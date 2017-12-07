@@ -2093,7 +2093,7 @@ sub unpublish_past_contents {
 
             # Rebuild Trigger
             require MT::RebuildTrigger;
-            MT::RebuildTrigger->runner( 'post_content_unpub', $app,
+            MT::RebuildTrigger->runner( 'post_content_unpub', $mt,
                 $content_data );
 
             $rebuild_queue{ $content_data->id } = $content_data;

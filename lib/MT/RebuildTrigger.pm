@@ -119,9 +119,9 @@ sub class_label {
 
 sub post_contents_bulk_save {
     my $self = shift;
-    my ( $eh, $app, $contents ) = @_;
+    my ( $app, $contents ) = @_;
     foreach my $content (@$contents) {
-        &post_content_save( $self, $eh, $app, $content->{current} );
+        &post_content_save( $self, $app, $content->{current} );
     }
 }
 
@@ -177,7 +177,7 @@ sub apply_default_settings {
 
 sub post_content_save {
     my $self = shift;
-    my ( $eh, $app, $content ) = @_;
+    my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id || 0;
     my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
 
@@ -202,7 +202,7 @@ sub post_content_save {
 
 sub post_content_pub {
     my $self = shift;
-    my ( $eh, $app, $content ) = @_;
+    my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id;
     my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
 
@@ -223,7 +223,7 @@ sub post_content_pub {
 
 sub post_content_unpub {
     my $self = shift;
-    my ( $eh, $app, $content ) = @_;
+    my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id;
     my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
 
