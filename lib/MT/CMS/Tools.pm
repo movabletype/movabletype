@@ -984,7 +984,7 @@ sub recover_profile_password {
         if !$author || $author->type != MT::Author::AUTHOR() || !$author_id;
 
     my ( $rc, $res )
-        = reset_password( $app, $author, $author->hint, $author->name );
+        = reset_password( $app, $author );
 
     if ($rc) {
         my $url = $app->uri(
@@ -2683,7 +2683,7 @@ sub recover_passwords {
     foreach (@id) {
         my $author = $class->load($_)
             or next;
-        my ( $rc, $res ) = reset_password( $app, $author, $author->hint );
+        my ( $rc, $res ) = reset_password( $app, $author );
         push @msg_loop, { message => $res };
     }
 
@@ -2693,9 +2693,7 @@ sub recover_passwords {
 
 sub reset_password {
     my $app      = shift;
-    my ($author) = $_[0];
-    my $hint     = $_[1];
-    my $name     = $_[2];
+    my ($author) = @_;
 
     require MT::Auth;
     require MT::Log;
@@ -2714,38 +2712,8 @@ sub reset_password {
         );
     }
 
-    $app->log(
-        {   message => $app->translate(
-                "Invalid user name '[_1]' in password recovery attempt",
-                $name
-            ),
-            level    => MT::Log::SECURITY(),
-            class    => 'system',
-            category => 'recover_password',
-        }
-        ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
+    return ( 0, $app->translate("Invalid request.") )
         unless $author;
-    return (
-        0,
-        $app->translate(
-            "User has not set pasword hint; Cannot recover password")
-    ) if ( $hint && !$author->hint );
-
-    $app->log(
-        {   message => $app->translate(
-                "Invalid attempt to recover password (used hint '[_1]')",
-                $hint
-            ),
-            level    => MT::Log::SECURITY(),
-            class    => 'system',
-            category => 'recover_password'
-        }
-        ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
-        unless $author->hint eq $hint;
 
     return (
         0,
