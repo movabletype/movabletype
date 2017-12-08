@@ -167,7 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: cover covertags tags test testall quick-test parallel-test test-update-fixture dist me clean
+.PHONY: cover covertags tags test testall quick-test parallel-test test-update-fixture test-ignore-fixture dist me clean
 
 cover:
 	-cover -delete
@@ -206,6 +206,9 @@ parallel-test:
 
 test-update-fixture:
 	MT_TEST_UPDATE_FIXTURE=1 prove
+
+test-ignore-fixture:
+	MT_TEST_IGNORE_FIXTURE=1 prove
 
 dist:
 	perl build/exportmt.pl --local
