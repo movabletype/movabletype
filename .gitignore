@@ -57,3 +57,5 @@ t/update/
 
 .perl-version
 
+cover_db/
+
