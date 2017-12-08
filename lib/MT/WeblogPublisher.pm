@@ -2048,7 +2048,7 @@ sub publish_future_posts {
 
             # Clear cache for site stats dashnoard widget.
             MT::Util::clear_site_stats_widget_cache( $blog->id )
-                or die translate('Removing stats cache failed.');
+                or die MT->translate('Removing stats cache failed.');
         }
         if ($changed) {
             my %rebuilt_okay;
