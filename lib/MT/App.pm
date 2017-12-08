@@ -725,6 +725,15 @@ sub set_x_frame_options_header {
     $app->set_header( 'X-Frame-Options', $x_frame_options );
 }
 
+sub set_x_xss_protection_header {
+    my $app = shift;
+
+    my $xss_protection = $app->config->XXSSProtection;
+    return unless $xss_protection;
+
+    $app->set_header( 'X-XSS-Protection', $xss_protection );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -3086,6 +3095,7 @@ sub run {
     }
 
     $app->set_x_frame_options_header;
+    $app->set_x_xss_protection_header;
 
     my ($body);
 
