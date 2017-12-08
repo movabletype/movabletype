@@ -1555,7 +1555,6 @@ subtest 'mode = save_entry' => sub {
     ok( $out, "Request: save_entry" );
     ok( $out !~ m!permission=1!i,
         "save_entry by permitted user (create_post)" );
-
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
@@ -3856,6 +3855,98 @@ subtest 'action = open_batch_editor (website)' => sub {
     ok( $out,                        "Request: open_batch_editor" );
     ok( $out =~ m!not implemented!i, "open_batch_editor by type mismatch" );
 
+};
+
+subtest 'mode = save_entry_prefs (entry)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by permitted user (create_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by permitted user (edit_all_posts)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other blog" );
 };
 
 done_testing();

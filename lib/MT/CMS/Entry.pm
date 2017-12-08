@@ -2408,14 +2408,39 @@ sub save_entry_prefs {
 
     MT::Util::Log->info('--- Start save_entry_prefs.');
 
-    my $perms = $app->permissions
-        or return $app->error( $app->translate("No permissions") );
+    # Magic token check
     $app->validate_magic() or return;
-    my $q          = $app->param;
+
+    # Param check
+    my $type = lc scalar $app->param('_type') || '';
+    if ( 'entry' ne $type and 'page' ne $type ) {
+        return $app->error( $app->translate('Invalid request.') );
+    }
+
+    # Loading permission record
+    my $user = $app->user
+        or return $app->error( $app->translate('Invalid request.') );
+    my $blog_id = scalar $app->param('blog_id')
+        or return $app->error( $app->translate('Invalid request.') );
+    my $perms = MT->model('permission')->load(
+        {   author_id => $user->id,
+            blog_id   => $blog_id,
+        }
+    );
+
+    # Sometimes super user does not have any permission for each site.
+    return $app->json_result( { success => 1 } )
+        if $user->is_superuser && !$perms;
+
+    # Permission check
+    return $app->permission_denied()
+        unless $perms
+        && $perms->can_do('save_edit_prefs');
+
     my $prefs      = $app->_entry_prefs_from_params;
-    my $disp       = $q->param('entry_prefs');
-    my $sort_only  = $q->param('sort_only');
-    my $prefs_type = $q->param('_type') . '_prefs';
+    my $disp       = scalar $app->param('entry_prefs');
+    my $sort_only  = scalar $app->param('sort_only');
+    my $prefs_type = $type . '_prefs';
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;

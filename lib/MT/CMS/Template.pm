@@ -3217,10 +3217,30 @@ sub delete_widget {
 
 sub save_template_prefs {
     my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    my $perms   = $app->user->permissions($blog_id)
-        or return $app->error( $app->translate("No permissions") );
+
+    # Magic token check
     $app->validate_magic() or return;
+
+    # Loading permission record
+    my $user = $app->user
+        or return $app->error( $app->translate('Invalid request.') );
+    my $blog_id = scalar $app->param('blog_id')
+        or return $app->error( $app->translate('Invalid request.') );
+    my $perms = MT->model('permission')->load(
+        {   author_id => $user->id,
+            blog_id   => $blog_id,
+        }
+    );
+
+    # Sometimes super user or system level template edit permitted user
+    # does not have any permission for each site.
+    return $app->json_result( { success => 1 } )
+        if !$perms && ( $user->is_superuser || $user->can_edit_templates() );
+
+    # Permission check
+    return $app->permission_denied()
+        unless $perms
+        && $perms->can_do('save_template_prefs');
 
     my $prefs = $perms->template_prefs || '';
     my $highlight = $app->param('syntax_highlight');

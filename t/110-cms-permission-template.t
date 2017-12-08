@@ -2450,4 +2450,72 @@ subtest 'website scope' => sub {
     done_testing();
 };
 
+subtest 'mode = save_template_prefs' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user (sys)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save_template_prefs by other blog" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save_template_prefs by other permission" );
+
+};
+
 done_testing();

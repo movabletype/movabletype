@@ -2744,6 +2744,7 @@ sub load_core_permissions {
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
                 'edit_entry_unpublished_on'               => 1,
+                'save_edit_prefs'                         => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2777,6 +2778,7 @@ sub load_core_permissions {
                 'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
+                'save_edit_prefs'                  => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2872,7 +2874,8 @@ sub load_core_permissions {
                 'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
-                'refresh_templates'         => 1.
+                'refresh_templates'         => 1,
+                'save_template_prefs'       => 1,
             }
         },
         'blog.manage_feedback' => {
@@ -2967,6 +2970,7 @@ sub load_core_permissions {
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
+                'save_edit_prefs'                 => 1,
             }
         },
         'blog.manage_users' => {
