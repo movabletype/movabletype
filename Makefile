@@ -167,7 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: test cover clean all
+.PHONY: cover covertags tags test testall quick-test dist me clean
 
 cover:
 	-cover -delete
