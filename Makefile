@@ -172,26 +172,26 @@ version_file:
 cover:
 	-cover -delete
 	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
+	prove
 
 covertags:
 	-cover -delete
 	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
+	prove t/*tags*.t
 	-cover
 
 tags:
 	-rm -rf t/db/*
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
+	prove t/*tags*.t
 
 test:
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
+	prove
 
 testall:
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t addons/*/t/*.t plugins/*/t/*.t
+	prove t plugins/*/t addons/*/t
 
 quick-test:
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
+	prove \
 		t/00-compile.t t/01-serialize.t t/04-config.t \
 		t/05-errorhandler.t t/07-builder.t t/08-util.t           \
 		t/09-image.t t/10-filemgr.t t/11-sanitize.t t/12-dsa.t   \
