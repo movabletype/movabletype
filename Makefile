@@ -197,7 +197,7 @@ quick-test:
 		t/09-image.t t/10-filemgr.t t/11-sanitize.t t/12-dsa.t   \
 		t/13-dirify.t t/20-setup.t t/21-callbacks.t t/22-author.t\
 		t/23-entry.t t/26-pings.t t/27-context.t t/28-xmlrpc.t   \
-		t/29-cleanup.t t/32-mysql.t t/33-postgres.t   \
+		t/32-mysql.t t/33-postgresql.t   \
 		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
 		t/47-i18n-ja.t t/48-cache.t
 
