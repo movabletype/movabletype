@@ -167,7 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: cover covertags tags test testall quick-test dist me clean
+.PHONY: cover covertags tags test testall quick-test parallel-test dist me clean
 
 cover:
 	-cover -delete
@@ -200,6 +200,9 @@ quick-test:
 		t/32-mysql.t t/33-postgresql.t   \
 		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
 		t/47-i18n-ja.t t/48-cache.t
+
+parallel-test:
+	prove -j4 -PMySQLPool=MT::Test::Env -It/lib
 
 dist:
 	perl build/exportmt.pl --local
