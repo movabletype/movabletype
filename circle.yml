@@ -2,11 +2,6 @@ machine:
   services:
     - docker
 
-general:
-  branches:
-    only:
-      - hotfix-internal-6.3.7
-
 checkout:
   post:
     - t/git-mtime t/cpanfile t/ldif/cn=config.ldif t/ldif/domain1_example_jp.ldif t/ldif/domain2_example_jp.ldif t/ldif/example_com.ldif t/ldif/example_jp.ldif
