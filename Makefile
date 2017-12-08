@@ -167,7 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: cover covertags tags test testall quick-test parallel-test test-update-fixture test-ignore-fixture dist me clean
+.PHONY: cover covertags tags test testall quick-test test-parallel test-update-fixture test-ignore-fixture dist me clean
 
 cover:
 	-cover -delete
@@ -201,7 +201,7 @@ quick-test:
 		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
 		t/47-i18n-ja.t t/48-cache.t
 
-parallel-test:
+test-parallel:
 	prove -j4 -PMySQLPool=MT::Test::Env -It/lib
 
 test-update-fixture:
