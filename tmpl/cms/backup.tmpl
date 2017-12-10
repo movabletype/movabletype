@@ -23,6 +23,7 @@
     <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="backup_what">" />
   <mt:else>
+    <input type="hidden" id="blog_id" name="blog_id" value="0" />
     <mtapp:setting
        id="backup_what"
        label="<__trans phrase="What to Backup">"
