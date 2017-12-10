@@ -354,7 +354,7 @@ sub init_user {
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
-    if ( $mode eq 'MT' ) {
+    if ( $mode eq 'MT' and $initial_email ) {
         if ( !MT::Util::is_valid_email($initial_email) ) {
             $param{error} = $app->translate( "Invalid email address '[_1]'",
                 $initial_email );

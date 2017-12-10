@@ -2440,11 +2440,16 @@ sub create_user_pending {
             );
         }
     }
-    elsif ( !( $q->param('external_auth') ) ) {
-        delete $param->{email};
-        return $app->error(
-            $app->translate("Email Address is required for password reset.")
-        );
+    else {
+        if ( $app->config('RerquiredUserEmail')
+            and !( $q->param('external_auth') ) )
+        {
+            delete $param->{email};
+            return $app->error(
+                $app->translate(
+                    "Email Address is required for password reset.")
+            );
+        }
     }
 
     my $name = $q->param('username');

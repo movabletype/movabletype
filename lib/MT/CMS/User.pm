@@ -175,6 +175,12 @@ sub edit {
     }
     $param->{'nav_authors'} = 1;
     $param->{active_user_menu} = 'profile';
+
+    $param->{'email_is_blank'} = 1
+        unless $obj->email;
+    $param->{'email_is_required'} = $app->config('RerquiredUserEmail');
+
+    return 1;
 }
 
 sub edit_role {
@@ -835,7 +841,7 @@ sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $user  = $app->user;
+    my $user = $app->user;
     return $app->permission_denied()
         unless $app->can_do('remove_user_assoc');
     my $can_remove_administrator
@@ -874,7 +880,7 @@ sub revoke_role {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $user  = $app->user;
+    my $user = $app->user;
     return $app->permission_denied()
         unless $app->can_do('revoke_role');
 
@@ -1642,21 +1648,23 @@ sub save_filter {
     }
 
     my $email = $accessor->('email');
-    return $eh->error(
-        MT->translate("Email Address is required for password reset.") )
-        unless $email;
-    if ( !is_valid_email($email) ) {
-        return $eh->error( $app->translate("Email Address is invalid.") );
-    }
+    if ($email) {
+        return $eh->error( $app->translate("Email Address is invalid.") )
+            unless is_valid_email($email);
 
-    if ( $email =~ m/([<>])/ ) {
+        if ( $email =~ m/([<>])/ ) {
+            return $eh->error(
+                $app->translate(
+                    "[_1] contains an invalid character: [_2]",
+                    $app->translate("Email Address"),
+                    $encode_html->($1)
+                )
+            );
+        }
+    }
+    elsif ( $app->config('RerquiredUserEmail') ) {
         return $eh->error(
-            $app->translate(
-                "[_1] contains an invalid character: [_2]",
-                $app->translate("Email Address"),
-                $encode_html->($1)
-            )
-        );
+            MT->translate("Email Address is required for password reset.") );
     }
 
     if ( $accessor->('url') ) {

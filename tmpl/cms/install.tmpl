@@ -91,7 +91,7 @@ div.warning#version-warning {
          label="<__trans phrase="Email Address">"
          label_class="top-label"
          hint="<__trans phrase="The user&rsquo;s email address.">">
-        <input type="text" id="admin_email" class="text full required email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+        <input type="text" id="admin_email" class="text full<mt:if name="config.rerquireduseremail"> required</mt:if> email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
       </mtapp:setting>
 
       <mt:unless name="config.emailaddressmain">
