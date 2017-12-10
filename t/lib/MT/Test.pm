@@ -1270,6 +1270,9 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->image_width(640);
     $asset->image_height(480);
     $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
     $asset->created_by(1);
     $asset->created_on('20000131074500');
     $asset->save or die "Couldn't save asset record 5: " . $asset->errstr;
@@ -1286,6 +1289,9 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->image_width(640);
     $asset->image_height(480);
     $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
     $asset->created_by(1);
     $asset->created_on('20000131074600');
     $asset->save or die "Couldn't save asset record 6: " . $asset->errstr;
@@ -1302,6 +1308,9 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->image_width(640);
     $asset->image_height(480);
     $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
     $asset->created_by(1);
     $asset->created_on('20000131074700');
     $asset->save or die "Couldn't save asset record 7: " . $asset->errstr;
