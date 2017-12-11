@@ -5,10 +5,6 @@ BUILD_PACKAGE ?= MTOS
 -include build/mt-dists/$(BUILD_PACKAGE).mk
 -include build/mt-dists/$(BUILD_LANGUAGE).mk
 
-# test tasks
--include t/test.mk
--include t/docker-test.mk
-
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
 local_js = mt-static/mt_de.js \
@@ -190,4 +186,8 @@ clean:
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
+
+# test tasks
+-include t/test.mk
+-include t/docker-test.mk
 
