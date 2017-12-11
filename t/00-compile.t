@@ -183,6 +183,7 @@ use_ok('MT::ContentType::UniqueID');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Template::Tags::IntegrateSite');
 
 SKIP: {
 
