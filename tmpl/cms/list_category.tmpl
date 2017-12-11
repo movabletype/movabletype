@@ -1,13 +1,5 @@
 <mt:setvarblock name="system_msg">
-<div id="msg-block">
-<mt:if name="saved">
-  <mtapp:statusmsg
-    id="saved"
-    class="success">
-    <__trans phrase="This category set has been saved.">
-  </mtapp:statusmsg>
-</mt:if>
-</div>
+<div id="msg-block"></div>
 </mt:setvarblock>
 
 <mt:loop name="list_headers">
@@ -73,41 +65,51 @@
   </div>
 </div>
 
-<div id="dialog-change-basename" class="dialog" style="display: none;">
-  <div class="dialog-msg-block"></div>
-<mt:if name="object_type" eq="category">
-  <mtapp:setting
-     id="new-label"
-     label="<__trans phrase="Label">"
-     label_class="top-label">
-    <input type="text" id="new-label" class="text full required">
-  </mtapp:setting>
-</mt:if>
-  <mtapp:setting
-     id="new-basename"
-     label="<__trans phrase="_CATEGORY_BASENAME">"
-     label_class="top-label">
-    <input type="text" id="new-basename" class="text full required">
-  </mtapp:setting>
-  <div class="dialog actions-bar">
-    <button
-       type="submit"
-       id="change-and-move"
-       class="action primary button">
-      <__trans phrase="Change and move">
-    </button>
-    <button
-       type="button"
-       id="cancel-move"
-       class="action button">
-      <__trans phrase="Cancel">
-    </button>
+<div id="modal-change-basename" class="modal" role="dialog" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><__trans phrase="Alert"></h4>
+      </div>
+      <div class="modal-body">
+        <mt:if name="object_type" eq="category">
+          <mtapp:setting
+             id="new-label"
+             label="<__trans phrase="Label">"
+             label_class="top-label">
+            <input type="text" id="new-label" class="form-control text full required">
+          </mtapp:setting>
+        </mt:if>
+          <mtapp:setting
+             id="new-basename"
+             label="<__trans phrase="_CATEGORY_BASENAME">"
+             label_class="top-label">
+            <input type="text" id="new-basename" class="form-control text full required">
+          </mtapp:setting>
+      </div>
+      <div class="modal-footer">
+        <button
+           type="submit"
+           id="change-and-move"
+           class="btn btn-primary action primary button">
+          <__trans phrase="Change and move">
+        </button>
+        <button
+           type="button"
+           id="cancel-move"
+           class="btn btn-default action button">
+          <__trans phrase="Cancel">
+        </button>
+      </div>
+    </div>
   </div>
 </div>
+
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/list_category.css?v=<mt:var name="mt_version_id" escape="url">" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/msg-balloon.css?v=<mt:var name="mt_version_id" escape="url">" />
 <mt:ignore>
 <link rel="stylesheet" href="<mt:var name="static_uri">css/sortable.css" />
 </mt:ignore>
@@ -124,6 +126,9 @@ var checksum = '';
 var isdirty = false;
 var indent = 35;
 var root_pos = jQuery('#root').position();
+<mt:if name="is_category_set">
+var categorySetId = <mt:if name="id"><mt:var name="id" escape="js"><mt:else>0</mt:if>;
+</mt:if>
 
 function setDirty( dirty ) {
     isdirty = dirty;
@@ -186,6 +191,7 @@ function loginAgain(fn) {
 }
 
 function handleMessages( data ) {
+  jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
       '<div class="alert alert-danger msg msg-error">'
@@ -198,7 +204,7 @@ function handleMessages( data ) {
   }
   if ( !data.result ) return false;
   var messages = data.result.messages;
-  if ( !data.result.messages || data.result.redirect_url ) return true;
+  if ( !data.result.messages ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
     var text  = msg.msg;
@@ -583,6 +589,7 @@ function initMoving() {
       ) {
 
         $item.attr('class', ('pcat-'+place));
+        $item.addClass('card card-block flex-row p-3 sortable-item');
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
@@ -604,15 +611,14 @@ function initMoving() {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
-              jQuery('#dialog-change-basename').dialog('close');
-
+              jQuery('#modal-change-basename').modal('hide');
             }
 <mt:else>
             if ( jQuery('#new-basename').mtValidate('simple') ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
-              jQuery('#dialog-change-basename').dialog('close');
+              jQuery('#modal-change-basename').modal('hide');
             }
 </mt:if>
             return false;
@@ -628,17 +634,11 @@ function initMoving() {
             initItem($item);
             setHoverAction(jQuery('.pcat-'+catid));
             setItemList();
-            jQuery('#dialog-change-basename').dialog('close');
+            jQuery('#modal-change-basename').modal('hide');
           });
-        jQuery('#dialog-change-basename').dialog({
-          title: trans('Alert'),
-          dialogClass: 'alert',
-          autoOpen: true,
-          width: 450,
-          modal: true,
-          resizable: false,
-          draggable: false,
-          closeOnEscape: false
+        jQuery('#modal-change-basename').modal({
+          backdrop: 'static',
+          keyboard: false
         });
 <mt:if name="object_type" eq="category">
         jQuery('#new-label, #new-basename').mtValidate('simple');
@@ -775,15 +775,13 @@ function fixZeroStateMessage () {
     jQuery('#zero-state-message').remove();
 }
 
-function renderNestedList(args) {
+function renderNestedList() {
   var params = {
     __mode: 'filtered_list',
     datasource: '<mt:var name="list_type">',
   <mt:if name="is_category_set">
     is_category_set: 1,
-  </mt:if>
-  <mt:if name="id">
-    set_id: <mt:var name="id" escape="js">,
+    set_id: categorySetId,
   </mt:if>
     blog_id: <mt:var name="blog_id">
   };
@@ -794,9 +792,6 @@ function renderNestedList(args) {
     dataType: 'json',
     data: params,
     success: function(data) {
-      if (!args || !args.notClearMsgBlock) {
-        jQuery('#msg-block').empty();
-      }
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
@@ -875,9 +870,7 @@ function bulkUpdateCategories() {
   <mt:if name="is_category_set">
       is_category_set: 1,
       set_name: jQuery('#set_name').val(),
-  </mt:if>
-  <mt:if name="id">
-      set_id: <mt:var name="id" escape="js">,
+      set_id: categorySetId,
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
@@ -885,13 +878,25 @@ function bulkUpdateCategories() {
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
-      jQuery('#msg-block').empty();
       if ( !handleMessages(data) ) return;
       renderItems(data);
       setDirty(false);
-      if (data.result.redirect_url) {
-        location.href = data.result.redirect_url;
+<mt:if name="is_category_set">
+  <mt:unless name="id">
+      if (!categorySetId && data.result.category_set_id) {
+        categorySetId = data.result.category_set_id;
+
+        var queryParams = {
+          __mode: 'view',
+          _type: 'category_set',
+          blog_id: <mt:var name="blog_id">,
+          id: categorySetId
+        };
+        var newUrl = '<mt:var name="script_url">?' + jQuery.param(queryParams);
+        window.history.replaceState(undefined, undefined, newUrl);
       }
+  </mt:unless>
+</mt:if>
     },
     complete: function() {
       initMoving();
@@ -924,7 +929,7 @@ jQuery(window).bind('beforeunload', function() {
 jQuery(window).bind('listReady', function() {
   jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 });
-renderNestedList({notClearMsgBlock: true});
+renderNestedList();
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

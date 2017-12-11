@@ -167,39 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: test cover clean all
-
-cover:
-	-cover -delete
-	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
-
-covertags:
-	-cover -delete
-	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
-	-cover
-
-tags:
-	-rm -rf t/db/*
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
-
-test: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
-
-testall: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t addons/*/t/*.t plugins/*/t/*.t
-
-quick-test: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
-		t/00-compile.t t/01-serialize.t t/04-config.t \
-		t/05-errorhandler.t t/07-builder.t t/08-util.t           \
-		t/09-image.t t/10-filemgr.t t/11-sanitize.t t/12-dsa.t   \
-		t/13-dirify.t t/20-setup.t t/21-callbacks.t t/22-author.t\
-		t/23-entry.t t/26-pings.t t/27-context.t t/28-xmlrpc.t   \
-		t/29-cleanup.t t/32-mysql.t t/33-postgres.t   \
-		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
-		t/47-i18n-ja.t t/48-cache.t
+.PHONY: dist me clean
 
 dist:
 	perl build/exportmt.pl --local
@@ -219,42 +187,7 @@ clean:
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
 
-##### Docker test
-.PHONY: docker_build_image docker_build_dist docker_run_test docker_test docker_label docker_stop docker_clean
-
-DOCKER_IMAGE ?= mt
-
-DOCKER_TESTS ?= ./t \
-                ./plugins/*/t
-
-DOCKER_SKIP_TESTS ?= t/62-asset-editor.t \
-                     plugins/MultiBlog/t/02.tags.t
-
-DOCKER_TEST_COMMAND ?= cp ./t/mysql-test.cfg ./mt-config.cgi && \
-                       rm $(DOCKER_SKIP_TESTS) && \
-                       service mysqld start & sleep 10 && \
-                       service memcached start & sleep 10 && \
-                       prove $(DOCKER_TESTS) && \
-                       phpunit
-
-docker_build_image:
-	docker build --tag $(DOCKER_IMAGE) .
-
-# TODO: remove hard-coded options
-docker_build_dist:
-	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "perl build/exportmt.pl --local --no-lang-stamp --pack=MT --rel_num=0 --prod --alpha=1"
-
-docker_run_test:
-	docker run --label="$$(make -s docker_label)" --rm -w /var/www/mt $(DOCKER_IMAGE) bash -c "$(DOCKER_TEST_COMMAND)"
-
-docker_test: docker_build_image docker_run_test
-
-docker_label:
-	echo "test.$(DOCKER_IMAGE)=$$(git rev-parse HEAD)"
-
-docker_stop:
-	docker stop $$(docker ps -q --filter "label=$$(make -s docker_label)")
-
-docker_clean:
-	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "make clean"
+# test tasks
+-include t/test.mk
+-include t/docker-test.mk
 
