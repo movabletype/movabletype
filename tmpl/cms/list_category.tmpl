@@ -1,13 +1,5 @@
 <mt:setvarblock name="system_msg">
-<div id="msg-block">
-<mt:if name="saved">
-  <mtapp:statusmsg
-    id="saved"
-    class="success">
-    <__trans phrase="This category set has been saved.">
-  </mtapp:statusmsg>
-</mt:if>
-</div>
+<div id="msg-block"></div>
 </mt:setvarblock>
 
 <mt:loop name="list_headers">
@@ -199,6 +191,7 @@ function loginAgain(fn) {
 }
 
 function handleMessages( data ) {
+  jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
       '<div class="alert alert-danger msg msg-error">'
@@ -782,7 +775,7 @@ function fixZeroStateMessage () {
     jQuery('#zero-state-message').remove();
 }
 
-function renderNestedList(args) {
+function renderNestedList() {
   var params = {
     __mode: 'filtered_list',
     datasource: '<mt:var name="list_type">',
@@ -799,9 +792,6 @@ function renderNestedList(args) {
     dataType: 'json',
     data: params,
     success: function(data) {
-      if (!args || !args.notClearMsgBlock) {
-        jQuery('#msg-block').empty();
-      }
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
@@ -888,7 +878,6 @@ function bulkUpdateCategories() {
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
-      jQuery('#msg-block').empty();
       if ( !handleMessages(data) ) return;
       renderItems(data);
       setDirty(false);
@@ -940,7 +929,7 @@ jQuery(window).bind('beforeunload', function() {
 jQuery(window).bind('listReady', function() {
   jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 });
-renderNestedList({notClearMsgBlock: true});
+renderNestedList();
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
