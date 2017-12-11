@@ -32,6 +32,7 @@ use MT::DataAPI::Resource;
 $test_env->prepare_fixture('db_data');
 
 my $app = MT::App::DataAPI->new;
+$app->init_request;
 MT->set_instance($app);
 my $author = $app->model('author')->load(1);
 $app->user($author);
