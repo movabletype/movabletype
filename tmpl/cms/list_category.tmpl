@@ -593,6 +593,7 @@ function initMoving() {
       ) {
 
         $item.attr('class', ('pcat-'+place));
+        $item.addClass('card card-block flex-row p-3 sortable-item');
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
