@@ -173,7 +173,7 @@ function loginAgain(fn) {
                     jQuery(this).attr('href', replace);
                   });
                 }
-                jQuery.fn.mtDialog.close();
+                jQuery.fn.mtModal.close();
                 fn(data);
                 return false;
               },
@@ -187,7 +187,10 @@ function loginAgain(fn) {
             return false;
           });
     });
-  jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
 }
 
 function handleMessages( data ) {
