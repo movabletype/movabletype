@@ -73,41 +73,51 @@
   </div>
 </div>
 
-<div id="dialog-change-basename" class="dialog" style="display: none;">
-  <div class="dialog-msg-block"></div>
-<mt:if name="object_type" eq="category">
-  <mtapp:setting
-     id="new-label"
-     label="<__trans phrase="Label">"
-     label_class="top-label">
-    <input type="text" id="new-label" class="text full required">
-  </mtapp:setting>
-</mt:if>
-  <mtapp:setting
-     id="new-basename"
-     label="<__trans phrase="_CATEGORY_BASENAME">"
-     label_class="top-label">
-    <input type="text" id="new-basename" class="text full required">
-  </mtapp:setting>
-  <div class="dialog actions-bar">
-    <button
-       type="submit"
-       id="change-and-move"
-       class="action primary button">
-      <__trans phrase="Change and move">
-    </button>
-    <button
-       type="button"
-       id="cancel-move"
-       class="action button">
-      <__trans phrase="Cancel">
-    </button>
+<div id="modal-change-basename" class="modal" role="dialog" aria-hidden="true" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><__trans phrase="Alert"></h4>
+      </div>
+      <div class="modal-body">
+        <mt:if name="object_type" eq="category">
+          <mtapp:setting
+             id="new-label"
+             label="<__trans phrase="Label">"
+             label_class="top-label">
+            <input type="text" id="new-label" class="form-control text full required">
+          </mtapp:setting>
+        </mt:if>
+          <mtapp:setting
+             id="new-basename"
+             label="<__trans phrase="_CATEGORY_BASENAME">"
+             label_class="top-label">
+            <input type="text" id="new-basename" class="form-control text full required">
+          </mtapp:setting>
+      </div>
+      <div class="modal-footer">
+        <button
+           type="submit"
+           id="change-and-move"
+           class="btn btn-primary action primary button">
+          <__trans phrase="Change and move">
+        </button>
+        <button
+           type="button"
+           id="cancel-move"
+           class="btn btn-default action button">
+          <__trans phrase="Cancel">
+        </button>
+      </div>
+    </div>
   </div>
 </div>
+
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/list_category.css?v=<mt:var name="mt_version_id" escape="url">" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/msg-balloon.css?v=<mt:var name="mt_version_id" escape="url">" />
 <mt:ignore>
 <link rel="stylesheet" href="<mt:var name="static_uri">css/sortable.css" />
 </mt:ignore>
@@ -583,6 +593,7 @@ function initMoving() {
       ) {
 
         $item.attr('class', ('pcat-'+place));
+        $item.addClass('card card-block flex-row p-3 sortable-item');
         initItem($item);
 <mt:if name="object_type" eq="category">
         jQuery.mtValidateRules['#new-label'] = function ($e) {
@@ -604,15 +615,14 @@ function initMoving() {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
-              jQuery('#dialog-change-basename').dialog('close');
-
+              jQuery('#modal-change-basename').modal('hide');
             }
 <mt:else>
             if ( jQuery('#new-basename').mtValidate('simple') ) {
               var $basename = $item.find('.item-basename-text');
               $basename.text( jQuery('#new-basename').val() );
               _stop();
-              jQuery('#dialog-change-basename').dialog('close');
+              jQuery('#modal-change-basename').modal('hide');
             }
 </mt:if>
             return false;
@@ -628,17 +638,11 @@ function initMoving() {
             initItem($item);
             setHoverAction(jQuery('.pcat-'+catid));
             setItemList();
-            jQuery('#dialog-change-basename').dialog('close');
+            jQuery('#modal-change-basename').modal('hide');
           });
-        jQuery('#dialog-change-basename').dialog({
-          title: trans('Alert'),
-          dialogClass: 'alert',
-          autoOpen: true,
-          width: 450,
-          modal: true,
-          resizable: false,
-          draggable: false,
-          closeOnEscape: false
+        jQuery('#modal-change-basename').modal({
+          backdrop: 'static',
+          keyboard: false
         });
 <mt:if name="object_type" eq="category">
         jQuery('#new-label, #new-basename').mtValidate('simple');
