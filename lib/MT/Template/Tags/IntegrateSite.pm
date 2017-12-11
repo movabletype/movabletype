@@ -13,6 +13,8 @@ use MT;
 
 =head2 IntegrateSite
 
+This is the block tag for multiple site to be integrated.
+
 =cut
 
 sub _hdlr_integrate_site {
