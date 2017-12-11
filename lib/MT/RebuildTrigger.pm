@@ -23,6 +23,10 @@ __PACKAGE__->install_properties(
     }
 );
 
+# Blog-level Access override statuses
+sub DENIED ()  {1}
+sub ALLOWED () {2}
+
 sub class_label {
     MT->translate("Rebuild Trigger");
 }
@@ -168,7 +172,7 @@ sub apply_default_settings {
     my ( $self, $data, $blog_id ) = @_;
 
     if ( $blog_id > 0 ) {
-        $data->{default_mtmultiblog_action} = 1;
+        $data->{default_mt_integrate_site_action} = 1;
     }
     else {
         $data->{default_access_allowed} = 1;
@@ -291,37 +295,37 @@ sub perform_mb_action {
 #    $args->{ $acl{mode} } = $acl{acl};
 #}
 
-#sub load_multiblog_acl {
-#    my $self= shift;
-#    my ($ctx) = @_;
-#
-#    # Set local blog
-#    my $this_blog = $ctx->stash('blog_id') || 0;
-#
-#    # Get the MultiBlog system config for default access and overrides
-#    my $default_access_allowed
-#        = $self->get_config_value( 'default_access_allowed', 'system' );
-#    my $access_overrides
-#        = $self->get_config_value( 'access_overrides', 'system' ) || {};
-#
-#    # System setting allows access by default
-#    my ( $mode, @acl );
-#    if ($default_access_allowed) {
-#        @acl = grep {
-#                    $_ != $this_blog
-#                and exists $access_overrides->{$_}
-#                and $access_overrides->{$_} == DENIED
-#        } keys %$access_overrides;
-#        $mode = 'deny_blogs';
-#    }
-#    else {
-#        @acl = grep { $_ == $this_blog or $access_overrides->{$_} == ALLOWED }
-#            ( $this_blog, keys %$access_overrides );
-#        $mode = 'allow_blogs';
-#    }
-#
-#    return ( mode => $mode, acl => @acl ? \@acl : undef );
-#}
+sub load_integrate_site_acl {
+    my $self = shift;
+    my ($ctx) = @_;
+
+    # Set local site
+    my $this_blog = $ctx->stash('blog_id') || 0;
+
+    # Get the MultiBlog system config for default access and overrides
+    my $default_access_allowed
+        = $self->get_config_value( 'default_access_allowed', 0 );
+    my $access_overrides
+        = $self->get_config_value( 'access_overrides', 0 ) || {};
+
+    # System setting allows access by default
+    my ( $mode, @acl );
+    if ($default_access_allowed) {
+        @acl = grep {
+                    $_ != $this_blog
+                and exists $access_overrides->{$_}
+                and $access_overrides->{$_} == DENIED
+        } keys %$access_overrides;
+        $mode = 'deny_blogs';
+    }
+    else {
+        @acl = grep { $_ == $this_blog or $access_overrides->{$_} == ALLOWED }
+            ( $this_blog, keys %$access_overrides );
+        $mode = 'allow_blogs';
+    }
+
+    return ( mode => $mode, acl => @acl ? \@acl : undef );
+}
 
 sub post_restore {
     my ( $self, $objects, $deferred, $errors, $callback ) = @_;

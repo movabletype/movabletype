@@ -35,20 +35,20 @@
 </mtapp:setting>
 
 <mtapp:setting
-   id="default_mtmultiblog_action"
+   id="default_mt_integrate_site_action"
    label="<__trans phrase="MTMultiBlog tag default arguments">"
    class="form-inline"
    hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
-    <option value="1"<mt:if name="default_mtmultiblog_action" eq="1"> selected="selected"</mt:if>>
+  <select name="default_mt_integrate_site_action" id="default_mt_integrate_site_action" class="custom-select form-control">
+    <option value="1"<mt:if name="default_mt_integrate_site_action" eq="1"> selected="selected"</mt:if>>
       <__trans phrase="Include sites/child sites">
     </option>
-    <option value="0"<mt:unless name="default_mtmultiblog_action"> selected="selected"</mt:unless>>
+    <option value="0"<mt:unless name="default_mt_integrate_site_action"> selected="selected"</mt:unless>>
       <__trans phrase="Exclude sites/child sites">
     </option>
   </select>
-  <input class="form-control" name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
+  <input class="form-control" name="default_mt_integrate_site_sites" type="text" value="<mt:var name="default_mt_integrate_site_sites">" />
 </mtapp:setting>
 
 <mtapp:setting

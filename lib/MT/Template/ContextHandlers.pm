@@ -390,6 +390,10 @@ sub core_tags {
             ## Category Set
             CategorySets =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_sets',
+
+            ## IntegrateSite
+            IntegrateSite =>
+                '$Core::MT::Template::Tags::IntegrateSite::_hdlr_integrate_site',
         },
         function => {
 

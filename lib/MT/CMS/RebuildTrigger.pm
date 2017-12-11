@@ -24,7 +24,7 @@ sub config {
         for my $key (
             qw/ default_access_allowed all_triggers
             blog_content_accessible blogs_in_website_triggers
-            default_mtmultiblog_action default_mtmulitblog_blogs
+            default_mt_integrate_site_action default_mt_integrate_site_sites
             rebuild_triggers /
             )
         {
@@ -229,7 +229,7 @@ sub save {
     for my $key (
         qw/ default_access_allowed all_triggers
         blog_content_accessible blogs_in_website_triggers
-        default_mtmultiblog_action default_mtmulitblog_blogs
+        default_mt_integrate_site_action default_mtintegrate_site_sites
         rebuild_triggers /
         )
     {
