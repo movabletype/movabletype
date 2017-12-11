@@ -1,13 +1,5 @@
 <mt:setvarblock name="system_msg">
-<div id="msg-block">
-<mt:if name="saved">
-  <mtapp:statusmsg
-    id="saved"
-    class="success">
-    <__trans phrase="This category set has been saved.">
-  </mtapp:statusmsg>
-</mt:if>
-</div>
+<div id="msg-block"></div>
 </mt:setvarblock>
 
 <mt:loop name="list_headers">
@@ -134,6 +126,9 @@ var checksum = '';
 var isdirty = false;
 var indent = 35;
 var root_pos = jQuery('#root').position();
+<mt:if name="is_category_set">
+var categorySetId = <mt:if name="id"><mt:var name="id" escape="js"><mt:else>0</mt:if>;
+</mt:if>
 
 function setDirty( dirty ) {
     isdirty = dirty;
@@ -196,6 +191,7 @@ function loginAgain(fn) {
 }
 
 function handleMessages( data ) {
+  jQuery('#msg-block').empty();
   if ( data.error ) {
     jQuery('#msg-block').append(
       '<div class="alert alert-danger msg msg-error">'
@@ -208,7 +204,7 @@ function handleMessages( data ) {
   }
   if ( !data.result ) return false;
   var messages = data.result.messages;
-  if ( !data.result.messages || data.result.redirect_url ) return true;
+  if ( !data.result.messages ) return true;
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
     var text  = msg.msg;
@@ -779,15 +775,13 @@ function fixZeroStateMessage () {
     jQuery('#zero-state-message').remove();
 }
 
-function renderNestedList(args) {
+function renderNestedList() {
   var params = {
     __mode: 'filtered_list',
     datasource: '<mt:var name="list_type">',
   <mt:if name="is_category_set">
     is_category_set: 1,
-  </mt:if>
-  <mt:if name="id">
-    set_id: <mt:var name="id" escape="js">,
+    set_id: categorySetId,
   </mt:if>
     blog_id: <mt:var name="blog_id">
   };
@@ -798,9 +792,6 @@ function renderNestedList(args) {
     dataType: 'json',
     data: params,
     success: function(data) {
-      if (!args || !args.notClearMsgBlock) {
-        jQuery('#msg-block').empty();
-      }
       if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
@@ -879,9 +870,7 @@ function bulkUpdateCategories() {
   <mt:if name="is_category_set">
       is_category_set: 1,
       set_name: jQuery('#set_name').val(),
-  </mt:if>
-  <mt:if name="id">
-      set_id: <mt:var name="id" escape="js">,
+      set_id: categorySetId,
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
@@ -889,13 +878,25 @@ function bulkUpdateCategories() {
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {
-      jQuery('#msg-block').empty();
       if ( !handleMessages(data) ) return;
       renderItems(data);
       setDirty(false);
-      if (data.result.redirect_url) {
-        location.href = data.result.redirect_url;
+<mt:if name="is_category_set">
+  <mt:unless name="id">
+      if (!categorySetId && data.result.category_set_id) {
+        categorySetId = data.result.category_set_id;
+
+        var queryParams = {
+          __mode: 'view',
+          _type: 'category_set',
+          blog_id: <mt:var name="blog_id">,
+          id: categorySetId
+        };
+        var newUrl = '<mt:var name="script_url">?' + jQuery.param(queryParams);
+        window.history.replaceState(undefined, undefined, newUrl);
       }
+  </mt:unless>
+</mt:if>
     },
     complete: function() {
       initMoving();
@@ -928,7 +929,7 @@ jQuery(window).bind('beforeunload', function() {
 jQuery(window).bind('listReady', function() {
   jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
 });
-renderNestedList({notClearMsgBlock: true});
+renderNestedList();
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

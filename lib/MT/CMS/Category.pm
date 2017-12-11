@@ -215,7 +215,7 @@ sub bulk_update {
             );
             $set->save or return $app->error( $set->errstr );
             $set_id = $set->id;
-            $app->request( 'new_category_set_id', $set_id );
+            $app->param( 'set_id', $set_id );
         }
     }
 
@@ -880,11 +880,6 @@ sub template_param_list {
     my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
-
-    # for category_set
-    if ( $app->isa('MT::App::CMS') ) {
-        $param->{saved} = $app->param('saved') ? 1 : 0;
-    }
 }
 
 sub pre_load_filtered_list {
@@ -922,6 +917,7 @@ sub filtered_list_param {
         if ( my $set_id = $app->param('set_id') ) {
             my $set = $app->model('category_set')->load($set_id);
             $sort_order = $set->order || '';
+            $param->{category_set_id} = $set_id;
         }
     }
     else {
@@ -940,18 +936,6 @@ sub filtered_list_param {
     );
     require Digest::MD5;
     $param->{checksum} = Digest::MD5::md5_hex($text);
-
-    if ( my $new_set_id = $app->request('new_category_set_id') ) {
-        $param->{redirect_url} = $app->uri(
-            mode => 'view',
-            args => {
-                _type   => 'category_set',
-                blog_id => $app->blog->id,
-                id      => $new_set_id,
-                saved   => 1,
-            },
-        );
-    }
 }
 
 1;
