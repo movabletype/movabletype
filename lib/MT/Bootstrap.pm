@@ -191,6 +191,7 @@ sub import {
                 $ENV{FAST_CGI} = 0;
                 $app = $class->new(%param) or die $class->errstr;
                 local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
+                $app->init_request;
                 $app->run;
             }
         };
