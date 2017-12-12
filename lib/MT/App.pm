@@ -2443,7 +2443,7 @@ sub create_user_pending {
         }
     }
     else {
-        if ( $app->config('RerquiredUserEmail')
+        if ( $app->config('RequiredUserEmail')
             and !( $q->param('external_auth') ) )
         {
             delete $param->{email};

@@ -177,8 +177,8 @@ sub edit {
     $param->{active_user_menu} = 'profile';
 
     $param->{'email_is_blank'} = 1
-        unless $obj->email;
-    $param->{'email_is_required'} = $app->config('RerquiredUserEmail');
+        if $obj && !$obj->email;
+    $param->{'email_is_reqxouired'} = $app->config('RequiredUserEmail');
 
     return 1;
 }
@@ -1662,7 +1662,7 @@ sub save_filter {
             );
         }
     }
-    elsif ( $app->config('RerquiredUserEmail') ) {
+    elsif ( $app->config('RequiredUserEmail') ) {
         return $eh->error(
             MT->translate("Email Address is required for password reset.") );
     }
