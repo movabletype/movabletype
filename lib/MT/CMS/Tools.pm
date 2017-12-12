@@ -1581,6 +1581,9 @@ sub restore {
         return 1;
     };
 
+    # Set flag
+    $app->request('__restore_in_progress', 1);
+
     require File::Path;
 
     my $error = '';
@@ -1593,7 +1596,9 @@ sub restore {
             ( $blog_ids, $asset_ids )
                 = restore_directory( $app, $dir, \$error );
         };
+        $app->request('__restore_in_progress', undef);
         return $return_error->($@) if $@;
+
         if ( defined $blog_ids ) {
             $param->{open_dialog} = 1;
             $param->{blog_ids}    = join( ',', @$blog_ids );
@@ -1677,6 +1682,7 @@ sub restore {
                 $app->print_encode(
                     $app->build_page( "restore_end.tmpl", $param ) );
                 close $fh if $fh;
+                $app->request('__restore_in_progress', undef);
                 return 1;
             }
             my $temp_dir = $app->config('TempDir');
@@ -1697,6 +1703,7 @@ sub restore {
                 ( $blog_ids, $asset_ids )
                     = restore_directory( $app, $tmp, \$error );
             };
+            $app->request('__restore_in_progress', undef);
             return $return_error->($@) if $@;
 
             if ( defined $blog_ids ) {
