@@ -108,7 +108,7 @@ function submitEdit( id, newname, oldname ) {
       magic_token: '<mt:var name="magic_token">'
     },
   }).always(function () {
-    location.reload();
+    listStore.trigger('load_list');
   });
 
   return false;
