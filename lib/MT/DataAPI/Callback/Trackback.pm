@@ -15,7 +15,8 @@ sub can_view {
     require MT::Trackback;
     my $tb    = MT::Trackback->load( $obj->tb_id );
     my $perms = $app->permissions
-        return 0;
+        or return 0;
+
     if ($tb) {
         my ( $entry, $cat );
         if ( $tb->entry_id ) {
