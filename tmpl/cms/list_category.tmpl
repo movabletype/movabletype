@@ -280,7 +280,7 @@ function initItem($item) {
   jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
 </mt:if>
 
-  jQuery('<a href="#" class="item-action edit-link clickable"><__trans phrase="Rename" escape="js"></a>')
+  jQuery('<a href="#" class="item-action edit-link clickable float-left"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({
@@ -344,7 +344,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon ml-1" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon ml-1 float-left" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({ sortable: false });
@@ -374,7 +374,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon ml-1" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon ml-1 float-left" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();
