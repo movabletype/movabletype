@@ -1602,6 +1602,10 @@ sub set_status_by_text {
 sub rebuild_favorite_sites {
     my $user = shift;
 
+    # In restoring, nothing to do.
+    my $app = MT->instance;
+    return if $app->request('__restore_in_progress');
+
     return
         if $user->is_superuser
         || $user->permissions(0)->can_do('edit_templates');
@@ -1626,8 +1630,10 @@ sub rebuild_favorite_sites {
         @current_website = grep { $user->has_perm($_) } @current_website;
     }
     push @current_website, @parents if @parents;
-    $user->favorite_websites( \@current_website );
-    $user->save;
+    if (@current_website) {
+        $user->favorite_websites( \@current_website );
+        $user->save;
+    }
 }
 
 1;
