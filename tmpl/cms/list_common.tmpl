@@ -110,6 +110,8 @@
 </mt:if>
 
 <script>
+var listStore;
+
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="default_sort_key">';
@@ -265,7 +267,7 @@
   var useFilters = false;
   </mt:if>
 
-  var listStore = new ListStore({
+  listStore = new ListStore({
     listClient: listClient,
 
     columns: listColumns,
@@ -337,6 +339,59 @@ function handleMessages( data, additional_class ) {
     showMessage(msg.msg, cls);
   }
   return true;
+}
+
+function loginAgain(fn) {
+  jQuery(window)
+    .unbind('dialogReady.loginAgain')
+    .bind('dialogReady.loginAgain', function(){
+      var dialog = jQuery('#mt-dialog-iframe').contents();
+      dialog
+        .find('#sign-in-button')
+          .text('<__trans phrase="Continue" escape="js">')
+          .unbind()
+          .click(function(){
+            dialog.find('#msg-block').empty();
+            jQuery.ajax({
+              type: 'POST',
+              contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+              async: false,
+              url: '<mt:var name="script_url">',
+              dataType: 'json',
+              data: {
+                __mode: 'login_json',
+                username: dialog.find('#username').val(),
+                password: dialog.find('#password').val()
+              },
+              success: function(data) {
+                var token = data.result['magic_token'];
+                if (token) {
+                  jQuery('input[name="magic_token"]').val(token);
+                  jQuery('a[href*="magic_token="]').each(function() {
+                    var replace = jQuery(this)
+                      .attr('href')
+                      .replace(/magic_token=[\d\w]+/, 'magic_token=' + token);
+                    jQuery(this).attr('href', replace);
+                  });
+                }
+                jQuery.fn.mtModal.close();
+                fn(data);
+                return false;
+              },
+              error: function(data) {
+                dialog.find('#password').val('');
+                dialog
+                  .find('#msg-block')
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login." escape="js"></div>');
+              }
+            });
+            return false;
+          });
+    });
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
 }
 
 function showMessage( content, cls ){
