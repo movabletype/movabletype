@@ -178,7 +178,7 @@ sub edit {
 
     $param->{'email_is_blank'} = 1
         if $obj && !$obj->email;
-    $param->{'email_is_reqxouired'} = $app->config('RequiredUserEmail');
+    $param->{'email_is_required'} = $app->config('RequiredUserEmail');
 
     return 1;
 }
@@ -1664,7 +1664,8 @@ sub save_filter {
     }
     elsif ( $app->config('RequiredUserEmail') ) {
         return $eh->error(
-            MT->translate("Email Address is required for password reset.") );
+            MT->translate("Email Address is required for password reset.") )
+            unless is_valid_email($email);
     }
 
     if ( $accessor->('url') ) {
