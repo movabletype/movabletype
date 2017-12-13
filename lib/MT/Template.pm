@@ -373,8 +373,7 @@ sub build {
         }
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl_name,
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $error
             )
         );
@@ -450,8 +449,7 @@ sub build {
     unless ( defined($res) ) {
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl_name,
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $build->errstr
             )
         );
