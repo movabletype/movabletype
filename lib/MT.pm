@@ -2262,7 +2262,8 @@ sub set_default_tmpl_params {
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
     if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        $param->{mt_vcs_revision} = { show => 1 };
+        require MT::Debug::GitInfo;
+        $param->{mt_vcs_revision} = MT::Debug::GitInfo->is_repository;
         if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
             $param->{mt_headers} = $mt->{apache}->headers_in();
         }

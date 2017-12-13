@@ -2,6 +2,11 @@ package MT::Debug::GitInfo;
 use strict;
 use warnings;
 
+sub is_repository {
+    my $class = shift;
+    -d '.git';
+}
+
 sub vcs_revision {
     my $class = shift;
     my $hash  = $class->_hash;
