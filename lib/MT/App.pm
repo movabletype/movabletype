@@ -1346,8 +1346,6 @@ sub permissions {
 
             # Exists?
             my $blog_id = $app->param('blog_id');
-            return unless defined $blog_id;
-
             if ($blog_id) {
                 my $blog = MT->model('blog')->load($blog_id)
                     or return $app->errtrans( 'Cannot load blog (ID:[_1])',
