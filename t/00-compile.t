@@ -28,7 +28,7 @@ use_ok('MT::Tool');
 use_ok('MT::Core');
 use_ok('MT::Component');
 
-# All CMS modules
+# CMS modules
 use_ok('MT::App::CMS');
 use_ok('MT::CMS::AddressBook');
 use_ok('MT::CMS::Dashboard');
@@ -131,6 +131,10 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+
+# Debug
+use_ok('MT::CMS::Debug');
+use_ok('MT::Debug::GitInfo');
 
 # MT7
 use_ok('MT::ArchiveType::ContentType');
