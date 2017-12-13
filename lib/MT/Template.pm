@@ -364,6 +364,8 @@ sub build {
     my $tokens = $tmpl->tokens
         or return;
 
+    my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
+
     if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
         my $error = "";
         foreach my $err ( @{ $tmpl->{errors} } ) {
@@ -372,7 +374,7 @@ sub build {
         return $tmpl->error(
             MT->translate(
                 "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file} || "?",
+                $tmpl_name,
                 $error
             )
         );
@@ -434,9 +436,9 @@ sub build {
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
-            "<!-- begin_tmpl " . ( $tmpl->name || $tmpl->{__file} || "?" ) . " -->",
+            "<!-- begin_tmpl $tmpl_name -->",
             $res,
-            "<!-- end_tmpl " . ( $tmpl->name || $tmpl->{__file} || "?" ) . " -->";
+            "<!-- end_tmpl $tmpl_name -->";
     }
 
     if ($timer) {
@@ -449,7 +451,7 @@ sub build {
         return $tmpl->error(
             MT->translate(
                 "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file} || "?",
+                $tmpl_name,
                 $build->errstr
             )
         );
