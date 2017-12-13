@@ -140,7 +140,7 @@
         <h1 class="mt-globalNavigation__logo btn-group">
           <a href="<mt:var name="mt_url">?__mode=dashboard" role="home"><img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="36" height="36"></a>
           <button type="button" class="btn btn-link dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" id="systemDropdownMenu" aria-haspopup="true" aria-expanded="false"><mt:var name="dropdown_label" strip_linefeeds="1"></button>
-          <mt:if name="blog_id"><a href="<mt:var name="blog_url" escape="html">" class="ml-2" target="_blank"><svg title="<__trans phrase="View Link">" role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_permalink"></svg></a></mt:if>
+          <mt:if name="blog_id"><a href="<mt:var name="blog_url" escape="html">" class="ml-2 d-inline-block" target="_blank"><svg title="<__trans phrase="View Link">" role="img" class="mt-icon"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_permalink"></svg></a></mt:if>
           <mt:var name="dropdown_content">
         </h1>
       </div>
@@ -156,8 +156,8 @@
       <div class="col align-self-center text-right mt-globalNavigation__user">
 <mt:if name="blog_id">
         <ul class="mt-globalNavigation__functions">
-          <li><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild"><mtapp:svgicon id="ic_build" title="<__trans phrase="Publish Site">" color="primary" size="lg" strip_linefeeds="1"></a></li>
-          <li><a href="#"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" color="primary" size="lg"></a></li>
+          <li><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild d-inline-block"><mtapp:svgicon id="ic_build" title="<__trans phrase="Publish Site">" color="primary" size="lg" strip_linefeeds="1"></a></li>
+          <li><a href="#" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" color="primary" size="lg"></a></li>
         </ul>
 </mt:if>
       </div>
