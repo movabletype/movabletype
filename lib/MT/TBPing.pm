@@ -138,7 +138,7 @@ sub list_props {
                     </span>
                     <span class="ping-from">$ping_from</span>
                     <span class="view-link">
-                      <a href="$url" target="_blank">
+                      <a href="$url" class="d-inline-block" target="_blank">
                         $view_img
                       </a>
                     </span>
