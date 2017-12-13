@@ -428,6 +428,12 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
+    if ( $MT::DebugMode ) {
+        $res = join "",
+            "<!-- begin_tmpl " . ( $tmpl->name || $tmpl->{__file} || "?" ) . " -->",
+            $res,
+            "<!-- end_tmpl " . ( $tmpl->name || $tmpl->{__file} || "?" ) . " -->";
+    }
 
     if ($timer) {
         $timer->mark( "MT::Template::build["
