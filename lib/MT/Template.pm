@@ -16,6 +16,8 @@ use MT::Util qw( weaken );
 use MT::Template::Node;
 sub NODE () {'MT::Template::Node'}
 
+our $DEBUG;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'              => 'integer not null auto_increment',
@@ -428,7 +430,7 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
-    if ( $MT::DebugMode ) {
+    if ( $MT::DebugMode || $DEBUG ) {
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
