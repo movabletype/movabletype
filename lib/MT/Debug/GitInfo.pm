@@ -2,7 +2,7 @@ package MT::Debug::GitInfo;
 use strict;
 use warnings;
 
-sub svn_revision {
+sub vcs_revision {
     my $class = shift;
     my $hash  = $class->_hash;
     if ($hash) {

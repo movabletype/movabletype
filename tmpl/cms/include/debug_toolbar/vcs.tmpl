@@ -1,0 +1,72 @@
+<table>
+    <thead>
+        <tr>
+            <th><__trans phrase="Key"></th>
+            <th><__trans phrase="Value"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="djDebugOdd">
+            <td>branch</td>
+            <td id="mt-vcs-branch-value">(not loaded)</td>
+        </tr>
+        <tr class="djDebugEven">
+            <td>revision</td>
+            <td id="mt-vcs-revision-value">(not loaded)</td>
+        </tr>
+    </tbody>
+</table>
+
+<button id="mt-vcs-reload-button" type="button" onclick="reloadVcsRevision();" style="display: none;">
+  Reload
+</button>
+
+<script>
+var loadedVcsRevision = false;
+
+function loadVcsRevision() {
+  if (loadedVcsRevision) return;
+
+  jQuery('#mt-vcs-branch-value').text('(loading...)');
+  jQuery('#mt-vcs-revision-value').text('(loading...)');
+  jQuery('#mt-vcs-reload-button').attr('disabled', 'disabled');
+
+  var errorProcess = function () {
+    jQuery('#mt-vcs-branch-value').text('(not loaded)');
+    jQuery('#mt-vcs-revision-value').text('(not loaded)');
+    jQuery('#mt-vcs-reload-button').removeAttr('disabled')
+                                   .show();
+  };
+
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:Var name="script_url">',
+    dataType: 'json',
+    data: { __mode: 'vcs_revision' },
+    success: function (data) {
+      if (data.error) {
+        errorProcess();
+        return;
+      }
+
+      jQuery('#mt-vcs-branch-value').text(data.result.vcs_revision.branch);
+      jQuery('#mt-vcs-revision-value').text(data.result.vcs_revision.revision);
+      jQuery('#mt-vcs-reload-button').hide();
+      loadedVcsRevision = true;
+    },
+    error: function (xhr, status) {
+      if (xhr.status == 401) {
+        loginAgain(loadVcsRevision);
+      } else {
+        errorProcess();
+      }
+    },
+  });
+}
+
+function reloadVcsRevision() {
+  loadedVcsRevision = false;
+  loadVcsRevision();
+}
+</script>
+

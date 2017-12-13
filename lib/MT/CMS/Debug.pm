@@ -4,14 +4,14 @@ use warnings;
 
 use MT::Debug::GitInfo;
 
-sub svn_revision {
+sub vcs_revision {
     my $app = shift;
 
     unless ( $app->request_method eq 'POST' ) {
         return $app->json_error( $app->translate('Invalid request.'), 400 );
     }
 
-    $app->json_result( { svn_revision => MT::Debug::GitInfo->svn_revision } );
+    $app->json_result( { vcs_revision => MT::Debug::GitInfo->vcs_revision } );
 }
 
 1;

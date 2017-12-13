@@ -346,8 +346,8 @@ sub core_methods {
         'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
 
         ## Debug
-        'svn_revision' => {
-            code      => "${pkg}Debug::svn_revision",
+        'vcs_revision' => {
+            code      => "${pkg}Debug::vcs_revision",
             app_mode  => 'JSON',
             condition => sub { my $app = shift; $app->config->DebugMode },
         },

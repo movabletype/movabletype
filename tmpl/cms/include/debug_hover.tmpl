@@ -6,12 +6,12 @@
     <mt:SetVar name="subtitle" value="$mt_version_id">
     <mt:SetVar name="no_content" value="1">
 </mt:SetHashVar>
-<mt:if name="mt_svn_revision">
-    <mt:SetHashVar name="subversion_panel">
-        <mt:SetVar name="name" value="Subversion">
+<mt:if name="mt_vcs_revision">
+    <mt:SetHashVar name="vcs_panel">
+        <mt:SetVar name="name" value="VCS">
         <mt:SetVar name="title" value="Version Control">
         <mt:SetVar name="nav_title" value="Version Control">
-        <mt:SetVar name="onclick" value="loadSvnRevision();">
+        <mt:SetVar name="onclick" value="loadVcsRevision();">
     </mt:SetHashVar>
 </mt:if>
 <mt:SetHashVar name="sql_panel">
@@ -36,7 +36,7 @@
     <mt:SetVar name="nav_title" value="HTTP Headers">
 </mt:SetHashVar>
 <mt:Var name="debug_panels" function="unshift" value="$version_panel">
-<mt:if name="mt_svn_revision"><mt:Var name="debug_panels" function="unshift" value="$subversion_panel"></mt:if>
+<mt:if name="mt_vcs_revision"><mt:Var name="debug_panels" function="unshift" value="$vcs_panel"></mt:if>
 <mt:Var name="debug_panels" function="push" value="$sql_panel">
 <mt:Var name="debug_panels" function="push" value="$cache_panel">
 <mt:Var name="debug_panels" function="push" value="$requestvars_panel">
