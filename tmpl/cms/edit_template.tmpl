@@ -275,7 +275,7 @@
 
     <div id="ct_selects-field" class="form-group">
       <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
-      <select name="content_type_sel" id="content_type_sel" tabindex="13" class="form-control">
+      <select name="content_type_sel" id="content_type_sel" tabindex="13" class="custom-select form-control">
       <mt:loop name="ct_selects">
       <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
       </mt:loop>
@@ -315,7 +315,7 @@
 
     <div id="content_field_sel-field" class="form-group">
       <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
-      <select name="content_field_sel" id="content_field_sel" tabindex="13" class="form-control">
+      <select name="content_field_sel" id="content_field_sel" tabindex="13" class="custom-select form-control">
       </select>
     </div>
 
