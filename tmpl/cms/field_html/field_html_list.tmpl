@@ -2,11 +2,11 @@
 <mt:loop name="list_value">
   <div class="form-inline d-inline">
     <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="form-control w-75 text long" value="<mt:var name="__value__">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
-    <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></a>
+    <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></a>
   </div>
   </mt:loop>
 
-  <a href="javascript:void(0)" class="add-list-button" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"></a>
+  <a href="javascript:void(0)" class="add-list-button d-inline-block" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"></a>
 </div>
 
 <mt:unless name="setup_list_js">
@@ -51,7 +51,7 @@ function generateNewListHtml(fieldId, required) {
 
   var newDiv = '<div class="form-inline" style="display: inline;">' + "\n";
   newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="form-control w-75 text long" value="" mt:raw-name="1" style="width: 95%" />\n';
-  newDiv    += '  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="' + fieldId + '" ' + required + '><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>\n';
+  newDiv    += '  <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="' + fieldId + '" ' + required + '><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>\n';
   newDiv    += '</div>' + "\n";
 
   return jQuery(newDiv);
@@ -69,7 +69,7 @@ function adjustButtons() {
   } else {
     $lists.each(function (index) {
       if (jQuery(this).next('a').length > 0) return;
-      jQuery(this).after('  <a href="javascript:void(0)" class="remove-list-button" data-mt-content-field-id="' + fieldId + '" data-mt-required="1"><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>');
+      jQuery(this).after('  <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="' + fieldId + '" data-mt-required="1"><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>');
     });
   }
 }

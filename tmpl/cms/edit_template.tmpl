@@ -132,7 +132,7 @@
   <mt:if name="type" eq="backup">
     <mt:setvarblock name="list_templates_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="$list_templates_label" size="sm">
         <mt:var name="list_templates_label">
       </a>
@@ -140,14 +140,14 @@
   </mt:if>
   <mt:if name="template_group" eq="widget">
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="Widgets">" size="sm">
         <__trans phrase="Widgets">
       </a>
     </li>
     <mt:if name="can_edit_config">
     <li>
-      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
         <__trans phrase="Module Option Settings">
       </a>
@@ -156,20 +156,20 @@
   <mt:elseif name="template_group" eq="module">
     <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
         <mt:var name="template_group_label">
       </a>
     </li>
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
         <__trans phrase="List all templates">
       </a>
     </li>
     <mt:if name="can_edit_config">
     <li>
-      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
         <__trans phrase="Module Option Settings">
       </a>
@@ -179,14 +179,14 @@
     <mt:unless name="type" eq="backup">
     <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="$template_group_label" size="sm">
         <mt:var name="template_group_label">
       </a>
     </li>
     </mt:unless>
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
         <__trans phrase="List all templates">
       </a>
@@ -194,7 +194,7 @@
   </mt:if>
   <mt:if name="published_url">
     <li>
-      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">">
+      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related d-inline-block" target="<__trans phrase="_external_link_target">">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="View Published Template">" size="sm">
         <__trans phrase="View Published Template">
       </a>
@@ -299,7 +299,7 @@
           <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
         </div>
         <div class="col-auto">
-          <a href="javascript:void(0)" id="copy_ct_unique_id">
+          <a href="javascript:void(0)" id="copy_ct_unique_id" class="d-inline-block">
             <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
           </a>
         </div>
@@ -336,7 +336,7 @@
           <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
         </div>
         <div class="col-auto">
-          <a href="javascript:void(0)" id="copy_cf_unique_id">
+          <a href="javascript:void(0)" id="copy_cf_unique_id" class="d-inline-block">
             <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary"></button>
           </a>
         </div>
@@ -778,7 +778,7 @@ function setSyntaxHighlight(on_or_off) {
 
       <div class="row">
         <div class="col">
-          <a class="btn btn-link" id="link-create-archive-mapping" data-toggle="collapse" href="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping" onclick="return setCreateMode()">
+          <a class="btn btn-link d-inline-block" id="link-create-archive-mapping" data-toggle="collapse" href="#create-inline-mapping" aria-expanded="false" aria-controls="create-inline-mapping" onclick="return setCreateMode()">
             <mtapp:svgicon id="ic_add" title="<__trans phrase="Create Archive Mapping">" size="sm">
             <__trans phrase="Create Archive Mapping">
           </a>

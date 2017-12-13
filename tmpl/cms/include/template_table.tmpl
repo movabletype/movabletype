@@ -9,19 +9,19 @@
     </li>
     </mt:if>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=individual&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create entry archive">">
         <__trans phrase="Entry">
       </a>
     </li>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create entry listing archive">">
         <__trans phrase="Entry Listing">
       </a>
     </li>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=page&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create page archive">">
         <__trans phrase="Page">
       </a>
@@ -34,13 +34,13 @@
       <__trans phrase="Create Content Type Template:">
     </li>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=ct&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=ct&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create content type archive">">
         <__trans phrase="Content Type">
       </a>
     </li>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=ct_archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=ct_archive&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create content type listing archive">">
         <__trans phrase="Content Type Listing">
       </a>
@@ -62,7 +62,7 @@
     </li>
     </mt:if>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=module&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create template module">">
         <__trans phrase="Create template module">
       </a>
@@ -76,7 +76,7 @@
     </li>
     </mt:if>
     <li class="list-inline-item">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=index&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create index template">">
         <__trans phrase="Create index template">
       </a>
@@ -199,7 +199,7 @@
     <mt:if name="template_type" like="/(index|archive|ct)/">
       <td class="output-file">
       <mt:if name="outfile">
-        <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
+        <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a class="d-inline-block" href="<mt:var name="published_url" escape="html" >" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
         <mt:else name="template_type" like="/(archive|ct)/">
         <ul class="list-unstyled">
         <mt:loop name="archive_types">
@@ -286,7 +286,7 @@
       <td class="view">
       <mt:if name="outfile">
         <mt:if name="published_url">
-        <a href="<mt:var name="published_url" escape="html">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">">
+        <a class="d-inline-block" href="<mt:var name="published_url" escape="html">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">">
           <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm">
         </a>
         </mt:if>

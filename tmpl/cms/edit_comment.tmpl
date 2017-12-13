@@ -189,7 +189,7 @@
   </mt:if>
       </div>
       <div class="col-1">
-        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>">
+        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>" class="d-inline-block">
           <mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm">
         </a>
       </div>
@@ -209,7 +209,7 @@
     <mt:else>
       <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
     </mt:if>
-      <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
   <mt:else>
     <div class="form-row align-items-center">
@@ -217,7 +217,7 @@
         <input type="text" name="author" id="author" class="form-control text" value="<mt:var name="author" escape="html">" />
       </div>
       <div class="col-1">
-        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="author" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="author" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
       </div>
     </div>
   </mt:if>
@@ -230,7 +230,7 @@
     <div class="form-group">
     <mt:if name="commenter_approved">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
       <mt:else>
       <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
       </mt:if>
@@ -248,7 +248,7 @@
 
     <mt:else name="commenter_banned">
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm"></a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block"  title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm"></a>
       <mt:else>
       <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
       </mt:if>
@@ -266,7 +266,7 @@
 
     <mt:else>
       <mt:if name="can_edit_commenters">
-      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary"></a>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary"></a>
       <mt:else>
       <mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary">
       </mt:if>
@@ -305,8 +305,8 @@
       <div class="col-1">
   </mt:if>
   <mt:if name="email">
-        <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
-        <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+        <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
+        <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
   </mt:if>
   <mt:unless name="commenter_id">
       </div>
@@ -333,9 +333,9 @@
       <div class="col-1">
   </mt:if>
   <mt:if name="url">
-        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
+        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
     <mt:unless name="commenter_id">
-        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </mt:unless>
   </mt:if>
   <mt:unless name="commenter_id">
@@ -353,7 +353,7 @@
   <mt:else>
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:var name="entry_title" escape="html"></a>
   </mt:if>
-      <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=entry&amp;filter_val=<mt:var name="entry_id" escape="url">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=entry&amp;filter_val=<mt:var name="entry_id" escape="url">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
      </div>
   </mtapp:setting>
 
@@ -362,7 +362,7 @@
      label="<__trans phrase="Date">">
     <div class="form-group">
       <mt:var name="created_on_time_formatted">
-      <a title="<__trans phrase="View all comments created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">&amp;show_all=1&amp;blog_id=<mt:var name="blog_id">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      <a title="<__trans phrase="View all comments created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">&amp;show_all=1&amp;blog_id=<mt:var name="blog_id">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
   </mtapp:setting>
 
@@ -372,7 +372,7 @@
      label="<__trans phrase="IP Address">">
     <div class="form-group">
       <mt:var name="ip" escape="html">
-      <a title="<__trans phrase="View all comments from this IP Address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="html">"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      <a title="<__trans phrase="View all comments from this IP Address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
   </mtapp:setting>
 </mt:if>

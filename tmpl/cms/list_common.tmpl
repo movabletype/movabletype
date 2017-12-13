@@ -22,7 +22,7 @@
     <mt:loop name="content_actions">
       <li class="list-inline-item">
         <a href="<mt:var name="url">"
-          class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
+          class="icon-left d-inline-block<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
           <mt:if name="dialog">data-mt-modal-large</mt:if>
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
           <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
@@ -44,7 +44,7 @@
   <mt:if name="object_type_feed">
   <li class="footer-link-item list-group-item">
     <a href="<$mt:var name="feed_url" escape="html"$>"
-      class="icon-feed icon-left"
+      class="icon-feed icon-left d-inline-block"
       title="<$mt:var name="feed_name" escape="html"$>"
       target="_blank"
     >

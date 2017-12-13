@@ -294,10 +294,10 @@
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
                     <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -637,7 +637,7 @@
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
      mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
      title="<mt:var name="delete_button_title">"
-     class="delete"
+     class="delete d-inline-block"
      accesskey="x">
     <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
@@ -750,7 +750,7 @@
      id="asset_container"
      label="$widget_label">
     <div class="text-right asset-list-header mb-2">
-      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open" data-mt-modal-large>
+      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
