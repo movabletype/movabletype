@@ -49,8 +49,14 @@ function loadVcsRevision() {
         return;
       }
 
-      jQuery('#mt-vcs-branch-value').text(data.result.vcs_revision.branch);
-      jQuery('#mt-vcs-revision-value').text(data.result.vcs_revision.revision);
+      if (data.result.vcs_revision) {
+        jQuery('#mt-vcs-branch-value').text(data.result.vcs_revision.branch);
+        jQuery('#mt-vcs-revision-value').text(data.result.vcs_revision.revision);
+      } else {
+        jQuery('#mt-vcs-branch-value').text('(no data)');
+        jQuery('#mt-vcs-revision-value').text('(no data)');
+      }
+
       jQuery('#mt-vcs-reload-button').hide();
       loadedVcsRevision = true;
     },
