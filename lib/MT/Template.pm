@@ -429,6 +429,8 @@ sub build {
 
     my $res = $build->build( $ctx, $tokens, $cond );
     if ( $MT::DebugMode ) {
+        $res =~ s/\A\s+//s;
+        $res =~ s/\s+\z//s;
         $res = join "",
             "<!-- begin_tmpl " . ( $tmpl->name || $tmpl->{__file} || "?" ) . " -->",
             $res,
