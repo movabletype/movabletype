@@ -197,7 +197,7 @@
     <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="You must configure this blog before you can publish this content data."></a></span>
   <mt:else>
     <mt:if name="can_publish_post">
-    <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
+    <select name="status" id="status" class="custom-select form-control full" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
       <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
     <mt:if name="status_review">
@@ -744,7 +744,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         <div class="col">
           <div class="field-convert_breaks">
             <__trans phrase="Format:">
-            <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
+            <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
