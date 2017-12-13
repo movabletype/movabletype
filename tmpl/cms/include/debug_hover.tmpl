@@ -11,8 +11,7 @@
         <mt:SetVar name="name" value="Subversion">
         <mt:SetVar name="title" value="Version Control">
         <mt:SetVar name="nav_title" value="Version Control">
-        <mt:SetVarBlock name="subtitle"><mt:Var name="mt_svn_revision{branch}"> at rev <mt:Var name="mt_svn_revision{revision}"></mt:SetVarBlock>
-        <mt:SetVar name="no_content" value="1">
+        <mt:SetVar name="onclick" value="loadSvnRevision();">
     </mt:SetHashVar>
 </mt:if>
 <mt:SetHashVar name="sql_panel">
@@ -54,7 +53,7 @@
         <mt:If name="no_content">
                 <div class="contentless">
         <mt:Else>
-                <a href="#" title="<mt:Var name="title" escape="html">" class="djDebug<mt:Var name="name" escape="html">Panel">
+                <a href="#" title="<mt:Var name="title" escape="html">" class="djDebug<mt:Var name="name" escape="html">Panel" <mt:If name="onclick">onclick="<mt:var name="onclick" escape="html">"</mt:If>>
         </mt:If>
                 <mt:Var name="nav_title" escape="html">
         <mt:If name="subtitle">

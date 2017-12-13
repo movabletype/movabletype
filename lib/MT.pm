@@ -2256,55 +2256,13 @@ sub load_tmpl {
     $tmpl;
 }
 
-sub _svn_revision {
-    my $mt      = shift;
-    my $wc_base = $mt->mt_dir;
-    return unless -d File::Spec->catdir( $wc_base, '.git' );
-
-    # Currently, we are on the Github.
-    return
-        unless ( -e $wc_base && open my $fh, '-|', "git status" );
-
-    my $revision = '';
-    if ( -e $wc_base && open my $fh,
-        '-|', "git log --pretty=format:'' | wc -l" )
-    {
-        $revision = do { local $/ = undef; <$fh> };
-        chomp $revision;
-        $revision =~ s/\s*(.*)/r$1/;
-        close $fh;
-    }
-
-    my $hash = '';
-    if ( -e $wc_base && open my $fh, '-|', "git log -1 | grep commit" ) {
-        $hash = do { local $/ = undef; <$fh> };
-        chomp $hash;
-        if ( $hash =~ s/commit (.*)/$1/ ) {
-            $hash = substr( $hash, 0, 8 );
-        }
-        close $fh;
-    }
-
-    my $branch = '';
-    if ( -e $wc_base && open my $fh, '-|', "git branch" ) {
-        $branch = do { local $/ = undef; <$fh> };
-        chomp $branch;
-        if ( $branch =~ m/\*\s(.*)/ ) {
-            $branch = $1;
-        }
-        close $fh;
-    }
-
-    return { revision => "$revision-$hash", branch => $branch };
-}
-
 sub set_default_tmpl_params {
     my $mt     = shift;
     my ($tmpl) = @_;
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
     if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        $param->{mt_svn_revision} = $mt->_svn_revision();
+        $param->{mt_svn_revision} = { show => 1 };
         if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
             $param->{mt_headers} = $mt->{apache}->headers_in();
         }

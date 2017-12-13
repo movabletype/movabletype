@@ -1,0 +1,72 @@
+<table>
+    <thead>
+        <tr>
+            <th><__trans phrase="Key"></th>
+            <th><__trans phrase="Value"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="djDebugOdd">
+            <td>branch</td>
+            <td id="mt-svn-branch-value">(not loaded)</td>
+        </tr>
+        <tr class="djDebugEven">
+            <td>revision</td>
+            <td id="mt-svn-revision-value">(not loaded)</td>
+        </tr>
+    </tbody>
+</table>
+
+<button id="mt-svn-reload-button" type="button" onclick="reloadSvnRevision();" style="display: none;">
+  Reload
+</button>
+
+<script>
+var loadedSvnRevision = false;
+
+function loadSvnRevision() {
+  if (loadedSvnRevision) return;
+
+  jQuery('#mt-svn-branch-value').text('(loading...)');
+  jQuery('#mt-svn-revision-value').text('(loading...)');
+  jQuery('#mt-svn-reload-button').attr('disabled', 'disabled');
+
+  var errorProcess = function () {
+    jQuery('#mt-svn-branch-value').text('(not loaded)');
+    jQuery('#mt-svn-revision-value').text('(not loaded)');
+    jQuery('#mt-svn-reload-button').removeAttr('disabled')
+                                   .show();
+  };
+
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:Var name="script_url">',
+    dataType: 'json',
+    data: { __mode: 'svn_revision' },
+    success: function (data) {
+      if (data.error) {
+        errorProcess();
+        return;
+      }
+
+      jQuery('#mt-svn-branch-value').text(data.result.svn_revision.branch);
+      jQuery('#mt-svn-revision-value').text(data.result.svn_revision.revision);
+      jQuery('#mt-svn-reload-button').hide();
+      loadedSvnRevision = true;
+    },
+    error: function (xhr, status) {
+      if (xhr.status == 401) {
+        loginAgain(loadSvnRevision);
+      } else {
+        errorProcess();
+      }
+    },
+  });
+}
+
+function reloadSvnRevision() {
+  loadedSvnRevision = false;
+  loadSvnRevision();
+}
+</script>
+
