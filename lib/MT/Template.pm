@@ -431,7 +431,7 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
-    if ( $MT::DebugMode || $DEBUG ) {
+    if ($DEBUG) {
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
