@@ -437,7 +437,7 @@
     <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
   <mt:else>
     <mt:if name="can_publish_post">
-    <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
+    <select name="status" id="status" class="custom-select form-control full" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>>
         <__trans phrase="Unpublished (Draft)">
       </option>
@@ -1419,7 +1419,7 @@ div.mce-notification-error {
           </div>
           <div id="field-convert_breaks" class="form-inline">
             <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" class="form-control">
+            <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
