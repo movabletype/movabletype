@@ -16,13 +16,7 @@ mt-static/mt_es.js
 mt-static/mt_fr.js
 mt-static/mt_ja.js
 mt-static/mt_nl.js
-mt-static/support/dashboard
-mt-static/support/logs
-mt-static/support/themes
-mt-static/support/assets_c
-mt-static/support/uploads
-mt-static/support/theme_thumbnails/
-mt-static/support/theme_static/
+mt-static/support
 mt-config.cgi
 
 mt-cp.cgi
