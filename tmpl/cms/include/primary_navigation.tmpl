@@ -1,30 +1,76 @@
-<ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
-<mt:loop name="top_nav_loop">
-  <li class="item mt-primaryNavigation__item">
-    <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primayNavigation-item<mt:var name="__counter__">">
-      <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
-      <mt:if name="icon">
-        <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
-        <mtapp:svgicon id="$escaped_icon" title="$escaped_label" size="sm">
-      <mt:else>
-        <mtapp:svgicon id="ic_box" title="$escaped_label" size="sm">
-      </mt:if>
-      <mt:var name="escaped_label">
-    </a>
-    <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" role="tabpanel">
-      <ul class="mt-primaryNavigation__child">
-  <mt:loop name="sub_nav_loop">
-    <mt:if name="allowed">
-        <li>
-          <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
-            <mt:var name="label" escape="html">
-          </a>
-        </li>
-    </mt:if>
-  </mt:loop>
-      </ul>
+<mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
+
+<div class="mt-primaryNavigation__container">
+  <div class="mt-primaryNavigation__header">
+    <div class="col-10">
+      <h1 class="mt-productHeader__logo">
+        <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
+        <span class="mt-productHeader__name">
+          <mt:if name="scope_type" eq="user">
+            Movable Type
+          <mt:elseif name="scope_type" eq="system">
+            <__trans phrase="System">
+          <mt:elseif name="scope_type" eq="website">
+            <mt:var name="curr_website_name" escape="html">
+          <mt:elseif name="scope_type" eq="blog">
+            <mt:var name="curr_blog_name" escape="html">
+          </mt:if>
+        </span>
+      </h1>
     </div>
-  </li>
-</mt:loop>
-</ul>
+    <div class="col-2">
+      <a href="#sites" class="mt-primaryNavigation__siteMenu">
+        <mtapp:svgicon id="ic_menu" title="<__trans phrase="Site Menu">">
+      </a>
+    </div>
+  </div>
+
+<mt:if name="blog_id">
+  <div class="mt-primaryNavigation__control">
+    <a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild btn btn-default"><mtapp:svgicon id="ic_build" title="<__trans phrase="Publish Site">"><__trans phrase="Rebuild"></a>
+    <a href="<mt:var name="blog_url" escape="html">" class="btn btn-default" target="_blank"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Site">"><__trans phrase="View Site"></a>
+  </div>
+</mt:if>
+
+  <div class="mt-primaryNavigation__content">
+    <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
+    <mt:loop name="top_nav_loop">
+      <li class="item mt-primaryNavigation__item">
+        <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primayNavigation-item<mt:var name="__counter__">">
+          <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+          <mt:if name="icon">
+            <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
+            <mtapp:svgicon id="$escaped_icon" title="$escaped_label" size="sm">
+          <mt:else>
+            <mtapp:svgicon id="ic_box" title="$escaped_label" size="sm">
+          </mt:if>
+          <mt:var name="escaped_label">
+        </a>
+        <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" role="tabpanel">
+          <ul class="mt-primaryNavigation__child">
+      <mt:loop name="sub_nav_loop">
+        <mt:if name="allowed">
+            <li>
+              <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
+                <mt:var name="label" escape="html">
+              </a>
+            </li>
+        </mt:if>
+      </mt:loop>
+          </ul>
+        </div>
+      </li>
+    </mt:loop>
+    </ul>
+  </div>
+
+  <div class="mt-primaryNavigation__info">
+    <button class="btn btn-link btn-block text-left" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
+      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
+      <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
+      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
+    </div>
+  </div>
+</div>
 
