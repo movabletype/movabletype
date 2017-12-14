@@ -689,7 +689,7 @@ sub edit {
     my $cfg    = $app->config;
     $param{styles} = '';
     if ( $type eq 'author' ) {
-        if ( !$perms || $blog_id ) {
+        if ( $blog_id ) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
