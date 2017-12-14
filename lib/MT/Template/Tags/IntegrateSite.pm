@@ -44,9 +44,9 @@ sub _hdlr_integrate_site {
         my $id = $ctx->stash('blog_id');
         my $is_include
             = MT::RebuildTrigger->get_config_value(
-            'default_mt_integrate_site_action', "blog:$id" );
+            'default_mt_integrate_site_action', $id );
         my $blogs = MT::RebuildTrigger->get_config_value(
-            'default_mt_integrate_site_sites', "blog:$id" );
+            'default_mt_integrate_site_sites', $id );
 
         if ( $blogs && defined($is_include) ) {
             $args->{ $is_include ? 'include_blogs' : 'exclude_blogs' }
@@ -105,12 +105,12 @@ sub context {
 
     # Assuming multiblog context, set it.
     if ( $include_blogs || $args->{exclude_blogs} ) {
-        $ctx->stash( 'multiblog_context', 1 );
-        $ctx->stash( 'multiblog_include_blog_ids',
+        $ctx->stash( 'integrate_site_context', 1 );
+        $ctx->stash( 'integrate_site_include_blog_ids',
             join( ',', $include_blogs ) )
             if $include_blogs;
         $ctx->stash(
-            'multiblog_exclude_blog_ids',
+            'integrate_site_exclude_blog_ids',
             join( ',', $args->{exclude_blogs} )
         ) if $args->{exclude_blogs};
     }
@@ -143,7 +143,7 @@ sub loop {
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
-    local $ctx->{__stash}{entries} = undef
+    local $ctx->{__stash}{contents} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp} = undef
         if $args->{ignore_archive_context};
@@ -163,8 +163,8 @@ sub loop {
     while ( my $blog = $iter->() ) {
         local $ctx->{__stash}{blog}    = $blog;
         local $ctx->{__stash}{blog_id} = $blog->id;
-        $ctx->stash( 'multiblog_context',  'include_blogs' );
-        $ctx->stash( 'multiblog_blog_ids', $blog->id );
+        $ctx->stash( 'integrate_site_context',  'include_blogs' );
+        $ctx->stash( 'integrate_site_blog_ids', $blog->id );
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
