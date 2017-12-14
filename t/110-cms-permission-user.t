@@ -1236,7 +1236,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save by others" );
 };
 
