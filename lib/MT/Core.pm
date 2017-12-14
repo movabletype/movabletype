@@ -2735,7 +2735,8 @@ sub load_backup_instructions {
 
 sub load_core_permissions {
     require MT::ContentType;
-    my @content_type_permissions = keys %{ MT->app->model('content_type')->all_permissions };
+    my @content_type_permissions
+        = keys %{ MT->app->model('content_type')->all_permissions };
 
     return {
         'blog.administer_site' => {
@@ -3310,11 +3311,15 @@ sub load_core_permissions {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.edit_templates',      'system.manage_plugins',
-                'system.view_log',            'system.manage_content_types',
-                'system.create_site',         'system.create_blog',
-                'system.sign_in_cms',         'system.sign_in_data_api',
-                'system.manage_users_groups', 'system.manage_content_types',
+                'system.edit_templates',
+                'system.manage_plugins',
+                'system.view_log',
+                'system.manage_content_types',
+                'system.create_site',
+                'system.sign_in_cms',
+                'system.sign_in_data_api',
+                'system.manage_users_groups',
+                'system.manage_content_types',
                 'system.manage_content_data'
             ],
             'order'            => 0,
@@ -3348,19 +3353,10 @@ sub load_core_permissions {
             }
         },
         'system.create_blog' => {
-            'group'            => 'sys_admin',
-            'label'            => 'Create Child Sites',
-            'order'            => 200,
-            'permitted_action' => {
-                'create_blog'                => 1,
-                'create_new_blog'            => 1,
-                'use_blog:create_menu'       => 1,
-                'edit_new_blog_config'       => 1,
-                'open_new_blog_screen'       => 1,
-                'set_new_blog_publish_paths' => 1,
-                'access_to_system_dashboard' => 1,
-                'use_tools:search'           => 1,
-            }
+            'group'   => 'sys_admin',
+            'label'   => 'Create Child Sites',
+            'order'   => 200,
+            'display' => 0,
         },
         'system.edit_templates' => {
             'group'        => 'sys_admin',

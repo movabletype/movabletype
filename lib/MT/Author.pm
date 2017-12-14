@@ -1032,13 +1032,16 @@ sub is_superuser {
 }
 
 sub can_create_blog {
-    my $author = shift;
+    my $author  = shift;
+    my $app     = MT->instance;
+    my $blog_id = $app->can('blog') ? $app->blog->id : 0;
+
     if (@_) {
-        $author->permissions(0)->can_create_blog(@_);
+        $author->permissions($blog_id)->can_create_site(@_);
     }
     else {
         $author->is_superuser()
-            || $author->permissions(0)->can_create_blog(@_);
+            || $author->permissions($blog_id)->can_create_site(@_);
     }
 }
 
