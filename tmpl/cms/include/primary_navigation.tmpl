@@ -1,7 +1,11 @@
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
 <div class="mt-primaryNavigation__container">
+<mt:if name="scope_type" eq="system">
+  <div class="mt-primaryNavigation__header--invert" style="background-color: #595959;">
+<mt:else>
   <div class="mt-primaryNavigation__header">
+</mt:if>
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
         <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
