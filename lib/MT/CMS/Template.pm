@@ -959,7 +959,11 @@ sub edit {
             {
             id       => $ct->id,
             label    => $ct->name,
-            selected => ( $obj && $obj->content_type_id == $ct->id ? 1 : 0 )
+            selected => (
+                       $obj
+                    && $obj->content_type_id
+                    && $obj->content_type_id == $ct->id ? 1 : 0
+            )
             };
         $ct_data->{ $ct->id } = {
             id        => $ct->id,
@@ -1791,7 +1795,8 @@ sub _populate_archive_loop {
 
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
-        $map->{archive_label} = $archiver->archive_short_label || $archiver->archive_label;
+        $map->{archive_label}
+            = $archiver->archive_short_label || $archiver->archive_label;
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {
