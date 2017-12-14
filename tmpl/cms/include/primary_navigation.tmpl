@@ -12,6 +12,7 @@
 </mt:if>
 </mt:setvarblock>
 
+<mt:if name="scope_type" ne="user">
 <script>
 function closeSiteMenu(e) {
     jQuery('.mt-primaryNavigation__container:first-of-type').fadeIn();
@@ -107,8 +108,13 @@ function stopPropagation(e) {
     </div>
   </div>
 </div>
+</mt:if>
 
+<mt:if name="scope_type" eq="user">
+<div class="mt-primaryNavigation__container" style="background-color: #595959; height: 100%;">
+<mt:else>
 <div class="mt-primaryNavigation__container" style="background-color: #595959; display: none; height: 100%;" onclick="stopPropagation(event);">
+</mt:if>
   <div class="mt-primaryNavigation__header--invert">
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
@@ -118,11 +124,13 @@ function stopPropagation(e) {
         </span>
       </h1>
     </div>
+<mt:if name="scope_type" ne="user">
     <div class="col-2">
       <a href="javascript:void(0)" class="mt-primaryNavigation__siteMenu" onclick="closeSiteMenu(event); return false;">
         <mtapp:svgicon id="ic_menu" title="<__trans phrase="Close Site Menu">">
       </a>
     </div>
+</mt:if>
   </div>
 
   <div class="mt-primaryNavigation__control">
@@ -199,12 +207,22 @@ function stopPropagation(e) {
       <__trans phrase="System">
     </a>
 </mt:if>
+<mt:if name="scope_type" ne="user">
     <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
       <__trans phrase="Dashboard">
     </a>
+</mt:if>
   </div>
 
+<mt:if name="scope_type" eq="user">
   <div class="mt-primaryNavigation__info">
+    <button class="btn btn-link btn-block text-left text-light" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
+      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
+      <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
+      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
+    </div>
   </div>
+</mt:if>
 </div>
 
