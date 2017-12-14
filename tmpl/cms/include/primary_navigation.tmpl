@@ -8,7 +8,11 @@
 </mt:if>
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
+<mt:if name="scope_type" eq="system">
+        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+<mt:else>
         <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
+</mt:if>
         <span class="mt-productHeader__name">
           <mt:if name="scope_type" eq="user">
             Movable Type
