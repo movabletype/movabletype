@@ -1,5 +1,39 @@
 <mt:setvarblock name="user_screen_name"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></mt:setvarblock>
 
+<mt:setvarblock name="product_header_name">
+<mt:if name="scope_type" eq="user">
+  Movable Type
+<mt:elseif name="scope_type" eq="system">
+  <__trans phrase="System">
+<mt:elseif name="scope_type" eq="website">
+  <mt:var name="curr_website_name" escape="html">
+<mt:elseif name="scope_type" eq="blog">
+  <mt:var name="curr_blog_name" escape="html">
+</mt:if>
+</mt:setvarblock>
+
+<script>
+function closeSiteMenu(e) {
+    jQuery('.mt-primaryNavigation__container:first-of-type').fadeIn();
+    jQuery('.mt-primaryNavigation__container:last-of-type').fadeOut();
+
+    jQuery('body').off('click', closeSiteMenu);
+}
+
+function openSiteMenu(e) {
+    jQuery('.mt-primaryNavigation__container:last-of-type').fadeIn();
+    jQuery('.mt-primaryNavigation__container:first-of-type').fadeOut();
+
+    e.stopPropagation();
+
+    jQuery('body').on('click', closeSiteMenu);
+}
+
+function stopPropagation(e) {
+    e.stopPropagation();
+}
+</script>
+
 <div class="mt-primaryNavigation__container">
 <mt:if name="scope_type" eq="system">
   <div class="mt-primaryNavigation__header--invert" style="background-color: #595959;">
@@ -14,21 +48,13 @@
         <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
 </mt:if>
         <span class="mt-productHeader__name">
-          <mt:if name="scope_type" eq="user">
-            Movable Type
-          <mt:elseif name="scope_type" eq="system">
-            <__trans phrase="System">
-          <mt:elseif name="scope_type" eq="website">
-            <mt:var name="curr_website_name" escape="html">
-          <mt:elseif name="scope_type" eq="blog">
-            <mt:var name="curr_blog_name" escape="html">
-          </mt:if>
+          <mt:var name="product_header_name">
         </span>
       </h1>
     </div>
     <div class="col-2">
-      <a href="#sites" class="mt-primaryNavigation__siteMenu">
-        <mtapp:svgicon id="ic_menu" title="<__trans phrase="Site Menu">">
+      <a href="javascript:void(0)" class="mt-primaryNavigation__siteMenu" onclick="openSiteMenu(event); return false;">
+        <mtapp:svgicon id="ic_menu" title="<__trans phrase="Open Site Menu">">
       </a>
     </div>
   </div>
@@ -79,6 +105,106 @@
       <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
       <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
     </div>
+  </div>
+</div>
+
+<div class="mt-primaryNavigation__container" style="background-color: #595959; display: none; height: 100%;" onclick="stopPropagation(event);">
+  <div class="mt-primaryNavigation__header--invert">
+    <div class="col-10">
+      <h1 class="mt-productHeader__logo">
+        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+        <span class="mt-productHeader__name">
+          <mt:var name="product_header_name">
+        </span>
+      </h1>
+    </div>
+    <div class="col-2">
+      <a href="javascript:void(0)" class="mt-primaryNavigation__siteMenu" onclick="closeSiteMenu(event); return false;">
+        <mtapp:svgicon id="ic_menu" title="<__trans phrase="Close Site Menu">">
+      </a>
+    </div>
+  </div>
+
+  <div class="mt-primaryNavigation__control">
+    <ul class="mt-primaryNavigation__sites">
+<mt:if name="fav_website_loop">
+      <li>
+        <span class="text-light">
+          <__trans phrase="Sites">
+        </span>
+      </li>
+      <li>
+        <ul class="list-unstyled">
+  <mt:loop name="fav_website_loop">
+          <li>
+    <mt:if name="fav_website_can_link">
+            <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
+              <mt:var name="fav_website_name" escape="html">
+            </a>
+    <mt:else>
+            <span class="text-light">
+              <mt:var name="fav_website_name" escape="html">
+            </span>
+    </mt:if>
+          </li>
+    <mt:if name="__last__">
+      <mt:unless name="selector_hide_website_chooser">
+          <li id="select-website" class="select-another">
+            <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
+              <__trans phrase="Select another site...">
+            </a>
+          </li>
+      </mt:unless>
+    </mt:if>
+  </mt:loop>
+        </ul>
+      </li>
+</mt:if>
+<mt:if name="fav_blog_loop">
+      <li>
+        <span class="text-light">
+          <__trans phrase="Child Sites">
+        </span>
+      </li>
+      <li>
+        <ul class="list-unstyled">
+  <mt:loop name="fav_blog_loop">
+          <li>
+            <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
+              <mt:var name="fav_blog_name" escape="html">
+              <span class="parent">
+                <__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">">
+              </span>
+            </a>
+          </li>
+    <mt:if name="__last__">
+      <mt:unless name="selector_hide_blog_chooser">
+          <li id="select-blog" class="select-another">
+            <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
+              <__trans phrase="Select another child site...">
+            </a>
+          </li>
+      </mt:unless>
+    </mt:if>
+  </mt:loop>
+        </ul>
+      </li>
+</mt:if>
+    </ul>
+  </div>
+
+  <div class="mt-primaryNavigation__content">
+<mt:if name="scope_type" ne="system">
+    <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
+      <__trans phrase="System">
+    </a>
+</mt:if>
+    <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
+      <__trans phrase="Dashboard">
+    </a>
+  </div>
+
+  <div class="mt-primaryNavigation__info">
   </div>
 </div>
 
