@@ -15,6 +15,6 @@ build:
 
     - rm plugins/MultiBlog/t/02.tags.t
 
-    - prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+    - MT_TEST_IGNORE_FIXTURE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
     - phpunit
 
