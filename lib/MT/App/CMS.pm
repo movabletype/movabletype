@@ -1861,6 +1861,34 @@ sub core_list_actions {
     };
 }
 
+sub core_menu_actions {
+    my $app = shift;
+    return {
+        rebuild => {
+            class     => 'mt-rebuild',
+            condition => sub {
+                $app->blog ? 1 : 0;
+            },
+            icon  => 'ic_build',
+            label => 'Rebuild',
+            mode  => 'rebuild_confirm',
+            order => 100,
+        },
+        view_site => {
+            condition => sub {
+                $app->blog ? 1 : 0;
+            },
+            icon  => 'ic_permalink',
+            label => 'View Site',
+            href  => sub {
+                $app->blog->site_url;
+            },
+            order  => 200,
+            target => '_blank',
+        },
+    };
+}
+
 sub _entry_label {
     my $app = MT->instance;
     my $type = $app->param('type') || 'entry';
@@ -3016,7 +3044,10 @@ sub build_page {
     $app->build_blog_selector($param) if $build_blog_selector;
     my $build_menus
         = exists $param->{build_menus} ? $param->{build_menus} : 1;
-    $app->build_menus($param) if $build_menus;
+    if ($build_menus) {
+        $app->build_menus($param);
+        $app->build_menu_actions($param);
+    }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
@@ -3630,6 +3661,33 @@ sub build_user_menus {
     }
     @menus = sort { $a->{order} <=> $b->{order} } @menus;
     $param->{user_menus} = \@menus;
+}
+
+sub build_menu_actions {
+    my $app = shift;
+    my ($param) = @_;
+
+    my @sorted_actions
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
+        values %{ $app->registry('menu_actions') || {} };
+
+    my @valid_actions;
+    for my $action (@sorted_actions) {
+        my $cond = $action->{condition};
+        if ( defined $cond ) {
+            next unless $cond;
+            next if ref $cond eq 'CODE' && !$cond->( $app, $param );
+        }
+
+        my $href = $action->{href};
+        if ( $href && ref $href eq 'CODE' ) {
+            $href = $href->( $app, $param );
+        }
+
+        push @valid_actions, $action;
+    }
+
+    $param->{menu_actions} = \@valid_actions;
 }
 
 sub return_to_dashboard {

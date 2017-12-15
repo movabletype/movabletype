@@ -60,10 +60,17 @@ function stopPropagation(e) {
     </div>
   </div>
 
-<mt:if name="blog_id">
+<mt:if name="menu_actions">
   <div class="mt-primaryNavigation__control">
-    <a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild btn btn-default"><mtapp:svgicon id="ic_build" title="<__trans phrase="Publish Site">"><__trans phrase="Rebuild"></a>
-    <a href="<mt:var name="blog_url" escape="html">" class="btn btn-default" target="_blank"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Site">"><__trans phrase="View Site"></a>
+  <mt:loop name="menu_actions">
+    <mt:setvarblock name="menu_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+    <mt:setvarblock name="escaped_menu_action_label"><__trans phrase="<mt:var name="label">" escape="html"></mt:setvarblock>
+
+    <a href="<mt:var name="menu_action_href">" class="btn btn-default <mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
+      <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
+      <mt:var name="escaped_menu_action_label">
+    </a>
+  </mt:loop>
   </div>
 </mt:if>
 
