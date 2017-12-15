@@ -12,6 +12,22 @@
 </mt:if>
 </mt:setvarblock>
 
+<mt:setvartemplate name="primary_navigation_info">
+<mt:if name="user_actions">
+  <div class="mt-primaryNavigation__info">
+    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> text-light</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
+  <mt:loop name="user_actions">
+      <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+      <a href="<mt:var name="user_action_href">" class="dropdown-item">
+        <__trans phrase="<mt:var name="label">" escape="html">
+      </a>
+  </mt:loop>
+    </div>
+  </div>
+</mt:if>
+</mt:setvartemplate>
+
 <mt:if name="scope_type" ne="user">
 <script>
 function closeSiteMenu(e) {
@@ -106,14 +122,7 @@ function stopPropagation(e) {
     </ul>
   </div>
 
-  <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
-      <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
-    </div>
-  </div>
+  <mt:var name="primary_navigation_info">
 </div>
 </mt:if>
 
@@ -222,14 +231,7 @@ function stopPropagation(e) {
   </div>
 
 <mt:if name="scope_type" eq="user">
-  <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left text-light" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=view&_type=author&id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a>
-      <a class="dropdown-item" href="<__trans phrase="https://movabletype.org/documentation/">" target="_blank"><__trans phrase="Documentation"></a>
-      <a class="dropdown-item" href="<mt:var name="mt_url">?__mode=logout"><__trans phrase="Sign out"></a>
-    </div>
-  </div>
+  <mt:var name="primary_navigation_info">
 </mt:if>
 </div>
 

@@ -1889,6 +1889,44 @@ sub core_menu_actions {
     };
 }
 
+sub core_user_actions {
+    my $app = shift;
+    return {
+        profile => {
+            condition => sub {
+                $app->user ? 1 : 0;
+            },
+            href => sub {
+                $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type => 'author',
+                        id    => $app->user->id,
+                    },
+                );
+            },
+            label => 'Profile',
+            order => 100,
+        },
+        documentation => {
+            href => sub {
+                $app->translate('https://movabletype.org/documentation/');
+            },
+            label  => 'Documentation',
+            order  => 200,
+            target => '_blank',
+        },
+        sign_out => {
+            condition => sub {
+                $app->user ? 1 : 0;
+            },
+            label => 'Sign out',
+            mode  => 'logout',
+            order => 300,
+        },
+    };
+}
+
 sub _entry_label {
     my $app = MT->instance;
     my $type = $app->param('type') || 'entry';
@@ -3047,6 +3085,7 @@ sub build_page {
     if ($build_menus) {
         $app->build_menus($param);
         $app->build_menu_actions($param);
+        $app->build_user_actions($param);
     }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
@@ -3688,6 +3727,33 @@ sub build_menu_actions {
     }
 
     $param->{menu_actions} = \@valid_actions;
+}
+
+sub build_user_actions {
+    my $app = shift;
+    my ($param) = @_;
+
+    my @sorted_actions
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
+        values %{ $app->registry('user_actions') || {} };
+
+    my @valid_actions;
+    for my $action (@sorted_actions) {
+        my $cond = $action->{condition};
+        if ( defined $cond ) {
+            next unless $cond;
+            next if ref $cond eq 'CODE' && !$cond->( $app, $param );
+        }
+
+        my $href = $action->{href};
+        if ( $href && ref $href eq 'CODE' ) {
+            $href = $href->( $app, $param );
+        }
+
+        push @valid_actions, $action;
+    }
+
+    $param->{user_actions} = \@valid_actions;
 }
 
 sub return_to_dashboard {

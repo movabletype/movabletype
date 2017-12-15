@@ -2290,6 +2290,7 @@ BEGIN {
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
                 menu_actions    => sub { MT->app->core_menu_actions(@_) },
+                user_actions    => sub { MT->app->core_user_actions(@_) },
                 search_apis     => sub {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
