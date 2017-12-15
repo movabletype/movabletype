@@ -4,7 +4,7 @@ build:
     image_name: masiuchi/docker-mt-test
     image_tag: trusty-full
     pull: true
-    options: "--tty"
+    options: "-it"
   ci:
     - locale-gen en_US en_US.UTF-8
     - dpkg-reconfigure locales
