@@ -1,0 +1,9 @@
+language: none
+build:
+  pre_ci_boot:
+    image_name: masiuchi/docker-mt-test
+    image_tag: trusty-full
+    pull: true
+  ci:
+    prove
+
