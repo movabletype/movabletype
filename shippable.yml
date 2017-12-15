@@ -1,7 +1,5 @@
 language: none
 build:
-  pre_ci:
-    - echo 'pre_ci'
   pre_ci_boot:
     image_name: masiuchi/docker-mt-test
     image_tag: trusty-full
