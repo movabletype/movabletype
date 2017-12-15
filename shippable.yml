@@ -4,8 +4,9 @@ build:
     image_name: masiuchi/docker-mt-test
     image_tag: trusty-full
     pull: true
-    env: LC_ALL=en_US.UTF-8
   ci:
+    - locale-gen en_US en_US.UTF-8
+    - dpkg-reconfigure locales
     - find /var/lib/mysql -type f | xargs touch
     - service mysql start
     - service memcached start
