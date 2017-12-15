@@ -135,7 +135,6 @@
             self.setResult(data.result);
           }
         },
-        fail: function (jqXHR, textStatus) {},
         always: function () {
           self.updateIsLoading(false);
           self.trigger('refresh_current_filter')
@@ -151,7 +150,6 @@
             self.setDeleteFilterResult(data.result);
           }
         },
-        fail: function (jqXHR, textStatus) {},
         always: function () {
           self.trigger('refresh_view');
         }
@@ -193,7 +191,6 @@
           self.setResult(data.result);
         }
       },
-      fail: function (jqXHR, textStatus) {},
       always: function () {
         self.updateIsLoading(false);
         if (refreshCurrentFilter) {
@@ -219,7 +216,6 @@
           self.setSaveFilterResult(data.result);
         }
       },
-      fail: function (jqXHR, textStatus) {},
       always: function () {
         self.trigger('refresh_view');
       }
@@ -240,7 +236,6 @@
           self.setResult(data.result);
         }
       },
-      fail: function (jqXHR, textStatus) {},
       always: function () {
         self.trigger('refresh_current_filter')
         self.trigger('refresh_view')
@@ -254,7 +249,6 @@
       columns: self.getCheckedColumnIds(),
       limit: self.limit,
       done: function (data, textStatus, jqXHR) {},
-      fail: function (jqXHR, textStatus) {},
       always: function () {
         self.trigger('refresh_view');
       }

@@ -30,6 +30,7 @@ plan tests => 8;
 
     require MT::App::CMS;
     my $app = MT::App::CMS->instance;
+    $app->init_request;
     note( 'Object types are: '
             . join( q{, }, sort keys %{ MT->registry('object_types') } ) );
 

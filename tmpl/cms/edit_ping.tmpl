@@ -167,7 +167,7 @@
 </mt:if>
     </div>
     <div class="col-1">
-      <a title="<__trans phrase="View all TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id"><mt:if name="is_junk">&amp;tab=junk<mt:else>&amp;filter=status&amp;filter_val=<mt:if name="ping_approved">approved</mt:if><mt:if name="ping_pending">pending</mt:if></mt:if>">
+      <a title="<__trans phrase="View all TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id"><mt:if name="is_junk">&amp;tab=junk<mt:else>&amp;filter=status&amp;filter_val=<mt:if name="ping_approved">approved</mt:if><mt:if name="ping_pending">pending</mt:if></mt:if>" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>
@@ -183,7 +183,7 @@
       <input type="text" name="blog_name" id="blog_name" class="form-control text" value="<mt:var name="source_blog_name" escape="html">" />
     </div>
     <div class="col-1">
-      <a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;filter=source_blog_name&amp;filter_val=<mt:var name="source_blog_name" escape="url">">
+      <a title="<__trans phrase="Search for other TrackBacks from this site">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id">&amp;_type=ping&amp;filter=source_blog_name&amp;filter_val=<mt:var name="source_blog_name" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>
@@ -199,7 +199,7 @@
       <input type="text" name="title" id="title" class="form-control text" value="<mt:var name="title" escape="html">" />
     </div>
     <div class="col-1">
-      <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=title&amp;filter_val=<mt:var name="title" escape="url">">
+      <a title="<__trans phrase="Search for other TrackBacks with this title">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=title&amp;filter_val=<mt:var name="title" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>
@@ -215,7 +215,7 @@
       <input type="text" name="source_url" id="source_url" class="form-control text" value="<mt:var name="source_url" escape="html">" />
     </div>
     <div class="col-1">
-      <a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=source_url&amp;filter_val=<mt:var name="source_url" escape="url">">
+      <a title="<__trans phrase="Search for other TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=source_url&amp;filter_val=<mt:var name="source_url" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>
@@ -232,7 +232,7 @@
   <mt:else>
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="target_type">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
   </mt:if>
-      <a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<__trans phrase="View all TrackBacks on this entry">">
+      <a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=ping&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<__trans phrase="View all TrackBacks on this entry">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>
@@ -249,7 +249,7 @@
     <mt:else>
         <a href="<mt:var name="script_url">?__mode=view&amp;_type=category&amp;id=<mt:var name="category_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="category_label"><mt:var name="category_label" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
     </mt:if>
-        <a title="<__trans phrase="View all TrackBacks on this category">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id" escape="html">">
+        <a title="<__trans phrase="View all TrackBacks on this category">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id" escape="html">" class="d-inline-block">
           <mtapp:svgicon id="ic_search" size="sm">
         </a>
       </div>
@@ -261,7 +261,7 @@
    label="<__trans phrase="Date">">
   <div class="form-group">
     <mt:var name="created_on_time_formatted">
-    <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">">
+    <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">" class="d-inline-block">
       <mtapp:svgicon id="ic_search" size="sm">
     </a>
   </div>
@@ -273,7 +273,7 @@
      label="<__trans phrase="IP address">">
     <div class="form-group">
       <mt:var name="ip" escape="html">
-      <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="url">">
+      <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">
       </a>
     </div>

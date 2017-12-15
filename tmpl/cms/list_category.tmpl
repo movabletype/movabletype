@@ -173,7 +173,7 @@ function loginAgain(fn) {
                     jQuery(this).attr('href', replace);
                   });
                 }
-                jQuery.fn.mtDialog.close();
+                jQuery.fn.mtModal.close();
                 fn(data);
                 return false;
               },
@@ -187,7 +187,10 @@ function loginAgain(fn) {
             return false;
           });
     });
-  jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
 }
 
 function handleMessages( data ) {
@@ -344,7 +347,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
+  jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions({ sortable: false });
@@ -374,7 +377,7 @@ function initItem($item) {
     });
 
 <mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
-  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
+  jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
     .bind('click', function() {
       fixInteractions();

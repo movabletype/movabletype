@@ -59,7 +59,8 @@ function submitEdit( id, newname, oldname ) {
       data: {
         __mode: 'js_tag_check',
         tag_name: newname,
-        blog_id: <mt:var name="blog_id">
+        blog_id: <mt:var name="blog_id">,
+        xhr: 1
       },
       success: function(data) {
         if ( !handleMessages(data) ) {
@@ -108,7 +109,7 @@ function submitEdit( id, newname, oldname ) {
       magic_token: '<mt:var name="magic_token">'
     },
   }).always(function () {
-    location.reload();
+    listStore.trigger('load_list');
   });
 
   return false;

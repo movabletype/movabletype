@@ -707,7 +707,7 @@
     </div>
     <div class="row">
       <div class="form-inline col">
-        <select name="upload_destination" id="upload_destination" class="form-control" onchange="uploadDestinationSelect(this)">
+        <select name="upload_destination" id="upload_destination" class="custom-select form-control" onchange="uploadDestinationSelect(this)">
         <mt:loop name="destination_loop">
           <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
         </mt:loop>

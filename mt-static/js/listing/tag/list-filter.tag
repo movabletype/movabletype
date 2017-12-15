@@ -328,6 +328,7 @@
           >
           </virtual>
           <a href="javascript:void(0);"
+            class="d-inline-block"
             if={ !filterTypeHash[item.type].singleton }
             onclick={ addFilterItemContent }
           >
@@ -358,6 +359,7 @@
           >
           </virtual>
           <a href="javascript:void(0);"
+            class="d-inline-block"
             if={ !filterTypeHash[opts.item.type].singleton }
             onclick={ addFilterItemContent }
           >
@@ -536,7 +538,7 @@
                   </a>
                   <div class="float-right">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
-                    <a href="#" onclick={ removeFilter }>
+                    <a href="#" class="d-inline-block" onclick={ removeFilter }>
                       <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
                         <use xlink:href={ StaticURI + 'images/sprite.svg#ic_trash' } />
                       </svg>
@@ -558,7 +560,7 @@
               <li class="filter line">
                 <a href="#"
                   id="new_filter"
-                  class="icon-mini-left addnew create-new apply-link"
+                  class="icon-mini-left addnew create-new apply-link d-inline-block"
                   onclick={ createNewFilter }
                 >
                   <svg title={ trans( 'Add' ) } role="img" class="mt-icon mt-icon--sm">

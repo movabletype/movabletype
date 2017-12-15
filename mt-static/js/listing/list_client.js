@@ -12,13 +12,22 @@
   };
 
   ListClient.prototype.sendRequest = function (args, data) {
-    $.ajax(this.url, {
+    var url = this.url;
+    var settings = {
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded; charset=utf-8',
       data: data,
       dataType: 'json'
-    }).done(args.done)
-      .fail(args.fail)
+    };
+    $.ajax(url, settings)
+      .done(args.done)
+      .fail(function (xhr, status, error) {
+        if (xhr.status == 401) {
+          loginAgain(function () {
+            $.ajax(url, settings);
+          });
+        }
+      })
       .always(args.always);
   };
 

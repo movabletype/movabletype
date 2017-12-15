@@ -294,10 +294,10 @@
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
                     <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -437,7 +437,7 @@
     <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
   <mt:else>
     <mt:if name="can_publish_post">
-    <select name="status" id="status" class="form-control full" onchange="highlightSwitch(this)">
+    <select name="status" id="status" class="custom-select form-control full" onchange="highlightSwitch(this)">
       <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>>
         <__trans phrase="Unpublished (Draft)">
       </option>
@@ -637,7 +637,7 @@
      mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
      mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
      title="<mt:var name="delete_button_title">"
-     class="delete"
+     class="delete d-inline-block"
      accesskey="x">
     <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
@@ -750,7 +750,7 @@
      id="asset_container"
      label="$widget_label">
     <div class="text-right asset-list-header mb-2">
-      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open" data-mt-modal-large>
+      <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
         <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
@@ -1419,7 +1419,7 @@ div.mce-notification-error {
           </div>
           <div id="field-convert_breaks" class="form-inline">
             <__trans phrase="Format:">
-            <select name="convert_breaks" id="convert_breaks" class="form-control">
+            <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>

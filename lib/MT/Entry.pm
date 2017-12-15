@@ -302,7 +302,7 @@ sub list_props {
                 my $view_link  = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
-                      <a href="$permalink" target="_blank">
+                      <a href="$permalink" class="d-inline-block" target="_blank">
                         <svg title="$view_link_text" role="img" class="mt-icon mt-icon--sm">
                           <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
                         </svg>
@@ -313,7 +313,7 @@ sub list_props {
 
                 my $out = qq{
                     <span class="icon status $lc_status_class">
-                      <a href="$edit_url">$status_img</a>
+                      <a href="$edit_url" class="d-inline-block">$status_img</a>
                     </span>
                     <span class="title">
                       $title

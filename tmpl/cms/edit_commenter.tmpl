@@ -193,7 +193,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
      label="<__trans phrase="Display Name">">
     <div class="form-group">
       <mt:var name="nickname" escape="html">
-      <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">">
+      <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
     </div>
@@ -204,7 +204,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
      label="<__trans phrase="Identity">">
     <div class="form-group">
   <mt:if name="url">
-      <a href="<mt:var name="url" escape="html">" target="_blank"><mt:var name="name" escape="html">
+      <a href="<mt:var name="url" escape="html">" target="_blank" class="d-inline-block"><mt:var name="name" escape="html">
         <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
       </a>
   <mt:else>
@@ -225,7 +225,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mt:if name="is_email_hidden">
       &nbsp;
   <mt:else>
-      <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">">
+      <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
       </a>
   </mt:if>
@@ -237,7 +237,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
      label="<__trans phrase="Website URL">">
     <div class="form-group">
   <mt:if name="url">
-      <a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html">
+      <a href="<mt:var name="url" escape="html">" class="d-inline-block"><mt:var name="url" escape="html">
         <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
       </a>
   <mt:else>

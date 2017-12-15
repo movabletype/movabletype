@@ -32,7 +32,7 @@
      label="<__trans phrase="Source Category Set">"
      required="1">
     <mt:if name="category_sets">
-      <select ref="category_set" name="category_set" id="categories-category_set" class="form-control html5-form">
+      <select ref="category_set" name="category_set" id="categories-category_set" class="custom-select form-control html5-form">
       <mt:loop name="category_sets">
         <option value="<mt:var name="id" escape="html">" if={ options.category_set == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
         <option value="<mt:var name="id" escape="html">" if={ options.category_set != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>

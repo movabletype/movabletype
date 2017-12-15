@@ -18,7 +18,6 @@ sub id {'new_search'}
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->set_no_cache;
     $app->{default_mode} = 'default';
 
     ## process pathinfo
@@ -107,6 +106,8 @@ sub init_request {
         $app->SUPER::init_request(@_);
         $app->mode('tag') if $app->param('tag');
     }
+
+    $app->set_no_cache;
 
     my $cfg = $app->config;
     my $blog_id
