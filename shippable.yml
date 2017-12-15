@@ -4,7 +4,6 @@ build:
     image_name: masiuchi/docker-mt-test
     image_tag: trusty-full
     pull: true
-    options: "-it"
   ci:
     - locale-gen en_US en_US.UTF-8
     - dpkg-reconfigure locales
@@ -15,6 +14,7 @@ build:
 
     - rm plugins/MultiBlog/t/02.tags.t
 
-    - MT_TEST_IGNORE_FIXTURE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+    - script -qfc "MT_TEST_IGNORE_FIXTURE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t && touch test_passed" | cat
+    - test -e test_passed
     - phpunit
 
