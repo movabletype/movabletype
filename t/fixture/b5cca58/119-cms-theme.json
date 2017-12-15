@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "dkmdz0r4",
+            "jxjfmatr",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$65RJzovy8h6m2Pck$KAKuoZEFzZuf3irppYmziFV7Qt1oBfUSLLu+5UOErBvQ5mzW3mJn9E+i1pDFdAVtAFOhYAqe0y7HrpUJx9vvRQ",
+            "$6$wnd5nfGg6bxPWN9C$zEvcQ0tAX1ZnAA7mbr++8iMq0HA4ek8oFH4TZTRrrI5IePyqYyn6dITFQg8RJxPwd46hbkYsa6N20T8p+1O2ig",
             "en_US",
             null,
             null,
@@ -548,7 +548,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

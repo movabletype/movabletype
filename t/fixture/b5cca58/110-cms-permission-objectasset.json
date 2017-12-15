@@ -73,7 +73,7 @@
       ],
       "rows" : [
          [
-            "g9dq6wle",
+            "u39hjj5h",
             "MT",
             "authorce2f3",
             null,
@@ -92,7 +92,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$aU3QCsaxYqe6UHir$2gi282BJrZpFRPDSc2t6pAtWt1x5CnBeqnWYqOT8+WzIWlgVOzTJCatbtEHKoZUnbCblUtOC2R2szUSl2ArPBQ",
+            "$6$Eq7gPWLLJ7xUQdVH$hR4goanaYfdhOqnkuHznlCu4di2uRcA5wFjbP4TW4hzIXygFWip05+o2607FtUJZY1DW04wTv89J7glWfzqs4Q",
             "en_US",
             null,
             null,
@@ -123,7 +123,7 @@
             null,
             "aikawa",
             "Ichiro Aikawa",
-            "$6$DZCf2S0QSxqlQe9m$YT0KBofs3jQ5e+6oswRpjAeo/AnO4PIfuCHwKlKnVJlvkiA9KxqGuaWh/xhx6QgAna9aXh83X1nElcfmU++XKQ",
+            "$6$cXZsoUhYaJubMHqI$O5gpxecOwE2n8z+uW8ftP8O+rg708OZzFZI1ppUOYmtOm78yoXEvRgI50LnnFfDOww4MYFShDKfLbKzqYhcwkQ",
             "en_US",
             null,
             null,
@@ -591,7 +591,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null
@@ -623,7 +623,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

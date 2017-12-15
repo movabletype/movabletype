@@ -73,7 +73,7 @@
       ],
       "rows" : [
          [
-            "kevs8v2n",
+            "shfo567r",
             "MT",
             "authorce2f3",
             null,
@@ -92,7 +92,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$cz2YGZyM4agwSw82$/1cxiUMWhjbbOBF7uSTDTZHueHQqJOYt1OV5ucNklQpidVlWKiisKirP7rE+FloiPNeIIB8h/lqQwdx05TzJag",
+            "$6$6m5f5VZuCxFrlyIG$JbAkrd4bTTzl+zL7pEUY+AoyJG+QEZb7SM1zKaoTXyJXd4V/b3xOmNZTbUUu6F75+jrvD37jWoGbXYbCEB/atg",
             "en_US",
             null,
             null,
@@ -123,7 +123,7 @@
             null,
             "aikawa",
             "Ichiro Aikawa",
-            "$6$0RdwnsESjB9J6Dp1$eEHWEi9Z+2jVmAbvLXs0e1V50zj3XUP58ksaEK3lMRqBV2fe1hUB60x84xMroacifaVquOcmqSWlM6YB+47tug",
+            "$6$PjxvjYdBEKt3tP4m$ESyYYnnsNadUujOUOH9o+SUcuUBXhtd82yrmbhB9KNRll50/tIhVpBtTzTNu0O0gC6Q3MkucUqcscYIYYJOR8A",
             "en_US",
             null,
             null,
@@ -481,7 +481,7 @@
             null,
             null,
             "single_line_text",
-            "dcc4bf61912490cf6ca5179125a4703601001a4b"
+            "f60cf4e8946e677a8b58aeb26e2e96bb95b1cc30"
          ]
       ]
    },
@@ -518,12 +518,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"label\":\"single line text\"},\"order\":1,\"type\":\"single_line_text\",\"id\":\"1\",\"unique_id\":\"dcc4bf61912490cf6ca5179125a4703601001a4b\"}]",
+            "[{\"options\":{\"label\":\"single line text\"},\"order\":1,\"type\":\"single_line_text\",\"id\":\"1\",\"unique_id\":\"f60cf4e8946e677a8b58aeb26e2e96bb95b1cc30\"}]",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "5535888d89c4e98d6b65c3b0f68366df069ce473",
+            "63c8c02f8b103ae50c43486f0cfb42e6666bde30",
             null,
             null
          ]
@@ -638,7 +638,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null
@@ -670,7 +670,7 @@
             null,
             "__NOW__",
             null,
-            "'content_type:5535888d89c4e98d6b65c3b0f68366df069ce473-content_field:dcc4bf61912490cf6ca5179125a4703601001a4b'",
+            "'content_type:63c8c02f8b103ae50c43486f0cfb42e6666bde30-content_field:f60cf4e8946e677a8b58aeb26e2e96bb95b1cc30'",
             null,
             "0",
             null
@@ -838,7 +838,7 @@
             null,
             "__NOW__",
             "Edit Content Field \"single line text\"",
-            "'content_type:5535888d89c4e98d6b65c3b0f68366df069ce473-content_field:dcc4bf61912490cf6ca5179125a4703601001a4b'",
+            "'content_type:63c8c02f8b103ae50c43486f0cfb42e6666bde30-content_field:f60cf4e8946e677a8b58aeb26e2e96bb95b1cc30'",
             null,
             null,
             null,

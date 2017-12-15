@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "bhmqnqdn",
+            "3gu65z6r",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$dXQVSdfgrUhoMD3U$F70q+jVJHJ6NT+2mjf9+1E2CgdoCAxN8czTGklJYzWyJdeWPhkmzMZSkg5HMsUpOy/bXXbFQZ2F3sTVLUCkpPA",
+            "$6$QpXVIMCMKKoijf2Z$mK4lxXmvmK4sQaLBP3nuF10FW32OuXiSstReTPyYtYbDdzduxgwJMRhVGqYbIjMrj/yNctqzrnaBIg6/Dnujwg",
             "en_US",
             null,
             null,
@@ -111,7 +111,7 @@
             null,
             "yishikawa",
             "Yuki Ishikawa",
-            "$6$ZnmZ8IeWcdFPs5Vc$CqgviqlTonsr96r3RxLY3VjJCeIXz0eizCGN6qAVzDhmiF6nATbJpFMk/4v7WbOjATUvSX4EwC9RZ0CPfoC/Jw",
+            "$6$gOdKeP0AoLMrPOFP$/vjeOkU6vn/aUUBcQziF6sL1wqGjtrXyFo73FTWZi4uTcu81xgBrKP3vWkvLXazUOD90sQu4Uy+k9jbG5SQOkw",
             "en_US",
             null,
             null,
@@ -525,21 +525,21 @@
       "rows" : [
          [
             "2",
-            "2017-12-14 07:47:20",
+            "2017-12-14 23:25:11",
             "2",
             "content_data",
             "1",
             null,
             "__NOW__",
-            "112f68f9c5751a4621cf45d18d26ac11528d8f01",
+            "0ea921ed970ea22ce08ada4b18bd41c09958f50c",
             "0",
             "{\"1\":\"20170603180500\",\"2\":[\"1\"]}",
             "1",
-            "54ecf4fda187c51cc8dc7c5c9373dfb9f4c7771d",
+            "312b605a5d3aa6f418e7936ae7d2be36728ad8c9",
             null,
             "__NOW__",
             "4",
-            "54ecf4fda187c51cc8dc7c5c9373dfb9f4c7771d",
+            "312b605a5d3aa6f418e7936ae7d2be36728ad8c9",
             "2017-05-31 16:36:00",
             "201750"
          ]
@@ -579,7 +579,7 @@
             null,
             null,
             "date_and_time",
-            "33d449f02777eccd7220f0f263f2d7562657229c"
+            "a8fe9bc6e0d94800c79504d3807cd6aa8179ad20"
          ],
          [
             "2",
@@ -596,7 +596,7 @@
             null,
             null,
             "categories",
-            "ceaf43cc4c4b1833b615fc321de42cc2456e6fcc"
+            "c7d2766cbfc2a75eb2563682ce3f614a399c0aba"
          ]
       ]
    },
@@ -682,12 +682,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"label\":\"date and time\"},\"order\":6,\"type\":\"date_and_time\",\"id\":\"1\",\"unique_id\":\"33d449f02777eccd7220f0f263f2d7562657229c\"},{\"options\":{\"min\":1,\"max\":5,\"category_set\":\"1\",\"multiple\":1,\"label\":\"categories\"},\"order\":15,\"type\":\"categories\",\"id\":\"2\"}]",
+            "[{\"options\":{\"label\":\"date and time\"},\"order\":6,\"type\":\"date_and_time\",\"id\":\"1\",\"unique_id\":\"a8fe9bc6e0d94800c79504d3807cd6aa8179ad20\"},{\"options\":{\"min\":1,\"max\":5,\"category_set\":\"1\",\"multiple\":1,\"label\":\"categories\"},\"order\":15,\"type\":\"categories\",\"id\":\"2\"}]",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "112f68f9c5751a4621cf45d18d26ac11528d8f01",
+            "0ea921ed970ea22ce08ada4b18bd41c09958f50c",
             null,
             null
          ]
@@ -839,7 +839,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null
