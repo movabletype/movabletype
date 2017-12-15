@@ -12,6 +12,6 @@ build:
     - find /var/lib/mysql -type f | xargs touch
     - service mysql start
     - service memcached start
-    - prove t plugins/*/t
+    - prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
     - phpunit
 
