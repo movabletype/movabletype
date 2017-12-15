@@ -5,5 +5,9 @@ build:
     image_tag: trusty-full
     pull: true
   ci:
-    prove
+    - find /var/lib/mysql -type f | xargs touch
+    - service mysql start
+    - service memcached start
+    - prove t plugins/*/t
+    - phpunit
 
