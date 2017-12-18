@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "vcc0b717",
+            "fh436fu6",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$bzwjiRtShOS2PNIe$RC72MMIpYYoi1xiI86gn5POZdNid2wqqHr07LsyIpLIaQhZc3GVeEKEOcCr6+DVfHOaJ4h3DLkH5UmcsRPfUQA",
+            "$6$SH43wsMyJe7b50oT$qFX9fY8zDTZ8X62/QCx6doGDI+GumyPTHcnabz+cDAQJ9wW5YkkXi0lbSwoVaGsVvG6Xy/usDhOicBOJxw4Oyg",
             "en_US",
             null,
             null,
@@ -447,15 +447,15 @@
             "1",
             null,
             "__NOW__",
-            "33e988dbe40f00ee2bd51c6348fde46d0293e5d0",
+            "ba2248d8b6ef292c3bbb90593d59164c184a53f5",
             "0",
             "{\"1\":[\"1\",\"2\",\"3\"]}",
             "1",
-            "e5302b2f8d8ab27c35914cc76355f9cdc1baf5f4",
+            "7e04d9483703062d1490d1d7898cb3a0945e6f92",
             null,
             "__NOW__",
             "2",
-            "e5302b2f8d8ab27c35914cc76355f9cdc1baf5f4",
+            "7e04d9483703062d1490d1d7898cb3a0945e6f92",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -495,7 +495,7 @@
             null,
             null,
             "categories",
-            "fedaf8c984f27c768442d970e97b8e0175efcc82"
+            "4ed0cc2a6141d25f8c7c18d1f3cf32390b19d000"
          ]
       ]
    },
@@ -596,12 +596,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"uniuque_id\":\"fedaf8c984f27c768442d970e97b8e0175efcc82\",\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"categories\",\"id\":\"1\"}]",
+            "[{\"uniuque_id\":\"4ed0cc2a6141d25f8c7c18d1f3cf32390b19d000\",\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"categories\",\"id\":\"1\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "33e988dbe40f00ee2bd51c6348fde46d0293e5d0",
+            "ba2248d8b6ef292c3bbb90593d59164c184a53f5",
             null,
             null
          ]
@@ -756,7 +756,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

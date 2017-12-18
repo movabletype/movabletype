@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "k6ovgbcr",
+            "ltq4fcvg",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$lmxzdofmbeNlvOxD$adA6kpltFaYTshSglLSB+2U19yXUvj+fcIIK5Obezi8G06DHob4XuGZ32RTJ3WJJxiM4C3fI/yWqLEXVFdMyfg",
+            "$6$YuiiVyuZ2G3EOuNH$+QXRPKacpja7K9UDGHUdoS2xRxlqv2cf+lH6QAAuOBQc+W+Km1dJqLjqdSO/lrBoYPEqve124ucT+byHfKDxyg",
             "en_US",
             null,
             null,
@@ -347,15 +347,15 @@
             "1",
             null,
             "__NOW__",
-            "fe9373068ebcc6448b499edf81b330c3f6ebc2a1",
+            "8364f08ca4995810c573ec27fe03504f57664ed8",
             "0",
             null,
             "1",
-            "c327c4b36e47577751732bf57ea12ef3a588bc5b",
+            "74c9a5faa29122ffdfbdae769b38e65449327e7b",
             null,
             "__NOW__",
             "2",
-            "c327c4b36e47577751732bf57ea12ef3a588bc5b",
+            "74c9a5faa29122ffdfbdae769b38e65449327e7b",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -367,15 +367,15 @@
             "1",
             null,
             "__NOW__",
-            "fe9373068ebcc6448b499edf81b330c3f6ebc2a1",
+            "8364f08ca4995810c573ec27fe03504f57664ed8",
             "0",
             null,
             "2",
-            "ecd7d7a9ba1828c92c38e1929afb49247d6d8fcb",
+            "ef8ac4ea01f9e37b092623a3b7b508352341ea93",
             null,
             "__NOW__",
             "2",
-            "ecd7d7a9ba1828c92c38e1929afb49247d6d8fcb",
+            "ef8ac4ea01f9e37b092623a3b7b508352341ea93",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -419,7 +419,7 @@
             null,
             "__NOW__",
             "test content data",
-            "fe9373068ebcc6448b499edf81b330c3f6ebc2a1",
+            "8364f08ca4995810c573ec27fe03504f57664ed8",
             null,
             null
          ]
@@ -504,7 +504,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

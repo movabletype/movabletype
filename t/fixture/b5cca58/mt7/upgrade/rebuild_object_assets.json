@@ -150,7 +150,7 @@
       ],
       "rows" : [
          [
-            "u22afw6v",
+            "5gbwsoae",
             "MT",
             "authorce2f3",
             null,
@@ -169,7 +169,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$TJfKDWqMdeoGM0oO$54BEzU8L/CIGiNmVQ5fAM2Qqe3hAUsu5hazPCFIODlZCyj4yCsoYSVz/k2n7xbQQCVnIKuZIriiyj1XTLPRFZQ",
+            "$6$54zxB8Gq4kT7ViJm$cC7VOtrfXQj7nlprRpNW1Ro4XRNVe+jx3wzqb1m9JWSY7VbtRJJRgl0JUQqu1ZzysWbDHo3HohuH6UDoVL4uWA",
             "en_US",
             null,
             null,
@@ -436,15 +436,15 @@
             "1",
             null,
             "__NOW__",
-            "4ff5be3283457fdc5af2391eabe24b5663f6d2c0",
+            "80eeb84664feb3a74b451555b660e6074bb0aa9e",
             "0",
             "{\"4\":[\"4\"],\"1\":[\"1\"],\"3\":[\"3\"],\"2\":[\"2\"]}",
             "1",
-            "13b9d3c07272edc4af0c6d3006946a24e7f9130f",
+            "e230d633fb89db96ac7d345d288de954207d020c",
             null,
             "__NOW__",
             "2",
-            "13b9d3c07272edc4af0c6d3006946a24e7f9130f",
+            "e230d633fb89db96ac7d345d288de954207d020c",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -484,7 +484,7 @@
             null,
             null,
             "asset",
-            "e561055f75dc716cfc9f2b02911c1ec00ef2f644"
+            "47016cad33f1d4ab56daad851e7ca7ce92f066fb"
          ],
          [
             "1",
@@ -501,7 +501,7 @@
             null,
             null,
             "asset_audio",
-            "e933b7327066c328c0298e866f889d2c04b2b65f"
+            "c7197c4d0f481074c9871f2ad23f8ca693dd287c"
          ],
          [
             "1",
@@ -518,7 +518,7 @@
             null,
             null,
             "asset_video",
-            "f107cad5ebbbf88a87ba8a4d9abed1c40704bcc1"
+            "7f1e0e8ed182502e07036ad276653756404b3b2c"
          ],
          [
             "1",
@@ -535,7 +535,7 @@
             null,
             null,
             "asset_image",
-            "5c123e2f8d8ce055c2f17722fede01dda38eb941"
+            "1d9ef95b21ce2b1f18eb49755097dba979548891"
          ]
       ]
    },
@@ -651,12 +651,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"asset\",\"id\":\"1\",\"unique_id\":\"e561055f75dc716cfc9f2b02911c1ec00ef2f644\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":2,\"type\":\"asset_audio\",\"id\":\"2\",\"unique_id\":\"e933b7327066c328c0298e866f889d2c04b2b65f\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"type\":\"asset_video\",\"id\":\"3\",\"unique_id\":\"f107cad5ebbbf88a87ba8a4d9abed1c40704bcc1\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"type\":\"asset_image\",\"id\":\"4\",\"unique_id\":\"5c123e2f8d8ce055c2f17722fede01dda38eb941\"}]",
+            "[{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":1,\"type\":\"asset\",\"id\":\"1\",\"unique_id\":\"47016cad33f1d4ab56daad851e7ca7ce92f066fb\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":2,\"type\":\"asset_audio\",\"id\":\"2\",\"unique_id\":\"c7197c4d0f481074c9871f2ad23f8ca693dd287c\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":3,\"type\":\"asset_video\",\"id\":\"3\",\"unique_id\":\"7f1e0e8ed182502e07036ad276653756404b3b2c\"},{\"options\":{\"multiple\":1,\"label\":\"Sample Content Field\"},\"order\":4,\"type\":\"asset_image\",\"id\":\"4\",\"unique_id\":\"1d9ef95b21ce2b1f18eb49755097dba979548891\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "4ff5be3283457fdc5af2391eabe24b5663f6d2c0",
+            "80eeb84664feb3a74b451555b660e6074bb0aa9e",
             null,
             null
          ]
@@ -865,7 +865,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

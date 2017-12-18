@@ -128,7 +128,7 @@
       ],
       "rows" : [
          [
-            "7n5az04m",
+            "xrcytzdf",
             "MT",
             "authorce2f3",
             null,
@@ -147,7 +147,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$XZy5wfrmcas9JjLy$ZpMJE+CEPuklfUiHaygnfQQ3+XAgdwR7/P8y/jTojTwGnyH/fNqWE1+gZEMBPsNf+xDlAxl7xk8J0o9Xw5+B9A",
+            "$6$hr7HGtQ9zcY9GeeD$GHbb/Zqqldb4u6SRGZuzxpbZBPAKS8EQa4VmbmEfvzri7Hn2TTms6cp6xS/owply8+JZdQ30bw1YxQWpg5mNag",
             "en_US",
             null,
             null,
@@ -159,7 +159,7 @@
             null
          ],
          [
-            "99wox9i8",
+            "m4xgbdif",
             null,
             "dum_dummy",
             null,
@@ -1132,7 +1132,7 @@
             null,
             null,
             "2",
-            "2017-12-14 10:05:46",
+            "2017-12-15 17:01:21",
             "content_1",
             "3",
             null,
@@ -1196,7 +1196,7 @@
             null,
             null,
             "2",
-            "2017-12-14 10:05:46",
+            "2017-12-15 17:01:22",
             "content_1",
             "3",
             null,
@@ -1467,7 +1467,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

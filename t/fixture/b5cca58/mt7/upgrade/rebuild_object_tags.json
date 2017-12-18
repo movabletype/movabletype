@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "0elg0jfy",
+            "thpvcpkp",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$DJxI6kncC6LpIlLt$YqrFhN/FSwgeuLgCvyTZvJjyam6uf2rLw5MdXm6DcsL69n15MBLT80RYSXNUMQc9ci41TYBKbzJ9Ry9TVrq7yg",
+            "$6$EtiiVIaeBATKVo9x$XpIMqrSy8PLaAzyclX5/ZoDrvf+CM+fF+gY6PV6MZnjVKC2EYYDbtT4Tw0XvEMGbqlE8vWYBu24bpUdXpGJv/w",
             "en_US",
             null,
             null,
@@ -347,7 +347,7 @@
             "1",
             null,
             "__NOW__",
-            "2e034d921fd653dc66148f04a4b0ab4bdf5b5c71",
+            "083755758bd29b02f83348723254b164c53ac315",
             "0",
             "{\"1\":[\"1\",\"2\",\"3\"]}",
             "1",
@@ -355,7 +355,7 @@
             null,
             "__NOW__",
             "2",
-            "dda04ebc7810cae501a80a71c56192a441b65a30",
+            "7193b8b3813c354811c52dcc5fe96108c72b75bb",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -395,7 +395,7 @@
             null,
             null,
             "tags",
-            "09baaaa73951656876487153b3bfc27aa6f8714b"
+            "374e1ea03f0fdbaca66c45c96455beff3af656ef"
          ]
       ]
    },
@@ -496,12 +496,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"multiple\":1,\"label\":\"my tags\"},\"order\":1,\"type\":\"tags\",\"id\":\"1\",\"unique_id\":\"09baaaa73951656876487153b3bfc27aa6f8714b\"}]",
+            "[{\"options\":{\"multiple\":1,\"label\":\"my tags\"},\"order\":1,\"type\":\"tags\",\"id\":\"1\",\"unique_id\":\"374e1ea03f0fdbaca66c45c96455beff3af656ef\"}]",
             "1",
             null,
             "__NOW__",
             "Sample Content Type",
-            "2e034d921fd653dc66148f04a4b0ab4bdf5b5c71",
+            "083755758bd29b02f83348723254b164c53ac315",
             null,
             null
          ]
@@ -652,7 +652,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

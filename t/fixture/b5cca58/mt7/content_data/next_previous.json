@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "ipe50fkz",
+            "eherg68p",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$kYXouN5sYr63Oqw1$SVa5vZOpMYcmsQeKxajgLkcOSZg1Iqu06pEB5v+N6PgSQhWeiRG2EfEudA9360l+/gwZj5hYF+f3kM6N06nULw",
+            "$6$viCmCmCOURNFWtI0$f1uWn8S1ZxpTw3CZgrkyuwLGTbSALl8Db9wuJEMDRiKhDt9s3BRGMqmCU4QKMvy8B3Ywteg7HBJ0tA8XWAVJYA",
             "en_US",
             null,
             null,
@@ -430,15 +430,15 @@
             "1",
             null,
             "__NOW__",
-            "af751162c539b0983efad7a8c95c5e706e38e88c",
+            "e5236848cef33fa6c2e5c5f8176fcb1caedd5f40",
             "0",
             "{\"1\":\"1\"}",
             "1",
-            "caffc1ebb0c15da71c0858eafb2f940e2a7f2796",
+            "5cef9c4470e7bd133997f6de7ed7e480affc5aad",
             null,
             "__NOW__",
             "2",
-            "caffc1ebb0c15da71c0858eafb2f940e2a7f2796",
+            "5cef9c4470e7bd133997f6de7ed7e480affc5aad",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -478,7 +478,7 @@
             null,
             null,
             "categories",
-            "d1ce27dd1b7e175d05a16489e3c0dac12f549038"
+            "68548942802a314fa0922d917f453a66365af7da"
          ]
       ]
    },
@@ -549,12 +549,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"category_set\":\"1\",\"label\":1},\"order\":1,\"type\":\"categories\",\"id\":\"1\",\"unique_id\":\"d1ce27dd1b7e175d05a16489e3c0dac12f549038\"}]",
+            "[{\"options\":{\"category_set\":\"1\",\"label\":1},\"order\":1,\"type\":\"categories\",\"id\":\"1\",\"unique_id\":\"68548942802a314fa0922d917f453a66365af7da\"}]",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "af751162c539b0983efad7a8c95c5e706e38e88c",
+            "e5236848cef33fa6c2e5c5f8176fcb1caedd5f40",
             null,
             null
          ]
@@ -691,7 +691,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

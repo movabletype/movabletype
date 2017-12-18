@@ -116,7 +116,7 @@
       ],
       "rows" : [
          [
-            "wr3a98nd",
+            "cchf4wus",
             "MT",
             "melody",
             null,
@@ -135,7 +135,7 @@
             "__NOW__",
             "Melody",
             "Administrator Melody",
-            "$6$N1sZRY886GM1TL16$KYbsj2Qsp8hsBx9HFUb6qc3n2UUKtZJafT8a0cbt4nZ+8uLL6zPA7WBaFtYtOmrQ/2G/Oybf9UkSJfgJ19aHUQ",
+            "$6$7TQRFAR7KD6KIw9B$zUOIBUowXjtLDTjKWeGHTjxXcXChQw/6ir2irO+F5bB/PiBTM8vdvKFVWiNXMlEKEmE/Q0TZNiKW316jcVIy+w",
             "en_US",
             null,
             null,
@@ -147,7 +147,7 @@
             "1"
          ],
          [
-            "ooa8yx4f",
+            "2msmoxmf",
             null,
             "guest",
             null,
@@ -996,7 +996,7 @@
             null,
             "tag:localhost,2017:/first_website//2.8",
             "1",
-            "2017-12-14 10:27:04",
+            "2017-12-15 14:47:19",
             "blog_entry_1",
             "2",
             null,
@@ -2249,7 +2249,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null
@@ -2494,10 +2494,10 @@
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "xSJnVLOS4v4FjAVfFur4fs1So3lSXAsWUbN2faXp",
+            "amfCM8MhpKv6EPLOaAEqUunMNWnjSq7nt3ZbEWpK",
             "US",
             "1",
-            "1513247222"
+            "1513349235"
          ]
       ]
    },

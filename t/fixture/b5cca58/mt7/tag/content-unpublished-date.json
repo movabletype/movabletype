@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "s9u03khr",
+            "f3ju3jyj",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$3qtbhhtkMLqNxNMW$T/n1JHjkSlmMjNIt09k3lLO9m8oPgF1kGLRBkBt8JOMR1SmioP1xvF+qhJaWT7bFa4HaobeGUeMIpSqTiFPguQ",
+            "$6$vBP5lfGq7lU5oM6Z$wlwLNLBYPisoxEfmhEMREFlFd/eS5oHwl1bQ/UpPJg1L+qTS76T6YY+qvFb/rew1/R2Qjdp3kg6bsIDw85/02g",
             "en_US",
             null,
             null,
@@ -347,15 +347,15 @@
             "1",
             null,
             "__NOW__",
-            "2cafa334718c9ac2a3a4c6bf7ce0dd812ca4bd1c",
+            "ed85028b18bc452f1ace278048a3771f6be214b0",
             "0",
             null,
             "1",
-            "ddf84c97695086eb862dc899c647b8872ed73057",
+            "f29cbf1a8709120250e0315c4949511b3fd8ed4e",
             null,
             "__NOW__",
             "2",
-            "ddf84c97695086eb862dc899c647b8872ed73057",
+            "f29cbf1a8709120250e0315c4949511b3fd8ed4e",
             "2017-05-30 19:01:00",
             "201722"
          ],
@@ -367,15 +367,15 @@
             "1",
             null,
             "__NOW__",
-            "2cafa334718c9ac2a3a4c6bf7ce0dd812ca4bd1c",
+            "ed85028b18bc452f1ace278048a3771f6be214b0",
             "0",
             null,
             "2",
-            "331d828eb8fe2698713bce887f4625d81a24fc3d",
+            "466550b31714abc8cea87f199f8e880945f5ef1e",
             null,
             "__NOW__",
             "2",
-            "331d828eb8fe2698713bce887f4625d81a24fc3d",
+            "466550b31714abc8cea87f199f8e880945f5ef1e",
             null,
             "201722"
          ]
@@ -419,7 +419,7 @@
             null,
             "__NOW__",
             "test content data",
-            "2cafa334718c9ac2a3a4c6bf7ce0dd812ca4bd1c",
+            "ed85028b18bc452f1ace278048a3771f6be214b0",
             null,
             null
          ]
@@ -504,7 +504,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

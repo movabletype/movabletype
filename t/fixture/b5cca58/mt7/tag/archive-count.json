@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "m2us6nb2",
+            "267rgovb",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$15rr5ugJLAQfEAIy$y8zNk/msm0g0lKtq4l6irzNo27PyVw1Gfi1D+LeE5rdmzybteT/+15xG9k1af1hv1RieJ9L+39ca+IpLCjppsQ",
+            "$6$7cumARgTYSCLszWq$flW0WYeTbZ8vsNeqkCJZsKuzBR2uINhJuO0I2Wek/HA7eKB/+4sVoWISoMqUkGdsiIASKMRfYj+CDdb3A9KBLw",
             "en_US",
             null,
             null,
@@ -111,7 +111,7 @@
             null,
             "yishikawa",
             "Yuki Ishikawa",
-            "$6$v5wjF5O9uMVIIsm9$LZoaU47tELh41wO3psi52io462+jYnOI5Xtali8J2D8/bXbjFCfJ52hQE5TWsMQFizzi6NrQupCo4V5FEA5fiA",
+            "$6$5YU3b7btdQ3SJ1xt$B8+HeAphpJwC4NXDyh9W1OWUWrLkYZwmiIneqvIfCROPncMSzSLWS2psKOTBvNnY9CzFFxoFl/Iswql7pRqkDg",
             "en_US",
             null,
             null,
@@ -142,7 +142,7 @@
             null,
             "myanagida",
             "Masahiro Yanagida",
-            "$6$gsK2c0AjoTnbVIP8$SFKi8kcw8tteA2DnO6pIYJxeV0Y/LLGBqjB1+G8gPvXPJwcJdYcF2jXlYCvwG+f7OOtqTb9h/pjVgYpA3Fil6w",
+            "$6$BtIYKQKOsPfqGtgP$guNbScaJsVUQkTQBWx3B4lzxJ83csQ0s8wxB+Lt3xoC8SpMC0tqmGetsiT+bf0Sc+6X8gVn5DzmJOmrtNy1JuQ",
             "en_US",
             null,
             null,
@@ -562,7 +562,7 @@
             "1",
             null,
             "__NOW__",
-            "a157dd131d06513a905a9b86ad3981f2c7d5af0e",
+            "8f2d60bcfa879202e00cc0455aaa8782ed26203c",
             "0",
             "{\"1\":[\"1\"]}",
             "1",
@@ -570,7 +570,7 @@
             null,
             "__NOW__",
             "2",
-            "1ef1d03d8acccb05b68b730863a25eac3c38aab8",
+            "b1d771f737fb686d602c93171b02ca660962b69a",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -582,7 +582,7 @@
             "1",
             null,
             "__NOW__",
-            "a157dd131d06513a905a9b86ad3981f2c7d5af0e",
+            "8f2d60bcfa879202e00cc0455aaa8782ed26203c",
             "0",
             "{\"1\":[\"1\"]}",
             "2",
@@ -590,7 +590,7 @@
             null,
             "__NOW__",
             "2",
-            "0978b845ccd845647b37094912af56f02fd7f932",
+            "10fb9e920cfeb0a87d220aa17c7bb7ea30279f31",
             "2017-05-31 16:36:00",
             "201839"
          ],
@@ -602,7 +602,7 @@
             "1",
             null,
             "__NOW__",
-            "a157dd131d06513a905a9b86ad3981f2c7d5af0e",
+            "8f2d60bcfa879202e00cc0455aaa8782ed26203c",
             "0",
             "{\"1\":[\"1\"]}",
             "3",
@@ -610,7 +610,7 @@
             null,
             "__NOW__",
             "2",
-            "2e7ecf27c76ec0d2b8838e6324f40cdd492d1f57",
+            "bbde2961d20c63249bd7b8ca44c5e44157b5dd8f",
             "2017-05-31 16:36:00",
             "201939"
          ],
@@ -622,7 +622,7 @@
             "2",
             null,
             "__NOW__",
-            "186607f7e87f6e7ff63ee13c2cba0fbe2c16277e",
+            "5fa6d9a5941568e2e4af2e98941ea8c955f86315",
             "0",
             "{\"2\":[\"1\"]}",
             "4",
@@ -630,7 +630,7 @@
             null,
             "__NOW__",
             "2",
-            "107709fc6c5aa6bed59c6e1f38f3ba30b584555d",
+            "5772ffca75cb896ec4cd86be4a59dc5a9baf3144",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -670,7 +670,7 @@
             null,
             null,
             "categories",
-            "bf53b329502a2c50e54048fb592d04b4bdd42907"
+            "b6fd5fbb4e0e52a52a5749e209ce554a609bfd3f"
          ],
          [
             "2",
@@ -687,7 +687,7 @@
             null,
             null,
             "categories",
-            "46fd3d90d57e5e65556ef4c812c75cb1eee001b4"
+            "2c2b152e42295e690cd5a5877736b68d2db5c92d"
          ]
       ]
    },
@@ -808,7 +808,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "a157dd131d06513a905a9b86ad3981f2c7d5af0e",
+            "8f2d60bcfa879202e00cc0455aaa8782ed26203c",
             null,
             null
          ],
@@ -822,7 +822,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "186607f7e87f6e7ff63ee13c2cba0fbe2c16277e",
+            "5fa6d9a5941568e2e4af2e98941ea8c955f86315",
             null,
             null
          ]
@@ -1031,7 +1031,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null

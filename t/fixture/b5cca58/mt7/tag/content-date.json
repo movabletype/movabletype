@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "fafcvih0",
+            "pzodk5g4",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$sPpSprFisHMZQ1x3$qk+5D/ClCzuEcfzeMZGXMxdZWqjZ1It5T3V72+cqZwx+TAAvn4CKMCHei/HGCJSD2qkV5iAGt/sibLRHb8xpdg",
+            "$6$zuQysvIUaSAoraEG$5Z1LsYdbW/9doCz85A7FHI+cMYqTGB1tFWiH9IJUNrDidK8I/aM8Cmd6eLCG+PGxSIQoyhM/53V212AU3cZ7gg",
             "en_US",
             null,
             null,
@@ -347,15 +347,15 @@
             "1",
             null,
             "__NOW__",
-            "25c4a1d5cc71daa733990fc5dba6781948dadae9",
+            "64efdb84277f7a8fa83f7a467f10d036d05a3d88",
             "0",
             null,
             "1",
-            "1d1ee2f1a0efe52fe5d8b25ff5d033ef2a824629",
+            "aa0c7734c758d9d7b84e5adcba85f86e4b279b6e",
             null,
             "__NOW__",
             "2",
-            "1d1ee2f1a0efe52fe5d8b25ff5d033ef2a824629",
+            "aa0c7734c758d9d7b84e5adcba85f86e4b279b6e",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -399,7 +399,7 @@
             null,
             "__NOW__",
             "test content data",
-            "25c4a1d5cc71daa733990fc5dba6781948dadae9",
+            "64efdb84277f7a8fa83f7a467f10d036d05a3d88",
             null,
             null
          ]
@@ -484,7 +484,7 @@
             null,
             "__NOW__",
             null,
-            "'create_site','send_notifications','manage_content_types','edit_notifications','manage_pages','edit_categories','manage_users','manage_feedback','edit_assets','edit_tags','administer_site','upload','manage_themes','create_post','publish_post','manage_category_set','rebuild','edit_templates','set_publish_paths','edit_all_posts','manage_content_data','comment','edit_config','view_blog_log'",
+            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
             null,
             "0",
             null
