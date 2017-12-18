@@ -71,7 +71,7 @@ sub _hdlr_contents {
     }
     else {
         my $tmpl = $ctx->stash('template');
-        $ct_terms{content_type_id} = $tmpl->content_type_id;
+        %ct_terms = ( id => $tmpl->content_type_id );
     }
     my @content_type = MT::ContentType->load( \%ct_terms )
         or return $ctx->error( MT->translate('Content Type was not found.') );
