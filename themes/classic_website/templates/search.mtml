@@ -5,13 +5,6 @@
             <input type="text" id="search" class="ti" name="search" value="<MTIfStatic><mt:IfStraightSearch><$mt:SearchString$></mt:IfStraightSearch></MTIfStatic>" />
 <mt:If name="search_results">
             <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>" />
-            <mt:Ignore>
-            <!-- use these options only with MT::App::Search::Legacy -->
-            <ul class="search-options">
-                <li><input type="checkbox" name="CaseSearch" /> <__trans phrase="Case sensitive"></li>
-                <li><input type="checkbox" name="RegexSearch" /> <__trans phrase="Regex search"></li>
-            </ul>
-            </mt:Ignore>
 <mt:Else>
             <input type="hidden" name="IncludeBlogs" value="<$mt:WebsiteID$><mt:WebsiteHasBlog><mt:Blogs include_blogs="children">,<mt:BlogID></mt:Blogs></mt:WebsiteHasBlog>" />
 </mt:If>

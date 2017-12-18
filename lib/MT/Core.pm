@@ -2257,10 +2257,6 @@ BEGIN {
                 script  => sub { MT->config->CommentScript },
                 tags    => sub { MT->app->load_core_tags },
             },
-            'search' => {
-                handler => 'MT::App::Search::Legacy',
-                tags    => sub { MT->app->load_core_tags },
-            },
             'new_search' => {
                 handler => 'MT::App::Search',
                 script  => sub { MT->config->SearchScript },
