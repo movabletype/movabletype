@@ -31,7 +31,6 @@
 <mt:if name="scope_type" ne="user">
 <script>
 function closeSiteMenu(e) {
-    jQuery('.mt-primaryNavigation__container:first-of-type').fadeIn();
     jQuery('.mt-primaryNavigation__container:last-of-type').fadeOut();
 
     jQuery('body').off('click', closeSiteMenu);
@@ -39,7 +38,6 @@ function closeSiteMenu(e) {
 
 function openSiteMenu(e) {
     jQuery('.mt-primaryNavigation__container:last-of-type').fadeIn();
-    jQuery('.mt-primaryNavigation__container:first-of-type').fadeOut();
 
     e.stopPropagation();
 
