@@ -179,6 +179,19 @@ sub edit_commenter {
             ? 1
             : 0
         : 0;
+
+    $app->add_breadcrumb(
+        $app->translate('Comments'),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'comment',
+                blog_id => $blog_id,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $app->translate('Commenter Details') );
+
     1;
 }
 

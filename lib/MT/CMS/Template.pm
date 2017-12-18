@@ -142,7 +142,6 @@ sub edit {
             $param->{ 'type_' . $obj->type } = 1;
             $param->{name} = $obj->name;
         }
-        $app->add_breadcrumb( $param->{name} );
         $param->{has_outfile} = $obj->type eq 'index';
         $param->{has_rebuild}
             = (    ( $obj->type eq 'index' )
@@ -734,7 +733,6 @@ sub edit {
         }
         $param->{template_group} = $tab;
         $app->translate($tab);
-        $app->add_breadcrumb( $app->translate('New Template') );
 
         # FIXME: enumeration of types
         $param->{has_name}
@@ -994,6 +992,36 @@ sub edit {
     $param->{can_create_new_content_type} = 1
         if $perms->can_do('create_new_content_type');
 
+    if ( $param->{type} && $param->{type} eq 'widget' ) {
+        $app->add_breadcrumb(
+            $app->translate('Widgets'),
+            $app->uri(
+                mode => 'list_widget',
+                args => { blog_id => $blog_id },
+            ),
+        );
+    }
+    else {
+        $app->add_breadcrumb(
+            $app->translate('Templates'),
+            $app->uri(
+                mode => 'list_template',
+                args => { blog_id => $blog_id },
+            ),
+        );
+    }
+    if ( $param->{id} ) {
+        $app->add_breadcrumb( $param->{name} );
+    }
+    else {
+        if ( $param->{type} && $param->{type} eq 'widget' ) {
+            $app->add_breadcrumb( $app->translate('Create Widget') );
+        }
+        else {
+            $app->add_breadcrumb( $app->translate('Create Template') );
+        }
+    }
+
     1;
 }
 
@@ -1250,6 +1278,8 @@ sub list {
 
     $params->{template_type_loop} = \@tmpl_loop;
     $params->{screen_id}          = "list-template";
+
+    $app->add_breadcrumb( $app->translate('Templates') );
 
     return $app->load_tmpl( 'list_template.tmpl', $params );
 }
@@ -1791,7 +1821,8 @@ sub _populate_archive_loop {
 
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
-        $map->{archive_label} = $archiver->archive_short_label || $archiver->archive_label;
+        $map->{archive_label}
+            = $archiver->archive_short_label || $archiver->archive_label;
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {
@@ -3384,6 +3415,20 @@ sub edit_widget {
         return $app->error( $app->callback_errstr() );
     }
 
+    $app->add_breadcrumb(
+        $app->translate('Widgets'),
+        $app->uri(
+            mode => 'list_widget',
+            args => { blog_id => $blog_id },
+        ),
+    );
+    if ($id) {
+        $app->add_breadcrumb( $param->{name} );
+    }
+    else {
+        $app->add_breadcrumb( $app->translate('Create Widget Set') );
+    }
+
     $app->load_tmpl( 'edit_widget.tmpl', $param );
 }
 
@@ -3467,6 +3512,9 @@ sub list_widget {
     $param->{ 'widget_' . $_ } = $widget_actions->{$_}
         for keys %$widget_actions;
     $param->{page_actions} = $app->page_actions('list_widget');
+
+    $app->add_breadcrumb( $app->translate('Widgets') );
+
     $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 

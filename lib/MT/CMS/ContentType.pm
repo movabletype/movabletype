@@ -209,6 +209,23 @@ sub edit {
         }
     }
 
+    $app->add_breadcrumb(
+        $app->translate('Content Types'),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'content_type',
+                blog_id => $app->blog->id,
+            },
+        ),
+    );
+    if ($id) {
+        $app->add_breadcrumb( $param->{name} );
+    }
+    else {
+        $app->add_breadcrumb( $app->translate('Create Content Type') );
+    }
+
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
 }
 
@@ -824,6 +841,7 @@ sub _make_content_data_listing_screens {
 
 sub list_boilerplates {
     my $app = shift;
+    $app->add_breadcrumb( $app->translate('Content Type Boilerplates') );
     my $param
         = { page_title => $app->translate('Manage Content Type Boilerplates'),
         };
