@@ -77,6 +77,18 @@ sub edit {
     ## author_id parameter of the author currently logged in.
     delete $param->{'author_id'};
 
+    $app->add_breadcrumb(
+        $app->model($type)->class_label_plural,
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => $type,
+                blog_id => $blog->id,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $obj->label );
+
     1;
 }
 
@@ -880,6 +892,26 @@ sub template_param_list {
     my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
+
+    if ( $param->{is_category_set} ) {
+        $app->{breadcrumbs} = [];
+        $app->add_breadcrumb(
+            $app->translate('Category Sets'),
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $app->blog->id,
+                },
+            ),
+        );
+        if ( $param->{id} ) {
+            $app->add_breadcrumb( $param->{set_name} );
+        }
+        else {
+            $app->add_breadcrumb( $app->translate('Create Category Set') );
+        }
+    }
 }
 
 sub pre_load_filtered_list {

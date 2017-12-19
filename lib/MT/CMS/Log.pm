@@ -544,6 +544,9 @@ sub template_param_list {
             abs($so), $partial_hour_offset );
         $param->{time_offset} = $tz;
     }
+
+    pop @{ $app->{breadcrumbs} };
+    $app->add_breadcrumb( $app->translate('Activity Log') );
 }
 
 sub cms_pre_load_filtered_list {

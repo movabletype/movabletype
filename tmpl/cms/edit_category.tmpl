@@ -129,7 +129,8 @@ function toggleFile() {
     <mtapp:setting
        id="label"
        label="<__trans phrase="Label">"
-       label_for="label">
+       label_for="label"
+       required="1">
       <input type="text" name="label" id="label" class="form-control text" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
@@ -139,7 +140,8 @@ function toggleFile() {
        label_for="basename"
        hint="<__trans phrase="This is the basename assigned to your category.">"
        help_page="categories"
-       help_section="category_basename">
+       help_section="category_basename"
+       required="1">
       <div class="form-group">
         <input type="text" name="basename" id="basename" class="form-control mt-edit-field text basename" maxlength="250" value="<mt:var name="basename" escape="html">" />
         <p class="text-warning alert-warning-inline" id="basename-warning" style="display: none;">

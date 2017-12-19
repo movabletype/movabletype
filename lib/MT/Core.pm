@@ -2258,10 +2258,6 @@ BEGIN {
                 script  => sub { MT->config->CommentScript },
                 tags    => sub { MT->app->load_core_tags },
             },
-            'search' => {
-                handler => 'MT::App::Search::Legacy',
-                tags    => sub { MT->app->load_core_tags },
-            },
             'new_search' => {
                 handler => 'MT::App::Search',
                 script  => sub { MT->config->SearchScript },
@@ -2290,6 +2286,8 @@ BEGIN {
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
+                menu_actions    => sub { MT->app->core_menu_actions(@_) },
+                user_actions    => sub { MT->app->core_user_actions(@_) },
                 search_apis     => sub {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
@@ -2736,7 +2734,8 @@ sub load_backup_instructions {
 
 sub load_core_permissions {
     require MT::ContentType;
-    my @content_type_permissions = keys %{ MT->app->model('content_type')->all_permissions };
+    my @content_type_permissions
+        = keys %{ MT->app->model('content_type')->all_permissions };
 
     return {
         'blog.administer_site' => {

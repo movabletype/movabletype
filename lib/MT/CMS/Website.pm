@@ -271,7 +271,17 @@ sub edit {
         $param->{error} = $app->errstr if $app->errstr;
     }
     else {
-        $app->add_breadcrumb( $app->translate('New Website') );
+        $app->add_breadcrumb(
+            $app->translate('Sites'),
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'website',
+                    blog_id => 0,
+                },
+            ),
+        );
+        $app->add_breadcrumb( $app->translate('Create Site') );
 
         my $tz;
         if ( defined( $param->{server_offset} ) ) {

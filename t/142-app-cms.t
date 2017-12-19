@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -76,7 +77,7 @@ subtest '5 websites and 5 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( $param->{selector_hide_blog_chooser},
             'selector_haide_blog_chooser is true.'
@@ -96,7 +97,7 @@ subtest '5 websites and 5 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( $param->{selector_hide_blog_chooser},
             'selector_haide_blog_chooser is true.'
@@ -150,7 +151,7 @@ subtest '6 websites and 6 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -169,7 +170,7 @@ subtest '6 websites and 6 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -205,7 +206,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            5, 'fav_website_loop has 5 data.' );
+            6, 'fav_website_loop has 6 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -224,7 +225,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -243,7 +244,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'

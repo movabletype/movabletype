@@ -440,7 +440,17 @@ sub start_upload {
 
     return $app->permission_denied unless $app->can_do('upload');
 
-    $app->add_breadcrumb( $app->translate('Upload File') );
+    $app->add_breadcrumb(
+        $app->translate('Assets'),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'asset',
+                blog_id => $app->blog->id,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $app->translate('Upload Asset') );
     my %param;
     %param = @_ if @_;
 

@@ -1868,6 +1868,72 @@ sub core_list_actions {
     };
 }
 
+sub core_menu_actions {
+    my $app = shift;
+    return {
+        rebuild => {
+            class     => 'mt-rebuild',
+            condition => sub {
+                $app->blog ? 1 : 0;
+            },
+            icon  => 'ic_build',
+            label => 'Rebuild',
+            mode  => 'rebuild_confirm',
+            order => 100,
+        },
+        view_site => {
+            condition => sub {
+                $app->blog ? 1 : 0;
+            },
+            icon  => 'ic_permalink',
+            label => 'View Site',
+            href  => sub {
+                $app->blog->site_url;
+            },
+            order  => 200,
+            target => '_blank',
+        },
+    };
+}
+
+sub core_user_actions {
+    my $app = shift;
+    return {
+        profile => {
+            condition => sub {
+                $app->user ? 1 : 0;
+            },
+            href => sub {
+                $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type => 'author',
+                        id    => $app->user->id,
+                    },
+                );
+            },
+            label => 'Profile',
+            order => 100,
+        },
+        documentation => {
+            href => sub {
+                $app->translate('https://movabletype.org/documentation/');
+            },
+            label  => 'Documentation',
+            order  => 200,
+            target => '_blank',
+        },
+        sign_out => {
+            condition => sub {
+                $app->user ? 1 : 0;
+            },
+            label => 'Sign out',
+            mode  => 'logout',
+            order => 300,
+        },
+    };
+}
+
 sub _entry_label {
     my $app = MT->instance;
     my $type = $app->param('type') || 'entry';
@@ -3030,7 +3096,11 @@ sub build_page {
     $app->build_blog_selector($param) if $build_blog_selector;
     my $build_menus
         = exists $param->{build_menus} ? $param->{build_menus} : 1;
-    $app->build_menus($param) if $build_menus;
+    if ($build_menus) {
+        $app->build_menus($param);
+        $app->build_menu_actions($param);
+        $app->build_user_actions($param);
+    }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
@@ -3261,10 +3331,43 @@ sub build_blog_selector {
         }
     }
 
+    $app->_build_site_selector($param);
+
     $param->{load_selector_data}  = 1;
     $param->{can_create_blog}     = $auth->can_do('create_blog') && $blog;
     $param->{can_create_website}  = $auth->can_do('create_site');
     $param->{can_access_overview} = 1;
+}
+
+sub _build_site_selector {
+    my $app = shift;
+    my ($param) = @_;
+
+FAV_BLOG: for my $fav_blog ( @{ $param->{fav_blog_loop} } ) {
+        for my $fav_website ( @{ $param->{fav_website_loop} } ) {
+            if ($fav_website->{fav_website_id} == $fav_blog->{fav_parent_id} )
+            {
+                push @{ $fav_website->{fav_website_children} ||= [] },
+                    $fav_blog;
+                next FAV_BLOG;
+            }
+        }
+        my $can_link
+            = $app->user->is_superuser
+            || $app->user->permissions(0)->can_do('edit_templates')
+            || MT::Permission->count(
+            {   author_id => $app->user->id,
+                blog_id   => $fav_blog->{fav_parent_id}
+            }
+            );
+        push @{ $param->{fav_website_loop} },
+            +{
+            fav_website_can_link => $can_link,
+            fav_website_id       => $fav_blog->{fav_parent_id},
+            fav_website_name     => $fav_blog->{fav_parent_name},
+            fav_website_children => [$fav_blog],
+            };
+    }
 }
 
 sub build_menus {
@@ -3644,6 +3747,60 @@ sub build_user_menus {
     }
     @menus = sort { $a->{order} <=> $b->{order} } @menus;
     $param->{user_menus} = \@menus;
+}
+
+sub build_menu_actions {
+    my $app = shift;
+    my ($param) = @_;
+
+    my @sorted_actions
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
+        values %{ $app->registry('menu_actions') || {} };
+
+    my @valid_actions;
+    for my $action (@sorted_actions) {
+        my $cond = $action->{condition};
+        if ( defined $cond ) {
+            next unless $cond;
+            next if ref $cond eq 'CODE' && !$cond->( $app, $param );
+        }
+
+        my $href = $action->{href};
+        if ( $href && ref $href eq 'CODE' ) {
+            $href = $href->( $app, $param );
+        }
+
+        push @valid_actions, $action;
+    }
+
+    $param->{menu_actions} = \@valid_actions;
+}
+
+sub build_user_actions {
+    my $app = shift;
+    my ($param) = @_;
+
+    my @sorted_actions
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
+        values %{ $app->registry('user_actions') || {} };
+
+    my @valid_actions;
+    for my $action (@sorted_actions) {
+        my $cond = $action->{condition};
+        if ( defined $cond ) {
+            next unless $cond;
+            next if ref $cond eq 'CODE' && !$cond->( $app, $param );
+        }
+
+        my $href = $action->{href};
+        if ( $href && ref $href eq 'CODE' ) {
+            $href = $href->( $app, $param );
+        }
+
+        push @valid_actions, $action;
+    }
+
+    $param->{user_actions} = \@valid_actions;
 }
 
 sub return_to_dashboard {

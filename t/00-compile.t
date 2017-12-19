@@ -66,7 +66,6 @@ use_ok('MT::App::Wizard');
 # Search apps
 use_ok('MT::App::Search');
 use_ok('MT::App::Search::FreeText');
-use_ok('MT::App::Search::Legacy');
 use_ok('MT::App::Search::TagSearch');
 
 # Auth framework

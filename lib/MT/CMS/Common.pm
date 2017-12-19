@@ -885,6 +885,11 @@ sub edit {
         }
     }
     local $app->{component} = $component if $component;
+
+    if ( $app->mode eq 'cfg_web_services' ) {
+        $app->add_breadcrumb( $app->translate('Web Services Settings') );
+    }
+
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -1022,6 +1027,13 @@ sub list {
     my $obj_type   = $screen_settings->{object_type} || $type;
     my $obj_class  = MT->model($obj_type);
     my $list_props = MT::ListProperty->list_properties( $type . $subtype );
+
+    my $breadcrumb
+        = $screen_settings->{object_label_plural}
+        ? $screen_settings->{object_label_plural}
+        : $obj_class->class_label_plural;
+    $breadcrumb = $breadcrumb->() if ref $breadcrumb eq 'CODE';
+    $app->add_breadcrumb( $app->translate($breadcrumb) );
 
     if ( $app->param('no_filter') ) {
 
