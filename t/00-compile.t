@@ -71,15 +71,7 @@ use_ok('MT::App::Search::TagSearch');
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');
 use_ok('MT::Auth::BasicAuth');
-use_ok('MT::Auth::LiveJournal');
-use_ok('MT::Auth::OpenID');
 use_ok('MT::Auth::TypeKey');
-use_ok('MT::Auth::Vox');
-use_ok('MT::Auth::WordPress');
-use_ok('MT::Auth::Hatena');
-use_ok('MT::Auth::AIM');
-use_ok('MT::Auth::Yahoo');
-use_ok('MT::Auth::GoogleOpenId');
 
 # MT::Objects
 use_ok('MT::Object');

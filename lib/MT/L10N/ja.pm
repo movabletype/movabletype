@@ -1127,14 +1127,6 @@ use vars qw( @ISA %Lexicon );
 	'Password contains invalid character.' => 'パスワードに利用できない文字が含まれています。',
 	'Missing required module' => '必要なモジュールが見つかりません',
 
-## lib/MT/Auth/OpenID.pm
-	'Could not save the session' => 'セッションを保存できませんでした。',
-	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
-	'The address entered does not appear to be an OpenID endpoint.' => '入力されたアドレスはOpenIDではありません。',
-	'The text entered does not appear to be a valid web address.' => '正しいURLを入力してください。',
-	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'OpenIDを検証できませんでした: [_1]',
-
 ## lib/MT/Auth/TypeKey.pm
 	'Sign in requires a secure signature.' => 'サインインにはセキュリティトークンが必要です。',
 	'The sign-in validation failed.' => 'サインインの検証に失敗しました。',

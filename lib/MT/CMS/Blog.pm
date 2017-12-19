@@ -63,8 +63,7 @@ sub edit {
             my %auth = %{ $cmtauth_reg->{$auth} };
             $cmtauth{$auth} = \%auth;
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
-                delete $cmtauth{$auth}, next
-                    if $cmtauth_reg->{$auth}->{disable};
+                next if $cmtauth_reg->{$auth}->{disable};
 
                 $c = $app->handler_to_coderef($c);
                 if ($c) {
@@ -89,6 +88,10 @@ sub edit {
         }
         my @cmtauth_loop;
         foreach ( keys %cmtauth ) {
+            if ( $cmtauth{$_}{disable} ) {
+                next unless $cmtauth{$_}{enabled};
+                $cmtauth{$_}{disabled} = 1;
+            }
             $cmtauth{$_}->{key} = $_;
             $cmtauth{$_}->{order} ||= 0;
             if ( UNIVERSAL::isa( $cmtauth{$_}->{plugin}, 'MT::Plugin' ) ) {
