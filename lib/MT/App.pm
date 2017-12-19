@@ -2410,10 +2410,10 @@ sub create_user_pending {
     }
 
     my $nickname = $q->param('nickname');
-    if ( !$nickname && !( $q->param('external_auth') ) ) {
+    if ( !length($nickname) && !( $q->param('external_auth') ) ) {
         return $app->error( $app->translate("User requires display name.") );
     }
-    if ( $nickname && $nickname =~ m/([<>])/ ) {
+    if ( length($nickname) && $nickname =~ m/([<>])/ ) {
         return $app->error(
             $app->translate(
                 "[_1] contains an invalid character: [_2]",
