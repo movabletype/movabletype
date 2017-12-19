@@ -35,7 +35,6 @@ my $components = {
                 MT/Template/Tags/Entry.pm
                 MT/Template/Tags/Filters.pm
                 MT/Template/Tags/Folder.pm
-                MT/Template/Tags/IntegrateSite.pm
                 MT/Template/Tags/Misc.pm
                 MT/Template/Tags/Page.pm
                 MT/Template/Tags/Pager.pm
