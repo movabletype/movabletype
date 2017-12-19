@@ -103,7 +103,9 @@ sub edit {
         $param->{cmtauth_loop} = \@cmtauth_loop;
 
         if ( $output eq 'cfg_prefs.tmpl' ) {
-            $app->add_breadcrumb( $app->translate('General Settings') );
+            if ( $obj->is_blog ) {
+                $app->add_breadcrumb( $app->translate('General Settings') );
+            }
 
             $lang = $obj->language || 'en';
             $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -242,6 +244,8 @@ sub edit {
             $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
                 = 1;
             $param->{thumb_width} = $blog->image_default_width || 0;
+
+            $app->add_breadcrumb( $app->translate('Compose Settings') );
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -318,6 +322,8 @@ sub edit {
             $param->{junk_score_threshold} = $threshold;
             $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
             $param->{auto_delete_junk}     = $obj->junk_folder_expiry;
+
+            $app->add_breadcrumb( $app->translate('Feedback Settings') );
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
@@ -330,8 +336,8 @@ sub edit {
             );
             $param->{can_config} = 1;
         }
-        else {
-            $app->add_breadcrumb( $app->translate('Settings') );
+        elsif ( $output eq 'cfg_registration.tmpl' ) {
+            $app->add_breadcrumb( $app->translate('Registration Settings') );
         }
         ( my $offset = $obj->server_offset ) =~ s![-\.]!_!g;
         $offset =~ s!_0+$!!;    # fix syntax highlight ->!
@@ -366,7 +372,17 @@ sub edit {
         return $app->return_to_dashboard( redirect => 1 )
             if !$blog || ( $blog && $blog->is_blog() );
 
-        $app->add_breadcrumb( $app->translate('New Blog') );
+        $app->add_breadcrumb(
+            $app->translate('Child Sites'),
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'blog',
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+        $app->add_breadcrumb( $app->translate('Create Child Site') );
         my $tz;
         if ( defined( $param->{server_offset} ) ) {
             ( $tz = $param->{server_offset} ) =~ s![-\.]!_!g;

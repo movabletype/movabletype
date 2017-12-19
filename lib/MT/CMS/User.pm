@@ -106,7 +106,9 @@ sub edit {
     my @keys = keys %$perms;
     foreach my $key (@keys) {
         next if $key !~ m/^system./;
-        next if( exists($perms->{$key}->{display}) && !$perms->{$key}->{display});
+        next
+            if ( exists( $perms->{$key}->{display} )
+            && !$perms->{$key}->{display} );
         my $perm;
         ( $perm->{id} = $key ) =~ s/^system\.//;
         $perm->{id} = 'can_' . $perm->{id};
@@ -272,7 +274,9 @@ sub edit_role {
     my @keys = keys %$perms;
     foreach my $key (@keys) {
         next if $key !~ m/^blog./;
-        next if( exists($perms->{$key}->{display}) && !$perms->{$key}->{display});
+        next
+            if ( exists( $perms->{$key}->{display} )
+            && !$perms->{$key}->{display} );
         my $perm;
         ( $perm->{id} = $key ) =~ s/^blog\.//;
 
@@ -613,7 +617,7 @@ sub cfg_system_users {
     return $app->permission_denied()
         unless $app->user->is_superuser();
     my $cfg = $app->config;
-    $app->add_breadcrumb( $app->translate('General Settings') );
+    $app->add_breadcrumb( $app->translate('User Settings') );
     $param{nav_config} = 1;
 
     $param{nav_settings} = 1;

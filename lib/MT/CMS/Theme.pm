@@ -324,6 +324,9 @@ sub export {
     $param{save_success}         = $app->param('success');
     $param{search_label}         = $app->translate('Templates');
     $param{object_type}          = 'template';
+
+    $app->add_breadcrumb( $app->translate('Export Themes') );
+
     $app->load_tmpl( 'export_theme.tmpl', \%param );
 }
 

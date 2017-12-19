@@ -50,6 +50,8 @@ sub system_check {
     $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
     $param{syscheck_html} = get_syscheck_content($app) || '';
 
+    $app->add_breadcrumb( $app->translate('System Information') );
+
     $app->load_tmpl( 'system_check.tmpl', \%param );
 }
 
@@ -345,7 +347,7 @@ sub do_list_action {
     my $subtype     = $app->param('type') ? '.' . $app->param('type') : '';
     my ($the_action)
         = ( grep { $_->{key} eq $action_name }
-            @{ $app->list_actions($type . $subtype) } );
+            @{ $app->list_actions( $type . $subtype ) } );
     return $app->errtrans(
         "That action ([_1]) is apparently not implemented!", $action_name )
         unless $the_action;
@@ -1054,13 +1056,15 @@ sub start_backup {
 
     my %param = ();
     if ( defined($blog_id) ) {
-        $param{blog_id} = $blog_id;
-        $app->add_breadcrumb( $app->translate('Export') );
+        $param{blog_id}     = $blog_id;
         $param{backup_what} = join ',',
             _allowed_blog_ids_for_backup( $app, $blog_id );
     }
+    if ($blog_id) {
+        $app->add_breadcrumb( $app->translate('Export Site') );
+    }
     else {
-        $app->add_breadcrumb( $app->translate('Import & Export') );
+        $app->add_breadcrumb( $app->translate('Export Sites') );
     }
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup} = 1;
@@ -1099,12 +1103,10 @@ sub start_restore {
     my %param = ();
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
-        $app->add_breadcrumb( $app->translate('Export') );
-        my $blog = $app->model('blog')->load($blog_id);
     }
-    else {
-        $app->add_breadcrumb( $app->translate('Import & Export') );
-    }
+
+    $app->add_breadcrumb( $app->translate('Import Sites') );
+
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup} = 1;
 

@@ -16,6 +16,8 @@ use MT::Util qw( weaken );
 use MT::Template::Node;
 sub NODE () {'MT::Template::Node'}
 
+our $DEBUG;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
             'id'              => 'integer not null auto_increment',
@@ -362,6 +364,8 @@ sub build {
     my $tokens = $tmpl->tokens
         or return;
 
+    my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
+
     if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
         my $error = "";
         foreach my $err ( @{ $tmpl->{errors} } ) {
@@ -369,8 +373,7 @@ sub build {
         }
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file} || "?",
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $error
             )
         );
@@ -428,6 +431,14 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
+    if ($DEBUG) {
+        $res =~ s/\A\s+//s;
+        $res =~ s/\s+\z//s;
+        $res = join "",
+            "<!-- begin_tmpl $tmpl_name -->",
+            $res,
+            "<!-- end_tmpl $tmpl_name -->";
+    }
 
     if ($timer) {
         $timer->mark( "MT::Template::build["
@@ -438,8 +449,7 @@ sub build {
     unless ( defined($res) ) {
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file} || "?",
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $build->errstr
             )
         );
