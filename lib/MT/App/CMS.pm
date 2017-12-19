@@ -3329,33 +3329,30 @@ sub _build_site_selector {
     my $app = shift;
     my ($param) = @_;
 
-    for my $fav_blog ( @{ $param->{fav_blog_loop} } ) {
-        my $found_parent;
+FAV_BLOG: for my $fav_blog ( @{ $param->{fav_blog_loop} } ) {
         for my $fav_website ( @{ $param->{fav_website_loop} } ) {
-            if ( $fav_website->{fav_website_id} == $fav_blog->{fav_parent_id} ) {
-                $found_parent = 1;
+            if ($fav_website->{fav_website_id} == $fav_blog->{fav_parent_id} )
+            {
                 push @{ $fav_website->{fav_website_children} ||= [] },
                     $fav_blog;
-                last;
+                next FAV_BLOG;
             }
         }
-        unless ($found_parent) {
-            my $can_link
-                = $app->user->is_superuser
-                || $app->user->permissions(0)->can_do('edit_templates')
-                || MT::Permission->count(
-                {   author_id => $app->user->id,
-                    blog_id   => $fav_blog->{fav_parent_id}
-                }
-                );
-            push @{ $param->{fav_website_loop} },
-                +{
-                fav_website_can_link => $can_link,
-                fav_website_id       => $fav_blog->{fav_parent_id},
-                fav_website_name     => $fav_blog->{fav_parent_name},
-                fav_website_children => [$fav_blog],
-                };
-        }
+        my $can_link
+            = $app->user->is_superuser
+            || $app->user->permissions(0)->can_do('edit_templates')
+            || MT::Permission->count(
+            {   author_id => $app->user->id,
+                blog_id   => $fav_blog->{fav_parent_id}
+            }
+            );
+        push @{ $param->{fav_website_loop} },
+            +{
+            fav_website_can_link => $can_link,
+            fav_website_id       => $fav_blog->{fav_parent_id},
+            fav_website_name     => $fav_blog->{fav_parent_name},
+            fav_website_children => [$fav_blog],
+            };
     }
 }
 
