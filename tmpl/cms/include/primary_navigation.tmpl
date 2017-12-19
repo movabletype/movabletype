@@ -147,71 +147,49 @@ function stopPropagation(e) {
 </mt:if>
   </div>
 
+
   <div class="mt-primaryNavigation__control">
     <ul class="mt-primaryNavigation__sites">
-<mt:if name="fav_website_loop">
+<mt:loop name="fav_website_loop">
       <li>
+  <mt:if name="fav_website_can_link">
+        <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
+          <mt:var name="fav_website_name" escape="html">
+        </a>
+  <mt:else>
         <span class="text-light">
-          <__trans phrase="Sites">
+          <mt:var name="fav_website_name" escape="html">
         </span>
-      </li>
-      <li>
+  </mt:if>
+  <mt:loop name="fav_website_children">
+    <mt:if name="__first__">
         <ul class="list-unstyled">
-  <mt:loop name="fav_website_loop">
-          <li>
-    <mt:if name="fav_website_can_link">
-            <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
-              <mt:var name="fav_website_name" escape="html">
-            </a>
-    <mt:else>
-            <span class="text-light">
-              <mt:var name="fav_website_name" escape="html">
-            </span>
     </mt:if>
-          </li>
-    <mt:if name="__last__">
-      <mt:unless name="selector_hide_website_chooser">
-          <li id="select-website" class="select-another">
-            <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
-              <__trans phrase="Select another site...">
-            </a>
-          </li>
-      </mt:unless>
-    </mt:if>
-  </mt:loop>
-        </ul>
-      </li>
-</mt:if>
-<mt:if name="fav_blog_loop">
-      <li>
-        <span class="text-light">
-          <__trans phrase="Child Sites">
-        </span>
-      </li>
-      <li>
-        <ul class="list-unstyled">
-  <mt:loop name="fav_blog_loop">
           <li>
             <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
               <mt:var name="fav_blog_name" escape="html">
-              <span class="parent">
-                <__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">">
-              </span>
             </a>
           </li>
     <mt:if name="__last__">
-      <mt:unless name="selector_hide_blog_chooser">
-          <li id="select-blog" class="select-another">
-            <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
-              <__trans phrase="Select another child site...">
-            </a>
-          </li>
-      </mt:unless>
+        </ul>
     </mt:if>
   </mt:loop>
-        </ul>
       </li>
-</mt:if>
+</mt:loop>
+<mt:unless name="selector_hide_website_chooser">
+      <li id="select-website" class="select-another">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
+          (<__trans phrase="Select another site...">)
+        </a>
+      </li>
+</mt:unless>
+<mt:unless name="selector_hide_blog_chooser">
+      <li id="select-blog" class="select-another">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
+          (<__trans phrase="Select another child site...">)
+        </a>
+      </li>
+</mt:unless>
     </ul>
   </div>
 
