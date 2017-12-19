@@ -1039,14 +1039,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Ontbrekende vereiste module',
 
-## lib/MT/Auth/OpenID.pm
-	'Could not save the session' => 'Kon de sessie niet opslaan',
-	'Could not load Net::OpenID::Consumer.' => 'Kon Net::OpenID::Consumer niet laden.',
-	'The address entered does not appear to be an OpenID endpoint.' => 'Het adres dat werd ingevuld lijkt geen OpenID endpoint te zijn.',
-	'The text entered does not appear to be a valid web address.' => 'De ingevulde tekst lijkt geen geldig webadres te zijn.',
-	'Unable to connect to [_1]: [_2]' => 'Kon niet verbinden met [_1]: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'Kon de opgegeven OpenID niet verifiëren: [_1]',
-
 ## lib/MT/Author.pm
 	'Users' => 'Gebruikers',
 	'Active' => 'Actief',
