@@ -48,7 +48,7 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    _preprocess_tags(@_);
+    MT::Template::Context::_preprocess_sites(@_);
 
     my $type    = $args->{type};
     my $name    = $args->{name};
@@ -1678,92 +1678,6 @@ sub _check_and_invoke {
         or return $ctx->_no_content_error();
     local $ctx->{__stash}{entry} = $cd;
     $ctx->invoke_handler( $tag, $args, $cond );
-}
-
-sub _preprocess_tags {
-    my ( $ctx, $args, $cond ) = @_;
-    my $tag = lc $ctx->stash('tag');
-
-    # If we're running under MT-Search, set the context based on the search
-    # parameters available.
-    unless ( $args->{blog_id}
-        || $args->{blog_ids}
-        || $args->{site_ids}
-        || $args->{include_blogs}
-        || $args->{exclude_blogs}
-        || $args->{include_websites}
-        || $args->{exclude_websites} )
-    {
-        my $app = MT->instance;
-        if ( $app->isa('MT::App::Search') && !$ctx->stash('inside_blogs') ) {
-            if ( my $excl = $app->{searchparam}{ExcludeBlogs} ) {
-                $args->{exclude_blogs} ||= join ',', @$excl;
-            }
-            elsif ( my $incl = $app->{searchparam}{IncludeBlogs} ) {
-                $args->{include_blogs} = join ',', @$incl;
-            }
-
-            if ( ( $args->{include_blogs} || $args->{exclude_blogs} )
-                && $args->{blog_id} )
-            {
-                delete $args->{blog_id};
-            }
-        }
-    }
-
-    # Load integrate site access control list
-    my $incl
-        = $args->{include_blogs}
-        || $args->{include_websites}
-        || $args->{blog_id}
-        || $args->{blog_ids}
-        || grep( $_ eq $tag, 'blogs', 'websites' );
-    my $excl = $args->{exclude_blogs} || $args->{exclude_websites};
-    for ( $incl, $excl ) {
-        next unless $_;
-        s{\s+}{}g;    # Remove spaces
-    }
-    if ( $incl or $excl ) {
-        my %acl = MT::RebuildTrigger->load_integrate_site_acl($ctx);
-        $args->{ $acl{mode} } = $acl{acl};
-    }
-
-    # Explicity set blog_id for MTInclude if not specified
-    # so that it never gets a integrate site context from MTIntegrateSite
-    if ( $tag eq 'include' and !exists $args->{blog_id} ) {
-        if ( $ctx->stash('integrate_site_context') ) {
-            if ( !$args->{local} && !$args->{global} && !$args->{parent} ) {
-                $args->{blog_id} = $ctx->stash('blog_id');
-            }
-            elsif ( $args->{local} ) {
-                my $local_blog_id = $ctx->stash('local_blog_id');
-                if ( defined $local_blog_id ) {
-                    $args->{blog_id} = $ctx->stash('local_blog_id');
-                }
-            }
-        }
-        else {
-            my $local_blog_id = $ctx->stash('local_blog_id');
-            if ( defined $local_blog_id ) {
-                $args->{blog_id} = $ctx->stash('local_blog_id');
-            }
-        }
-    }
-
-    # If no include_blogs/exclude_blogs specified look for a
-    # previously set MTMultiBlog context
-    elsif ( $ctx->stash('integrate_site_context') ) {
-        $args->{include_blogs}
-            = $ctx->stash('integrate_site_include_blog_ids')
-            if $ctx->stash('integrate_site_include_blog_ids');
-        $args->{exclude_blogs}
-            = $ctx->stash('integrate_site_exclude_blog_ids')
-            if $ctx->stash('integrate_site_exclude_blog_ids');
-    }
-
-    # Remove local blog ID from MTTags since it is cross-blog
-    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.
-    local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
 }
 
 1;

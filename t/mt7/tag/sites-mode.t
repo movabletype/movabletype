@@ -46,15 +46,15 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
-        # Blog 1
-        my $blog_01 = MT::Test::Permission->make_blog(
+        # Site 1
+        my $site_01 = MT::Test::Permission->make_website(
             parent_id => 0,
-            name      => 'test blog 01'
+            name      => 'test site 01'
         );
 
         my $ct_01 = MT::Test::Permission->make_content_type(
             name    => 'test content data',
-            blog_id => $blog_01->id,
+            blog_id => $site_01->id,
         );
         my $cf_single_line_text_01
             = MT::Test::Permission->make_content_field(
@@ -77,7 +77,7 @@ $test_env->prepare_fixture(
 
         for ( 1 .. 5 ) {
             MT::Test::Permission->make_content_data(
-                blog_id         => $blog_01->id,
+                blog_id         => $site_01->id,
                 content_type_id => $ct_01->id,
                 data            => {
                     $cf_single_line_text_01->id => 'test single line text '
@@ -87,15 +87,15 @@ $test_env->prepare_fixture(
             $count_01++;
         }
 
-        # Blog 2
-        my $blog_02 = MT::Test::Permission->make_blog(
+        # Site 2
+        my $site_02 = MT::Test::Permission->make_website(
             parent_id => 0,
-            name      => 'test blog 02'
+            name      => 'test site 02'
         );
 
         my $ct_02 = MT::Test::Permission->make_content_type(
             name    => 'test content data',
-            blog_id => $blog_02->id,
+            blog_id => $site_02->id,
         );
         my $cf_single_line_text_02
             = MT::Test::Permission->make_content_field(
@@ -118,7 +118,7 @@ $test_env->prepare_fixture(
 
         for ( 1 .. 5 ) {
             MT::Test::Permission->make_content_data(
-                blog_id         => $blog_02->id,
+                blog_id         => $site_02->id,
                 content_type_id => $ct_02->id,
                 data            => {
                     $cf_single_line_text_02->id => 'test single line text '
@@ -130,21 +130,20 @@ $test_env->prepare_fixture(
     }
 );
 
-my $blog_01 = MT::Blog->load( { name => 'test blog 01' } );
-my $blog_02 = MT::Blog->load( { name => 'test blog 02' } );
+my $site_01 = MT->model('website')->load( { name => 'test site 01' } );
+my $site_02 = MT->model('website')->load( { name => 'test site 02' } );
 
-$vars->{include_blogs} = $blog_01->id . ',' . $blog_02->id;
+$vars->{include_blogs} = $site_01->id . ',' . $site_02->id;
 
-MT::Test::Tag->run_perl_tests( $blog_01->id );
-
-# MT::Test::Tag->run_php_tests($blog_01->id);
+MT::Test::Tag->run_perl_tests( $site_01->id );
+# MT::Test::Tag->run_php_tests($site_01->id);
 
 __END__
 
-=== MT::IntegrateSite mode="loop"
+=== mt::Sites mode="loop"
 --- template
-<mt:IntegrateSite include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
-<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:IntegrateSite>
+<mt:Sites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
 --- expected
 test single line text 5
 test single line text 4
@@ -157,10 +156,10 @@ test single line text 8
 test single line text 7
 test single line text 6
 
-=== MT::IntegrateSite mode="context"
+=== mt::Sites mode="context"
 --- template
-<mt:IntegrateSite include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
-<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:IntegrateSite>
+<mt:Sites include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
 --- expected
 test single line text 10
 test single line text 9

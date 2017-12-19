@@ -82,7 +82,7 @@ sub apply_default_settings {
     my ( $self, $data, $blog_id ) = @_;
 
     if ( $blog_id > 0 ) {
-        $data->{default_mt_integrate_site_action} = 1;
+        $data->{default_mt_sites_action} = 1;
     }
     else {
         $data->{default_access_allowed} = 1;
@@ -205,7 +205,7 @@ sub perform_mb_action {
 #    $args->{ $acl{mode} } = $acl{acl};
 #}
 
-sub load_integrate_site_acl {
+sub load_sites_acl {
     my $self = shift;
     my ($ctx) = @_;
 
