@@ -271,9 +271,30 @@ sub mount_applications {
     ## Mount mt-static directory
     my $staticurl = $mt->static_path();
     $staticurl =~ s!^https?://[^/]*!!;
-    my $staticpath = $mt->static_file_path();
-    $urlmap->map( $staticurl,
-        Plack::App::Directory->new( { root => $staticpath } )->to_app );
+    my @static_paths = $mt->static_file_path();
+    for my $plugin_path ( MT->config->PluginPath ) {
+        my $static_path
+            = File::Spec->catdir( $plugin_path, "..", "mt-static" );
+        next unless -d $static_path;
+        push @static_paths, Cwd::realpath($static_path);
+    }
+    my $static_app;
+    if ( @static_paths > 1 ) {
+        require Plack::App::Cascade;
+        $static_app = Plack::App::Cascade->new;
+        for my $static_path (@static_paths) {
+            my $dir_app
+                = Plack::App::Directory->new( { root => $static_path } )
+                ->to_app;
+            $static_app->add($dir_app);
+        }
+    }
+    else {
+        $static_app
+            = Plack::App::Directory->new( { root => $static_paths[0] } )
+            ->to_app;
+    }
+    $urlmap->map( $staticurl, $static_app );
 
     ## Mount support directory
     my $supporturl = MT->config->SupportURL;
@@ -283,7 +304,7 @@ sub mount_applications {
         Plack::App::Directory->new( { root => $supportpath } )->to_app );
 
     ## Mount favicon.ico
-    my $static = $staticpath;
+    my $static = $static_paths[0];
     $static .= '/' unless $static =~ m!/$!;
     my $favicon = $static . 'images/favicon.ico';
     $urlmap->map( '/favicon.ico' =>
