@@ -27,13 +27,14 @@
           <__trans phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)
         </span>
       </label>
-      <span id="ipbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
+      <div id="ipbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-        <input type="text" name="ipbl_weight" id="sl_ipbl_weight" class="form-control text num" value="<mt:var name="ipbl_weight" escape="html">" />
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_ipbl_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" /><!-- <__trans phrase="More"> --></a>
-        <!-- <span class="hint">Applies a negative rating to feedback matching this test.</span> -->
-      </span>
+        <div class="input-group" style="width: 10rem;">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight');">-</button></span>
+          <input id="sl_ipbl_weight" name="ipbl_weight" class="form-control mt-stepper" type="text" value="<mt:var name="ipbl_weight" escape="html">" min="0" max="10">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_ipbl_weight');">+</button></span>
+        </div>
+      </div>
     </li>
   </ul>
 </mtapp:setting>
@@ -74,12 +75,14 @@
           <__trans phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)
         </span>
       </label>
-      <span id="domainbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
+      <div id="domainbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-        <input type="text" name="domainbl_weight" id="sl_domainbl_weight" class="form-control text num" value="<mt:var name="domainbl_weight" escape="html">" />
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_domainbl_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /><!-- <__trans phrase="More"> --></a>
-      </span>
+        <div class="input-group" style="width: 10rem;">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight');">-</button></span>
+          <input id="sl_domainbl_weight" name="domainbl_weight" class="form-control mt-stepper" type="text" value="<mt:var name="domainbl_weight" escape="html">" min="0" max="10">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_domainbl_weight');">+</button></span>
+        </div>
+      </div>
     </li>
   </ul>
 </mtapp:setting>
@@ -120,12 +123,14 @@
           <__trans phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><__trans phrase="Adjust scoring"></a>)
         </span>
       </label>
-      <span id="tborigin_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
+      <div id="tborigin_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight')"><!-- <__trans phrase="Less"> --><img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" /></a>
-        <input type="text" name="tborigin_weight" id="sl_tborigin_weight" class="form-control text num" value="<mt:var name="tborigin_weight" escape="html">" />
-        <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_tborigin_weight')"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" /><!-- <__trans phrase="More"> --></a>
-      </span>
+        <div class="input-group" style="width: 10rem;">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight');">-</button></span>
+          <input id="sl_tborigin_weight" name="tborigin_weight" class="form-control mt-stepper" type="text" value="<mt:var name="tborigin_weight" escape="html">" min="0" max="10">
+          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_tborigin_weight');">+</button></span>
+        </div>
+      </div>
     </li>
   </ul>
 </mtapp:setting>

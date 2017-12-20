@@ -791,48 +791,33 @@
 
 <mt:setvarblock name="css_include" append="1">
 <style>
-.sort-enabled {
-    margin-bottom: 15px;
-    padding: 0;
-    border: 1px solid #c0c6c9;
-    background-color: #fff;
-    border-radius: 3px;
-}
-.sort-enabled:hover {
-    border: 1px solid #adadad;
-    border-top-color: #cfd0d0;
-    border-left-color: #cfd0d0;
-}
-.sort-enabled .field-header {
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    border-bottom: 1px solid #fff;
-    background-image: url(<mt:var name="static_uri">images/sort_handle.png);
-    background-repeat: no-repeat;
-    background-position: 5px center;
-    border-radius: 3px 3px 0 0;
-}
-.sort-enabled .field-header:hover {
-    cursor: move;
-}
-.sort-enabled .field-header label {
-    margin-left: 20px;
-}
-.sort-enabled .field-content {
-    padding: 0 10px 10px;
-}
-
 .placeholder {
     margin-bottom: 15px;
     border: 1px dashed #c0c6c9;
     background-color: #fbfbfb;
-    padding: 0.5rem;   /* .p-2 */
     margin-top: 1rem;  /* .mt-3 */
 }
 
 /* TinyMCE */
 div.mce-notification-error {
     display: none;
+}
+
+#tags_completion {
+    display: none;
+    min-width: 200px;
+    max-width: 100%;
+    position: absolute;
+    z-index: 50;
+    border: 1px solid #c0c6c9;
+    background-color: #f3f3f3;
+}
+#tags_completion div {
+    padding: 2px 5px;
+}
+#tags_completion .complete-highlight {
+    color: #1A1A1A;
+    background-color: #dcdddd;
 }
 </style>
 </mt:setvarblock>
@@ -874,7 +859,7 @@ div.mce-notification-error {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="html_head" prepend="1">
   <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js"></script>
@@ -1360,18 +1345,27 @@ div.mce-notification-error {
 <mt:var name="description" escape="html" setvar="desc_encoded">
 
 <mt:if name="field_html">
-  <mtapp:setting
-     id="$field_id"
-     class="card card-block mt-3 p-2 sort-enabled"
-     label="$label_encoded"
-     label_class="$label_class"
-     hint="$desc_encoded"
-     shown="$show_field"
-     show_hint="$show_hint"
-     field_header="1"
-     required="$required">
-    <$mt:var name="field_html"$>
-  </mtapp:setting>
+
+  <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+    <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+      <div class="col-auto field-header">
+        <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+      </div>
+      <div class="col">
+        <p>
+          <mt:var name="label_encoded">
+  <mt:if name="required">
+          <span class="badge badge-danger"><__trans phrase="Required"></span>
+  </mt:if>
+        </p>
+        <mt:var name="field_html">
+  <mt:if name="show_hint">
+        <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
+  </mt:if>
+      </div>
+    </div>
+  </div>
+
 <mt:else>
   <mt:if name="field_name" eq="title">
   <mtapp:setting
@@ -1452,47 +1446,50 @@ div.mce-notification-error {
         <mt:setvarblock name="tags_hint"><__trans phrase="(delimited by '[_1]')" params="<$mt:var name="auth_pref_tag_delim"$>"></mt:setvarblock>
       </mt:if>
     </mt:if>
-    <mtapp:setting
-       id="tags"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="<__trans phrase="Tags">"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="entry_tags">
-      <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-      <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-      <div id="tags-suggestion">
-        <div id="tags_completion"></div>
+
+    <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <p><__trans phrase="Tags"></p>
+          <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+          <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+          <div id="tags-suggestion">
+            <div id="tags_completion"></div>
+          </div>
+        </div>
       </div>
-    </mtapp:setting>
+    </div>
 
   <mt:else eq="excerpt">
-    <mtapp:setting
-       id="excerpt"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="$field_label"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="excerpt">
-      <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
-    </mtapp:setting>
+
+    <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <p><mt:var name="field_label"></p>
+          <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+        </div>
+      </div>
+    </div>
 
   <mt:else eq="keywords">
-    <mtapp:setting
-       id="keywords"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="$field_label"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="keywords">
-      <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-    </mtapp:setting>
+
+    <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable mt-3 p-2" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <p><mt:var name="field_label"></p>
+          <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+        </div>
+      </div>
+    </div>
 
   </mt:if>
 </mt:if>
@@ -1500,7 +1497,7 @@ div.mce-notification-error {
 <!-- / Sortable --></div>
 
 
-  <div id="quickpost">
+  <div id="quickpost" class="mt-3">
     <p><mt:var name="quickpost_js"></p>
   </div>
 
@@ -1580,8 +1577,13 @@ div.mce-notification-error {
         opacity: 0.8,
         cursor: 'move',
         forcePlaceholderSize: true,
-        handle: '.field-header',
         containment: 'body',
+        start: function (event, ui) {
+            ui.item.children('.mt-draggable').attr('aria-grabbed', true);
+        },
+        stop: function (event, ui) {
+            ui.item.children('.mt-draggable').attr('aria-grabbed', false);
+        },
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });

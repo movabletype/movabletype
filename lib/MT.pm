@@ -2684,55 +2684,24 @@ sub commenter_authenticators {
     return values %auths;
 }
 
-sub _commenter_auth_params {
-    my ( $key, $blog_id, $entry_id, $static ) = @_;
-    my $params = {
-        blog_id => $blog_id,
-        static  => $static,
-    };
-    $params->{entry_id} = $entry_id if defined $entry_id;
-    return $params;
-}
-
-sub _openid_commenter_condition {
-    my ( $blog, $reason ) = @_;
-    eval { require Digest::SHA1; };
-    return 1 unless $@;
-    $$reason
-        = MT->translate(
-        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.'
-        );
-    return 0;
-}
-
 sub core_commenter_authenticators {
     return {
         'OpenID' => {
-            class             => 'MT::Auth::OpenID',
             label             => 'OpenID',
-            login_form        => 'comment/auth_openid.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_openid.png',
             logo_small        => 'images/comment/openid_logo.png',
             order             => 10,
+            disable           => 1, # overriden by OpenID plugin
         },
         'LiveJournal' => {
-            class             => 'MT::Auth::LiveJournal',
             label             => 'LiveJournal',
-            login_form        => 'comment/auth_livejournal.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_livejournal.png',
             logo_small        => 'images/comment/livejournal_logo.png',
             order             => 11,
+            disable           => 1, # overriden by OpenID plugin
         },
         'Vox' => {
-            class             => 'MT::Auth::Vox',
             label             => 'Vox',
-            login_form        => 'comment/auth_vox.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_vox.png',
             logo_small        => 'images/comment/vox_logo.png',
             order             => 12,
@@ -2740,57 +2709,31 @@ sub core_commenter_authenticators {
         },
         'Google' => {
             label      => 'Google',
-            class      => 'MT::Auth::GoogleOpenId',
-            login_form => 'comment/auth_googleopenid.tmpl',
-            condition  => sub {
-                my ( $blog, $reason ) = @_;
-                my @missing;
-                eval { require Digest::SHA1; };
-                push @missing, 'Digest::SHA1' if $@;
-                eval { require Crypt::SSLeay; };
-                push @missing, 'Crypt::SSLeay' if $@;
-                return 1 unless @missing;
-                $$reason = MT->translate(
-                    'A Perl module required for Google ID commenter authentication is missing: [_1].',
-                    join( ',', @missing )
-                );
-                return 0;
-            },
-            login_form_params => \&_commenter_auth_params,
             logo              => 'images/comment/google.png',
             logo_small        => 'images/comment/google_logo.png',
             order             => 13,
             disable           => 1,
         },
         'Yahoo' => {
-            class             => 'MT::Auth::Yahoo',
             label             => 'Yahoo!',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/yahoo.png',
             logo_small        => 'images/comment/favicon_yahoo.png',
-            login_form        => 'comment/auth_yahoo.tmpl',
             order             => 14,
+            disable           => 1, # overriden by OpenID plugin
         },
         AIM => {
-            class             => 'MT::Auth::AIM',
             label             => 'AIM',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/aim.png',
             logo_small        => 'images/comment/aim_logo.png',
-            login_form        => 'comment/auth_aim.tmpl',
             order             => 15,
+            disable           => 1, # overriden by OpenID plugin
         },
         'WordPress' => {
-            class             => 'MT::Auth::WordPress',
             label             => 'WordPress.com',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/wordpress.png',
             logo_small        => 'images/comment/wordpress_logo.png',
-            login_form        => 'comment/auth_wordpress.tmpl',
             order             => 16,
+            disable           => 1, # overriden by OpenID plugin
         },
         'TypeKey' => {
             disable           => 1,
@@ -2826,34 +2769,25 @@ sub core_commenter_authenticators {
             order => 17,
         },
         'YahooJP' => {
-            class             => 'MT::Auth::Yahoo',
             label             => 'Yahoo! JAPAN',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/yahoo.png',
             logo_small        => 'images/comment/favicon_yahoo.png',
-            login_form        => 'comment/auth_yahoojapan.tmpl',
             order             => 18,
+            disable           => 1, # overriden by OpenID plugin
         },
         'livedoor' => {
-            class             => 'MT::Auth::OpenID',
             label             => 'livedoor',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_livedoor.png',
             logo_small        => 'images/comment/livedoor_logo.png',
-            login_form        => 'comment/auth_livedoor.tmpl',
             order             => 20,
+            disable           => 1, # overriden by OpenID plugin
         },
         'Hatena' => {
-            class             => 'MT::Auth::Hatena',
             label             => 'Hatena',
-            login_form        => 'comment/auth_hatena.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_hatena.png',
             logo_small        => 'images/comment/hatena_logo.png',
             order             => 21,
+            disable           => 1, # overriden by OpenID plugin
         },
     };
 }

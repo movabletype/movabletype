@@ -9425,10 +9425,6 @@ fieldset.form-group {
   padding: 0.5rem 1rem 1rem;
 }
 
-.mt-widget--panel .mt-widget__list li:last-child {
-  border-bottom: 1px solid #CACACA;
-}
-
 .mt-widget--site {
   margin-bottom: 1rem;
   padding: 1rem 1rem 2rem;

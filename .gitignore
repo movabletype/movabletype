@@ -48,6 +48,7 @@ t/update/
 /mt.pid
 
 /node_modules/
+yarn-error.log
 
 .perl-version
 
