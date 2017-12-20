@@ -107,9 +107,9 @@ sub _hdlr_websites {
 
         # No blog-level config set
         # Set mode to context as this will mimic no MTMultiBlog tag
-        else {
-            $args->{'mode'} = 'context';    # Override 'loop' mode
-        }
+        #else {
+        #    $args->{'mode'} = 'context';    # Override 'loop' mode
+        #}
     }
 
     # Filter mt:Sites args through access controls
@@ -209,7 +209,7 @@ sub _loop {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    #$terms{class} = 'website' unless $terms{class};
+    $terms{class} = 'website' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
 
