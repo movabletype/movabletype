@@ -76,12 +76,13 @@ $plugin = MT::Plugin::MultiBlog->new(
                     Pings      => 'MultiBlog::preprocess_native_tags',
                     Authors    => 'MultiBlog::preprocess_native_tags',
                     Tags       => 'MultiBlog::preprocess_native_tags',
-                    MultiBlog  => 'MultiBlog::Tags::MultiBlog',
-                    OtherBlog  => 'MultiBlog::Tags::MultiBlog',
-                    MultiBlogLocalBlog =>
-                        'MultiBlog::Tags::MultiBlogLocalBlog',
-                    'MultiBlogIfLocalBlog?' =>
-                        'MultiBlog::Tags::MultiBlogIfLocalBlog',
+
+                    #MultiBlog  => 'MultiBlog::Tags::MultiBlog',
+                    #OtherBlog  => 'MultiBlog::Tags::MultiBlog',
+                    #MultiBlogLocalBlog =>
+                    #    'MultiBlog::Tags::MultiBlogLocalBlog',
+                    #'MultiBlogIfLocalBlog?' =>
+                    #    'MultiBlog::Tags::MultiBlogIfLocalBlog',
                 },
                 function => {
                     'Include' => 'MultiBlog::preprocess_native_tags',
