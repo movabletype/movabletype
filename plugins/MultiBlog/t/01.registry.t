@@ -52,11 +52,11 @@ my %registries = (
             Pings              => qr/MultiBlog::preprocess_native_tags/,
             Authors            => qr/MultiBlog::preprocess_native_tags/,
             Tags               => qr/MultiBlog::preprocess_native_tags/,
-            MultiBlog          => qr/MultiBlog::Tags::MultiBlog/,
-            OtherBlog          => qr/MultiBlog::Tags::MultiBlog/,
-            MultiBlogLocalBlog => qr/MultiBlog::Tags::MultiBlogLocalBlog/,
-            'MultiBlogIfLocalBlog?' =>
-                qr/MultiBlog::Tags::MultiBlogIfLocalBlog/,
+            #MultiBlog          => qr/MultiBlog::Tags::MultiBlog/,
+            #OtherBlog          => qr/MultiBlog::Tags::MultiBlog/,
+            #MultiBlogLocalBlog => qr/MultiBlog::Tags::MultiBlogLocalBlog/,
+            #'MultiBlogIfLocalBlog?' =>
+            #    qr/MultiBlog::Tags::MultiBlogIfLocalBlog/,
         }
     },
 );
