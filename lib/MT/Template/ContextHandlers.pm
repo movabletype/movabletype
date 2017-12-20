@@ -71,7 +71,7 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
             'SitesLocalSite' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
-            'SitesIfLocalSite' =>
+            'SitesIfLocalSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
 
             ## Blog
