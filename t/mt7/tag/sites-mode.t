@@ -134,13 +134,16 @@ my $site_01 = MT->model('website')->load( { name => 'test site 01' } );
 my $site_02 = MT->model('website')->load( { name => 'test site 02' } );
 
 $vars->{include_blogs} = $site_01->id . ',' . $site_02->id;
+$vars->{site_01_id}    = $site_01->id;
+$vars->{site_02_id}    = $site_02->id;
 
 MT::Test::Tag->run_perl_tests( $site_01->id );
+
 # MT::Test::Tag->run_php_tests($site_01->id);
 
 __END__
 
-=== mt::Sites mode="loop"
+=== mt:Sites mode="loop"
 --- template
 <mt:Sites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
@@ -156,7 +159,7 @@ test single line text 8
 test single line text 7
 test single line text 6
 
-=== mt::Sites mode="context"
+=== mt:Sites mode="context"
 --- template
 <mt:Sites include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
@@ -172,3 +175,58 @@ test single line text 3
 test single line text 2
 test single line text 1
 
+=== mt:MultiBlog mode="loop"
+--- template
+<mt:MultiBlog include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt::MultiBlog mode="context"
+--- template
+<mt:MultiBlog include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
+--- expected
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+
+=== mt:SitesLocalSite
+--- template
+<mt:Sites blog_id="[% site_02_id %]"><mt:SitesLocalSite><mt:SiteID></mt:SitesLocalSite></mt:Sites>
+--- expected
+[% site_01_id %]
+
+=== mt:SitesIfLocalSite
+--- template
+<mt:Sites><mt:SitesIfLocalSite><mt:SiteID></mt:SitesIfLocalSite></mt:Sites>
+--- expected
+[% site_01_id %]
+
+=== mt:MultiBlogLocalBlog
+--- template
+<mt:MultiBlog blog_id="[% site_02_id %]"><mt:MultiBlogLocalBlog><mt:BlogID></mt:MultiBlogLocalBlog></mt:MultiBlog>
+--- expected
+[% site_01_id %]
+
+=== mt:MultiBlogIfLocalBlog
+--- template
+<mt:MultiBlog><mt:MultiBlogIfLocalBlog><mt:BlogID></mt:MultiBlogIfLocalBlog></mt:MultiBlog>
+--- expected
+[% site_01_id %]
