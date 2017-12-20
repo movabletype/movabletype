@@ -31,9 +31,9 @@ This container tag let you refer to the local blog, inside mt:Sites block.
 example:
 
     <mt:Sites blog_ids="1" mode="context">
-        <mt:SitesLocalBlog>
+        <mt:SitesLocalSite>
             <mt:BlogName />
-        </mt:SitesLocalBlog>
+        </mt:SitesLocalSite>
     </mt:Sites>
 
 =cut
@@ -82,7 +82,7 @@ This tag is an alias for the SitesIfLocalSite tag
 
 =cut
 
-sub SitesIfLocalSite {
+sub _hdlr_sites_if_local_site {
     my $ctx     = shift;
     my $local   = $ctx->stash('local_blog_id');
     my $blog_id = $ctx->stash('blog_id');
