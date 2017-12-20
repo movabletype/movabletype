@@ -38,6 +38,12 @@ example:
 
 =cut
 
+=head2 MultiBlogLocalBlog
+
+This tag is an alias for the SitesLocalSite tag
+
+=cut
+
 sub _hdlr_sites_local_site {
     my ( $ctx, $args, $cond ) = @_;
 
@@ -67,6 +73,12 @@ sub _hdlr_sites_local_site {
 
 A conditional tag that is true when the mt:Sites is presenting the current 
 local blog
+
+=cut
+
+=head2 MultiBlogIfLocalBlog
+
+This tag is an alias for the SitesIfLocalSite tag
 
 =cut
 

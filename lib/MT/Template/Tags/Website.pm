@@ -61,7 +61,29 @@ would iterate over only the sites with IDs 1, 12 and 19.
 
 =back
 
+=over 4
+
+=item * mode (default: "loop")
+
+"loop": Information on multiple blogs is displayed in blog units.
+
+"context": Information on whole of multiple blogs is sorted and displayed.
+
+=back
+
 =for tags multiblog, loop, sites
+
+=cut
+
+=head2 MultiBlog
+
+This tag is an alias for the Sites tag
+
+=cut
+
+=head2 OtherBlog
+
+This tag is an alias for the Sites tag
 
 =cut
 
