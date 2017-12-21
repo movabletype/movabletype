@@ -48,8 +48,6 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    MT::Template::Context::_preprocess_sites(@_);
-
     my $type    = $args->{type};
     my $name    = $args->{name};
     my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};

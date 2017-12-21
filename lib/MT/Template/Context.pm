@@ -356,6 +356,9 @@ sub set_blog_load_context {
     my $blog_id = $ctx->stash('blog_id');
     $col ||= 'blog_id';
 
+    # Preprocess from MultiBlog
+    MT::Template::Context::_preprocess_multiblog(@_);
+
     # Grab specified blog IDs
     my $blog_ids
         = $attr->{blog_ids}
@@ -878,7 +881,7 @@ sub count_format {
     return $phrase;
 }
 
-sub _preprocess_sites {
+sub _preprocess_multiblog {
     my ( $ctx, $args, $cond ) = @_;
     my $tag = lc $ctx->stash('tag');
 
@@ -952,11 +955,9 @@ sub _preprocess_sites {
     # If no include_blogs/exclude_blogs specified look for a
     # previously set MTSites context
     elsif ( $ctx->stash('sites_context') ) {
-        $args->{include_blogs}
-            = $ctx->stash('sites_include_blog_ids')
+        $args->{include_blogs} = $ctx->stash('sites_include_blog_ids')
             if $ctx->stash('sites_include_blog_ids');
-        $args->{exclude_blogs}
-            = $ctx->stash('sites_exclude_blog_ids')
+        $args->{exclude_blogs} = $ctx->stash('sites_exclude_blog_ids')
             if $ctx->stash('sites_exclude_blog_ids');
     }
 

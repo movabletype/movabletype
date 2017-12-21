@@ -91,8 +91,6 @@ sub _hdlr_websites {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
 
-    MT::Template::Context::_preprocess_sites(@_);
-
     return $ctx->error( MT->translate('MTSites tags cannot be nested.') )
         if $ctx->stash('sites_context');
 

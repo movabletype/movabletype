@@ -64,18 +64,19 @@ $plugin = MT::Plugin::MultiBlog->new(
                     );
                 },
                 block => {
-                    Entries    => 'MultiBlog::preprocess_native_tags',
-                    Categories => 'MultiBlog::preprocess_native_tags',
-                    Comments   => 'MultiBlog::preprocess_native_tags',
-                    Pages      => 'MultiBlog::preprocess_native_tags',
-                    Folders    => 'MultiBlog::preprocess_native_tags',
-                    Blogs      => 'MultiBlog::preprocess_native_tags',
-                    Websites   => 'MultiBlog::preprocess_native_tags',
-                    Assets     => 'MultiBlog::preprocess_native_tags',
-                    Comments   => 'MultiBlog::preprocess_native_tags',
-                    Pings      => 'MultiBlog::preprocess_native_tags',
-                    Authors    => 'MultiBlog::preprocess_native_tags',
-                    Tags       => 'MultiBlog::preprocess_native_tags',
+
+                    #Entries    => 'MultiBlog::preprocess_native_tags',
+                    #Categories => 'MultiBlog::preprocess_native_tags',
+                    #Comments   => 'MultiBlog::preprocess_native_tags',
+                    #Pages      => 'MultiBlog::preprocess_native_tags',
+                    #Folders    => 'MultiBlog::preprocess_native_tags',
+                    #Blogs      => 'MultiBlog::preprocess_native_tags',
+                    #Websites   => 'MultiBlog::preprocess_native_tags',
+                    #Assets     => 'MultiBlog::preprocess_native_tags',
+                    #Comments   => 'MultiBlog::preprocess_native_tags',
+                    #Pings      => 'MultiBlog::preprocess_native_tags',
+                    #Authors    => 'MultiBlog::preprocess_native_tags',
+                    #Tags       => 'MultiBlog::preprocess_native_tags',
 
                     #MultiBlog  => 'MultiBlog::Tags::MultiBlog',
                     #OtherBlog  => 'MultiBlog::Tags::MultiBlog',
@@ -86,11 +87,12 @@ $plugin = MT::Plugin::MultiBlog->new(
                 },
                 function => {
                     'Include' => 'MultiBlog::preprocess_native_tags',
-                    'BlogCategoryCount' =>
-                        'MultiBlog::preprocess_native_tags',
-                    'BlogEntryCount' => 'MultiBlog::preprocess_native_tags',
-                    'BlogPingCount'  => 'MultiBlog::preprocess_native_tags',
-                    'TagSearchLink'  => 'MultiBlog::preprocess_native_tags',
+
+                    #'BlogCategoryCount' =>
+                    #    'MultiBlog::preprocess_native_tags',
+                    #'BlogEntryCount' => 'MultiBlog::preprocess_native_tags',
+                    #'BlogPingCount'  => 'MultiBlog::preprocess_native_tags',
+                    #'TagSearchLink'  => 'MultiBlog::preprocess_native_tags',
                 },
             },
             upgrade_functions => {
