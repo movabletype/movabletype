@@ -52,6 +52,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
+        theme_export_handler =>
+            '$Core::MT::ContentFieldType::ContentType::theme_export_handler',
         list_props => {
             content_type =>
                 { html => '$Core::MT::ContentFieldType::ContentType::html' },
@@ -995,6 +997,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
+        theme_export_handler =>
+            '$Core::MT::ContentFieldType::Categories::theme_export_handler',
         list_props => {
             categories => {
                 base      => '__virtual.string',

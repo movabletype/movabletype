@@ -1,0 +1,49 @@
+<mtapp:listing id="default_content_types" loop="content_types" hide_pager="1" show_actions="0" type="content_type">
+<mt:if name="__first__">
+
+<mt:setvarblock name="table_header">
+  <tr>
+    <th class="head cb">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+        <span class="custom-control-indicator"></span>
+      </label>
+    </th>
+    <th class="head display-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+  </tr>
+</mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd</mt:if>">
+      <td class="cb">
+        <label class="custom-control custom-checkbox">
+          <input
+             type="checkbox"
+             name="default_content_type_export_ids"
+             id="default_content_type_<mt:var name="content_type_id">"
+             class="custom-control-input select content-type"
+             value="<mt:var name="content_type_id">"
+             <mt:if name="checked">checked="checked"</mt:if>
+             />
+          <span class="custom-control-indicator"></span>
+        </label>
+      </td>
+      <td class="display-name">
+        <div>
+          <mt:var name="content_type_name" escape="html">
+        </div>
+      </td>
+    </tr>
+<mt:if __last__>
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<script type="text/javascript">
+jQuery.mtCheckbox();
+</script>
+

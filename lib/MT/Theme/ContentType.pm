@@ -174,4 +174,78 @@ sub validator {
     1;
 }
 
+sub template {
+    my $app = shift;
+    my ( $blog, $saved ) = @_;
+
+    my @content_types
+        = MT->model('content_type')->load( { blog_id => $blog->id } )
+        or return;
+
+    my %checked_ids
+        = $saved
+        ? map { $_ => 1 } @{ $saved->{default_content_type_export_ids} }
+        : ();
+
+    my @list;
+    for my $ct (@content_types) {
+        push @list,
+            {
+            content_type_id   => $ct->id,
+            content_type_name => $ct->name,
+            checked           => $saved ? $checked_ids{ $ct->id } : 1,
+            };
+    }
+
+    my %param = ( content_types => \@list );
+    return $app->load_tmpl( 'include/theme_exporters/content_type.tmpl',
+        \%param );
+}
+
+sub export {
+    my ( $app, $blog, $settings ) = @_;
+
+    my $terms
+        = defined $settings
+        ? { id => $settings->{default_content_type_export_ids} }
+        : { blog_id => $blog->id };
+    my @content_types = MT->model('content_type')->load($terms);
+
+    my @remove_fields = qw( id options type_label unique_id );
+
+    my @data;
+    for my $ct (@content_types) {
+        my @fields;
+        for my $f ( @{ $ct->fields } ) {
+            my $type_registry
+                = MT->registry('content_field_types')->{ $f->{type} };
+            if ( my $hdlr = $type_registry->{theme_export_handler} ) {
+                if ( ref $hdlr ne 'CODE' ) {
+                    $hdlr = MT->handler_to_coderef($hdlr);
+                }
+                if ($hdlr) {
+                    $hdlr->( $app, $blog, $settings, $ct, $f );
+                }
+            }
+
+            push @fields, +{ %{$f}, %{ $f->{options} } };
+            delete $fields[-1]{$_} for @remove_fields;
+        }
+        push @data,
+            {
+            description => $ct->description,
+            @fields ? ( fields => \@fields ) : (),
+            name             => $ct->name,
+            user_disp_option => $ct->user_disp_option,
+            };
+    }
+
+    @data ? \@data : undef;
+}
+
+sub condition {
+    my ($blog) = @_;
+    MT->model('content_type')->exist( { blog_id => $blog->id } );
+}
+
 1;

@@ -731,12 +731,18 @@ sub core_theme_element_handlers {
             },
         },
         default_content_types => {
-            label    => 'Default Content Types',
+            label    => 'Content Types',
             order    => 450,
             importer => {
                 import    => '$Core::MT::Theme::ContentType::apply',
                 info      => '$Core::MT::Theme::ContentType::info',
                 validator => '$Core::MT::Theme::ContentType::validator',
+            },
+            exporter => {
+                params    => 'default_content_type_export_ids',
+                template  => '$Core::MT::Theme::ContentType::template',
+                export    => '$Core::MT::Theme::ContentType::export',
+                condition => '$Core::MT::Theme::ContentType::condition',
             },
         },
         template_set => {
