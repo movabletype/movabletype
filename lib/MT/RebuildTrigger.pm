@@ -48,7 +48,8 @@ sub get_config_value {
 
 sub get_config_hash {
     my $self = shift;
-    $self->get_config_obj(@_)->data() || {};
+    my $data = $self->get_config_obj(@_)->data();
+    $data ? MT::Util::from_json($data) : {};
 }
 
 sub get_config_obj {
@@ -73,8 +74,8 @@ sub get_config_obj {
         = $rebuild_trigger->data()
         ? MT::Util::from_json( $rebuild_trigger->data() )
         : {};
-    $self->apply_default_settings( $data, $blog_id );
-    $rebuild_trigger->data($data);
+    $self->apply_default_settings( $data, $blog_id ) unless $data;
+    $rebuild_trigger->data( MT::Util::to_json($data) );
     $rebuild_trigger;
 }
 
