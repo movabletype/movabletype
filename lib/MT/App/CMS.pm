@@ -2707,6 +2707,142 @@ sub core_user_menus {
     };
 }
 
+sub core_enable_object_methods {
+    my $app = shift;
+    return {
+        association => {
+            delete => 1,
+            edit   => 0,
+            save   => 0,
+        },
+        banlist => {
+            delete => 1,
+            edit   => 0,
+            save   => 1,
+        },
+        blocklist => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        category => {
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
+        },
+        category_set => {
+            delete => 1,
+            edit   => 0,
+            save   => 0,
+        },
+        comment => {
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
+        },
+        config => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        fileinfo => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        folder => {
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
+        },
+        log => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        notification => {
+            delete => 1,
+            edit   => 0,
+            save   => 1,
+        },
+        objectasset => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        objectscore => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        objecttag => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        permission => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        placement => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        plugindata => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        session => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        tag => {
+            delete => 1,
+            edit   => 0,
+            save   => 0,
+        },
+        templatemap => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        touch => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        trackback => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        ts_error => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        ts_exitstatus => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        ts_funcmap => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+        ts_job => {
+            delete => 0,
+            edit   => 0,
+            save   => 0,
+        },
+    };
+}
+
 sub core_disable_object_methods {
     my $app = shift;
     return {
