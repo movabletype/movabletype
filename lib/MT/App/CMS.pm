@@ -2710,10 +2710,20 @@ sub core_user_menus {
 sub core_enable_object_methods {
     my $app = shift;
     return {
+        asset => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
+        },
         association => {
             delete => 1,
             edit   => 0,
             save   => 0,
+        },
+        author => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
         banlist => {
             delete => 1,
@@ -2724,6 +2734,11 @@ sub core_enable_object_methods {
             delete => 0,
             edit   => 0,
             save   => 0,
+        },
+        blog => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
         category => {
             delete => 1,
@@ -2744,6 +2759,12 @@ sub core_enable_object_methods {
             delete => 0,
             edit   => 0,
             save   => 0,
+        },
+        entry => { edit => 1 },
+        page => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
         fileinfo => {
             delete => 0,
@@ -2785,6 +2806,11 @@ sub core_enable_object_methods {
             edit   => 0,
             save   => 0,
         },
+        ping => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
+        },
         placement => {
             delete => 0,
             edit   => 0,
@@ -2795,6 +2821,7 @@ sub core_enable_object_methods {
             edit   => 0,
             save   => 0,
         },
+        role    => { delete => 1 },
         session => {
             delete => 0,
             edit   => 0,
@@ -2804,6 +2831,11 @@ sub core_enable_object_methods {
             delete => 1,
             edit   => 0,
             save   => 0,
+        },
+        template => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
         templatemap => {
             delete => 0,
@@ -2839,6 +2871,11 @@ sub core_enable_object_methods {
             delete => 0,
             edit   => 0,
             save   => 0,
+        },
+        website => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
     };
 }
