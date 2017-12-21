@@ -1084,7 +1084,7 @@ Local path for the file. can contain shortcuts similar to the url method
 
 =item $asset->file_name - i.e. document.pdf
 
-=item $asset->file_ext - the extention, without the leading dot
+=item $asset->file_ext - the extension, without the leading dot
 
 =item $asset->mime_type
 
