@@ -717,11 +717,17 @@ sub core_theme_element_handlers {
             },
         },
         default_category_sets => {
-            label    => 'Default Category Sets',
+            label    => 'Category Sets',
             order    => 420,
             importer => {
                 import => '$Core::MT::Theme::CategorySet::apply',
                 info   => '$Core::MT::Theme::CategorySet::info',
+            },
+            exporter => {
+                params    => 'default_category_set_export_ids',
+                template  => '$Core::MT::Theme::CategorySet::template',
+                export    => '$Core::MT::Theme::CategorySet::export',
+                condition => '$Core::MT::Theme::CategorySet::condition',
             },
         },
         default_content_types => {
