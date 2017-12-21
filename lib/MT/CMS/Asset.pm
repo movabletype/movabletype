@@ -1562,13 +1562,16 @@ sub _upload_file_compat {
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
                     )[2];
-                if( $basename eq $ext_old ) {
+
+                if ( !$ext_old && $ext_new ) {
+                    # Add extention to filename
                     $basename .= '.'  . $ext_new;
                     $app->param( "changed_file_ext", ",$ext_new" );
                 } elsif (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
+                    # Change to correct extention
                     $basename =~ s/$ext_old$/$ext_new/;
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
@@ -2098,13 +2101,16 @@ sub _upload_file {
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
 
-        if ( $basename eq $ext_old ) {
+        if ( !$ext_old && $ext_new ) {
+            # Add extention to filename
             $basename .= '.' . $ext_new;
             $app->param( "changed_file_ext", ",$ext_new" );
-        } elsif (   $ext_new ne lc($ext_old)
+        }
+        elsif ( $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
+            # Change to correct extention
             $basename =~ s/$ext_old$/$ext_new/;
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
