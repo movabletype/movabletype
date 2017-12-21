@@ -1573,7 +1573,7 @@ sub restore {
     my $param = { return_args => '__mode=dashboard' };
 
     $app->add_breadcrumb(
-        $app->translate('Import & Export'),
+        $app->translate('Import Sites'),
         $app->uri( mode => 'start_restore' )
     );
     $app->add_breadcrumb( $app->translate('Import') );
