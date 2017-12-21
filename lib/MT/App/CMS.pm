@@ -2715,25 +2715,15 @@ sub core_enable_object_methods {
             edit   => 1,
             save   => 1,
         },
-        association => {
-            delete => 1,
-            edit   => 0,
-            save   => 0,
-        },
-        author => {
+        association => { delete => 1 },
+        author      => {
             delete => 1,
             edit   => 1,
             save   => 1,
         },
         banlist => {
             delete => 1,
-            edit   => 0,
             save   => 1,
-        },
-        blocklist => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
         },
         blog => {
             delete => 1,
@@ -2745,132 +2735,38 @@ sub core_enable_object_methods {
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
-        category_set => {
-            delete => 1,
-            edit   => 0,
-            save   => 0,
-        },
-        comment => {
+        category_set => { delete => 1 },
+        comment      => {
             delete => 1,
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
-        config => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
         entry => { edit => 1 },
-        page => {
+        page  => {
             delete => 1,
             edit   => 1,
             save   => 1,
-        },
-        fileinfo => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
         },
         folder => {
             delete => 1,
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
-        log => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
         notification => {
             delete => 1,
-            edit   => 0,
             save   => 1,
-        },
-        objectasset => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        objectscore => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        objecttag => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        permission => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
         },
         ping => {
             delete => 1,
             edit   => 1,
             save   => 1,
         },
-        placement => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        plugindata => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        role    => { delete => 1 },
-        session => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        tag => {
-            delete => 1,
-            edit   => 0,
-            save   => 0,
-        },
+        role     => { delete => 1 },
+        tag      => { delete => 1 },
         template => {
             delete => 1,
             edit   => 1,
             save   => 1,
-        },
-        templatemap => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        touch => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        trackback => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        ts_error => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        ts_exitstatus => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        ts_funcmap => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
-        },
-        ts_job => {
-            delete => 0,
-            edit   => 0,
-            save   => 0,
         },
         website => {
             delete => 1,
