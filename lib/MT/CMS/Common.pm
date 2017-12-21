@@ -38,7 +38,7 @@ sub save {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'save', $t );
+            unless is_enabled_mode( $app, 'save', $t );
     }
 
     $app->param( 'allow_pings', 0 )
@@ -627,7 +627,7 @@ sub edit {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'edit', $t );
+            unless is_enabled_mode( $app, 'edit', $t );
     }
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
@@ -1790,7 +1790,7 @@ sub delete {
     }
 
     return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'delete', $type );
+        unless is_enabled_mode( $app, 'delete', $type );
 
     my $parent  = $app->param('parent');
     my $blog_id = $app->param('blog_id');
@@ -2310,6 +2310,26 @@ sub is_disabled_mode {
 
     my $res;
     if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res  = $code->();
+            }
+            else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
+}
+
+sub is_enabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry( 'enable_object_methods', $type ) ) {
         if ( defined $reg->{$mode} ) {
             if ( 'CODE' eq ref $reg->{$mode} ) {
                 my $code = $reg->{$mode};

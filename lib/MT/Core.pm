@@ -2300,8 +2300,8 @@ BEGIN {
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
                 user_menus    => sub { MT->app->core_user_menus() },
-                disable_object_methods =>
-                    sub { MT->app->core_disable_object_methods() },
+                enable_object_methods =>
+                    sub { MT->app->core_enable_object_methods() },
                 site_stats_lines =>
                     sub { MT::CMS::Dashboard->site_stats_widget_lines() },
             },

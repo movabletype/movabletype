@@ -12,6 +12,11 @@ object_types:
 
 applications:
     cms:
+        enable_object_methods:
+            formatted_text:
+                delete: 1
+                edit: 1
+                save: 1
         menus:
             entry:manage_formatted_text:
                 label: Boilerplate
