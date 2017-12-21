@@ -28,9 +28,9 @@ __PACKAGE__->install_properties(
             blog_id => 1,
             name    => 1,
         },
-        defaults => { name => '', cat_count => 0, ct_count => 0 },
-        child_of => 'MT::Blog',
-        audit    => 1,
+        defaults      => { name => '', cat_count => 0, ct_count => 0 },
+        child_of      => 'MT::Blog',
+        audit         => 1,
         child_classes => ['MT::Category'],
         datasource    => 'category_set',
         primary_key   => 'id',
@@ -226,6 +226,10 @@ sub _content_type_name_terms {
 
 sub save {
     my $self = shift;
+    if ( $self->_exist_same_name_in_site ) {
+        return $self->error(
+            MT->translate( 'Name "[_1]" is already used.', $self->name ) );
+    }
     if ( $self->id ) {
         if ( my $blog = $self->blog ) {
             $self->modified_on( $blog->current_timestamp );
@@ -238,6 +242,16 @@ sub save {
         $self->_calculate_ct_count;
     }
     $self->SUPER::save(@_);
+}
+
+sub _exist_same_name_in_site {
+    my $self = shift;
+    __PACKAGE__->exist(
+        {   blog_id => $self->blog_id,
+            name    => $self->name,
+            $self->id ? ( id => { not => $self->id } ) : (),
+        }
+    );
 }
 
 sub _calculate_cat_count {
