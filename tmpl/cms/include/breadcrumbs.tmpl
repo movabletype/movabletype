@@ -5,6 +5,16 @@
     <__trans phrase="System">
   </a>
   <mt:else>
+    <mt:if name="scope_type" eq="blog">
+      <mt:if name="curr_website_can_link">
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">">
+    <mt:var name="curr_website_name" escape="html">
+  </a>
+      <mt:else>
+  <mt:var name="curr_website_name" escape="html">
+      </mt:if>
+  <span class="mt-gts">&gt;</span>
+    </mt:if>
   <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
     <mt:var name="blog_name" escape="html">
   </a>
@@ -25,7 +35,17 @@
   <__trans phrase="Dashboard">
   <mt:elseif name="scope_type" eq="system">
   <__trans phrase="System">
+  <mt:elseif name="scope_type" eq="website">
+  <mt:var name="blog_name" escape="html">
   <mt:else>
+    <mt:if name="curr_website_can_link">
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">">
+    <mt:var name="curr_website_name" escape="html">
+  </a>
+    <mt:else>
+  <mt:var name="curr_website_name" escape="html">
+    </mt:if>
+  <span class="mt-gts">&gt;</span>
   <mt:var name="blog_name" escape="html">
   </mt:if>
 </mt:if>
