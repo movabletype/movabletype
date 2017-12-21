@@ -1127,7 +1127,7 @@ sub start_restore {
 sub backup {
     my $app      = shift;
     my $user     = $app->user;
-    my $blog_id  = $app->param('blog_id');
+    my $blog_id  = $app->param('blog_id') || 0;
     my $perms    = $app->permissions;
     my $blog_ids = $app->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
@@ -1184,8 +1184,11 @@ sub backup {
     my $param = { return_args => '__mode=start_backup' };
     $app->{no_print_body} = 1;
     $app->add_breadcrumb(
-        $app->translate('Import & Export'),
-        $app->uri( mode => 'start_backup' )
+        $app->translate( $blog_id ? 'Export Site' : 'Export Sites' ),
+        $app->uri(
+            mode => 'start_backup',
+            args => { blog_id => $blog_id },
+        )
     );
     $app->add_breadcrumb( $app->translate('Export') );
     $param->{system_overview_nav} = 1 if defined($blog_ids) && $blog_ids;
