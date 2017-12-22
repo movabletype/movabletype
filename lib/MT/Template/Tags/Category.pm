@@ -342,11 +342,13 @@ sub _hdlr_categories {
         );
         };
 
-    $terms{category_set_id}
+    my $category_set_id
         = defined $args->{category_set_id} ? $args->{category_set_id}
         : $ctx->stash('category_set')      ? $ctx->stash('category_set')->id
         :                                    0;
-    my $iter = $class->load_iter( \%terms, \%args );
+    my $iter
+        = $class->load_iter( { %terms, category_set_id => $category_set_id },
+        \%args );
 
     my $res     = '';
     my $builder = $ctx->stash('builder');
