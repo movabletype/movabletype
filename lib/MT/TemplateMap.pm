@@ -86,7 +86,7 @@ sub remove {
         };
         my $remaining = MT::TemplateMap->load( $terms, $args );
         if ($remaining) {
-            if ( $map->archive_type =~ /^ContentType/ ) {
+            if ( $map->_is_for_content_type ) {
                 $args->{join} = _generate_join_on_template($map);
                 $remaining = MT::TemplateMap->load( $terms, $args );
             }
@@ -212,7 +212,7 @@ sub prefer {
     if ($prefer) {
         return 1 if $map->is_preferred;
         my $args
-            = $map->archive_type =~ /^ContentType/
+            = $map->_is_for_content_type
             ? { join => _generate_join_on_template($map) }
             : {};
         my $preferred = MT::TemplateMap->load(
@@ -239,7 +239,7 @@ sub prefer {
 sub _prefer_next_map {
     my $map = shift;
     my $args
-        = $map->archive_type =~ /^ContentType/
+        = $map->_is_for_content_type
         ? { join => _generate_join_on_template($map) }
         : {};
     my @all = MT::TemplateMap->load(
@@ -303,6 +303,35 @@ sub list_props {
             ],
         },
     };
+}
+
+sub dt_field {
+    my $self = shift;
+    $self->cache_property(
+        'dt_field',
+        sub {
+            return unless $self->_is_for_content_type;
+            return unless $self->dt_field_id;
+            MT->model('content_field')->load( $self->dt_field_id );
+        },
+    );
+}
+
+sub cat_field {
+    my $self = shift;
+    $self->cache_property(
+        'cat_field',
+        sub {
+            return unless $self->_is_for_content_type;
+            return unless $self->cat_field_id;
+            MT->model('content_field')->load( $self->cat_field_id );
+        },
+    );
+}
+
+sub _is_for_content_type {
+    my $self = shift;
+    $self->archive_type =~ /^ContentType/;
 }
 
 1;
@@ -377,6 +406,16 @@ any others defined for this archive type. This is used when generating links
 to archives of this archive type--the link will always link to the preferred
 archive type.
 
+=item * cat_field_id
+
+MT::ContentField ID related to this mapping's category field.
+This is used when this mapping is for Content Type.
+
+=item * dt_field_id
+
+MT::ContentField ID related to this mapping's date & time field.
+This is used when this mapping is for Content Type.
+
 =back
 
 =head1 METHODS
@@ -415,6 +454,16 @@ the first of the other objects will be set as the preferred object.
 Its I<is_preferred> flag will be set to true.  If the map is the only 
 I<MT::TemplateMap> object for the blog and the archive type, the method does
 nothing - the map continues to be preferred.
+
+=item * dt_field()
+
+Returns MT::ContentField related to this mapping's date & time field.
+Returns nothing when dt_field_id is invalid or this mapping is not for Content Type.
+
+=item * cat_field()
+
+Returns MT::ContentField related to this mapping's category field.
+Returns nothing when cat_field_id is invalid or this mapping is not for Content Type.
 
 =back
 

@@ -178,6 +178,18 @@ sub theme_import_handler {
     }
 }
 
+sub theme_export_handler {
+    my ( $app, $blog, $settings, $ct, $field ) = @_;
+    my $source_ct
+        = MT->model('content_type')->load( $field->{options}{source} || 0 );
+    if ($source_ct) {
+        $field->{options}{source} = $source_ct->name;
+    }
+    else {
+        delete $field->{options}{source};
+    }
+}
+
 sub options_html_params {
     my ( $app, $param ) = @_;
     my $parent_id = $app->param('id');

@@ -7,7 +7,7 @@ package MT::Theme::Category;
 use strict;
 use warnings;
 use MT;
-use MT::Theme::Common qw( add_categories );
+use MT::Theme::Common qw( add_categories build_category_tree );
 
 sub import_categories {
     my ( $element, $theme, $obj_to_apply ) = @_;
@@ -131,7 +131,7 @@ sub export_category {
     my @tops = grep { !$_->parent } @cats;
     my $data = {};
     for my $top (@tops) {
-        $data->{ $top->basename } = _build_tree( \@cats, $top );
+        $data->{ $top->basename } = build_category_tree( \@cats, $top );
     }
     return %$data ? $data : undef;
 }
@@ -149,24 +149,9 @@ sub export_folder {
     my @tops = grep { !$_->parent } @folders;
     my $data = {};
     for my $top (@tops) {
-        $data->{ $top->basename } = _build_tree( \@folders, $top );
+        $data->{ $top->basename } = build_category_tree( \@folders, $top );
     }
     return %$data ? $data : undef;
-}
-
-sub _build_tree {
-    my ( $cats, $cat ) = @_;
-    my $hash = { label => $cat->label, };
-    $hash->{description} = $cat->description if $cat->description;
-    my @children = grep { $_->parent == $cat->id } @$cats;
-    if ( scalar @children ) {
-        $hash->{children} = {};
-        for my $child (@children) {
-            $hash->{children}{ $child->basename }
-                = _build_tree( $cats, $child );
-        }
-    }
-    return $hash;
 }
 
 1;

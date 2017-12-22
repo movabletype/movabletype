@@ -9,7 +9,7 @@ use warnings;
 
 use MT;
 use MT::CategorySet;
-use MT::Theme::Common qw( add_categories );
+use MT::Theme::Common qw( add_categories build_category_tree );
 
 sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
@@ -55,6 +55,68 @@ sub info {
     sub {
         MT->translate( '[_1] category sets.', $category_set_count );
     };
+}
+
+sub template {
+    my $app = shift;
+    my ( $blog, $saved ) = @_;
+
+    my @category_sets
+        = MT->model('category_set')->load( { blog_id => $blog->id } )
+        or return;
+
+    my %checked_ids
+        = $saved
+        ? map { $_ => 1 } @{ $saved->{default_category_set_export_ids} }
+        : undef;
+
+    my @list;
+    for my $cs (@category_sets) {
+        push @list,
+            {
+            category_set_id   => $cs->id,
+            category_set_name => $cs->name,
+            categories_count  => $cs->cat_count,
+            checked           => $saved ? $checked_ids{ $cs->id } : 1,
+            };
+    }
+
+    my %param = ( category_sets => \@list );
+    return $app->load_tmpl( 'include/theme_exporters/category_set.tmpl',
+        \%param );
+}
+
+sub export {
+    my ( $app, $blog, $settings ) = @_;
+    my $terms
+        = defined $settings
+        ? { id => $settings->{default_category_set_export_ids} }
+        : { blog_id => $blog->id };
+    my @category_sets = MT->model('category_set')->load($terms);
+    my %data;
+    for my $cs (@category_sets) {
+        $data{ $cs->name } = {
+            name       => $cs->name,
+            categories => {},
+        };
+
+        my @cats = MT->model('category')->load(
+            {   blog_id         => $blog->id,
+                category_set_id => $cs->id,
+            }
+        );
+        my @tops = grep { !$_->parent } @cats;
+        for my $top (@tops) {
+            $data{ $cs->name }{categories}{ $top->basename }
+                = build_category_tree( \@cats, $top );
+        }
+    }
+    %data ? \%data : undef;
+}
+
+sub condition {
+    my ($blog) = @_;
+    MT->model('category_set')->exist( { blog_id => $blog->id } );
 }
 
 1;

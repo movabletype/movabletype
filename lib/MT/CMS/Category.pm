@@ -213,10 +213,10 @@ sub bulk_update {
     if ($is_category_set) {
         if ($set_id) {
             $set = MT->model('category_set')->load($set_id)
-                or return $app->errtrans( 'Invalid category_set_id: [_1]',
-                $set_id );
+                or return $app->json_error(
+                $app->tranlsate( 'Invalid category_set_id: [_1]', $set_id ) );
             $set->name( scalar $app->param('set_name') );
-            $set->save or return $app->error( $set->errstr );
+            $set->save or return $app->json_error( $set->errstr );
         }
         else {
             $set = MT->model('category_set')->new;
@@ -225,7 +225,7 @@ sub bulk_update {
                     name    => scalar $app->param('set_name'),
                 }
             );
-            $set->save or return $app->error( $set->errstr );
+            $set->save or return $app->json_error( $set->errstr );
             $set_id = $set->id;
             $app->param( 'set_id', $set_id );
         }

@@ -10,7 +10,7 @@ use base 'Exporter';
 
 use MT;
 
-our @EXPORT_OK = qw( add_categories get_author_id );
+our @EXPORT_OK = qw( add_categories build_category_tree get_author_id );
 
 sub add_categories {
     my ( $theme, $blog, $cat_data, $class, $category_set_id, $parent ) = @_;
@@ -65,6 +65,21 @@ sub add_categories {
         }
     }
     1;
+}
+
+sub build_category_tree {
+    my ( $cats, $cat ) = @_;
+    my $hash = { label => $cat->label, };
+    $hash->{description} = $cat->description if $cat->description;
+    my @children = grep { $_->parent == $cat->id } @$cats;
+    if ( scalar @children ) {
+        $hash->{children} = {};
+        for my $child (@children) {
+            $hash->{children}{ $child->basename }
+                = build_category_tree( $cats, $child );
+        }
+    }
+    return $hash;
 }
 
 sub get_author_id {
