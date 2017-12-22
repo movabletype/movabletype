@@ -323,6 +323,18 @@ sub theme_import_handler {
     }
 }
 
+sub theme_export_handler {
+    my ( $app, $blog, $settings, $ct, $field ) = @_;
+    my $category_set = MT->model('category_set')
+        ->load( $field->{options}{category_set} || 0 );
+    if ($category_set) {
+        $field->{options}{category_set} = $category_set->name;
+    }
+    else {
+        delete $field->{options}{category_set};
+    }
+}
+
 sub options_html_params {
     my ( $app, $param ) = @_;
 

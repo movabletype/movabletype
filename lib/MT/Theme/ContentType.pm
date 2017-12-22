@@ -129,6 +129,8 @@ sub validator {
     my $content_field_types = MT->registry('content_field_types');
 
     for my $ct ( @{$content_types} ) {
+        next unless ref $ct->{fields} eq 'ARRAY' && @{ $ct->{fields} } > 0;
+
         my @valid_content_fields = grep {
             defined $content_field_types->{ $_->{type} }
                 && $content_field_types->{ $_->{type} } ne ''
@@ -137,20 +139,6 @@ sub validator {
             'some content field in this theme has invalid type.')
             unless @valid_content_fields;
     }
-
-    my @valid_content_types = grep {
-               ref $_ eq 'HASH'
-            && $_->{type}
-            && defined $content_field_types->{ $_->{type} }
-            && $content_field_types->{ $_->{type} } ne ''
-    } @{$content_types};
-    if (@valid_content_types) {
-        return $element->trans_error(
-            'some content field in this theme has invalid type.');
-    }
-
-    my $error
-        = 'some content type in this theme have been installed already.';
 
     my @names = grep {$_} map { $_->{name} } @{$content_types};
     if (@names) {
@@ -165,13 +153,89 @@ sub validator {
             )
         {
             MT->set_language($current_lang);
-            return $element->trans_error($error);
+            return $element->trans_error(
+                'some content type in this theme have been installed already.'
+            );
         }
 
         MT->set_language($current_lang);
     }
 
     1;
+}
+
+sub template {
+    my $app = shift;
+    my ( $blog, $saved ) = @_;
+
+    my @content_types
+        = MT->model('content_type')->load( { blog_id => $blog->id } )
+        or return;
+
+    my %checked_ids
+        = $saved
+        ? map { $_ => 1 } @{ $saved->{default_content_type_export_ids} }
+        : ();
+
+    my @list;
+    for my $ct (@content_types) {
+        push @list,
+            {
+            content_type_id   => $ct->id,
+            content_type_name => $ct->name,
+            checked           => $saved ? $checked_ids{ $ct->id } : 1,
+            };
+    }
+
+    my %param = ( content_types => \@list );
+    return $app->load_tmpl( 'include/theme_exporters/content_type.tmpl',
+        \%param );
+}
+
+sub export {
+    my ( $app, $blog, $settings ) = @_;
+
+    my $terms
+        = defined $settings
+        ? { id => $settings->{default_content_type_export_ids} }
+        : { blog_id => $blog->id };
+    my @content_types = MT->model('content_type')->load($terms);
+
+    my @remove_fields = qw( id options type_label unique_id );
+
+    my @data;
+    for my $ct (@content_types) {
+        my @fields;
+        for my $f ( @{ $ct->fields } ) {
+            my $type_registry
+                = MT->registry('content_field_types')->{ $f->{type} };
+            if ( my $hdlr = $type_registry->{theme_export_handler} ) {
+                if ( ref $hdlr ne 'CODE' ) {
+                    $hdlr = MT->handler_to_coderef($hdlr);
+                }
+                if ($hdlr) {
+                    $hdlr->( $app, $blog, $settings, $ct, $f );
+                }
+            }
+
+            push @fields, +{ %{$f}, %{ $f->{options} } };
+            delete $fields[-1]{$_} for @remove_fields;
+        }
+        push @data,
+            {
+            description => $ct->description,
+            @fields ? ( fields => \@fields ) : (),
+            name             => $ct->name,
+            user_disp_option => $ct->user_disp_option,
+            };
+    }
+
+    @data ? \@data : undef;
+}
+
+sub condition {
+    my ($blog) = @_;
+    MT->model('content_type')->exist( { blog_id => $blog->id } );
 }
 
 1;

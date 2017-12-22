@@ -2721,142 +2721,71 @@ sub core_user_menus {
     };
 }
 
-sub core_disable_object_methods {
+sub core_enable_object_methods {
     my $app = shift;
     return {
-        association => {
-            edit => 1,
-            save => 1,
-        },
-        banlist   => { edit => 1, },
-        blocklist => {
-            save   => 1,
+        asset => {
             delete => 1,
             edit   => 1,
+            save   => 1,
+        },
+        association => { delete => 1 },
+        author      => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
+        },
+        banlist => {
+            delete => 1,
+            save   => 1,
+        },
+        blog => {
+            delete => 1,
+            edit   => 1,
+            save   => 1,
         },
         category => {
-            save => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-            edit => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
         },
-        category_set => {
-            save => 1,
-            edit => 1,
+        category_set => { delete => 1 },
+        comment      => {
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
         },
-        comment => {
-            save => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-            edit => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-        },
-        config => {
-            save   => 1,
+        entry => { edit => 1 },
+        page  => {
             delete => 1,
             edit   => 1,
-        },
-        fileinfo => {
             save   => 1,
-            delete => 1,
-            edit   => 1,
         },
         folder => {
-            save => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
-            edit => sub {
-                return 0 if $app->param('id');
-                return 1;
-            },
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
         },
-        log => {
+        notification => {
+            delete => 1,
             save   => 1,
+        },
+        ping => {
             delete => 1,
             edit   => 1,
-        },
-        notification => { edit => 1, },
-        objectasset  => {
             save   => 1,
+        },
+        role     => { delete => 1 },
+        tag      => { delete => 1 },
+        template => {
             delete => 1,
             edit   => 1,
-        },
-        objectscore => {
             save   => 1,
+        },
+        website => {
             delete => 1,
             edit   => 1,
-        },
-        objecttag => {
             save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        permission => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        placement => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        plugindata => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        session => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        tag => {
-            save => 1,
-            edit => 1,
-        },
-        templatemap => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        touch => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        trackback => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        ts_error => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        ts_exitstatus => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        ts_funcmap => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
-        ts_job => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
         },
     };
 }
