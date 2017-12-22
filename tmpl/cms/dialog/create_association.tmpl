@@ -119,6 +119,57 @@ function init() {
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
     dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
+
+<mt:if name="has_group">
+    jQuery('[name=assoc_type]').on('change', function(){
+        var val = jQuery(this).val();
+        var newpanels = new Array();
+        panels.forEach(function(panel, index){
+            jQuery('#'+panel.name + '-panel').hide();
+            if(val == 'users_only'){
+                if(panel.name != 'group'){
+                    newpanels.push(panel);
+                    return;
+                }
+            } else if(val == 'groups_only'){
+                if(panel.name != 'author'){
+                    newpanels.push(panel);
+                    return;
+                }
+            } else {
+                newpanels.push(panel);
+            }
+        });
+
+        dialog.setPanels(newpanels);
+        count = newpanels.length;
+        newpanels.forEach(function(panel, index){
+            var panel_id = panel.name + '-panel';
+            jQuery('#' + panel_id + ' .panel-header .text-right').each(function(){
+                var num_text = jQuery(this).text();
+                num_text = num_text.replace(/.*/, (index+1) + ' / '+count);
+                jQuery(this).text(num_text);
+            })
+
+        });
+    });
+    var init_nextPanel = dialog.nextPanel;
+    var init_previousPanel = dialog.previousPanel;
+    dialog.nextPanel = function(){
+        if(this.currentPanel == 0){
+            jQuery('.select_assoc_type').hide();
+        }
+        init_nextPanel.apply(dialog);
+    };
+    dialog.previousPanel = function(){
+        if(this.currentPanel == 1){
+            jQuery('.select_assoc_type').show();
+        }
+        init_previousPanel.apply(dialog);
+    };
+
+    jQuery('[name=assoc_type]').get(0).click();
+</mt:if>
 }
 
 TC.attachLoadEvent(init);
@@ -194,6 +245,27 @@ TC.attachLoadEvent(init);
 </div>
 <mt:else>
 <div class="modal-body">
+
+<mt:if name="has_group">
+    <div class="select_assoc_type">
+        <label class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" name="assoc_type" value="users_only">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Users only"></span>
+        </label>
+        <label class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" name="assoc_type" value="groups_only">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Groups only"></span>
+        </label>
+        <label class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" name="assoc_type" value="both">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description"><__trans phrase="Both"></span>
+        </label>
+    </div>
+</mt:if>
+
     <mt:loop name="panel_loop">
       <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>

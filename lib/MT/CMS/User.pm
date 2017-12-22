@@ -1044,8 +1044,43 @@ sub grant_role {
         $app->config->save_config;
     }
 
+    _grant_role_for_group( $app, \@blogs, \@roles )
+        if ( $app->model("group") && $app->param('group') );
+
     $app->add_return_arg( saved => 1 );
     $app->call_return;
+}
+
+sub _grant_role_for_group {
+    my $app = shift;
+    my ( $blogs, $roles ) = @_;
+
+    my $groups = $app->param('group') || '';
+    my $group_id = $app->param('group_id');
+
+    my @groups = split /,/, $groups;
+    my $grp_class = $app->model("group");
+
+    push @groups, $group_id if $group_id;
+    foreach my $group (@groups) {
+        return unless $grp_class;
+        my $id = $group;
+        $id =~ s/\D//g;
+        $group = $grp_class->load($id);
+    }
+    @groups = grep { ref $_ } @groups;
+    $app->error(undef);
+
+    require MT::Association;
+
+    foreach my $blog (@$blogs) {
+        foreach my $role (@$roles) {
+            foreach my $ug (@groups) {
+                MT::Association->link( $ug => $role => $blog );
+            }
+        }
+    }
+
 }
 
 sub dialog_select_author {
@@ -1247,8 +1282,8 @@ PERMCHECK: {
                     label       => $_->name,
                     description => $_->description
                     } foreach @{$child_blogs};
-                $row->{child_sites}      = $child_sites;
-                $row->{child_site_count} = scalar @{$child_blogs};
+                $row->{child_obj}      = $child_sites;
+                $row->{child_obj_count} = scalar @{$child_blogs};
             }
         }
         $row->{disabled} = 1
@@ -1350,9 +1385,12 @@ PERMCHECK: {
             }
         }
 
+        my $has_group = $params->{has_group} = $group ? 1 : 0;
+
         if ( !$author_id ) {
             if ( $type eq 'user' ) {
                 unshift @panels, 'author';
+                unshift @panels, 'group' if $has_group;
             }
         }
 
@@ -1375,6 +1413,12 @@ PERMCHECK: {
                 items_prompt      => $app->translate("Roles Selected"),
                 panel_description => $app->translate("Description"),
             },
+            'group' => {
+                panel_title       => $app->translate("Select Groups"),
+                panel_label       => $app->translate("Group Name"),
+                items_prompt      => $app->translate("Groups Selected"),
+                panel_description => $app->translate("Description"),
+            }
         };
 
         $params->{panel_multi}  = 1;
