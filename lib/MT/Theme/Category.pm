@@ -7,13 +7,31 @@ package MT::Theme::Category;
 use strict;
 use warnings;
 use MT;
-use MT::Theme::Common qw( add_categories build_category_tree );
+use MT::Theme::Common
+    qw( add_categories build_category_tree generate_order get_ordered_basenames );
 
 sub import_categories {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
     add_categories( $theme, $obj_to_apply, $cats, 'category' )
         or die "Failed to create theme default categories";
+
+    my $order = generate_order(
+        {   basenames => $element->{data}{':order'},
+            terms     => {
+                blog_id         => $obj_to_apply->id,
+                class           => 'category',
+                category_set_id => 0,
+            },
+        }
+    );
+    if ($order) {
+        $obj_to_apply->category_order($order);
+        $obj_to_apply->save
+            or die MT->translate( 'Failed to save category_order: ',
+            $obj_to_apply->errstr );
+    }
+
     return 1;
 }
 
@@ -22,6 +40,23 @@ sub import_folders {
     my $cats = $element->{data};
     add_categories( $theme, $obj_to_apply, $cats, 'folder' )
         or die "Failed to create theme default folders";
+
+    my $order = generate_order(
+        {   basenames => $element->{data}{':order'},
+            terms     => {
+                blog_id         => $obj_to_apply->id,
+                class           => 'folder',
+                category_set_id => 0,
+            },
+        }
+    );
+    if ($order) {
+        $obj_to_apply->folder_order($order);
+        $obj_to_apply->save
+            or die MT->translate( 'Failed to save folder_order: ',
+            $obj_to_apply->errstr );
+    }
+
     return 1;
 }
 
@@ -134,11 +169,19 @@ sub export_category {
         @cats = MT->model('category')
             ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
-    my @tops = grep { !$_->parent } @cats;
+
     my $data = {};
+
+    if (@cats) {
+        $data->{':order'}
+            = get_ordered_basenames( \@cats, $blog->category_order );
+    }
+
+    my @tops = grep { !$_->parent } @cats;
     for my $top (@tops) {
         $data->{ $top->basename } = build_category_tree( \@cats, $top );
     }
+
     return %$data ? $data : undef;
 }
 
@@ -154,11 +197,19 @@ sub export_folder {
         @folders = MT->model('folder')
             ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
-    my @tops = grep { !$_->parent } @folders;
+
     my $data = {};
+
+    if (@folders) {
+        $data->{':order'}
+            = get_ordered_basenames( \@folders, $blog->folder_order );
+    }
+
+    my @tops = grep { !$_->parent } @folders;
     for my $top (@tops) {
         $data->{ $top->basename } = build_category_tree( \@folders, $top );
     }
+
     return %$data ? $data : undef;
 }
 
