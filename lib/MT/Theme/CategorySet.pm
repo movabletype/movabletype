@@ -9,7 +9,8 @@ use warnings;
 
 use MT;
 use MT::CategorySet;
-use MT::Theme::Common qw( add_categories build_category_tree );
+use MT::Theme::Common
+    qw( add_categories build_category_tree generate_order get_ordered_basenames );
 
 sub apply {
     my ( $element, $theme, $blog, $opts ) = @_;
@@ -42,6 +43,16 @@ sub apply {
 
         my $categories = $cs_value->{categories} || {};
         add_categories( $theme, $blog, $categories, 'category', $cs->id );
+
+        my $order = generate_order(
+            {   basenames => $cs_value->{categories}{':order'},
+                terms     => {
+                    class           => 'category',
+                    category_set_id => $cs->id,
+                },
+            }
+        );
+        $cs->order($order) if $order;
 
         $cs->save or die $cs->errstr;    # calculate category count
     }
@@ -95,16 +106,14 @@ sub export {
     my @category_sets = MT->model('category_set')->load($terms);
     my %data;
     for my $cs (@category_sets) {
+        my @cats = @{ $cs->categories };
+
         $data{ $cs->name } = {
-            name       => $cs->name,
-            categories => {},
+            categories =>
+                { ':order' => get_ordered_basenames( \@cats, $cs->order ) },
+            name => $cs->name,
         };
 
-        my @cats = MT->model('category')->load(
-            {   blog_id         => $blog->id,
-                category_set_id => $cs->id,
-            }
-        );
         my @tops = grep { !$_->parent } @cats;
         for my $top (@tops) {
             $data{ $cs->name }{categories}{ $top->basename }

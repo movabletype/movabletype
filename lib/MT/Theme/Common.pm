@@ -10,7 +10,8 @@ use base 'Exporter';
 
 use MT;
 
-our @EXPORT_OK = qw( add_categories build_category_tree get_author_id );
+our @EXPORT_OK
+    = qw( add_categories build_category_tree generate_order get_author_id get_ordered_basenames );
 
 sub add_categories {
     my ( $theme, $blog, $cat_data, $class, $category_set_id, $parent ) = @_;
@@ -28,6 +29,8 @@ sub add_categories {
     }
 
     for my $basename ( keys %$cat_data ) {
+        next if $basename eq ':order';
+
         my $datum = $cat_data->{$basename};
         my $cat   = MT->model($class)->load(
             {   blog_id  => $blog->id,
@@ -82,6 +85,25 @@ sub build_category_tree {
     return $hash;
 }
 
+sub generate_order {
+    my ($args) = @_;
+
+    my $basenames = $args->{basenames};
+    my $terms     = $args->{terms};
+
+    return unless ref $basenames eq 'ARRAY' && @$basenames;
+
+    my %cat_basename_hash;
+    my $iter
+        = MT->model('category')
+        ->load_iter( { %$terms, basename => $basenames } );
+    while ( my $c = $iter->() ) {
+        $cat_basename_hash{ $c->basename } = $c;
+    }
+
+    join ',', map { $cat_basename_hash{$_}->id } @$basenames;
+}
+
 sub get_author_id {
     my ($blog) = @_;
     my $author_id;
@@ -120,6 +142,24 @@ sub get_author_id {
     }
 
     $author_id;
+}
+
+sub get_ordered_basenames {
+    my ( $cats, $order ) = @_;
+
+    require MT::Category;
+    my @sorted_cats = MT::Category::_sort_by_id_list(
+        $order || '',
+        $cats,
+        unknown_place        => 'top',
+        secondary_sort       => 'created_on',
+        secondary_sort_order => 'descend'
+    );
+
+    @sorted_cats = grep { ref $_ }
+        MT::Category::_flattened_category_hierarchy( \@sorted_cats );
+
+    [ map { $_->basename } @sorted_cats ];
 }
 
 1;
