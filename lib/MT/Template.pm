@@ -601,6 +601,17 @@ sub blog {
     return $this->{__blog} = MT::Blog->load( $this->blog_id );
 }
 
+sub content_type {
+    my $self = shift;
+    $self->cache_property(
+        'content_type',
+        sub {
+            return unless $self->content_type_id;
+            MT->model('content_type')->load( $self->content_type_id );
+        }
+    );
+}
+
 sub set_values_internal {
     my $tmpl = shift;
     my ($cols) = @_;
@@ -1247,6 +1258,10 @@ the I<MT::ObjectDriver> classes (upon loading a template object), and if
 the template is linked to a file, it will also load the contents of that
 file, setting the 'text' property.
 
+=head2 $tmpl->content_type
+
+Returns MT::ContentType related to this template.
+
 =head1 DATA ACCESS METHODS
 
 The I<MT::Template> object holds the following pieces of data. These fields
@@ -1312,6 +1327,12 @@ disk, and needs to be re-synced.
 The size of the linked file, in bytes. This, along with I<linked_file_mtime>,
 is used to determine whether a file has been updated on disk, and needs to
 be re-synced.
+
+=item * content_type_id
+
+MT::ContentType ID related to this template.
+This value is set only when this template is for Content Type.
+(this template type is 'ct' or 'ct_archive')
 
 =back
 

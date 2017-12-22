@@ -129,6 +129,8 @@ sub validator {
     my $content_field_types = MT->registry('content_field_types');
 
     for my $ct ( @{$content_types} ) {
+        next unless ref $ct->{fields} eq 'ARRAY' && @{ $ct->{fields} } > 0;
+
         my @valid_content_fields = grep {
             defined $content_field_types->{ $_->{type} }
                 && $content_field_types->{ $_->{type} } ne ''
@@ -137,20 +139,6 @@ sub validator {
             'some content field in this theme has invalid type.')
             unless @valid_content_fields;
     }
-
-    my @valid_content_types = grep {
-               ref $_ eq 'HASH'
-            && $_->{type}
-            && defined $content_field_types->{ $_->{type} }
-            && $content_field_types->{ $_->{type} } ne ''
-    } @{$content_types};
-    if (@valid_content_types) {
-        return $element->trans_error(
-            'some content field in this theme has invalid type.');
-    }
-
-    my $error
-        = 'some content type in this theme have been installed already.';
 
     my @names = grep {$_} map { $_->{name} } @{$content_types};
     if (@names) {
@@ -165,7 +153,9 @@ sub validator {
             )
         {
             MT->set_language($current_lang);
-            return $element->trans_error($error);
+            return $element->trans_error(
+                'some content type in this theme have been installed already.'
+            );
         }
 
         MT->set_language($current_lang);
