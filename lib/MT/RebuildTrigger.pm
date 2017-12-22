@@ -74,7 +74,7 @@ sub get_config_obj {
         = $rebuild_trigger->data()
         ? MT::Util::from_json( $rebuild_trigger->data() )
         : {};
-    $self->apply_default_settings( $data, $blog_id ) unless $data;
+    $self->apply_default_settings( $data, $blog_id );
     $rebuild_trigger->data( MT::Util::to_json($data) );
     $rebuild_trigger;
 }
@@ -83,10 +83,12 @@ sub apply_default_settings {
     my ( $self, $data, $blog_id ) = @_;
 
     if ( $blog_id > 0 ) {
-        $data->{default_mt_sites_action} = 1;
+        $data->{default_mt_sites_action}
+            unless exists $data->{default_mt_sites_action};
     }
     else {
-        $data->{default_access_allowed} = 1;
+        $data->{default_access_allowed} = 1
+            unless exists $data->{default_access_allowed};
     }
 }
 
