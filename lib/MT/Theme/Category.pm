@@ -65,15 +65,19 @@ sub _count_descendant_categories {
 
 sub category_condition {
     my ($blog) = @_;
-    my $cat = MT->model('category')
-        ->load( { blog_id => $blog->id }, { limit => 1 } );
+    my $cat
+        = MT->model('category')
+        ->load( { blog_id => $blog->id, category_set_id => 0 },
+        { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
 sub folder_condition {
     my ($blog) = @_;
-    my $cat = MT->model('folder')
-        ->load( { blog_id => $blog->id }, { limit => 1 } );
+    my $cat
+        = MT->model('folder')
+        ->load( { blog_id => $blog->id, category_set_id => 0 },
+        { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
@@ -123,10 +127,12 @@ sub export_category {
     my @cats;
     if ( defined $settings ) {
         my @ids = $settings->{default_category_export_ids};
-        @cats = MT->model('category')->load( { id => \@ids } );
+        @cats = MT->model('category')
+            ->load( { id => \@ids, category_set_id => 0 } );
     }
     else {
-        @cats = MT->model('category')->load( { blog_id => $blog->id } );
+        @cats = MT->model('category')
+            ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
     my @tops = grep { !$_->parent } @cats;
     my $data = {};
@@ -141,10 +147,12 @@ sub export_folder {
     my @folders;
     if ( defined $settings ) {
         my @ids = $settings->{default_folder_export_ids};
-        @folders = MT->model('folder')->load( { id => \@ids } );
+        @folders = MT->model('folder')
+            ->load( { id => \@ids, category_set_id => 0 } );
     }
     else {
-        @folders = MT->model('folder')->load( { blog_id => $blog->id } );
+        @folders = MT->model('folder')
+            ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
     my @tops = grep { !$_->parent } @folders;
     my $data = {};
