@@ -1385,6 +1385,7 @@ PERMCHECK: {
             }
         }
 
+        my $group = MT->registry( 'object_types', 'group' );
         my $has_group = $params->{has_group} = $group ? 1 : 0;
 
         if ( !$author_id ) {
