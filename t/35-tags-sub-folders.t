@@ -23,6 +23,7 @@ filters {
 };
 
 my $blog_id         = 1;
+my $category_set_id = 1;
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
@@ -39,6 +40,14 @@ $test_env->prepare_fixture(sub {
         blog_id => $blog_id,
         label => 'baz',
     );
+
+    my $category_set
+        = MT::Test::Permission->make_category_set( blog_id => $blog_id );
+    $category_set->id($category_set_id);
+    $category_set->save or die $category_set->errstr;
+    if ( $category_set->id != $category_set_id ) {
+        die 'category_set->id is ' . ( $category_set->id || 'not set' );
+    }
 });
 
 MT::Test::Tag->run_perl_tests($blog_id);
@@ -59,6 +68,15 @@ foo
 --- template
 <MTSubFolders top="1" category_set_id="1"><MTFolderLabel>
 </MTSubFolders>
+--- expected
+bar
+baz
+foo
+
+=== MTSubFolders with category_set context
+--- template
+<MTCategorySets id="1"><MTSubFolders top="1"><MTFolderLabel>
+</MTSubFolders></MTCategorySets>
 --- expected
 bar
 baz

@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "m901hb4k",
+            "krxo938k",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$QYQioZoEHLqWhoif$cWQOgq3mC9j38xBSV8e8dM8QgMVT/2hsc9KqCefArItimiZmCRqdNO7rVa9g/ZBNN+8U/58Gb/BDNak90RbIHQ",
+            "$6$cbLsnxIMEBaMLOdf$e5UXyp3scMi+j2HohTlXzA7rncgE48O3fJJTYmLwrVLAHbm2Mf8o7KEjDoVNa2REiKEews0hcd5uEpZIKhQkig",
             "en_US",
             null,
             null,
@@ -210,7 +210,7 @@
             "0",
             null,
             "14",
-            "0",
+            0,
             "en_US",
             null,
             "1",
@@ -229,7 +229,7 @@
             null,
             "0",
             "0",
-            "0",
+            0,
             "",
             "/",
             "ascend",
@@ -389,6 +389,34 @@
          ]
       ]
    },
+   "mt_category_set" : {
+      "cols" : [
+         "category_set_blog_id",
+         "category_set_cat_count",
+         "category_set_created_by",
+         "category_set_created_on",
+         "category_set_ct_count",
+         "category_set_id",
+         "category_set_modified_by",
+         "category_set_modified_on",
+         "category_set_name",
+         "category_set_order"
+      ],
+      "rows" : [
+         [
+            "1",
+            "0",
+            null,
+            "__NOW__",
+            "0",
+            "1",
+            null,
+            "__NOW__",
+            "Sample Category Set",
+            null
+         ]
+      ]
+   },
    "mt_config" : {
       "cols" : [
          "config_data",
@@ -396,7 +424,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0024\n",
+            "PluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion multiblog=2.8\nSchemaVersion 7.0023\n",
             "1"
          ]
       ]
@@ -446,7 +474,7 @@
             null,
             "__NOW__",
             null,
-            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
+            "'comment','manage_content_data','publish_post','send_notifications','manage_users','edit_all_posts','manage_content_types','edit_categories','administer_site','create_site','set_publish_paths','manage_category_set','edit_templates','rebuild','edit_notifications','edit_assets','manage_pages','edit_config','view_blog_log','manage_feedback','upload','create_post','manage_themes','edit_tags'",
             null,
             "0",
             null
@@ -641,16 +669,16 @@
             "__NOW__",
             "0",
             "1",
-            "notify-entry",
+            "new-ping",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Entry Notify",
+            "New Ping",
             null,
             "1",
-            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
+            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -707,16 +735,16 @@
             "__NOW__",
             "0",
             "4",
-            "commenter_confirm",
+            "new-comment",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Confirm",
+            "New Comment",
             null,
             "1",
-            "Thank you for registering an account to comment on <$mt:BlogName$>. \n\nFor your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on <$mt:BlogName$>.\n\nTo confirm your account, please click on the following URL, or cut and paste this URL into a web browser:\n\n<$mt:Var name=\"confirm_url\"$>\n\nIf you did not make this request, or you don't want to register for an account to comment on <$mt:BlogName$>, then no further action is required.\n\nSincerely,\n<mt:If tag=\"AuthorDisplayName\"><$mt:AuthorDisplayName encode_html=\"1\"$><mt:Else>Movable Type</mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "<mt:If name=\"unapproved\" trim=\"1\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this comment before it will appear on your site.\n    <mt:Else>\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this comment before it will appear on your site.\n    </mt:If>\n<mt:Else>\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        A new comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n        A new comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n</mt:If>\n\n<$mt:CommentBody remove_html=\"1\" wrap_text=\"72\"$>\n\nCommenter name: <$mt:CommentAuthor$> \nCommenter email address: <$mt:CommentEmail$>\nCommenter URL: <$mt:CommentURL$>\nCommenter IP address: <$mt:CommentIP$>\n\n<mt:If name=\"unapproved\"><mt:If name=\"state_editable\">Approve comment:\n    <<$mt:Var name=\"approve_url\"$>></mt:If></mt:If>\n<mt:If name=\"view_url\">View comment:\n    <<$mt:Var name=\"view_url\" escape=\"html\"$>></mt:If>\nEdit comment:\n    <<$mt:Var name=\"edit_url\"$>>\n<mt:If name=\"state_editable\">Report the comment as spam:\n    <<$mt:Var name=\"spam_url\"$>></mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -729,28 +757,6 @@
             "__NOW__",
             "0",
             "5",
-            "new-ping",
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "New Ping",
-            null,
-            "1",
-            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
-            "email"
-         ],
-         [
-            "0",
-            "0",
-            "0",
-            "1",
-            null,
-            null,
-            "__NOW__",
-            "0",
-            "6",
             "lockout-user",
             null,
             null,
@@ -772,17 +778,39 @@
             null,
             "__NOW__",
             "0",
-            "7",
-            "new-comment",
+            "6",
+            "commenter_notify",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "New Comment",
+            "Commenter Notify",
             null,
             "1",
-            "<mt:If name=\"unapproved\" trim=\"1\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this comment before it will appear on your site.\n    <mt:Else>\n        An unapproved comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this comment before it will appear on your site.\n    </mt:If>\n<mt:Else>\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n        A new comment has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n        A new comment has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n</mt:If>\n\n<$mt:CommentBody remove_html=\"1\" wrap_text=\"72\"$>\n\nCommenter name: <$mt:CommentAuthor$> \nCommenter email address: <$mt:CommentEmail$>\nCommenter URL: <$mt:CommentURL$>\nCommenter IP address: <$mt:CommentIP$>\n\n<mt:If name=\"unapproved\"><mt:If name=\"state_editable\">Approve comment:\n    <<$mt:Var name=\"approve_url\"$>></mt:If></mt:If>\n<mt:If name=\"view_url\">View comment:\n    <<$mt:Var name=\"view_url\" escape=\"html\"$>></mt:If>\nEdit comment:\n    <<$mt:Var name=\"edit_url\"$>>\n<mt:If name=\"state_editable\">Report the comment as spam:\n    <<$mt:Var name=\"spam_url\"$>></mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "email"
+         ],
+         [
+            "0",
+            "0",
+            "0",
+            "1",
+            null,
+            null,
+            "__NOW__",
+            "0",
+            "7",
+            "notify-entry",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Entry Notify",
+            null,
+            "1",
+            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
             "email"
          ],
          [
@@ -817,16 +845,16 @@
             "__NOW__",
             "0",
             "9",
-            "commenter_notify",
+            "recover-password",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Notify",
+            "Password Recovery",
             null,
             "1",
-            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
          ],
          [
