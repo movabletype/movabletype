@@ -3838,6 +3838,30 @@ abstract class MTDatabase {
         return $category_set;
     }
 
+    public function fetch_category_sets($args) {
+        if ($args['limit'] && $args['limit'] > 0) {
+            $limit = $args['limit'];
+        } else {
+            $limit = -1;
+        }
+        if ($args['blog_id'] && $args['blog_id'] > 0) {
+            $blog_filter = "and category_set_blog_id = " . $args['blog_id'];
+        } else {
+            $blog_filter = "";
+        }
+        if (isset($args['name']) && !empty($args['name'])) {
+            $name_filter = 'and category_set_name = "' . $args['name'] . '"';
+        } else {
+            $name_filter = "";
+        }
+        $where = "1 = 1
+                  $blog_filter
+                  $name_filter";
+        require_once('class.mt_category_set.php');
+        $category_set = new CategorySet;
+        return $category_set->Find($where, $limit);
+    }
+
     private function build_date_filter($args, $field) {
         $start = isset($args['current_timestamp'])
             ? $args['current_timestamp'] : null;
