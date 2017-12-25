@@ -282,7 +282,9 @@ sub mount_applications {
     if ( @static_paths > 1 ) {
         require Plack::App::Cascade;
         $static_app = Plack::App::Cascade->new;
+        my %seen;
         for my $static_path (@static_paths) {
+            next if $seen{$static_path}++;
             my $dir_app
                 = Plack::App::Directory->new( { root => $static_path } )
                 ->to_app;
