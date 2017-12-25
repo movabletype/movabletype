@@ -11,7 +11,9 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
-        if (!isset($args['category_set_id'])) {
+        if ($ctx->stash('category_set')) {
+            $args['category_set_id'] = $ctx->stash('category_set')->id;
+        } elseif (!isset($args['category_set_id'])) {
             $args['category_set_id'] = 0;
         }
         $args['sort_by'] = 'label';
