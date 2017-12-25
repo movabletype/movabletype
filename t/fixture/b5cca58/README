@@ -1,0 +1,13 @@
+addons/Commercial.pack
+addons/Enterprise.pack
+plugins/BlockEditor
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE
+plugins/GoogleAnalytics
+plugins/TinyMCE
+plugins/WXRImporter
+plugins/Markdown
+plugins/MultiBlog
+plugins/spamlookup
+plugins/Textile
+plugins/WidgetManager
