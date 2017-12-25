@@ -408,7 +408,7 @@ sub _hdlr_assets {
     else {
         my $blog = $ctx->stash('blog');
         my $so
-            = lc( $args->{sort_order} )
+            = lc( $args->{sort_order} || '' )
             || ( $blog ? $blog->sort_order_posts : undef )
             || '';
         my $col
@@ -1183,8 +1183,8 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} > $a->image_height;
+        delete $arg{Width}  if ( $arg{Width} && $arg{Width} > $a->image_width );
+        delete $arg{Height} if ( $arg{Height} && $arg{Height} > $a->image_height );
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
