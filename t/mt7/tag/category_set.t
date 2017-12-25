@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -145,6 +145,7 @@ $vars->{content_type_01_name}      = $content_type_01->name;
 $vars->{content_type_02_unique_id} = $content_type_02->unique_id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
+MT::Test::Tag->run_php_tests( $blog->id );
 
 __END__
 
@@ -165,15 +166,20 @@ test category set 01
 <mt:CategorySets content_type="[% content_type_02_unique_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 02
+--- skip_php
+1
 
 === mt:CategorySets label="Set Content Type Name"
 --- template
 <mt:CategorySets blog_id="[% blog_id %]" content_type="[% content_type_01_name %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 01
+--- skip_php
+1
 
 === mt:CategorySets label="Set Category Set Name"
 --- template
 <mt:CategorySets blog_id="[% blog_id %]" name="[% category_set_02_name %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 02
+

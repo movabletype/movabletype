@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use Test::More;
 use MT::Test 'has_php';
+
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
@@ -66,6 +67,7 @@ SKIP: {
             my $block = shift;
         SKIP: {
                 skip $block->skip, 1 if $block->skip;
+                skip 'skip php test', 1 if $block->skip_php;
 
                 my $template = $block->template;
                 my $text     = $block->text || '';
