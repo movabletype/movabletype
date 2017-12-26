@@ -2860,8 +2860,10 @@ sub set_default_tmpl_params {
     my $blog_class = $app->model('blog');
     $blog ||= $blog_class->load($blog_id) if $blog_id;
     if ( my $auth = $app->user ) {
-        $param->{is_administrator}       = $auth->is_superuser;
-        $param->{can_create_newblog}     = $auth->can_do('create_site') && $blog;
+        $param->{is_administrator} = $auth->is_superuser;
+        $param->{can_access_to_system_dashboard}
+            = $auth->can_do('access_to_system_dashboard');
+        $param->{can_create_newblog} = $auth->can_do('create_site') && $blog;
         $param->{can_create_newbwebsite} = $auth->can_create_site;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
