@@ -33,8 +33,9 @@ sub dashboard {
     my $scope = $app->view;
 
     return $app->error(
-        $app->translate('Error: This blog does not have a parent website.') )
-        if $blog && $blog->is_blog && !$blog->website;
+        $app->translate(
+            'Error: This child site does not have a parent site.')
+    ) if $blog && $blog->is_blog && !$blog->website;
 
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
@@ -479,10 +480,8 @@ sub site_stats_widget_pageview_lines {
         $ten_days_ago_tl->[3],
     );
     my @ts = MT::Util::offset_time_list( time, $blog_id );
-    my $today = sprintf( '%04d-%02d-%02d',
-        $ts[5] + 1900,
-        $ts[4] + 1,
-        $ts[ 3 ] );
+    my $today
+        = sprintf( '%04d-%02d-%02d', $ts[5] + 1900, $ts[4] + 1, $ts[3] );
     my $for_date = $provider->pageviews_for_date(
         $app,
         {   startDate => $ten_days_ago,
