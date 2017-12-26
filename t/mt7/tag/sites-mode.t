@@ -127,15 +127,102 @@ $test_env->prepare_fixture(
             );
             $count_02++;
         }
+
+        # Blog 1
+        my $blog_01 = MT::Test::Permission->make_blog(
+            parent_id => 1,
+            name      => 'test blog 01'
+        );
+
+        my $ct_03 = MT::Test::Permission->make_content_type(
+            name    => 'test content data',
+            blog_id => $blog_01->id,
+        );
+        my $cf_single_line_text_03
+            = MT::Test::Permission->make_content_field(
+            blog_id         => $ct_03->blog_id,
+            content_type_id => $ct_03->id,
+            name            => 'single line text 03',
+            type            => 'single_line_text',
+            );
+        my $fields_03 = [
+            {   id        => $cf_single_line_text_03->id,
+                order     => 1,
+                type      => $cf_single_line_text_03->type,
+                options   => { label => $cf_single_line_text_03->name },
+                unique_id => $cf_single_line_text_03->unique_id,
+            },
+        ];
+        $ct_03->fields($fields_03);
+        $ct_03->save or die $ct_03->errstr;
+        my $count_03 = 1;
+
+        for ( 1 .. 5 ) {
+            MT::Test::Permission->make_content_data(
+                blog_id         => $blog_01->id,
+                content_type_id => $ct_03->id,
+                data            => {
+                    $cf_single_line_text_03->id => 'test single line text '
+                        . $count_03,
+                },
+            );
+            $count_03++;
+        }
+
+        # Blog 2
+        my $blog_02 = MT::Test::Permission->make_blog(
+            parent => 2,
+            name   => 'test blog 02'
+        );
+
+        my $ct_04 = MT::Test::Permission->make_content_type(
+            name    => 'test content data',
+            blog_id => $blog_02->id,
+        );
+        my $cf_single_line_text_04
+            = MT::Test::Permission->make_content_field(
+            blog_id         => $ct_04->blog_id,
+            content_type_id => $ct_04->id,
+            name            => 'single line text 04',
+            type            => 'single_line_text',
+            );
+        my $fields_04 = [
+            {   id        => $cf_single_line_text_04->id,
+                order     => 1,
+                type      => $cf_single_line_text_04->type,
+                options   => { label => $cf_single_line_text_04->name },
+                unique_id => $cf_single_line_text_04->unique_id,
+            },
+        ];
+        $ct_04->fields($fields_04);
+        $ct_04->save or die $ct_04->errstr;
+        my $count_04 = 6;
+
+        for ( 1 .. 5 ) {
+            MT::Test::Permission->make_content_data(
+                blog_id         => $blog_02->id,
+                content_type_id => $ct_04->id,
+                data            => {
+                    $cf_single_line_text_04->id => 'test single line text '
+                        . $count_04,
+                },
+            );
+            $count_04++;
+        }
     }
 );
 
 my $site_01 = MT->model('website')->load( { name => 'test site 01' } );
 my $site_02 = MT->model('website')->load( { name => 'test site 02' } );
+my $blog_01 = MT->model('blog')->load( { name => 'test blog 01' } );
+my $blog_02 = MT->model('blog')->load( { name => 'test blog 02' } );
 
-$vars->{include_blogs} = $site_01->id . ',' . $site_02->id;
+$vars->{include_sites} = $site_01->id . ',' . $site_02->id;
+$vars->{include_blogs} = $blog_01->id . ',' . $blog_02->id;
 $vars->{site_01_id}    = $site_01->id;
 $vars->{site_02_id}    = $site_02->id;
+$vars->{blog_01_id}    = $blog_01->id;
+$vars->{blog_02_id}    = $blog_02->id;
 
 MT::Test::Tag->run_perl_tests( $site_01->id );
 
@@ -145,7 +232,7 @@ __END__
 
 === mt:Sites mode="loop"
 --- template
-<mt:Sites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:Sites include_blogs="[% include_sites %]" mode="loop"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
 --- expected
 test single line text 5
@@ -161,8 +248,40 @@ test single line text 6
 
 === mt:Sites mode="context"
 --- template
-<mt:Sites include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:Sites include_blogs="[% include_sites %]" mode="context"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
+--- expected
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+
+=== mt:ChildSites mode="loop"
+--- template
+<mt:ChildSites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:ChildSites mode="context"
+--- template
+<mt:ChildSites include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
 --- expected
 test single line text 10
 test single line text 9
@@ -177,7 +296,7 @@ test single line text 1
 
 === mt:MultiBlog mode="loop"
 --- template
-<mt:MultiBlog include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:MultiBlog include_blogs="[% include_sites %]" mode="loop"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
 --- expected
 test single line text 5
@@ -193,7 +312,7 @@ test single line text 6
 
 === mt::MultiBlog mode="context"
 --- template
-<mt:MultiBlog include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:MultiBlog include_blogs="[% include_sites %]" mode="context"><mt:Contents name="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
 --- expected
 test single line text 10

@@ -67,17 +67,136 @@ would iterate over only the child sites with IDs 1, 12, 19, 37 and 112.
 
 sub _hdlr_blogs {
     my ( $ctx, $args, $cond ) = @_;
+
+    return $ctx->error( MT->translate('MTChildSites tags cannot be nested.') )
+        if $ctx->stash('sites_context');
+
+    # Set default mode for backwards compatibility
+    $args->{mode} ||= 'loop';
+
+    if ( $args->{blog_id} ) {
+        $args->{blog_ids} = $args->{blog_id};
+        delete $args->{blog_id};
+    }
+
+    # If MTMultiBlog was called with no arguments, we check the
+    # blog-level settings for the default includes/excludes.
+    unless ( $args->{blog_ids}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs}
+        || $args->{include_websites}
+        || $args->{exclude_websites}
+        || $args->{site_ids} )
+    {
+        require MT::RebuildTrigger;
+        my $id = $ctx->stash('blog_id');
+        my $is_include
+            = MT::RebuildTrigger->get_config_value( 'default_mt_sites_action',
+            $id );
+        my $blogs
+            = MT::RebuildTrigger->get_config_value( 'default_mt_sites_sites',
+            $id );
+
+        if ( $blogs && defined($is_include) ) {
+            $args->{ $is_include ? 'include_blogs' : 'exclude_blogs' }
+                = $blogs;
+        }
+
+        # No blog-level config set
+        # Set mode to context as this will mimic no MTMultiBlog tag
+        #else {
+        #    $args->{'mode'} = 'context';    # Override 'loop' mode
+        #}
+    }
+
+    # Filter mt:Sites args through access controls
+    require MT::RebuildTrigger;
+
+    # Load mt:Sites access control list
+    my %acl = MT::RebuildTrigger->load_sites_acl($ctx);
+    $args->{ $acl{mode} } = $acl{acl};
+
+    # Run mt:Sites in specified mode
+    my $res;
+    if ( $args->{mode} eq 'loop' ) {
+        $res = _loop(@_);
+    }
+    elsif ( $args->{mode} eq 'context' ) {
+        $res = _context(@_);
+    }
+    else {
+
+        # Throw error if mode is unknown
+        $res = $ctx->error(
+            MT->translate(
+                'Unknown "mode" attribute value: [_1]. '
+                    . 'Valid values are "loop" and "context".',
+                $args->{mode}
+            )
+        );
+    }
+
+    # Remove sites_context and blog_ids
+    $ctx->stash( 'sites_context',          '' );
+    $ctx->stash( 'sites_include_blog_ids', '' );
+    $ctx->stash( 'sites_exclude_blog_ids', '' );
+    return defined($res) ? $res : $ctx->error( $ctx->errstr );
+}
+
+## Supporting functions for 'mt:Sites' & 'mt:ChildSites' tag:
+
+# "context" mode:
+# The container's contents are evaluated once with a multi-site context
+sub _context {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $include_blogs = $args->{include_blogs} || $args->{blog_ids};
+
+    # Assuming multiblog context, set it.
+    my $set = $include_blogs || $args->{exclude_blogs} ? 1 : 0;
+    local $ctx->{__stash}{sites_context} = 1 if $set;
+    local $ctx->{__stash}{sites_include_blog_ids}
+        = join( ',', $include_blogs )
+        if $set && $include_blogs;
+    local $ctx->{__stash}{sites_exclude_blog_ids}
+        = join( ',', $args->{exclude_blogs} )
+        if $set && $args->{exclude_blogs};
+
+    # Evaluate container contents and return output
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $out     = $builder->build( $ctx, $tokens, $cond );
+    return
+        defined($out) ? $out : $ctx->error( $ctx->stash('builder')->errstr );
+
+}
+
+# "loop" mode:
+# The container's contents are evaluated once per specified blog
+sub _loop {
+    my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
 
+    # Set the context for blog loading
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
+    $args{'no_class'} = 1
+        if ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' )
+        || ( $args->{include_website}
+        && lc $args->{include_website} eq 'all' )
+        || ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' )
+        || ( $args->{site_ids} && lc $args->{site_ids} eq 'all' );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
+    local $ctx->{__stash}{contents} = undef
+        if $args->{ignore_archive_context};
     local $ctx->{__stash}{entries} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp} = undef
+        if $args->{ignore_archive_context};
+    local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
@@ -87,25 +206,25 @@ sub _hdlr_blogs {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    require MT::Blog;
     $terms{class} = 'blog' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my @blogs = MT::Blog->load( \%terms, \%args );
+
+    my @sites = MT->model('blog')->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects( \@blogs );
-
-    for my $blog (@blogs) {
+    for my $site (@sites) {
         $count++;
-        local $ctx->{__stash}{blog}    = $blog;
-        local $ctx->{__stash}{blog_id} = $blog->id;
+        local $ctx->{__stash}{blog}    = $site;
+        local $ctx->{__stash}{blog_id} = $site->id;
         local $vars->{__first__}       = $count == 1;
-        local $vars->{__last__}        = $count == scalar(@blogs);
+        local $vars->{__last__}        = $count == scalar(@sites);
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;
+        $ctx->stash( 'sites_context',  'include_blogs' );
+        $ctx->stash( 'sites_blog_ids', $site->id );
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
