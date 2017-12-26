@@ -2830,7 +2830,6 @@ sub load_core_permissions {
                 'edit_new_blog_config'         => 1,
                 'open_new_blog_screen'         => 1,
                 'set_new_blog_publish_paths'   => 1,
-                'access_to_system_dashboard'   => 1,
                 'use_tools:search'             => 1,
                 'create_site'                  => 1,
                 'open_blog_listing_screen'     => 1,
@@ -3457,9 +3456,10 @@ sub load_core_permissions {
             'order'            => 800,
             'inherit_from'     => ['blog.manage_users'],
             'permitted_action' => {
-                'access_to_any_group_list' => 1,
-                'grant_administer_role'    => 1,
-                'grant_role_for_blog'      => 1,
+                'access_to_any_group_list'   => 1,
+                'access_to_system_dashboard' => 1,
+                'grant_administer_role'      => 1,
+                'grant_role_for_blog'        => 1,
             },
         },
         'system.manage_content_data' => {
@@ -3492,6 +3492,7 @@ sub load_core_permissions {
                 'send_update_pings_content_data'          => 1,
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
+                'access_to_system_dashboard'              => 1,
             },
         },
         'system.manage_content_types' => {
@@ -3500,6 +3501,7 @@ sub load_core_permissions {
             order            => 1000,
             inherit_from     => ['system.manage_content_data'],
             permitted_action => {
+                'access_to_system_dashboard' => 1,
                 'create_new_content_type'    => 1,
                 'delete_folder'              => 1,
                 'delete_content_type'        => 1,
