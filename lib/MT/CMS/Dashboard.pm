@@ -39,6 +39,13 @@ sub dashboard {
 
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
+
+    if ( ( defined $blog_id && $blog_id eq '0' )
+        && !( $user && $user->can_do('access_to_system_dashboard') ) )
+    {
+        return $app->return_to_user_dashboard( permission => 1 );
+    }
+
     if ( defined $blog_id && $blog_id ) {
         my $blog = MT->model('blog')->load($blog_id);
         my $trust;
