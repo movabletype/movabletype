@@ -6,11 +6,13 @@
     <mt:var name="form_header">
   </mt:if>
   <div class="row">
-  <mt:if name="has_menu">
     <div class="mt-primaryNavigation">
+  <mt:if name="has_menu">
       <mt:include name="include/primary_navigation.tmpl">
-    </div>
+  <mt:else>
+      <mt:include name="include/primary_navigation.tmpl" scope_type="user">
   </mt:if>
+    </div>
 
     <mt:include name="include/main_content.tmpl">
 
