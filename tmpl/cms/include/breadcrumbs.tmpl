@@ -1,9 +1,13 @@
 <div class="mt-breadcrumb">
 <mt:if name="breadcrumbs">
   <mt:if name="scope_type" eq="system">
+    <mt:if name="can_access_system_dashboard">
   <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0">
     <__trans phrase="System">
   </a>
+    <mt:else>
+    <__trans phrase="System">
+    </mt:if>
   <mt:else>
     <mt:if name="scope_type" eq="blog">
       <mt:if name="curr_website_can_link">
