@@ -342,11 +342,14 @@ sub _hdlr_categories {
         );
         };
 
-    my $iter;
-    {
-        local $terms{category_set_id} = $args->{category_set_id} || 0;
-        $iter = $class->load_iter( \%terms, \%args );
-    }
+    my $category_set_id
+        = defined $args->{category_set_id} ? $args->{category_set_id}
+        : $ctx->stash('category_set')      ? $ctx->stash('category_set')->id
+        :                                    0;
+    my $iter
+        = $class->load_iter( { %terms, category_set_id => $category_set_id },
+        \%args );
+
     my $res     = '';
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -681,7 +684,10 @@ sub _hdlr_sub_categories {
     ) if ( $sort_method && $sort_by );
     $sort_by = 'user_custom' if !$sort_by || !$class->has_column($sort_by);
 
-    my $category_set_id = $args->{category_set_id} || 0;
+    my $category_set_id
+        = $ctx->stash('category_set')
+        ? $ctx->stash('category_set')->id
+        : $args->{category_set_id} || 0;
 
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;

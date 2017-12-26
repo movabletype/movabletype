@@ -1583,7 +1583,7 @@ sub can_save {
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
-        return $app->can_do('create_blog');
+        return $app->can_do('create_site');
     }
 }
 
@@ -1989,7 +1989,7 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-        || $app->user->can_create_blog
+        || $app->user->can_do('create_site')
         || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
@@ -2066,20 +2066,10 @@ sub post_save {
         my $assoc_class = $app->model('association');
         my $role_class  = $app->model('role');
         my $role;
-        if ( $obj->is_blog ) {
-            my @roles = $role_class->load_by_permission("administer_site");
-            foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_site\'/;
-                $role = $r;
-                last;
-            }
-        }
-        else {
-            my @roles = $role_class->load_by_permission("administer_site");
-            foreach my $r (@roles) {
-                $role = $r;
-                last;
-            }
+        my @roles = $role_class->load_by_permission("administer_site");
+        foreach my $r (@roles) {
+            $role = $r;
+            last;
         }
         $assoc_class->link( $auth => $role => $obj );
 

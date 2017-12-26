@@ -298,20 +298,11 @@ sub categories {
     $self->cache_property(
         'categories',
         sub {
-            my $join = MT::ObjectCategory->join_on(
-                'category_id',
-                undef,
-                {   sort      => 'is_primary',
-                    direction => 'descend',
-                },
-            );
             my @cats;
-            my $iter = MT::Category->load_iter(
-                { category_set_id => $self->id },
-                { join            => $join },
-            );
-            while ( my $cat = $iter->() ) {
-                push @cats, $cat;
+            my $iter = MT->model('category')
+                ->load_iter( { category_set_id => $self->id } );
+            while ( my $c = $iter->() ) {
+                push @cats, $c;
             }
             \@cats;
         },

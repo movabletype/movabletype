@@ -623,7 +623,7 @@ sub suite {
                     themeId  => 'classic_blog',
                 },
             },
-            restrictions => { 0 => [qw/ create_blog /], },
+            restrictions => { 0 => [qw/ create_site /], },
             code         => 403,
             error => 'Do not have permission to create a blog.',
         },
@@ -1331,4 +1331,3 @@ sub suite {
         },
     ];
 }
-

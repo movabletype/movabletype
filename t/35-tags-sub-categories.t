@@ -159,3 +159,12 @@ ghi
 def
 abc
 
+=== MTSubCategories with category_set context
+--- template
+<MTCategorySets id="1"><MTSubCategories top="1"><MTCategoryLabel>
+</MTSubCategories></MTCategorySets>
+--- expected
+def
+abc
+ghi
+

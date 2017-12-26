@@ -775,10 +775,20 @@ sub make_list_props {
 
         $props->{$key} = {
             id => {
-                base    => '__virtual.id',
-                display => 'force',
-                order   => 100,
-                html    => \&_make_id_html,
+                base       => '__virtual.id',
+                display    => 'force',
+                order      => 100,
+                html       => \&_make_id_html,
+                sub_fields => [
+                    {   class   => 'status',
+                        label   => 'Status',
+                        display => 'default',
+                    },
+                    {   class   => 'view-link',
+                        label   => 'Link',
+                        display => 'default',
+                    },
+                ],
             },
             author_name => {
                 base  => '__virtual.author_name',
@@ -848,6 +858,44 @@ sub _make_id_html {
     my ( $prop, $obj ) = @_;
     my $app = MT->instance;
 
+    my $status = $obj->status;
+    my $status_class
+        = $status == MT::Entry::HOLD()      ? 'Draft'
+        : $status == MT::Entry::RELEASE()   ? 'Published'
+        : $status == MT::Entry::REVIEW()    ? 'Review'
+        : $status == MT::Entry::FUTURE()    ? 'Future'
+        : $status == MT::Entry::JUNK()      ? 'Junk'
+        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+        :                                     '';
+    my $lc_status_class = lc $status_class;
+
+    my $status_icon_id
+        = $status == MT::Entry::HOLD()      ? 'ic_statusdraft'
+        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
+        : $status == MT::Entry::REVIEW()    ? 'ic_error'
+        : $status == MT::Entry::FUTURE()    ? 'ic_time'
+        : $status == MT::Entry::JUNK()      ? 'ic_error'
+        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
+        :                                     '';
+    my $status_icon_color_class
+        = $status == MT::Entry::HOLD()      ? ''
+        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
+        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
+        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
+        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
+        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
+        :                                     '';
+
+    my $status_img = '';
+    if ($status_icon_id) {
+        my $static_uri = MT->static_path;
+        $status_img = qq{
+          <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+              <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+          </svg>
+        };
+    }
+
     my $id        = $obj->id;
     my $edit_link = $app->uri(
         mode => 'view',
@@ -859,7 +907,27 @@ sub _make_id_html {
         },
     );
 
-    return qq{<a href="$edit_link">$id</a>};
+    my $permalink  = MT::Util::encode_html( $obj->permalink );
+    my $static_uri = MT->static_path;
+    my $view_link  = $status == MT::ContentStatus::RELEASE()
+        ? qq{
+            <span class="view-link">
+              <a href="$permalink" class="d-inline-block" target="_blank">
+                <svg title="View" role="img" class="mt-icon mt-icon--sm">
+                  <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                </svg>
+              </a>
+            </span>
+        }
+        : '';
+
+    return qq{
+        <span class="icon status $lc_status_class">
+          <a href="$edit_link" class="d-inline-block">$status_img</a>
+        </span>
+        <a href="$edit_link">$id</a>
+        $view_link
+    };
 }
 
 sub _make_field_list_props {
