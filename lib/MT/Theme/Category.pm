@@ -65,6 +65,7 @@ sub info_categories {
     my $data = $element->{data};
     my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
+        next unless ref $parent eq 'HASH';
         $parents++;
         $children += _count_descendant_categories( $parent, 0 );
     }
@@ -79,6 +80,7 @@ sub info_folders {
     my $data = $element->{data};
     my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
+        next unless ref $parent eq 'HASH';
         $parents++;
         $children += _count_descendant_categories( $parent, 0 );
     }
