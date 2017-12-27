@@ -207,3 +207,8 @@ test category set 02
 --- expected
 test category set 03
 
+=== mt:CategorySets is empty
+--- template
+<mt:CategorySets name="non-exisitent name"><mt:CategorySetName></mt:CategorySets>
+--- expected
+
