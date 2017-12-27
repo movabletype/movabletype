@@ -4059,7 +4059,7 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="pull-left mr-3 button-actions actions">$buttons</div>}
+        ? qq{<div class="float-left mr-3 button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);

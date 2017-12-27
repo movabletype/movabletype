@@ -21,7 +21,7 @@
     <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
       <td class="log-message">
       <mt:if name="log_detail">
-         <a href="#log-detail-<mt:var name="id" escape="html">" data-toggle="collapse" class="toggle-link icon-left icon-spinner detail-link" aria-expanded="false" aria-controls="log-detail-<mt:var name="id" escape="html">">
+         <a href="#log-detail-<mt:var name="id" escape="html">" data-toggle="collapse" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" aria-expanded="false" aria-controls="log-detail-<mt:var name="id" escape="html">">
            <mt:var name="log_message" escape="html">
          </a>
       <mt:else>
@@ -31,7 +31,11 @@
         <mt:if name="log_ip"> (<__trans phrase="IP: [_1]" params="<$mt:var name="log_ip"$>">)</mt:if>
       </mt:if>
       <mt:if name="log_detail">
-        <pre id="log-detail-<mt:var name="id">" class="collapse"><code><mt:var name="log_detail" escape="html"></code></pre>
+        <div id="log-detail-<mt:var name="id" escape="html">" class="collapse">
+          <div class="card card-block bg-light mt-2 p-2">
+            <pre style="overflow: auto; white-space: pre-wrap; word-wrap: break-word;"><mt:var name="log_detail" escape="html"></pre>
+          </div>
+        </div>
       </mt:if>
       </td>
     <mt:unless name="is_blog">
@@ -69,8 +73,3 @@
 </mt:if>
 </mtapp:listing>
 
-<mt:setvarblock name="jq_js_include" append="1">
-    jQuery('tr.log-detail-parent').click(function() {
-        jQuery(this).toggleClass('active').next('tr.log-detail').toggleClass('hidden');
-    });
-</mt:setvarblock>

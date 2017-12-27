@@ -2480,6 +2480,16 @@ sub core_menus {
             permit_action => 'use_tools:system_info_menu',
         },
 
+        'tools:search' => {
+            label     => "Search & Replace",
+            order     => 50,
+            mode      => "search_replace",
+            view      => [ "blog", 'website', 'system' ],
+            condition => sub {
+                require MT::CMS::Search;
+                return MT::CMS::Search::can_search_replace($app);
+            }
+        },
         'tools:activity_log' => {
             label     => "Activity Log",
             order     => 100,

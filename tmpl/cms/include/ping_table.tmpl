@@ -21,9 +21,16 @@
   <mt:if name="__first__">
     <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head cb">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
+      </th>
     <mt:unless name="tab_junk">
-      <th class="head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
     </mt:unless>
       <th class="head from primary"><span class="col-label"><__trans phrase="From"></span></th>
     <mt:unless name="is_blog">
@@ -47,14 +54,23 @@
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
   <mt:if name="has_edit_access">
-        <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
   <mt:else>
         &nbsp;
   </mt:if>
       </td>
   <mt:unless name="tab_junk">
       <td class="si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
-        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
+    <mt:if name="visible">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
+    <mt:elseif name="junk_status">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+    <mt:else>
+        <mtapp:svgicon id="ic_statusdraft" title="<__trans phrase="Moderated">" size="sm">
+    </mt:if>
       </td>
   </mt:unless>
       <td class="excerpt">
