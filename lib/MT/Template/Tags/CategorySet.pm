@@ -51,16 +51,15 @@ sub _hdlr_category_sets {
 
     my @category_sets;
     if ( my $set_id = $args->{id} ) {
-        my $category_set = MT->model('category_set')->load($set_id)
-            or return $ctx->_no_category_set_error();
-        push @category_sets, $category_set;
+        my $category_set = MT->model('category_set')->load($set_id);
+        push @category_sets, $category_set
+            if $category_set;
     }
     elsif ( my $name = $args->{name} ) {
         my ($category_set)
             = MT->model('category_set')
-            ->load( { blog_id => $blog_id, name => $name } )
-            or return $ctx->_no_category_set_error();
-        push @category_sets, $category_set;
+            ->load( { blog_id => $blog_id, name => $name } );
+        push @category_sets, $category_set if $category_set;
     }
     else {
         $content_type = $ctx->get_content_type_context( $args, $cond );
