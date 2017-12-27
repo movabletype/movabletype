@@ -570,7 +570,7 @@ sub core_search_apis {
 }
 
 sub can_search_replace {
-    my $app = shift;
+    my $app     = shift;
     my $blog_id = $app->param('blog_id');
 
     return 1 if $app->user->is_superuser;
@@ -838,8 +838,7 @@ sub do_search_replace {
                     $blog = MT::Blog->load($blog_id) if $blog_id;
                     if (   $blog
                         && !$blog->is_blog
-                        && ( $author->permissions($blog_id)
-                            ->has('create_site')
+                        && ($author->permissions($blog_id)->has('create_site')
                             || $author->is_superuser )
                         )
                     {
@@ -862,8 +861,7 @@ sub do_search_replace {
                 $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
-                    && $author->permissions($blog_id)
-                    ->has('create_site') )
+                    && $author->permissions($blog_id)->has('create_site') )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
                     my @blog_ids = map { $_->id } @blogs;
@@ -1309,13 +1307,16 @@ sub do_search_replace {
         object_label        => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type         => $type,
-        search              => ( $do_replace ? $orig_search : $search ) || '',
-        searched            => (
-              $do_replace
-            ? $orig_search
+        search              => (
+            $do_replace ? scalar $app->param('orig_search')
+            : scalar $app->param('search')
+            )
+            || '',
+        searched => (
+            $do_replace ? scalar $app->param('orig_search')
             : (        $do_search
-                    && defined $search
-                    && $search ne '' )
+                    && defined $app->param('search')
+                    && $app->param('search') ne '' )
             )
             || $show_all
             || defined $publish_status
