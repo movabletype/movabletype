@@ -14,7 +14,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
         $ctx->localize($localvars);
 
-        $blog_id = '';
+        $blog_id = '0';
         if (isset($args['blog_id']) && !empty($args['blog_id'])) {
             $blog_id = $args['blog_id'];
         } elseif ($blog && $blog->id) {
@@ -40,9 +40,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
             if ($content_type) {
                 // not implemented yet
             } else {
-                if ($blog && $blog->id) {
+                if ($blog_id) {
                     $category_sets = $ctx->mt->db()->fetch_category_sets(array(
-                        'blog_id' => $blog->id
+                        'blog_id' => $blog_id
                     ));
                 }
             }
