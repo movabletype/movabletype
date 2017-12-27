@@ -21,9 +21,16 @@
   <mt:if name="__first__">
     <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-      <th class="head commenter primary"><span class="col-label"><__trans phrase="Commenter"></span></th>
+      <th class="head cb">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
+      </th>
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
+      <th class="head commenter primary"><span class="col-label"><__trans phrase="Comment"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog primary"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
       </mt:unless>
@@ -45,25 +52,46 @@
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="showReply('replyto_<mt:var name="id" escape="js">',document,'visible');" onmouseout="hideReply('replyto_<mt:var name="id escape="js"">');"</mt:if>>
       <td class="cb">
   <mt:if name="has_edit_access">
-        <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" />
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
   <mt:else>
         &nbsp;
   </mt:if>
       </td>
       <td class="si <mt:if name="visible">status-publish<mt:elseif name="junk_status" eq="-1">status-spam<mt:else>status-pending</mt:if>">
-        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
+  <mt:if name="visible">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Approved">" size="sm" color="success">
+  <mt:elseif name="junk_status" eq="-1">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+  <mt:else>
+        <mtapp:svgicon id="ic_statusdraft" title="<__trans phrase="Unapproved">" size="sm">
+  </mt:if>
       </td>
       <td class="comment">
   <mt:var name="comment_long" escape="html">
   <mt:if name="has_edit_access">
         <span class="actions-link">
-          <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">"><__trans phrase="Edit"></a><mt:if name="visible"><mt:if name="can_reply"> | <a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"><mt:if name="search">%26do_search%3D1%26search%3D<mt:var name="search" escape="url"></mt:if></mt:if>" class="mt-open-dialog"><__trans phrase="Reply"></a></mt:if></mt:if>
+          <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">">
+            <__trans phrase="Edit">
+          </a>
+  <mt:if name="visible">
+    <mt:if name="can_reply">
+          |
+          <a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"><mt:if name="search">%26do_search%3D1%26search%3D<mt:var name="search" escape="url"></mt:if></mt:if>" class="mt-open-dialog">
+            <__trans phrase="Reply">
+          </a>
+    </mt:if>
+  </mt:if>
         </span>
   </mt:if>
   <mt:if name="reply_count">
         <__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">">
   </mt:if>
+
   <br/>
+
   <mt:if name="commenter_id">
     <mt:if name="commenter_approved">
       <mt:setvar name="commenter_status" value="<__trans phrase="Trusted">">
@@ -74,22 +102,29 @@
         <mt:setvar name="commenter_status" value="<__trans phrase="Authenticated">">
       </mt:if>
     </mt:if>
+
     <mt:if name="auth_icon_url">
-      <img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
+        <img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
     </mt:if>
     <mt:if name="can_edit_commenter">
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">">
+          <mt:var name="author" escape="html">
+        </a>
     <mt:else>
-        <span class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>"><mt:var name="author" escape="html"></span>
+        <span class="icon-right-wide">
+          <mt:var name="author" escape="html">
+        </span>
     </mt:if>
   <mt:else>
     <mt:if name="author">
-        <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
+        <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">">
+          <mt:var name="author_display" escape="html">
+        </a>
     <mt:else>
         [<__trans phrase="Anonymous">]
     </mt:if>
   </mt:if>
-      </td>
+      </td><mt:ignore>close tag of div.comment</mt:ignore>
   <mt:unless name="is_blog">
       <td class="blog">
         <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></a>
