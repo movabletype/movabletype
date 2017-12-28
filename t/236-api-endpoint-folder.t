@@ -3,19 +3,27 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::Test;
 use MT::Test::DataAPI;
 use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
+
+my $category_set = MT::Test::Permission->make_category_set( blog_id => 1 );
+my $category_set_category = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+);
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -85,6 +93,11 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # category of category set.
+            path   => '/v2/sites/1/folders/' . $category_set_category->id,
+            method => 'GET',
+            code   => 404,
+        },
 
         # get_folder - normal tests
         {   path      => '/v2/sites/1/folders/22',
@@ -145,13 +158,18 @@ sub suite {
             params => { folder => { label => 'create-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
-            error => 'Do not have permission to create a folder.',
+            error        => 'Do not have permission to create a folder.',
         },
 
         # create_folder - normal tests
-        {   path      => '/v2/sites/1/folders',
-            method    => 'POST',
-            params    => { folder => { label => 'create-folder', }, },
+        {   path   => '/v2/sites/1/folders',
+            method => 'POST',
+            params => {
+                folder => {
+                    label           => 'create-folder',
+                    category_set_id => $category_set->id,
+                },
+            },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.folder',
@@ -169,8 +187,9 @@ sub suite {
             ],
             result => sub {
                 $app->model('folder')->load(
-                    {   blog_id => 1,
-                        label   => 'create-folder',
+                    {   blog_id         => 1,
+                        label           => 'create-folder',
+                        category_set_id => 0,
                     }
                 );
             },
@@ -222,19 +241,33 @@ sub suite {
             params => { folder => { label => 'update-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
-            error => 'Do not have permission to update a folder.',
+            error        => 'Do not have permission to update a folder.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/folders/' . $category_set_category->id,
+            method => 'PUT',
+            params => {
+                folder => { label => 'update-folder-with-category-set-id', },
+            },
+            code => 404,
         },
 
         # update_folder - normal tests
         {   path   => '/v2/sites/1/folders/22',
             method => 'PUT',
-            params => { folder => { label => 'update-folder', }, },
+            params => {
+                folder => {
+                    label           => 'update-folder',
+                    category_set_id => $category_set->id
+                },
+            },
             result => sub {
                 $app->model('folder')->load(
-                    {   id      => 22,
-                        blog_id => 1,
-                        label   => 'update-folder',
-                        class   => 'folder',
+                    {   id              => 22,
+                        blog_id         => 1,
+                        label           => 'update-folder',
+                        class           => 'folder',
+                        category_set_id => 0,
                     }
                 );
             },
@@ -307,7 +340,21 @@ sub suite {
             },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
-            error => 'Do not have permission to permutate folders.',
+            error        => 'Do not have permission to permutate folders.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/folders/permutate',
+            method => 'POST',
+            params => sub {
+                my @cats
+                    = $app->model('category')
+                    ->load(
+                    { blog_id => 1,    category_set_id => $category_set->id },
+                    { sort    => 'id', direction       => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                { folders => \@cat_ids };
+            },
+            code => 400,
         },
 
         # permutate_folder - normal tests
@@ -376,6 +423,11 @@ sub suite {
             restrictions => { 1 => [qw/ delete_folder /], },
             code         => 403,
             error        => 'Do not have permission to delete a folder.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/folders/' . $category_set_category->id,
+            method => 'DELETE',
+            code   => 404,
         },
 
         # delete_folder - normal tests

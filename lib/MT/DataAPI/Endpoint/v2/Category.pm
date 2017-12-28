@@ -21,7 +21,7 @@ sub list {
 sub list_common {
     my ( $app, $endpoint, $class ) = @_;
 
-    my %terms;
+    my %terms = ( category_set_id => 0 );
     if ( $app->param('top') ) {
         %terms = ( parent => 0 );
     }
@@ -113,9 +113,10 @@ sub list_siblings_common {
     my $cat = get_common( $app, $endpoint, $class ) or return;
 
     my %terms = (
-        id      => { not => $cat->id },
-        blog_id => $cat->blog_id,
-        parent  => $cat->parent,
+        id              => { not => $cat->id },
+        blog_id         => $cat->blog_id,
+        parent          => $cat->parent,
+        category_set_id => 0,
     );
     my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
@@ -204,6 +205,12 @@ sub get_common {
     my ( $blog, $category ) = context_objects(@_)
         or return;
 
+    if ( $category->category_set_id ) {
+        return $app->error(
+            $app->translate( '[_1] not found', $category->class_label ),
+            404, );
+    }
+
     run_permission_filter( $app, 'data_api_view_permission_filter',
         $class, $category->id, obj_promise($category) )
         or return;
@@ -221,6 +228,14 @@ sub update_common {
 
     my ( $blog, $orig_category ) = context_objects(@_)
         or return;
+
+    if ( $orig_category->category_set_id ) {
+        return $app->error(
+            $app->translate( '[_1] not found', $orig_category->class_label ),
+            404,
+        );
+    }
+
     my $new_category = $app->resource_object( $class, $orig_category )
         or return;
 
@@ -242,6 +257,12 @@ sub delete {
 
     my ( $blog, $category ) = context_objects(@_)
         or return;
+
+    if ( $category->category_set_id ) {
+        return $app->error(
+            $app->translate( '[_1] not found', $category->class_label ),
+            404, );
+    }
 
     run_permission_filter( $app, 'data_api_delete_permission_filter',
         'category', $category )
@@ -290,7 +311,10 @@ sub list_for_entry {
             = ( ( grep { $_->[1] } @$rows ), ( grep { !$_->[1] } @$rows ) );
     }
 
-    my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0 );
+    my %terms = (
+        id => @$rows ? [ map { $_->[0] } @$rows ] : 0,
+        category_set_id => 0,
+    );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
     +{  totalResults => $res->{count},
@@ -347,7 +371,9 @@ sub permutate_common {
         }
 
         my $cat
-            = $app->model($class)->load( { id => $c->{id}, class => $class } )
+            = $app->model($class)
+            ->load(
+            { id => $c->{id}, class => $class, category_set_id => 0 } )
             or return $invalid_error->();
 
         push @categories, $cat;
@@ -355,10 +381,14 @@ sub permutate_common {
 
     my $parameter_ids
         = join( ',', sort { $a <=> $b } map { $_->{id} } @$categories_array );
-    my $exist_ids = join( ',',
+    my $exist_ids = join(
+        ',',
         sort    { $a <=> $b }
-            map { $_->id }
-            ( $app->model($class)->load( { blog_id => $site->id } ) ) );
+            map { $_->id } (
+            $app->model($class)
+                ->load( { blog_id => $site->id, category_set_id => 0 } )
+            )
+    );
     if ( ( $parameter_ids || '' ) ne ( $exist_ids || '' ) ) {
         return $invalid_error->();
     }
