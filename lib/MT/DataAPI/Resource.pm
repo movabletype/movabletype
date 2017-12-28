@@ -46,6 +46,12 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::Folder::updatable_fields",
             },
         ],
+        'category_set' => [
+            {   version          => 4,
+                fields           => "${pkg}v4::CategorySet::fields",
+                updatable_fields => "${pkg}v4::CategorySet::updatable_fields",
+            },
+        ],
         'comment' => [
             {   version          => 1,
                 fields           => "${pkg}Comment::fields",

@@ -2172,6 +2172,57 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
         },
+
+        # version 4
+        {   id          => 'list_category_sets',
+            route       => '/sites/:site_id/category_sets',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::list",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of category sets.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'create_category_set',
+            route       => '/sites/:site_id/category_sets',
+            resources   => ['category_set'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::create",
+            error_codes => {
+                403 => 'Do not have permission to create a category set.',
+            },
+        },
+        {   id          => 'get_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category set.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'update_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            resources   => ['category_set'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::update",
+            error_codes => {
+                403 => 'Do not have permission to update a category set.',
+            },
+        },
+        {   id          => 'delete_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a category set.',
+            },
+        },
     ];
 }
 
@@ -2339,6 +2390,11 @@ sub init_plugins {
                 . 'list_permission_filter.plugin' => "${pfx}Plugin::can_list",
             $pkg
                 . 'view_permission_filter.plugin' => "${pfx}Plugin::can_view",
+
+            # category_set callbacks
+            $pkg
+                . 'save_filter.category_set' =>
+                "${pfx}CategorySet::save_filter",
         }
     );
 

@@ -39,6 +39,35 @@ sub list_actions {
     };
 }
 
+sub can_list {
+    my ( $eh, $app, $terms, $args, $options ) = @_;
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
+    $user->permissions( $app->blog->id )
+        ->can_do('access_to_category_set_list');
+}
+
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    return unless $id;
+
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
+
+    my $obj = $objp->force or return 0;
+    $user->permissions( $obj->blog_id )->can_do('edit_category_set');
+}
+
+sub can_save {
+    my ( $eh, $app, $id ) = @_;
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
+    $app->can_do('save_category_set');
+}
+
 sub can_delete {
     my ( $eh, $app, $set ) = @_;
     my $author = $app->user;
