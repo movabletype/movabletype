@@ -628,6 +628,10 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.content_data' =>
                 "${pfx}ContentData::cms_pre_load_filtered_list",
+            "${pkg}list_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_list",
+            "${pkg}view_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_view",
         }
     );
 

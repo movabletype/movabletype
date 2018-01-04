@@ -1710,8 +1710,12 @@ BEGIN {
                 primary          => 'name',
                 view             => [ 'website', 'blog' ],
                 default_sort_key => 'name',
-                permission       => 'access_to_category_set_list',
-                scope_mode       => 'this',
+                permission       => {
+                    permit_action => 'access_to_category_set_list',
+                    inherit       => 0,
+                },
+                data_api_permission => undef,
+                scope_mode          => 'this',
             },
             content_type => {
                 screen_label        => 'Manage Content Type',

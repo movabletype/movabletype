@@ -211,6 +211,8 @@ sub init_core_callbacks {
                 "${pfx}Category::filtered_list_param",
 
             # category_set callbacks
+            "${pkg}save_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_save",
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
 
@@ -317,8 +319,10 @@ sub init_core_callbacks {
             $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
 
             # Contnt Tyoe
-            $pkg . 'post_save.content_type'   => "${pfx}ContentType::post_save",
-            $pkg . 'post_delete.content_type'   => "${pfx}ContentType::post_delete",
+            $pkg . 'post_save.content_type' => "${pfx}ContentType::post_save",
+            $pkg
+                . 'post_delete.content_type' =>
+                "${pfx}ContentType::post_delete",
 
         }
     );
