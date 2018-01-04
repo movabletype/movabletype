@@ -57,11 +57,13 @@ function stopPropagation(e) {
 </mt:if>
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
+        <a href="<mt:var name="mt_url">?__mode=dashboard">
 <mt:if name="scope_type" eq="system">
-        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+          <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
 <mt:else>
-        <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
+          <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
 </mt:if>
+        </a>
         <span class="mt-productHeader__name">
           <mt:var name="product_header_name">
         </span>
@@ -132,7 +134,13 @@ function stopPropagation(e) {
   <div class="mt-primaryNavigation__header--invert">
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
-        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+<mt:if name="scope_type" ne="user">
+        <a href="<mt:var name="mt_url">?__mode=dashboard">
+</mt:if>
+          <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+<mt:if name="scope_type" ne="user">
+        </a>
+</mt:if>
         <span class="mt-productHeader__name">
           <mt:var name="product_header_name">
         </span>
