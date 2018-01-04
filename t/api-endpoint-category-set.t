@@ -199,7 +199,13 @@ sub normal_tests_for_get_category_set {
                     count => 1,
                 },
             ],
-            result => $category_set,
+            result => sub {
+                MT::DataAPI::Resource->from_object(
+                    $category_set,
+                    [   qw( blog categories createdBy createdDate id modifiedBy modifiedDate name updatable )
+                    ]
+                );
+            },
         }
     );
     test_data_api(
@@ -384,10 +390,13 @@ sub normal_tests_for_list_category_sets {
                     items        => MT::DataAPI::Resource->from_object(
                         [   MT->model('category_set')
                                 ->load( { blog_id => $site_id } )
-                        ]
+                        ],
+                        [   qw( blog categories createdBy createdDate id modifiedBy modifiedDate name updatable )
+                        ],
                     ),
                 };
             },
+
         }
     );
     test_data_api(

@@ -14,8 +14,13 @@ sub fields {
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
-        {   name  => 'content_type_count',
-            alias => 'ct_count',
+        {   name      => 'content_type_count',
+            alias     => 'ct_count',
+            condition => sub {
+                my $app  = MT->instance or return;
+                my $user = $app->user   or return;
+                $user->id ? 1 : 0;
+            },
         },
         {   name        => 'categories',
             from_object => sub {
@@ -29,7 +34,7 @@ sub fields {
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
-                my $app  = MT->instance;
+                my $app = MT->instance;
                 my $user = $app->user or return;
 
                 if ( $user->is_superuser ) {
