@@ -2223,6 +2223,127 @@ sub core_endpoints {
                 403 => 'Do not have permission to delete a category set.',
             },
         },
+
+        {   id => 'list_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::Category::list_for_category_set",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set. ',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_parent_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/parents',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_parents_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_sibling_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/siblings',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_siblings_for_category_set",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_child_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/children',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_children_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'create_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories',
+            resources   => ['category'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::Category::create_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to create a category for category set.',
+            },
+        },
+        {   id => 'get_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::Category::get_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'update_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            resources   => ['category'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::Category::update_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to update a category for category set.',
+            },
+        },
+        {   id => 'delete_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::Category::delete_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to delete a category for category set.',
+            },
+        },
+        {   id => 'permutate_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/permutate',
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::Category::permutate_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to permutate categories for category set.',
+            },
+        },
     ];
 }
 

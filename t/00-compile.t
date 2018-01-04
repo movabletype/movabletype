@@ -174,6 +174,7 @@ use_ok('MT::ContentStatus');
 use_ok('MT::ContentType');
 use_ok('MT::ContentType::UniqueID');
 use_ok('MT::DataAPI::Callback::CategorySet');
+use_ok('MT::DataAPI::Endpoint::v4::Category');
 use_ok('MT::DataAPI::Endpoint::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::EntryStatus');

@@ -25,7 +25,7 @@ sub fields {
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
                 my $app  = MT->instance;
-                my $user = $app->user;
+                my $user = $app->user or return;
 
                 if ( $user->is_superuser ) {
                     $_->{updatable} = 1 for @$hashes;
