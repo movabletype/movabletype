@@ -57,7 +57,7 @@ function stopPropagation(e) {
 </mt:if>
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
-        <a href="<mt:var name="mt_url">?__mode=dashboard">
+        <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 <mt:if name="scope_type" eq="system">
           <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
 <mt:else>
@@ -135,7 +135,7 @@ function stopPropagation(e) {
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
 <mt:if name="scope_type" ne="user">
-        <a href="<mt:var name="mt_url">?__mode=dashboard">
+        <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 </mt:if>
           <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
 <mt:if name="scope_type" ne="user">
