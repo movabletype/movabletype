@@ -2953,6 +2953,7 @@ sub load_core_permissions {
             'label'            => 'Manage Categories',
             'order'            => 400,
             'permitted_action' => {
+                'access_to_category_list'             => 1,
                 'bulk_edit_category_trackbacks'       => 1,
                 'delete_category'                     => 1,
                 'delete_category_trackback'           => 1,
