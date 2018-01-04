@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -796,7 +796,7 @@ sub load_permissions_from_action {
     return $perms;
 }
 
-__PACKAGE__->add_trigger( pre_save   => \&_rebuild_permissions );
+__PACKAGE__->add_trigger( pre_save => \&_rebuild_permissions );
 
 sub _rebuild_permissions {
     my ( $perm, $orig ) = @_;

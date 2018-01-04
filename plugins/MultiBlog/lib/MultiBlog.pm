@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -93,7 +93,8 @@ sub preprocess_native_tags {
             if $ctx->stash('multiblog_include_blog_ids');
         $args->{exclude_blogs} = $ctx->stash('multiblog_exclude_blog_ids')
             if $ctx->stash('multiblog_exclude_blog_ids');
-        $args->{include_with_website} = $ctx->stash('multiblog_include_with_website')
+        $args->{include_with_website}
+            = $ctx->stash('multiblog_include_with_website')
             if $ctx->stash('multiblog_include_with_website');
     }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -274,8 +274,8 @@ sub list_props {
                 my $author = MT->model('author')->load($val)
                     or
                     return $prop->error( MT->translate('Invalid parameter') );
-                my $label = MT->translate( 'User is [_1]',
-                    $author->nickname, );
+                my $label
+                    = MT->translate( 'User is [_1]', $author->nickname, );
                 return $label;
             },
             label_via_param => sub {

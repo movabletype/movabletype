@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,8 +14,8 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $perms   = $app->permissions
+    my $q     = $app->param;
+    my $perms = $app->permissions
         or return $app->permission_denied();
     my $blog    = $app->blog;
     my $blog_id = $q->param('blog_id');

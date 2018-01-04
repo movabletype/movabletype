@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -359,13 +359,13 @@ sub untrust_commenter {
 }
 
 sub approve_item {
-    my $app   = shift;
+    my $app = shift;
     $app->param( 'approve', 1 );
     set_item_visible($app);
 }
 
 sub unapprove_item {
-    my $app   = shift;
+    my $app = shift;
     $app->param( 'unapprove', 1 );
     set_item_visible($app);
 }

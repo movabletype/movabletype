@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -205,8 +205,8 @@ sub dialog_list_asset {
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT->model('tag')->load( { name => '@userpic' },
-            { binary => { name => 1 } } );
+        my $tag = MT->model('tag')
+            ->load( { name => '@userpic' }, { binary => { name => 1 } } );
         if ($tag) {
             require MT::ObjectTag;
             $args{'join'} = MT::ObjectTag->join_on(
@@ -337,12 +337,14 @@ sub insert {
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
     my $extension_message;
-    if ( $ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to );
-    } elsif ( !$ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension '[_1]' added",
-        $ext_to );
+    if ( $ext_from && $ext_to ) {
+        $extension_message
+            = $app->translate( "Extension changed from [_1] to [_2]",
+            $ext_from, $ext_to );
+    }
+    elsif ( !$ext_from && $ext_to ) {
+        $extension_message
+            = $app->translate( "Extension '[_1]' added", $ext_to );
     }
 
     my $tmpl;
@@ -586,12 +588,14 @@ sub js_upload_file {
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
     my $extension_message;
-    if ( $ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to );
-    } elsif ( !$ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension '[_1]' added",
-        $ext_to );
+    if ( $ext_from && $ext_to ) {
+        $extension_message
+            = $app->translate( "Extension changed from [_1] to [_2]",
+            $ext_from, $ext_to );
+    }
+    elsif ( !$ext_from && $ext_to ) {
+        $extension_message
+            = $app->translate( "Extension '[_1]' added", $ext_to );
     }
 
     my $metadata = {
@@ -1177,7 +1181,7 @@ sub _set_start_upload_params_compat {
             unless $perms->can_do('upload');
 
         my $blog_id = $app->param('blog_id');
-        my $blog = MT->model('blog')->load($blog_id)
+        my $blog    = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1420,7 +1424,7 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        my $blog = MT->model('blog')->load($blog_id)
+        my $blog    = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1564,10 +1568,12 @@ sub _upload_file_compat {
                     )[2];
 
                 if ( !$ext_old && $ext_new ) {
+
                     # Add extension to filename
-                    $basename .= '.'  . $ext_new;
+                    $basename .= '.' . $ext_new;
                     $app->param( "changed_file_ext", ",$ext_new" );
-                } elsif (   $ext_new ne lc($ext_old)
+                }
+                elsif ($ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
@@ -2102,11 +2108,12 @@ sub _upload_file {
             [2];
 
         if ( !$ext_old && $ext_new ) {
+
             # Add extension to filename
             $basename .= '.' . $ext_new;
             $app->param( "changed_file_ext", ",$ext_new" );
         }
-        elsif ( $ext_new ne lc($ext_old)
+        elsif ($ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {

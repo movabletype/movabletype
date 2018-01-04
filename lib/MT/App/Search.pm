@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -60,8 +60,8 @@ sub core_parameters {
                     text      => 'like',
                     text_more => 'like'
                 },
-                'sort' => 'authored_on',
-                terms  => \&_filter_terms,
+                'sort'       => 'authored_on',
+                terms        => \&_filter_terms,
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -529,7 +529,7 @@ sub search_terms {
         if ( 'HASH' ne ref $params->{terms} ) {
             my $code = $params->{terms};
             $code = MT->handler_to_coderef($code);
-            eval { %def_terms = %{ $code->( $app ) }; };
+            eval { %def_terms = %{ $code->($app) }; };
         }
         else {
             %def_terms = %{ $params->{terms} };
@@ -995,12 +995,12 @@ sub query_parse {
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
         if ( my @filter = $app->param($type) ) {
-            foreach my $filter ( @filter ) {
+            foreach my $filter (@filter) {
                 if ( $filter =~ m/\s/ ) {
                     $filter = '"' . $filter . '"';
                 }
                 $search .= " $type:$filter";
-           }
+            }
         }
     }
 
@@ -1092,7 +1092,7 @@ sub _query_parse_core {
                     if ($code) {
                         my $join_args = $code->( $app, $term );
                         if ( 'ARRAY' eq ref $join_args->[0] ) {
-                            foreach my $j ( @$join_args ) {
+                            foreach my $j (@$join_args) {
                                 push @joins, $j;
                             }
                         }
@@ -1188,7 +1188,11 @@ sub _join_category {
 
     # search for exact match
     my $joins;
-    if (scalar @$lucene_struct > 1 && ( $lucene_struct->[1]->{conj} && $lucene_struct->[1]->{conj} eq 'AND' ) ) {
+    if (scalar @$lucene_struct > 1
+        && (   $lucene_struct->[1]->{conj}
+            && $lucene_struct->[1]->{conj} eq 'AND' )
+        )
+    {
         while ( my $t = shift @$lucene_struct ) {
             my $j = _join_category( $app, $t );
             push @$joins, $j;
@@ -1197,10 +1201,10 @@ sub _join_category {
     else {
         my $make_alias = sub {
             my $length = shift @_ || 8;
-            my @seed = ('a'..'z', 'A'..'Z', 0..9);
+            my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
             my $str = '';
-            while(length $str < $length) {
-                $str .= @seed[int rand(scalar @seed)];
+            while ( length $str < $length ) {
+                $str .= @seed[ int rand( scalar @seed ) ];
             }
 
             return $str;
@@ -1208,32 +1212,36 @@ sub _join_category {
         require MT::Placement;
         require MT::Category;
         my $place_class = $app->model('placement');
-        my $cat_class = $app->model('category');
-        my $trail = $make_alias->(4);
-        my $p_alias = $place_class->datasource . '_' . $trail;
-        my $c_alias = $cat_class->datasource . '_' . $trail;
+        my $cat_class   = $app->model('category');
+        my $trail       = $make_alias->(4);
+        my $p_alias     = $place_class->datasource . '_' . $trail;
+        my $c_alias     = $cat_class->datasource . '_' . $trail;
 
-        my ($terms) = $app->_query_parse_core( $lucene_struct,{ ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {});
+        my ($terms)
+            = $app->_query_parse_core( $lucene_struct,
+            { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
         next unless $terms && @$terms;
 
-        push @$terms, '-and', {
+        push @$terms, '-and',
+            {
             id      => \"= $p_alias.placement_category_id",
             blog_id => \'= entry_blog_id',
-        };
+            };
 
         my $join = MT::Placement->join_on(
             undef,
             { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
-            {  join  => MT::Category->join_on( undef, $terms, { alias => $c_alias } ),
+            {   join => MT::Category->join_on(
+                    undef, $terms, { alias => $c_alias }
+                ),
                 unique => 1,
-                alias => $p_alias
+                alias  => $p_alias
             }
         );
 
         push @$joins, @$join;
     }
     return $joins;
-
 
 }
 

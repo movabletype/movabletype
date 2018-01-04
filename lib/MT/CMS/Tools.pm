@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -983,8 +983,7 @@ sub recover_profile_password {
     return $app->error( $app->translate("Invalid author_id") )
         if !$author || $author->type != MT::Author::AUTHOR() || !$author_id;
 
-    my ( $rc, $res )
-        = reset_password( $app, $author );
+    my ( $rc, $res ) = reset_password( $app, $author );
 
     if ($rc) {
         my $url = $app->uri(
@@ -1582,7 +1581,7 @@ sub restore {
     };
 
     # Set flag
-    $app->request('__restore_in_progress', 1);
+    $app->request( '__restore_in_progress', 1 );
 
     require File::Path;
 
@@ -1596,7 +1595,7 @@ sub restore {
             ( $blog_ids, $asset_ids )
                 = restore_directory( $app, $dir, \$error );
         };
-        $app->request('__restore_in_progress', undef);
+        $app->request( '__restore_in_progress', undef );
         return $return_error->($@) if $@;
 
         if ( defined $blog_ids ) {
@@ -1682,7 +1681,7 @@ sub restore {
                 $app->print_encode(
                     $app->build_page( "restore_end.tmpl", $param ) );
                 close $fh if $fh;
-                $app->request('__restore_in_progress', undef);
+                $app->request( '__restore_in_progress', undef );
                 return 1;
             }
             my $temp_dir = $app->config('TempDir');
@@ -1703,7 +1702,7 @@ sub restore {
                 ( $blog_ids, $asset_ids )
                     = restore_directory( $app, $tmp, \$error );
             };
-            $app->request('__restore_in_progress', undef);
+            $app->request( '__restore_in_progress', undef );
             return $return_error->($@) if $@;
 
             if ( defined $blog_ids ) {
@@ -2699,7 +2698,7 @@ sub recover_passwords {
 }
 
 sub reset_password {
-    my $app      = shift;
+    my $app = shift;
     my ($author) = @_;
 
     require MT::Auth;

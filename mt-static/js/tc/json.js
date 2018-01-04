@@ -1,5 +1,5 @@
 /*
-JavasScript Object Notation (JSON) Library - Copyright 2005-2017 Six Apart, Ltd.
+JavasScript Object Notation (JSON) Library - Copyright 2005-2018 Six Apart, Ltd.
 $Id$
 */
 

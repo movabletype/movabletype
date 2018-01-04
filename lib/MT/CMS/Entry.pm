@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,9 +14,9 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q          = $app->param;
-    my $type       = $q->param('_type');
-    my $perms      = $app->permissions
+    my $q     = $app->param;
+    my $type  = $q->param('_type');
+    my $perms = $app->permissions
         or return $app->permission_denied();
     my $blog_class = $app->model('blog');
     my $blog       = $app->blog;
@@ -1206,9 +1206,9 @@ sub _build_entry_preview {
     my $orig_file;
     my $file_ext;
     if ($tmpl_map) {
-        $tmpl         = MT::Template->load( $tmpl_map->template_id );
+        $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
-        $file_ext     = $blog->file_extension || '';
+        $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
 
         my $blog_path
@@ -2034,7 +2034,7 @@ sub save_entries {
 
     MT::Util::Log->info('--- Start save_entries.');
 
-    my $perms   = $app->permissions
+    my $perms = $app->permissions
         or $app->permission_denied();
     my $type    = $app->param('_type');
     my $blog_id = $app->param('blog_id');
@@ -2613,8 +2613,8 @@ sub build_entry_table {
     my $app_author = $app->user;
     my $perms      = $app->permissions
         or return $app->permission_denied();
-    my $type       = $args{type};
-    my $class      = $app->model($type);
+    my $type  = $args{type};
+    my $class = $app->model($type);
 
     my $list_pref = $app->list_pref($type);
     if ( $args{is_power_edit} ) {

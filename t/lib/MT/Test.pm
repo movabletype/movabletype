@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1277,7 +1277,7 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->created_on('20000131074500');
     $asset->save or die "Couldn't save asset record 5: " . $asset->errstr;
 
-    $asset->set_score( 'unit test', $bobd,               8, 5 );
+    $asset->set_score( 'unit test', $bobd, 8, 5 );
 
     $asset = new $img_pkg;
     $asset->blog_id(1);
@@ -1296,7 +1296,7 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->created_on('20000131074600');
     $asset->save or die "Couldn't save asset record 6: " . $asset->errstr;
 
-    $asset->set_score( 'unit test', $bobd,               9, 6 );
+    $asset->set_score( 'unit test', $bobd, 9, 6 );
 
     $asset = new $img_pkg;
     $asset->blog_id(1);
@@ -1315,7 +1315,7 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->created_on('20000131074700');
     $asset->save or die "Couldn't save asset record 7: " . $asset->errstr;
 
-    $asset->set_score( 'unit test', $bobd,               7, 7 );
+    $asset->set_score( 'unit test', $bobd, 7, 7 );
     ## ObjectScore
     my $e5 = MT::Entry->load(5);
     $e5->set_score( 'unit test', $bobd,               5, 1 );

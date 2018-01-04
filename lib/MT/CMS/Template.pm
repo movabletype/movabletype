@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -3216,7 +3216,7 @@ sub delete_widget {
 }
 
 sub save_template_prefs {
-    my $app     = shift;
+    my $app = shift;
 
     # Magic token check
     $app->validate_magic() or return;
