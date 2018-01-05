@@ -2174,6 +2174,8 @@ sub core_endpoints {
         },
 
         # version 4
+
+        # category_set
         {   id          => 'list_category_sets',
             route       => '/sites/:site_id/category_sets',
             version     => 4,
@@ -2224,6 +2226,7 @@ sub core_endpoints {
             },
         },
 
+        # category for category_set
         {   id => 'list_categories_for_category_set',
             route =>
                 '/sites/:site_id/category_sets/:category_set_id/categories',
@@ -2342,6 +2345,136 @@ sub core_endpoints {
             error_codes => {
                 403 =>
                     'Do not have permission to permutate categories for category set.',
+            },
+        },
+
+        # content_type
+        {   id             => 'list_content_types',
+            route          => '/sites/:site_id/content_types',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentType::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'ascend',
+                searchFields => 'name,description',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content types.',
+            },
+        },
+        {   id          => 'create_content_type',
+            route       => '/sites/:site_id/content_types',
+            resources   => ['content_type'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content type.',
+            },
+        },
+        {   id          => 'get_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content type.',
+            },
+        },
+        {   id          => 'update_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            resources   => ['content_type'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content type.',
+            },
+        },
+        {   id          => 'delete_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content type.',
+            },
+        },
+
+        # content_field
+        {   id => 'list_content_fields',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentField::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
+                searchFields => 'name,description',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content fields.',
+            },
+        },
+        {   id => 'create_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields',
+            resources   => ['content_field'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content type.',
+            },
+        },
+        {   id => 'get_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content field.',
+            },
+        },
+        {   id => 'update_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            resources   => ['content_field'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content field.',
+            },
+        },
+        {   id => 'delete_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content field.',
+            },
+        },
+        {   id => 'permutate_content_fields',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/permutate',
+            verb        => 'POST',
+            handler     => "${pkg}v4::ContentField::permutate",
+            error_codes => {
+                403 => 'Do not have permission to permutate content fields.',
             },
         },
     ];
