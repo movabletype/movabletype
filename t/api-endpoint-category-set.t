@@ -372,6 +372,13 @@ sub irregular_tests_for_list_category_sets {
             code   => 404,
         }
     );
+    test_data_api(
+        {   note   => 'system scope',
+            path   => '/v4/sites/0/category_sets',
+            method => 'GET',
+            code   => 404,
+        }
+    );
 }
 
 sub normal_tests_for_list_category_sets {

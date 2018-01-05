@@ -8,6 +8,9 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    return $app->error( $app->translate('Site not found'), 404 )
+        unless $app->blog;
+
     my $res = filtered_list( $app, $endpoint, 'category_set' ) or return;
 
     +{  totalResults => $res->{count} || 0,
