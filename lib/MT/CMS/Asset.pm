@@ -1415,6 +1415,7 @@ sub _make_upload_destinations {
 }
 
 sub _set_start_upload_params {
+
     my $app = shift;
     my ($param) = @_;
 
@@ -1424,36 +1425,38 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        my $blog    = MT->model('blog')->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        if ( $blog_id ) {
+            my $blog    = MT->model('blog')->load($blog_id)
+                or return $app->error(
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
-        # Make a list of upload destination
-        my @dest_root = _make_upload_destinations( $app, $blog, 1 );
-        $param->{destination_loop} = \@dest_root;
+            # Make a list of upload destination
+            my @dest_root = _make_upload_destinations( $app, $blog, 1 );
+            $param->{destination_loop} = \@dest_root;
 
-        # Set default upload options
-        $param->{allow_to_change_at_upload}
-            = defined $blog->allow_to_change_at_upload
-            ? $blog->allow_to_change_at_upload
-            : 1;
-        if ( !$param->{allow_to_change_at_upload} ) {
-            foreach my $opt ( grep { $_->{selected} } @dest_root ) {
-                $param->{upload_destination_label} = $opt->{label};
-                $param->{upload_destination_value} = $opt->{path};
+            # Set default upload options
+            $param->{allow_to_change_at_upload}
+                = defined $blog->allow_to_change_at_upload
+                ? $blog->allow_to_change_at_upload
+                : 1;
+            if ( !$param->{allow_to_change_at_upload} ) {
+                foreach my $opt ( grep { $_->{selected} } @dest_root ) {
+                    $param->{upload_destination_label} = $opt->{label};
+                    $param->{upload_destination_value} = $opt->{path};
+                }
             }
+            $param->{destination}         = $blog->upload_destination;
+            $param->{extra_path}          = $blog->extra_path;
+            $param->{operation_if_exists} = $blog->operation_if_exists;
+            $param->{normalize_orientation}
+                = defined $blog->normalize_orientation
+                ? $blog->normalize_orientation
+                : 1;
+            $param->{auto_rename_non_ascii}
+                = defined $blog->auto_rename_non_ascii
+                ? $blog->auto_rename_non_ascii
+                : 1;
         }
-        $param->{destination}         = $blog->upload_destination;
-        $param->{extra_path}          = $blog->extra_path;
-        $param->{operation_if_exists} = $blog->operation_if_exists;
-        $param->{normalize_orientation}
-            = defined $blog->normalize_orientation
-            ? $blog->normalize_orientation
-            : 1;
-        $param->{auto_rename_non_ascii}
-            = defined $blog->auto_rename_non_ascii
-            ? $blog->auto_rename_non_ascii
-            : 1;
     }
     else {
         $param->{normalize_orientation} = 1;
