@@ -3311,7 +3311,6 @@ sub load_core_permissions {
                 'system.edit_templates',
                 'system.manage_plugins',
                 'system.view_log',
-                'system.manage_content_types',
                 'system.create_site',
                 'system.sign_in_cms',
                 'system.sign_in_data_api',

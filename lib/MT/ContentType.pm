@@ -142,8 +142,31 @@ sub unique_id {
     }
 }
 
+sub is_name_empty {
+    my $self = shift;
+    !( defined $self->name && $self->name ne '' );
+}
+
+sub exist_same_name_in_site {
+    my $self = shift;
+    __PACKAGE__->exist(
+        {   blog_id => $self->blog_id,
+            name    => $self->name,
+            $self->id ? ( id => { not => $self->id } ) : (),
+        }
+    );
+}
+
 sub save {
     my $self = shift;
+
+    if ( $self->is_name_empty ) {
+        return $self->error( MT->translate('name is required.') );
+    }
+    if ( $self->exist_same_name_in_site ) {
+        return $self->error(
+            MT->translate( 'name "[_1]" is already used.', $self->name ) );
+    }
 
     if ( !$self->id && !defined $self->unique_id ) {
         my $unique_id

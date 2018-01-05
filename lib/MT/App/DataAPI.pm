@@ -2649,6 +2649,11 @@ sub init_plugins {
             $pkg
                 . 'save_filter.category_set' =>
                 "${pfx}CategorySet::save_filter",
+
+            # content_type callbacks
+            $pkg
+                . 'save_filter.content_type' =>
+                "${pfx}ContentType::save_filter",
         }
     );
 
