@@ -11,6 +11,7 @@ use base 'Exporter';
 our @EXPORT_OK = qw(
     get_cd_ids_by_inner_join
     get_cd_ids_by_left_join
+    field_type_icon
 );
 
 use MT;
@@ -58,6 +59,22 @@ sub get_cd_ids_by_left_join {
         }
     );
     _get_cd_ids( $db_terms, $join );
+}
+
+sub field_type_icon {
+    my ( $id, $title ) = @_;
+
+    $id = 'ic_contentstype' unless $id;
+    if ( $title ) {
+        $title = qq { title=$title};
+    }
+    else {
+        $title = '';
+    }
+
+    my $static_uri = MT->static_path;
+
+    return qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 sub _get_cd_ids {
