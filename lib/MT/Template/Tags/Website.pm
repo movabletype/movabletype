@@ -119,6 +119,8 @@ sub _hdlr_websites {
             = MT::RebuildTrigger->get_config_value( 'default_mt_sites_sites',
             $id );
 
+        my $tag_name = $ctx->stash('tag');
+
         if ( $blogs && defined($is_include) ) {
             $args->{ $is_include ? 'include_blogs' : 'exclude_blogs' }
                 = $blogs;
@@ -126,9 +128,9 @@ sub _hdlr_websites {
 
         # No blog-level config set
         # Set mode to context as this will mimic no MTMultiBlog tag
-        #else {
-        #    $args->{'mode'} = 'context';    # Override 'loop' mode
-        #}
+        elsif ( $tag_name eq 'mtmultiblog' ) {
+            $args->{'mode'} = 'context';    # Override 'loop' mode
+        }
     }
 
     # Filter mt:Sites args through access controls
