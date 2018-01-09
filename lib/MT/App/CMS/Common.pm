@@ -314,11 +314,23 @@ sub init_core_callbacks {
                 . 'delete_permission_filter.role' =>
                 "${pfx}User::can_delete_role",
 
-            # content data
+            # content_data
             $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
             $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
 
-            # Contnt Tyoe
+            # content_type
+            $pkg
+                . 'list_permission_filter.content_type' =>
+                "${pfx}ContentType::can_list",
+            $pkg
+                . 'view_permission_filter.content_type' =>
+                "${pfx}ContentType::can_view",
+            $pkg
+                . 'save_permission_filter.content_type' =>
+                "${pfx}ContentType::can_save",
+            $pkg
+                . 'delete_permission_filter.content_type' =>
+                "${pfx}ContentType::can_delete",
             $pkg . 'post_save.content_type' => "${pfx}ContentType::post_save",
             $pkg
                 . 'post_delete.content_type' =>
