@@ -20,7 +20,11 @@ sub fields {
             alias => 'unique_id',
         },
         {   name        => 'contentFields',
-            from_object => sub { +[] },
+            from_object => sub {
+                my ( $obj, $hash ) = @_;
+                MT::DataAPI::Resource->from_object( $obj->field_objs,
+                    [ 'id', 'label', 'type', 'uniqueID' ] );
+            },
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
