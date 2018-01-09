@@ -45,20 +45,7 @@
   <form>
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
-      <div class="mb-3">
-        <div class="row">
-          <div class="col-2">
-            <select onchange={ changeType } name="type" id="type" class="required custom-select form-control">
-              <option each={ opts.types } value={ type }>{ label }</option>
-            </select>
-          </div>
-          <div class="col">
-            <button type="button" onclick={ addField } class="btn btn-default">{ trans('Add content field') }</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="sortable" class="sortable">
+      <div id="sortable" class="sortable" dropzone="copy" ondrop={ onDrop } ondragover={ onDragOver }>
         <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
         <div each={ fields } data-is="content-field"></div>
       </div>
@@ -68,8 +55,6 @@
 
   <script>
     this.fields = opts.fields
-    this.currentType = opts.types[0].type
-    this.currentTypeLabel = opts.types[0].label
     this.isEmpty = this.fields.length > 0 ? false : true
     this.data = "";
 
@@ -86,11 +71,19 @@
       this.currentTypeLabel = e.target.options[e.target.selectedIndex].text
     }
 
-    addField(e) {
+    onDragOver(e) {
+      e.preventDefault();
+    }
+
+    onDrop(e) {
+      let fieldType = e.dataTransfer.getData('text');
+      let field = jQuery("[data-field-type='" + fieldType + "']");
+      let fieldTypeLabel = field.data('field-label');
+
       newId = Math.random().toString(36).slice(-8);
       field = {
-        'type': this.currentType,
-        'typeLabel' : this.currentTypeLabel,
+        'type': fieldType,
+        'typeLabel' : fieldTypeLabel,
         'id' : newId,
         'isNew': true,
         'isShow': 'show'
