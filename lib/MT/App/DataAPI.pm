@@ -2414,11 +2414,11 @@ sub core_endpoints {
             version        => 4,
             handler        => "${pkg}v4::ContentField::list",
             default_params => {
-                limit        => 10,
-                offset       => 0,
+                limit  => 10,
+                offset => 0,
                 sortBy       => 'user_custom',
-                sortOrder    => 'descend',
-                searchFields => 'name,description',
+                sortOrder    => 'ascend',
+                searchFields => 'label,description',
             },
             error_codes => {
                 403 =>
@@ -2654,6 +2654,11 @@ sub init_plugins {
             $pkg
                 . 'save_filter.content_type' =>
                 "${pfx}ContentType::save_filter",
+
+            # content_field callbacks
+            $pkg
+                . 'save_filter.content_field' =>
+                "${pfx}ContentField::save_filter",
         }
     );
 

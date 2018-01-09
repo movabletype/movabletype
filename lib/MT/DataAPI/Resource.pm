@@ -179,6 +179,14 @@ sub core_resources {
                 updatable_fields => "${pkg}v4::ContentType::updatable_fields",
             },
         ],
+        'cf' => [
+            {   version => 4,
+                fields  => "${pkg}v4::ContentField::fields",
+                updatable_fields =>
+                    "${pkg}v4::ContentField::updatable_fields",
+            },
+        ],
+        'content_field' => 'cf',
     };
 }
 

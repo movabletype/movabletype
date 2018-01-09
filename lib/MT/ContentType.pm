@@ -204,7 +204,8 @@ sub fields {
 sub _sort_fields {
     my $fields = shift;
     return [] unless $fields && ref $fields eq 'ARRAY';
-    my @sorted_fields = sort { $a->{order} <=> $b->{order} } @{$fields};
+    my @sorted_fields
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @{$fields};
     \@sorted_fields;
 }
 
@@ -212,7 +213,8 @@ sub get_field {
     my $self = shift;
     my ($field_id) = @_ or return;
     my ($field)
-        = grep { $_->{id} && $_->{id} == $field_id } @{ $self->fields };
+        = grep { $_->{id} && $field_id && $_->{id} == $field_id }
+        @{ $self->fields };
     $field;
 }
 
