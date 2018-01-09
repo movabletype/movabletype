@@ -154,10 +154,17 @@
   });
 
   jQuery(document).on('dragstart', '.mt-draggable', function(event) {
-    let fieldType = jQuery(this).data('field-type');
+    let $this = jQuery(this);
+    $this.attr('aria-grabbed', true);
+    let fieldType = $this.data('field-type');
     event.originalEvent.dataTransfer.setData('text', fieldType);
   });
   
+  jQuery(document).on('dragend', '.mt-draggable', function(event) {
+    let $this = jQuery(this);
+    $this.attr('aria-grabbed', false);
+  });
+
   riot.mount('content-fields', {
     blog_id: "<mt:var name="blog_id" escape="js">",
     magic_token: "<mt:var name="magic_token" escape="js">",
