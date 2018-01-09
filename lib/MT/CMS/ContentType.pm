@@ -144,7 +144,7 @@ sub edit {
             }
         }
 
-#        # field type icon
+        # field type icon
         my $icon;
         if ( my $handler = $content_field_types->{$key}{icon_handler} ) {
             $handler = MT->handler_to_coderef( $content_field_types->{$key}{icon_handler} );
