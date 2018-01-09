@@ -45,7 +45,7 @@
   <form>
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
-      <div id="sortable" class="sortable" dropzone="copy" ondrop={ onDrop } ondragover={ onDragOver }>
+      <div id="installed-fields" class="sortable" ondrop={ onDrop } ondragover={ onDragOver }>
         <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
         <div each={ fields } data-is="content-field"></div>
       </div>
@@ -64,11 +64,6 @@
         return false
       }
       return true
-    }
-
-    changeType(e) {
-      this.currentType = e.target.options[e.target.selectedIndex].value
-      this.currentTypeLabel = e.target.options[e.target.selectedIndex].text
     }
 
     onDragOver(e) {
