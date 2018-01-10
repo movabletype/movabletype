@@ -153,16 +153,19 @@
     $block.mtValid({ focus: false, afterTrigger: false });
   });
 
+  var observer = riot.observable();
   jQuery(document).on('dragstart', '.mt-draggable', function(event) {
     let $this = jQuery(this);
     $this.attr('aria-grabbed', true);
     let fieldType = $this.data('field-type');
     event.originalEvent.dataTransfer.setData('text', fieldType);
+    observer.trigger('mtDragStart');
   });
-  
+
   jQuery(document).on('dragend', '.mt-draggable', function(event) {
     let $this = jQuery(this);
     $this.attr('aria-grabbed', false);
+    observer.trigger('mtDragEnd');
   });
 
   riot.mount('content-fields', {
@@ -177,6 +180,7 @@
     fields: fields,
     types: content_field_types,
     invalid_types: invalid_types,
+    observer: observer
   });
 </mt:setvarblock>
 

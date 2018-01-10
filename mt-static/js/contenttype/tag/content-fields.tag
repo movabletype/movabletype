@@ -54,9 +54,20 @@
   <button type="button" class="btn btn-primary" disabled={ !canSubmit() } onclick={ submit }>{ trans("Save") }</button>
 
   <script>
-    this.fields = opts.fields
-    this.isEmpty = this.fields.length > 0 ? false : true
-    this.data = "";
+    self = this
+    self.fields = opts.fields
+    self.isEmpty = self.fields.length > 0 ? false : true
+    self.data = ""
+    self.droppable = false
+    self.observer = opts.observer
+
+    self.observer.on('mtDragStart', function() {
+      self.droppable = true
+    })
+
+    self.observer.on('mtDragEnd', function() {
+      self.droppable = false
+    })
 
     stopSubmitting(e) {
       if (e.which == 13) {
@@ -67,15 +78,16 @@
     }
 
     onDragOver(e) {
-      e.preventDefault();
+      if ( self.droppable )
+        e.preventDefault()
     }
 
     onDrop(e) {
-      let fieldType = e.dataTransfer.getData('text');
-      let field = jQuery("[data-field-type='" + fieldType + "']");
-      let fieldTypeLabel = field.data('field-label');
+      let fieldType = e.dataTransfer.getData('text')
+      let field = jQuery("[data-field-type='" + fieldType + "']")
+      let fieldTypeLabel = field.data('field-label')
 
-      newId = Math.random().toString(36).slice(-8);
+      newId = Math.random().toString(36).slice(-8)
       field = {
         'type': fieldType,
         'typeLabel' : fieldTypeLabel,
@@ -83,9 +95,9 @@
         'isNew': true,
         'isShow': 'show'
       }
-      this.fields.push(field)
+      self.fields.push(field)
       setDirty(true)
-      this.update({
+      self.update({
         isEmpty: false
       })
       e.preventDefault()
@@ -106,28 +118,28 @@
     }
 
     canSubmit() {
-      if (this.fields.length == 0) {
+      if (self.fields.length == 0) {
         return true
       }
-      var invalidFields = this.fields.filter(function (field) {
+      var invalidFields = self.fields.filter(function (field) {
         return opts.invalid_types[field.type]
       })
       return invalidFields.length == 0 ? true : false
     }
 
     submit(e) {
-      if (!this.canSubmit()) {
+      if (!self.canSubmit()) {
         return
       }
 
-      if ( !this._validateFields() ) {
+      if ( !self._validateFields() ) {
         return
       }
 
       setDirty(false)
       fieldOptions = [];
-      if ( this.fields ) {
-        child = this.tags['content-field']
+      if ( self.fields ) {
+        child = self.tags['content-field']
         if ( child ) {
           if ( !Array.isArray(child) )
             child = [ child ]
@@ -142,13 +154,13 @@
               data.id = c.id
             fieldOptions.push(data)
           })
-          this.data = JSON.stringify(fieldOptions)
+          self.data = JSON.stringify(fieldOptions)
         }
       }
       else {
-        this.data = ""
+        self.data = ""
       }
-      this.update()
+      self.update()
       document.forms['content-type-form'].submit()
     }
 
