@@ -8,6 +8,8 @@
     border: 1px dashed #c0c6c9;
     border-radius: .25em;
     background-color: #fbfbfb;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
     padding: 0.5rem 0.5rem 0.5rem 0;
 }
 </style>
@@ -62,8 +64,6 @@
       </div>
     </mt:setvarblock>
 
-    <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1" settings_bar="1">
-
     <div class="row">
       <div class="col">
         <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
@@ -77,13 +77,15 @@
            label="<__trans phrase="Available Widgets">">
           <div id="available-column-items" class="connectSortable p-2">
           <mt:loop name="available">
-            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable widget widget-item" draggable="true" aria-grabbed="false">
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
               <div class="col-auto">
                 <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
               </div>
               <div class="col">
                 <mt:var name="name" escape="html">
-                <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+                <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                  <mtapp:svgicon id="ic_edit" title="edit">
+                </a>
               </div>
             </div>
           </mt:loop>
@@ -96,13 +98,15 @@
            label="<__trans phrase="Installed Widgets">">
           <div id="installed-column-items" class="connectSortable p-2">
           <mt:loop name="installed">
-            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable widget widget-item" draggable="true" aria-grabbed="false">
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
               <div class="col-auto">
                 <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
               </div>
               <div class="col">
                 <mt:var name="name" escape="html">
-                  <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
+                  <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                    <mtapp:svgicon id="ic_edit" title="edit">
+                  </a>
               </div>
             </div>
           </mt:loop>
