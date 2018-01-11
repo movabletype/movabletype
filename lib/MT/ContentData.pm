@@ -189,6 +189,13 @@ sub save {
         $self->identifier( $self->unique_id );
     }
 
+    if ( !$self->id && !$self->authored_on ) {
+        my @ts = MT::Util::offset_time_list( time, $self->blog_id );
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+        $self->authored_on($ts);
+    }
+
     # Week Number for authored_on
     if ( my $week_number = _get_week_number( $self, 'authored_on' ) ) {
         $self->week_number($week_number)
@@ -754,6 +761,34 @@ sub is_in_category {
         }
     }
     0;
+}
+
+sub list_props_for_data_api {
+    +{  authored_on => {
+            base    => 'entry.authored_on',
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        id => {
+            base    => '__virtual.id',
+            display => 'none',
+        },
+        identifier => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        status => {
+            base    => 'entry.status',
+            display => 'none',
+        },
+    };
 }
 
 sub make_list_props {

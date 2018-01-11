@@ -1304,6 +1304,7 @@ BEGIN {
             category_set  => '$Core::MT::CategorySet::list_props',
             content_type  => '$Core::MT::ContentType::list_props',
             content_field => '$Core::MT::ContentField::list_props',
+            content_data => '$Core::MT::ContentData::list_props_for_data_api',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1738,6 +1739,18 @@ BEGIN {
                 use_filters         => 0,
                 view                => [ 'website', 'blog' ],
                 primary             => 'name',
+            },
+            content_data => {
+                object_label        => 'Content Data',
+                object_label_plural => 'Content Data',
+                object_type         => 'content_data',
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'id',
+                default_sort_key    => 'modified_on',
             },
         },
         summaries => {
@@ -3117,6 +3130,7 @@ sub load_core_permissions {
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
                 'edit_all_content_data'                   => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,
@@ -3476,6 +3490,7 @@ sub load_core_permissions {
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
                 'edit_all_content_data'                   => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,

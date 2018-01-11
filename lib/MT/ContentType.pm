@@ -263,6 +263,8 @@ sub _create_content_data_permission {
             group => $self->permission_group,
             label => 'Create Content Data',
             order => 200,
+            permitted_action =>
+                { 'create_new_content_data_' . $self->unique_id => 1, },
         }
     );
 }

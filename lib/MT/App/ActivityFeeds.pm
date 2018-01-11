@@ -1004,10 +1004,7 @@ sub _filter_content_data {
     }
 
     $item->{'log.cd.can_edit'}
-        = $perm->can_edit_content_data( $content_data, $user,
-        ( $content_data->status eq MT::ContentStatus::RELEASE() ? 1 : () ) )
-        ? 1
-        : 0;
+        = $perm->can_edit_content_data( $content_data, $user ) ? 1 : 0;
 
     # TODO: fix permission
     $item->{'log.cd.can_change_status'}

@@ -299,13 +299,15 @@ sub make_comment {
     return $comment;
 }
 
+my $template_name_index = 0;
+
 sub make_template {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         blog_id => 1,
-        name    => 'blog-name',
+        name    => 'blog-name ' . $template_name_index++,
         text    => '<MTBlogName>',
         type    => 'custom',
         outfile => 'blog.html',
@@ -979,12 +981,14 @@ sub make_category_set {
     $cs;
 }
 
+my $content_type_name_index = 0;
+
 sub make_content_type {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
-        name        => 'Sample Content Type',
+        name        => 'Sample Content Type ' . $content_type_name_index++,
         description => 'This is a sample.',
         blog_id     => 2,
         %params,

@@ -2414,8 +2414,8 @@ sub core_endpoints {
             version        => 4,
             handler        => "${pkg}v4::ContentField::list",
             default_params => {
-                limit  => 10,
-                offset => 0,
+                limit        => 10,
+                offset       => 0,
                 sortBy       => 'user_custom',
                 sortOrder    => 'ascend',
                 searchFields => 'label,description',
@@ -2476,6 +2476,100 @@ sub core_endpoints {
             error_codes => {
                 403 => 'Do not have permission to permutate content fields.',
             },
+        },
+
+        # content_data
+        {   id => 'list_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentData::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'modified_on',
+                sortOrder    => 'descend',
+                searchFields => 'identifier',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content data.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'create_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data',
+            resources   => ['content_data'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content data.',
+            },
+        },
+        {   id => 'get_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content data.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'update_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            resources   => ['content_data'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content data.',
+            },
+        },
+        {   id => 'delete_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content data.',
+            },
+        },
+        {   id => 'preview_content_data_by_id',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
+        {   id => 'preview_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
+        {   id      => 'publish_content_data',
+            route   => '/publish/content_data',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Publish::content_data",
+            error_codes =>
+                { 403 => 'Do not have permission to publish content_data.', },
         },
     ];
 }
@@ -2659,6 +2753,20 @@ sub init_plugins {
             $pkg
                 . 'save_filter.content_field' =>
                 "${pfx}ContentField::save_filter",
+
+            # content_data callbacks
+            $pkg
+                . 'list_permission_filter.content_data' =>
+                "${pfx}ContentData::can_list",
+            $pkg
+                . 'view_permission_filter.content_data' =>
+                "${pfx}ContentData::can_view",
+            $pkg
+                . 'pre_load_filtered_list.content_data' =>
+                "${pfx}ContentData::cms_pre_load_filtered_list",
+            $pkg
+                . 'save_filter.content_data' =>
+                "${pfx}ContentData::save_filter",
         }
     );
 

@@ -587,9 +587,14 @@ sub can_view_feedback {
 
 sub can_edit_content_data {
     my $self = shift;
-    my ( $content_data, $author, $status ) = @_;
+    my ( $content_data, $author ) = @_;
+
     die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
+
+    return 1
+        if $author->is_superuser
+        || $author->can_do('edit_all_content_data');
+
     unless ( ref $content_data ) {
         $content_data = MT::ContentData->load($content_data)
             or return;
@@ -605,27 +610,30 @@ sub can_edit_content_data {
 
     return 1 if $self->can_do('edit_all_content_data');
 
-    my $content_type_unique_id = $content_data->ct_unique_id;
+    my $content_type = $content_data->content_type or return 0;
 
     return 1
         if $self->can_do(
-        'edit_all_content_data_' . $content_type_unique_id );
+        'edit_all_content_data_' . $content_type->unique_id );
 
     my $own_content_data = $content_data->author_id == $author->id;
 
-    if ( defined $status ) {
+    require MT::ContentStatus;
+    if ( $content_data->status == MT::ContentStatus::RELEASE() ) {
+        return 1
+            if $self->can_do(
+            'edit_all_published_content_data_' . $content_type->unique_id );
         return $own_content_data
-            ? $self->can_do(
-            'edit_own_published_content_data_' . $content_type_unique_id )
-            : $self->can_do(
-            'edit_all_published_content_data_' . $content_type_unique_id );
+            && $self->can_do(
+            'edit_own_published_content_data_' . $content_type->unique_id );
     }
     else {
+        return 1
+            if $self->can_do(
+            'edit_all_unpublished_content_data_' . $content_type->unique_id );
         return $own_content_data
-            ? $self->can_do(
-            'edit_own_unpublished_content_data_' . $content_type_unique_id )
-            : $self->can_do(
-            'edit_all_unpublished_content_data_' . $content_type_unique_id );
+            && $self->can_do(
+            'edit_own_unpublished_content_data_' . $content_type->unique_id );
     }
 }
 
