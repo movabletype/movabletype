@@ -2563,6 +2563,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to preview content data.', },
         },
+        {   id      => 'publish_content_data',
+            route   => '/publish/content_data',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Publish::content_data",
+            error_codes =>
+                { 403 => 'Do not have permission to publish content_data.', },
+        },
     ];
 }
 

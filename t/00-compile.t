@@ -182,6 +182,7 @@ use_ok('MT::DataAPI::Endpoint::v4::CategorySet');
 use_ok('MT::DataAPI::Endpoint::v4::ContentData');
 use_ok('MT::DataAPI::Endpoint::v4::ContentField');
 use_ok('MT::DataAPI::Endpoint::v4::ContentType');
+use_ok('MT::DataAPI::Endpoint::v4::Publish');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::ContentData');
 use_ok('MT::DataAPI::Resource::v4::ContentField');
