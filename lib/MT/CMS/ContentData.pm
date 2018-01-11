@@ -1441,8 +1441,7 @@ sub _update_content_data_status {
         return $app->permission_denied
             unless $app_author->is_superuser
             || $app_author->permissions( $content_data->id )
-            ->can_edit_content_data( $content_data, $app_author,
-            MT::ContentStatus::HOLD() );
+            ->can_edit_content_data( $content_data, $app_author );
 
         if (   $app->config('DeleteFilesAtRebuild')
             && $content_data->status == MT::ContentStatus::RELEASE() )
@@ -1511,6 +1510,54 @@ sub _update_content_data_status {
     MT::Util::Log->info('--- End   update_entry_status.');
 
     $tmpl;
+}
+
+sub can_save {
+    my ( $eh, $app, $id, $obj, $original ) = @_;
+
+    return 0 unless $obj;
+
+    my $perms = $app->permissions
+        or return 0;
+
+    if ($id) {
+        $original ||= MT->model('content_data')->load($id)
+            or return 0;
+
+        return 0
+            unless $perms->can_edit_content_data( $original, $app->user );
+    }
+    else {
+        my $user         = $app->user         or return 0;
+        my $content_type = $obj->content_type or return 0;
+
+        return 0
+            unless $user->can_do('create_new_content_data')
+            || $perms->can_do('create_new_content_data')
+            || $perms->can_do(
+            'create_new_content_data_' . $content_type->unique_id );
+
+        return 0
+            unless $obj->status == MT::ContentStatus::HOLD()
+            || $user->can_do('publish_all_content_data')
+            || $perms->can_do('publish_all_content_data')
+            || $perms->can_do(
+            'publish_all_content_data_' . $content_type->unique_id )
+            || (
+            $obj->author_id == $user->id
+            && $perms->can_do(
+                'publish_own_content_data_' . $content_type->unique_id
+            )
+            );
+    }
+
+    1;
+}
+
+sub can_delete {
+    my ( $eh, $app, $obj ) = @_;
+    my $user = $app->user or return;
+    $user->permissions(0)->can_edit_content_data( $obj, $user );
 }
 
 1;

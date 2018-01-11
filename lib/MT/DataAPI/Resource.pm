@@ -187,6 +187,14 @@ sub core_resources {
             },
         ],
         'content_field' => 'cf',
+        'cd'            => [
+            {   version => 4,
+                fields  => "${pkg}v4::ContentData::fields",
+                updatable_fields =>
+                    "${pkg}v4::ContentData::updatable_fields",
+            },
+        ],
+        'content_data' => 'cd',
     };
 }
 

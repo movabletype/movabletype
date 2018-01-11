@@ -1034,7 +1034,7 @@ sub is_superuser {
 sub can_create_blog {
     my $author  = shift;
     my $app     = MT->instance;
-    my $blog = $app->can('blog') ? $app->blog : undef;
+    my $blog    = $app->can('blog') ? $app->blog : undef;
     my $blog_id = $blog ? $blog->id : 0;
 
     if (@_) {
