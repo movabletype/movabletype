@@ -2048,7 +2048,7 @@ sub core_menus {
             order     => 100,
             mode      => "list",
             args      => { _type => "blog" },
-            view      => [ "blog", "website" ],
+            view      => ["website"],
             condition => sub {
                 require MT::CMS::Blog;
                 return MT::CMS::Blog::can_view_blog_list($app);
@@ -2060,7 +2060,7 @@ sub core_menus {
             mode          => 'view',
             args          => { _type => 'blog' },
             permit_action => 'use_blog:create_menu',
-            view          => [ "blog", "website" ],
+            view          => ["website"],
         },
 
         'user:member' => {
