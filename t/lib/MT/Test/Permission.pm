@@ -299,13 +299,15 @@ sub make_comment {
     return $comment;
 }
 
+my $template_name_index = 0;
+
 sub make_template {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         blog_id => 1,
-        name    => 'blog-name',
+        name    => 'blog-name ' . $template_name_index++,
         text    => '<MTBlogName>',
         type    => 'custom',
         outfile => 'blog.html',

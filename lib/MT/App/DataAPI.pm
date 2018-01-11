@@ -2543,6 +2543,26 @@ sub core_endpoints {
                 403 => 'Do not have permission to delete a content data.',
             },
         },
+        {   id => 'preview_content_data_by_id',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
+        {   id => 'preview_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
     ];
 }
 

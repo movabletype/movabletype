@@ -206,5 +206,158 @@ sub _build_post_save_sub {
     };
 }
 
+sub preview_by_id {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $content_type, $content_data ) = context_objects(@_)
+        or return;
+
+    return $app->error(403)
+        unless $app->permissions->can_edit_content_data( $content_data,
+        $app->user );
+
+    $content_data = $app->resource_object( 'content_data', $content_data )
+        or return;
+
+    # Set authored_on as a parameter
+    my ( $yr, $mo, $dy, $hr, $mn, $sc )
+        = unpack( 'A4A2A2A2A2A2', $content_data->authored_on );
+    my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
+    my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
+    $app->param( 'authored_on_date', $authored_on_date );
+    $app->param( 'authored_on_time', $authored_on_time );
+
+    _preview_common( $app, $content_data );
+}
+
+sub preview {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $content_type ) = context_objects(@_)
+        or return;
+    my $author     = $app->user;
+    my $site_perms = $author->permissions( $site->id );
+
+    # Create dummy new object
+    my $orig_content_data = $app->model('content_data')->new;
+    $orig_content_data->set_values(
+        {   blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            author_id       => $author->id,
+            status          => (
+                (          $author->can_do('publish_all_content_data')
+                        || $site_perms->can_do('publish_all_content_data')
+                        || $site_perms->can_do(
+                        'publish_all_content_data_'
+                            . $content_type->unique_id
+                        )
+                        || $site_perms->can_do(
+                        'publish_own_content_data_'
+                            . $content_type->unique_id
+                        )
+                )
+                ? MT::ContentStatus::RELEASE()
+                : MT::ContentStatus::HOLD()
+            ),
+        }
+    );
+    my $content_data
+        = $app->resource_object( 'content_data', $orig_content_data )
+        or return;
+    $content_data->id(-1);
+
+    # Set authored_on as a parameter
+    if ( !$content_data->authored_on ) {
+        my @ts = MT::Util::offset_time_list( time, $site );
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+        $content_data->authored_on($ts);
+    }
+
+    return $app->error(403)
+        unless $app->permissions->can_edit_content_data( $content_data,
+        $app->user );
+
+    my ( $yr, $mo, $dy, $hr, $mn, $sc )
+        = unpack( 'A4A2A2A2A2A2', $content_data->authored_on );
+    my $authored_on_date = sprintf( "%04d-%02d-%02d", $yr, $mo, $dy );
+    my $authored_on_time = sprintf( "%02d:%02d:%02d", $hr, $mn, $sc );
+    $app->param( 'authored_on_date', $authored_on_date );
+    $app->param( 'authored_on_time', $authored_on_time );
+    _preview_common( $app, $content_data );
+}
+
+sub _preview_common {
+    my ( $app, $content_data ) = @_;
+
+    require MT::TemplateMap;
+    my $at       = 'ContentType';
+    my $tmpl_map = MT::TemplateMap->load(
+        {   archive_type => $at,
+            is_preferred => 1,
+            blog_id      => $content_data->blog_id,
+        }
+    );
+    if ( !$tmpl_map ) {
+        return $app->error(
+            $app->translate(
+                'Could not found archive template for [_1].',
+                'content data',
+            ),
+            400
+        );
+    }
+
+    my $preview_basename;
+    no warnings 'redefine', 'once';
+    local *MT::App::DataAPI::preview_object_basename = sub {
+        require MT::App::CMS;
+        $preview_basename = MT::App::CMS::preview_object_basename(@_);
+    };
+
+    # TODO: PreviewInNewWindow cannot be changed
+    # when Cloud.pack is installed and this value is saved in database.
+    local $app->config->{__overwritable_keys}{previewinnewwindow};
+
+    my $old = $app->config('PreviewInNewWindow');
+    $app->config( 'PreviewInNewWindow', 1 );
+
+    # Make preview file
+    require MT::CMS::ContentData;
+    my $preview = MT::CMS::ContentData::_build_content_data_preview( $app,
+        $content_data );
+
+    $app->config( 'PreviewInNewWindow', $old );
+
+    if ( $app->errstr ) {
+        return $app->error( $app->errstr, 500 );
+    }
+
+    my $redirect_to = delete $app->{redirect};
+    if ( $redirect_to && !$app->param('raw') ) {
+        return +{
+            status  => 'success',
+            preview => $redirect_to,
+        };
+    }
+
+    my $session_class = MT->model('session');
+    my $sess = $session_class->load( { id => $preview_basename } );
+    return $app->error( $app->translate('Preview data not found.'), 404 )
+        unless $sess;
+
+    require MT::FileMgr;
+    my $fmgr    = MT::FileMgr->new('Local');
+    my $content = $fmgr->get_data( $sess->name );
+
+    $fmgr->delete( $sess->name );
+    $sess->remove;
+
+    return +{
+        status  => 'success',
+        preview => $content
+    };
+}
+
 1;
 
