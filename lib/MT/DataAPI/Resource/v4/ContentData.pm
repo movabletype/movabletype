@@ -121,8 +121,6 @@ sub fields {
         $MT::DataAPI::Resource::Common::fields{blog},
         $MT::DataAPI::Resource::Common::fields{createdDate},
         $MT::DataAPI::Resource::Common::fields{modifiedDate},
-        $MT::DataAPI::Resource::Common::fields{createdBy},
-        $MT::DataAPI::Resource::Common::fields{modifiedBy},
     ];
 }
 
