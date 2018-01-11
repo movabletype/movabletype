@@ -38,9 +38,13 @@ sub fields {
                 }
                 \@data;
             },
-            to_object         => sub { },    # Do nothing.
-            type_to_object    => sub {
+            to_object      => sub { },    # Do nothing.
+            type_to_object => sub {
                 my ( $hashes, $objs ) = @_;
+                my $app  = MT->instance;
+                my $user = $app->user;
+
+                my %site_perms_cache;
 
                 for my $i ( 0 .. scalar @$objs - 1 ) {
                     my $hash = $hashes->[$i];
@@ -48,29 +52,35 @@ sub fields {
 
                     my $hash_data = $hash->{data};
                     $hash_data = [] unless ref $hash_data eq 'ARRAY';
-                    my $obj_data     = $obj->data;
-                    my $content_type = $obj->content_type;
+                    my $obj_data              = $obj->data;
+                    my $content_type          = $obj->content_type;
+                    my $can_edit_content_data = $user->permissions(0)
+                        ->can_edit_content_data( $obj, $user );
+                    my $site_perms = $site_perms_cache{ $obj->blog_id }
+                        ||= $user->permissions( $obj->blog_id );
+
                     for my $field ( @{ $content_type->fields } ) {
                         my $field_id = $field->{id};
                         my $options = $field->{options} || {};
                         my ($field_hash_data)
                             = grep { $_->{id} && $_->{id} == $field_id }
                             @$hash_data;
-                        if ( !defined $field_hash_data
-                            || $field_hash_data eq '' )
+                        my $can_edit_field = $can_edit_content_data
+                            || $site_perms->can_do( 'content_type:'
+                                . $content_type->unique_id
+                                . '-content_field:'
+                                . $field->{unique_id} );
+                        if (   $field_hash_data
+                            && exists $field_hash_data->{data}
+                            && $can_edit_field )
                         {
-                            if ((   !defined $obj_data->{$field_id}
-                                    || $obj_data->{$field_id} eq ''
-                                )
-                                && exists $options->{initial_value}
-                                )
-                            {
-                                $obj_data->{$field_id}
-                                    = $options->{initial_value};
-                            }
-                        }
-                        else {
                             $obj_data->{$field_id} = $field_hash_data->{data};
+                        }
+                        elsif ( !defined $obj_data->{$field_id}
+                            && exists $options->{initial_value} )
+                        {
+                            $obj_data->{$field_id}
+                                = $options->{initial_value};
                         }
                     }
                     $obj->data($obj_data);
