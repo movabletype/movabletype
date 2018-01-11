@@ -57,16 +57,31 @@ sub class_label_plural {
 
 sub list_props {
     return +{
+        id => {
+            base    => '__virtual.id',
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
         label => {
-            display   => 'none',
             bulk_sort => sub {
                 my ( $props, $objs ) = @_;
                 return @$objs unless @$objs;
                 sort { $a->name cmp $b->name } @$objs;
             },
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        type => {
+            auto    => 1,
+            display => 'none',
         },
         user_custom => {
-            display   => 'none',
             bulk_sort => sub {
                 my ( $props, $objs ) = @_;
                 return @$objs unless @$objs;
@@ -76,6 +91,7 @@ sub list_props {
                 my @field_ids = map { $_->{id} } @{ $content_type->fields };
                 map { $obj_hash{$_} } @field_ids;
             },
+            display => 'none',
         },
     };
 }
