@@ -33,6 +33,12 @@ sub _iso2epoch {
 
 sub entries {
     my ( $app, $endpoint ) = @_;
+    publish_common( $app, $endpoint, \&MT::App::CMS::rebuild_these );
+}
+
+sub publish_common {
+    my ( $app, $endpoint, $rebuild_these_sub ) = @_;
+
     my $rebuild_phase_params;
 
     my $blog_id;
@@ -48,7 +54,8 @@ sub entries {
     my $start_time = $app->param('start_time');
     my %ids = map { $_ => 1 }
         grep {m/\A\d+\z/o} map { split ',', $_ } $app->multi_param('ids');
-    MT::App::CMS::rebuild_these(
+
+    $rebuild_these_sub->(
         $app,
         \%ids,
         (   $start_time

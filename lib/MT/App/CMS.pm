@@ -635,6 +635,10 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.content_data' =>
                 "${pfx}ContentData::cms_pre_load_filtered_list",
+            "${pkg}list_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_list",
+            "${pkg}view_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_view",
         }
     );
 
@@ -1583,12 +1587,7 @@ sub core_list_actions {
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
                 dialog        => 1,
-                condition     => sub {
-                    return 0 if $app->mode eq 'view';
-
-                    my $count = MT->model('website')->count();
-                    $count > 1 ? 1 : 0;
-                }
+                condition     => sub {0},
             },
             clone_blog => {
                 label         => "Clone Child Site",
@@ -1596,6 +1595,7 @@ sub core_list_actions {
                 permit_action => 'clone_blog',
                 max           => 1,
                 dialog        => 1,
+                condition     => sub {0},
             },
             'delete' => {
                 label      => 'Delete',
@@ -2051,7 +2051,7 @@ sub core_menus {
             order     => 100,
             mode      => "list",
             args      => { _type => "blog" },
-            view      => [ "blog", "website" ],
+            view      => ["website"],
             condition => sub {
                 require MT::CMS::Blog;
                 return MT::CMS::Blog::can_view_blog_list($app);
@@ -2063,7 +2063,7 @@ sub core_menus {
             mode          => 'view',
             args          => { _type => 'blog' },
             permit_action => 'use_blog:create_menu',
-            view          => [ "blog", "website" ],
+            view          => ["website"],
         },
 
         'user:member' => {
@@ -2494,6 +2494,16 @@ sub core_menus {
             permit_action => 'use_tools:system_info_menu',
         },
 
+        'tools:search' => {
+            label     => "Search & Replace",
+            order     => 50,
+            mode      => "search_replace",
+            view      => [ "blog", 'website', 'system' ],
+            condition => sub {
+                require MT::CMS::Search;
+                return MT::CMS::Search::can_search_replace($app);
+            }
+        },
         'tools:activity_log' => {
             label     => "Activity Log",
             order     => 100,
@@ -2586,18 +2596,18 @@ sub core_menus {
         },
 
         'category_set:manage' => {
-            label     => 'Manage',
-            order     => 100,
-            mode      => 'list',
-            condition => '$Core::MT::CMS::CategorySet::manage_condition',
-            args      => { _type => 'category_set' },
-            view      => [ 'website', 'blog' ],
+            label      => 'Manage',
+            order      => 100,
+            mode       => 'list',
+            permission => 'manage_category_set',
+            args       => { _type => 'category_set' },
+            view       => [ 'website', 'blog' ],
         },
         'category_set:create' => {
             label      => 'New',
             order      => 200,
             mode       => 'view',
-            permission => 'edit_categories',
+            permission => 'manage_category_set',
             args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
         },
@@ -2755,8 +2765,9 @@ sub core_enable_object_methods {
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
-        entry => { edit => 1 },
-        page  => {
+        content_type => { delete => 1, },
+        entry        => { edit   => 1 },
+        page         => {
             delete => 1,
             edit   => 1,
             save   => 1,
@@ -2874,8 +2885,10 @@ sub set_default_tmpl_params {
     my $blog_class = $app->model('blog');
     $blog ||= $blog_class->load($blog_id) if $blog_id;
     if ( my $auth = $app->user ) {
-        $param->{is_administrator}       = $auth->is_superuser;
-        $param->{can_create_newblog}     = $auth->can_do('create_site') && $blog;
+        $param->{is_administrator} = $auth->is_superuser;
+        $param->{can_access_to_system_dashboard}
+            = $auth->can_do('access_to_system_dashboard');
+        $param->{can_create_newblog} = $auth->can_do('create_site') && $blog;
         $param->{can_create_newbwebsite} = $auth->can_create_site;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;

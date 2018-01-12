@@ -33,7 +33,12 @@
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
   <tr>
-    <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+    <th class="head cb">
+      <label class="custom-control custom-checkbox">
+        <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+        <span class="custom-control-indicator"></span>
+      </label>
+    </th>
     <th class="head name primary"><span class="col-label"><__trans phrase="[_1] Name" params="<mt:var name="object_label" capitalize="1">"></span></th>
   <mt:if name="object_type" eq="website">
     <th class="head blog"><span class="col-label"><__trans phrase="Child Sites"></span></th>
@@ -57,7 +62,12 @@
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select"<mt:if checked> checked="checked"</mt:if> /></td>
+      <td class="cb">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select"<mt:if checked> checked="checked"</mt:if> />
+          <span class="custom-control-indicator"></span>
+        </label>
+      </td>
       <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
     <mt:if name="object_type" eq="website">
       <td class="blog"><mt:if name="can_list_blogs"><a href="<mt:var name="script_url">?__mode=list&amp;_type=blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>

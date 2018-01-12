@@ -14,7 +14,12 @@
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head cb">
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
+      </th>
       <th class="head asset-thumbnail">&nbsp;</th>
       <th class="head name primary"><span class="col-label"><__trans phrase="Label"></span></th>
     <mt:unless name="blog_view">
@@ -38,7 +43,10 @@
     <tr id="asset-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if> status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
       <td class="cb">
         <input type="hidden" id="asset-<mt:var name="id">-json" value="<mt:var name="metadata_json" escape="html">" />
-        <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+        <label class="custom-control custom-checkbox">
+          <input type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <span class="custom-control-indicator"></span>
+        </label>
       </td>
       <td class="asset-thumbnail asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
         <div class="asset-thumb thumbnail">

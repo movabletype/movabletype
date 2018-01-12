@@ -211,6 +211,8 @@ sub init_core_callbacks {
                 "${pfx}Category::filtered_list_param",
 
             # category_set callbacks
+            "${pkg}save_permission_filter.category_set" =>
+                "${pfx}CategorySet::can_save",
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
 
@@ -312,13 +314,39 @@ sub init_core_callbacks {
                 . 'delete_permission_filter.role' =>
                 "${pfx}User::can_delete_role",
 
-            # content data
+            # content_data
+            $pkg
+                . 'save_permission_filter.cd' =>
+                "${pfx}ContentData::can_save",
+            $pkg
+                . 'save_permission_filter.content_data' =>
+                "${pfx}ContentData::can_save",
+            $pkg
+                . 'delete_permission_filter.cd' =>
+                "${pfx}ContentData::can_delete",
+            $pkg
+                . 'delete_permission_filter.content_data' =>
+                "${pfx}ContentData::can_delete",
             $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
             $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
 
-            # Contnt Tyoe
-            $pkg . 'post_save.content_type'   => "${pfx}ContentType::post_save",
-            $pkg . 'post_delete.content_type'   => "${pfx}ContentType::post_delete",
+            # content_type
+            $pkg
+                . 'list_permission_filter.content_type' =>
+                "${pfx}ContentType::can_list",
+            $pkg
+                . 'view_permission_filter.content_type' =>
+                "${pfx}ContentType::can_view",
+            $pkg
+                . 'save_permission_filter.content_type' =>
+                "${pfx}ContentType::can_save",
+            $pkg
+                . 'delete_permission_filter.content_type' =>
+                "${pfx}ContentType::can_delete",
+            $pkg . 'post_save.content_type' => "${pfx}ContentType::post_save",
+            $pkg
+                . 'post_delete.content_type' =>
+                "${pfx}ContentType::post_delete",
 
         }
     );

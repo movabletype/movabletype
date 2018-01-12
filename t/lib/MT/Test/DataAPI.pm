@@ -66,6 +66,7 @@ sub test_data_api {
 
     my $format = MT::DataAPI::Format->find_format('json');
 
+    $suite = [$suite] unless ref $suite eq 'ARRAY';
     for my $data (@$suite) {
         $mock_app_api->mock( 'authenticate', sub {$author} )
             if !$mock_app_api->is_mocked('authenticate');

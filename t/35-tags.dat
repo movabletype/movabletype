@@ -751,7 +751,7 @@
 { "r" : "1", "t" : "<div><table><mt:Calendar month=\"196301\" category=\"foo\"><mt:CalendarWeekHeader><tr></mt:CalendarWeekHeader><td><mt:CalendarIfEntries><mt:Entries lastn=\"1\"><a href=\"<$mt:EntryPermalink$>\"><$mt:CalendarDay$></a></mt:Entries></mt:CalendarIfEntries><mt:CalendarIfNoEntries><$mt:CalendarDay$></mt:CalendarIfNoEntries><mt:CalendarIfBlank>&nbsp;</mt:CalendarIfBlank></td><mt:CalendarWeekFooter></tr></mt:CalendarWeekFooter></mt:Calendar></table></div>", "e" : "<div><table><tr><td>&nbsp;</td><td>&nbsp;</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td></tr><tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr><tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr><tr><td>27</td><td>28</td><td>29</td><td>30</td><td><a href=\"http://narnia.na/nana/archives/1963/01/verse-3.html\">31</a></td><td>&nbsp;</td><td>&nbsp;</td></tr></table></div>"}, #735
 { "r" : "1", "t" : "<mt:unless trim_to='7+0'>Movable Type</mt:unless>", "e" : "Movable0" }, #736
 { "r" : "1", "t" : "<mt:DataAPIScript>", "e" : "mt-data-api.cgi" }, #737
-{ "r" : "1", "t" : "<mt:DataAPIVersion>", "e" : "3" }, #738
+{ "r" : "1", "t" : "<mt:DataAPIVersion>", "e" : "4" }, #738
 { "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_blogs=\"siblings\" include_with_website=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" }, #739
 { "r" : "1", "t" : "<MTBlogs><MTBlogThemeID raw='1'></MTBlogs>", "e" : "classic_blog"}, #740
 { "r" : "1", "t" : "<MTWebsiteThemeID raw='1'>", "e" : "classic_website"}, #741

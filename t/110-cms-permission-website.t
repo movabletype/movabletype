@@ -731,44 +731,6 @@ subtest 'mode = edit (edit)' => sub {
     done_testing();
 };
 
-subtest 'mode = move_blogs' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user          => $admin,
-            __request_method     => 'POST',
-            __mode               => 'itemset_action',
-            _type                => 'blog',
-            action_name          => 'move_blogs',
-            itemset_action_input => '',
-            return_args => '__mode%3Dlist_blogs%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
-            id                     => $blog->id,
-            plugin_action_selector => 'move_blogs',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: move_blogs" );
-    ok( $out !~ m!not implemented!i, "move_blogs by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user          => $aikawa,
-            __request_method     => 'POST',
-            __mode               => 'itemset_action',
-            _type                => 'blog',
-            action_name          => 'move_blogs',
-            itemset_action_input => '',
-            return_args => '__mode%3Dlist_blogs%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
-            id                     => $blog->id,
-            plugin_action_selector => 'move_blogs',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: move_blogs" );
-    ok( $out =~ m!not implemented!i, "move_blogs by non permitted user" );
-};
-
 subtest 'action = refresh_website_templates' => sub {
     $app = _run_app(
         'MT::App::CMS',

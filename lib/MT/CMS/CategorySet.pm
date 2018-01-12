@@ -39,32 +39,33 @@ sub list_actions {
     };
 }
 
-sub manage_condition {
-    my $app = MT->app;
-    return 1 if $app->user->is_superuser;
+sub can_list {
+    my ( $eh, $app, $terms, $args, $options ) = @_;
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
+    $user->permissions( $app->blog->id )
+        ->can_do('access_to_category_set_list');
+}
 
-    my $blog = $app->blog;
-    my $blog_ids
-        = !$blog         ? undef
-        : $blog->is_blog ? [ $blog->id ]
-        :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+sub can_view {
+    my ( $eh, $app, $id, $objp ) = @_;
+    return unless $id;
 
-    require MT::Permission;
-    my $iter = MT::Permission->load_iter(
-        {   author_id => $app->user->id,
-            (   $blog_ids
-                ? ( blog_id => $blog_ids )
-                : ( blog_id => { not => 0 } )
-            ),
-        }
-    );
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
 
-    my $cond;
-    while ( my $p = $iter->() ) {
-        $cond = 1, last
-            if $p->can_do('access_to_category_set_list');
-    }
-    return $cond ? 1 : 0;
+    my $obj = $objp->force or return 0;
+    $user->permissions( $obj->blog_id )->can_do('edit_category_set');
+}
+
+sub can_save {
+    my ( $eh, $app, $id ) = @_;
+    my $user = $app->user;
+    return unless $user;
+    return 1 if $user->is_superuser;
+    $app->can_do('save_category_set');
 }
 
 sub can_delete {

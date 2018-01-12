@@ -21,8 +21,8 @@ use MT::AccessToken;
 our %endpoints = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {3}
-sub API_VERSION ()     {3.2}
+sub DEFAULT_VERSION () {4}
+sub API_VERSION ()     {4.0}
 
 sub init {
     my $app = shift;
@@ -2172,6 +2172,405 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
         },
+
+        # version 4
+
+        # category_set
+        {   id          => 'list_category_sets',
+            route       => '/sites/:site_id/category_sets',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::list",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of category sets.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'create_category_set',
+            route       => '/sites/:site_id/category_sets',
+            resources   => ['category_set'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::create",
+            error_codes => {
+                403 => 'Do not have permission to create a category set.',
+            },
+        },
+        {   id          => 'get_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category set.',
+            },
+            requires_login => 0,
+        },
+        {   id          => 'update_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            resources   => ['category_set'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::update",
+            error_codes => {
+                403 => 'Do not have permission to update a category set.',
+            },
+        },
+        {   id          => 'delete_category_set',
+            route       => '/sites/:site_id/category_sets/:category_set_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySet::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a category set.',
+            },
+        },
+
+        # category for category_set
+        {   id => 'list_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::Category::list_for_category_set",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set. ',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_parent_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/parents',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_parents_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_sibling_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/siblings',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_siblings_for_category_set",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'descend',
+                searchFields => 'label,basename',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'list_child_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/children',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Category::list_children_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested categories for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'create_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories',
+            resources   => ['category'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::Category::create_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to create a category for category set.',
+            },
+        },
+        {   id => 'get_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::Category::get_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested category for category set.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'update_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            resources   => ['category'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::Category::update_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to update a category for category set.',
+            },
+        },
+        {   id => 'delete_category_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::Category::delete_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to delete a category for category set.',
+            },
+        },
+        {   id => 'permutate_categories_for_category_set',
+            route =>
+                '/sites/:site_id/category_sets/:category_set_id/categories/permutate',
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::Category::permutate_for_category_set",
+            error_codes => {
+                403 =>
+                    'Do not have permission to permutate categories for category set.',
+            },
+        },
+
+        # content_type
+        {   id             => 'list_content_types',
+            route          => '/sites/:site_id/content_types',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentType::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'id',
+                sortOrder    => 'ascend',
+                searchFields => 'name,description',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content types.',
+            },
+        },
+        {   id          => 'create_content_type',
+            route       => '/sites/:site_id/content_types',
+            resources   => ['content_type'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content type.',
+            },
+        },
+        {   id          => 'get_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content type.',
+            },
+        },
+        {   id          => 'update_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            resources   => ['content_type'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content type.',
+            },
+        },
+        {   id          => 'delete_content_type',
+            route       => '/sites/:site_id/content_types/:content_type_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentType::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content type.',
+            },
+        },
+
+        # content_field
+        {   id => 'list_content_fields',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentField::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'user_custom',
+                sortOrder    => 'ascend',
+                searchFields => 'label,description',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content fields.',
+            },
+        },
+        {   id => 'create_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields',
+            resources   => ['content_field'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content type.',
+            },
+        },
+        {   id => 'get_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content field.',
+            },
+        },
+        {   id => 'update_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            resources   => ['content_field'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content field.',
+            },
+        },
+        {   id => 'delete_content_field',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentField::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content field.',
+            },
+        },
+        {   id => 'permutate_content_fields',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_fields/permutate',
+            verb        => 'POST',
+            handler     => "${pkg}v4::ContentField::permutate",
+            error_codes => {
+                403 => 'Do not have permission to permutate content fields.',
+            },
+        },
+
+        # content_data
+        {   id => 'list_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::ContentData::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'modified_on',
+                sortOrder    => 'descend',
+                searchFields => 'identifier',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of content data.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'create_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data',
+            resources   => ['content_data'],
+            verb        => 'POST',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::create",
+            error_codes => {
+                403 => 'Do not have permission to create a content data.',
+            },
+        },
+        {   id => 'get_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested content data.',
+            },
+            requires_login => 0,
+        },
+        {   id => 'update_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            resources   => ['content_data'],
+            verb        => 'PUT',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::update",
+            error_codes => {
+                403 => 'Do not have permission to update a content data.',
+            },
+        },
+        {   id => 'delete_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+            verb        => 'DELETE',
+            version     => 4,
+            handler     => "${pkg}v4::ContentData::delete",
+            error_codes => {
+                403 => 'Do not have permission to delete a content data.',
+            },
+        },
+        {   id => 'preview_content_data_by_id',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview_by_id",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
+        {   id => 'preview_content_data',
+            route =>
+                '/sites/:site_id/content_types/:content_type_id/content_data/preview',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::preview",
+            error_codes =>
+                { 403 => 'Do not have permission to preview content data.', },
+        },
+        {   id      => 'publish_content_data',
+            route   => '/publish/content_data',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::Publish::content_data",
+            error_codes =>
+                { 403 => 'Do not have permission to publish content_data.', },
+        },
     ];
 }
 
@@ -2339,6 +2738,35 @@ sub init_plugins {
                 . 'list_permission_filter.plugin' => "${pfx}Plugin::can_list",
             $pkg
                 . 'view_permission_filter.plugin' => "${pfx}Plugin::can_view",
+
+            # category_set callbacks
+            $pkg
+                . 'save_filter.category_set' =>
+                "${pfx}CategorySet::save_filter",
+
+            # content_type callbacks
+            $pkg
+                . 'save_filter.content_type' =>
+                "${pfx}ContentType::save_filter",
+
+            # content_field callbacks
+            $pkg
+                . 'save_filter.content_field' =>
+                "${pfx}ContentField::save_filter",
+
+            # content_data callbacks
+            $pkg
+                . 'list_permission_filter.content_data' =>
+                "${pfx}ContentData::can_list",
+            $pkg
+                . 'view_permission_filter.content_data' =>
+                "${pfx}ContentData::can_view",
+            $pkg
+                . 'pre_load_filtered_list.content_data' =>
+                "${pfx}ContentData::cms_pre_load_filtered_list",
+            $pkg
+                . 'save_filter.content_data' =>
+                "${pfx}ContentData::save_filter",
         }
     );
 

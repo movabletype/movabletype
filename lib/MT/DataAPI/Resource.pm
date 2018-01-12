@@ -167,6 +167,34 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::TemplateMap::updatable_fields",
             },
         ],
+        'category_set' => [
+            {   version          => 4,
+                fields           => "${pkg}v4::CategorySet::fields",
+                updatable_fields => "${pkg}v4::CategorySet::updatable_fields",
+            },
+        ],
+        'content_type' => [
+            {   version          => 4,
+                fields           => "${pkg}v4::ContentType::fields",
+                updatable_fields => "${pkg}v4::ContentType::updatable_fields",
+            },
+        ],
+        'cf' => [
+            {   version => 4,
+                fields  => "${pkg}v4::ContentField::fields",
+                updatable_fields =>
+                    "${pkg}v4::ContentField::updatable_fields",
+            },
+        ],
+        'content_field' => 'cf',
+        'cd'            => [
+            {   version => 4,
+                fields  => "${pkg}v4::ContentData::fields",
+                updatable_fields =>
+                    "${pkg}v4::ContentData::updatable_fields",
+            },
+        ],
+        'content_data' => 'cd',
     };
 }
 
