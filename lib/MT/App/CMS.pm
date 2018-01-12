@@ -96,11 +96,6 @@ sub core_methods {
         'asset_insert'         => "${pkg}Asset::insert",
         'asset_userpic'        => "${pkg}Asset::asset_userpic",
         'transform_image'      => "${pkg}Asset::transform_image",
-        'save_commenter_perm'  => "${pkg}Comment::save_commenter_perm",
-        'trust_commenter'      => "${pkg}Comment::trust_commenter",
-        'ban_commenter'        => "${pkg}Comment::ban_commenter",
-        'approve_item'         => "${pkg}Comment::approve_item",
-        'unapprove_item'       => "${pkg}Comment::unapprove_item",
         'preview_entry'        => "${pkg}Entry::preview",
         'apply_theme'          => "${pkg}Theme::apply",
         'uninstall_theme'      => "${pkg}Theme::uninstall",
@@ -170,9 +165,6 @@ sub core_methods {
         'disable_object'    => "${pkg}User::disable",
         'unlock'            => "${pkg}User::unlock",
         'list_action'       => "${pkg}Tools::do_list_action",
-        'empty_junk'        => "${pkg}Comment::empty_junk",
-        'handle_junk'       => "${pkg}Comment::handle_junk",
-        'not_junk'          => "${pkg}Comment::not_junk",
         'open_batch_editor' => "${pkg}Entry::open_batch_editor",
         'delete_filters'    => {
             code      => "${pkg}Filter::delete_filters",
@@ -298,15 +290,9 @@ sub core_methods {
         'publish_templates_from_search' =>
             "${pkg}Template::publish_templates_from_search",
 
-        ## Comment Replies
-        reply         => "${pkg}Comment::reply",
-        do_reply      => "${pkg}Comment::do_reply",
-        reply_preview => "${pkg}Comment::reply_preview",
-
         ## Dialogs
         'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
         'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
-        'dialog_post_comment'      => "${pkg}Comment::dialog_post_comment",
         'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
         'dialog_select_website'    => "${pkg}Website::dialog_select_website",
         'dialog_select_theme'      => "${pkg}Theme::dialog_select_theme",
@@ -353,10 +339,8 @@ sub core_methods {
         },
 
         ## DEPRECATED ##
-        'list_pings'        => "${pkg}TrackBack::list",
         'list_entries'      => "${pkg}Entry::list",
         'list_pages'        => "${pkg}Page::list",
-        'list_comments'     => "${pkg}Comment::list",
         'list_authors'      => "${pkg}User::list",
         'list_assets'       => "${pkg}Asset::list",
         'list_cat'          => "${pkg}Category::list",
@@ -562,22 +546,6 @@ sub init_plugins {
             $pkg . 'save_filter.author' => "${pfx}User::save_filter",
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
 
-            # comment callbacks
-            $pkg
-                . 'view_permission_filter.comment' =>
-                "${pfx}Comment::can_view",
-            $pkg
-                . 'pre_load_filtered_list.comment' =>
-                "${pfx}Comment::cms_pre_load_filtered_list",
-
-            # ping callbacks
-            $pkg
-                . 'view_permission_filter.ping' =>
-                "${pfx}TrackBack::can_view",
-            $pkg
-                . 'pre_load_filtered_list.ping' =>
-                "${pfx}TrackBack::cms_pre_load_filtered_list",
-
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
             $pkg . 'save_filter.blog'            => "${pfx}Blog::save_filter",
@@ -728,46 +696,6 @@ sub init_request {
 sub core_content_actions {
     my $app = shift;
     return {
-        'ping' => {
-            'empty_junk' => {
-                mode        => 'empty_junk',
-                class       => 'icon-action',
-                label       => 'Delete all Spam trackbacks',
-                icon        => 'ic_setting',
-                return_args => 1,
-                order       => 100,
-                confirm_msg => sub {
-                    $app->translate(
-                        'Are you sure you want to remove all trackbacks reported as spam?'
-                    );
-                },
-                permit_action => {
-                    include_all => 1,
-                    permit_action =>
-                        'delete_junk_comments,delete_all_junk_comments',
-                },
-            },
-        },
-        'comment' => {
-            'empty_junk' => {
-                mode        => 'empty_junk',
-                class       => 'icon-action',
-                label       => 'Delete all Spam comments',
-                icon        => 'ic_setting',
-                return_args => 1,
-                order       => 100,
-                confirm_msg => sub {
-                    MT->translate(
-                        'Are you sure you want to remove all comments reported as spam?'
-                    );
-                },
-                permit_action => {
-                    include_all => 1,
-                    permit_action =>
-                        'delete_junk_comments,delete_all_junk_comments',
-                },
-            },
-        },
         'role' => {
             'create_role' => {
                 mode  => 'view',
@@ -1102,385 +1030,6 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
-            },
-        },
-        'ping' => {
-            'spam' => {
-                label         => "Mark as Spam",
-                order         => 110,
-                code          => "${pkg}Comment::handle_junk",
-                permit_action => {
-                    permit_action =>
-                        'edit_all_trackbacks,edit_own_entry_trackback_status',
-                    include_all => 1,
-                },
-                condition => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'not_spam' => {
-                label         => "Remove Spam status",
-                order         => 120,
-                code          => "${pkg}Comment::not_junk",
-                permit_action => {
-                    permit_action =>
-                        'edit_all_trackbacks,edit_own_entry_trackback_status',
-                    include_all => 1,
-                },
-                condition => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'unapprove_ping' => {
-                label         => "Unpublish TrackBack(s)",
-                order         => 100,
-                code          => "${pkg}Comment::unapprove_item",
-                permit_action => {
-                    include_all   => 1,
-                    permit_action => 'unapprove_trackbacks_via_list',
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1;
-                },
-            },
-            'publish' => {
-                label         => 'Publish',
-                code          => "${pkg}Comment::approve_item",
-                mode          => 'approve_item',
-                order         => 100,
-                js_message    => 'publish',
-                button        => 1,
-                permit_action => {
-                    include_all   => 1,
-                    permit_action => 'approve_trackback_via_list',
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1;
-                },
-            },
-            'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-                mode       => 'delete',
-                order      => 110,
-                js_message => 'delete',
-                button     => 1,
-                condition  => sub {
-                    return 1 if $app->user->is_superuser;
-
-                    my $blogs;
-                    if ( $app->blog ) {
-                        push @$blogs, $app->blog->id;
-                        push @$blogs, map { $_->id } @{ $app->blog->blogs }
-                            unless $app->blog->is_blog;
-                    }
-
-                    my $iter = MT->model('permission')->load_iter(
-                        {   author_id => $app->user->id,
-                            (   $blogs
-                                ? ( blog_id => $blogs )
-                                : ( blog_id => { not => 0 } )
-                            ),
-                        }
-                    );
-
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        $cond = 0,
-                            last
-                            if (
-                            !$p->can_do('delete_own_entry_trackback')
-                            && $p->can_do(
-                                'delete_own_entry_unpublished_trackback')
-                            );
-                    }
-
-                    if ( !$cond ) {
-                        my $count = MT->model('tbping')->count(
-                            { visible => 1, },
-                            {   join => MT->model('trackback')->join_on(
-                                    undef,
-                                    { id => \' = tbping_tb_id', },
-                                    {   join => MT->model('entry')->join_on(
-                                            undef,
-                                            {   id => \
-                                                    ' = trackback_entry_id',
-                                                author_id => $app->user->id,
-                                            }
-                                        ),
-                                    }
-                                ),
-                            }
-                        );
-                        $cond = 1
-                            if $count == 0;
-                    }
-
-                    return $cond;
-                },
-            },
-        },
-        'comment' => {
-            'spam' => {
-                label         => "Mark as Spam",
-                order         => 110,
-                code          => "${pkg}Comment::handle_junk",
-                permit_action => {
-                    permit_action =>
-                        'edit_all_comments,edit_own_entry_comment_status',
-                    include_all => 1,
-                },
-                condition => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'not_spam' => {
-                label         => "Remove Spam status",
-                order         => 120,
-                code          => "${pkg}Comment::not_junk",
-                permit_action => {
-                    permit_action =>
-                        'edit_all_comments,edit_own_entry_comment_status',
-                    include_all => 1,
-                },
-                condition => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'unapprove_comment' => {
-                label         => "Unpublish Comment(s)",
-                order         => 100,
-                code          => "${pkg}Comment::unapprove_item",
-                permit_action => {
-                    permit_action => 'unapprove_comments_via_list',
-                    include_all   => 1,
-                },
-                condition => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'trust_commenter' => {
-                label         => "Trust Commenter(s)",
-                order         => 200,
-                code          => "${pkg}Comment::trust_commenter_by_comment",
-                permit_action => {
-                    permit_action => 'trust_commenters_via_list',
-                    include_all   => 1,
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                }
-            },
-            'untrust_commenter' => {
-                label => "Untrust Commenter(s)",
-                order => 300,
-                code  => "${pkg}Comment::untrust_commenter_by_comment",
-                permit_action => {
-                    permit_action => 'untrust_commenters_via_list',
-                    include_all   => 1,
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                }
-            },
-            'ban_commenter' => {
-                label         => "Ban Commenter(s)",
-                order         => 400,
-                code          => "${pkg}Comment::ban_commenter_by_comment",
-                permit_action => {
-                    permit_action => 'ban_commenters_via_list',
-                    include_all   => 1,
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                }
-            },
-            'unban_commenter' => {
-                label         => "Unban Commenter(s)",
-                order         => 500,
-                code          => "${pkg}Comment::unban_commenter_by_comment",
-                permit_action => {
-                    permit_action => 'unban_commenters_via_list',
-                    include_all   => 1,
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                }
-            },
-            'publish' => {
-                label         => 'Publish',
-                code          => "${pkg}Comment::approve_item",
-                mode          => 'approve_item',
-                order         => 100,
-                js_message    => 'publish',
-                button        => 1,
-                permit_action => {
-                    include_all   => 1,
-                    permit_action => 'approve_comments_via_list',
-                },
-                condition => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1;
-                }
-            },
-            'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-                mode       => 'delete',
-                order      => 110,
-                js_message => 'delete',
-                button     => 1,
-                condition  => sub {
-                    return 1 if $app->user->is_superuser;
-
-                    my $blogs;
-                    if ( $app->blog ) {
-                        push @$blogs, $app->blog->id;
-                        push @$blogs, map { $_->id } @{ $app->blog->blogs }
-                            unless $app->blog->is_blog;
-                    }
-
-                    my $iter = MT->model('permission')->load_iter(
-                        {   author_id => $app->user->id,
-                            (   $blogs
-                                ? ( blog_id => $blogs )
-                                : ( blog_id => { not => 0 } )
-                            ),
-                        }
-                    );
-
-                    my $cond = 1;
-                    while ( my $p = $iter->() ) {
-                        $cond = 0,
-                            last
-                            if (
-                            !$p->can_do('delete_own_entry_comment')
-                            && $p->can_do(
-                                'delete_own_entry_unpublished_comment')
-                            );
-                    }
-
-                    if ( !$cond ) {
-                        my $count = MT->model('comment')->count(
-                            { visible => 1, },
-                            {   join => MT->model('entry')->join_on(
-                                    undef,
-                                    {   id        => \' = comment_entry_id',
-                                        author_id => $app->user->id,
-                                    }
-                                ),
-                            }
-                        );
-                        $cond = 1
-                            if $count == 0;
-                    }
-
-                    return $cond;
-                },
-            },
-        },
-        'commenter' => {
-            'trust' => {
-                label         => "Trust Commenter(s)",
-                order         => 100,
-                code          => "${pkg}Comment::trust_commenter",
-                permit_action => 'access_to_all_commenter_list',
-                condition     => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                },
-            },
-            'untrust' => {
-                label         => "Untrust Commenter(s)",
-                order         => 200,
-                code          => "${pkg}Comment::untrust_commenter",
-                permit_action => 'access_to_all_commenter_list',
-                condition     => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                },
-            },
-            'ban' => {
-                label         => "Ban Commenter(s)",
-                order         => 300,
-                code          => "${pkg}Comment::ban_commenter",
-                permit_action => 'access_to_all_commenter_list',
-                condition     => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                },
-            },
-            'unban' => {
-                label         => "Unban Commenter(s)",
-                order         => 400,
-                code          => "${pkg}Comment::unban_commenter",
-                permit_action => 'access_to_all_commenter_list',
-                condition     => sub {
-                    return 0 if $app->mode eq 'view';
-                    return 1 if $app->user->is_superuser;
-                    return
-                          $app->config->SingleCommunity
-                        ? $app->blog
-                            ? 0
-                            : 1
-                        : $app->blog ? 1
-                        :              0;
-                },
             },
         },
         'author' => {
@@ -2291,73 +1840,6 @@ sub core_menus {
             permission        => 'edit_tags',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
-        },
-
-        'feedback:comment' => {
-            label     => "Comments",
-            order     => 100,
-            mode      => 'list',
-            args      => { _type => 'comment' },
-            condition => sub {
-                return 1 if $app->user->is_superuser;
-
-                my $blog = $app->blog;
-                my $blog_ids
-                    = !$blog         ? undef
-                    : $blog->is_blog ? [ $blog->id ]
-                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-
-                require MT::Permission;
-                my $iter = MT::Permission->load_iter(
-                    {   author_id => $app->user->id,
-                        (   $blog_ids
-                            ? ( blog_id => $blog_ids )
-                            : ( blog_id => { not => 0 } )
-                        ),
-                    }
-                );
-
-                my $cond;
-                while ( my $p = $iter->() ) {
-                    $cond = 1, last
-                        if $p->can_do('view_feedback');
-                }
-                return $cond ? 1 : 0;
-            },
-            view => [ "blog", 'website' ],
-        },
-        'feedback:ping' => {
-            label     => "TrackBacks",
-            order     => 200,
-            mode      => 'list',
-            args      => { _type => 'ping' },
-            view      => [ "blog", 'website' ],
-            condition => sub {
-                return 1 if $app->user->is_superuser;
-
-                my $blog = $app->blog;
-                my $blog_ids
-                    = !$blog         ? undef
-                    : $blog->is_blog ? [ $blog->id ]
-                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-
-                require MT::Permission;
-                my $iter = MT::Permission->load_iter(
-                    {   author_id => $app->user->id,
-                        (   $blog_ids
-                            ? ( blog_id => $blog_ids )
-                            : ( blog_id => { not => 0 } )
-                        ),
-                    }
-                );
-
-                my $cond;
-                while ( my $p = $iter->() ) {
-                    $cond = 1, last
-                        if $p->can_do('view_feedback');
-                }
-                return $cond ? 1 : 0;
-            },
         },
 
         'design:template' => {
