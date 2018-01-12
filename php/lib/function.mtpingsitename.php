@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_function_mtpingsitename($args, &$ctx) {
-    return smarty_function_mtpingblogname($args, $ctx);
+    return '';
 }
 ?>
