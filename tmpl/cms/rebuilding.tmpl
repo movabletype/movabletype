@@ -50,15 +50,18 @@
 
 <mt:if name="total">
   <mt:if name="complete">
-<div class="progress">
-  <div class="progress-bar" style="width: <mt:var name="complete">%;">
-    <span class="sr-only"><mt:var name="complete">% Complete</span>
+<div class="mt-progress">
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: <mt:var name="complete" escape="html">%;" aria-valuenow="<mt:var name="comple" escape="html">" aria-valuemin="0" aria-valuemax="100">
+    </div>
   </div>
 </div>
 <p><__trans phrase="Complete [_1]%" params="<$mt:var name="complete"$>"></p>
   <mt:else>
-<div class="progress progress-indeterminate">
-  <div class="progress-bar">
+<div class="mt-progress">
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+    </div>
   </div>
 </div>
   </mt:if>
@@ -80,10 +83,6 @@ function doRedirect () {
 setTimeout('doRedirect()', 200);
 /* ]]> */
 </script>
-</mt:setvarblock>
-
-<mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/rebuilding.css">
 </mt:setvarblock>
 
 <mt:if name="is_full_screen">
