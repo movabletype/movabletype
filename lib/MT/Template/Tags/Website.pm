@@ -230,7 +230,13 @@ sub _loop {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    $terms{class} = 'website' unless $terms{class};
+    my $tag_name = $ctx->stash('tag');
+    if ( !$terms{class} && $tag_name ne 'MultiBlog' ) {
+        $terms{class} = 'website';
+    }
+    elsif ( $terms{class} ) {
+        delete $terms{class};
+    }
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
 
