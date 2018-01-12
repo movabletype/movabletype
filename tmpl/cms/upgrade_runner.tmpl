@@ -15,7 +15,7 @@
       </ul>
     </pre>
   </div>
-  <div id="progressbar" class="progressbar indeterminate"></div>
+  <div id="progressbar" class="mt-progress mt-5"><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progress" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>
   <div id="error-message-div" class="msg msg-error" style="display: none">
     <p class="msg-text alert alert-danger">
     <mt:if name="installing">
@@ -30,7 +30,7 @@
   <mt:if name="installing">
     <input type="hidden" name="installed" value="1">
   </mt:if>
-    <div class="actions-bar">
+    <div class="actions-bar mt-5">
       <button
          type="submit"
          accesskey="s"
