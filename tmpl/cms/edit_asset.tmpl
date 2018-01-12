@@ -311,7 +311,13 @@ jQuery(window).load( init );
            label_class="top-label"
            label="<__trans phrase="Embed Asset">"
            label_for="asset-url">
-          <input type="text" readonly="readonly" name="asset-url" id="asset-url" class="form-control text full readonly" value="<mt:var name="url" escape="html">" />
+          <mt:var name="url" escape="html">
+          <a href="<mt:var name="url" escape="html">" class="button d-inline-block" target="_blank">
+            <mtapp:svgicon id="ic_permalink" title="View" color="secondary">
+          </a>
+          <a href="javascript:void(0);" class="button d-inline-block" id="btn-copy-url">
+            <mtapp:svgicon id="ic_duplicate" title="Copy" color="secondary">
+          </a>
         </mtapp:setting>
       </div>
     </fieldset>
@@ -374,6 +380,17 @@ jQuery(window).load( init );
         return false;
     });
 </script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#btn-copy-url').click(function() {
+      var fld = document.createElement("textarea");
+      fld.value = '<mt:var name="url" escape="js">';
+      document.body.appendChild(fld);
+      fld.select();
+      document.execCommand("copy");
+      fld.parentElement.removeChild(fld);
+    });
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
