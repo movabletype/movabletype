@@ -4735,14 +4735,14 @@ tbody.collapse.show {
 
 .badge {
   display: inline-block;
-  padding: 0.25em 0.4em;
-  font-size: 75%;
+  padding: 0.25em 0.5em;
+  font-size: 0.8rem;
   font-weight: bold;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
-  border-radius: 0.25rem;
+  border-radius: 0;
 }
 
 .badge:empty {
@@ -4757,7 +4757,7 @@ tbody.collapse.show {
 .badge-pill {
   padding-right: 0.6em;
   padding-left: 0.6em;
-  border-radius: 10rem;
+  border-radius: 1rem;
 }
 
 .badge-primary {
@@ -9629,6 +9629,11 @@ fieldset.form-group {
   margin-top: 0;
 }
 
+.modal-body {
+  max-height: 32rem;
+  overflow-y: auto;
+}
+
 /* Alert */
 .alert h1, .alert h2, .alert h3, .alert h4,
 .alert .h1, .alert .h2, .alert .h3, .alert .h4 {
@@ -9637,9 +9642,8 @@ fieldset.form-group {
 
 /* Badges */
 .badge {
-  padding: 0.4rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   border: 1px solid;
-  border-radius: 2rem;
   background: #FFFFFF;
   font-size: 85%;
 }
@@ -9650,18 +9654,20 @@ fieldset.form-group {
 }
 
 .badge-primary {
-  border-color: #004B9A;
-  color: #004B9A;
+  border-color: transparent;
+  background-color: #399280;
+  color: #FFFFFF;
+}
+
+.badge-info {
+  border-color: transparent;
+  background-color: #595959;
+  color: #FFFFFF;
 }
 
 .badge-success {
   border-color: #399280;
   color: #399280;
-}
-
-.badge-info {
-  border-color: #5FBCEB;
-  color: #5FBCEB;
 }
 
 .badge-warning {
