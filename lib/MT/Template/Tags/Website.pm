@@ -231,7 +231,10 @@ sub _loop {
     local $ctx->{__stash}{inside_blogs} = 1;
 
     my $tag_name = $ctx->stash('tag');
-    if ( !$terms{class} && $tag_name ne 'MultiBlog' ) {
+    if (  !$terms{class}
+        && $tag_name ne 'MultiBlog'
+        && $tag_name ne 'OtherBlog' )
+    {
         $terms{class} = 'website';
     }
     elsif ( $terms{class} ) {
