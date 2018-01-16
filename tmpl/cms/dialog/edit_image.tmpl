@@ -1,69 +1,12 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
 
-<mt:ignore>
-<mt:setvarblock name="html_head" prepend="1">
+<mt:setvarblock name="css_include" append="1">
 <style type="text/css">
-div#editor {
-  margin-left: 520px;  /* 500+20 */
-}
-
-div#editor input[type=checkbox] {
-  margin-right: 3px;
-}
-div#editor label {
-  margin-right: 3px;
-  vertical-align: middle;
-}
-
-div#image {
-  width: 500px;
-  float: left;
-}
-
-/* resize block */
-div#editor-resize {
-  margin-bottom: 10px;
-}
-div.editor-resize-column,.editor-resize-subcolumn {
-  margin-bottom: 5px;
-}
-div.editor-resize-subcolumn {
-  margin-left: 22px;
-}
-input.resize {
-  width: 96px;
-  text-align: center;
-  margin-right: 8px;
-}
-button.resize {
-  margin: 0px;
-}
-
-/* metadata block */
-div#editor-metadata {
-  margin-bottom: 20px;
-}
-div.editor-metadata-column {
-  margin-bottom: 10px;
-}
-
-/* button block */
-div.editor-button-column {
-  margin-bottom: 5px;
-}
-button.editor-button {
-  width: 40px;
-  height: 40px;
-  margin: 0px;
-}
-button.history {
-  width: 84px;
-  height: 30px;
-  margin: 0px;
+.editor-button > .mt-icon {
+  margin: 0;
 }
 </style>
 </mt:setvarblock>
-</mt:ignore>
 
 <mt:setvarblock name="js_include" append="1">
   <mt:if name="mt_debug">
@@ -92,26 +35,20 @@ button.history {
       <div id="editor" class="col-4">
 
         <div id="editor-resize" class="form-group">
-          <div class="form-row align-items-center mb-1">
-            <div class="col-2">
-              <label class="text-right" for="resize-width"><__trans phrase="W:"></label>
-            </div>
+          <div class="form-row mb-1">
             <div class="col">
-              <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
+              <label class="w-100" for="resize-width">
+                <__trans phrase="Width">
+                <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
+              </label>
             </div>
           </div>
-          <div class="form-row align-items-center mb-1">
-            <div class="col-2">
-              <label class="text-right" for="resize-height"><__trans phrase="H:"></label>
-            </div>
+          <div class="form-row mb-1">
             <div class="col">
-              <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
-            </div>
-          </div>
-          <div class="form-row align-items-center mb-1">
-            <div class="col">
-              <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
-              <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+              <label class="w-100" for="resize-height">
+                <__trans phrase="Height">
+                <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
+              </label>
             </div>
           </div>
           <div class="form-row align-items-center editor-resize-subcolumn">
@@ -121,6 +58,12 @@ button.history {
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description"><__trans phrase="Keep aspect ratio"></span>
               </label>
+            </div>
+          </div>
+          <div class="form-row align-items-center mb-1">
+            <div class="col">
+              <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+              <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
             </div>
           </div>
         </div>
@@ -151,22 +94,22 @@ button.history {
         </div>
 
         <div id="editor-button" class="form-group">
-          <div class="form-row align-items-center mb-1 editor-button-column">
+          <div class="form-row align-items-center mb-4 editor-button-column">
             <div class="col">
               <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
-                <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
+                <mtapp:svgicon id="ic_redo" title="Rotate right">
               </button>
               <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
-                <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
+                <mtapp:svgicon id="ic_undo" title="Rotate left">
               </button>
               <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
-                <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
+                <mtapp:svgicon id="ic_fliph" title="Flip horizontal">
               </button>
               <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
-                <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
+                <mtapp:svgicon id="ic_flipv" title="Flip vertical">
               </button>
               <button id="crop" class="btn btn-default p-1 button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
-                <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
+                <mtapp:svgicon id="ic_crop" title="Crop">
               </button>
             </div>
           </div>
@@ -478,6 +421,16 @@ button.history {
                 .addClass('disabled')
                 .attr('disabled', 'disabled');
         }
+
+        jQuery(window).on('load resize', function () {
+            if (jQuery(this).width() == 798) {
+                jQuery('#image').attr('class', 'col-8');
+                jQuery('#editor').attr('class', 'col-4');
+            } else {
+                jQuery('#image').attr('class', 'col-12');
+                jQuery('#editor').attr('class', 'col-12 mt-3');
+            }
+        });
     });
 </script>
 </mt:setvarblock>

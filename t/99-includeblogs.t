@@ -12,7 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 8;
+plan tests => 7;
 
 use MT;
 use MT::Author;
@@ -132,12 +132,6 @@ $tmpl = MT::Template->new;
 $tmpl->blog_id ('1');
 $tmpl->text ('<mt:Entries include_blogs="all"><mt:EntryTitle>, </mt:Entries>');
 ok ($tmpl->output, "Got entries correctly: " . $tmpl->output);
-
-# test for <mt:Comments include_blogs="all">
-$tmpl = MT::Template->new;
-$tmpl->blog_id ('1');
-$tmpl->text ('<mt:Comments include_blogs="all"><mt:CommentBody>, </mt:Comments>');
-ok ($tmpl->output, "Got comments correctly: " . $tmpl->output);
 
 # test for <mt:Authors include_blogs="all">
 $tmpl = MT::Template->new;

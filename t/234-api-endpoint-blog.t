@@ -25,7 +25,7 @@ $author->save;
 
 # Oops, sitepath is not absolute.
 my $website = $app->model('website')->load(2);
-$website->site_path($FindBin::Bin);
+$website->site_path($test_env->root);
 $website->save or die $website->errstr;
 
 # TODO: Avoid an error when installing GoogleAnalytics plugin.
@@ -287,7 +287,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                     themeId  => 'dummy',
                 },
             },
@@ -318,7 +318,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
             author_id => 0,
@@ -332,7 +332,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
             restrictions => { 0 => [qw/ create_new_website /], },
@@ -363,7 +363,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
         },
@@ -389,7 +389,7 @@ sub suite {
                 website => {
                     name     => 'SitePath ends with slash',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                 },
             },
         },
@@ -415,8 +415,8 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
-                    archivePath => $FindBin::Bin . '/archives',
+                    sitePath => $test_env->root,
+                    archivePath => $test_env->root . '/archives',
                     archiveUrl  => 'http://narnia2.na/archives/',
                 },
             },
@@ -443,8 +443,8 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
-                    archivePath => $FindBin::Bin . '/archives/',
+                    sitePath => $test_env->root,
+                    archivePath => $test_env->root . '/archives/',
                     archiveUrl => 'http://narnia2.na/archives/',
                 },
             },
@@ -456,7 +456,7 @@ sub suite {
                 website => {
                     name         => 'test-api-permission-website-2',
                     url          => 'http://narnia2.na/',
-                    sitePath     => $FindBin::Bin,
+                    sitePath     => $test_env->root,
                     themeId      => 'classic_website',
                     serverOffset => -5.5,
                     language     => 'de',
@@ -487,7 +487,7 @@ sub suite {
 
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
-                is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 is( $got->{themeId},      'classic_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
@@ -502,7 +502,7 @@ sub suite {
                 website => {
                     name     => 'test-api-website-3',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                     themeId  => 'classic_website',
                 },
             },
@@ -515,7 +515,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
@@ -718,7 +718,7 @@ sub suite {
                     name          => 'blog-3 name',
                     url           => 'blog-3',
                     siteSubdomain => 'www',
-                    sitePath      => $FindBin::Bin,    # absolute.
+                    sitePath      => $test_env->root,    # absolute.
                     serverOffset  => +8,
                     language      => 'nl',
                 },
@@ -753,7 +753,7 @@ sub suite {
                 is( $got->{themeId}, 'classic_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
-                is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
+                is( $got->{sitePath},     $test_env->root, 'sitePath' );
                 is( $got->{serverOffset}, 8,             'serverOffset' );
                 is( $got->{language},     'nl',          'language' );
             },
@@ -767,7 +767,7 @@ sub suite {
                 blog => {
                     name     => 'test-api-blog-3',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                     themeId  => 'classic_blog',
                 },
             },
@@ -779,7 +779,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
@@ -875,10 +875,10 @@ sub suite {
                     language     => 'fr',
                     url          => 'http://www.sixapart.com',
                     sitePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'update' ),
+                        File::Spec->catfile( $test_env->root, 'update' ),
                     archiveUrl => 'http://www.sixapart.com/archive/',
                     archivePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                        File::Spec->catfile( $test_env->root, 'archive' ),
 
                     fileExtension        => 'pl',
                     archiveTypePreferred => 'Category',
@@ -972,12 +972,12 @@ sub suite {
                 is( $got->{language},     'fr', 'language' );
                 is( $got->{url}, 'http://www.sixapart.com/', 'url' );
                 is( $got->{sitePath},
-                    File::Spec->catfile( $FindBin::Bin, 'update' ),
+                    File::Spec->catfile( $test_env->root, 'update' ),
                     'sitePath' );
                 is( $got->{archiveUrl}, 'http://www.sixapart.com/archive/',
                     'archiveUrl' );
                 is( $got->{archivePath},
-                    File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                    File::Spec->catfile( $test_env->root, 'archive' ),
                     'archivePath' );
 
                 is( $got->{fileExtension}, 'pl', 'fileExtension' );
@@ -998,10 +998,6 @@ sub suite {
                 is( $got->{basenameLimit},  50,            'basenameLimit' );
                 is( $got->{statusDefault},  'Draft',       'statusDefault' );
                 is( $got->{convertParas},   '__default__', 'convertParas' );
-                is( $got->{allowCommentsDefault}, 1, 'allowCommentsDefault' )
-                    ;    # true.
-                is( $got->{allowPingsDefault}, 1, 'allowPingsDefault' )
-                    ;    # true.
                 is( $got->{contentCss},   'css dummy', 'contentCss' );
                 is( $got->{smartReplace}, 1,           'smartReplace' );
                 is_deeply( $got->{smartReplaceFields},
@@ -1012,31 +1008,12 @@ sub suite {
                 is( $got->{junkScoreThreshold}, -5, 'junkScoreThreshold' );
                 is( $got->{nofollowUrls},     1, 'nofollowUrls' );     # true.
                 is( $got->{followAuthLinks},  1, 'followAuthLinks' );  # true.
-                is( $got->{allowComments},    1, 'allowComments' );    # true.
-                is( $got->{moderateComments}, 2, 'moderateComments' );
-                is( $got->{allowCommentHtml}, 1, 'allowCommentHtml' ); # true.
                 is( $got->{sanitizeSpec},     'b,p', 'sanitizeSpec' );
-                is( $got->{emailNewComments}, 2,     'emailNewComments' );
-                is( $got->{sortOrderComments},
-                    'descend', 'sortOrderComments' );
                 is( $got->{autolinkUrls}, 1, 'autolinkUrls' );         # true.
-                is( $got->{convertParasComments},
-                    'markdown', 'convertParasComments' );
-                is( $got->{useCommentConfirmation},
-                    1, 'useCommentConfirmation' );                     # true.
-                is( $got->{allowPings},        1, 'allowPings' );      # true.
-                is( $got->{moderatePings},     1, 'moderatePings' );   # true.
-                is( $got->{emailNewPings},     2, 'emailNewPings' );
                 is( $got->{autodiscoverLinks}, 1, 'autodiscoverLinks' )
                     ;                                                  # true.
                 is( $got->{internalAutodiscovery},
                     1, 'internalAutodiscovery' );                      # true.
-                is( $got->{allowUnregComments}, 1, 'allowUnregComments' )
-                    ;                                                  # true.
-
-                # Registration Settings screen.
-                is( $got->{allowCommenterRegist}, 1, 'allowCommenterRegist' )
-                    ;                                                  # true.
 
                 my $webmaster_role
                     = $app->model('role')->load(6);    # Webmaster.
@@ -1047,22 +1024,6 @@ sub suite {
                     ),
                     'newCreatedUserRoles'
                 );
-
-                is( $got->{allowUnregComments}, 1, 'allowUnregComments' )
-                    ;                                  # true.
-                is( $got->{requireCommentEmails}, 1, 'requireCommentEmails' )
-                    ;                                  # true.
-                is_deeply(
-                    $got->{commenterAuthenticators},
-                    [qw/ WordPress Hatena /],
-                    'commenterAuthenticators'
-                );
-
-                # Web Services Settings screen.
-                is( $got->{pingGoogle},  1, 'pingGoogles' );    # true.
-                is( $got->{pingWeblogs}, 1, 'pingWeblogs' );    # true.
-                is_deeply( $got->{pingOthers}, [qw/ dummy_a dummy_b /],
-                    'pingOthers' );
 
                 # Template tags.
                 is( $got->{dateLanguage}, 'fr', 'dateLanguage' );
@@ -1146,38 +1107,15 @@ sub suite {
                 is( $got->{listOnIndex},  20,         'listOnIndex' );
                 is( $got->{daysOrPosts},  'days',     'daysOrPosts' );
                 is( $got->{convertParas}, 'markdown', 'convertParas' );
-                is( $got->{allowCommentsDefault}, 0, 'allowCommentsDefault' )
-                    ;                                           # false.
-                is( $got->{allowPingsDefault}, 0, 'allowPingsDefault' )
-                    ;                                           # false.
 
                 # Feedback Settings screen.
                 is( $got->{nofollowUrls},     0, 'nofollowUrls' );    # false.
                 is( $got->{followAuthLinks},  0, 'followAuthLinks' ); # false.
-                is( $got->{allowComments},    0, 'allowComments' );   # false.
-                is( $got->{allowCommentHtml}, 0, 'allowCommentsHtml' )
-                    ;                                                 # false.
                 is( $got->{autolinkUrls}, 0, 'autolinkUrls' );        # false.
-                is( $got->{useCommentConfirmation},
-                    0, 'useCommentConfirmation' );                    # false.
-                is( $got->{allowPings},    0, 'allowPings' );         # false.
-                is( $got->{moderatePings}, 0, 'moderatePings' );      # false.
                 is( $got->{autodiscoverLinks}, 0, 'autodiscoverLinks' )
                     ;                                                 # false.
                 is( $got->{internalAutodiscovery},
                     0, 'internalAutodiscovery' );                     # false.
-
-                # Registration Settings screen.
-                is( $got->{allowCommenterRegist}, 0, 'allowCommenterRegist' )
-                    ;                                                 # false.
-                is( $got->{allowUnregComments}, 0, 'allowUnregComments' )
-                    ;                                                 # false.
-                is( $got->{requireCommentEmails}, 0, 'requireCommentEmails' )
-                    ;                                                 # false.
-
-                # Web Services Settings screen.
-                is( $got->{pingGoogle},  0, 'pingGoogles' );          # false.
-                is( $got->{pingWeblogs}, 0, 'pingWeblogs' );          # false.
             },
         },
 
@@ -1189,7 +1127,7 @@ sub suite {
                 website => {
                     name     => 'test-api-website-3-update',
                     url      => 'http://narnia2.na/update/',
-                    sitePath => File::Spec->catfile( $FindBin::Bin, 'update' )
+                    sitePath => File::Spec->catfile( $test_env->root, 'update' )
                         . '/',
                 },
             },
@@ -1203,7 +1141,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },

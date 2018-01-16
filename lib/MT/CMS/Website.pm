@@ -28,8 +28,8 @@ sub edit {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild}  = 1 if $app->param('need_full_rebuild');
         $param->{need_index_rebuild} = 1 if $app->param('need_index_rebuild');
-        $param->{show_ip_info} = $cfg->ShowIPInformation;
-        $param->{use_plugins}  = $cfg->UsePlugins;
+        $param->{show_ip_info}       = $cfg->ShowIPInformation;
+        $param->{use_plugins}        = $cfg->UsePlugins;
 
         $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -552,6 +552,11 @@ sub dialog_move_blogs {
     };
 
     my @id = $app->multi_param('id');
+    if ( MT->model('website')->exist( { id => \@id, class => 'website' } ) ) {
+        return $app->error(
+            $app->translate('This action cannot move top-level site.') );
+    }
+
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',

@@ -676,65 +676,6 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 	'Profile' => 'Profil',
 
-## lib/MT/App/Comments.pm
-	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fehler bei der Zuweisung von Kommentierungsrechten an Benutzer &#8222;[_1] (ID: [_2])&#8220; für Weblog \'[_3] (ID: [_4])\'. Keine geeignete Kommentierungsrolle gefunden.',
-	'Cannot load blog #[_1].' => 'Konnte Blog #[_1] nicht laden.',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ungültiger Anmeldeversuch von Kommentarautor [_1] an Weblog [_2](ID: [_3]) - native Movable Type-Authentifizierung bei diesem Weblog nicht zulässig.',
-	'Invalid login.' => 'Login ungültig.',
-	'Invalid login' => 'Login ungültig',
-	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'Sie haben sich erfolgreich authentifiziert, dürfen sich aber nicht anmelden. Bitte wenden Sie sich an Ihren Movable-Type-Administrator.',
-	'You need to sign up first.' => 'Bitte registrieren Sie sich zuerst.',
-	'The login could not be confirmed because of a database error ([_1])' => 'Anmeldung konnte aufgrund eines Datenbankfehlers nicht durchgeführt werden ([_1])',
-	'Permission denied.' => 'Zugriff verweigert.',
-	'Login failed: permission denied for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: Zugriff verweigert für Benutzer &#8222;[_1]&#8220;',
-	'Login failed: password was wrong for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: falsches Passwort für Benutzer &#8222;[_1]&#8220;',
-	'Failed login attempt by disabled user \'[_1]\'' => 'Fehlgeschlagener Anmeldeversuch von deaktiviertem Benutzer &#8222;[_1]&#8220;',
-	'Failed login attempt by unknown user \'[_1]\'' => 'Fehlgeschlagener Anmeldeversuch von unbekanntem Benutzer &#8222;[_1]&#8220;',
-	'Signing up is not allowed.' => 'Registrierungen sind nicht erlaubt.',
-	'Movable Type Account Confirmation' => 'Movable Type-Anmeldungsbestätigung',
-	'Your confirmation has expired. Please register again.' => 'Ihre Bestätigung ist nicht mehr gültig. Bitte registrieren Sie sich erneut.',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Zurück zur Ausgangsseite</a>',
-	'Your confirmation have expired. Please register again.' => 'Ihre Anmeldung ist abgelaufen. Bitte registrieren Sie sich erneut.',
-	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Kommentarautor &#8222;[_1]&#8220; (ID:[_2]) erfolgreich registriert.',
-	'Thanks for the confirmation.  Please sign in to comment.' => 'Vielen Dank für Ihre Bestätigung. Sie können sich jetzt anmelden und kommentieren.',
-	'[_1] registered to the blog \'[_2]\'' => '[_1] hat sich für das Blog &#8222;[_2]&#8220; registriert.',
-	'No id' => 'Keine ID',
-	'No such comment' => 'Kein entsprechender Kommentar',
-	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'IP [_1] gesperrt, da mehr als 8 Kommentare in [_2] Sekunden abgegeben wurden.',
-	'IP Banned Due to Excessive Comments' => 'IP-Adresse wegen exzessiver Kommentarabgabe gesperrt',
-	'No entry_id' => 'Entry_id fehlt',
-	'No such entry \'[_1]\'.' => 'Kein Eintrag &#8222;[_1]&#8220;.',
-	'_THROTTLED_COMMENT' => 'Sie haben zu viele Kommentare in schneller Folge abgegeben. Bitte versuchen Sie es in einigen Augenblicken erneut.',
-	'Comments are not allowed on this entry.' => 'Zu diesem Eintrag können keine Kommentare abgegeben werden.',
-	'Comment text is required.' => 'Bitte geben Sie einen Kommentartext ein.',
-	'An error occurred: [_1]' => 'Es ist ein Fehler aufgetreten: [_1]',
-	'Registration is required.' => 'Registrierung erforderlich',
-	'Name and E-mail address are required.' => 'Name und E-Mail-Adresse sind erforderlich',
-	'Invalid email address \'[_1]\'' => 'Ungültige E-Mail-Adresse &#8222;[_1]&#8220;',
-	'Invalid URL \'[_1]\'' => 'Ungültige Web-Adresse (URL) &#8222;[_1]&#8220;',
-	'Text entered was wrong.  Try again.' => 'Der eingegebene Text ist nicht richtig. Bitte versuchen Sie es erneut.',
-	'Comment save failed with [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
-	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2].',
-	'Publishing failed: [_1]' => 'Veröffentlichung fehlgeschlagen: [_1]',
-	'Cannot load template' => 'Kann Vorlage nicht laden',
-	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch wartenden Kommentarautoren &#8222;[_1]&#8220;',
-	'Registered User' => 'Registrierter Benutzer',
-	'Cannot load entry #[_1].' => 'Kann Eintrag #[_1] nicht laden.',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'Weiterleitung auf eine externe Website. Wenn Sie dieser Site vertrauen, klicken Sie bitte auf diesen Link: [_1]',
-	'No entry was specified; perhaps there is a template problem?' => 'Es wurde kein Eintrag angegeben. Vielleicht gibt es ein Problem mit der Vorlage?',
-	'Somehow, the entry you tried to comment on does not exist' => 'Der Eintrag, den Sie kommentieren möchten, existiert nicht.',
-	'Invalid entry ID provided' => 'Ungültige Eintrags-ID angegeben',
-	'For improved security, please change your password' => 'Zur Steigerung Ihrer Sicherheit ändern Sie bitte Ihr Passwort.',
-	'All required fields must be populated.' => 'Alle erforderlichen Felder müssen ausgefüllt sein.',
-	'[_1] contains an invalid character: [_2]' => '[_1] enthält ein ungültiges Zeichen: [_2]',
-	'Display Name' => 'Angezeigter Name',
-	'Passwords do not match.' => 'Passwörter stimmen nicht überein.',
-	'Failed to verify the current password.' => 'Konnte das derzeitige Passwort nicht verifizieren.',
-	'Email Address is invalid.' => 'Die E-Mail-Adresse ist ungültig.',
-	'URL is invalid.' => 'Die Web-Adresse (URL) ist ungültig.',
-	'Commenter profile has successfully been updated.' => 'Das Profil des Kommentarautoren wurde erfolgreich aktualisiert.',
-	'Commenter profile could not be updated: [_1]' => 'Das Profil des Kommentarautoren konnte nicht aktualisiert werden: [_1]',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Es ist ein Fehler aufgetreten: ungültige Zeichen für Zeichensatz [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fehler beim Laden der Website #[_1] zur Bereitstellung an Benutzer. Bitte überprüfen Sie Ihre NewUserDefaultWebsiteId-Einstellugen.',
@@ -804,23 +745,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch verwendet MT::App::Search.',
-
-## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => 'Ungültige entry_id &#8222;[_1]&#8220;',
-	'You must define a Ping template in order to display pings.' => 'Sie müssen eine Ping-Vorlage definieren, um Pings anzeigen zu können.',
-	'Trackback pings must use HTTP POST' => 'Trackbacks müssen HTTP-POST verwenden',
-	'TrackBack ID (tb_id) is required.' => 'TrackBack_ID (tb_id) erforderlich.',
-	'Invalid TrackBack ID \'[_1]\'' => 'Ungültige TrackBack-ID &#8222;[_1]&#8220;',
-	'You are not allowed to send TrackBack pings.' => 'Sie haben keine Berechtigung, TrackBack-Pings zu senden.',
-	'You are sending TrackBack pings too quickly. Please try again later.' => 'Sie versenden TrackBacks-Pings zu schnell hintereinander. Bitte versuchen Sie es später erneut.',
-	'You need to provide a Source URL (url).' => 'Bitte geben Sie eine Quell-URL (url) an.',
-	'This TrackBack item is disabled.' => 'Dieser TrackBack-Eintrag ist deaktiviert.',
-	'This TrackBack item is protected by a passphrase.' => 'Dieser TrackBack-Eintrag ist passwortgeschützt.',
-	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack zu "[_1]" von "[_2]".',
-	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack für Kategorie &#8222;[_1]&#8220; (ID:[_2])',
-	'Cannot create RSS feed \'[_1]\': ' => 'RSS-Feed &#8222;[_1]&#8220; kann nicht angelegt werden: ',
-	'New TrackBack ping to \'[_1]\'' => 'Neuer TrackBack-Ping an &#8222;[_1]&#8220;',
-	'New TrackBack ping to category \'[_1]\'' => 'Neuer TrackBack-Ping an Kategorie &#8222;[_1]&#8220;',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => 'Authentifizierung mit den angegeben Daten fehlgeschlagen: [_1]',
@@ -1304,25 +1228,6 @@ use vars qw( @ISA %Lexicon );
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen. Hauptkategorien und Unterkategorien gleichen Ursprungs müssen eindeutige Namen haben.',
 
-## lib/MT/CMS/Comment.pm
-	'Edit Comment' => 'Kommentar bearbeiten',
-	'(untitled)' => '(ohne Überschrift)',
-	'No such commenter [_1].' => 'Kein Kommentarautor [_1].',
-	'User \'[_1]\' trusted commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; das Vertrauen ausgesprochen',
-	'User \'[_1]\' banned commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; gesperrt',
-	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat die Sperrung von Kommentarautor &#8222;[_2]&#8220; aufgehoben',
-	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; das Vertrauen entzogen',
-	'The parent comment id was not specified.' => 'ID des Eltern-Kommentars nicht angegeben.',
-	'The parent comment was not found.' => 'Eltern-Kommentar nicht gefunden.',
-	'You cannot reply to unapproved comment.' => 'Sie können nicht auf nicht freigeschaltete Kommentare antworten.',
-	'You cannot create a comment for an unpublished entry.' => 'Nicht veröffentlichte Einträge können nicht kommentiert werden.',
-	'You cannot reply to unpublished comment.' => 'Auf nicht veröffentlichte Kommentare kann nicht geantwortet werden.',
-	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Kommentar (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
-	'You do not have permission to approve this trackback.' => 'Sie haben keine Benutzerrechte zur Freischaltung des TrackBacks.',
-	'The entry corresponding to this comment is missing.' => 'Zugehöriger Eintrag fehlt.',
-	'You do not have permission to approve this comment.' => 'Sie haben keine Benutzerrechte zur Freischaltung des Kommentars.',
-	'Orphaned comment' => 'Verwaister Kommentar',
-
 ## lib/MT/CMS/Common.pm
 	'Invalid type [_1]' => 'Ungültiger Typ [_1]',
 	'The Template Name and Output File fields are required.' => 'Die Felder &#8222;Vorlagennamen&#8220; und &#8222;Ausgabedatei&#8220; sind erforderlich.',
@@ -1628,16 +1533,6 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => 'Anzahl Versuche bis IP-Sperrung',
 	'IP address lockout interval' => 'Zeitraum bis IP-Sperrung',
 	'Lockout IP address whitelist' => 'Diese IP-Adresse nie sperren',
-
-## lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(Namenlose Kategorie)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => 'Ping (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Kategorie &#8222;[_4]&#8220; gelöscht',
-	'(Untitled entry)' => '(Namenloser Eintrag)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Ping (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
-	'No Excerpt' => 'Kein Auszug',
-	'No Title' => 'Keine Überschrift',
-	'Orphaned TrackBack' => 'Verwaistes TrackBack',
-	'category' => 'Kategorien',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Benutzerkonto anlegen',
@@ -2487,15 +2382,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot use sort_by and sort_method together in [_1]' => '"sorty_by" und "sort_method" können nicht gemeinsam in [_1] verwendet werden.',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] kann nur mit Kategoriearchiv verwendet werden.',
 	'[_1] used outside of [_2]' => '[_1] außerhalb [_2] verwendet',
-
-## lib/MT/Template/Tags/Commenter.pm
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Der Befehl &#8222;[_1]&#8220; wird nicht mehr unterstützt. Verwenden Sie stattdessen den Befehl \'[_2]\'.',
-
-## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'Der Befehl MTComentFields steht nicht mehr zur Verfügung. Binden Sie stattdessen das Vorlagenmodul [_1] ein. ',
-	'Comment Form' => 'Kommentarformular',
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'TypePad-Authentifizierung ist für dieses Blog nicht aktiviert. MTremoteSignInLink kann daher nicht verwendet werden.',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Um Kommentarregistrierung zu aktivieren, geben Sie in Ihrer Weblog-Konfiguration oder Ihrem Benutzer-Profil ein TypePad-Token ein.',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => 'Sie haben <$MTEntryFlag$> ohne Flag verwendet.',

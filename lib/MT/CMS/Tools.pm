@@ -550,7 +550,7 @@ sub cfg_system_general {
     my $send = $cfg->OutboundTrackbackLimit || 'any';
 
     if ( $send =~ m/^(any|off|selected|local)$/ ) {
-        $param{ "trackback_send_" . $cfg->OutboundTrackbackLimit } = 1;
+        $param{ "trackback_send_" . $send } = 1;
         if ( $send eq 'selected' ) {
             my @domains = $cfg->OutboundTrackbackDomains;
             my $domains = join "\n", @domains;

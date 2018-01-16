@@ -436,7 +436,7 @@ function createUploadBlock () {
   this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
   this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
-  this.progressbar  = jQuery('<div class="progress"><div class="progress-bar"></div></div>').appendTo(this.leftContent);
+  this.progressbar  = jQuery('<div class="mt-progress"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
@@ -446,7 +446,8 @@ function createUploadBlock () {
 
   this.editAsset.hide();
 </mt:unless>
-  this.progressbar.children().css('width', '0');
+  this.progressbar.find('.progress-bar').css('width', '0')
+                                        .attr('aria-valuenow', '0');
   jQuery('#upload-progress').prepend(this.uploadBlockPanel);
 
   // Recalculate block height
@@ -461,7 +462,8 @@ function createUploadBlock () {
   }
 
   this.setProgress = function(val) {
-    this.progressbar.children().css('width', val + '%');
+    this.progressbar.find('.progress-bar').css('width', val + '%')
+                                          .attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
       this.filename.hide();
       this.cancelUpload.hide();

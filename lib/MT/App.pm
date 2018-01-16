@@ -3308,7 +3308,7 @@ sub run {
                         my $debug_panel_header
                             = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                          <div class="col-12">
+                          <div class="col-12 mt-3">
                             <div class="card debug-panel" style="margin: 0 -15px;">
                               <div class="card-header text-white" style="background: #EF7678;">
                                 <h4 class="my-0">$debug_panel_header</h4>

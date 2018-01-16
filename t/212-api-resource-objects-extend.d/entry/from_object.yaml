@@ -31,8 +31,6 @@
       userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
     class: entry
     status: Publish
-    allowComments: !!perl/scalar:boolean 1
-    allowTrackbacks: !!perl/scalar:boolean 1
     title: Title
     body: Body
     more: More
@@ -43,14 +41,7 @@
     date: 2013-05-17T10:10:10-03:30
     createdDate: 2013-03-17T10:10:10-03:30
     modifiedDate: 2013-04-17T10:10:10-03:30
-    commentCount: 0
-    trackbackCount: 0
-    pingsSentUrl:
-      - http://example.com/entry/1
-      - http://example.com/entry/2
     categories: []
-    comments: []
-    trackbacks: []
     assets: []
     tags: []
     updatable: 1

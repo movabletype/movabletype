@@ -15,6 +15,10 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Disable Comments/Trackback plugins
+    $test_env->disable_plugin('Comments');
+    $test_env->disable_plugin('Trackback');
 }
 
 use MT::Test;
