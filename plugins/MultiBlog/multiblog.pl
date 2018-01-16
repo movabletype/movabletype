@@ -86,7 +86,7 @@ $plugin = MT::Plugin::MultiBlog->new(
                     #    'MultiBlog::Tags::MultiBlogIfLocalBlog',
                 },
                 function => {
-                    'Include' => 'MultiBlog::preprocess_native_tags',
+                    #'Include' => 'MultiBlog::preprocess_native_tags',
 
                     #'BlogCategoryCount' =>
                     #    'MultiBlog::preprocess_native_tags',
