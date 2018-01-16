@@ -1129,7 +1129,12 @@ sub core_list_actions {
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
                 dialog        => 1,
-                condition     => sub {0},
+                condition     => sub {
+                    return 0 if $app->mode eq 'view';
+
+                    my $count = MT->model('website')->count();
+                    $count > 1 ? 1 : 0;
+                }
             },
             clone_blog => {
                 label         => "Clone Child Site",
@@ -1137,7 +1142,6 @@ sub core_list_actions {
                 permit_action => 'clone_blog',
                 max           => 1,
                 dialog        => 1,
-                condition     => sub {0},
             },
             'delete' => {
                 label      => 'Delete',
