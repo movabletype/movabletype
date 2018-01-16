@@ -19,7 +19,9 @@ mt-static/mt_nl.js
 mt-static/support
 mt-config.cgi
 
+mt-comments.cgi
 mt-cp.cgi
+mt-tb.cgi
 addons
 mt-static/addons
 mt-static/plugins/FacebookCommenters
@@ -27,7 +29,9 @@ mt-static/plugins/feeds-app-lite
 mt-static/plugins/mixiComment
 mt-static/themes/tristan-blue
 mt-static/themes/tristan-blue-4.2
+plugins/Comments
 plugins/FacebookCommenters
+plugins/Trackback
 plugins/feeds-app-lite
 plugins/mixiComment
 
