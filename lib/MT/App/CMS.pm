@@ -1271,6 +1271,26 @@ sub core_list_actions {
                     return $cond;
                 },
             },
+            move_blogs => {
+                label         => "Move child site(s) ",
+                order         => 200,
+                code          => "${pkg}Website::dialog_move_blogs",
+                permit_action => 'move_blogs',
+                dialog        => 1,
+                condition     => sub {
+                    return 0 if $app->mode eq 'view';
+
+                    my $count = MT->model('website')->count();
+                    $count > 1 ? 1 : 0;
+                }
+            },
+            clone_blog => {
+                label         => "Clone Child Site",
+                code          => "${pkg}Blog::clone",
+                permit_action => 'clone_blog',
+                max           => 1,
+                dialog        => 1,
+            },
         },
         'template' => {
             refresh_tmpl_templates => {
