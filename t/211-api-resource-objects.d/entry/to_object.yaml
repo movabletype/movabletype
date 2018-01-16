@@ -18,8 +18,6 @@
       - tag2
   to: 
     status: 2
-    allow_comments: 1
-    allow_pings: 1
     title: Title
     text: Body
     text_more: More

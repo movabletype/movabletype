@@ -63,30 +63,6 @@ sub init_core_callbacks {
                 "${pfx}User::can_delete",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
-            $pkg . 'pre_load_filtered_list.commenter' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                my $args  = $opts->{args};
-                $args->{joins} ||= [];
-                push @{ $args->{joins} },
-                    MT->model('permission')->join_on(
-                    undef,
-                    [   { blog_id => 0 },
-                        '-and',
-                        { author_id => \'= author_id', },
-                        '-and',
-                        [   { permissions => { like => '%comment%' } },
-                            '-or',
-                            { restrictions => { like => '%comment%' } },
-                            '-or',
-                            [   { permissions => \'IS NULL' },
-                                '-and',
-                                { restrictions => \'IS NULL' },
-                            ],
-                        ],
-                    ],
-                    );
-            },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
@@ -216,28 +192,6 @@ sub init_core_callbacks {
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
 
-            # comment callbacks
-            $pkg . 'edit.comment' => "${pfx}Comment::edit",
-            $pkg
-                . 'save_permission_filter.comment' =>
-                "${pfx}Comment::can_save",
-            $pkg
-                . 'delete_permission_filter.comment' =>
-                "${pfx}Comment::can_delete",
-            $pkg . 'save_filter.comment' => "${pfx}Comment::save_filter",
-            $pkg . 'pre_save.comment'    => "${pfx}Comment::pre_save",
-            $pkg . 'post_save.comment'   => "${pfx}Comment::post_save",
-            $pkg . 'post_delete.comment' => "${pfx}Comment::post_delete",
-
-            # commenter callbacks
-            $pkg . 'edit.commenter' => "${pfx}Comment::edit_commenter",
-            $pkg
-                . 'view_permission_filter.commenter' =>
-                "${pfx}Comment::can_view_commenter",
-            $pkg
-                . 'delete_permission_filter.commenter' =>
-                "${pfx}Comment::can_delete_commenter",
-
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",
             $pkg . 'save_permission_filter.entry' => "${pfx}Entry::can_save",
@@ -256,18 +210,6 @@ sub init_core_callbacks {
             $pkg . 'pre_save.page'               => "${pfx}Page::pre_save",
             $pkg . 'post_save.page'              => "${pfx}Page::post_save",
             $pkg . 'post_delete.page'            => "${pfx}Page::post_delete",
-
-            # ping callbacks
-            $pkg . 'edit.ping' => "${pfx}TrackBack::edit",
-            $pkg
-                . 'save_permission_filter.ping' =>
-                "${pfx}TrackBack::can_save",
-            $pkg
-                . 'delete_permission_filter.ping' =>
-                "${pfx}TrackBack::can_delete",
-            $pkg . 'pre_save.ping'    => "${pfx}TrackBack::pre_save",
-            $pkg . 'post_save.ping'   => "${pfx}TrackBack::post_save",
-            $pkg . 'post_delete.ping' => "${pfx}TrackBack::post_delete",
 
             # template callbacks
             $pkg . 'edit.template' => "${pfx}Template::edit",

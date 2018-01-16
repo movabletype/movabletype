@@ -974,39 +974,6 @@ SKIP: {
     done_testing();
 };
 
-note 'The cache of new entry check';
-subtest 'The cache of new entry check' => sub {
-    my $categories;
-
-    my $mock_entry = Test::MockModule->new('MT::Entry');
-    $mock_entry->mock(
-        'categories',
-        sub {
-            $categories = $mock_entry->original('categories')->(@_);
-        }
-    );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'entry',
-            blog_id          => $website->id,
-            author_id        => $admin->id,
-            status           => 2,
-            category_ids     => $website_cat->id . ',' . $website_cat2->id,
-        },
-    );
-    my $out = delete $app->{__test_output};
-
-    is_deeply(
-        [ map { $_->id } @$categories ],
-        [ $website_cat2->id, $website_cat->id ],
-        'A new entry has category "Bar" and category "Foo" in cache.'
-    );
-};
-
 subtest 'Save prefs check' => sub {
     $app = _run_app(
         'MT::App::CMS',

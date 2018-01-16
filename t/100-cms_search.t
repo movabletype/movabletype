@@ -12,7 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 42;
+plan tests => 24;
 
 BEGIN {
         $ENV{MT_APP} = 'MT::App::CMS';
@@ -94,15 +94,6 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok ($out, "Global comment search results are present");
-ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
-ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
-ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
-ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
-ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
-ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
-ok ($out =~ /Ban commenter\(s\)/i, "Ban commenter dropdown is present");
-ok ($out =~ /Unban commenter\(s\)/i, "Unban commenter dropdown is present");
 
 # blog search for a comment
 # __mode=search_replace&_type=comment&do_search=1&search=hello&blog_id=1
@@ -112,12 +103,3 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok ($out, "Blog comment search results are present");
-ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
-ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
-ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
-ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
-ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
-ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
-ok ($out =~ /Ban commenter\(s\)/i, "Ban commenter dropdown is present");
-ok ($out =~ /Unban commenter\(s\)/i, "Unban commenter dropdown is present");

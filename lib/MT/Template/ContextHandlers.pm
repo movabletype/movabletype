@@ -67,8 +67,7 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
-            'SiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+            'SiteIfCommentsOpen?' => sub {''},
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
@@ -97,18 +96,12 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Author::_hdlr_if_author',
 
             ## Commenter
-            'IfExternalUserManagement?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_if_external_user_management',
-            'IfCommenterRegistrationAllowed?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_if_commenter_registration_allowed',
-            'IfCommenterTrusted?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'CommenterIfTrusted?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'IfCommenterIsAuthor?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
-            'IfCommenterIsEntryAuthor?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
+            'IfExternalUserManagement?' => sub {''},
+            'IfCommenterRegistrationAllowed?' => sub {''},
+            'IfCommenterTrusted?' => sub {''},
+            'CommenterIfTrusted?' => sub {''},
+            'IfCommenterIsAuthor?' => sub {''},
+            'IfCommenterIsEntryAuthor?' => sub {''},
 
             ## Archive
             Archives =>
@@ -143,70 +136,43 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_author_has_entry',
 
             ## Comment
-            'IfCommentsModerated?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comments_moderated',
-            'BlogIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            'WebsiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            Comments => '$Core::MT::Template::Tags::Comment::_hdlr_comments',
-            CommentsHeader => \&slurp,
-            CommentsFooter => \&slurp,
-            CommentEntry =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry',
-            'CommentIfModerated?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_if_moderated',
-            CommentParent =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent',
-            CommentReplies =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies',
-            'IfCommentParent?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_parent',
-            'IfCommentReplies?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_replies',
-            'IfRegistrationRequired?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_required',
-            'IfRegistrationNotRequired?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_not_required',
-            'IfRegistrationAllowed?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_allowed',
-            'IfTypeKeyToken?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_typekey_token',
-            'IfAllowCommentHTML?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_allow_comment_html',
-            'IfCommentsAllowed?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_allowed',
-            'IfCommentsAccepted?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_accepted',
-            'IfCommentsActive?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_active',
-            'IfNeedEmail?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'IfRequireCommentEmails?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'EntryIfAllowComments?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_allow_comments',
-            'EntryIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_comments_open',
+            'IfCommentsModerated?' => sub {''},
+            'BlogIfCommentsOpen?' => sub {''},
+            'WebsiteIfCommentsOpen?' => sub {''},
+            Comments => sub {''},
+            CommentsHeader => sub {''},
+            CommentsFooter => sub {''},
+            CommentEntry => sub {''},
+            'CommentIfModerated?' => sub {''},
+            CommentParent => sub {''},
+            CommentReplies => sub {''},
+            'IfCommentParent?' => sub {''},
+            'IfCommentReplies?' => sub {''},
+            'IfRegistrationRequired?' => sub {''},
+            'IfRegistrationNotRequired?' => sub {''},
+            'IfRegistrationAllowed?' => sub {''},
+            'IfTypeKeyToken?' => sub {''},
+            'IfAllowCommentHTML?' => sub {''},
+            'IfCommentsAllowed?' => sub {''},
+            'IfCommentsAccepted?' => sub {''},
+            'IfCommentsActive?' => sub {''},
+            'IfNeedEmail?' => sub {''},
+            'IfRequireCommentEmails?' => sub {''},
+            'EntryIfAllowComments?' => sub {''},
+            'EntryIfCommentsOpen?' => sub {''},
 
             ## Ping
-            Pings       => '$Core::MT::Template::Tags::Ping::_hdlr_pings',
-            PingsHeader => \&slurp,
-            PingsFooter => \&slurp,
-            PingsSent => '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent',
-            PingEntry => '$Core::MT::Template::Tags::Ping::_hdlr_ping_entry',
-            'IfPingsAllowed?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_allowed',
-            'IfPingsAccepted?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_accepted',
-            'IfPingsActive?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_active',
-            'IfPingsModerated?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_moderated',
-            'EntryIfAllowPings?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_if_allow_pings',
-            'CategoryIfAllowPings?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_allow_pings',
+            Pings       => sub {''},
+            PingsHeader => sub {''},
+            PingsFooter => sub {''},
+            PingsSent => sub {''},
+            PingEntry => sub {''},
+            'IfPingsAllowed?' => sub {''},
+            'IfPingsAccepted?' => sub {''},
+            'IfPingsActive?' => sub {''},
+            'IfPingsModerated?' => sub {''},
+            'EntryIfAllowPings?' => sub {''},
+            'CategoryIfAllowPings?' => sub {''},
 
             ## Category
             Categories =>
@@ -312,8 +278,7 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
             EntryAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
-            CommenterUserpicAsset =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_asset',
+            CommenterUserpicAsset => sub {''},
 
             ## Tag
             Tags      => '$Core::MT::Template::Tags::Tag::_hdlr_tags',
@@ -498,14 +463,10 @@ sub core_tags {
             SiteEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
-            CommentSiteID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
-            SiteCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            PingSiteName =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
-            SitePingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
+            CommentSiteID => sub {''},
+            SiteCommentCount => sub {''},
+            PingSiteName => sub {''},
+            SitePingCount => sub {''},
 
             SiteCategoryCount =>
                 '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
@@ -594,38 +555,24 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
             AuthorBasename =>
                 '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
-            AuthorCommentCount =>
-                '$Core::MT::Summary::Author::_hdlr_author_comment_count',
+            AuthorCommentCount => sub {''},
             AuthorEntriesCount =>
                 '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 
             ## Commenter
-            CommenterNameThunk =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name_thunk',
-            CommenterUsername =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_username',
-            CommenterName =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name',
-            CommenterEmail =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_email',
-            CommenterAuthType =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_type',
-            CommenterAuthIconURL =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_icon_url',
-            CommenterID =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_id',
-            CommenterURL =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_url',
-            UserSessionState =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_state',
-            UserSessionCookieTimeout =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_timeout',
-            UserSessionCookieName =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_name',
-            UserSessionCookiePath =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_path',
-            UserSessionCookieDomain =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_domain',
+            CommenterNameThunk => sub {''},
+            CommenterUsername => sub {''},
+            CommenterName => sub {''},
+            CommenterEmail => sub {''},
+            CommenterAuthType => sub {''},
+            CommenterAuthIconURL => sub {''},
+            CommenterID => sub {''},
+            CommenterURL => sub {''},
+            UserSessionState => sub {''},
+            UserSessionCookieTimeout => sub {''},
+            UserSessionCookieName => sub {''},
+            UserSessionCookiePath => sub {''},
+            UserSessionCookieDomain => sub {''},
 
             ## Archive
             ArchiveLink =>
@@ -717,108 +664,61 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
             ## Comment
-            CommentID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_id',
-            CommentBlogID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
-            CommentEntryID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry_id',
-            CommentName =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentIP =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentAuthor =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentAuthorLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentAuthorIdentity =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_identity',
-            CommentEmail =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_link',
-            CommentURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentBody =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentOrderNumber =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_order_num',
-            CommentDate =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_date',
-            CommentParentID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent_id',
-            CommentReplyToLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_reply_link',
-            CommentPreviewAuthor =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentPreviewIP =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentPreviewAuthorLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentPreviewEmail =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentPreviewURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentPreviewBody =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentPreviewDate => \&build_date,
-            CommentPreviewState =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_state',
-            CommentPreviewIsStatic =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_static',
-            CommentRepliesRecurse =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies_recurse',
-            BlogCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            WebsiteCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            EntryCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_comments',
-            CategoryCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_category_comment_count',
-            TypeKeyToken =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_typekey_token',
-            CommentFields =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_fields',
-            RemoteSignOutLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_out_link',
-            RemoteSignInLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_in_link',
-            SignOutLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_sign_out_link',
-            SignInLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_sign_in_link',
-            SignOnURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_signon_url',
+            CommentID => sub {''},
+            CommentBlogID => sub {''},
+            CommentEntryID => sub {''},
+            CommentName => sub {''},
+            CommentIP => sub {''},
+            CommentAuthor => sub {''},
+            CommentAuthorLink => sub {''},
+            CommentAuthorIdentity => sub {''},
+            CommentEmail => sub {''},
+            CommentLink => sub {''},
+            CommentURL => sub {''},
+            CommentBody => sub {''},
+            CommentOrderNumber => sub {''},
+            CommentDate => sub {''},
+            CommentParentID => sub {''},
+            CommentReplyToLink => sub {''},
+            CommentPreviewAuthor => sub {''},
+            CommentPreviewIP => sub {''},
+            CommentPreviewAuthorLink => sub {''},
+            CommentPreviewEmail => sub {''},
+            CommentPreviewURL => sub {''},
+            CommentPreviewBody => sub {''},
+            CommentPreviewDate => sub {''},
+            CommentPreviewState => sub {''},
+            CommentPreviewIsStatic => sub {''},
+            CommentRepliesRecurse => sub {''},
+            BlogCommentCount => sub {''},
+            WebsiteCommentCount => sub {''},
+            EntryCommentCount => sub {''},
+            CategoryCommentCount => sub {''},
+            TypeKeyToken => sub {''},
+            CommentFields => sub {''},
+            RemoteSignOutLink => sub {''},
+            RemoteSignInLink => sub {''},
+            SignOutLink => sub {''},
+            SignInLink => sub {''},
+            SignOnURL => sub {''},
 
-            ## Ping', => {
-            PingsSentURL =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent_url',
-            PingTitle => '$Core::MT::Template::Tags::Ping::_hdlr_ping_title',
-            PingID    => '$Core::MT::Template::Tags::Ping::_hdlr_ping_id',
-            PingURL   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_url',
-            PingExcerpt =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_excerpt',
-            PingBlogName =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
-            PingIP   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_ip',
-            PingDate => '$Core::MT::Template::Tags::Ping::_hdlr_ping_date',
-            BlogPingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            WebsitePingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            EntryTrackbackCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_ping_count',
-            EntryTrackbackLink =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_link',
-            EntryTrackbackData =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_data',
-            EntryTrackbackID =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_id',
-            CategoryTrackbackLink =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_link',
-            CategoryTrackbackCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_count',
+            ## Ping
+            PingsSentURL => sub {''},
+            PingTitle => sub {''},
+            PingID    => sub {''},
+            PingURL   => sub {''},
+            PingExcerpt => sub {''},
+            PingBlogName => sub {''},
+            PingIP   => sub {''},
+            PingDate => sub {''},
+            BlogPingCount => sub {''},
+            WebsitePingCount => sub {''},
+            EntryTrackbackCount => sub {''},
+            EntryTrackbackLink => sub {''},
+            EntryTrackbackData => sub {''},
+            EntryTrackbackID => sub {''},
+            CategoryTrackbackLink => sub {''},
+            CategoryTrackbackCount => sub {''},
 
             ## Category
             CategoryID =>
@@ -929,10 +829,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
             EntryAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
-            CommenterUserpic =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic',
-            CommenterUserpicURL =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_url',
+            CommenterUserpic => sub {''},
+            CommenterUserpicURL => sub {''},
 
             ## Tag
             TagName  => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
@@ -954,9 +852,8 @@ sub core_tags {
             # Rating related handlers
             EntryScore =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score',
-            CommentScore =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score',
-            PingScore => '$Core::MT::Template::Tags::Score::_hdlr_ping_score',
+            CommentScore => sub {''},
+            PingScore => sub {''},
             AssetScore =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score',
             AuthorScore =>
@@ -964,10 +861,8 @@ sub core_tags {
 
             EntryScoreHigh =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_high',
-            CommentScoreHigh =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_high',
-            PingScoreHigh =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_high',
+            CommentScoreHigh => sub {''},
+            PingScoreHigh => sub {''},
             AssetScoreHigh =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_high',
             AuthorScoreHigh =>
@@ -975,10 +870,8 @@ sub core_tags {
 
             EntryScoreLow =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_low',
-            CommentScoreLow =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_low',
-            PingScoreLow =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_low',
+            CommentScoreLow => sub {''},
+            PingScoreLow => sub {''},
             AssetScoreLow =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_low',
             AuthorScoreLow =>
@@ -986,10 +879,8 @@ sub core_tags {
 
             EntryScoreAvg =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_avg',
-            CommentScoreAvg =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_avg',
-            PingScoreAvg =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_avg',
+            CommentScoreAvg => sub {''},
+            PingScoreAvg => sub {''},
             AssetScoreAvg =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_avg',
             AuthorScoreAvg =>
@@ -997,19 +888,16 @@ sub core_tags {
 
             EntryScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_count',
-            CommentScoreCount =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_count',
-            PingScoreCount =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_count',
+            CommentScoreCount => sub {''},
+            PingScoreCount => sub {''},
             AssetScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_count',
             AuthorScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_score_count',
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
-            CommentRank =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_rank',
-            PingRank  => '$Core::MT::Template::Tags::Score::_hdlr_ping_rank',
+            CommentRank => sub {''},
+            PingRank  => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',

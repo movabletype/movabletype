@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_function_mtsitecommentcount($args, &$ctx) {
-    return smarty_function_mtblogcommentcount($args, $ctx);
+    return '';
 }
 ?>

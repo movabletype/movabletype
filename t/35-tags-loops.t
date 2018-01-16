@@ -536,24 +536,28 @@ __END__
 --- SKIP
 
 === mt:Comments
+--- SKIP
 --- template
 <mt:Comments>____</mt:Comments>
 --- expected
 3
 
 === mt:CommentReplies
+--- SKIP
 --- template
 <mt:Comments><mt:IfCommentReplies><mt:CommentReplies>____</mt:CommentReplies></mt:IfCommentReplies></mt:Comments>
 --- expected
 2
 
 === mt:PingsSent
+--- SKIP
 --- template
 <mt:Entries lastn="1"><mt:PingsSent>____</mt:PingsSent></mt:Entries>
 --- expected
 2
 
 === mt:Pings
+--- SKIP
 --- template
 <mt:Pings>____</mt:Pings>
 --- expected

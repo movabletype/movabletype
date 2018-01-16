@@ -505,7 +505,7 @@ sub disable_addon {
     if ( -f $config ) {
         rename( $config, $disabled )
             or plan skip_all => "$config cannot be renamed.: $!";
-        push @{ $self->{disabled} ||= [] }, $name;
+        $self->{disabled_addons}{$name} = 1;
     }
 }
 
@@ -514,16 +514,46 @@ sub enable_addon {
     my $config   = "$MT_HOME/addons/$name/config.yaml";
     my $disabled = "$config.disabled";
 
-    if ( -f $disabled ) {
+    if ( -f $disabled && $self->{disabled_addons}{$name} ) {
         rename( $disabled, $config ) or warn $!;
+        delete $self->{disabled_addons}{$name};
+    }
+}
+
+sub disable_plugin {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    # Want a lock?
+    if ( -f $config ) {
+        rename( $config, $disabled )
+            or plan skip_all => "$config cannot be renamed.: $!";
+        $self->{disabled_plugins}{$name} = 1;
+    }
+}
+
+sub enable_plugin {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    if ( -f $disabled && $self->{disabled_plugins}{$name} ) {
+        rename( $disabled, $config ) or warn $!;
+        delete $self->{disabled_plugins}{$name};
     }
 }
 
 sub DESTROY {
     my $self = shift;
-    if ( my @disabled = @{ $self->{disabled} || [] } ) {
+    if ( my @disabled = keys %{ $self->{disabled_addons} || {} } ) {
         for my $name (@disabled) {
             $self->enable_addon($name);
+        }
+    }
+    if ( my @disabled = keys %{ $self->{disabled_plugins} || {} } ) {
+        for my $name (@disabled) {
+            $self->enable_plugin($name);
         }
     }
 }

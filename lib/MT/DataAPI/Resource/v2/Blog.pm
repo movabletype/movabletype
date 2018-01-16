@@ -58,8 +58,6 @@ sub updatable_fields {
             basenameLimit
             statusDefault
             convertParas
-            allowCommentsDefault
-            allowPingsDefault
             contentCss
             smartReplace
             smartReplaceFields
@@ -71,36 +69,15 @@ sub updatable_fields {
             junkScoreThreshold
             nofollowUrls
             followAuthLinks
-            allowComments
-            moderateComments
-            allowCommentHtml
             sanitizeSpec
-            emailNewComments
-            sortOrderComments
             autolinkUrls
-            convertParasComments
-            useCommentConfirmation
-            allowPings
-            moderatePings
-            emailNewPings
             autodiscoverLinks
             internalAutodiscovery
             ),
 
         # Registration Settings screen
         qw(
-            allowCommenterRegist
             newCreatedUserRole
-            allowUnregComments
-            requireCommentEmails
-            commenterAuthenticators
-            ),
-
-        # Web Services Settings screen
-        qw(
-            pingGoogle
-            pingWeblogs
-            pingOthers
             ),
 
         # template tags
@@ -362,16 +339,6 @@ sub fields {
             alias     => 'convert_paras',
             condition => \&_can_view_cfg_screens,
         },
-        {   name      => 'allowCommentsDefault',
-            alias     => 'allow_comments_default',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'allowPingsDefault',
-            alias     => 'allow_pings_default',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
         {   name        => 'entryCustomPrefs',
             from_object => sub {
                 my $app = MT->instance;
@@ -452,81 +419,13 @@ sub fields {
             from_object => sub { $_[0]->follow_auth_links },    # meta column.
             condition   => \&_can_view_cfg_screens,
         },
-        {    # Do not use MT::DataAPI::Resource::DataType::Boolean,
-                # because updating 2 columns at once.
-            name        => 'allowComments',
-            from_object => sub {
-                my ($obj) = @_;
-                if ( $obj->allow_reg_comments || $obj->allow_unreg_comments )
-                {
-                    return boolean::true();
-                }
-                else {
-                    return boolean::false();
-                }
-            },
-            to_object => sub {
-                my ( $hash, $obj ) = @_;
-                if ( $hash->{allowComments} ) {
-                    $obj->allow_reg_comments(1);
-                }
-                else {
-                    $obj->allow_unreg_comments(0);
-                    $obj->allow_reg_comments(0);
-                }
-                return;
-            },
-            condition => \&_can_view_cfg_screens,
-        },
-        {    # Not boolean.
-            name      => 'moderateComments',
-            alias     => 'moderate_unreg_comments',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'allowCommentHtml',
-            alias     => 'allow_comment_html',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
         {   name      => 'sanitizeSpec',
             alias     => 'sanitize_spec',
-            condition => \&_can_view_cfg_screens,
-        },
-        {    # Not boolean.
-            name      => 'emailNewComments',
-            alias     => 'email_new_comments',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'sortOrderComments',
-            alias     => 'sort_order_comments',
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'autolinkUrls',
             alias     => 'autolink_urls',
             type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'convertParasComments',
-            alias     => 'convert_paras_comments',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'useCommentConfirmation',
-            alias     => 'use_comment_confirmation',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'allowPings',
-            alias     => 'allow_pings',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'moderatePings',
-            alias     => 'moderate_pings',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'emailNewPings',
-            alias     => 'email_new_pings',         # Not boolean.
             condition => \&_can_view_cfg_screens,
         },
         {   name      => 'autodiscoverLinks',
@@ -541,11 +440,6 @@ sub fields {
         },
 
         # Registration Settings screen
-        {   name      => 'allowCommenterRegist',
-            alias     => 'allow_commenter_regist',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
         {   name        => 'newCreatedUserRoles',
             from_object => sub {
                 my ($obj) = @_;
@@ -563,61 +457,6 @@ sub fields {
                     [qw/ id name /] );
             },
             condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'allowUnregComments',
-            alias     => 'allow_unreg_comments',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'requireCommentEmails',
-            alias     => 'require_comment_emails',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name        => 'commenterAuthenticators',
-            alias       => 'commenter_authenticators',
-            from_object => sub {
-                my ($obj) = @_;
-                my $auths = $obj->commenter_authenticators or return [];
-                return [ split ',', $auths ];
-            },
-            to_object => sub {
-                my ($hash) = @_;
-                if ( ref $hash->{commenterAuthenticators} eq 'ARRAY' ) {
-                    return join( ',', @{ $hash->{commenterAuthenticators} } );
-                }
-                else {
-                    return '';
-                }
-            },
-            condition => \&_can_view_cfg_screens,
-        },
-
-        # Web Services Settings screen
-        {   name      => 'pingGoogle',
-            alias     => 'ping_google',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name      => 'pingWeblogs',
-            alias     => 'ping_weblogs',
-            type      => 'MT::DataAPI::Resource::DataType::Boolean',
-            condition => \&_can_view_cfg_screens,
-        },
-        {   name        => 'pingOthers',
-            alias       => 'ping_others',
-            from_object => sub {
-                my ($obj) = @_;
-                return [
-                    split /\r?\n/,
-                    defined $obj->ping_others ? $obj->ping_others : ''
-                ];
-            },
-            to_object => sub {
-                my ($hash) = @_;
-                return join "\n", @{ $hash->{pingOthers} };
-            },
-            codition => \&_can_view_cfg_screens,
         },
 
         # template tags
