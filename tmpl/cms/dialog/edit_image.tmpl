@@ -421,6 +421,16 @@
                 .addClass('disabled')
                 .attr('disabled', 'disabled');
         }
+
+        jQuery(window).on('load resize', function () {
+            if (jQuery(this).width() == 798) {
+                jQuery('#image').attr('class', 'col-8');
+                jQuery('#editor').attr('class', 'col-4');
+            } else {
+                jQuery('#image').attr('class', 'col-12');
+                jQuery('#editor').attr('class', 'col-12 mt-3');
+            }
+        });
     });
 </script>
 </mt:setvarblock>

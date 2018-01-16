@@ -2830,7 +2830,7 @@ sub dialog_edit_image {
     # Retrive data of thumbnail.
     my $param  = {};
     my $hasher = build_asset_hasher($app);
-    $hasher->( $asset, $param, ThumbWidth => 500, ThumbHeight => 500 );
+    $hasher->( $asset, $param, ThumbWidth => 400, ThumbHeight => 400 );
 
     # Disable browser cache for image.
     $param->{modified_on} = $asset->modified_on;
@@ -2868,8 +2868,8 @@ sub thumbnail_image {
     my $blog_id = $app->param('blog_id') || 0;
 
     # Thumbnail size on "Edit Image" screen is 240.
-    my $width  = $app->param('width')  || 500;
-    my $height = $app->param('height') || 500;
+    my $width  = $app->param('width')  || 400;
+    my $height = $app->param('height') || 400;
 
     my $asset;
 
