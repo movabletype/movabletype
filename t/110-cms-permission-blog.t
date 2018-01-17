@@ -681,7 +681,7 @@ subtest 'mode = list' => sub {
     ok( $out,                   "Request: list" );
     ok( $out !~ m!redirect=1!i, "list by permitted user" );
 
-    foreach my $blog_id ( $website->id, 0 ) {
+    foreach my $blog_id ( $website->id ) {
         note 'blog_id: ' . $blog_id;
 
         $app = _run_app(
