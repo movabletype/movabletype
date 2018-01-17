@@ -155,15 +155,15 @@
 
   var observer = riot.observable();
   jQuery(document).on('dragstart', '.mt-draggable', function(event) {
-    let $this = jQuery(this);
+    var $this = jQuery(this);
     $this.attr('aria-grabbed', true);
-    let fieldType = $this.data('field-type');
+    var fieldType = $this.data('field-type');
     event.originalEvent.dataTransfer.setData('text', fieldType);
     observer.trigger('mtDragStart');
   });
 
   jQuery(document).on('dragend', '.mt-draggable', function(event) {
-    let $this = jQuery(this);
+    var $this = jQuery(this);
     $this.attr('aria-grabbed', false);
     observer.trigger('mtDragEnd');
   });

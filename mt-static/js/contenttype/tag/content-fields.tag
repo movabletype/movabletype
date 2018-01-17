@@ -137,9 +137,9 @@
     }
 
     onDrop(e) {
-      let fieldType = e.dataTransfer.getData('text')
-      let field = jQuery("[data-field-type='" + fieldType + "']")
-      let fieldTypeLabel = field.data('field-label')
+      var fieldType = e.dataTransfer.getData('text')
+      var field = jQuery("[data-field-type='" + fieldType + "']")
+      var fieldTypeLabel = field.data('field-label')
 
       newId = Math.random().toString(36).slice(-8)
       field = {
