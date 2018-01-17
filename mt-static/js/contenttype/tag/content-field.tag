@@ -1,5 +1,5 @@
 <content-field>
-  <div class="content-field-block mt-collapse mb-2" draggable="true" aria-grabbed="false" id="content-field-block-{ id }">
+  <div class="content-field-block mt-collapse mb-2" id="content-field-block-{ id }">
     <div class="mt-collapse__container">
       <div class="col">
         <svg title="{ trans('ContentField') }" role="img" class="mt-icon--secondary"><use xlink:href="{ StaticURI }images/sprite.svg#ic_contentstype" /></svg>{ label } ({ typeLabel })

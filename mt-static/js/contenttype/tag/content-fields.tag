@@ -47,11 +47,23 @@
       <legend class="h3">{ trans('Content Fields') }</legend>
       <div id="installed-fields" class="sortable" ondrop={ onDrop } ondragover={ onDragOver }>
         <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
-        <div each={ fields } data-is="content-field"></div>
+        <div class="mt-draggable"  draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
       </div>
     </fieldset>
   </form>
   <button type="button" class="btn btn-primary" disabled={ !canSubmit() } onclick={ submit }>{ trans("Save") }</button>
+
+  <style>
+    .placeholder{
+        height:26px;
+        margin:4px;
+        margin-left:10px;
+        border-width:2px;
+        border-style:dashed;
+        border-radius:4px;
+        border-color:#aaa;
+    }
+  </style>
 
   <script>
     self = this
@@ -60,6 +72,10 @@
     self.data = ""
     self.droppable = false
     self.observer = opts.observer
+    self.dragged = null
+    self.draggedItem = null
+    self.placeholder = document.createElement("div")
+    self.placeholder.className = 'placeholder'
 
     self.observer.on('mtDragStart', function() {
       self.droppable = true
@@ -78,8 +94,46 @@
     }
 
     onDragOver(e) {
-      if ( self.droppable )
+      // Allowed only for Content Field and Content Field Type.
+      if (self.droppable ) {
+
+        if (e.target.className != 'sortable' && e.target.className != 'mt-draggable') {
+          e.preventDefault()
+          return
+        }
+
+        if (self.dragged) {
+          if (e.target.className == 'mt-draggable') {
+            // Inside the dragOver method
+            self.over = e.target
+            var relY = e.clientY - self.over.offsetTop
+            var height = self.over.offsetHeight / 2
+            var parent = e.target.parentNode
+
+            if(relY > height) {
+              self.nodePlacement = "after"
+              parent.insertBefore(self.placeholder, e.target.nextElementSibling)
+            }
+            else if(relY < height) {
+              self.nodePlacement = "before"
+              parent.insertBefore(this.placeholder, e.target)
+            }
+          }
+          if (e.target.className == 'sortable') {
+            var fields = e.target.getElementsByClassName('mt-draggable')
+            if (fields.length == 0 || ( fields.length == 1 && fields[0] == self.dragged)){
+              e.target.appendChild(self.placeholder);
+            }
+          }
+
+        }
+        else {
+          // Dragged from content field types
+          e.target.parentNode.appendChild(self.placeholder)
+        }
+
         e.preventDefault()
+      }
     }
 
     onDrop(e) {
@@ -101,6 +155,22 @@
         isEmpty: false
       })
       e.preventDefault()
+    }
+
+    onDragStart (e) {
+      self.dragged = e.target
+      self.draggedItem = e.item;
+      e.dataTransfer.setData('text', e.item.id)
+      self.droppable = true
+    }
+
+    onDragEnd (e) {
+      self.dragged.style.display = 'block'
+      if(self.placeholder.parentNode){
+        self.placeholder.parentNode.removeChild(self.placeholder);
+      }
+      self.droppable = false
+      self.update();
     }
 
     _validateFields() {
