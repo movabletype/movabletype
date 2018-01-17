@@ -138,8 +138,11 @@
 
     onDrop(e) {
       if (self.dragged) {
-        var pos = 0;
-        var children = self.placeholder.parentNode.children;
+        var pos = 0
+        var children
+        if (self.placeholder.parentNode) {
+          children = self.placeholder.parentNode.children
+        }
         for(var i = 0; i < children.length; i++){
           if(children[i] == self.placeholder) 
           break;
