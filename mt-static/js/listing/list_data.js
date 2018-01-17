@@ -261,8 +261,12 @@
   };
 
   ListData.prototype.toggleRow = function (rowIndex) {
-    var currentState = this.objects[rowIndex].checked;
-    this.objects[rowIndex].checked = !currentState;
+    var object = this.objects[rowIndex];
+    if (!object.object[0]) {
+      return;
+    }
+    var currentState = object.checked;
+    object.checked = !currentState;
 
     this.checkedAllRowsOnPage = this.isCheckedAllRowsOnPage();
     this.checkedAllRows = false;
@@ -304,7 +308,9 @@
 
   ListData.prototype.updateAllRowsOnPage = function (nextState) {
     this.objects.forEach(function (object) {
-      object.checked = nextState;
+      if (object.object[0]) {
+        object.checked = nextState;
+      }
     });
     this.checkedAllRowsOnPage = nextState;
     this.checkedAllRows = false;
