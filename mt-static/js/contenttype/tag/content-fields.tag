@@ -83,6 +83,7 @@
 
     self.observer.on('mtDragEnd', function() {
       self.droppable = false
+      self.onDragEnd()
     })
 
     stopSubmitting(e) {
