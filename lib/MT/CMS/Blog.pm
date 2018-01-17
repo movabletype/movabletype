@@ -3674,12 +3674,14 @@ sub cms_pre_load_filtered_list {
 }
 
 sub can_view_blog_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if !$blog || $blog->is_blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
