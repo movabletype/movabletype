@@ -520,9 +520,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -3535,7 +3535,7 @@ HTML
             . $app->uri(
             mode => 'list',
             args => {
-                '_type' => 'blog',
+                '_type' => $app->blog ? 'blog' : 'website',
                 blog_id => ( $app->blog ? $new_blog->website->id : 0 )
             }
             );
