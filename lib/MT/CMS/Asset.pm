@@ -336,17 +336,10 @@ sub insert {
     my $file_ext_changes = $app->param('changed_file_ext');
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
-    my $extension_message;
-    if ( $ext_from && $ext_to ) {
-        $extension_message
-            = $app->translate( "Extension changed from [_1] to [_2]",
-            $ext_from, $ext_to );
-    }
-    elsif ( !$ext_from && $ext_to ) {
-        $extension_message
-            = $app->translate( "Extension '[_1]' added", $ext_to );
-    }
-
+    my $extension_message
+        = $app->translate( "Extension changed from [_1] to [_2]",
+        $ext_from, $ext_to )
+        if ( $ext_from && $ext_to );
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
@@ -587,16 +580,10 @@ sub js_upload_file {
     my $file_ext_changes = $app->param('changed_file_ext');
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
-    my $extension_message;
-    if ( $ext_from && $ext_to ) {
-        $extension_message
-            = $app->translate( "Extension changed from [_1] to [_2]",
-            $ext_from, $ext_to );
-    }
-    elsif ( !$ext_from && $ext_to ) {
-        $extension_message
-            = $app->translate( "Extension '[_1]' added", $ext_to );
-    }
+    my $extension_message
+        = $app->translate( "Extension changed from [_1] to [_2]",
+        $ext_from, $ext_to )
+        if ( $ext_from && $ext_to );
 
     my $metadata = {
         id        => $asset->id,
@@ -1569,15 +1556,15 @@ sub _upload_file_compat {
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
                     )[2];
-                if( $basename eq $ext_old ) {
-                    $basename .= '.'  . $ext_new;
-                    $app->param( "changed_file_ext", ",$ext_new" );
-                }
-                elsif ($ext_new ne lc($ext_old)
+                if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
-                    $basename =~ s/$ext_old$/$ext_new/;
+                    if( $basename eq $ext_old ) {
+                        $basename .= '.'  . $ext_new;
+                    } else {
+                        $basename =~ s/$ext_old$/$ext_new/;
+                    }
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
             }
@@ -2106,14 +2093,15 @@ sub _upload_file {
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
 
-        if ( $basename eq $ext_old ) {
-            $basename .= '.' . $ext_new;
-            $app->param( "changed_file_ext", ",$ext_new" );
-        } elsif (   $ext_new ne lc($ext_old)
+        if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
-            $basename =~ s/$ext_old$/$ext_new/;
+            if( $basename eq $ext_old ){
+                $basename .= '.' . $ext_new;
+            } else {
+                $basename =~ s/$ext_old$/$ext_new/;
+            }
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
     }
