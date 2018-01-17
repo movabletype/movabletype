@@ -3454,7 +3454,7 @@ sub print_status_page {
     <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
     <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
         <div id="clone-process" class="process-msg card-block">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled p-3">
 HTML
 
     my $new_blog;
@@ -3552,7 +3552,7 @@ HTML
             </ul>
         </div>
     </div>
-    <p><strong><__trans phrase="Finished!"></strong></p>
+    <p class="mt-3"><strong><__trans phrase="Finished!"></strong></p>
 </div>
 
 <div class="modal-footer">
