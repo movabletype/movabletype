@@ -96,7 +96,6 @@
     onDragOver(e) {
       // Allowed only for Content Field and Content Field Type.
       if (self.droppable ) {
-
         if (e.target.className != 'sortable' && e.target.className != 'mt-draggable') {
           e.preventDefault()
           return
@@ -137,54 +136,87 @@
     }
 
     onDrop(e) {
-      var fieldType = e.dataTransfer.getData('text')
-      var field = jQuery("[data-field-type='" + fieldType + "']")
-      var fieldTypeLabel = field.data('field-label')
-
-      newId = Math.random().toString(36).slice(-8)
-      field = {
-        'type': fieldType,
-        'typeLabel' : fieldTypeLabel,
-        'id' : newId,
-        'isNew': true,
-        'isShow': 'show'
+      if (self.dragged) {
+        var pos = 0;
+        var children = self.placeholder.parentNode.children;
+        for(var i = 0; i < children.length; i++){
+          if(children[i] == self.placeholder) 
+          break;
+          if(children[i] != self.dragged && children[i].classList.contains("mt-draggable")) {
+            pos++;
+          }
+        }
+        self._moveField(self.draggedItem, pos)
+        setDirty(true)
+        self.update()
       }
-      self.fields.push(field)
-      setDirty(true)
-      self.update({
-        isEmpty: false
-      })
+      else {
+        // Drag from field list
+        var fieldType = e.dataTransfer.getData('text')
+        var field = jQuery("[data-field-type='" + fieldType + "']")
+        var fieldTypeLabel = field.data('field-label')
+
+        newId = Math.random().toString(36).slice(-8)
+        field = {
+          'type': fieldType,
+          'typeLabel' : fieldTypeLabel,
+          'id' : newId,
+          'isNew': true,
+          'isShow': 'show'
+        }
+        self.fields.push(field)
+        setDirty(true)
+        self.update({
+          isEmpty: false
+        })
+      }
+
       e.preventDefault()
     }
 
     onDragStart (e) {
       self.dragged = e.target
-      self.draggedItem = e.item;
+      self.draggedItem = e.item
       e.dataTransfer.setData('text', e.item.id)
       self.droppable = true
     }
 
     onDragEnd (e) {
-      self.dragged.style.display = 'block'
-      if(self.placeholder.parentNode){
-        self.placeholder.parentNode.removeChild(self.placeholder);
+      if (self.placeholder.parentNode) {
+        self.placeholder.parentNode.removeChild(self.placeholder)
       }
       self.droppable = false
-      self.update();
+      self.dragged = null
+      self.draggedItem = null
+      self.update()
     }
 
-    _validateFields() {
-      var requiredFieldsAreValid    = jQuery('.html5-form')
+    _moveField(item, pos){
+      for (var i = 0; i < self.fields.length; i++) {
+        var field = self.fields[i];
+        if (field.id == item.id) {
+          self.fields.splice(i, 1)
+          break
+        }
+      }
+      self.fields.splice(pos, 0, field)
+      for (var i = 0; i < self.fields.length; i++) {
+        self.fields[i].order = i + 1
+      }
+    }
+
+   _validateFields() {
+     var requiredFieldsAreValid    = jQuery('.html5-form')
                                         .mtValidate('simple')
-      var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
+     var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
                                         .mtValidate('simple');
-      var tableIsValid              = jQuery('.values-option-table')
+     var tableIsValid              = jQuery('.values-option-table')
                                         .mtValidate('selection-field-values-option')
-      var contentFieldBlockIsValid  = jQuery('.content-field-block')
+     var contentFieldBlockIsValid  = jQuery('.content-field-block')
                                         .mtValidate('content-field-block')
 
-      return requiredFieldsAreValid && textFieldsInTableAreValid
-          && tableIsValid && contentFieldBlockIsValid
+     return requiredFieldsAreValid && textFieldsInTableAreValid
+         && tableIsValid && contentFieldBlockIsValid
     }
 
     canSubmit() {
@@ -208,20 +240,34 @@
 
       setDirty(false)
       fieldOptions = [];
-      if ( self.fields ) {
-        child = self.tags['content-field']
-        if ( child ) {
-          if ( !Array.isArray(child) )
+      if (self.fields) {
+        var child = self.tags['content-field']
+        if (child) {
+          if (!Array.isArray(child)) {
             child = [ child ]
-          child.forEach( function (c, i) {
-            field = c.tags[c.type]
-            options = field.gatheringData()
-            data = {}
+          }
+
+          child.forEach(function (c, i) {
+            var field = c.tags[c.type]
+            var options = field.gatheringData()
+            var data = {}
             data.type = c.type
-            data.order = i + 1
             data.options = options
-            if ( !c.isNew )
+            if ( c.isNew ) {
+              data.order = i + 1
+            }
+            else {
               data.id = c.id
+              var innerField = self.fields.filter( function (v) {
+                return v.id == c.id
+              })
+              if (innerField.length) {
+                data.order = innerField[0].order
+              }
+              else {
+                data.order = i + 1
+              }
+            }
             fieldOptions.push(data)
           })
           self.data = JSON.stringify(fieldOptions)
