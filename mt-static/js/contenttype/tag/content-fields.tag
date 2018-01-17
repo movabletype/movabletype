@@ -106,16 +106,12 @@
           if (e.target.className == 'mt-draggable') {
             // Inside the dragOver method
             self.over = e.target
-            var relY = e.clientY - self.over.offsetTop
-            var height = self.over.offsetHeight / 2
+            var targetRect = e.target.getBoundingClientRect()
             var parent = e.target.parentNode
-
-            if(relY > height) {
-              self.nodePlacement = "after"
+            if ((e.clientY - targetRect.top) / targetRect.height > 0.5) {
               parent.insertBefore(self.placeholder, e.target.nextElementSibling)
             }
-            else if(relY < height) {
-              self.nodePlacement = "before"
+            else {
               parent.insertBefore(this.placeholder, e.target)
             }
           }
