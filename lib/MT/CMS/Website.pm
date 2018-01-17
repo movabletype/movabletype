@@ -412,12 +412,14 @@ sub can_view {
 }
 
 sub can_view_website_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if $blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
