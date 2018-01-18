@@ -3132,6 +3132,8 @@ sub clone {
 
     $app->validate_magic() or return;
 
+    $app->{hide_goback_button} = 1;
+
     my @id = $app->multi_param('id');
 
     if ( !@id ) {
