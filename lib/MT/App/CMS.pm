@@ -559,6 +559,9 @@ sub init_plugins {
             $pkg
                 . 'pre_load_filtered_list.blog' =>
                 "${pfx}Blog::cms_pre_load_filtered_list",
+            $pkg
+                . 'filtered_list_param.blog' =>
+                "${pfx}Blog::filtered_list_param",
 
             # category callbacks
             $pkg
