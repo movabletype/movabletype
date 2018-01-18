@@ -3816,4 +3816,17 @@ sub _determine_total {
     return $total;
 }
 
+sub filtered_list_param {
+    my ( $cb, $app, $param, $objs ) = @_;
+    my %obj_hash = map { $_->id => $_ } @$objs;
+    my $objects = $param->{objects};
+    return unless $objects && @$objects > 0;
+    for my $obj (@$objects) {
+        my $id = $obj->[0] or next;
+        if ( $obj_hash{$id} && !$obj_hash{$id}->is_blog ) {
+            $obj->[0] = undef;
+        }
+    }
+}
+
 1;
