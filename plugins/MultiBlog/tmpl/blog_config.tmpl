@@ -15,13 +15,13 @@ function rebuildMultiBlogTriggerTable() {
         var str = "";
         for (var i = 0; i < multiBlogRebuilds.length; i++) {
             str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
-            str += "<td class=\"col\"> <__trans phrase="When"> "
+            str += "<td> <__trans phrase="When"> "
                 + multiBlogRebuilds[i][2]
-                + "</td><td class='col'>"
+                + "</td><td>"
                 + multiBlogRebuilds[i][4]
                 + "</td>";
-            str += "<td class='col'>" + multiBlogRebuilds[i][0] + "</td>";
-            str += "<td class='col si'><a class='d-inline-block' href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></a></td>";
+            str += "<td>" + multiBlogRebuilds[i][0] + "</td>";
+            str += "<td class='si'><a class='d-inline-block' href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></a></td>";
             str += "</tr>\n";
             values[i] = multiBlogRebuilds[i][1];
             values[i] += ":";
@@ -29,7 +29,7 @@ function rebuildMultiBlogTriggerTable() {
             values[i] += ":";
             values[i] += multiBlogRebuilds[i][5];
         }
-        str = "<table class='table mt-table'><thead><tr><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si' scope='col'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></th></tr></thead>\n" + str + "</table>";
+        str = "<table class='table mt-table'><thead><tr><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='head si' scope='col'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></th></tr></thead>\n" + str + "</table>";
         getByID('multiblog_blog_list').innerHTML = str;
         getByID('rebuild_triggers').value = values.join('|');
     }
