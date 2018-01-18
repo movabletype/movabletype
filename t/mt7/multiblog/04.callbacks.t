@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
+
 BEGIN {
     eval { require Test::MockObject }
-      or plan skip_all => 'Test::MockObject is not installed';
+        or plan skip_all => 'Test::MockObject is not installed';
 }
 
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -24,34 +26,49 @@ use MT::Test;
 
 $test_env->prepare_fixture('db_data');
 
-require MultiBlog;
+#require MultiBlog;
+use MT::RebuildTrigger;
 
 my $app     = MT->instance;
 my $request = MT::Request->instance;
 
-my $plugin = $app->component('MultiBlog');
-
-my $plugin_data = $app->model('plugindata')->new;
-$plugin_data->plugin('MultiBlog');
-my $new_blog    = $app->model('blog')->new;
+my $rebuild_trigger = MT::RebuildTrigger->new();
+my $new_blog        = $app->model('blog')->new;
 $new_blog->id(9999);
 
 ### Utilities
 sub is_restored {
     my ( $original, $objects, $restored, $message ) = @_;
 
-    $plugin_data->data($original);
-    MultiBlog::post_restore( $plugin, undef, $objects, undef, undef, sub { } );
-    is_deeply( $plugin_data->data, $restored, $message );
+    $rebuild_trigger->blog_id(1);
+    $rebuild_trigger->data( MT::Util::to_json($original) );
+    $rebuild_trigger->save;
+    MT::RebuildTrigger->post_restore( $objects, undef, undef, sub { } );
+    my $rebuild_triggers = $restored->{rebuild_triggers};
+    my ( $action, $restored_id, $trigger )
+        = $rebuild_triggers
+        ? split ':', $rebuild_triggers
+        : ( '', '', '' );
+    my $new_blog_id
+        = (    $restored_id =~ m/[_all|_blogs_in_website]/
+            || $restored->{other_triggers} )
+        ? 0
+        : $new_blog->id;
+    my $rebuild_trigger_restored
+        = MT::RebuildTrigger->load( { blog_id => $new_blog_id } );
+    my $data
+        = $rebuild_trigger_restored->data()
+        ? MT::Util::from_json( $rebuild_trigger_restored->data() )
+        : {};
+    is_deeply( $data, $restored, $message );
 }
 
 ### Do test
 
 is_restored(
     { rebuild_triggers => 'ri:1:entry_save', },
-    {
-        'MT::PluginData#1' => $plugin_data,
-        'MT::Blog#1'       => $new_blog,
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
     },
     { rebuild_triggers => 'ri:9999:entry_save' },
     'If restoring data has a trigger for a blog.'
@@ -59,9 +76,8 @@ is_restored(
 
 is_restored(
     { rebuild_triggers => 'ri:1:entry_save', },
-    {
-        'MT::PluginData#1' => $plugin_data,
-        'MT::Website#1'    => $new_blog,
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Website#1'        => $new_blog,
     },
     { rebuild_triggers => 'ri:9999:entry_save' },
     'If restoring data has a trigger for a website.'
@@ -69,25 +85,21 @@ is_restored(
 
 is_restored(
     { rebuild_triggers => 'ri:_all:entry_save', },
-    {
-        'MT::PluginData#1' => $plugin_data,
-        'MT::Blog#1'       => $new_blog,
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
     },
     { rebuild_triggers => 'ri:_all:entry_save' },
     'If restoring data has a trigger for all.'
 );
 
 is_restored(
-    {
-        rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
+    {   rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
         blogs_in_website_triggers => { 'ri' => { 1 => 1, } },
     },
-    {
-        'MT::PluginData#1' => $plugin_data,
-        'MT::Blog#1'       => $new_blog,
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
     },
-    {
-        rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
+    {   rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
         blogs_in_website_triggers => { 'ri' => { 9999 => 1, } },
     },
     'If restoring data has a trigger for blogs_in_website.'
@@ -95,9 +107,8 @@ is_restored(
 
 is_restored(
     { other_triggers => { 'ri' => { 1 => 1, } }, },
-    {
-        'MT::PluginData#1' => $plugin_data,
-        'MT::Blog#1'       => $new_blog,
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
     },
     { other_triggers => { 'ri' => { 9999 => 1, } }, },
     'If restoring data has a trigger for other_triggers.'

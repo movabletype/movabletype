@@ -249,12 +249,14 @@ sub post_restore {
         my $data = $rt->data || {};
         $data = MT::Util::from_json($data);
         next unless ref $data eq 'HASH';
+        my $new_blog_id;
         if ( my $rebuild_triggers = $data->{rebuild_triggers} ) {
             my @restored;
             foreach my $trg_str ( split( '\|', $rebuild_triggers ) ) {
                 my ( $action, $id, $trigger ) = split( ':', $trg_str );
                 if ( $id eq '_all' ) {
                     push @restored, "$action:$id:$trigger";
+                    $new_blog_id = 0;
                 }
                 elsif ( $id eq '_blogs_in_website' ) {
                     my @keys = keys %{ $data->{blogs_in_website_triggers} };
@@ -272,7 +274,7 @@ sub post_restore {
                                     $data->{blogs_in_website_triggers}{$act}
                                     {$old_id};
                                 $callback->(
-                                    $self->translate(
+                                    MT->translate(
                                         'Restoring MultiBlog rebuild trigger for blog #[_1]...',
                                         $old_id
                                     )
@@ -281,6 +283,7 @@ sub post_restore {
                         }
                     }
                     push @restored, "$action:$id:$trigger";
+                    $new_blog_id = 0;
                 }
                 else {
                     my $new_obj = $objects->{ 'MT::Blog#' . $id };
@@ -290,17 +293,19 @@ sub post_restore {
                         push @restored,
                             "$action:" . $new_obj->id . ":$trigger";
                         $callback->(
-                            $self->translate(
+                            MT->translate(
                                 'Restoring MultiBlog rebuild trigger for blog #[_1]...',
                                 $id
                             )
                         );
+                        $new_blog_id = $new_obj->id;
                     }
                 }
             }
 
             if (@restored) {
                 $data->{rebuild_triggers} = join( '|', @restored );
+                $rt->blog_id($new_blog_id);
                 $rt->data( MT::Util::to_json($data) );
                 $rt->save;
             }
@@ -317,14 +322,16 @@ sub post_restore {
                         $data->{other_triggers}{$act}{ $new_obj->id }
                             = delete $data->{other_triggers}{$act}{$old_id};
                         $callback->(
-                            $self->translate(
+                            MT->translate(
                                 'Restoring MultiBlog rebuild trigger for blog #[_1]...',
                                 $old_id
                             )
                         );
                     }
                 }
+                $new_blog_id = 0;
             }
+            $rt->blog_id($new_blog_id);
             $rt->data( MT::Util::to_json($data) );
             $rt->save;
         }
