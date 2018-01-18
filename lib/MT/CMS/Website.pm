@@ -540,6 +540,8 @@ sub dialog_select_website {
 sub dialog_move_blogs {
     my $app = shift;
 
+    $app->{hide_goback_button} = 1;
+
     my $blog_id = $app->param('blog_id');
 
     my $terms = {};
