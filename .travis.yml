@@ -11,7 +11,7 @@ env:
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.18" TEST_COMMAND="phpunit"
+    - PERL_VERSION="5.18" TEST_COMMAND="phpunit && find . -type '*.php' | xargs -n1 php -l"
 
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
@@ -19,7 +19,7 @@ env:
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.10" TEST_COMMAND="phpunit"
+    - PERL_VERSION="5.10" TEST_COMMAND="phpunit && find . -type '*.php' | xargs -n1 php -l"
 
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
@@ -27,7 +27,7 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.24" TEST_COMMAND="phpunit"
+    - PERL_VERSION="5.24" TEST_COMMAND="phpunit && find . -type '*.php' | xargs -n1 php -l"
 
     - TEST_COMMAND="npm run test-riot"
 
