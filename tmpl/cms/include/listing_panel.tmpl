@@ -74,7 +74,7 @@ parameters:
         <tbody>
         <mt:loop name="object_loop">
           <mt:unless name="disabled">
-          <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="has_child"> has_child</mt:if>">
+          <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="has_child"> has_child</mt:if>">
             <td class="cb" scope="row">
               <label class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
                 <input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />

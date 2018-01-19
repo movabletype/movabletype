@@ -1282,7 +1282,7 @@ PERMCHECK: {
                     label       => $_->name,
                     description => $_->description
                     } foreach @{$child_blogs};
-                $row->{child_obj}      = $child_sites;
+                $row->{child_obj}       = $child_sites;
                 $row->{child_obj_count} = scalar @{$child_blogs};
             }
         }
@@ -1316,22 +1316,51 @@ PERMCHECK: {
         $terms->{class} = 'website';
     }
 
+    my $group = MT->registry( 'object_types', 'group' );
+    my $has_group = $group ? 1 : 0;
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
             panel_multi  => 1,
+            has_group    => $has_group ? 1 : 0,
         };
-        $app->listing(
-            {   terms    => $terms,
-                args     => { sort => 'name' },
-                type     => $type,
-                code     => $hasher,
-                params   => $params,
-                template => 'include/listing_panel.tmpl',
-                $app->param('search') ? ( no_limit => 1 ) : (),
-            }
-        );
+        if ( $has_group && $type eq 'author' && !$app->param('link_filter') )
+        {
+            my $author_terms = {
+                status => MT::Author::ACTIVE(),
+                type   => MT::Author::AUTHOR()
+            };
+            require MT::Group;
+            my $group_terms = { status => MT::Group::ACTIVE() };
+            my $no_limit
+                = $app->param('no_limit')
+                ? 1
+                : ( $app->param('search') ? 1 : 0 );
+            $app->multi_listing(
+                {   args => { sort => 'name' },
+                    type         => [ 'group', 'author' ],
+                    code         => $hasher,
+                    params       => $params,
+                    author_terms => $author_terms,
+                    group_terms  => $group_terms,
+                    template     => 'include/listing_panel.tmpl',
+                    $no_limit ? ( no_limit => 1 ) : (),
+                }
+            );
+        }
+        else {
+            $app->listing(
+                {   terms    => $terms,
+                    args     => { sort => 'name' },
+                    type     => $type,
+                    code     => $hasher,
+                    params   => $params,
+                    template => 'include/listing_panel.tmpl',
+                    $app->param('search') ? ( no_limit => 1 ) : (),
+                }
+            );
+        }
     }
     else {
 
@@ -1385,13 +1414,9 @@ PERMCHECK: {
             }
         }
 
-        my $group = MT->registry( 'object_types', 'group' );
-        my $has_group = $params->{has_group} = $group ? 1 : 0;
-
         if ( !$author_id ) {
             if ( $type eq 'user' ) {
                 unshift @panels, 'author';
-                unshift @panels, 'group' if $has_group;
             }
         }
 
@@ -1414,18 +1439,13 @@ PERMCHECK: {
                 items_prompt      => $app->translate("Roles Selected"),
                 panel_description => $app->translate("Description"),
             },
-            'group' => {
-                panel_title       => $app->translate("Select Groups"),
-                panel_label       => $app->translate("Group Name"),
-                items_prompt      => $app->translate("Groups Selected"),
-                panel_description => $app->translate("Description"),
-            }
         };
 
         $params->{panel_multi}  = 1;
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
+        $params->{has_group}    = $has_group ? 1 : 0;
 
         for ( my $i = 0; $i <= $#panels; $i++ ) {
             my $source       = $panels[$i];
@@ -1457,15 +1477,45 @@ PERMCHECK: {
                 $terms->{class} = 'website';
             }
 
-            $app->listing(
-                {   no_html => 1,
-                    code    => $hasher,
-                    type    => $source,
-                    params  => $panel_params,
-                    terms   => $terms,
-                    args    => $args,
-                }
-            );
+            if ( $has_group && $source eq 'author' ) {
+                $panel_params->{panel_title}
+                    = $app->translate("Select Groups And Users");
+                $panel_params->{items_prompt}
+                    = $app->translate("Groups/Users Selected");
+                $panel_params->{panel_label}
+                    = $app->translate("User/Group Name");
+                $panel_params->{panel_description}
+                    = $app->translate("Description");
+
+                my $author_terms = {
+                    status => MT::Author::ACTIVE(),
+                    type   => MT::Author::AUTHOR()
+                };
+                require MT::Group;
+                my $group_terms = { status => MT::Group::ACTIVE() };
+                $app->multi_listing(
+                    {   no_html      => 1,
+                        code         => $hasher,
+                        type         => [ 'group', 'author' ],
+                        params       => $panel_params,
+                        author_terms => $author_terms,
+                        group_terms  => $group_terms,
+                        args         => $args,
+                    }
+                );
+            }
+            else {
+
+                $app->listing(
+                    {   no_html => 1,
+                        code    => $hasher,
+                        type    => $source,
+                        params  => $panel_params,
+                        terms   => $terms,
+                        args    => $args,
+                    }
+                );
+            }
             if (!$panel_params->{object_loop}
                 || ( $panel_params->{object_loop}
                     && @{ $panel_params->{object_loop} } < 1 )

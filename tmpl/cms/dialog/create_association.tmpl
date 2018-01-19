@@ -49,7 +49,24 @@ function dialog_closed(ok) {
                 alert("cannot find field for " + panel.name);
                 continue;
             }
-            fld.value = panel.selectionList.items().join(",");
+            var items = panel.selectionList.items();
+
+            var item_length = items.length;
+            for(var x = 0; x < item_length; x++){
+                var val = items[x];
+                var type = val.slice(0, val.indexOf('-'));
+                if(panel.name != type){
+                    var input_val = frm.elements[type].value;
+                    if(input_val) input_val += ',';
+                    input_val += val;
+                    frm.elements[type].value = input_val
+                }
+            }
+            var target_items =  items.filter(function(val){
+                var type = val.slice(0, val.indexOf('-'));
+                return( panel.name === type);
+            });
+            fld.value = target_items.join(',');
         }
         // commit!
         frm.submit();
@@ -120,57 +137,58 @@ function init() {
     dialog.setPanels(panels);
     dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
 
+
 <mt:if name="has_group">
-    jQuery('[name=assoc_type]').on('change', function(){
-        var val = jQuery(this).val();
-        var newpanels = new Array();
-        panels.forEach(function(panel, index){
-            jQuery('#'+panel.name + '-panel').hide();
-            if(val == 'users_only'){
-                if(panel.name != 'group'){
-                    newpanels.push(panel);
-                    return;
-                }
-            } else if(val == 'groups_only'){
-                if(panel.name != 'author'){
-                    newpanels.push(panel);
-                    return;
-                }
-            } else {
-                newpanels.push(panel);
-            }
-        });
+    var panel = panels[dialog.currentPanel];
+    var datasource = panel.datasource;
 
-        dialog.setPanels(newpanels);
-        count = newpanels.length;
-        newpanels.forEach(function(panel, index){
-            var panel_id = panel.name + '-panel';
-            jQuery('#' + panel_id + ' .panel-header .text-right').each(function(){
-                var num_text = jQuery(this).text();
-                num_text = num_text.replace(/.*/, (index+1) + ' / '+count);
-                jQuery(this).text(num_text);
-            })
+    jQuery('.select_assoc_type a').on('click', function(){
+        var search = jQuery('.search-input');
+        if(jQuery(this).hasClass('both') && search.val() == ''){
+            datasource.navigate(0);
+            panel.searchField.value = "";
+            jQuery(panel.searchReset).hide();
+            return false;
+        }
 
+        if (datasource.searching) return;
+
+        var doc = TC.getOwnerDocument(datasource.element);
+        var args = doc.location.search;
+        args = args.replace(/^\?/, '');
+        args = args.replace(/&?offset=\d+/, '');
+        datasource.searching = true;
+        if (datasource.pager)
+            datasource.pager.render();
+        if (datasource.pager2)
+            datasource.pager2.render();
+
+        args = args.replace(/&_type=\w+/, '');
+        args += '&search=' + escape(search.val());
+        if(jQuery(this).hasClass('both')){
+            args += '&_type=author';
+        } else if(jQuery(this).hasClass('author')){
+            args += '&_type=author&link_filter=1';
+        }else if(jQuery(this).hasClass('group')){
+            args += '&_type=group&link_filter=1';
+        }
+        args += '&json=1&no_limit=1';
+
+        TC.Client.call({
+            'load': function(c,r) { datasource.searched(r); },
+            'error': function() { alert("Error during search."); datasource.searched(null); },
+            'method': 'POST',
+            'uri': ScriptURI,
+            'arguments': args
         });
     });
-    var init_nextPanel = dialog.nextPanel;
-    var init_previousPanel = dialog.previousPanel;
-    dialog.nextPanel = function(){
-        if(this.currentPanel == 0){
-            jQuery('.select_assoc_type').hide();
-        }
-        init_nextPanel.apply(dialog);
-    };
-    dialog.previousPanel = function(){
-        if(this.currentPanel == 1){
-            jQuery('.select_assoc_type').show();
-        }
-        init_previousPanel.apply(dialog);
-    };
-
-    jQuery('[name=assoc_type]').get(0).click();
+    jQuery('.select_assoc_type').insertAfter(jQuery('#modal-search')).removeAttr('hidden');
 </mt:if>
 }
+
+
+
+
 
 TC.attachLoadEvent(init);
 /* ]]> */
@@ -189,6 +207,7 @@ TC.attachLoadEvent(init);
     </mt:if><mt:if name="role_id"><input type="hidden" name="role_id" value="<mt:var name="role_id" escape="html">" />
     </mt:if><mt:loop name="panel_loop">
     <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
+    <mt:if name="has_group"><input type="hidden" name="group" value="" /></mt:if>
 </form>
 
 <div class="modal-header">
@@ -247,23 +266,11 @@ TC.attachLoadEvent(init);
 <div class="modal-body">
 
 <mt:if name="has_group">
-    <div class="select_assoc_type">
-        <label class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" name="assoc_type" value="users_only">
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Users only"></span>
-        </label>
-        <label class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" name="assoc_type" value="groups_only">
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Groups only"></span>
-        </label>
-        <label class="custom-control custom-radio">
-            <input type="radio" class="custom-control-input" name="assoc_type" value="both">
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Both"></span>
-        </label>
-    </div>
+    <ul class="select_assoc_type list-inline" hidden>
+        <li class="list-inline-item"><a href="#" class="search_object both"><__trans phrase="Both"></a></li>
+        <li class="list-inline-item"><a href="#" class="search_object author"><__trans phrase="Users only"></a></li>
+        <li class="list-inline-item"><a href="#" class="search_object group"><__trans phrase="Groups only"></a></li>
+    </ul>
 </mt:if>
 
     <mt:loop name="panel_loop">
