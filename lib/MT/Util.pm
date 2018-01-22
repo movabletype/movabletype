@@ -2614,9 +2614,12 @@ sub log_time {
 # Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few)
 # requires OO access to filehandles.
 # Once CGI solved this issue, this method will be removed.
-*Fh::read = sub {
-    read( $_[0], $_[1], $_[2], $_[3] || 0 );
-};
+{
+    no warnings 'once';
+    *Fh::read = sub {
+        read( $_[0], $_[1], $_[2], $_[3] || 0 );
+    };
+}
 
 sub make_string_csv {
     my ( $value, $enc ) = @_;
