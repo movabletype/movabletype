@@ -32,7 +32,7 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination is_mod_perl1 );
+    encode_json build_upload_destination is_mod_perl1 asset_from_url );
 
 {
     my $Has_Weaken;
@@ -2614,9 +2614,12 @@ sub log_time {
 # Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few)
 # requires OO access to filehandles.
 # Once CGI solved this issue, this method will be removed.
-*Fh::read = sub {
-    read( $_[0], $_[1], $_[2], $_[3] || 0 );
-};
+{
+    no warnings 'once';
+    *Fh::read = sub {
+        read( $_[0], $_[1], $_[2], $_[3] || 0 );
+    };
+}
 
 sub make_string_csv {
     my ( $value, $enc ) = @_;
@@ -2963,6 +2966,122 @@ sub build_upload_destination {
     return $dest;
 }
 
+sub asset_from_url {
+    my ($image_url) = @_;
+    my $ua = MT->new_ua( { paranoid => 1 } ) or return;
+    my $resp = $ua->get($image_url);
+    return undef unless $resp->is_success;
+    my $image = $resp->content;
+    return undef unless $image;
+    my $mimetype = $resp->header('Content-Type');
+    return undef unless $mimetype;
+    my $ext = {
+        'image/jpeg' => '.jpg',
+        'image/png'  => '.png',
+        'image/gif'  => '.gif'
+    }->{$mimetype};
+
+    require Image::Size;
+    my ( $w, $h, $id ) = Image::Size::imgsize( \$image );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    require File::Spec;
+    my $save_path  = '%s/uploads/';
+    my $local_path = File::Spec->catdir( MT->instance->support_directory_path,
+        'uploads' );
+    $local_path =~ s|/$||
+        unless $local_path eq
+        '/';    ## OS X doesn't like / at the end in mkdir().
+    unless ( $fmgr->exists($local_path) ) {
+        $fmgr->mkpath($local_path);
+    }
+    require Digest::SHA1;
+    my $filename = Digest::SHA1::sha1_hex($image_url);
+    unless ($ext) {    # trust content type higher than url extension
+        ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
+    }
+
+    # Find unique name for the file.
+    my $i         = 1;
+    my $base_copy = $filename;
+    while (
+        $fmgr->exists( File::Spec->catfile( $local_path, $filename . $ext ) )
+        )
+    {
+        $filename = $base_copy . '_' . $i++;
+    }
+
+    my $local_relative = File::Spec->catfile( $save_path,  $filename . $ext );
+    my $local          = File::Spec->catfile( $local_path, $filename . $ext );
+    $fmgr->put_data( $image, $local, 'upload' );
+
+    require MT::Asset;
+    my $asset_pkg = MT::Asset->handler_for_file($local);
+    if ( $asset_pkg ne 'MT::Asset::Image' ) {
+        unlink $local;
+        return undef;
+    }
+
+    my $asset;
+    $asset = $asset_pkg->new();
+    $asset->file_path($local_relative);
+    $asset->file_name( $filename . $ext );
+    my $ext_copy = $ext;
+    $ext_copy =~ s/\.//;
+    $asset->file_ext($ext_copy);
+    $asset->blog_id(0);
+
+    my $original = $asset->clone;
+    my $url      = $local_relative;
+    $url =~ s!\\!/!g;
+    $asset->url($url);
+    $asset->image_width($w);
+    $asset->image_height($h);
+    $asset->mime_type($mimetype);
+
+    if ( !$asset->save ) {
+        unlink $local;
+        return undef;
+    }
+
+    MT->run_callbacks(
+        'api_upload_file.' . $asset->class,
+        File  => $local,
+        file  => $local,
+        Url   => $url,
+        url   => $url,
+        Size  => length($image),
+        size  => length($image),
+        Asset => $asset,
+        asset => $asset,
+        Type  => $asset->class,
+        type  => $asset->class,
+    );
+    MT->run_callbacks(
+        'api_upload_image',
+        File       => $local,
+        file       => $local,
+        Url        => $url,
+        url        => $url,
+        Size       => length($image),
+        size       => length($image),
+        Asset      => $asset,
+        asset      => $asset,
+        Height     => $h,
+        height     => $h,
+        Width      => $w,
+        width      => $w,
+        Type       => 'image',
+        type       => 'image',
+        ImageType  => $id,
+        image_type => $id,
+    );
+
+    $asset;
+}
+
 package MT::Util::XML::SAX::LexicalHandler;
 
 sub start_dtd {
@@ -3228,6 +3347,12 @@ determined by reference to this value.
 Checks the IP address I<$ip_address> for syntax validity; if the
 IP address is valid, I<is_valid_ip> returns the valid
 the IP address. Otherwise, it returns C<0>.
+
+=back
+
+=head2 asset_from_url($image_url)
+
+Creates image asset from I<$image_url>.
 
 =back
 
