@@ -2260,6 +2260,7 @@ sub core_enable_object_methods {
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
+        commenter    => { edit   => 1, },
         content_type => { delete => 1, },
         entry        => { edit   => 1 },
         page         => {
