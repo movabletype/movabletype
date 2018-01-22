@@ -1,5 +1,5 @@
 <mt:unless name="screen_class" eq="search-replace">
-<div class="actions-bar actions-bar-<$mt:var name="bar_position" default="top"$> line">
+<div class="actions-bar actions-bar-<$mt:var name="bar_position" default="top"$> line<mt:if name="align_right"> text-right</mt:if>">
 <mt:unless name="hide_pager">
   <mt:include name="include/pagination.tmpl">
 </mt:unless>
