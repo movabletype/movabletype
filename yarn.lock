@@ -184,9 +184,9 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-bootstrap@4.0.0-beta.2:
-  version "4.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-4.0.0-beta.2.tgz#4d67d2aa2219f062cd90bc1247e6747b9e8fd051"
+bootstrap@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-4.0.0.tgz#ceb03842c145fcc1b9b4e15da2a05656ba68469a"
 
 brace-expansion@^1.1.7:
   version "1.1.8"
@@ -1084,11 +1084,11 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git#bundled-to-mt-core":
+"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git#fix/update-bootstrap":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#7ca811965bc0395d38415a41d3cb77a688a6ee6f"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#393f617631fc530967ab65e8e75557ca98bbd8a0"
   dependencies:
-    bootstrap "4.0.0-beta.2"
+    bootstrap "^4.0.0"
     winston "^2.3.1"
     xpath "0.0.24"
 
