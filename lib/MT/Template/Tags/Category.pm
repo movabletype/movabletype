@@ -528,7 +528,7 @@ sub _hdlr_category_prevnext {
         || 'user_custom';
     $sort_by = 'user_custom'
         if 'user_custom' ne $sort_by || !$class->has_column($sort_by);
-    $sort_by ||= 'user_csutom';
+    $sort_by ||= 'user_custom';
     if ($sort_method) {
         $cats = _sort_cats( $ctx, $sort_method, $sort_order, $cats )
             or return $ctx->error( $ctx->errstr );
