@@ -10,7 +10,7 @@
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
   <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
-  <div id="buttons" class="actions-bar">
+  <div id="buttons" class="actions-bar text-right">
     <button
        name="continue"
        type="submit"
@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
+      <div id="goback" class="actions-bar text-right" <mt:if name="mail_transfer">style="display: none"</mt:if>>
         <button
            name="continue"
            type="submit"
@@ -195,7 +195,7 @@
         </button>
       </div>
 
-      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+      <div id="submit" class="actions-bar text-right" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
         <button
            name="continue"
            type="submit"
@@ -230,7 +230,7 @@
         <input type="text" id="test_mail_address" class="form-control text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
       </mtapp:setting>
 
-      <div id="submit" class="actions-bar">
+      <div id="submit" class="actions-bar text-right">
         <button
            name="test"
            type="submit"
