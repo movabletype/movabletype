@@ -1031,7 +1031,10 @@ sub approve {
     $comment->junk_status(NOT_JUNK);
 }
 
-*publish = \&approve;
+{
+    no warnings 'once';
+    *publish = \&approve;
+}
 
 sub author {
     my $comment = shift;
