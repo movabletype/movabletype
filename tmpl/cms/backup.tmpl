@@ -44,20 +44,18 @@
        help_section="backup_format">
       <div class="form-group">
       <mt:loop name="archive_formats">
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio" id="<mt:var name="key">" class="custom-control-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-        </label>
+          <label class="custom-control-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+        </div>
         <mt:if name="__last__">
           <mt:setvar name="format_available">
         </mt:if>
       </mt:loop>
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio" id="no_archive" class="custom-control-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Don't compress"></span>
-        </label>
+          <label class="custom-control-label" for="no_archive"><__trans phrase="Don't compress"></label>
+        </div>
       </div>
     </mtapp:setting>
 

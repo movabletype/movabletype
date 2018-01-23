@@ -6,27 +6,24 @@
    label="<__trans phrase="IP Address Lookups">">
   <ul class="list-unstyled">
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="ipbl_mode" id="ipbl_mode_moderate" class="custom-control-input" value="0"<mt:unless name="ipbl_mode"> checked="checked"</mt:unless> onclick="toggleSubPrefs(this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Off"></span>
-      </label>
+        <label class="custom-control-label" for="ipbl_mode_moderate"><__trans phrase="Off"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="ipbl_mode" id="ipbl_mode_ipban" class="custom-control-input" value="2"<mt:if name="ipbl_mode_2"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Moderate feedback from blacklisted IP addresses"></span>
-      </label>
+        <label class="custom-control-label" for="ipbl_mode_ipban"><__trans phrase="Moderate feedback from blacklisted IP addresses"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="ipbl_mode" id="ipbl_mode_junk" class="custom-control-input" value="1"<mt:if name="ipbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this);" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">
+        <label class="custom-control-label" for="ipbl_mode_junk">
           <__trans phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)
-        </span>
-      </label>
+        </label>
+      </div>
       <div id="ipbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">
@@ -54,27 +51,24 @@
    label="<__trans phrase="Domain Name Lookups">">
   <ul class="list-unstyled">
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="domainbl_mode" id="domainbl_moderate" class="custom-control-input" value="0"<mt:unless name="domainbl_mode"> checked="checked"</mt:unless> onclick="toggleSubPrefs(this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Off"></span>
-      </label>
+        <label class="custom-control-label" for="domainbl_moderate"><__trans phrase="Off"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="domainbl_mode" id="domainbl_mode_ipban" class="custom-control-input" value="2"<mt:if name="domainbl_mode"> checked="checked"</mt:if> onclick="toggleSubPrefs(this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Moderate feedback containing blacklisted domains"></span>
-      </label>
+        <label class="custom-control-label" for="domainbl_mode_ipban"><__trans phrase="Moderate feedback containing blacklisted domains"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="domainbl_mode" id="domainbl_mode_junk" class="custom-control-input" value="1"<mt:if name="domainbl_mode_1"> checked="checked"</mt:if> onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">
+        <label class="custom-control-label" for="domainbl_mode_junk">
           <__trans phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><__trans phrase="Adjust scoring"></a>)
-        </span>
-      </label>
+        </label>
+      </div>
       <div id="domainbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">
@@ -102,27 +96,24 @@
    label="<__trans phrase="Advanced TrackBack Lookups">">
   <ul class="list-unstyled">
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="tborigin_mode" id="tborigin_moderate" class="custom-control-input" value="0"<mt:unless name="tborigin_mode"> checked="checked"</mt:unless> />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Off"></span>
-      </label>
+        <label class="custom-control-label" for="tborigin_moderate"><__trans phrase="Off"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="tborigin_mode" id="tborigin_mode_ipban" class="custom-control-input" value="2"<mt:if name="tborigin_mode_2"> checked="checked"</mt:if> />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Moderate TrackBacks from suspicious sources"></span>
-      </label>
+        <label class="custom-control-label" for="tborigin_mode_ipban"><__trans phrase="Moderate TrackBacks from suspicious sources"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
+      <div class="custom-control custom-radio">
         <input type="radio" name="tborigin_mode" id="tborigin_mode_junk" class="custom-control-input" value="1"<mt:if name="tborigin_mode_1"> checked="checked"</mt:if> onclick="toggleAdvancedPrefs(event,this)" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">
+        <label class="custom-control-label" for="tborigin_mode_junk">
           <__trans phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><__trans phrase="Adjust scoring"></a>)
-        </span>
-      </label>
+        </label>
+      </div>
       <div id="tborigin_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">

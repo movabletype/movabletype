@@ -18,13 +18,14 @@
 <list-table-header>
   <tr>
     <th class="mt-table__control">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox"
           class="custom-control-input"
+          id="select-all"
           checked={ store.checkedAllRowsOnPage }
           onchange={ toggleAllRowsOnPage } />
-        <span class="custom-control-indicator"></span>
-      </label>
+        <label class="custom-control-label" for="select-all"><span class="sr-only">{ trans('Select All') }</span></label>
+      </div>
     </th>
     <th each={ store.columns }
       scope="col"
@@ -114,14 +115,16 @@
 
 <list-table-row>
   <td>
-    <label class="custom-control custom-checkbox" if={ opts.object[0] }>
+    <div class="custom-control custom-checkbox" if={ opts.object[0] }>
       <input type="checkbox"
         name="id"
         class="custom-control-input"
+        id={ 'select_' + opts.object[0] }
         value={ opts.object[0] }
         checked={ opts.checked }>
       <span class="custom-control-indicator"></span>
-    </label>
+      <label class="custom-control-label" for={ 'select_' + opts.object[0] }><span class="sr-only">{ trans('Select') }</span></label>
+    </div>
   </td>
   <td data-is="list-table-column"
     each={ content, index in opts.object }

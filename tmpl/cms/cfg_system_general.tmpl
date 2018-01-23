@@ -93,11 +93,10 @@
        hint_id="performanceLogging"
        show_hint="1">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox"<mt:if name="config_warnings_performancelogging"> disabled="disable"</mt:if> name="system_performance_logging" id="system-performance-logging" class="custom-control-input" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> aria-describedby="performanceLogging" data-target="#system-performance-logging-option" data-toggle="collapse" aria-expanded="<mt:if name="system_performance_loggin">true<mt:else>false</mt:if>" aria-controls="system-performance-logging-option" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Turn on performance logging"></span>
-        </label>
+          <label class="custom-control-label" for="system-performance-logging"><__trans phrase="Turn on performance logging"></label>
+        </div>
       </div>
     </mt:app:setting>
 
@@ -128,11 +127,10 @@
        id="track-revisions"
        label="<__trans phrase="Revision History">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox"<mt:if name="config_warnings_trackrevisions"> disabled="disabled"</mt:if> name="track_revisions" id="track-revisions" <mt:if name="track_revisions"> checked="checked"</mt:if> class="custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Track revision history"></span>
-        </label>
+          <label class="custom-control-label" for="track-revisions"><__trans phrase="Track revision history"></label>
+        </div>
       </div>
     </mtapp:setting>
 </mtapp:settinggroup>
@@ -159,11 +157,10 @@
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox"<mt:if name="config_warnings_allowcomments"> disabled="disabled"</mt:if> name="comment_disable" class="custom-control-input" id="comment-disable"<mt:if name="comment_disable"> checked="checked"</mt:if> />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Disable comments for all sites and child sites."></span>
-      </label>
+        <label class="custom-control-label" for="comment-disable"><__trans phrase="Disable comments for all sites and child sites."></label>
+      </div>
     </div>
   </mtapp:setting>
 
@@ -171,11 +168,10 @@
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox"<mt:if name="config_warnings_allowpings"> disabled="disabled"</mt:if> name="ping_disable" id="ping-disable" class="custom-control-input" <mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Disable receipt of TrackBacks for all sites and child sites."></span>
-      </label>
+        <label class="custom-control-label" for="ping-disable"><__trans phrase="Disable receipt of TrackBacks for all sites and child sites."></label>
+      </div>
     </div>
   </mtapp:setting>
 </mtapp:settinggroup>
@@ -186,11 +182,10 @@
      id="disable-notify-ping"
      label="<__trans phrase="Prohibit Notification Pings">">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox"<mt:if name="config_warnings_disablenotificationpings"> disabled="disabled"</mt:if> name="disable_notify_ping" id="disable-notify-ping" class="custom-control-input" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Disable notification pings for all sites and child sites."></span>
-      </label>
+        <label class="custom-control-label" for="disable-notify-ping"><__trans phrase="Disable notification pings for all sites and child sites."></label>
+      </div>
     </div>
   </mtapp:setting>
 
@@ -202,35 +197,31 @@
      show_hint="1">
     <ul id="outbound-trackback-setting-list" class="list-unstyled setting-list">
       <li>
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_any" class="custom-control-input" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> aria-describedby="sendOutboundTrackbacksTo" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Any site"></span>
-        </label>
+          <label class="custom-control-label" for="trackback_send_any"><__trans phrase="Any site"></label>
+        </div>
         </li>
       <li>
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_off" class="custom-control-input" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">
+          <label class="custom-control-label" for="trackback_send_off">
             <__trans phrase="Disabled">
             <span class="text-muted hint"><__trans phrase="(No Outbound TrackBacks)"></span>
-          </span>
-        </label>
+          </label>
+        </div>
         </li>
       <li>
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_local" class="custom-control-input" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Only to child sites within this system"></span>
-        </label>
+          <label class="custom-control-label" for="trackback_send_local"><__trans phrase="Only to child sites within this system"></label>
+        </div>
         </li>
       <li>
-        <label class="custom-control custom-radio">
+        <div class="custom-control custom-radio">
           <input type="radio"<mt:if name="config_warnings_outboundtrackbacklimit"> disabled="disabled"</mt:if> name="trackback_send" id="trackback_send_selected" class="custom-control-input" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Only to sites on the following domains:"></span>
-        </label>
+          <label class="custom-control-label" for="trackback_send_selected"><__trans phrase="Only to sites on the following domains:"></label>
+        </div>
         <textarea<mt:if name="config_warnings_outboundtrackbackdomains"> disabled="disabled"</mt:if> name="trackback_send_domains" class="form-control text low" rows="4"><mt:var name="trackback_send_domains" escape="html"></textarea>
       </li>
     </ul>
@@ -289,11 +280,10 @@
     id="auto-change-image-quality"
     label="<__trans phrase="Changing image quality">">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox"<mt:if name="config_warnings_autochangeimagequality"> disabled="disabled"</mt:if> name="auto_change_image_quality" class="custom-control-input" id="auto-change-image-quality"<mt:if name="auto_change_image_quality"> checked="checked"</mt:if> data-target="#auto-change-image-quality-option" data-toggle="collapse" aria-expanded="<mt:if name="auto_change_image_quality">true<mt:else>false</mt:if>" aria-controls="auto-change-image-quality-option" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Enable image quality changing."></span>
-      </label>
+        <label class="custom-control-label" for="auto-change-image-quality"><__trans phrase="Enable image quality changing."></label>
+      </div>
     </div>
   </mtapp:setting>
 

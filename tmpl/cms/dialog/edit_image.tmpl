@@ -53,11 +53,10 @@
           </div>
           <div class="form-row align-items-center editor-resize-subcolumn">
             <div class="col">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input id="keep-aspect-ratio" class="custom-control-input checkbox" type="checkbox" value="1" checked="checked" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Keep aspect ratio"></span>
-              </label>
+                <label class="custom-control-label" for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+              </div>
             </div>
           </div>
           <div class="form-row align-items-center mb-1">
@@ -72,22 +71,20 @@
         <mt:if name="has_metadata">
           <div class="form-row align-items-center editor-metadata-column">
             <div class="col">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input id="remove-all-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Remove All metadata"></span>
-              </label>
+                <label class="custom-control-label" for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+              </div>
             </div>
           </div>
         </mt:if>
         <mt:if name="has_gps_metadata">
           <div class="form-row align-items-center editor-metadata-column">
             <div class="col">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input id="remove-gps-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Remove GPS metadata"></span>
-              </label>
+                <label class="custom-control-label" for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+              </div>
             </div>
           </div>
         </mt:if>

@@ -692,11 +692,10 @@
        help_section="accept_comments">
       <ul class="list-unstyled">
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Accept Comments"></span>
-          </label>
+            <label class="custom-control-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
+          </div>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
             <mtapp:svgicon id="ic_comment" title="<__trans phrase="Accept Comments">" size="sm">
@@ -705,11 +704,10 @@
         </mt:unless>
         </li>
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Accept Trackbacks"></span>
-          </label>
+            <label class="custom-control-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+          </div>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
             <mtapp:svgicon id="ic_trackback" title="<__trans phrase="Accept Trackbacks">" size="sm">
@@ -1258,19 +1256,17 @@ div.mce-notification-error {
         <mt:unless name="system_field">
           <mt:unless name="lock_field">
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
-              </label>
+                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              </div>
             </div>
           <mt:else>
             <div class="form-check form-check-inline">
-             <label class="custom-control custom-checkbox">
+             <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
-              </label>
+                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              </div>
             </div>
           </mt:unless>
         </mt:unless>
@@ -1286,26 +1282,23 @@ div.mce-notification-error {
       <div>
       <mt:if name="object_type" ne="page">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Categories"></span>
-          </label>
+            <label class="custom-control-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
+          </div>
         </div>
       </mt:if>
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Comments"></span>
-          </label>
+            <label class="custom-control-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
+          </div>
         </div>
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></span>
-          </label>
+            <label class="custom-control-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
+          </div>
         </div>
       </div>
     </mtapp:setting>

@@ -144,11 +144,10 @@ function init() {
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_admin">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
         </div>
       </mt:if>
       </mt:loop>
@@ -162,11 +161,10 @@ function init() {
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="auth_pub">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
         </div>
       </mt:if>
       </mt:loop>
@@ -180,11 +178,10 @@ function init() {
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_design">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
         </div>
       </mt:if>
       </mt:loop>
@@ -198,11 +195,10 @@ function init() {
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_upload">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
         </div>
       </mt:if>
       </mt:loop>
@@ -216,11 +212,10 @@ function init() {
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_comment">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
         </div>
       </mt:if>
       </mt:loop>
@@ -237,11 +232,10 @@ function init() {
         <mt:loop name="loaded_permissions">
         <mt:if name="group" eq="$ct_perm_group">
           <div class="form-check">
-            <label class="custom-control custom-checkbox">
+            <div class="custom-control custom-checkbox">
                 <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-            </label>
+                <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            </div>
           </div>
         </mt:if>
         </mt:loop>
