@@ -69,26 +69,49 @@ sub get_config_obj {
         $rebuild_trigger = MT::RebuildTrigger->new();
         $rebuild_trigger->blog_id($blog_id);
     }
-    $cfg->{$blog_id} = $rebuild_trigger;
     my $data
         = $rebuild_trigger->data()
         ? MT::Util::from_json( $rebuild_trigger->data() )
         : {};
     $self->apply_default_settings( $data, $blog_id );
     $rebuild_trigger->data( MT::Util::to_json($data) );
+    $cfg->{$blog_id} = $rebuild_trigger;
     $rebuild_trigger;
 }
 
 sub apply_default_settings {
-    my ( $self, $data, $blog_id ) = @_;
+    my $self = shift;
+    my ( $data, $blog_id ) = @_;
 
-    if ( $blog_id > 0 ) {
-        $data->{default_mt_sites_action}
-            unless exists $data->{default_mt_sites_action};
+    my $s = {
+        system => {
+            default_access_allowed => 1,
+            all_triggers           => undef,
+        },
+        blog => {
+            rebuild_triggers           => '',
+            blog_content_accessible    => '',
+            other_triggers             => undef,
+            blogs_in_website_triggers  => undef,
+            default_mtmultiblog_action => 1,
+            default_mtmulitblog_blogs  => '',
+        },
+    };
+
+    my $scope = $blog_id;
+    if ( $scope > 0 ) {
+        $scope = 'blog';
     }
     else {
-        $data->{default_access_allowed} = 1
-            unless exists $data->{default_access_allowed};
+        $scope = 'system';
+    }
+    my $defaults;
+
+    #my $s = $plugin->settings;
+    if ( $s && ( $defaults = $s->{$scope} ) ) {
+        foreach ( keys %$defaults ) {
+            $data->{$_} = $defaults->{$_} if !exists $data->{$_};
+        }
     }
 }
 
@@ -159,34 +182,17 @@ sub post_content_unpub {
     _post_content_common( $self, \@blog_ids, $code, $content->blog );
 }
 
-sub _post_content_common {
-    my ( $self, $blog_ids, $code, $blog ) = @_;
-
-    foreach my $blog_id (@$blog_ids) {
-        my $d = $self->get_config_value(
-            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $blog_id );
-        $code->($d);
-    }
-
-    if ( my $website = $blog->website ) {
-        my $blog_id = $website->id;
-        my $d       = $self->get_config_value( 'blogs_in_website_triggers',
-            $blog_id );
-        $code->($d);
-    }
-}
-
 sub init_rebuilt_cache {
     my ( $self, $app ) = @_;
-    $app->request( 'rebuild_trigger', {} );
+    $app->request( 'config_rebuild_trigger', {} );
 }
 
 sub is_first_rebuild {
     my ( $app, $blog_id, $action ) = @_;
-    my $rebuilt = $app->request('rebuild_trigger') || {};
+    my $rebuilt = $app->request('config_rebuild_trigger') || {};
     return if exists $rebuilt->{"$blog_id,$action"};
     $rebuilt->{"$blog_id,$action"} = 1;
-    $app->request( 'rebuild_trigger', $rebuilt );
+    $app->request( 'config_rebuild_trigger', $rebuilt );
 }
 
 sub perform_mb_action {
@@ -201,12 +207,6 @@ sub perform_mb_action {
         $app->rebuild_indexes( BlogID => $blog_id );
     }
 }
-
-#sub filter_blogs_from_args {
-#    my ( $self, $ctx, $args ) = @_;
-#    my %acl = load_multiblog_acl( $plugin, $ctx );
-#    $args->{ $acl{mode} } = $acl{acl};
-#}
 
 sub load_sites_acl {
     my $self = shift;
@@ -346,6 +346,225 @@ sub runner {
     no strict 'refs';
     return $_->( $self, @_ ) if $_ = \&{"MT::RebuildTrigger::$method"};
     die "Failed to find MT::RebuildTrigger::$method";
+}
+
+sub post_feedback_save {
+    my $self = shift;
+    my ( $trigger, $eh, $feedback ) = @_;
+    if ( $feedback->visible ) {
+        my $blog_id  = $feedback->blog_id;
+        my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
+        my $app      = MT->instance;
+
+        my $code = sub {
+            my ($d) = @_;
+
+            while ( my ( $id, $a ) = each( %{ $d->{$trigger} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        };
+
+        _post_content_common( $self, \@blog_ids, $code, $feedback->blog );
+    }
+}
+
+sub post_entries_bulk_save {
+    my $self = shift;
+    my ( $eh, $app, $entries ) = @_;
+    foreach my $entry (@$entries) {
+        &post_entry_save( $self, $eh, $app, $entry->{current} );
+    }
+}
+
+sub post_entry_save {
+    my $self = shift;
+    my ( $eh, $app, $entry ) = @_;
+    my $blog_id = $entry->blog_id;
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
+
+    my $code = sub {
+        my ($d) = @_;
+        while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {
+            next if $id == $blog_id;
+            perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+        }
+
+        require MT::Entry;
+        if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    _post_content_common( $self, \@blog_ids, $code, $entry->blog );
+}
+
+sub post_entry_pub {
+    my $self = shift;
+    my ( $eh, $app, $entry ) = @_;
+    my $blog_id = $entry->blog_id;
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
+
+    my $code = sub {
+        my ($d) = @_;
+
+        require MT::Entry;
+        if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    _post_content_common( $self, \@blog_ids, $code, $entry->blog );
+}
+
+sub post_entry_unpub {
+    my $self = shift;
+    my ( $eh, $app, $entry ) = @_;
+    my $blog_id = $entry->blog_id;
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
+
+    my $code = sub {
+        my ($d) = @_;
+
+        require MT::Entry;
+        if ( ( $entry->status || 0 ) == MT::Entry::UNPUBLISH() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'entry_unpub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    };
+
+    _post_content_common( $self, \@blog_ids, $code, $entry->blog );
+}
+
+sub _post_content_common {
+    my ( $self, $blog_ids, $code, $blog ) = @_;
+
+    foreach my $blog_id (@$blog_ids) {
+        my $d = $self->get_config_value(
+            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $blog_id );
+        $code->($d);
+    }
+
+    if ( my $website = $blog->website ) {
+        my $blog_id = $website->id;
+        my $d       = $self->get_config_value( 'blogs_in_website_triggers',
+            $blog_id );
+        $code->($d);
+    }
+}
+
+sub save {
+    my $self = shift;
+
+    my $data
+        = $self->data()
+        ? MT::Util::from_json( $self->data() )
+        : {};
+    $self->update_trigger_cache( $data, $self->blog_id );
+
+    $self->SUPER::save(@_);
+}
+
+sub update_trigger_cache {
+    my $self = shift;
+    my ( $data, $blog_id ) = @_;
+
+    if ( $blog_id > 0 ) {
+
+        # Save blog-level content aggregation policy to single
+        # system config hash for easy lookup
+        my ( $cfg_old, $cfg_new ) = 0;
+        my $override = $self->get_config_value( 'access_overrides', 0 ) || {};
+        $cfg_new = $data->{blog_content_accessible} || 0;
+        if ( exists $override->{$blog_id} ) {
+            $cfg_old = $override->{$blog_id};
+        }
+        if ( $cfg_old != $cfg_new ) {
+            $override->{$blog_id} = $cfg_new
+                or delete $override->{$blog_id};
+            $self->set_config_value( 'access_overrides', $override, 0 );
+        }
+
+        # Fiddle with rebuild triggers...
+        my $rebuild_triggers = $data->{rebuild_triggers}     || '';
+        my $old_triggers     = $data->{old_rebuild_triggers} || '';
+
+        # Check to see if the triggers changed
+        if ( $old_triggers ne $rebuild_triggers ) {
+
+# If so, remove all references to the current blog from the triggers cached in other blogs
+            foreach ( split( /\|/, $old_triggers ) ) {
+                my ( $action, $id, $trigger ) = split( /:/, $_ );
+                my $name
+                    = $id eq '_all'              ? "all_triggers"
+                    : $id eq '_blogs_in_website' ? 'blogs_in_website_triggers'
+                    :                              "other_triggers";
+                my $scope;
+                if ( $id eq '_all' ) {
+                    $scope = 0;
+                }
+                elsif ( $id eq '_blogs_in_website' ) {
+                    $scope = $blog_id;
+                }
+                else {
+                    $scope = $id;
+                }
+                my $d = $self->get_config_value( $name, $scope );
+                next unless exists $d->{$trigger}{$blog_id};
+                delete $d->{$trigger}{$blog_id};
+                $self->set_config_value( $name, $d, $scope );
+            }
+        }
+        foreach ( split( /\|/, $rebuild_triggers ) ) {
+            my ( $action, $id, $trigger ) = split( /:/, $_ );
+            my $name
+                = $id eq '_all'              ? "all_triggers"
+                : $id eq '_blogs_in_website' ? 'blogs_in_website_triggers'
+                :                              "other_triggers";
+            my $scope;
+            if ( $id eq '_all' ) {
+                $scope = 0;
+            }
+            elsif ( $id eq '_blogs_in_website' ) {
+                $scope = $blog_id;
+            }
+            else {
+                $scope = $id;
+            }
+
+            my $d = $self->get_config_value( $name, $scope ) || {};
+            $d->{$trigger}{$blog_id}{$action} = 1;
+            $self->set_config_value( $name, $d, $scope );
+        }
+    }
+}
+
+sub set_config_value {
+    my $self = shift;
+    my ( $name, $d, $blog_id ) = @_;
+
+    my $rt = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
+    unless ($rt) {
+        $rt = MT->model('rebuild_trigger')->new();
+        $rt->blog_id($blog_id);
+        $rt->data('{}');
+    }
+    my $data
+        = $rt->data()
+        ? MT::Util::from_json( $rt->data() )
+        : {};
+    $data->{$name} = $d;
+    $rt->data( MT::Util::to_json($data) );
+    MT->request( 'config_rebuild_trigger', undef );
+    $rt->save;
 }
 
 1;
