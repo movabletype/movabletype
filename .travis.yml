@@ -33,7 +33,7 @@ env:
 
 before_script:
   # Skip failed test.
-  - if [ $PERL_VERSION ]; then rm plugins/MultiBlog/t/02.tags.t; fi
+  - if [ $PERL_VERSION ]; then rm -f plugins/MultiBlog/t/02.tags.t; fi
 
 script:
   - if [ $PERL_VERSION = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND" ; fi
