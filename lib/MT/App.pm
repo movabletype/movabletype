@@ -676,8 +676,6 @@ sub multi_listing {
     my $app = shift;
     my ($opt) = @_;
 
-    use Data::Dumper;
-
     my $types = $opt->{type} || $opt->{Type};
     if ( ref($types) ne 'ARRAY' ) {
         return $app->listing(@_);
@@ -690,15 +688,15 @@ sub multi_listing {
     my $app_json        = $app->param('json');
     my $app_search_type = $app->param('search_type');
 
-    my $no_html = $opt->{no_html}       || $opt->{NoHTML};
+    my $no_html = $opt->{no_html} || $opt->{NoHTML};
     my $search = $app->param('search');
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
         : ( $search ? 1 : 0 );
-    my $json    = $opt->{json}          || $app->param('json');
-    my $param   = $opt->{params}        || $opt->{Params} || {};
-    my $offset  = $app->param('offset') || 0;
+    my $json   = $opt->{json}          || $app->param('json');
+    my $param  = $opt->{params}        || $opt->{Params} || {};
+    my $offset = $app->param('offset') || 0;
     $offset =~ s/\D//g;
     my $sort = exists $opt->{args}->{sort} ? $opt->{args}->{sort} : 'id';
 
@@ -706,7 +704,7 @@ sub multi_listing {
         return $app->listing(@_);
     }
     my $all_object_loop = [];
-    my $page_limit           = $app->param('limit') || 0;
+    my $page_limit = $app->param('limit') || 0;
     foreach my $type (@$types) {
         my $options = $opt;
         $options->{type} = $type;
@@ -743,7 +741,7 @@ sub multi_listing {
         $type_limit =~ s/\D//g;
 
         $options->{args}->{limit} = 9999;
-        $app->param('limit', 9999);
+        $app->param( 'limit', 9999 );
         $options->{args}->{no_limit} = 1;
 
         $app->listing($options);
@@ -754,17 +752,18 @@ sub multi_listing {
 
         $page_limit = $page_limit < $type_limit ? $type_limit : $page_limit;
         $options->{params}->{object_loop} = undef;
-        $options->{args}->{limit} = $page_limit;
+        $options->{args}->{limit}         = $page_limit;
     }
-    @$all_object_loop = sort { $b->{$sort} cmp $a->{$sort} } @$all_object_loop;
+    @$all_object_loop
+        = sort { $b->{$sort} cmp $a->{$sort} } @$all_object_loop;
     my @object_loop = @$all_object_loop;
-    if(!$no_limit){
+    if ( !$no_limit ) {
         @object_loop = splice( @object_loop, $offset, $page_limit );
     }
     $param->{object_loop} = \@object_loop;
 
+    $app->param( 'limit', $page_limit );
 
-    $app->param('limit', $page_limit);
     # handle pagination
     my $args = $opt->{args}     || $opt->{Args};
     my $d    = $app->param('d') || 0;
