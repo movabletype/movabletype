@@ -142,13 +142,14 @@ function init() {
     var panel = panels[dialog.currentPanel];
     var datasource = panel.datasource;
 
-    jQuery('.select_assoc_type a').on('click', function(){
+    jQuery('.select_assoc_type :radio').on('click', function(){
+        var target = jQuery(this).val();
         var search = jQuery('.search-input');
-        if(jQuery(this).hasClass('both') && search.val() == ''){
+        if(target == 'both' && search.val() == ''){
             datasource.navigate(0);
             panel.searchField.value = "";
             jQuery(panel.searchReset).hide();
-            return false;
+            return;
         }
 
         if (datasource.searching) return;
@@ -165,11 +166,11 @@ function init() {
 
         args = args.replace(/&_type=\w+/, '');
         args += '&search=' + escape(search.val());
-        if(jQuery(this).hasClass('both')){
+        if(target == 'both'){
             args += '&_type=author';
-        } else if(jQuery(this).hasClass('author')){
+        } else if(target == 'author'){
             args += '&_type=author&link_filter=1';
-        }else if(jQuery(this).hasClass('group')){
+        }else if(target == 'group'){
             args += '&_type=group&link_filter=1';
         }
         args += '&json=1&no_limit=1';
@@ -182,13 +183,8 @@ function init() {
             'arguments': args
         });
     });
-    jQuery('.select_assoc_type').insertAfter(jQuery('#modal-search')).removeAttr('hidden');
 </mt:if>
 }
-
-
-
-
 
 TC.attachLoadEvent(init);
 /* ]]> */
@@ -266,10 +262,28 @@ TC.attachLoadEvent(init);
 <div class="modal-body">
 
 <mt:if name="has_group">
-    <ul class="select_assoc_type list-inline" hidden>
-        <li class="list-inline-item"><a href="#" class="search_object both"><__trans phrase="Both"></a></li>
-        <li class="list-inline-item"><a href="#" class="search_object author"><__trans phrase="Users only"></a></li>
-        <li class="list-inline-item"><a href="#" class="search_object group"><__trans phrase="Groups only"></a></li>
+    <ul class="select_assoc_type list-inline">
+        <li class="list-inline-item">
+            <label class="custom-control custom-radio">
+                <input type="radio" name="search_object" class="custom-control-input search_object" value="both" checked="checked">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Both"></span>
+            </label>
+        </li>
+        <li class="list-inline-item">
+            <label class="custom-control custom-radio">
+                <input type="radio" name="search_object" class="custom-control-input search_object" value="author">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Users only"></span>
+            </label>
+        </li>
+        <li class="list-inline-item">
+            <label class="custom-control custom-radio">
+                <input type="radio" name="search_object" class="custom-control-input search_object" value="group">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description"><__trans phrase="Groups only"></span>
+            </label>
+        </li>
     </ul>
 </mt:if>
 
