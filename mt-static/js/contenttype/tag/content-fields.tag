@@ -10,33 +10,53 @@
 
     <div class="row">
       <div class="col">
-        <div id="name-field" class="form-group">
+        <div if={ opts.id }  id="name-field" class="form-group">
+          <h3>{opts.name} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#editDetail">{ trans('Edit') }</button></h3>
+          <div id="editDetail" class="modal" role="dialog" aria-labelledby="editDetail" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{ trans('Content Type') }</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="col">
+                    <div id="name-field" class="form-group">
+                      <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
+                      <input type="text" name="name" id="name" class="form-control html5-form" value={opts.name} onkeypress={ stopSubmitting } required>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div id="description-field" class="form-group">
+                      <label for="description" class="form-control-label">{ trans('Description') }</label>
+                      <textarea name="description" id="description" class="form-control">{ opts.description }</textarea>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div id="unique_id-field" class="form-group">
+                      <label for="unique_id" class="form-control-label">{ trans('Unique ID') }</label>
+                        <input type="text" class="form-control-plaintext w-50" id="unieuq_id" value={ opts.unique_id } readonly>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div id="user_disp_option-field" class="form-group">
+                      <label for="user_disp_option">{ trans('Allow users to change the display and sort of fields by display option') }</label>
+                      <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked={ opts.user_disp_option } name="user_disp_option"><label for="user_disp_option" class="last-child">{ trans('Allow users to change the display and sort of fields by display option') }</label>
+                    </div>
+                  </div>
+                </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{ trans('close') }</button>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div if={ !opts.id }  id="name-field" class="form-group">
           <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
           <input type="text" name="name" id="name" class="form-control html5-form" value={opts.name} onkeypress={ stopSubmitting } required>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div id="description-field" class="form-group">
-          <label for="description" class="form-control-label">{ trans('Description') }</label>
-          <textarea name="description" id="description" class="form-control">{ opts.description }</textarea>
-        </div>
-      </div>
-    </div>
-    <div if={ opts.id } class="row">
-      <div class="col">
-        <div id="unique_id-field" class="form-group">
-          <label for="unique_id" class="form-control-label">{ trans('Unique ID') }</label>
-            <input type="text" class="form-control-plaintext w-50" id="unieuq_id" value={ opts.unique_id } readonly>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div id="user_disp_option-field" class="form-group">
-          <label for="user_disp_option">{ trans('Allow users to change the display and sort of fields by display option') }</label>
-          <input type="checkbox" class="mt-switch form-control" id="user_disp_option" checked={ opts.user_disp_option } name="user_disp_option"><label for="user_disp_option" class="last-child">{ trans('Allow users to change the display and sort of fields by display option') }</label>
         </div>
       </div>
     </div>
@@ -84,6 +104,17 @@
     self.observer.on('mtDragEnd', function() {
       self.droppable = false
       self.onDragEnd()
+    })
+
+    jQuery(document).on('hide.bs.modal', '#editDetail', function(e){
+      if ( jQuery('#name-field > input').mtValidate('simple') ) {
+        self.opts.name = jQuery('#name-field > input').val()
+        setDirty(true)
+        self.update()
+      }
+      else {
+        return false
+      }
     })
 
     stopSubmitting(e) {
@@ -174,14 +205,14 @@
       e.preventDefault()
     }
 
-    onDragStart (e) {
+    onDragStart(e) {
       self.dragged = e.target
       self.draggedItem = e.item
       e.dataTransfer.setData('text', e.item.id)
       self.droppable = true
     }
 
-    onDragEnd (e) {
+    onDragEnd(e) {
       if (self.placeholder.parentNode) {
         self.placeholder.parentNode.removeChild(self.placeholder)
       }
