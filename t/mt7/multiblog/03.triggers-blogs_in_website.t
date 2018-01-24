@@ -24,22 +24,28 @@ use MT::Test;
 
 $test_env->prepare_fixture('db_data');
 
-require MultiBlog;
+require MT::RebuildTrigger;
 
 my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
-my $plugin = $app->component('MultiBlog');
-$plugin->save_config(
-    {
-        blog_content_accessible => 1,
-        old_rebuild_triggers    => '',
-        rebuild_triggers =>
-          'ri:_blogs_in_website:entry_pub',
-    },
-    'blog:2'
-);
+my $rt0 = MT::RebuildTrigger->new;
+$rt0->blog_id(0);
+my $data0 = {
+    blog_content_accessible => 1,
+    old_rebuild_triggers    => '',
+};
+$rt0->data( MT::Util::to_json($data0) );
+$rt0->save;
+my $rt2 = MT::RebuildTrigger->new;
+$rt2->blog_id(2);
+my $data2
+    = { rebuild_triggers =>
+        'ri:_blogs_in_website:entry_pub',
+    };
+$rt2->data( MT::Util::to_json($data2) );
+$rt2->save;
 
 ### initialize mock
 my $rebuild_count = 0;
@@ -67,7 +73,7 @@ sub run_test(&) {
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MultiBlog::post_entry_save( $plugin, undef, $app, $entry );
+    MT::RebuildTrigger->post_entry_save( undef, $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_save.' );
 };
 
