@@ -226,11 +226,10 @@
       </div>
       <mt:unless name="ignore_subdomain">
       <div class="use-subdomain option">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-        </label>
+          <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
       </div>
       </mt:unless>
     <mt:elseif name="site_url_path">
@@ -249,11 +248,10 @@
       </div>
       <mt:unless name="ignore_subdomain">
       <div class="use-subdomain option">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-        </label>
+          <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
       </div>
       </mt:unless>
     <mt:elseif name="is_blog">
@@ -272,11 +270,10 @@
       </div>
       <mt:unless name="ignore_subdomain">
       <div class="use-subdomain option">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-        </label>
+          <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
       </div>
       </mt:unless>
     <mt:else>
@@ -315,11 +312,10 @@
         <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="form-control text blog-path-text hide-input<mt:if name="sitepath_limited"> limited_path</mt:if>" />
       </div>
       <div class="use-absolute option">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Use absolute path"></span>
-        </label>
+          <label class="custom-control-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+        </div>
       </div>
       </mt:if></mt:if>
       <p class="text-warning alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none">
@@ -348,11 +344,10 @@
        show_label="0"
        help_page="blog_settings_publishing"
        help_section="advanced_archive_publishing">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="custom-control-input cb" data-target="#enable_archive_paths_prefs" data-toggle="collapse" aria-expanded="<mt:if name="eanble_archive_paths">true<mt:else>false</mt:if>" aria-controls="enable_archive_paths_prefs" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Publish archives outside of Site Root"></span>
-      </label>
+        <label class="custom-control-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
+      </div>
     </mtapp:setting>
 
     <div id="enable_archive_paths_prefs" class="collapse<mt:if name="enable_archive_paths"> show</mt:if>">
@@ -382,11 +377,10 @@
         </div>
         <mt:unless name="ignore_archive_subdomain">
         <div class="use-subdomain option">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-          </label>
+            <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          </div>
         </div>
         </mt:unless>
         <mt:elseif name="archive_url_path">
@@ -405,11 +399,10 @@
         </div>
         <mt:unless name="ignore_archive_subdomain">
         <div class="use-subdomain option">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-          </label>
+            <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          </div>
         </div>
         </mt:unless>
         <mt:elseif name="archive_url" eq="">
@@ -430,11 +423,10 @@
         </div>
         <mt:unless name="ignore_archive_subdomain">
         <div class="use-subdomain option">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-          </label>
+            <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          </div>
         </div>
         </mt:unless>
         <mt:else>
@@ -453,11 +445,10 @@
         </div>
         <mt:unless name="ignore_archive_subdomain">
         <div class="use-subdomain option">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Use subdomain"></span>
-          </label>
+            <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          </div>
         </div>
         </mt:unless>
         </mt:if>
@@ -497,11 +488,10 @@
           <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="form-control blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" />
         </div>
         <div class="use-absolute option">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Use absolute path"></span>
-          </label>
+            <label class="custom-control-label" for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+          </div>
         </div>
           </mt:unless>
         <mt:else>
@@ -541,18 +531,16 @@
        show_label="0">
       <ul class="list-unstyled">
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" id="dynamic_cache" class="custom-control-input" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Enable dynamic cache"></span>
-          </label>
+            <label class="custom-control-label" for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
+          </div>
         </li>
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" id="dynamic_conditional" class="custom-control-input" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Enable conditional retrieval"></span>
-          </label>
+            <label class="custom-control-label" for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
+          </div>
         </li>
       </ul>
     </mtapp:setting>
@@ -605,11 +593,10 @@
        id="publish_empty_archive"
        label="<__trans phrase="Publish With No Entries">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input id="publish_empty_archive" class="custom-control-input" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Publish category archive without entries"></span>
-        </label>
+          <label class="custom-control-label" for="publish_empty_archive"><__trans phrase="Publish category archive without entries"></label>
+        </div>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>
@@ -638,13 +625,12 @@
        help_page="blog_settings_publishing"
        help_section="include_cache">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input id="include_cache" class="custom-control-input" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">
+          <label class="custom-control-label" for="include_cache">
             <__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance.">
-          </span>
-        </label>
+          </label>
+        </div>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>
@@ -664,11 +650,10 @@
        id="use-revision"
        label="<__trans phrase="Revision history">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" value="1" name="use_revision" class="custom-control-input" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> data-toggle="collapse" data-target="#use-revision-option" aria-expanded="<mt:if name="use_revision">true<mt:else>false</mt:if>" aria-controls="use-revision-option" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Enable revision history"></span>
-        </label>
+          <label class="custom-control-label" for="use-revision"><__trans phrase="Enable revision history"></label>
+        </div>
       </div>
     </mtapp:setting>
 
@@ -721,11 +706,10 @@
     </div>
     <div class="row">
       <div class="form-group col"> 
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Allow to change at upload"></span>
-        </label>
+          <label class="custom-control-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
+        </div>
       </div>
     </div>
 
@@ -733,11 +717,10 @@
       id="auto_rename_non_ascii"
       label="<__trans phrase="Rename filename">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Rename non-ascii filename automatically"></span>
-        </label>
+          <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+        </div>
       </div>
     </mtapp:setting>
     <mtapp:setting
@@ -754,11 +737,10 @@
       id="normalize_orientation"
       label="<__trans phrase="Normalize orientation">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Enable orientation normalization"></span>
-        </label>
+          <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+        </div>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>

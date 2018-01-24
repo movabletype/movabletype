@@ -81,18 +81,19 @@
       <ul class="list-unstyled">
       <mt:loop name="exporters">
         <li>
-          <label class="custom-control custom-checkbox">
-            <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label"></span>
-          </label>
+          <div class="form-inline">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
+              <label class="custom-control-label" for="<mt:var name="id" escape="html">-include"><mt:var name="label"></label>
+            </div>
         <mt:if name="template">
-          <span id="<mt:var name="id">-detail" class="theme-option-detail <mt:unless name="include"> active</mt:unless>">
-            <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
-              <__trans phrase="Details">
-            </a>
-          </span>
+            <span id="<mt:var name="id">-detail" class="theme-option-detail ml-3 <mt:unless name="include"> active</mt:unless>">
+              <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+                <__trans phrase="Details">
+              </a>
+            </span>
         </mt:if>
+          </div>
         </li>
       </mt:loop>
       </ul>

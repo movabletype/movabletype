@@ -92,25 +92,24 @@
     <ul id="disp_cols" class="list-inline m-0">
       <virtual each={ column in store.columns }>
         <li hide={ column.force_display } class="list-inline-item">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox"
               class="custom-control-input"
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
             />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description">
+            <label class="custom-control-label" for={ column.id }>
               <raw content={ column.label }></raw>
-            </span>
-          </label>
+            </label>
+          </div>
         </li>
         <li
           each={ subField in column.sub_fields }
           hide={ subField.force_display }
           class="list-inline-item"
         >
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox"
               id={ subField.id }
               pid={ subField.parent_id }
@@ -119,9 +118,8 @@
               checked={ subField.checked }
               onchange={ toggleSubField }
             />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description">{ subField.label }</span>
-          </label>
+            <label class="custom-control-label" for={ subField.id }>{ subField.label }</label>
+          </div>
         </li>
       </virtual>
     </ul>

@@ -3,18 +3,16 @@
    label="<__trans phrase="Default system aggregation policy">">
   <ul class="list-unstyled">
     <li>
-      <label class="custom-control custom-radio">
-        <input type="radio" value="1" name="default_access_allowed" id="default_access_allowed" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Allow"></span>
-      </label>
+      <div class="custom-control custom-radio">
+        <input type="radio" value="1" name="default_access_allowed" id="default_access_allowed_1" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
+        <label class="custom-control-label" for="default_access_allowed_1"><__trans phrase="Allow"></label>
+      </div>
     </li>
     <li>
-      <label class="custom-control custom-radio">
-        <input type="radio" value="0" name="default_access_allowed" id="default_access_allowed" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Disallow"></span>
-      </label>
+      <div class="custom-control custom-radio">
+        <input type="radio" value="0" name="default_access_allowed" id="default_access_allowed_0" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
+        <label class="custom-control-label" for="default_access_allowed_0"><__trans phrase="Disallow"></label>
+      </div>
     </li>
   </ul>
   <p id="mb-allow" style="display:<mt:if name="default_access_allowed">block<mt:else>none</mt:if>;">
