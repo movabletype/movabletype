@@ -43,11 +43,10 @@ function doValidateNotifyRecips(f) {
     <ul class="list-unstyled">
     <mt:if name="config.enableaddressbook">
       <li>
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="send_notify_list" id="send_notify_list" value="1" class="custom-control-input cb" checked="checked" aria-describedby="recipientsHelp" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="All addresses from Address Book"></span>
-        </label>
+          <label class="custom-control-label" for="send_notify_list"><__trans phrase="All addresses from Address Book"></label>
+        </div>
       </li>
     </mt:if>
       <li>
@@ -67,23 +66,21 @@ function doValidateNotifyRecips(f) {
      label_class="top-label">
     <ul class="list-unstyled">
       <li>
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="send_excerpt" id="send_excerpt" class="custom-control-input" value="1" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Entry Excerpt"></span>
-        </label>
+          <label class="custom-control-label" for="send_excerpt"><__trans phrase="Entry Excerpt"></label>
+        </div>
       </li>
       <li>
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="send_body" id="send_body" class="custom-control-input" value="1" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">
+          <label class="custom-control-label" for="send_body">
             <__trans phrase="Body">
             <span class="text-muted disabled">
               <__trans phrase="(Body will be sent without any text formatting applied.)">
             </span>
-          </span>
-        </label>
+          </label>
+        </div>
       </li>
     </ul>
   </mtapp:setting>

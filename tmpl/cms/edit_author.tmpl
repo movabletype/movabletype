@@ -496,11 +496,10 @@ function showPasswordField() {
       <div class="form-group align-items-center">
       <mt:loop name="loaded_permissions">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><mt:var name="label"></span>
-          </label>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
+          </div>
         </div>
       </mt:loop>
       </div>
@@ -515,11 +514,10 @@ function showPasswordField() {
        label="<__trans phrase="Options">"
        label_for="create_personal_weblog">
       <div class="form-group">
-        <label class="custom-control custom-checkbox<mt:unless name="create_personal_weblog"> text-muted</mt:unless>">
+        <div class="custom-control custom-checkbox<mt:unless name="create_personal_weblog"> text-muted</mt:unless>">
           <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" class="custom-control-input" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Create personal child site for user"></span>
-        </label>
+          <label class="custom-control-label" for="create_personal_weblog"><__trans phrase="Create personal child site for user"></label>
+        </div>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>

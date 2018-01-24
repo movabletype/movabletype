@@ -202,11 +202,10 @@ h1.dialog-title {
   label="<__trans phrase="Rename filename">"
   show_label="1">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Rename non-ascii filename automatically"></span>
-        </label>
+          <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+        </div>
       </div>
 </mtapp:setting>
 <mtapp:setting
@@ -232,11 +231,10 @@ h1.dialog-title {
   label="<__trans phrase="Normalize orientation">"
   show_label="1">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Enable orientation normalization"></span>
-        </label>
+          <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+        </div>
       </div>
 </mtapp:setting>
 </fieldset>

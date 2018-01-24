@@ -113,11 +113,10 @@
       <!-- SMTPAuth -->
           <mt:if name="has_net_smtp_auth">
             <p>
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="smtp_auth" id="smtp_auth" class="custom-control-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Use SMTP Auth"></span>
-              </label>
+                <label class="custom-control-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              </div>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
       <!-- SMTPAuth Username -->

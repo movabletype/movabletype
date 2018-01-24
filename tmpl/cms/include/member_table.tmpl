@@ -16,10 +16,10 @@
   <mt:setvarblock name="table_header">
     <tr>
       <th class="head cb">
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <span class="custom-control-indicator"></span>
-        </label>
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
       </th>
       <th class="head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
       <th class="head name primary"><span class="col-label"><__trans phrase="Name"></span></th>
@@ -43,10 +43,10 @@
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
-        <label class="custom-control custom-checkbox">
-          <input<mt:if name="is_administrator"><mt:if n ame="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
-          <span class="custom-control-indicator"></span>
-        </label>
+        <div class="custom-control custom-checkbox">
+          <input<mt:if name="is_administrator"><mt:if n ame="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" id="select_<mt:var name="id" escape="html">" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
       </td>
     <mt:if name="usertype_author">
       <td class="username">
