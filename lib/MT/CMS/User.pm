@@ -1304,6 +1304,15 @@ PERMCHECK: {
         {
             $row->{disabled} = 1;
         }
+        if ( UNIVERSAL::isa( $obj, 'MT::Author' ) ) {
+            $row->{icon}
+                = MT->static_path . 'images/nav_icons/color/user.gif';
+        }
+        if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
+            $row->{icon}
+                = MT->static_path . 'images/nav_icons/color/group.gif';
+        }
+
     };
 
     # Only show active users who are not commenters.
