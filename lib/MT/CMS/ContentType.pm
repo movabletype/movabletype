@@ -58,7 +58,7 @@ sub edit {
     }
     else {
         $param->{new_object} = 1;
-        $param->{name}       = $app->translate('New Content Type');
+        $param->{name}       = '';
     }
 
     if ( $app->param('error') ) {
