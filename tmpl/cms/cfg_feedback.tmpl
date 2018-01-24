@@ -93,9 +93,17 @@
        hint="<__trans phrase="This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines comment/trackback as a spam.">"
        show_hint="1">
       <div class="input-group" style="width: 10rem;">
-        <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return scoreNudge(-1);">-</button></span>
+        <div class="input-group-prepend">
+          <span class="input-group-text btn" onclick="return scoreNudge(-1);">
+            -
+          </span>
+        </div>
         <input id="junk_score_threshold" name="junk_score_threshold" class="form-control mt-stepper" type="text" value="<mt:var name="junk_score_threshold" escape="html">" min="-10" max="10">
-        <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return scoreNudge(1);">+</button></span>
+        <div class="input-group-append">
+          <span class="input-group-text btn" onclick="return scoreNudge(1);">
+            +
+          </span>
+        </div>
       </div>
     </mtapp:setting>
 

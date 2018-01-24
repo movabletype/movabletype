@@ -66,7 +66,7 @@
      >
     <div class="input-group">
       <input type="text"<mt:if name="config_warnings_emailaddressmain"> disabled="disabled"</mt:if> name="system_email_address" id="system_email_address" class="form-control text med required email"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> style="width: 50%;" aria-describedby="systemEmailAddress" />
-      <div class="input-group-btn">
+      <div class="input-group-append">
         <a id="send-test-email" class="button btn btn-default" data-toggle="modal" data-target="#test-email-dialog" onclick="return false;">
           <__trans phrase="Send Test Mail">
         </a>

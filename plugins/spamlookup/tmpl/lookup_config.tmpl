@@ -27,9 +27,17 @@
       <div id="ipbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight');">-</button></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight');">
+              -
+            </span>
+          </div>
           <input id="sl_ipbl_weight" name="ipbl_weight" class="form-control mt-stepper" type="text" value="<mt:var name="ipbl_weight" escape="html">" min="0" max="10">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_ipbl_weight');">+</button></span>
+          <div class="input-group-append">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(1, 'sl_ipbl_weight');">
+              +
+            </span>
+          </div>
         </div>
       </div>
     </li>
@@ -72,9 +80,17 @@
       <div id="domainbl_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight');">-</button></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight');">
+              -
+            </span>
+          </div>
           <input id="sl_domainbl_weight" name="domainbl_weight" class="form-control mt-stepper" type="text" value="<mt:var name="domainbl_weight" escape="html">" min="0" max="10">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_domainbl_weight');">+</button></span>
+          <div class="input-group-append">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(1, 'sl_domainbl_weight');">
+              +
+            </span>
+          </div>
         </div>
       </div>
     </li>
@@ -117,9 +133,17 @@
       <div id="tborigin_mode_junk-advanced" class="form-inline setting-advanced" style="display: none;">
         <__trans phrase="Score weight:">
         <div class="input-group" style="width: 10rem;">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight');">-</button></span>
+          <div class="input-group-prepend">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight');">
+              -
+            </span>
+          </div>
           <input id="sl_tborigin_weight" name="tborigin_weight" class="form-control mt-stepper" type="text" value="<mt:var name="tborigin_weight" escape="html">" min="0" max="10">
-          <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="return junkScoreNudge(1, 'sl_tborigin_weight');">+</button></span>
+          <div class="input-group-append">
+            <span class="input-group-text btn" onclick="return junkScoreNudge(1, 'sl_tborigin_weight');">
+              +
+            </span>
+          </div>
         </div>
       </div>
     </li>
