@@ -26,9 +26,6 @@ sub fields {
             from_object => sub { },          # Display nothing.
             to_object   => sub {
                 my ( $hash, $obj ) = @_;
-                use CGI::Carp;
-                use Data::Dumper;
-                print STDERR Dumper($hash);
                 my $pass = $hash->{apiPassword};
                 if ( length $pass ) {
                     $obj->api_password($pass);
