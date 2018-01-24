@@ -55,7 +55,7 @@
           </div>
         </div>
         <div if={ !opts.id }  id="name-field" class="form-group">
-          <label for="name" class="form-control-label">{ trans('Content Type Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
+          <label for="name" class="form-control-label">{ trans('Name') } <span class="badge badge-danger">{ trans('Required') }</span></label>
           <input type="text" name="name" id="name" class="form-control html5-form" value={opts.name} onkeypress={ stopSubmitting } required>
         </div>
       </div>
