@@ -5,7 +5,7 @@ build:
     - script:
         name: Remove skip test
         code: |
-          rm plugins/MultiBlog/t/02.tags.t
+          rm -f plugins/MultiBlog/t/02.tags.t
     - script:
         name: Install CPAN modules
         code: |

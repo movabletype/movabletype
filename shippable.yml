@@ -12,7 +12,7 @@ build:
     - service mysql start
     - service memcached start
 
-    - rm plugins/MultiBlog/t/02.tags.t
+    - rm -f plugins/MultiBlog/t/02.tags.t
 
     - script -qfc "MT_TEST_IGNORE_FIXTURE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t && touch test_passed" | cat
     - test -e test_passed
