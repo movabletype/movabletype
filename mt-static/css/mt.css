@@ -6283,7 +6283,7 @@ button.bg-dark:focus {
   display: table-cell !important;
 }
 
-.d-flex, .mt-productHeader, .mt-draggable, .mt-contentfield .mt-collapse__container, .mt-collapse__container {
+.d-flex, .mt-productHeader, .mt-draggable, .mt-draggable__area, .mt-contentfield .mt-collapse__container, .mt-collapse__container {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6563,7 +6563,7 @@ button.bg-dark:focus {
           justify-content: flex-end !important;
 }
 
-.justify-content-center {
+.justify-content-center, .mt-draggable__area {
   -webkit-box-pack: center !important;
       -ms-flex-pack: center !important;
           justify-content: center !important;
@@ -9081,7 +9081,7 @@ li {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   -webkit-box-align: stretch;
       -ms-flex-align: stretch;
           align-items: stretch;
@@ -9203,7 +9203,8 @@ li {
 }
 
 .mt-primaryNavigation__content {
-  overflow: auto;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 .mt-primaryNavigation__sites {
@@ -9814,6 +9815,17 @@ fieldset.form-group {
 .mt-draggable[aria-grabbed="true"] {
   border-color: #5FBCEB;
   font-weight: bold;
+}
+
+.mt-draggable__area {
+  height: 400px;
+  border: 4px dotted #A5A5A5;
+  border-radius: 0.25rem;
+  text-align: center;
+}
+
+.mt-draggable__area--dragover {
+  border: 4px dotted #0176BF;
 }
 
 .mt-contentfield[aria-grabbed="true"] {
