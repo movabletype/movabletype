@@ -184,15 +184,15 @@ sub post_content_unpub {
 
 sub init_rebuilt_cache {
     my ( $self, $app ) = @_;
-    $app->request( 'config_rebuild_trigger', {} );
+    $app->request( 'sites_rebuild', {} );
 }
 
 sub is_first_rebuild {
     my ( $app, $blog_id, $action ) = @_;
-    my $rebuilt = $app->request('config_rebuild_trigger') || {};
+    my $rebuilt = $app->request('sites_rebuild') || {};
     return if exists $rebuilt->{"$blog_id,$action"};
     $rebuilt->{"$blog_id,$action"} = 1;
-    $app->request( 'config_rebuild_trigger', $rebuilt );
+    $app->request( 'sites_rebuild', $rebuilt );
 }
 
 sub perform_mb_action {
