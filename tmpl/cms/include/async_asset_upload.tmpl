@@ -315,12 +315,11 @@ jQuery(window).load(function () {
       );
   }
 
-  // Initialize upload overlay size.
-  resize_upload_overlay();
-
   // Bind events.
   jQuery(window)
     .on('dragover', function(e) {  // Show upload overlay.
+      // Refresh upload overlay size.
+      resize_upload_overlay();
       e.preventDefault();
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
       jQuery('#upload-overlay-container').show();
