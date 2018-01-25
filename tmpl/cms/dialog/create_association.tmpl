@@ -141,30 +141,40 @@ function init() {
 <mt:if name="has_group">
     var panel = panels[dialog.currentPanel];
     var datasource = panel.datasource;
+    datasource.type = null;
 
     jQuery('.select_assoc_type :radio').on('click', function(){
-        var target = jQuery(this).val();
-        var search = jQuery('.search-input');
-        if(target == 'both' && search.val() == ''){
-            datasource.navigate(0);
-            panel.searchField.value = "";
-            jQuery(panel.searchReset).hide();
-            return;
-        }
-
         if (datasource.searching) return;
 
         var doc = TC.getOwnerDocument(datasource.element);
         var args = doc.location.search;
         args = args.replace(/^\?/, '');
         args = args.replace(/&?offset=\d+/, '');
+        args = args.replace(/&_type=\w+/, '');
+        args = args.replace(/&search=\w+/, '');
+        args = args.replace(/&link_filter=\d+/, '');
+        args = args.replace(/&json=\d+/, '');
+        args = args.replace(/&no_limit=\d+/, '');
+
+        var target = jQuery(this).val();
+        var search = jQuery('.search-input');
+        if(target == 'both' && search.val() == ''){
+            args += '&_type=author';
+            panel.searchField.value = "";
+            jQuery(panel.searchReset).hide();
+            history.pushState(args, '', CMSScriptURI + '?' + args);
+            datasource.navigate(0);
+
+            return;
+        }
+
+
         datasource.searching = true;
         if (datasource.pager)
             datasource.pager.render();
         if (datasource.pager2)
             datasource.pager2.render();
 
-        args = args.replace(/&_type=\w+/, '');
         args += '&search=' + escape(search.val());
         if(target == 'both'){
             args += '&_type=author';
@@ -175,6 +185,7 @@ function init() {
         }
         args += '&json=1&no_limit=1';
 
+
         TC.Client.call({
             'load': function(c,r) { datasource.searched(r); },
             'error': function() { alert("Error during search."); datasource.searched(null); },
@@ -182,7 +193,11 @@ function init() {
             'uri': ScriptURI,
             'arguments': args
         });
+
+        args = args.replace(/&search=\w+/, '');
+        history.pushState(args, '', CMSScriptURI + '?' + args);
     });
+    jQuery('.select_assoc_type :radio:eq(0)').trigger('click');
 </mt:if>
 }
 
