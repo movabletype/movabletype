@@ -81,8 +81,8 @@ parameters:
                 <span class="custom-control-indicator"></span>
               </label>
             </td>
-            <td class="panel-label">
-              <mt:if name="icon"><img src="<mt:var name="icon">" class="mr-1"></mt:if><mt:var name="label" escape="html">
+            <td class="panel-label-tr">
+              <mt:if name="icon"><span class="panel-label-icon mr-1"><img src="<mt:var name="icon">"></span></mt:if><span class="panel-label"><mt:var name="label" escape="html"></span>
               <mt:if name="has_child">
               <div class="mt-table__hierarchy">
                 <ul class="list-unstyled">
@@ -91,7 +91,7 @@ parameters:
                     <label class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
                       <input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
                       <span class="custom-control-indicator"></span>
-                      <mt:if name="icon"><img src="<mt:var name="icon">" class="mr-1"></mt:if><mt:var name="label" escape="html">
+                      <mt:if name="icon"><span class="panel-label-icon mr-1"><img src="<mt:var name="icon">"></span></mt:if><span class="panel-label"><mt:var name="label" escape="html"></span>
                     </label>
                   </li>
                   </mt:loop>
