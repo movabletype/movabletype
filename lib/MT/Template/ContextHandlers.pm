@@ -4162,7 +4162,7 @@ sub _hdlr_app_contentfield_option_group {
 
   $insides
 
-  <div>
+  <div class="form-group-button">
     <button type="button" class="btn btn-default" onclick={ closePanel }><__trans phrase="Close"></button>
   </div>
 

@@ -67,7 +67,7 @@
       <legend class="h3">{ trans('Content Fields') }</legend>
       <div id="installed-fields" class="sortable" ondrop={ onDrop } ondragover={ onDragOver }>
         <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
-        <div class="mt-draggable"  draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
+        <div class="mt-contentfield"  draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
       </div>
     </fieldset>
   </form>
@@ -128,13 +128,13 @@
     onDragOver(e) {
       // Allowed only for Content Field and Content Field Type.
       if (self.droppable ) {
-        if (e.target.className != 'sortable' && e.target.className != 'mt-draggable') {
+        if (e.target.className != 'sortable' && e.target.className != 'mt-draggable' && e.target.className != 'mt-contentfield') {
           e.preventDefault()
           return
         }
 
         if (self.dragged) {
-          if (e.target.className == 'mt-draggable') {
+          if (e.target.className == 'mt-draggable' || e.target.className == 'mt-contentfield') {
             // Inside the dragOver method
             self.over = e.target
             var targetRect = e.target.getBoundingClientRect()
