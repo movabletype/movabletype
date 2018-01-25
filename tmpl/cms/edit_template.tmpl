@@ -899,18 +899,22 @@ function setSyntaxHighlight(on_or_off) {
                 <label class="custom-control-label" for="cache-event-entry"><__trans phrase="Entry"></label>
               </div>
             </div>
+            <mt:if name="enabled_plugins{Comments}">
             <div class="form-check form-check-inline">
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
                 <label class="custom-control-label" for="cache-event-comment"><__trans phrase="Comment"></label>
               </div>
             </div>
+            </mt:if>
+            <mt:if name="enabled_plugins{Trackback}">
             <div class="form-check form-check-inline">
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
                 <label class="custom-control-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
               </div>
             </div>
+            </mt:if>
             <div class="form-check form-check-inline">
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>

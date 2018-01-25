@@ -162,6 +162,7 @@ function toggleFile() {
 
   <mt:unless name="category_set_id">
 
+    <mt:if name="enabled_plugins{Trackback}">
     <mtapp:settinggroup id="category-inbound-ping">
 
       <legend class="h3 title"><__trans phrase="Inbound TrackBacks"></legend>
@@ -232,6 +233,7 @@ function toggleFile() {
       </mtapp:setting>
     </mtapp:settinggroup>
 
+  </mt:if>
   </mt:unless>
 
   <mt:setvarblock name="action_buttons">

@@ -157,6 +157,7 @@
       </select>
     </mtapp:setting>
 
+    <mt:if name="enabled_plugins{Comments}">
     <mtapp:setting
        id="allow_comments_default"
        label="<__trans phrase="Comments">"
@@ -181,7 +182,9 @@
       </div>
     </mt:unless>
     </mtapp:setting>
+    </mt:if>
 
+    <mt:if name="enabled_plugins{Trackback}">
     <mtapp:setting
        id="allow_pings_default"
        label="<__trans phrase="TrackBacks">"
@@ -206,6 +209,7 @@
       </div>
     </mt:unless>
     </mtapp:setting>
+    </mt:if>
 
     <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
     <mtapp:setting
@@ -248,12 +252,14 @@
             <label class="custom-control-label" for="entry-prefs-tags"><__trans phrase="Tags"></label>
           </div>
         </div>
+        <mt:if name="enabled_plugins{Comments}">
         <div class="form-check form-check-inline">
           <label class="custom-control custom-checkbox">
             <input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback"<mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
             <label class="custom-control-label" for="entry-prefs-feedback"><__trans phrase="Comments"></label>
           </label>
         </div>
+        </mt:if>
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets"<mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />
@@ -299,12 +305,14 @@
           <label class="custom-control-label" for="page-prefs-tags"><__trans phrase="Tags"></label>
         </div>
       </div>
+      <mt:if name="enabled_plugins{Comments}">
       <div class="form-check form-check-inline">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="page_custom_prefs" id="page-prefs-feedback" value="feedback" <mt:if name="page_disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
           <label class="custom-control-label" for="page-prefs-feedback"><__trans phrase="Comments"></label>
         </div>
       </div>
+      </mt:if>
       <div class="form-check form-check-inline">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="page_custom_prefs" id="page-prefs-assets" value="assets" <mt:if name="page_disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />

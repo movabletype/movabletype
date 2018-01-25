@@ -6,9 +6,11 @@
   <li>
     <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count">
   </li>
+  <mt:if name="enabled_plugins{Comments}">
   <li>
     <strong><__trans phrase="Commenters"></strong>: <mt:var name="commenter_count">
   </li>
+  </mt:if>
 </ul>
 
 <ul class="list-unstyled">
