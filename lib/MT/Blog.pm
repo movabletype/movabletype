@@ -1837,6 +1837,29 @@ sub to_hash {
     return $hash;
 }
 
+sub junk_score_threshold {
+    my $self = shift;
+    if (@_) {
+        my $adjusted_value = _adjust_threshold( $_[0] );
+        return $self->column( 'junk_score_threshold', $adjusted_value );
+    }
+    else {
+        return _adjust_threshold( $self->column('junk_score_threshold') );
+    }
+}
+
+sub _adjust_threshold {
+    my $value = shift;
+    if ( defined $value && $value =~ /^[+-]?[0-9]+\.?[0-9]*$/ ) {
+        return -10 if $value < -10;
+        return 10  if $value > 10;
+        return $value + 0;
+    }
+    else {
+        return 0;
+    }
+}
+
 1;
 __END__
 
@@ -2119,7 +2142,10 @@ When a new comment is entered, it is checked if it is spam using spam
 filters. each filter is voting by returning a number between -10 to 10,
 (or ABSTAIN) and then numbers are merged to a single spam score. if this
 score is bigger then junk_score_threshold, this comment is considered
-spam
+spam.
+
+If this value is out of range between -10 to 10, rounded value will
+be returned.
 
 =item * basename_limit
 
