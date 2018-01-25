@@ -135,6 +135,24 @@ function init() {
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
+    var callback = function(index){
+        var new_panel = this.panels[this.currentPanel+index];
+        if(new_panel.name != 'author'){
+            jQuery('.select_assoc_type').hide();
+        } else {
+            jQuery('.select_assoc_type').show();
+        }
+    };
+    var next_event = dialog.nextPanel;
+    var prev_event = dialog.previousPanel;
+    dialog.nextPanel = function(){
+        callback.apply(this,[1]);
+        next_event.apply(this,arguments);
+    };
+    dialog.previousPanel = function(){
+        callback.apply(this,[-1]);
+        prev_event.apply(this,arguments);
+    };
     dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
 
 
