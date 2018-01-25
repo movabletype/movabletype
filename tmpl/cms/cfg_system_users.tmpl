@@ -62,6 +62,7 @@ function clearNotifyUsers() {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <mt:unless name="external_user_management">
+  <mt:if name="enabled_plugins{Comments}">
   <mtapp:settinggroup id="external-user-management">
     <legend class="h3"><__trans phrase="User Registration"></legend>
     <mtapp:setting
@@ -97,6 +98,7 @@ function clearNotifyUsers() {
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>
+  </mt:if>
 </mt:unless>
 
 <mt:if name="auth_mode_mt">

@@ -2,8 +2,12 @@
 <mt:setvar name="position_actions_bottom" value="1">
 
 <mt:setvar name="spam" value="1">
+<mt:if name="enabled_plugins{Comments}">
 <mt:setvar name="comments" value="1">
+</mt:if>
+<mt:if name="enabled_plugins{Trackback}">
 <mt:setvar name="trackbacks" value="1">
+</mt:if>
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
@@ -140,6 +144,7 @@
     </div>
   </mtapp:settinggroup>
 
+  <mt:if name="enabled_plugins{Comments}">
   <mtapp:settinggroup id="cfg-comment">
     <legend class="h3"><__trans phrase="Comment Settings"></legend>
 
@@ -365,8 +370,9 @@
       </mtapp:settinggroup>
     </div>
   </mtapp:settinggroup>
+  </mt:if>
 
-
+  <mt:if name="enabled_plugins{Trackback}">
   <mtapp:settinggroup id="cfg_trackback">
     <legend class="h3"><__trans phrase="Trackback Settings"></legend>
 
@@ -497,6 +503,7 @@
       </mtapp:settinggroup>
     </div>
   </mtapp:settinggroup>
+  </mt:if>
 
   <mt:setvarblock name="action_buttons">
     <button
