@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "dependencies": {
-    "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git#bundled-to-mt-core",
+    "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git#fix/navigation-adjustment",
     "popper.js": "^1.12.1",
     "riot": "^3.6.1",
     "svg4everybody": "^2.1.9"
