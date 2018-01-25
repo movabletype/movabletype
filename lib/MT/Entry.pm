@@ -612,48 +612,6 @@ sub list_props {
             label   => 'Unpublish Date',
             order   => 750,
         },
-        comment_count => {
-            auto         => 1,
-            display      => 'default',
-            label        => 'Comments',
-            filter_label => '__COMMENT_COUNT',
-            order        => 800,
-            html_link    => sub {
-                my $prop = shift;
-                my ( $obj, $app, $opts ) = @_;
-                return unless $app->can_do('access_to_comment_list');
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type      => 'comment',
-                        filter     => 'entry',
-                        filter_val => $obj->id,
-                        blog_id    => $opts->{blog_id} || 0,
-                    },
-                );
-            },
-        },
-        ping_count => {
-            auto         => 1,
-            display      => 'optional',
-            label        => 'Trackbacks',
-            filter_label => '__PING_COUNT',
-            order        => 900,
-            html_link    => sub {
-                my $prop = shift;
-                my ( $obj, $app, $opts ) = @_;
-                return unless $app->can_do('access_to_trackback_list');
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type      => 'ping',
-                        filter     => 'entry_id',
-                        filter_val => $obj->id,
-                        blog_id    => $opts->{blog_id} || 0,
-                    },
-                );
-            },
-        },
         text => {
             auto      => 1,
             display   => 'none',
@@ -713,68 +671,6 @@ sub list_props {
             label   => 'Basename',
             display => 'none',
             auto    => 1,
-        },
-        commented_on => {
-            base          => '__virtual.date',
-            label         => 'Date Commented',
-            comment_class => 'comment',
-            display       => 'none',
-            terms         => sub {
-                my $prop = shift;
-                my ( $args, $db_terms, $db_args ) = @_;
-                my $option = $args->{option};
-                my $query;
-                my $blog = MT->app ? MT->app->blog : undef;
-                require MT::Util;
-                my $now = MT::Util::epoch2ts( $blog, time() );
-                my $from   = $args->{from}   || '';
-                my $to     = $args->{to}     || '';
-                my $origin = $args->{origin} || '';
-                $from =~ s/\D//g;
-                $to =~ s/\D//g;
-                $origin =~ s/\D//g;
-                $from .= '000000' if $from;
-                $to   .= '235959' if $to;
-
-                if ( 'range' eq $option ) {
-                    $query = [
-                        '-and',
-                        { op => '>', value => $from },
-                        { op => '<', value => $to },
-                    ];
-                }
-                elsif ( 'days' eq $option ) {
-                    my $days   = $args->{days};
-                    my $origin = MT::Util::epoch2ts( $blog,
-                        time - $days * 60 * 60 * 24 );
-                    $query = [
-                        '-and',
-                        { op => '>', value => $origin },
-                        { op => '<', value => $now },
-                    ];
-                }
-                elsif ( 'before' eq $option ) {
-                    $query = { op => '<', value => $origin . '000000' };
-                }
-                elsif ( 'after' eq $option ) {
-                    $query = { op => '>', value => $origin . '235959' };
-                }
-                elsif ( 'future' eq $option ) {
-                    $query = { op => '>', value => $now };
-                }
-                elsif ( 'past' eq $option ) {
-                    $query = { op => '<', value => $now };
-                }
-                $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} },
-                    MT->model( $prop->comment_class )->join_on(
-                    undef,
-                    { entry_id => \'= entry_id', created_on => $query },
-                    { unique   => 1, },
-                    );
-                return;
-            },
-            sort => 0,
         },
         author_id => {
             auto            => 1,
@@ -887,15 +783,6 @@ sub system_filters {
                 ,;
             },
             order => 500,
-        },
-        commented_in_last_7_days => {
-            label => 'Entries with Comments Within the Last 7 Days',
-            items => [
-                {   type => 'commented_on',
-                    args => { option => 'days', days => 7 }
-                }
-            ],
-            order => 1100,
         },
     };
 }
