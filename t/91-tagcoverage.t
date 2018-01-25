@@ -29,8 +29,6 @@ my $components = {
                 MT/Template/Tags/Calendar.pm
                 MT/Template/Tags/Category.pm
                 MT/Template/Tags/CategorySet.pm
-                MT/Template/Tags/Comment.pm
-                MT/Template/Tags/Commenter.pm
                 MT/Template/Tags/ContentType.pm
                 MT/Template/Tags/Entry.pm
                 MT/Template/Tags/Filters.pm
@@ -38,7 +36,6 @@ my $components = {
                 MT/Template/Tags/Misc.pm
                 MT/Template/Tags/Page.pm
                 MT/Template/Tags/Pager.pm
-                MT/Template/Tags/Ping.pm
                 MT/Template/Tags/Score.pm
                 MT/Template/Tags/Search.pm
                 MT/Template/Tags/Site.pm
@@ -57,6 +54,53 @@ my $components = {
     'FeedsAppLite' => { paths => [ 'MT/Feeds/Tags.pm', ], },
 };
 
+my @removed_from_core = qw(
+    BlogCommentCount BlogPingCount
+    CategoryCommentCount CategoryTrackbackCount CategoryTrackbackLink
+    CommentAuthor CommentAuthorIdentity CommentAuthorLink
+    CommentBlogID CommentBody CommentDate CommentEmail
+    CommentEntryID CommentFields CommentID CommentIP
+    CommentLink CommentName CommentOrderNumber CommentParentID
+    CommentPreviewAuthor CommentPreviewAuthorLink
+    CommentPreviewBody CommentPreviewDate CommentPreviewEmail
+    CommentPreviewIP CommentPreviewIsStatic CommentPreviewState
+    CommentPreviewURL CommentRank CommentRepliesRecurse
+    CommentReplyToLink CommentScore CommentScoreAvg
+    CommentScoreCount CommentScoreHigh CommentScoreLow
+    CommentSiteID CommentURL CommenterAuthIconURL
+    CommenterAuthType CommenterEmail CommenterID
+    CommenterName CommenterNameThunk CommenterURL
+    CommenterUsername CommenterUserpic CommenterUserpicURL
+    EntryCommentCount EntryTrackbackCount EntryTrackbackData
+    EntryTrackbackID EntryTrackbackLink
+    PingBlogName PingDate PingExcerpt PingID PingIP
+    PingRank PingScore PingScoreAvg PingScoreCount
+    PingScoreHigh PingScoreLow PingSiteName PingTitle
+    PingURL PingsSentURL RemoteSignInLink RemoteSignOutLink
+    SignInLink SignOnURL SignOutLink SiteCommentCount SitePingCount
+    TypeKeyToken UserSessionCookieDomain UserSessionCookieName
+    UserSessionCookiePath UserSessionCookieTimeout
+    UserSessionState WebsiteCommentCount WebsitePingCount
+
+    BlogIfCommentsOpen CategoryIfAllowPings
+    CommentEntry CommentIfModerated CommentParent
+    CommentReplies CommenterIfTrusted CommenterUserpicAsset
+    Comments CommentsFooter CommentsHeader
+    EntryIfAllowComments EntryIfAllowPings EntryIfCommentsOpen
+    IfAllowCommentHTML IfCommentParent IfCommentReplies
+    IfCommenterIsAuthor IfCommenterIsEntryAuthor
+    IfCommenterRegistrationAllowed IfCommenterTrusted
+    IfCommentsAccepted IfCommentsActive IfCommentsAllowed
+    IfCommentsModerated IfExternalUserManagement
+    IfNeedEmail IfPingsAccepted IfPingsActive IfPingsAllowed
+    IfPingsModerated IfRegistrationAllowed IfRegistrationNotRequired
+    IfRegistrationRequired IfRequireCommentEmails IfTypeKeyToken
+    PingEntry Pings PingsFooter PingsHeader PingsSent
+    SiteIfCommentsOpen WebsiteIfCommentsOpen
+);
+
+my %is_removed = map { $_ => 1 } @removed_from_core;
+
 my $mt = MT->instance;
 
 my $tag_count = 0;
@@ -72,8 +116,6 @@ foreach my $c ( sort keys %$components ) {
     my $count = $fn_count + $mod_count + $block_count;
     $tag_count += $count;
 }
-
-plan tests => $tag_count;
 
 foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
@@ -130,6 +172,7 @@ foreach my $c ( sort keys %$components ) {
 
     foreach my $tag ( sort keys %{ $tags->{function} } ) {
         next if $tag eq 'plugin';
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{function}{$tag} ) {
             ok( 1, "component $c, function tag $tag (extends core tag)" );
         }
@@ -142,6 +185,7 @@ foreach my $c ( sort keys %$components ) {
     foreach my $tag ( sort keys %{ $tags->{block} } ) {
         next if $tag eq 'plugin';
         $tag =~ s/\?$//;
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{block}{$tag} ) {
             ok( 1, "component $c, block tag $tag (extends core tag)" );
         }
@@ -152,6 +196,7 @@ foreach my $c ( sort keys %$components ) {
 
     foreach my $tag ( sort keys %{ $tags->{modifier} } ) {
         next if $tag eq 'plugin';
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{modifier}{$tag} ) {
             ok( 1, "component $c, modifier $tag (extends core tag)" );
         }
@@ -161,3 +206,4 @@ foreach my $c ( sort keys %$components ) {
     }
 }
 
+done_testing;

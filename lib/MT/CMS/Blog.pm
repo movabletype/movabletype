@@ -520,9 +520,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -3132,6 +3132,8 @@ sub clone {
 
     $app->validate_magic() or return;
 
+    $app->{hide_goback_button} = 1;
+
     my @id = $app->multi_param('id');
 
     if ( !@id ) {
@@ -3454,7 +3456,7 @@ sub print_status_page {
     <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
     <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
         <div id="clone-process" class="process-msg card-block">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled p-3">
 HTML
 
     my $new_blog;
@@ -3535,7 +3537,7 @@ HTML
             . $app->uri(
             mode => 'list',
             args => {
-                '_type' => 'blog',
+                '_type' => $app->blog ? 'blog' : 'website',
                 blog_id => ( $app->blog ? $new_blog->website->id : 0 )
             }
             );
@@ -3552,7 +3554,7 @@ HTML
             </ul>
         </div>
     </div>
-    <p><strong><__trans phrase="Finished!"></strong></p>
+    <p class="mt-3"><strong><__trans phrase="Finished!"></strong></p>
 </div>
 
 <div class="modal-footer">
@@ -3674,12 +3676,14 @@ sub cms_pre_load_filtered_list {
 }
 
 sub can_view_blog_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if !$blog || $blog->is_blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
@@ -3812,6 +3816,19 @@ sub _determine_total {
     }
 
     return $total;
+}
+
+sub filtered_list_param {
+    my ( $cb, $app, $param, $objs ) = @_;
+    my %obj_hash = map { $_->id => $_ } @$objs;
+    my $objects = $param->{objects};
+    return unless $objects && @$objects > 0;
+    for my $obj (@$objects) {
+        my $id = $obj->[0] or next;
+        if ( $obj_hash{$id} && !$obj_hash{$id}->is_blog ) {
+            $obj->[0] = undef;
+        }
+    }
 }
 
 1;

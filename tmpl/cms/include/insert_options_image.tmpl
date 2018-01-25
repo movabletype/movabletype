@@ -6,16 +6,15 @@
      help_page="file_upload"
      help_section="creating_thumbnails">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox" name="thumb" id="create_thumbnail-<mt:var name="id">" class="custom-control-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description form-inline">
+        <label class="custom-control-label form-inline" for="create_thumbnail-<mt:var name="id" escape="html">">
           <__trans phrase="Use thumbnail">
           (<__trans phrase="width:">
           <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number" value="<mt:var name="thumb_width" escape="html">"/>
           <__trans phrase="pixels">)
-        </span>
-      </label>
+        </label>
+      </div>
       <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
     </div>
   </mtapp:setting>
@@ -25,48 +24,43 @@
    label="<__trans phrase="Alignment">"
    label_class="top-header">
   <div id="alignment-<mt:var name="id">" class="form-group">
-    <label class="custom-control custom-radio icon-left icon-left-xwide icon-align icon-align-none">
+    <div class="custom-control custom-radio icon-left icon-left-xwide icon-align icon-align-none">
       <input type="radio" name="align-<mt:var name="id">" id="align-none-<mt:var name="id">" class="custom-control-input rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description">
+      <label class="custom-control-label" for="align-none-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_alignnone" title="<__trans phrase="None">" size="sm">
         <__trans phrase="None">
-      </span>
-    </label>
-    <label class="custom-control custom-radio icon-left-xwide icon-align icon-align-left">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-left">
       <input type="radio" name="align-<mt:var name="id">" id="align-left-<mt:var name="id">" class="custom-control-input rb" value="left" <mt:if name="align_left">checked="checked" </mt:if>/>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description">
+      <label class="custom-control-label" for="align-left-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_alignleft" title="<__trans phrase="Left">" size="sm">
         <__trans phrase="Left">
-      </span>
-    </label>
-    <label class="custom-control custom-radio icon-left-xwide icon-align icon-align-center">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-center">
       <input type="radio" name="align-<mt:var name="id">" id="align-center-<mt:var name="id">" class="custom-control-input rb" value="center" <mt:if name="align_center">checked="checked" </mt:if>/>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description">
+      <label class="custom-control-label" for="align-center-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_aligncenter" title="<__trans phrase="Center">" size="sm">
         <__trans phrase="Center">
-      </span>
-    </label>
-    <label class="custom-control custom-radio icon-left-xwide icon-align icon-align-right">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-right">
       <input type="radio" name="align-<mt:var name="id">" id="align-right-<mt:var name="id">" class="custom-control-input rb" value="right" <mt:if name="align_right">checked="checked" </mt:if>/>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description">
+      <label class="custom-control-label" for="align-right-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_alignright" title="<__trans phrase="Right">" size="sm">
         <__trans phrase="Right">
-      </span>
-    </label>
+      </label>
+    </div>
   </div>
 </mtapp:setting>
 <mtapp:setting
    id="link_to_popup-<mt:var name="id">"
    label="<__trans phrase="Link image to full-size version in a popup window.">">
   <div class="form-group">
-    <label class="custom-control custom-checkbox">
+    <div class="custom-control custom-checkbox">
       <input type="checkbox" name="popup-<mt:var name="id">" id="link_to_popup-<mt:var name="id">" class="custom-control-input" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description"><__trans phrase="Link image to full-size version in a popup window."></span>
-    </label>
+      <label class="custom-control-label" for="link_to_popup-<mt:var name="id" escape="html">"><__trans phrase="Link image to full-size version in a popup window."></label>
+    </div>
   </div>
 </mtapp:setting>

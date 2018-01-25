@@ -1,4 +1,14 @@
 <div class="mt-breadcrumb">
+
+<mt:if name="scope_type" ne="user">
+  <a href="<mt:var name="mt_url">?__mode=dashboard">
+</mt:if>
+    <__trans phrase="Dashboard">
+<mt:if name="scope_type" ne="user">
+  </a>
+  <span class="mt-gts">&gt;</span>
+</mt:if>
+
 <mt:if name="breadcrumbs">
   <mt:if name="scope_type" eq="system">
     <mt:if name="can_access_system_dashboard">
@@ -35,13 +45,11 @@
     </mt:if>
   </mt:loop>
 <mt:else>
-  <mt:if name="scope_type" eq="user">
-  <__trans phrase="Dashboard">
-  <mt:elseif name="scope_type" eq="system">
+  <mt:if name="scope_type" eq="system">
   <__trans phrase="System">
   <mt:elseif name="scope_type" eq="website">
   <mt:var name="blog_name" escape="html">
-  <mt:else>
+  <mt:elseif name="scope_type" eq="blog">
     <mt:if name="curr_website_can_link">
   <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">">
     <mt:var name="curr_website_name" escape="html">

@@ -55,6 +55,47 @@ sub class_label_plural {
     MT->translate("Content Fields");
 }
 
+sub list_props {
+    return +{
+        id => {
+            base    => '__virtual.id',
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        label => {
+            bulk_sort => sub {
+                my ( $props, $objs ) = @_;
+                return @$objs unless @$objs;
+                sort { $a->name cmp $b->name } @$objs;
+            },
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        type => {
+            auto    => 1,
+            display => 'none',
+        },
+        user_custom => {
+            bulk_sort => sub {
+                my ( $props, $objs ) = @_;
+                return @$objs unless @$objs;
+                my $content_type = $objs->[0]->content_type;
+                return @$objs unless $content_type;
+                my %obj_hash = map { $_->id => $_ } @$objs;
+                my @field_ids = map { $_->{id} } @{ $content_type->fields };
+                map { $obj_hash{$_} } @field_ids;
+            },
+            display => 'none',
+        },
+    };
+}
+
 sub unique_id {
     my $self = shift;
     if ( $self->id || !@_ ) {
@@ -113,6 +154,8 @@ sub remove {
     }
 
     MT->app->reboot;
+
+    1;
 }
 
 sub content_type {
@@ -195,7 +238,7 @@ sub related_cat_set {
 
 sub options {
     my $self = shift;
-    $self->content_type->get_field( $self->id )->{options} || {};
+    ( $self->content_type->get_field( $self->id ) || {} )->{options} || {};
 }
 
 {

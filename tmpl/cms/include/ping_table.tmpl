@@ -22,10 +22,10 @@
     <mt:setvarblock name="table_header">
     <tr>
       <th class="head cb">
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <span class="custom-control-indicator"></span>
-        </label>
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
       </th>
     <mt:unless name="tab_junk">
       <th class="head status si">
@@ -54,10 +54,10 @@
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
   <mt:if name="has_edit_access">
-        <label class="custom-control custom-checkbox">
-          <input type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
-          <span class="custom-control-indicator"></span>
-        </label>
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
   <mt:else>
         &nbsp;
   </mt:if>

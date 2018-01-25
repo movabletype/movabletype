@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "gwoqr7c1",
+            "fldyvztw",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "",
-            "$6$sh8fpccqrp273xYG$ejt8laVGZW20xPMi3k2NRD1oR1xgEyyiA7jMfCp2o93RBQBJjtdd6jWgM/ncmA3VymHV0wGvdt3XeeylkMQh3A",
+            "$6$mfXcbfRxQ8j2muJi$xC6G2L5SQallseKBEoCQ/Iv0eEFM01iFiLiZZqqI56UiRuMsq83T3apyiwTZGGHJBXiv9qNpdoS7+ieJCrLcig",
             "en_US",
             null,
             null,
@@ -210,7 +210,7 @@
             "0",
             null,
             "14",
-            "0",
+            0,
             "en_US",
             null,
             "1",
@@ -229,7 +229,7 @@
             null,
             "0",
             "0",
-            "0",
+            0,
             "",
             "/",
             "ascend",
@@ -447,15 +447,15 @@
             "1",
             null,
             "__NOW__",
-            "b7331d92dee3bf6c0f07b0b9770d8b9e50b07710",
+            "cccc69968a9644bdbee6e753a8fbcbaecc03a6b8",
             "0",
             "{\"1\":[1,2]}",
             "1",
-            "5f916aa8ad1ba8df47e3815184b679109057e3fd",
+            "d62cc6ad30c346d6431f6b9d5de43da072e74fc8",
             null,
             "__NOW__",
             "2",
-            "5f916aa8ad1ba8df47e3815184b679109057e3fd",
+            "d62cc6ad30c346d6431f6b9d5de43da072e74fc8",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -467,15 +467,15 @@
             "1",
             null,
             "__NOW__",
-            "b7331d92dee3bf6c0f07b0b9770d8b9e50b07710",
+            "cccc69968a9644bdbee6e753a8fbcbaecc03a6b8",
             "0",
             "{\"2\":[1]}",
             "2",
-            "3e69b9f1928f6ba133d42da88ce12cfc0c5c7893",
+            "914f4ea3a8dca1d727190219eb80e58df91c0bc4",
             null,
             "__NOW__",
             "2",
-            "3e69b9f1928f6ba133d42da88ce12cfc0c5c7893",
+            "914f4ea3a8dca1d727190219eb80e58df91c0bc4",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -487,15 +487,15 @@
             "1",
             null,
             "__NOW__",
-            "b7331d92dee3bf6c0f07b0b9770d8b9e50b07710",
+            "cccc69968a9644bdbee6e753a8fbcbaecc03a6b8",
             "0",
             "{\"2\":[1,2,3]}",
             "3",
-            "0efebcb0b143cd4f3f03c494af5f9f542acb44e9",
+            "cdb226b968f40357c3d479171e525d0ce686ccbd",
             null,
             "__NOW__",
             "1",
-            "0efebcb0b143cd4f3f03c494af5f9f542acb44e9",
+            "cdb226b968f40357c3d479171e525d0ce686ccbd",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -507,15 +507,15 @@
             "2",
             null,
             "__NOW__",
-            "008810af2839f1cb76583cd0e68e1138341cd26f",
+            "cd6788324ee9e00888821b6ba488203955d90347",
             "0",
             "{\"3\":[1,2]}",
             "4",
-            "6ef29fdead99c23293fdeefc12ef97b9f4b265ef",
+            "ef3801cf4e65ec5b883b929447debc09233723ab",
             null,
             "__NOW__",
             "2",
-            "6ef29fdead99c23293fdeefc12ef97b9f4b265ef",
+            "ef3801cf4e65ec5b883b929447debc09233723ab",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -527,15 +527,15 @@
             "2",
             null,
             "__NOW__",
-            "008810af2839f1cb76583cd0e68e1138341cd26f",
+            "cd6788324ee9e00888821b6ba488203955d90347",
             "0",
             "{\"4\":[1]}",
             "5",
-            "7d60e58e0e6bc6673f27e1723ec3d2e4dbd80612",
+            "df20440c1e2773526eb54e6af8ba2245110be897",
             null,
             "__NOW__",
             "2",
-            "7d60e58e0e6bc6673f27e1723ec3d2e4dbd80612",
+            "df20440c1e2773526eb54e6af8ba2245110be897",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -547,15 +547,15 @@
             "2",
             null,
             "__NOW__",
-            "008810af2839f1cb76583cd0e68e1138341cd26f",
+            "cd6788324ee9e00888821b6ba488203955d90347",
             "0",
             "{\"4\":[1,2,3]}",
             "6",
-            "6aeebcc4da0d30f7d21db68283c594aaf7fe9dc1",
+            "02bcaf6d9d27544657e8e8ab788c99f69b918027",
             null,
             "__NOW__",
             "1",
-            "6aeebcc4da0d30f7d21db68283c594aaf7fe9dc1",
+            "02bcaf6d9d27544657e8e8ab788c99f69b918027",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -595,7 +595,7 @@
             null,
             null,
             "categories",
-            "a88362cd55b85f4133639d4f84807969b935065c"
+            "fee69195053c5c3959e5e41fa389e00ec1f059da"
          ],
          [
             "1",
@@ -612,7 +612,7 @@
             null,
             null,
             "categories",
-            "cd5af08903f3da7301552747232d47387e6180c2"
+            "22938829b19126bc922a8f0485ec856f40e2fc60"
          ],
          [
             "1",
@@ -629,7 +629,7 @@
             null,
             null,
             "categories",
-            "93c22d9af405ce7a1a5fb396040bd2d5f943f1f6"
+            "553665421f151636305a8b6302fdcd81e9723425"
          ],
          [
             "1",
@@ -646,7 +646,7 @@
             null,
             null,
             "categories",
-            "1b229f366ab3d2b7f1e30f6f97caf902e6a91ec5"
+            "9efb40ec48abee105f7abc9af7e341c1e0838b46"
          ]
       ]
    },
@@ -856,7 +856,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0024\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion multiblog=2.8\nSchemaVersion 7.0024\n",
             "1"
          ]
       ]
@@ -882,12 +882,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"category_set\":1,\"multiple\":1,\"label\":\"field0\"},\"order\":1,\"type\":\"categories\",\"id\":1,\"unique_id\":1},{\"options\":{\"category_set\":1,\"multiple\":1,\"label\":\"field1\"},\"order\":2,\"type\":\"categories\",\"id\":2,\"unique_id\":2}]",
+            "[{\"order\":1,\"options\":{\"multiple\":1,\"category_set\":1,\"label\":\"field0\"},\"type\":\"categories\",\"id\":1,\"unique_id\":1},{\"type\":\"categories\",\"order\":2,\"options\":{\"multiple\":1,\"label\":\"field1\",\"category_set\":1},\"unique_id\":2,\"id\":2}]",
             "1",
             null,
             "__NOW__",
-            "Sample Content Type",
-            "b7331d92dee3bf6c0f07b0b9770d8b9e50b07710",
+            "ct1",
+            "cccc69968a9644bdbee6e753a8fbcbaecc03a6b8",
             null,
             null
          ],
@@ -896,12 +896,12 @@
             null,
             "__NOW__",
             "This is a sample.",
-            "[{\"options\":{\"category_set\":1,\"multiple\":1,\"label\":\"field2\"},\"order\":3,\"type\":\"categories\",\"id\":3,\"unique_id\":3},{\"options\":{\"category_set\":1,\"multiple\":1,\"label\":\"field3\"},\"order\":4,\"type\":\"categories\",\"id\":4,\"unique_id\":4}]",
+            "[{\"id\":3,\"unique_id\":3,\"options\":{\"multiple\":1,\"category_set\":1,\"label\":\"field2\"},\"order\":3,\"type\":\"categories\"},{\"unique_id\":4,\"id\":4,\"type\":\"categories\",\"order\":4,\"options\":{\"multiple\":1,\"label\":\"field3\",\"category_set\":1}}]",
             "2",
             null,
             "__NOW__",
-            "Sample Content Type",
-            "008810af2839f1cb76583cd0e68e1138341cd26f",
+            "ct2",
+            "cd6788324ee9e00888821b6ba488203955d90347",
             null,
             null
          ]
@@ -934,7 +934,7 @@
             "1",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -949,7 +949,7 @@
             "2",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -964,7 +964,7 @@
             "3",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -979,7 +979,7 @@
             "4",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -994,7 +994,7 @@
             "5",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1009,7 +1009,7 @@
             "6",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1024,7 +1024,7 @@
             "7",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -1039,7 +1039,7 @@
             "8",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -1054,7 +1054,7 @@
             "9",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -1069,7 +1069,7 @@
             "10",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1084,7 +1084,7 @@
             "11",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1099,7 +1099,7 @@
             "12",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1114,7 +1114,7 @@
             "13",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 147.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentField.pm line 174.\n",
             null,
             null,
             "__NOW__"
@@ -1129,7 +1129,7 @@
             "14",
             null,
             "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
+            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 344.\n",
             null,
             null,
             "__NOW__"
@@ -1286,7 +1286,7 @@
             null,
             "__NOW__",
             null,
-            "'administer','edit_templates','manage_plugins','view_log','manage_content_types','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_data'",
+            "'administer','edit_templates','manage_plugins','view_log','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_types','manage_content_data'",
             null,
             "0",
             null
@@ -1302,7 +1302,7 @@
             null,
             "__NOW__",
             null,
-            "'manage_pages','set_publish_paths','manage_category_set','manage_themes','manage_feedback','publish_post','edit_all_posts','edit_config','administer_blog','create_post','rebuild','comment','upload','edit_categories','view_blog_log','manage_content_data','edit_tags','manage_member_blogs','create_site','manage_content_types','edit_assets','send_notifications','administer_site','edit_notifications','manage_users','administer_website','edit_templates'",
+            "'manage_category_set','manage_feedback','comment','rebuild','manage_themes','manage_content_data','set_publish_paths','edit_notifications','manage_content_types','create_site','send_notifications','manage_member_blogs','view_blog_log','administer_site','administer_website','manage_pages','upload','edit_config','edit_assets','create_post','edit_templates','administer_blog','edit_categories','edit_tags','publish_post','edit_all_posts','manage_users'",
             null,
             "0",
             null
@@ -1497,17 +1497,17 @@
             "__NOW__",
             "0",
             "1",
-            "notify-entry",
+            "footer-email",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Entry Notify",
+            "Mail Footer",
             null,
             "1",
-            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
-            "email"
+            "\n-- \nPowered by Movable Type <$mt:Version$>\n<$mt:Var name=\"portal_url\"$>\n",
+            "custom"
          ],
          [
             "0",
@@ -1519,16 +1519,16 @@
             "__NOW__",
             "0",
             "2",
-            "recover-password",
+            "notify-entry",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Password Recovery",
+            "Entry Notify",
             null,
             "1",
-            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
+            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
             "email"
          ],
          [
@@ -1585,16 +1585,16 @@
             "__NOW__",
             "0",
             "5",
-            "new-ping",
+            "lockout-user",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "New Ping",
+            "User Lockout",
             null,
             "1",
-            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "This email is to notify you that a Movable Type user account has been locked out.\n\nUsername: <mt:AuthorName> \nDisplay Name: <mt:AuthorDisplayName>\nEmail: <mt:AuthorEmail>\n\nIf you want to permit this user to participate again, click the link below.\n\n<mt:var name=\"recover_lockout_link\">\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
          ],
          [
@@ -1607,16 +1607,16 @@
             "__NOW__",
             "0",
             "6",
-            "lockout-user",
+            "commenter_notify",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "User Lockout",
+            "Commenter Notify",
             null,
             "1",
-            "This email is to notify you that a Movable Type user account has been locked out.\n\nUsername: <mt:AuthorName> \nDisplay Name: <mt:AuthorDisplayName>\nEmail: <mt:AuthorEmail>\n\nIf you want to permit this user to participate again, click the link below.\n\n<mt:var name=\"recover_lockout_link\">\n\n<mt:include module=\"Mail Footer\">\n",
+            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -1651,17 +1651,17 @@
             "__NOW__",
             "0",
             "8",
-            "footer-email",
+            "new-ping",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Mail Footer",
+            "New Ping",
             null,
             "1",
-            "\n-- \nPowered by Movable Type <$mt:Version$>\n<$mt:Var name=\"portal_url\"$>\n",
-            "custom"
+            "<mt:If name=\"unapproved\" trim=\"1\">\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>). You need to approve this TrackBack before it will appear on your site.\n    <mt:Else>\n      An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>). You need to approve this TrackBack before it will appear on your site.\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    An unapproved TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$>, (<$mt:CategoryLabel$>). You need to approve this TrackBack before it will appear on your site.\n  </mt:If>\n<mt:Else>\n  <mt:If name=\"entry_id\">\n    <mt:If tag=\"EntryClass\" eq=\"entry\">\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on entry #<$mt:EntryID$> (<$mt:EntryTitle$>).\n    <mt:Else>\n      A new TrackBack has been posted on your site '<$mt:BlogName$>', on page #<$mt:PageID$> (<$mt:PageTitle$>).\n    </mt:If>\n  <mt:ElseIf name=\"category_id\">\n    A new TrackBack has been posted on your site '<$mt:BlogName$>', on category #<$mt:CategoryID$> (<$mt:CategoryLabel$>).\n  </mt:If>\n</mt:If>\n\nExcerpt: \n<$mt:PingExcerpt wrap_text=\"72\"$>\n\nURL: <$mt:PingURL$>\nTitle: <$mt:PingTitle$>\nBlog: <$mt:PingBlogName$>\nIP address: <$mt:PingIP$>\n\n<mt:If name=\"state_editable\"><mt:If name=\"unapproved\">Approve TrackBack: \n  <<$mt:Var name=\"approve_url\"$>>\n</mt:If></mt:If>\n<mt:If name=\"entry_id\"><mt:If tag=\"EntryPermalink\">View TrackBack: \n  <<$mt:EntryPermalink$>>\n</mt:If></mt:If>\n<mt:If name=\"state_editable\">Report TrackBack as spam: \n  <<$mt:Var name=\"spam_url\"$>>\n</mt:If>\nEdit TrackBack: \n  <<$mt:Var name=\"edit_url\"$>>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "email"
          ],
          [
             "0",
@@ -1673,16 +1673,16 @@
             "__NOW__",
             "0",
             "9",
-            "commenter_notify",
+            "recover-password",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Notify",
+            "Password Recovery",
             null,
             "1",
-            "This email is to notify you that a new user has successfully registered on the blog '<$mt:BlogName$>'. Here is some information about this new user.\n\nNew User Information:\nUsername: <$mt:CommenterUsername$> \nFull Name: <$mt:CommenterName$>\nEmail: <$mt:CommenterEmail$>\n\nTo view or edit this user, please click on or cut and paste the following URL into a web browser:\n<$mt:Var name=\"profile_url\"$>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
          ],
          [

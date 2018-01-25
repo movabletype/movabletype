@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_function_mtcommentsiteid($args, &$ctx) {
-    return smarty_function_mtcommentblogid($args, $ctx);
+    return '';
 }
 ?>

@@ -1279,30 +1279,32 @@ BEGIN {
                     },
                 },
             },
-            website      => '$Core::MT::Website::list_props',
-            blog         => '$Core::MT::Blog::list_props',
-            entry        => '$Core::MT::Entry::list_props',
-            page         => '$Core::MT::Page::list_props',
-            asset        => '$Core::MT::Asset::list_props',
-            category     => '$Core::MT::Category::list_props',
-            folder       => '$Core::MT::Folder::list_props',
-            comment      => '$Core::MT::Comment::list_props',
-            ping         => '$Core::MT::TBPing::list_props',
-            author       => '$Core::MT::Author::list_props',
-            member       => '$Core::MT::Author::member_list_props',
-            commenter    => '$Core::MT::Author::commenter_list_props',
-            tag          => '$Core::MT::Tag::list_props',
-            banlist      => '$Core::MT::IPBanList::list_props',
-            association  => '$Core::MT::Association::list_props',
-            role         => '$Core::MT::Role::list_props',
-            notification => '$Core::MT::Notification::list_props',
-            log          => '$Core::MT::Log::list_props',
-            filter       => '$Core::MT::Filter::list_props',
-            permission   => '$Core::MT::Permission::list_props',
-            template     => '$Core::MT::Template::list_props',
-            templatemap  => '$Core::MT::TemplateMap::list_props',
-            category_set => '$Core::MT::CategorySet::list_props',
-            content_type => '$Core::MT::ContentType::list_props',
+            website       => '$Core::MT::Website::list_props',
+            blog          => '$Core::MT::Blog::list_props',
+            entry         => '$Core::MT::Entry::list_props',
+            page          => '$Core::MT::Page::list_props',
+            asset         => '$Core::MT::Asset::list_props',
+            category      => '$Core::MT::Category::list_props',
+            folder        => '$Core::MT::Folder::list_props',
+            comment       => '$Core::MT::Comment::list_props',
+            ping          => '$Core::MT::TBPing::list_props',
+            author        => '$Core::MT::Author::list_props',
+            member        => '$Core::MT::Author::member_list_props',
+            commenter     => '$Core::MT::Author::commenter_list_props',
+            tag           => '$Core::MT::Tag::list_props',
+            banlist       => '$Core::MT::IPBanList::list_props',
+            association   => '$Core::MT::Association::list_props',
+            role          => '$Core::MT::Role::list_props',
+            notification  => '$Core::MT::Notification::list_props',
+            log           => '$Core::MT::Log::list_props',
+            filter        => '$Core::MT::Filter::list_props',
+            permission    => '$Core::MT::Permission::list_props',
+            template      => '$Core::MT::Template::list_props',
+            templatemap   => '$Core::MT::TemplateMap::list_props',
+            category_set  => '$Core::MT::CategorySet::list_props',
+            content_type  => '$Core::MT::ContentType::list_props',
+            content_field => '$Core::MT::ContentField::list_props',
+            content_data => '$Core::MT::ContentData::list_props_for_data_api',
         },
         system_filters => {
             entry     => '$Core::MT::Entry::system_filters',
@@ -1529,70 +1531,6 @@ BEGIN {
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
             },
-            comment => {
-                object_label        => 'Comment',
-                default_sort_key    => 'created_on',
-                data_api_scope_mode => 'this',
-                permission          => 'access_to_comment_list',
-                data_api_permission => undef,
-                primary             => 'comment',
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_comment_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_comment_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
-            },
-            ping => {
-                primary             => 'excerpt',
-                object_label        => 'Trackback',
-                default_sort_key    => 'created_on',
-                data_api_scope_mode => 'this',
-                permission          => 'access_to_trackback_list',
-                data_api_permission => undef,
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_trackback_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_trackback_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
-            },
             author => {
                 object_label        => 'Author',
                 primary             => 'name',
@@ -1601,20 +1539,6 @@ BEGIN {
                 default_sort_key    => 'name',
                 view                => 'system',
                 scope_mode          => 'none',
-            },
-            commenter => {
-                primary             => 'name',
-                object_label        => 'Commenter',
-                object_label_plural => 'Commenters',
-                object_type         => 'author',
-                permission          => 'administer',
-                default_sort_key    => 'name',
-                condition           => sub {
-                    return MT->config->SingleCommunity;
-                },
-                view         => 'system',
-                scope_mode   => 'none',
-                screen_label => 'Manage Commenters',
             },
             member => {
                 primary             => 'name',
@@ -1710,8 +1634,12 @@ BEGIN {
                 primary          => 'name',
                 view             => [ 'website', 'blog' ],
                 default_sort_key => 'name',
-                permission       => 'access_to_category_set_list',
-                scope_mode       => 'this',
+                permission       => {
+                    permit_action => 'access_to_category_set_list',
+                    inherit       => 0,
+                },
+                data_api_permission => undef,
+                scope_mode          => 'this',
             },
             content_type => {
                 screen_label        => 'Manage Content Type',
@@ -1722,6 +1650,29 @@ BEGIN {
                 use_filters         => 0,
                 view                => [ 'website', 'blog' ],
                 primary             => 'name',
+            },
+            content_field => {
+                object_label        => 'Content Field',
+                object_label_plural => 'Content Fields',
+                object_type         => 'content_field',
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'name',
+            },
+            content_data => {
+                object_label        => 'Content Data',
+                object_label_plural => 'Content Data',
+                object_type         => 'content_data',
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'id',
+                default_sort_key    => 'modified_on',
             },
         },
         summaries => {
@@ -2239,10 +2190,6 @@ BEGIN {
                 handler => 'MT::App::ActivityFeeds',
                 script  => sub { MT->config->ActivityFeedScript },
             },
-            'tb' => {
-                handler => 'MT::App::Trackback',
-                script  => sub { MT->config->TrackbackScript },
-            },
             'wizard' => {
                 handler => 'MT::App::Wizard',
                 script  => sub {'mt-wizard.cgi'},
@@ -2251,11 +2198,6 @@ BEGIN {
             'check' => {
                 script => sub { MT->config->CheckScript },
                 type   => 'run_once',
-            },
-            'comments' => {
-                handler => 'MT::App::Comments',
-                script  => sub { MT->config->CommentScript },
-                tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
                 handler => 'MT::App::Search',
@@ -2353,16 +2295,6 @@ BEGIN {
             'archetype' => {
                 label    => 'Movable Type Default',
                 template => 'archetype_editor.tmpl',
-            },
-        },
-        ping_servers => {
-            'weblogs' => {
-                label => 'weblogs.com',
-                url   => 'http://rpc.weblogs.com/RPC2',
-            },
-            'google' => {
-                label => 'google.com',
-                url   => 'http://blogsearch.google.com/ping/RPC2',
             },
         },
         commenter_authenticators => \&load_core_commenter_auth,
@@ -2775,7 +2707,6 @@ sub load_core_permissions {
                 'create_association'               => 1,
                 'delete_association'               => 1,
                 'delete_blog'                      => 1,
-                'force_post_comment'               => 1,
                 'get_blog_feed'                    => 1,
                 'get_system_feed'                  => 1,
                 'grant_administer_role'            => 1,
@@ -2792,7 +2723,6 @@ sub load_core_permissions {
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
-                'edit_global_commenter_status'     => 1,
 
                 'remove_user_assoc'            => 1,
                 'administer_site'              => 1,
@@ -2840,10 +2770,6 @@ sub load_core_permissions {
             'group'            => 'blog_comment',
             'label'            => 'Post Comments',
             'order'            => 100,
-            'permitted_action' => {
-                'comment'      => 1,
-                'post_comment' => 1,
-            }
         },
         'blog.create_post' => {
             'group'            => 'auth_pub',
@@ -2854,16 +2780,10 @@ sub load_core_permissions {
                 'access_to_atom_server'                   => 1,
                 'access_to_entry_list'                    => 1,
                 'access_to_new_entry_editor'              => 1,
-                'access_to_trackback_list'                => 1,
-                'access_to_comment_list'                  => 1,
                 'create_new_entry'                        => 1,
                 'create_new_entry_via_xmlrpc_server'      => 1,
                 'create_post'                             => 1,
                 'edit_own_entry'                          => 1,
-                'delete_own_entry_unpublished_trackback'  => 1,
-                'delete_own_entry_unpublished_comment'    => 1,
-                'edit_own_entry_comment_without_status'   => 1,
-                'edit_own_entry_trackback_without_status' => 1,
                 'edit_own_unpublished_entry'              => 1,
                 'get_blog_info_via_atom_server'           => 1,
                 'get_blog_info_via_xmlrpc_server'         => 1,
@@ -2875,16 +2795,10 @@ sub load_core_permissions {
                 'insert_asset'                            => 1,
                 'open_existing_own_entry_screen'          => 1,
                 'open_new_entry_screen'                   => 1,
-                'open_own_entry_comment_edit_screen'      => 1,
-                'open_own_entry_trackback_edit_screen'    => 1,
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
                 'use_tools:search'                        => 1,
-                'view_own_entry_comment'                  => 1,
-                'view_own_entry_trackback'                => 1,
                 'get_entry_feed'                          => 1,
-                'get_comment_feed'                        => 1,
-                'get_trackback_feed'                      => 1,
                 'add_tags_to_entry_via_list'              => 1,
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
@@ -2903,13 +2817,10 @@ sub load_core_permissions {
                 'edit_all_posts'                   => 1,
                 'edit_all_published_entry'         => 1,
                 'edit_all_unpublished_entry'       => 1,
-                'edit_comment_status'              => 1,
-                'edit_trackback_status'            => 1,
                 'handle_junk'                      => 1,
                 'handle_not_junk'                  => 1,
                 'list_asset'                       => 1,
                 'load_next_scheduled_entry'        => 1,
-                'open_all_trackback_edit_screen'   => 1,
                 'open_batch_entry_editor_via_list' => 1,
                 'publish_all_entry'                => 1,
                 'remove_tags_from_entry_via_list'  => 1,
@@ -2919,7 +2830,6 @@ sub load_core_permissions {
                 'get_entry_feed'                   => 1,
                 'save_multiple_entries'            => 1,
                 'open_select_author_dialog'        => 1,
-                'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
             }
@@ -2950,16 +2860,10 @@ sub load_core_permissions {
             'order'            => 400,
             'permitted_action' => {
                 'access_to_category_list'             => 1,
-                'bulk_edit_category_trackbacks'       => 1,
                 'delete_category'                     => 1,
-                'delete_category_trackback'           => 1,
                 'edit_categories'                     => 1,
-                'handle_junk_for_category_trackback'  => 1,
                 'open_category_edit_screen'           => 1,
-                'open_category_trackback_edit_screen' => 1,
                 'save_category'                       => 1,
-                'save_category_trackback'             => 1,
-                'search_category_trackbacks'          => 1,
             }
         },
         'blog.edit_config' => {
@@ -3026,56 +2930,16 @@ sub load_core_permissions {
             'label'            => 'Manage Feedback',
             'order'            => 200,
             'permitted_action' => {
-                'access_to_comment_list'                => 1,
-                'access_to_trackback_list'              => 1,
-                'approve_all_comment'                   => 1,
-                'approve_all_trackback'                 => 1,
-                'ban_commenters_via_list'               => 1,
-                'bulk_edit_all_comments'                => 1,
-                'bulk_edit_all_entry_trackbacks'        => 1,
-                'delete_all_trackbacks'                 => 1,
-                'delete_every_comment'                  => 1,
-                'delete_junk_comments'                  => 1,
                 'delete_junk_feedbacks'                 => 1,
-                'edit_all_comments'                     => 1,
-                'edit_all_trackbacks'                   => 1,
-                'edit_comment_status'                   => 1,
-                'edit_commenter'                        => 1,
-                'edit_commenter_status'                 => 1,
-                'edit_trackback_status'                 => 1,
-                'edit_trackback_status_via_notify_mail' => 1,
-                'get_comment_feed'                      => 1,
-                'get_trackback_feed'                    => 1,
                 'handle_junk'                           => 1,
-                'handle_junk_for_all_trackbacks'        => 1,
                 'handle_not_junk'                       => 1,
-                'open_all_trackback_edit_screen'        => 1,
-                'open_all_comment_edit_screen'          => 1,
                 'open_blog_config_screen'               => 1,
-                'open_comment_edit_screen'              => 1,
-                'open_commenter_edit_screen'            => 1,
-                'open_own_entry_comment_edit_screen'    => 1,
-                'publish_trackback'                     => 1,
-                'reply_comment_from_cms'                => 1,
-                'save_all_trackback'                    => 1,
                 'save_banlist'                          => 1,
                 'delete_banlist'                        => 1,
-                'save_existing_comment'                 => 1,
-                'trust_commenters_via_list'             => 1,
-                'unapprove_comments_via_list'           => 1,
-                'unapprove_trackbacks_via_list'         => 1,
-                'approve_comments_via_list'             => 1,
-                'approve_trackback_via_list'            => 1,
-                'unban_commenters_via_list'             => 1,
-                'untrust_commenters_via_list'           => 1,
-                'view_commenter'                        => 1,
                 'view_feedback'                         => 1,
                 'access_to_banlist'                     => 1,
                 'use_tools:search'                      => 1,
-                'view_all_comments'                     => 1,
-                'view_all_trackbacks'                   => 1,
                 'manage_feedback'                       => 1,
-                'delete_comments_via_list'              => 1,
             }
         },
         'blog.manage_content_types' => {
@@ -3101,17 +2965,15 @@ sub load_core_permissions {
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
                 'edit_all_content_data'                   => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,
                 'edit_all_unpublished_content_data'       => 1,
-                'edit_comment_status'                     => 1,
-                'edit_trackback_status'                   => 1,
                 'handle_junk'                             => 1,
                 'handle_not_junk'                         => 1,
                 'list_asset'                              => 1,
                 'load_next_scheduled_content_data'        => 1,
-                'open_all_trackback_edit_screen'          => 1,
                 'open_batch_content_data_editor_via_list' => 1,
                 'publish_all_content_data'                => 1,
                 'remove_tags_from_content_data_via_list'  => 1,
@@ -3121,7 +2983,6 @@ sub load_core_permissions {
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
-                'send_update_pings_content_data'          => 1,
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
             },
@@ -3142,7 +3003,6 @@ sub load_core_permissions {
                 'edit_own_page'                   => 1,
                 'get_page_feed'                   => 1,
                 'manage_pages'                    => 1,
-                'open_all_comment_edit_screen'    => 1,
                 'open_batch_page_editor_via_list' => 1,
                 'open_folder_edit_screen'         => 1,
                 'open_page_edit_screen'           => 1,
@@ -3154,9 +3014,7 @@ sub load_core_permissions {
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
                 'publish_page_via_list'           => 1,
-                'view_all_comments'               => 1,
                 'open_select_author_dialog'       => 1,
-                'send_update_pings_page'          => 1,
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
@@ -3198,40 +3056,18 @@ sub load_core_permissions {
             'order'            => 200,
             'permitted_action' => {
                 'publish_entry_via_list'                => 1,
-                'approve_own_entry_comment'             => 1,
-                'approve_own_entry_trackback'           => 1,
-                'bulk_edit_own_entry_comments'          => 1,
-                'bulk_edit_own_entry_trackbacks'        => 1,
-                'delete_own_entry_trackback'            => 1,
-                'delete_own_entry_comment'              => 1,
                 'edit_entry_basename'                   => 1,
-                'edit_own_entry_trackback'              => 1,
-                'edit_own_entry_trackback_status'       => 1,
-                'edit_own_entry_comment_status'         => 1,
                 'edit_own_published_entry'              => 1,
-                'edit_trackback_status'                 => 1,
-                'edit_trackback_status_via_notify_mail' => 1,
                 'handle_junk_for_own_entry'             => 1,
-                'handle_junk_for_own_entry_trackback'   => 1,
                 'handle_not_junk_for_own_entry'         => 1,
                 'load_next_scheduled_entry'             => 1,
                 'publish_entry_via_xmlrpc_server'       => 1,
                 'publish_new_post_via_atom_server'      => 1,
                 'publish_new_post_via_xmlrpc_server'    => 1,
                 'publish_own_entry'                     => 1,
-                'publish_own_entry_trackback'           => 1,
                 'publish_post'                          => 1,
                 'set_entry_draft_via_list'              => 1,
-                'unapprove_comments_via_list'           => 1,
-                'unapprove_trackbacks_via_list'         => 1,
-                'approve_comments_via_list'             => 1,
-                'approve_trackback_via_list'            => 1,
-                'delete_comments_via_list'              => 1,
                 'use_tools:search'                      => 1,
-                'reply_comment_from_cms'                => 1,
-                'edit_comment_status_of_own_entry'      => 1,
-                'send_update_pings_entry'               => 1,
-                'edit_own_entry_comment'                => 1,
             }
         },
         'blog.rebuild' => {
@@ -3304,15 +3140,10 @@ sub load_core_permissions {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.edit_templates',
-                'system.manage_plugins',
-                'system.view_log',
-                'system.manage_content_types',
-                'system.create_site',
-                'system.sign_in_cms',
-                'system.sign_in_data_api',
-                'system.manage_users_groups',
-                'system.manage_content_types',
+                'system.edit_templates',      'system.manage_plugins',
+                'system.view_log',            'system.create_site',
+                'system.sign_in_cms',         'system.sign_in_data_api',
+                'system.manage_users_groups', 'system.manage_content_types',
                 'system.manage_content_data'
             ],
             'order'            => 0,
@@ -3320,13 +3151,11 @@ sub load_core_permissions {
                 'access_to_all_association_list' => 1,
                 'access_to_system_author_list'   => 1,
                 'access_to_system_dashboard'     => 1,
-                'access_to_all_commenter_list'   => 1,
                 'administer'                     => 1,
                 'create_role'                    => 1,
                 'create_user'                    => 1,
                 'create_any_association'         => 1,
                 'access_to_any_permission_list'  => 1,
-                'delete_all_junk_comments'       => 1,
                 'delete_user_via_list'           => 1,
                 'edit_authors'                   => 1,
                 'edit_other_profile'             => 1,
@@ -3340,7 +3169,6 @@ sub load_core_permissions {
                 'use_tools:search'               => 1,
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
-                'edit_commenter_status'          => 1,
                 'delete_any_filters'             => 1,
                 'open_dialog_select_theme'       => 1,
             }
@@ -3465,17 +3293,15 @@ sub load_core_permissions {
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
                 'edit_all_content_data'                   => 1,
                 'edit_all_posts'                          => 1,
                 'edit_all_published_content_data'         => 1,
                 'edit_all_unpublished_content_data'       => 1,
-                'edit_comment_status'                     => 1,
-                'edit_trackback_status'                   => 1,
                 'handle_junk'                             => 1,
                 'handle_not_junk'                         => 1,
                 'list_asset'                              => 1,
                 'load_next_scheduled_content_data'        => 1,
-                'open_all_trackback_edit_screen'          => 1,
                 'open_batch_content_data_editor_via_list' => 1,
                 'publish_all_content_data'                => 1,
                 'remove_tags_from_content_data_via_list'  => 1,
@@ -3485,7 +3311,6 @@ sub load_core_permissions {
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
-                'send_update_pings_content_data'          => 1,
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
                 'access_to_system_dashboard'              => 1,

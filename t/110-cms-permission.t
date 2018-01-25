@@ -354,26 +354,6 @@ $out = delete $app->{__test_output};
 ok( $out,                          "Create a new comment" );
 ok( $out =~ m/Invalid request\./i, "Create a new Comment: result" );
 
-# Delete Comment
-# __mode=delete&_type=comment&id=1&blog_id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'delete',
-        _type            => 'comment',
-        id               => 1,
-        blog_id          => 1
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out, "Delete comment" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Delete comment: result"
-);
-
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
 $app = _run_app(
@@ -928,46 +908,6 @@ location_param_contains(
     $out,
     { __mode => 'dashboard', permission => 1 },
     "Delete tag: result"
-);
-
-# Create a new Ping
-# __mode=save&_type=ping&blog_id=1&ip=1.1.1.1&tb_id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'save',
-        _type            => 'ping',
-        blog_id          => 1,
-        ip               => '1.1.1.1',
-        tb_id            => 1
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out, "Create a new ping" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Create a new Ping: result"
-);
-
-# Delete Ping
-# __mode=delete&_type=ping&id=1
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $user,
-        __request_method => 'POST',
-        __mode           => 'delete',
-        _type            => 'ping',
-        id               => 1,
-    }
-);
-$out = delete $app->{__test_output};
-ok( $out, "Delete ping" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Delete ping: result"
 );
 
 # Create a new Touch

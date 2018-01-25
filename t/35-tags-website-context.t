@@ -1218,6 +1218,7 @@ __END__
 if
 
 === mt:BlogIfCommentsOpen
+--- SKIP
 --- template _mt_websites
 <mt:BlogIfCommentsOpen>if<mt:else>else</mt:BlogIfCommentsOpen>
 --- expected
@@ -1895,6 +1896,7 @@ http://localhost/first_website/
 6
 
 === mt:Comments, mt:CommentBlogID
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentBlogID>
 </mt:Comments>
@@ -1904,12 +1906,14 @@ http://localhost/first_website/
 1
 
 === mt:BlogCommentCount
+--- SKIP
 --- template _mt_websites
 <mt:BlogCommentCount>
 --- expected
 3
 
 === mt:CommentEntry
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentEntry><mt:EntryTitle>
 </mt:CommentEntry></mt:Comments>
@@ -1919,6 +1923,7 @@ Website Entry 1
 Website Entry 1
 
 === mt:EntryIfAllowComments
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryIfAllowComments>if
 </mt:EntryIfAllowComments></mt:Entries>
@@ -1926,6 +1931,7 @@ Website Entry 1
 if
 
 === mt:EntryIfCommentsOpen
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryIfCommentsOpen>if
 </mt:EntryIfCommentsOpen></mt:Entries>
@@ -1933,6 +1939,7 @@ if
 if
 
 === mt:IfCommenterIsEntryAuthor
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:IfCommenterIsEntryAuthor>if
 <mt:Else>else
@@ -1943,6 +1950,7 @@ else
 if
 
 === mt:CommentEntryID
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentEntryID>
 </mt:Comments>
@@ -1952,6 +1960,7 @@ if
 1
 
 === mt:EntryCommentCount
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryCommentCount>
 </mt:Entries>
@@ -1964,6 +1973,7 @@ if
 3
 
 === mt:EntryTrackbackCount
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryTrackbackCount>
 </mt:Entries>
@@ -1976,6 +1986,7 @@ if
 0
 
 === mt:EntryTrackbackLink
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryTrackbackLink>
 </mt:Entries>
@@ -1983,6 +1994,7 @@ if
 http://localhost/cgi-bin/mt-tb.cgi/2
 
 === mt:EntryTrackbackData
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryTrackbackData>
 </mt:Entries>
@@ -2004,6 +2016,7 @@ http://localhost/cgi-bin/mt-tb.cgi/2
 -->
 
 === mt:EntryTrackbackID
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryTrackbackID>
 </mt:Entries>
@@ -2011,6 +2024,7 @@ http://localhost/cgi-bin/mt-tb.cgi/2
 2
 
 === mt:PingBlogName
+--- SKIP
 --- template _mt_websites
 <mt:Pings><mt:PingBlogName>
 </mt:Pings>
@@ -2019,12 +2033,14 @@ first website
 first website
 
 === mt:BlogPingCount
+--- SKIP
 --- template _mt_websites
 <mt:BlogPingCount>
 --- expected
 2
 
 === mt:PingEntry
+--- SKIP
 --- template _mt_websites
 <mt:Pings><mt:PingEntry><mt:EntryBody>
 </mt:PingEntry></mt:Pings>
@@ -2032,6 +2048,7 @@ first website
 This is website entry 2.
 
 === mt:EntryIfAllowPings
+--- SKIP
 --- template _mt_websites
 <mt:Entries><mt:EntryIfAllowPings>if
 </mt:EntryIfAllowPings></mt:Entries>
@@ -2039,6 +2056,7 @@ This is website entry 2.
 if
 
 === mt:CategoryIfAllowPings
+--- SKIP
 --- template _mt_websites
 <mt:Categories glue=" "><mt:CategoryIfAllowPings>if
 </mt:CategoryIfAllowPings></mt:Categories>
@@ -2345,6 +2363,7 @@ Website Subcategory 2
 Website Category 1
 
 === mt:CategoryCommentCount
+--- SKIP
 --- template _mt_websites
 <mt:Categories><mt:CategoryCommentCount>
 </mt:Categories>
@@ -2357,6 +2376,7 @@ Website Category 1
 0
 
 === mt:CategoryTrackbackLink
+--- SKIP
 --- template _mt_websites
 <mt:Categories><mt:CategoryTrackbackLink>
 </mt:Categories>
@@ -2364,6 +2384,7 @@ Website Category 1
 http://localhost/cgi-bin/mt-tb.cgi/1
 
 === mt:CategoryTrackbackCount
+--- SKIP
 --- template _mt_websites
 <mt:Categories><mt:CategoryTrackbackCount>
 </mt:Categories>
@@ -2507,12 +2528,14 @@ Website Entry 1
 else
 
 === mt:IfCommenterRegistrationAllowed
+--- SKIP
 --- template _mt_websites
 <mt:IfCommenterRegistrationAllowed>if</mt:IfCommenterRegistrationAllowed>
 --- expected
 if
 
 === mt:IfCommenterTrusted
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:IfCommenterTrusted><mt:CommenterName>
 <mt:Else>else
@@ -2523,6 +2546,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterIfTrusted
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterIfTrusted><mt:CommenterName>
 <mt:Else>else
@@ -2533,6 +2557,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterIsAuthor
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:IfCommenterIsAuthor><mt:CommenterName>
 <mt:Else>else
@@ -2543,24 +2568,28 @@ Guest
 Administrator Melody
 
 === mt:IfCommentsModerated
+--- SKIP
 --- template _mt_websites
 <mt:IfCommentsModerated>if<mt:Else>else</mt:IfCommentsModerated>
 --- expected
 if
 
 === mt:BlogIfCommentsOpen
+--- SKIP
 --- template _mt_websites
 <mt:BlogIfCommentsOpen>if<mt:Else>else</mt:BlogIfCommentsOpen>
 --- expected
 if
 
 === mt:WebsiteIfCommentsOpen
+--- SKIP
 --- template _mt_websites
 <mt:WebsiteIfCommentsOpen>if<mt:Else>else</mt:WebsiteIfCommentsOpen>
 --- expected
 if
 
 === mt:CommentsHeader, mt:CommentsFooter
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentsHeader>-- header --
 </mt:CommentsHeader><mt:CommentName>
@@ -2574,6 +2603,7 @@ Administrator Melody
 -- footer --
 
 === mt:CommentIfModerated
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentIfModerated>if<mt:Else>else</mt:CommentIfModerated>
 </mt:Comments>
@@ -2583,6 +2613,7 @@ else
 else
 
 === mt:CommentParent
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentParent><mt:CommentName></mt:CommentParent>
 </mt:Comments>
@@ -2591,6 +2622,7 @@ Administrator Melody
 Guest
 
 === mt:CommentReplies
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentReplies><mt:CommentName></mt:CommentReplies>
 </mt:Comments>
@@ -2599,6 +2631,7 @@ Guest
 Administrator Melody
 
 === mt:IfCommentParent
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:IfCommentParent>if<mt:Else>else</mt:IfCommentParent>
 </mt:Comments>
@@ -2608,6 +2641,7 @@ if
 if
 
 === mt:IfCommentReplies
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:IfCommentReplies>if<mt:Else>else</mt:IfCommentReplies>
 </mt:Comments>
@@ -2617,48 +2651,56 @@ if
 else
 
 === mt:IfRegistrationRequired
+--- SKIP
 --- template _mt_websites
 <mt:IfRegistrationRequired>required<mt:Else>not required</mt:IfRegistrationRequired>
 --- expected
 not required
 
 === mt:IfRegistrationNotRequired
+--- SKIP
 --- template _mt_websites
 <mt:IfRegistrationNotRequired>not required<mt:Else>required</mt:IfRegistrationNotRequired>
 --- expected
 not required
 
 === mt:IfRegistrationAllowed
+--- SKIP
 --- template _mt_websites
 <mt:IfRegistrationAllowed>allowed<mt:Else>not allowed</mt:IfRegistrationAllowed>
 --- expected
 allowed
 
 === mt:IfTypeKeyToken
+--- SKIP
 --- template _mt_websites
 <mt:IfTypeKeyToken>if<mt:Else>else</mt:IfTypeKeyToken>
 --- expected
 if
 
 === mt:IfAllowCommentHTML
+--- SKIP
 --- template _mt_websites
 <mt:IfAllowCommentHTML>if<mt:Else>else</mt:IfAllowCommentHTML>
 --- expected
 if
 
 === mt:IfCommentsAllowed
+--- SKIP
 --- template _mt_websites
 <mt:IfCommentsAllowed>if<mt:Else>else</mt:IfCommentsAllowed>
 --- expected
 if
 
 === mt:IfCommentsAccepted
+--- SKIP
 --- template _mt_websites
 <mt:IfCommentsAccepted>if<mt:Else>else</mt:IfCommentsAccepted>
 --- expected
 if
 
 === mt:IfCommentsActive
+--- SKIP
 --- template _mt_websites
 <mt:IfCommentsActive>if<mt:Else>else</mt:IfCommentsActive>
 --- expected
@@ -2671,12 +2713,14 @@ if
 else
 
 === mt:IfRequireCommentEmails
+--- SKIP
 --- template _mt_websites
 <mt:IfRequireCommentEmails>if<mt:Else>else</mt:IfRequireCommentEmails>
 --- expected
 else
 
 === mt:CommentID, mt:CommenterUserpicAsset
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentID>: <mt:CommenterUserpicAsset><mt:AssetLabel></mt:CommenterUserpicAsset>
 </mt:Comments>
@@ -2702,6 +2746,7 @@ else
 (no php code)
 
 === mt:CommenterUsername
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterUsername>
 </mt:Comments>
@@ -2711,6 +2756,7 @@ Guest
 Melody
 
 === mt:CommenterName
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterName>
 </mt:Comments>
@@ -2720,6 +2766,7 @@ Guest
 Administrator Melody
 
 === mt:CommenterEmail
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterEmail>
 </mt:Comments>
@@ -2729,6 +2776,7 @@ guest@localhost
 melody@localhost
 
 === mt:CommenterAuthType
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterAuthType>
 </mt:Comments>
@@ -2738,6 +2786,7 @@ MT
 MT
 
 === mt:CommenterAuthIconURL
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterAuthIconURL>
 </mt:Comments>
@@ -2747,6 +2796,7 @@ http://localhost/mt-static/images/logo-mark.svg
 http://localhost/mt-static/images/logo-mark.svg
 
 === mt:CommenterID
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterID>
 </mt:Comments>
@@ -2756,6 +2806,7 @@ http://localhost/mt-static/images/logo-mark.svg
 1
 
 === mt:CommenterURL
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterURL>
 </mt:Comments>
@@ -2772,30 +2823,35 @@ http://localhost/~melody/
 (no php code)
 
 === mt:UserSessionCookieTimeout
+--- SKIP
 --- template _mt_websites
 <mt:UserSessionCookieTimeout>
 --- expected
 14400
 
 === mt:UserSessionCookieName
+--- SKIP
 --- template _mt_websites
 <mt:UserSessionCookieName>
 --- expected
 mt_blog_user
 
 === mt:UserSessionCookiePath
+--- SKIP
 --- template _mt_websites
 <mt:UserSessionCookiePath>
 --- expected
 /
 
 === mt:UserSessionCookieDomain
+--- SKIP
 --- template _mt_websites
 <mt:UserSessionCookieDomain>
 --- expected
 .localhost
 
 === mt:CommentName
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentName>
 </mt:Comments>
@@ -2805,6 +2861,7 @@ Guest
 Administrator Melody
 
 === mt:CommentIP
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentIP>
 </mt:Comments>
@@ -2814,6 +2871,7 @@ Administrator Melody
 127.0.0.1
 
 === mt:CommentAuthor
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentAuthor>
 </mt:Comments>
@@ -2823,6 +2881,7 @@ Guest
 Administrator Melody
 
 === mt:CommentAuthorLink
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentAuthorLink>
 </mt:Comments>
@@ -2832,6 +2891,7 @@ Administrator Melody
 <a title="http://localhost/~melody/" href="http://localhost/~melody/">Administrator Melody</a>
 
 === mt:CommentAuthorIdentity
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentAuthorIdentity>
 </mt:Comments>
@@ -2841,6 +2901,7 @@ Administrator Melody
 <a class="commenter-profile" href="http://localhost/~melody/"><img alt="" src="http://localhost/mt-static/images/logo-mark.svg" width="16" height="16" /></a>
 
 === mt:CommentEmail
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentEmail>
 </mt:Comments>
@@ -2850,6 +2911,7 @@ guest@localhost
 melody@localhost
 
 === mt:CommentLink
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentLink>
 </mt:Comments>
@@ -2859,6 +2921,7 @@ http://localhost/first_website/2011/01/website-entry-1.html#comment-2
 http://localhost/first_website/2011/01/website-entry-1.html#comment-3
 
 === mt:CommentURL
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentURL>
 </mt:Comments>
@@ -2868,6 +2931,7 @@ http://localhost/~guest/
 http://localhost/~melody/
 
 === mt:CommentBody
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentBody>
 </mt:Comments>
@@ -2877,6 +2941,7 @@ http://localhost/~melody/
 <p>Comment 3</p>
 
 === mt:CommentOrderNumber
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentOrderNumber>
 </mt:Comments>
@@ -2886,6 +2951,7 @@ http://localhost/~melody/
 3
 
 === mt:CommentDate
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentDate>
 </mt:Comments>
@@ -2895,6 +2961,7 @@ November 11, 2011 12:00 AM
 December 12, 2012 12:00 AM
 
 === mt:CommentParentID
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentParentID>
 </mt:Comments>
@@ -2903,6 +2970,7 @@ December 12, 2012 12:00 AM
 2
 
 === mt:CommentReplyToLink
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentReplyToLink>
 </mt:Comments>
@@ -2963,6 +3031,7 @@ December 12, 2012 12:00 AM
 --- expected
 
 === mt:CommentRepliesRecurse
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentReplies><mt:CommentName>
 <mt:CommentRepliesRecurse></mt:CommentReplies></mt:Comments>
@@ -2972,12 +3041,14 @@ Administrator Melody
 Administrator Melody
 
 === mt:WebsiteCommentCount
+--- SKIP
 --- template _mt_websites
 <mt:WebsiteCommentCount>
 --- expected
 3
 
 === mt:TypeKeyToken
+--- SKIP
 --- template _mt_websites
 <mt:TypeKeyToken>
 --- expected
@@ -3036,6 +3107,7 @@ https://www.typekey.com/t/typekey/login?
 <img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="100" height="100" alt="" />
 
 === mt:CommenterUserpicURL
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommenterUserpicURL>
 </mt:Comments>
@@ -3045,6 +3117,7 @@ https://www.typekey.com/t/typekey/login?
 /mt-static/support/assets_c/userpics/userpic-1-100x100.png
 
 === mt:CommentScore
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentScore namespace="test_namespace">
 </mt:Comments>
@@ -3054,6 +3127,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreHigh
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentScoreHigh namespace="test_namespace">
 </mt:Comments>
@@ -3063,6 +3137,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreLow
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentScoreLow namespace="test_namespace">
 </mt:Comments>
@@ -3072,6 +3147,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreAvg
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentScoreAvg namespace="test_namespace">
 </mt:Comments>
@@ -3081,6 +3157,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentScoreCount
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentScoreCount namespace="test_namespace">
 </mt:Comments>
@@ -3090,6 +3167,7 @@ https://www.typekey.com/t/typekey/login?
 0
 
 === mt:CommentRank
+--- SKIP
 --- template _mt_websites
 <mt:Comments><mt:CommentRank namespace="test_namespace">
 </mt:Comments>

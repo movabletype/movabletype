@@ -766,52 +766,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/CMS/Common.pm
 	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
 
-## lib/MT/App/Comments.pm
-	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => '\'[_1]\' (ID:[_2])にブログ\'[_3]\'(ID:[_2])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => '[_1]がブログ[_2](ID:[_3])にサインインしようとしましたが、このブログではMovable Type認証が有効になっていません。',
-	'Invalid login' => 'サインインできませんでした。',
-	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => '認証されましたが、登録は許可されていません。システム管理者に連絡してください。',
-	'You need to sign up first.' => '先に登録してください。',
-	'Permission denied.' => '権限がありません。',
-	'Login failed: permission denied for user \'[_1]\'' => 'サインインに失敗しました。[_1]には権限がありません。',
-	'Login failed: password was wrong for user \'[_1]\'' => 'サインインに失敗しました。[_1]のパスワードが誤っています。',
-	'Signing up is not allowed.' => '登録はできません。',
-	'Movable Type Account Confirmation' => 'Movable Type アカウント登録確認',
-	'Your confirmation has expired. Please register again.' => '有効期限が過ぎています。再度登録してください。',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">元のページに戻る</a>',
-	'Your confirmation have expired. Please register again.' => '有効期限が過ぎています。再度登録してください。',
-	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'コメント投稿者\'[_1]\'(ID:[_2])が登録されました。',
-	'Thanks for the confirmation.  Please sign in to comment.' => '登録ありがとうございます。サインインしてコメントしてください。',
-	'[_1] registered to the blog \'[_2]\'' => '[_1]がブログ\'[_2]\'に登録されました。',
-	'No id' => 'IDがありません。',
-	'No such comment' => 'コメントがありません。',
-	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => '[_1]からのコメントが[_2]秒間に8個続いたため、このIPアドレスを禁止リストに登録しました。',
-	'IP Banned Due to Excessive Comments' => '大量コメントによるIP禁止',
-	'No entry_id' => '記事のIDがありません。',
-	'No such entry \'[_1]\'.' => '記事\'[_1]\'がありません。',
-	'_THROTTLED_COMMENT' => '短い期間にコメントを大量に送りすぎです。しばらくたってからやり直してください。',
-	'Comments are not allowed on this entry.' => 'この記事にはコメントできません。',
-	'Comment text is required.' => 'コメントを入力していません。',
-	'Registration is required.' => '登録しなければなりません。',
-	'Name and E-mail address are required.' => '名前とメールアドレスは必須です。',
-	'Invalid email address \'[_1]\'' => 'メールアドレス([_1])は不正です。',
-	'Invalid URL \'[_1]\'' => 'URL([_1])は不正です。',
-	'Comment save failed with [_1]' => 'コメントを保存できませんでした: [_1]',
-	'Comment on "[_1]" by [_2].' => '[_2]が\'[_1]\'にコメントしました。',
-	'Publishing failed: [_1]' => '公開できませんでした: [_1]',
-	'Cannot load template' => 'テンプレートをロードできませんでした。',
-	'Failed comment attempt by pending registrant \'[_1]\'' => 'まだ登録を完了していないユーザー\'[_1]\'がコメントしようとしました。',
-	'Registered User' => '登録ユーザー',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => '外部のサイトへリダイレクトしようとしています。あなたがそのサイトを信頼できる場合、リンクをクリックしてください。[_1]',
-	'No entry was specified; perhaps there is a template problem?' => '記事が指定されていません。テンプレートに問題があるかもしれません。',
-	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとした記事がありません。',
-	'Invalid entry ID provided' => '記事のIDが不正です。',
-	'For improved security, please change your password' => 'セキュリティを向上させるために、パスワードを変更してください。',
-	'All required fields must be populated.' => '必須フィールドのすべてに正しい値を設定してください。',
-	'Failed to verify the current password.' => '現在のパスワードを確認できません。',
-	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
-	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
-
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -843,23 +797,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearchはMT::App::Searchと一緒に使います。',
-
-## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => '記事のIDが不正です: [_1]',
-	'You must define a Ping template in order to display pings.' => '表示するにはトラックバックテンプレートを定義する必要があります。',
-	'Trackback pings must use HTTP POST' => 'Trackback pings must use HTTP POST',
-	'TrackBack ID (tb_id) is required.' => 'トラックバックIDが必要です。',
-	'Invalid TrackBack ID \'[_1]\'' => 'トラックバックID([_1])が不正です。',
-	'You are not allowed to send TrackBack pings.' => 'トラックバック送信を許可されていません。',
-	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけてもう一度送信してください。',
-	'You need to provide a Source URL (url).' => 'URLが必要です。',
-	'This TrackBack item is disabled.' => 'トラックバックは無効に設定されています。',
-	'This TrackBack item is protected by a passphrase.' => 'トラックバックはパスワードで保護されています。',
-	'TrackBack on "[_1]" from "[_2]".' => '[_2]から\'[_1]\'にトラックバックがありました。',
-	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'カテゴリ\'[_1]\'にトラックバックがありました。',
-	'Cannot create RSS feed \'[_1]\': ' => 'フィード([_1])を作成できません: ',
-	'New TrackBack ping to \'[_1]\'' => '\'[_1]\'に新しいトラックバックがありました',
-	'New TrackBack ping to category \'[_1]\'' => 'カテゴリ\'[_1]\'にの新しいトラックバックがありました',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => '提供されている手段による認証ができません: [_1]',
@@ -1379,25 +1316,6 @@ use vars qw( @ISA %Lexicon );
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がカテゴリ\'[_1]\'(ID:[_2])を削除しました。',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => '\'[_1]\'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。',
 
-## lib/MT/CMS/Comment.pm
-	'Edit Comment' => 'コメントの編集',
-	'(untitled)' => '(タイトルなし)',
-	'No such commenter [_1].' => '[_1]というコメント投稿者は存在しません。',
-	'User \'[_1]\' trusted commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'を承認しました。',
-	'User \'[_1]\' banned commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'を禁止しました。',
-	'User \'[_1]\' unbanned commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'を保留にしました。',
-	'User \'[_1]\' untrusted commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'の承認を取り消しました。',
-	'The parent comment id was not specified.' => '返信先のコメントが指定されていません。',
-	'The parent comment was not found.' => '返信先のコメントが見つかりません。',
-	'You cannot reply to unapproved comment.' => '未公開のコメントには返信できません。',
-	'You cannot create a comment for an unpublished entry.' => '公開されていない記事にはコメントできません。',
-	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
-	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'がコメント\'[_1]\'(ID:[_2])を削除しました。',
-	'You do not have permission to approve this trackback.' => 'トラックバックを承認する権限がありません。',
-	'The entry corresponding to this comment is missing.' => '存在しない記事に対してコメントしています。',
-	'You do not have permission to approve this comment.' => 'コメントを公開する権限がありません。',
-	'Orphaned comment' => '記事のないコメント',
-
 ## lib/MT/CMS/Common.pm
 	'Invalid type [_1]' => 'type [_1]は不正です。',
 	'The Template Name and Output File fields are required.' => 'テンプレートの名前と出力ファイル名は必須です。',
@@ -1704,16 +1622,6 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
-
-## lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(無名カテゴリ)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])をカテゴリ\'[_4]\'から削除しました。',
-	'(Untitled entry)' => '(タイトルなし)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。',
-	'No Excerpt' => '抜粋なし',
-	'No Title' => 'タイトルなし',
-	'Orphaned TrackBack' => '対応する記事のないトラックバック',
-	'category' => 'カテゴリ',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'ユーザーの作成',
@@ -2528,15 +2436,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot use sort_by and sort_method together in [_1]' => 'sort_byとsort_methodは同時に利用できません。',
 	'[_1] cannot be used without publishing Category archive.' => 'カテゴリアーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
-
-## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'MTCommentFieldsタグは利用できません。代わりにテンプレートモジュール「[_1]」をインクルードしてください。',
-	'Comment Form' => 'コメント入力フォーム',
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'ブログでTypePad認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'コメント投稿者を登録するためにTypePadトークンをブログの設定またはユーザーのプロフィールに設定してください。',
-
-## lib/MT/Template/Tags/Commenter.pm
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',

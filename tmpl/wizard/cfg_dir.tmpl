@@ -46,7 +46,7 @@
     <input type="text" name="temp_dir" id="temp_dir" class="form-control text full" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
   </mtapp:setting>
 
-  <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
+  <div id="goback" class="actions-bar text-right" <mt:unless name="success">style="display: none"</mt:unless>>
     <button
        name="test"
        type="submit"
@@ -70,7 +70,7 @@
     </button>
   </div>
 
-  <div id="submit" class="actions-bar" <mt:if name="success">style="display: none"</mt:if>>
+  <div id="submit" class="actions-bar text-right" <mt:if name="success">style="display: none"</mt:if>>
     <button
        name="back"
        type="submit"

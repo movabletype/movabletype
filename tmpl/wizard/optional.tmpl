@@ -10,7 +10,7 @@
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
   <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
-  <div id="buttons" class="actions-bar">
+  <div id="buttons" class="actions-bar text-right">
     <button
        name="continue"
        type="submit"
@@ -113,11 +113,10 @@
       <!-- SMTPAuth -->
           <mt:if name="has_net_smtp_auth">
             <p>
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="smtp_auth" id="smtp_auth" class="custom-control-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Use SMTP Auth"></span>
-              </label>
+                <label class="custom-control-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              </div>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
       <!-- SMTPAuth Username -->
@@ -178,7 +177,7 @@
         </div>
       </div>
 
-      <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
+      <div id="goback" class="actions-bar text-right" <mt:if name="mail_transfer">style="display: none"</mt:if>>
         <button
            name="continue"
            type="submit"
@@ -195,7 +194,7 @@
         </button>
       </div>
 
-      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+      <div id="submit" class="actions-bar text-right" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
         <button
            name="continue"
            type="submit"
@@ -230,7 +229,7 @@
         <input type="text" id="test_mail_address" class="form-control text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
       </mtapp:setting>
 
-      <div id="submit" class="actions-bar">
+      <div id="submit" class="actions-bar text-right">
         <button
            name="test"
            type="submit"

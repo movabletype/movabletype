@@ -20,6 +20,10 @@ BEGIN {
 
     # Disable Commercial.pack temporarily.
     $test_env->disable_addon('Commercial.pack');
+
+    # Disable Comments/Trackback plugins, too
+    $test_env->disable_plugin('Comments');
+    $test_env->disable_plugin('Trackback');
 }
 
 use File::Spec;

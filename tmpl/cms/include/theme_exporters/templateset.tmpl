@@ -21,10 +21,10 @@
     <mt:setvarblock name="table_header">
       <tr>
         <th class="head cb">
-          <label class="custom-control custom-checkbox">
-            <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-            <span class="custom-control-indicator"></span>
-          </label>
+          <div class="custom-control custom-checkbox">
+            <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+            <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="sr-only"><__trans phrase="Select All"></span></label>
+          </div>
         </th>
         <th class="head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
       <mt:if name="template_type" eq="index">
@@ -47,17 +47,18 @@
 
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
           <td class="cb">
-            <label class="custom-control custom-checkbox">
+            <div class="custom-control custom-checkbox">
               <input
                  type="checkbox"
                  name="template_set_export_ids"
                  class="custom-control-input select template_set_id"
+                 id="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"
                  value="<mt:var name="tmpl_id">"
                  <mt:if name="includes">tmpl_includes="<mt:loop includes glue=","><mt:var name="__value__"></mt:loop>"</mt:if>
                  <mt:if name="checked">checked="checked"</mt:if>
                  />
-              <span class="custom-control-indicator"></span>
-            </label>
+              <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+            </div>
           </td>
           <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>
         <mt:if name="template_type" like="/(index|archive|ct)/">

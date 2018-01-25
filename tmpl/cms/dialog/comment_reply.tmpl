@@ -39,9 +39,11 @@ parent.location.reload();
     </mtapp:statusmsg>
 </mt:if>
 
-    <div id="comment">
-        <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html" escape="html"$></span>"></p>
-        <div class="comment-body">
+    <div id="comment" class="card mt-2 mb-4">
+        <div class="card-header comment-meta">
+          <__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html" escape="html"$></span>">
+        </div>
+        <div class="card-body comment-body">
             <$mt:var name="comment_text"$>
         </div>
     </div>

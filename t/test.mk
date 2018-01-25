@@ -1,4 +1,4 @@
-.PHONY: cover covertags tags test testall quick-test test-parallel test-update-fixture test-ignore-fixture
+.PHONY: cover covertags tags test testall quick-test test-parallel test-update-fixture test-ignore-fixture test-phpunit test-php-lint
 
 cover:
 	-cover -delete
@@ -40,4 +40,14 @@ test-update-fixture:
 
 test-ignore-fixture:
 	MT_TEST_IGNORE_FIXTURE=1 prove
+
+test-phpunit:
+	php -v
+	phpunit
+
+PHP_LINT_DIR ?= .
+
+test-php-lint:
+	php -v
+	find $(PHP_LINT_DIR) -name "*.php" | xargs -n1 php -l
 

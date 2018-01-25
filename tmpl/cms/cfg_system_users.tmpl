@@ -69,11 +69,10 @@ function clearNotifyUsers() {
        label="<__trans phrase="Allow Registration">">
       <div>
         <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" id="registration" class="custom-control-input" name="registration"<mt:if name="registration"> checked="checked"</mt:if><mt:if name="commenter_registration_readonly"> disabled="disabled"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Allow commenters to register on this system."></span>
-        </label>
+          <label class="custom-control-label" for="registration"><__trans phrase="Allow commenters to register on this system."></label>
+        </div>
         <p><__trans phrase="Notify the following system administrators when a commenter registers:"></p>
         <span id="notify_user_name">
         <mt:if name="notify_user_id">
@@ -108,25 +107,22 @@ function clearNotifyUsers() {
        label="<__trans phrase="Options">">
       <ul id="password-validation-options-setting-list" class="list-unstyled setting-list">
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower" class="custom-control-input"<mt:if name="combo_upper_lower"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Should contain uppercase and lowercase letters."></span>
-          </label>
+            <label class="custom-control-label" for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
+          </div>
         </li>
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="combo_letter_number" id="combo-letter-number" class="custom-control-input"<mt:if name="combo_letter_number"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Should contain letters and numbers."></span>
-          </label>
+            <label class="custom-control-label" for="combo-letter-number"><__trans phrase="Should contain letters and numbers."></label>
+          </div>
         </li>
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="require_special_characters" id="require-special-characters" class="custom-control-input"<mt:if name="require_special_characters"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Should contain special characters."></span>
-          </label>
+            <label class="custom-control-label" for="require-special-characters"><__trans phrase="Should contain special characters."></label>
+          </div>
         </li>
       </ul>
     </mtapp:setting>
@@ -171,11 +167,10 @@ function clearNotifyUsers() {
        id="personal_weblog"
        label="<__trans phrase="Personal Child Site">">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" id="personal_weblog" class="custom-control-input" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if><mt:if name="personal_weblog_readonly"> disabled="disabled"</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Automatically create a new child site for each new user."></span>
-        </label>
+          <label class="custom-control-label" for="personal_weblog"><__trans phrase="Automatically create a new child site for each new user."></label>
+        </div>
       </div>
     </mtapp:setting>
 

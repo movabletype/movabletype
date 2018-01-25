@@ -15,13 +15,13 @@ function rebuildMultiBlogTriggerTable() {
         var str = "";
         for (var i = 0; i < multiBlogRebuilds.length; i++) {
             str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
-            str += "<td class=\"col\"> <__trans phrase="When"> "
+            str += "<td> <__trans phrase="When"> "
                 + multiBlogRebuilds[i][2]
-                + "</td><td class='col'>"
+                + "</td><td>"
                 + multiBlogRebuilds[i][4]
                 + "</td>";
-            str += "<td class='col'>" + multiBlogRebuilds[i][0] + "</td>";
-            str += "<td class='col si'><a href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><img alt='<__trans phrase="Remove">' src='<mt:var NAME='STATIC_URI'>images/nav_icons/mini/delete.gif' /></a></td>";
+            str += "<td>" + multiBlogRebuilds[i][0] + "</td>";
+            str += "<td class='si'><a class='d-inline-block' href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></a></td>";
             str += "</tr>\n";
             values[i] = multiBlogRebuilds[i][1];
             values[i] += ":";
@@ -29,7 +29,7 @@ function rebuildMultiBlogTriggerTable() {
             values[i] += ":";
             values[i] += multiBlogRebuilds[i][5];
         }
-        str = "<table class='table mt-table'><thead><tr><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='col head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='col head si' scope='col'><img alt='<__trans phrase="Remove">' src='<mt:var name='static_uri'>images/nav_icons/mini/delete.gif' /></th></tr></thead>\n" + str + "</table>";
+        str = "<table class='table mt-table'><thead><tr><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Site/Child Site" escape="js"></span></th><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Trigger" escape="js"></span></th><th class='head primary' scope='col'><span class='col-label'><__trans phrase="Action" escape="js"></span></th><th class='head si' scope='col'><svg title='Remove' role='img' class='mt-icon--secondary mt-icon--sm'><use xlink:href='<mt:var name='static_uri'>images/sprite.svg#ic_trash' /></svg></th></tr></thead>\n" + str + "</table>";
         getByID('multiblog_blog_list').innerHTML = str;
         getByID('rebuild_triggers').value = values.join('|');
     }
@@ -61,18 +61,19 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
 <mtapp:setting
    id="default_mtmultiblog_action"
    label="<__trans phrase="MTMultiBlog tag default arguments">"
-   class="form-inline"
    hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
-    <option value="1"<mt:if name="default_mtmultiblog_action_1"> selected="selected"</mt:if>>
-      <__trans phrase="Include sites/child sites">
-    </option>
-    <option value="0"<mt:if name="default_mtmultiblog_action_0"> selected="selected"</mt:if>>
-      <__trans phrase="Exclude sites/child sites">
-    </option>
-  </select>
-  <input class="form-control" name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
+  <div class="form-inline">
+    <select name="default_mtmultiblog_action" id="default_mtmultiblog_action" class="custom-select form-control">
+      <option value="1"<mt:if name="default_mtmultiblog_action_1"> selected="selected"</mt:if>>
+        <__trans phrase="Include sites/child sites">
+      </option>
+      <option value="0"<mt:if name="default_mtmultiblog_action_0"> selected="selected"</mt:if>>
+        <__trans phrase="Exclude sites/child sites">
+      </option>
+    </select>
+    <input class="form-control mt-0" name="default_mtmulitblog_blogs" type="text" value="<mt:var name="default_mtmulitblog_blogs">" />
+  </div>
 </mtapp:setting>
 
 <mtapp:setting

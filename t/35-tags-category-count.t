@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -80,103 +81,109 @@ filters {
 my $blog_id         = 1;
 my $category_set_id = 1;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # create category set
-    my $category_set
-        = MT::Test::Permission->make_category_set( blog_id => $blog_id );
-    $category_set->id($category_set_id);
-    $category_set->save or die $category_set->errstr;
+        # create category set
+        my $category_set
+            = MT::Test::Permission->make_category_set( blog_id => $blog_id );
+        $category_set->id($category_set_id);
+        $category_set->save or die $category_set->errstr;
 
-    # create 3 categories
-    my @cats;
-    my @cat_labels = ( 'a', 'b', 'c' );
-    for my $cat_id ( 1 .. 3 ) {
-        my $cat = MT::Test::Permission->make_category(
-            blog_id         => $category_set->blog_id,
-            category_set_id => $category_set->id,
-            label           => $cat_labels[ $cat_id - 1 ],
-        );
-        $cat->id($cat_id);
-        $cat->save or die $cat->errstr;
-
-        push @cats, $cat;
-    }
-
-    # create 2 content types
-    my ( @content_types, @category_fields );
-    for my $ct_id ( 1 .. 2 ) {
-        my $ct = MT::Test::Permission->make_content_type( blog_id => $blog_id );
-        $ct->id($ct_id);
-        $ct->save or die $ct->errstr;
-        push @content_types, $ct;
-
-        my @field_data;
-
-        # create 2 category fields
-        for my $field_id ( 1 .. 2 ) {
-            my $cat_field = MT::Test::Permission->make_content_field(
-                blog_id         => $ct->blog_id,
-                content_type_id => $ct->id,
-                type            => 'categories',
+        # create 3 categories
+        my @cats;
+        my @cat_labels = ( 'a', 'b', 'c' );
+        for my $cat_id ( 1 .. 3 ) {
+            my $cat = MT::Test::Permission->make_category(
+                blog_id         => $category_set->blog_id,
+                category_set_id => $category_set->id,
+                label           => $cat_labels[ $cat_id - 1 ],
             );
-            if ( $ct_id == 1 ) {
-                $cat_field->id($field_id);
-                $cat_field->name( 'field' . $field_id );
-            }
-            else {
-                $cat_field->id( $field_id + 2 );
-                $cat_field->name( 'field' . ( $field_id + 2 ) );
-            }
-            $cat_field->save or die $cat_field->errstr;
+            $cat->id($cat_id);
+            $cat->save or die $cat->errstr;
 
-            $category_fields[ $ct->id - 1 ] ||= [];
-            push @{ $category_fields[ $ct->id - 1 ] }, $cat_field;
-
-            my $data = {
-                id      => $cat_field->id,
-                order   => $cat_field->id,
-                type    => $cat_field->type,
-                options => {
-                    label        => $cat_field->name,
-                    category_set => $category_set->id,
-                    multiple     => 1,
-                },
-                unique_id => $cat_field->id,
-            };
-            push @field_data, $data;
+            push @cats, $cat;
         }
 
-        $ct->fields( \@field_data );
-        $ct->save or die $ct->errstr;
+        # create 2 content types
+        my ( @content_types, @category_fields );
+        for my $ct_id ( 1 .. 2 ) {
+            my $ct = MT::Test::Permission->make_content_type(
+                blog_id => $blog_id,
+                name    => "ct$ct_id"
+            );
+            $ct->id($ct_id);
+            $ct->save or die $ct->errstr;
+            push @content_types, $ct;
 
-        # create 2 content data
-        MT::Test::Permission->make_content_data(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            data            => {
-                $category_fields[ $ct->id - 1 ][0]->id =>
-                    [ $cats[0]->id, $cats[1]->id ]
-            },
-        );
-        MT::Test::Permission->make_content_data(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            data =>
-                { $category_fields[ $ct->id - 1 ][1]->id => [ $cats[0]->id ] },
-        );
-        MT::Test::Permission->make_content_data(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            status          => MT::Entry::HOLD(),
-            data            => {
-                $category_fields[ $ct->id - 1 ][1]->id =>
-                    [ $cats[0]->id, $cats[1]->id, $cats[2]->id ]
-            },
-        );
+            my @field_data;
+
+            # create 2 category fields
+            for my $field_id ( 1 .. 2 ) {
+                my $cat_field = MT::Test::Permission->make_content_field(
+                    blog_id         => $ct->blog_id,
+                    content_type_id => $ct->id,
+                    type            => 'categories',
+                );
+                if ( $ct_id == 1 ) {
+                    $cat_field->id($field_id);
+                    $cat_field->name( 'field' . $field_id );
+                }
+                else {
+                    $cat_field->id( $field_id + 2 );
+                    $cat_field->name( 'field' . ( $field_id + 2 ) );
+                }
+                $cat_field->save or die $cat_field->errstr;
+
+                $category_fields[ $ct->id - 1 ] ||= [];
+                push @{ $category_fields[ $ct->id - 1 ] }, $cat_field;
+
+                my $data = {
+                    id      => $cat_field->id,
+                    order   => $cat_field->id,
+                    type    => $cat_field->type,
+                    options => {
+                        label        => $cat_field->name,
+                        category_set => $category_set->id,
+                        multiple     => 1,
+                    },
+                    unique_id => $cat_field->id,
+                };
+                push @field_data, $data;
+            }
+
+            $ct->fields( \@field_data );
+            $ct->save or die $ct->errstr;
+
+            # create 2 content data
+            MT::Test::Permission->make_content_data(
+                blog_id         => $ct->blog_id,
+                content_type_id => $ct->id,
+                data            => {
+                    $category_fields[ $ct->id - 1 ][0]->id =>
+                        [ $cats[0]->id, $cats[1]->id ]
+                },
+            );
+            MT::Test::Permission->make_content_data(
+                blog_id         => $ct->blog_id,
+                content_type_id => $ct->id,
+                data            => {
+                    $category_fields[ $ct->id - 1 ][1]->id => [ $cats[0]->id ]
+                },
+            );
+            MT::Test::Permission->make_content_data(
+                blog_id         => $ct->blog_id,
+                content_type_id => $ct->id,
+                status          => MT::Entry::HOLD(),
+                data            => {
+                    $category_fields[ $ct->id - 1 ][1]->id =>
+                        [ $cats[0]->id, $cats[1]->id, $cats[2]->id ]
+                },
+            );
+        }
     }
-});
+);
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

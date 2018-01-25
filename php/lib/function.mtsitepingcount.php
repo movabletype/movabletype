@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_function_mtsitepingcount($args, &$ctx) {
-    return smarty_function_mtblogpingcount($args, $ctx);
+    return '';
 }
 ?>

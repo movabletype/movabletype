@@ -339,8 +339,9 @@ sub permutate {
 }
 
 sub permutate_common {
-    my ( $app, $endpoint, $site, $class ) = @_;
+    my ( $app, $endpoint, $site, $class, $category_set_id ) = @_;
 
+    $category_set_id ||= 0;
     my $class_plural = ( $class eq 'category' ) ? 'categories' : 'folders';
 
     my $categories_json = $app->param($class_plural)
@@ -370,11 +371,12 @@ sub permutate_common {
             return $invalid_error->();
         }
 
-        my $cat
-            = $app->model($class)
-            ->load(
-            { id => $c->{id}, class => $class, category_set_id => 0 } )
-            or return $invalid_error->();
+        my $cat = $app->model($class)->load(
+            {   id              => $c->{id},
+                class           => $class,
+                category_set_id => $category_set_id
+            }
+        ) or return $invalid_error->();
 
         push @categories, $cat;
     }
@@ -385,8 +387,9 @@ sub permutate_common {
         ',',
         sort    { $a <=> $b }
             map { $_->id } (
-            $app->model($class)
-                ->load( { blog_id => $site->id, category_set_id => 0 } )
+            $app->model($class)->load(
+                { blog_id => $site->id, category_set_id => $category_set_id }
+            )
             )
     );
     if ( ( $parameter_ids || '' ) ne ( $exist_ids || '' ) ) {
@@ -394,11 +397,34 @@ sub permutate_common {
     }
 
     my $category_order = join( ',', map { $_->id } @categories );
-    my $column = $class . '_order';
-    $site->$column($category_order);
-    $site->save
-        or return $app->error(
-        $app->translate( 'Saving object failed: [_1]', $site->errstr ), 500 );
+
+    if ($category_set_id) {
+        my $category_set = MT->model('category_set')->load($category_set_id)
+            or return $app->error(
+            $app->translate(
+                'Loading object failed: [_1]',
+                MT->model('category_set')->errstr
+            ),
+            500
+            );
+        $category_set->order($category_order);
+        $category_set->save
+            or return $app->error(
+            $app->translate(
+                'Saving object failed: [_1]',
+                $category_set->errstr
+            ),
+            500
+            );
+    }
+    else {
+        my $column = $class . '_order';
+        $site->$column($category_order);
+        $site->save
+            or return $app->error(
+            $app->translate( 'Saving object failed: [_1]', $site->errstr ),
+            500 );
+    }
 
     $app->run_callbacks( 'data_api_post_bulk_save.' . $class,
         $app, \@categories );

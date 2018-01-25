@@ -55,8 +55,15 @@
 
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
-  <div class="row actions-bar actions-bar-login">
-    <div class="col-4">
+  <div class="row align-items-center actions-bar actions-bar-login">
+    <div id="forget-password" class="col-8">
+    <mt:if name="can_recover_password">
+      <a href="<mt:var name="mt_url">?__mode=start_recover">
+        <__trans phrase="Forgot your password?">
+      </a>
+    </mt:if>
+    </div>
+    <div class="col-4 text-right">
       <button
          type="submit"
          id="sign-in-button"
@@ -66,13 +73,6 @@
         <__trans phrase="Sign In">
       </button>
     </div>
-    <mt:if name="can_recover_password">
-    <div id="forget-password" class="col-8">
-      <a class="float-right" href="<mt:var name="mt_url">?__mode=start_recover">
-        <__trans phrase="Forgot your password?">
-      </a>
-    </div>
-    </mt:if>
   </div>
 
 </mt:unless>

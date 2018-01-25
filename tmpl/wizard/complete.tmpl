@@ -42,15 +42,14 @@
   </div>
 <mt:unless name="config_created">
   <p class="form-inline">
-    <label class="custom-control custom-checkbox">
+    <div class="custom-control custom-checkbox">
       <input name="manually" id="manually" class="custom-control-input" type="checkbox" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>>
-      <span class="custom-control-indicator"></span>
-      <span class="custom-control-description"><__trans phrase="The mt-config.cgi file has been created manually."></span>
-    </label>
+      <label class="custom-control-label" for="manually"><__trans phrase="The mt-config.cgi file has been created manually."></label>
+    </div>
   </p>
 </mt:unless>
 
-  <div id="retry-buttons" class="actions-bar" <mt:if name="file_not_found">style="display:none;"</mt:if>>
+  <div id="retry-buttons" class="actions-bar text-right" <mt:if name="file_not_found">style="display:none;"</mt:if>>
     <mt:unless name="config_created">
     <button
        name="retry"
@@ -77,7 +76,7 @@
   </mt:unless>
   </div>
 
-  <div id="automatic-buttons" class="actions-bar" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
+  <div id="automatic-buttons" class="actions-bar text-right" <mt:unless name="file_not_found">style="display:none;"</mt:unless>>
     <button
        name="retry"
        type="submit"
