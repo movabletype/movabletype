@@ -229,17 +229,6 @@ sub list_props {
             count_args         => { no_class => 1 },
             list_permit_action => 'access_to_asset_list',
         },
-        comment_count => {
-            label              => 'Comments',
-            filter_label       => '__COMMENT_COUNT',
-            order              => 600,
-            base               => '__virtual.object_count',
-            count_class        => 'comment',
-            count_col          => 'blog_id',
-            filter_type        => 'blog_id',
-            list_screen        => 'comment',
-            list_permit_action => 'access_to_comment_list',
-        },
 
         # not in use in 5.1
         # member_count => {

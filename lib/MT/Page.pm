@@ -100,13 +100,6 @@ sub list_props {
             display => 'default',
         },
         unpublished_on => { base => 'entry.unpublished_on', },
-        comment_count  => {
-            display => 'optional',
-            base    => 'entry.comment_count',
-            order   => 800,
-        },
-        ping_count => { base => 'entry.ping_count', order => 900, },
-
         text      => { base => 'entry.text' },
         text_more => { base => 'entry.text_more' },
         excerpt   => {
@@ -140,7 +133,6 @@ sub list_props {
             ],
         },
         basename     => { base => 'entry.basename' },
-        commented_on => { base => 'entry.commented_on' },
         tag          => {
             base   => 'entry.tag',
             tag_ds => 'entry',
@@ -198,15 +190,6 @@ sub system_filters {
                 ,;
             },
             order => 500,
-        },
-        commented_in_last_7_days => {
-            label => 'Pages with comments in the last 7 days',
-            items => [
-                {   type => 'commented_on',
-                    args => { option => 'days', days => 7 }
-                }
-            ],
-            order => 600,
         },
     };
 }
