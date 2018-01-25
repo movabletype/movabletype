@@ -1080,10 +1080,10 @@ Datasource = new Class(Object, {
         if (!this.element) return;
         jQuery('div.alert').remove();
         if (jQuery(html).hasClass('alert')) {
-            jQuery(this.element).find('table.list-heading').hide();
+            jQuery(this.element).find('table.mt-table').hide();
             jQuery(this.element).append(html);
         } else {
-            jQuery(this.element).find('table.list-heading').show();
+            jQuery(this.element).find('table.mt-table').show();
             jQuery(this.element).find('tbody').remove();
             jQuery(this.element).find('thead').after(html);
         }

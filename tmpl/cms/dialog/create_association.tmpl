@@ -193,7 +193,9 @@ function init() {
         if (datasource.pager2)
             datasource.pager2.render();
 
-        args += '&search=' + escape(search.val());
+        if(search.val() != ''){
+            args += '&search=' + escape(search.val());
+        }
         if(target == 'both'){
             args += '&_type=author';
         } else if(target == 'author'){
