@@ -1084,9 +1084,9 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git#fix/navigation-adjustment":
+"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git#bundled-to-mt-core":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#7e787a2079a13faa758dc3553df1d162c5933e6e"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#015a8c1add5707320adc6d11c6272362abfe0a04"
   dependencies:
     bootstrap "^4.0.0"
     winston "^2.3.1"
