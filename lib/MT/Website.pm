@@ -100,15 +100,6 @@ sub list_props {
                 return $html;
             },
         },
-        comment_count => {
-            base => 'blog.comment_count',
-            html => sub {
-                my $prop = shift;
-                my $html = $prop->super(@_);
-                $html =~ s/"(.+)"/"$1&filter=current_context"/;
-                return $html;
-            },
-        },
 
         # not in use in 5.1
         # member_count => {
