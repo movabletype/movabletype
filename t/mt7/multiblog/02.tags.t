@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
+
 BEGIN {
     eval { require PHP::Serialization }
         or plan skip_all => 'PHP::Serialization is not installed';
@@ -12,6 +13,7 @@ BEGIN {
 
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -42,8 +44,6 @@ $app->model('page')->remove( { id => 24 } );
 
 my $blog_id = 2;
 
-#my $plugin = $app->component('MultiBlog');
-#$plugin->set_config_value( 'default_access_allowed', '0', 'system' );
 my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
 unless ($rebuild_trigger) {
     $rebuild_trigger = MT->model('rebuild_trigger')->new();
@@ -87,7 +87,8 @@ SKIP:
             if $block->skip || $block->skip_static;
 
         # Get system setting
-        my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
+        my $rebuild_trigger
+            = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
         unless ($rebuild_trigger) {
             $rebuild_trigger = MT->model('rebuild_trigger')->new();
             $rebuild_trigger->blog_id(0);
@@ -108,7 +109,6 @@ SKIP:
         # Save system setting
         $rebuild_trigger->data( MT::Util::to_json($data) );
         $rebuild_trigger->save;
-        MT->request( 'config_rebuild_trigger', {} );
 
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
@@ -252,7 +252,8 @@ SKIP:
                 if $block->skip || $block->skip_dynamic;
 
             # Get system setting
-            my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
+            my $rebuild_trigger
+                = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
             unless ($rebuild_trigger) {
                 $rebuild_trigger = MT->model('rebuild_trigger')->new();
                 $rebuild_trigger->blog_id(0);
@@ -273,14 +274,6 @@ SKIP:
             # Save system setting
             $rebuild_trigger->data( MT::Util::to_json($data) );
             $rebuild_trigger->save;
-            MT->request( 'config_rebuild_trigger', {} );
-
-            #my $overrides
-            #    = $block->access_overrides
-            #    ? eval $block->access_overrides
-            #    : $default_access_overrides;
-            #$plugin->set_config_value( 'access_overrides', $overrides,
-            #    'system' );
 
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script(

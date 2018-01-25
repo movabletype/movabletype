@@ -470,6 +470,8 @@ sub save {
         : {};
     $self->update_trigger_cache( $data, $self->blog_id );
 
+    MT->request( 'config_rebuild_trigger', undef );
+
     $self->SUPER::save(@_);
 }
 
@@ -563,7 +565,6 @@ sub set_config_value {
         : {};
     $data->{$name} = $d;
     $rt->data( MT::Util::to_json($data) );
-    MT->request( 'config_rebuild_trigger', undef );
     $rt->save;
 }
 
