@@ -2094,6 +2094,17 @@ sub set_default_tmpl_params {
             $param->{template_filename} = $fname;
         }
     }
+
+    my $switch = $mt->config->PluginSwitch || {};
+    my %enabled_plugins;
+    for my $plugin_sig ( keys %MT::Plugins ) {
+        next if defined $MT::Plugins{$plugin_sig}{enabled} && !$MT::Plugins{$plugin_sig}{enabled};
+        next if defined $switch->{$plugin_sig} && !$switch->{$plugin_sig};
+        $enabled_plugins{$plugin_sig} = 1;
+    }
+    $enabled_plugins{CommentsTrackback} = 1 if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
+    $param->{enabled_plugins} = \%enabled_plugins;
+
     $tmpl->param($param);
 }
 

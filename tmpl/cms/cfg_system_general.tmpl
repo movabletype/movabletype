@@ -150,9 +150,10 @@
   </mtapp:settinggroup>
 </mt:unless>
 
-
+<mt:if name="enabled_plugins{CommentsTrackback}">
 <mtapp:settinggroup id="system-feedback-controls">
   <legend class="h3"><__trans phrase="System-wide Feedback Controls"></legend>
+  <mt:if name="enabled_plugins{Comments}">
   <mtapp:setting
      id="comment-disable"
      label="<__trans phrase="Prohibit Comments">">
@@ -163,7 +164,9 @@
       </div>
     </div>
   </mtapp:setting>
+  </mt:if>
 
+  <mt:if name="enabled_plugins{Trackback}">
   <mtapp:setting
      id="ping-disable"
      label="<__trans phrase="Prohibit TrackBacks">">
@@ -174,8 +177,11 @@
       </div>
     </div>
   </mtapp:setting>
+  </mt:if>
 </mtapp:settinggroup>
+</mt:if>
 
+<mt:if name="enabled_plugins{Trackback}">
 <mtapp:settinggroup id="outbound-notifications">
   <legend class="h3"><__trans phrase="Outbound Notifications"></legend>
   <mtapp:setting
@@ -227,6 +233,7 @@
     </ul>
   </mtapp:setting>
 </mtapp:settinggroup>
+</mt:if>
 
 <mtapp:settinggroup id="lockout">
   <legend class="h3"><__trans phrase="Lockout Settings"></legend>
