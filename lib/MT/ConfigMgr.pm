@@ -277,7 +277,7 @@ sub save_config {
             if exists $mgr->{__settings}{$_}{dirty};
         if ( $type eq 'HASH' ) {
             my $h = $settings->{$_};
-            foreach my $k ( keys %$h ) {
+            foreach my $k ( sort keys %$h ) {
                 $data
                     .= $mgr->{__settings}{$_}{key} . ' '
                     . $k . '='

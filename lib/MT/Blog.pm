@@ -503,7 +503,7 @@ sub create_default_templates {
         for my $map_set (@arch_tmpl) {
             my $tmpl     = $map_set->{template};
             my $mappings = $map_set->{mappings};
-            foreach my $map_key ( keys %$mappings ) {
+            foreach my $map_key ( sort keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
 
@@ -617,7 +617,7 @@ sub create_default_templates {
         }
     }
 
-    $blog->archive_type( join ',', keys %archive_types );
+    $blog->archive_type( join ',', sort keys %archive_types );
     foreach my $at (qw( Individual Daily Weekly Monthly Category )) {
         $blog->archive_type_preferred($at), last
             if exists $archive_types{$at};
