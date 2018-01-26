@@ -29,6 +29,7 @@ sub new {
     my $root = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
+    $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
 
     my $self = bless {
         root   => $root,
@@ -487,12 +488,12 @@ sub save_fixture {
         return;
     }
 
-    require JSON;
+    require JSON::PP;
     my $dir = dirname($file);
     mkpath $dir unless -d $dir;
     open my $fh, '>', $file or die $!;
     flock $fh, LOCK_EX;
-    print $fh JSON->new->pretty->canonical->utf8->encode( \%data );
+    print $fh JSON::PP->new->pretty->canonical->utf8->encode( \%data );
     close $fh;
 }
 
