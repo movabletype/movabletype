@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
+
 BEGIN {
     eval { require Test::MockObject }
-      or plan skip_all => 'Test::MockObject is not installed';
+        or plan skip_all => 'Test::MockObject is not installed';
 }
 
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -30,20 +32,13 @@ my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
-my $rt0 = MT::RebuildTrigger->new;
-$rt0->blog_id(0);
-my $data0 = {
+my $rt2 = MT::RebuildTrigger->new;
+$rt2->blog_id(2);
+my $data2 = {
+    rebuild_triggers        => 'ri:_blogs_in_website:entry_pub',
     blog_content_accessible => 1,
     old_rebuild_triggers    => '',
 };
-$rt0->data( MT::Util::to_json($data0) );
-$rt0->save;
-my $rt2 = MT::RebuildTrigger->new;
-$rt2->blog_id(2);
-my $data2
-    = { rebuild_triggers =>
-        'ri:_blogs_in_website:entry_pub',
-    };
 $rt2->data( MT::Util::to_json($data2) );
 $rt2->save;
 

@@ -33,20 +33,14 @@ my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
-my $rt0 = MT::RebuildTrigger->new;
-$rt0->blog_id(0);
-my $data0 = {
+my $rt2 = MT::RebuildTrigger->new;
+$rt2->blog_id(2);
+my $data2 = {
+    rebuild_triggers =>
+        'ri:1:entry_save|ri:1:entry_pub|ri:1:entry_unpub|ri:1:comment_pub|ri:1:tb_pub',
     blog_content_accessible => 1,
     old_rebuild_triggers    => '',
 };
-$rt0->data( MT::Util::to_json($data0) );
-$rt0->save;
-my $rt2 = MT::RebuildTrigger->new;
-$rt2->blog_id(2);
-my $data2
-    = { rebuild_triggers =>
-        'ri:1:entry_save|ri:1:entry_pub|ri:1:entry_unpub|ri:1:comment_pub|ri:1:tb_pub',
-    };
 $rt2->data( MT::Util::to_json($data2) );
 $rt2->save;
 

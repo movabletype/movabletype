@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use Test::Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -29,7 +31,6 @@ $test_env->prepare_fixture('db_data');
 
 my $blog_id = 2;
 
-my $plugin = $app->component('MultiBlog');
 my $default_access_allowed = 0;
 
 # Settings:
@@ -138,33 +139,20 @@ SKIP:
     {
         skip $block->skip, 1 if $block->skip;
 
-        # Get system setting
-        my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
-        unless ($rebuild_trigger) {
-            $rebuild_trigger = MT->model('rebuild_trigger')->new();
-            $rebuild_trigger->blog_id(0);
-            $rebuild_trigger->data('{}');
-        }
-        my $data
-            = $rebuild_trigger->data()
-            ? MT::Util::from_json( $rebuild_trigger->data() )
-            : {};
-
         my $overrides
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $data->{access_overrides} = $overrides;
+        $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
 
         my $allowed
             = defined( $block->default_access_allowed )
             ? $block->default_access_allowed
             : $default_access_allowed;
         chomp($allowed);
-        $data->{default_access_allowed} = $allowed;
+        $app->config->DefaultAccessAllowed( $allowed, 1 );
 
-        $rebuild_trigger->data( MT::Util::to_json($data) );
-        $rebuild_trigger->save;
+        $app->config->save_config;
 
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
@@ -240,33 +228,20 @@ SKIP:
         {
             skip $block->skip, 1 if $block->skip;
 
-            # Get system setting
-            my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
-            unless ($rebuild_trigger) {
-                $rebuild_trigger = MT->model('rebuild_trigger')->new();
-                $rebuild_trigger->blog_id(0);
-                $rebuild_trigger->data('{}');
-            }
-            my $data
-                = $rebuild_trigger->data()
-                ? MT::Util::from_json( $rebuild_trigger->data() )
-                : {};
-
             my $overrides
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $data->{access_overrides} = $overrides;
+            $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
 
             my $allowed
                 = defined( $block->default_access_allowed )
                 ? $block->default_access_allowed
                 : $default_access_allowed;
             chomp($allowed);
-            $data->{default_access_allowed} = $allowed;
+            $app->config->DefaultAccessAllowed( $allowed, 1 );
 
-            $rebuild_trigger->data( MT::Util::to_json($data) );
-            $rebuild_trigger->save;
+            $app->config->save_config;
 
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script( $block->template,

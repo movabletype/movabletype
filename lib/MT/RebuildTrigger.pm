@@ -84,11 +84,8 @@ sub apply_default_settings {
     my ( $data, $blog_id ) = @_;
 
     my $s = {
-        system => {
-            default_access_allowed => 1,
-            all_triggers           => undef,
-        },
-        blog => {
+        system => { all_triggers => undef, },
+        blog   => {
             rebuild_triggers           => '',
             blog_content_accessible    => '',
             other_triggers             => undef,
@@ -216,10 +213,11 @@ sub load_sites_acl {
     my $this_blog = $ctx->stash('blog_id') || 0;
 
     # Get the MultiBlog system config for default access and overrides
-    my $default_access_allowed
-        = $self->get_config_value( 'default_access_allowed', 0 );
+    my $default_access_allowed = MT->config('DefaultAccessAllowed');
     my $access_overrides
-        = $self->get_config_value( 'access_overrides', 0 ) || {};
+        = MT->config('AccessOverrides')
+        ? MT::Util::from_json( MT->config('AccessOverrides') )
+        : {};
 
     # System setting allows access by default
     my ( $mode, @acl );
@@ -484,7 +482,10 @@ sub update_trigger_cache {
         # Save blog-level content aggregation policy to single
         # system config hash for easy lookup
         my ( $cfg_old, $cfg_new ) = 0;
-        my $override = $self->get_config_value( 'access_overrides', 0 ) || {};
+        my $override
+            = MT->config('AccessOverrides')
+            ? MT::Util::from_json( MT->config('AccessOverrides') )
+            : {};
         $cfg_new = $data->{blog_content_accessible} || 0;
         if ( exists $override->{$blog_id} ) {
             $cfg_old = $override->{$blog_id};
@@ -492,7 +493,7 @@ sub update_trigger_cache {
         if ( $cfg_old != $cfg_new ) {
             $override->{$blog_id} = $cfg_new
                 or delete $override->{$blog_id};
-            $self->set_config_value( 'access_overrides', $override, 0 );
+            MT->config( 'AccessOverrides', MT::Util::to_json($override) );
         }
 
         # Fiddle with rebuild triggers...

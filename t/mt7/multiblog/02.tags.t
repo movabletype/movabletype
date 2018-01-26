@@ -44,19 +44,7 @@ $app->model('page')->remove( { id => 24 } );
 
 my $blog_id = 2;
 
-my $rebuild_trigger = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
-unless ($rebuild_trigger) {
-    $rebuild_trigger = MT->model('rebuild_trigger')->new();
-    $rebuild_trigger->blog_id(0);
-    $rebuild_trigger->data('{}');
-}
-my $data
-    = $rebuild_trigger->data()
-    ? MT::Util::from_json( $rebuild_trigger->data() )
-    : {};
-$data->{default_access_allowed} = 0;
-$rebuild_trigger->data( MT::Util::to_json($data) );
-$rebuild_trigger->save;
+$app->config->DefaultAccessAllowed(0);
 
 my $default_access_overrides = {
 
@@ -86,29 +74,13 @@ SKIP:
         skip $block->skip, 'skip_static', 1
             if $block->skip || $block->skip_static;
 
-        # Get system setting
-        my $rebuild_trigger
-            = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
-        unless ($rebuild_trigger) {
-            $rebuild_trigger = MT->model('rebuild_trigger')->new();
-            $rebuild_trigger->blog_id(0);
-            $rebuild_trigger->data('{}');
-        }
-        my $data
-            = $rebuild_trigger->data()
-            ? MT::Util::from_json( $rebuild_trigger->data() )
-            : {};
-
         # Access overrides
         my $overrides
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $data->{access_overrides} = $overrides;
-
-        # Save system setting
-        $rebuild_trigger->data( MT::Util::to_json($data) );
-        $rebuild_trigger->save;
+        $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+        $app->config->save_config;
 
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
@@ -251,29 +223,13 @@ SKIP:
             skip $block->skip, 'skip_dynamic', 1
                 if $block->skip || $block->skip_dynamic;
 
-            # Get system setting
-            my $rebuild_trigger
-                = MT->model('rebuild_trigger')->load( { blog_id => 0 } );
-            unless ($rebuild_trigger) {
-                $rebuild_trigger = MT->model('rebuild_trigger')->new();
-                $rebuild_trigger->blog_id(0);
-                $rebuild_trigger->data('{}');
-            }
-            my $data
-                = $rebuild_trigger->data()
-                ? MT::Util::from_json( $rebuild_trigger->data() )
-                : {};
-
             # Access overrides
             my $overrides
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $data->{access_overrides} = $overrides;
-
-            # Save system setting
-            $rebuild_trigger->data( MT::Util::to_json($data) );
-            $rebuild_trigger->save;
+            $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+            $app->config->save_config;
 
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script(

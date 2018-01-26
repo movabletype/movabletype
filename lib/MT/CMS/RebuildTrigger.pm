@@ -22,7 +22,7 @@ sub config {
     if ($rebuild_trigger) {
         my $data = MT::Util::from_json( $rebuild_trigger->data );
         for my $key (
-            qw/ default_access_allowed all_triggers
+            qw/ all_triggers
             blog_content_accessible blogs_in_website_triggers
             default_mt_sites_action default_mt_sites_sites
             rebuild_triggers /
@@ -30,6 +30,8 @@ sub config {
         {
             $param->{$key} = $data->{$key} if $data->{$key};
         }
+        $param->{default_access_allowed}
+            = $app->config('DefaultAccessAllowed');
 
         load_config( $app, $param,
             ( $blog_id ? "blog:$blog_id" : 'system' ) );
@@ -227,7 +229,7 @@ sub save {
     my @p = $app->multi_param;
     my %params;
     for my $key (
-        qw/ default_access_allowed all_triggers
+        qw/ all_triggers
         blog_content_accessible blogs_in_website_triggers
         default_mt_sites_action default_mt_sites_sites
         rebuild_triggers /
@@ -235,6 +237,9 @@ sub save {
     {
         $params{$key} = $app->multi_param($key) if $app->multi_param($key);
     }
+    $app->config( 'DefaultAccessAllowed',
+        $app->multi_param('default_access_allowed'), 1 );
+    $app->config->save_config;
     my $rebuild_trigger
         = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
     unless ($rebuild_trigger) {
