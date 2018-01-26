@@ -35,9 +35,6 @@
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr id="asset-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if> status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
