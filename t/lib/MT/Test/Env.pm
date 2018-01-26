@@ -347,6 +347,13 @@ sub load_schema_and_fixture {
         warn "Fixture is empty or broken";
         return;
     }
+
+    my $fixture_schema_version = $fixture->{schema_version};
+    if ( !$fixture_schema_version or $fixture_schema_version ne $self->schema_version ) {
+        diag "FIXTURE IS IGNORED: please update fixture";
+        return;
+    }
+
     my $dbh = $self->dbh;
     $dbh->begin_work;
     eval {
@@ -502,6 +509,8 @@ sub save_fixture {
         return;
     }
 
+    $data{schema_version} = $self->schema_version;
+
     require JSON::PP;
     my $dir = dirname($file);
     mkpath $dir unless -d $dir;
@@ -557,6 +566,15 @@ sub enable_plugin {
         rename( $disabled, $config ) or warn $!;
         delete $self->{disabled_plugins}{$name};
     }
+}
+
+sub schema_version {
+    my $self = shift;
+    my %versions = (
+        core => MT->schema_version,
+        %{ MT->config->PluginSchemaVersion || {} },
+    );
+    return join "; ", map { $_ . " " . $versions{$_} } sort keys %versions;
 }
 
 sub DESTROY {
