@@ -1838,6 +1838,7 @@ sub core_menus {
             mode       => 'list_ct_boilerplates',
             permission => 'administer',
             view       => ['system'],
+            permission => 'manage_content_types',
         },
         'content_type:manage_content_type' => {
             label      => 'Manage',
@@ -1853,6 +1854,7 @@ sub core_menus {
             args  => { _type => 'content_type' },
             order => 200,
             view  => [ 'website', 'blog' ],
+            permission => 'manage_content_types',
         },
 
         'tag:manage' => {
