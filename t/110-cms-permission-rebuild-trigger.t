@@ -99,83 +99,83 @@ my $admin = MT::Author->load(1);
 # Run
 my ( $app, $out );
 
-subtest 'mode = multiblog_add_trigger' => sub {
+subtest 'mode = add_rebuild_trigger' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: multiblog_add_trigger" );
-    ok( $out !~ m!Permission denied!i, "multiblog_add_trigger by admin" );
+    ok( $out,                          "Request: add_rebuild_trigger" );
+    ok( $out !~ m!Permission denied!i, "add_rebuild_trigger by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out, "Request: add_rebuild_trigger" );
     ok( $out !~ m!Permission denied!i,
-        "multiblog_add_trigger by permitted user (blog)" );
+        "add_rebuild_trigger by permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out, "Request: add_rebuild_trigger" );
     ok( $out !~ m!Permission denied!i,
-        "multiblog_add_trigger by permitted user (website)" );
+        "add_rebuild_trigger by permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out, "Request: add_rebuild_trigger" );
     ok( $out =~ m!Permission denied!i,
-        "multiblog_add_trigger by non permitted user (blog)" );
+        "add_rebuild_trigger by non permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $egawa,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $website->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out, "Request: add_rebuild_trigger" );
     ok( $out =~ m!Permission denied!i,
-        "multiblog_add_trigger by non permitted user (website)" );
+        "add_rebuild_trigger by non permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ogawa,
             __request_method => 'POST',
-            __mode           => 'multiblog_add_trigger',
+            __mode           => 'add_rebuild_trigger',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out, "Request: add_rebuild_trigger" );
     ok( $out =~ m!Permission denied!i,
-        "multiblog_add_trigger by other permission" );
+        "add_rebuild_trigger by other permission" );
 };
 
 done_testing();
