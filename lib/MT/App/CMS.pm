@@ -339,14 +339,6 @@ sub core_methods {
         },
 
         ## DEPRECATED ##
-        'list_entries'      => "${pkg}Entry::list",
-        'list_pages'        => "${pkg}Page::list",
-        'list_authors'      => "${pkg}User::list",
-        'list_assets'       => "${pkg}Asset::list",
-        'list_cat'          => "${pkg}Category::list",
-        'list_blogs'        => "${pkg}Blog::list",
-        'list_associations' => "${pkg}User::list_association",
-        'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
