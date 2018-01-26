@@ -11,6 +11,7 @@ use File::Temp 'tempdir';
 use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
+use Digest::SHA;
 
 our $MT_HOME;
 
@@ -327,11 +328,18 @@ sub load_schema_and_fixture {
     my ( $s, $m, $h, $d, $mo, $y ) = gmtime;
     my $now = sprintf( "%04d%02d%02d%02d%02d%02d",
         $y + 1900, $mo + 1, $d, $h, $m, $s );
+    my @pool = ( 'a' .. 'z', 0 .. 9 );
+    my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
+    my $salt = join '', map { $pool[ rand @pool ] } 1 .. 16;
+    # Tentative password; update it later when necessary
+    my $author_pass = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
     my $schema  = _slurp($schema_file)  or return;
     my $fixture = _slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
+    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
+    $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
 
@@ -466,6 +474,12 @@ sub save_fixture {
                         if ( $now - $t < Time::Seconds::ONE_DAY() ) {
                             $value = '__NOW__';
                         }
+                    }
+                    elsif ( $key eq 'author_api_password' ) {
+                        $value = '__API_PASS__';
+                    }
+                    elsif ( $key eq 'author_password' ) {
+                        $value = '__AUTHOR_PASS__';
                     }
                     else {
                         $value =~ s/^$root/__TEST_ROOT__/;
