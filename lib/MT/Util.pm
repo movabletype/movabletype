@@ -2706,6 +2706,10 @@ sub translate_naughty_words {
 
 sub to_json {
     my ( $value, $args ) = @_;
+    if ( MT->config->JSONCanonicalization ) {
+        $args ||= {};
+        $args->{canonical} = 1;
+    }
     require JSON;
     return JSON::to_json( $value, $args );
 }
