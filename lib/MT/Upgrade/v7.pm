@@ -410,7 +410,7 @@ sub _migrate_site_archive_type {
 
     my @archive_type = split ',', $site->archive_type;
     my %hash = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
-    my @unique_archive_type = keys %hash;
+    my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );
     $site->save
         or return $self->error(

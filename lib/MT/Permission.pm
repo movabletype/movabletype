@@ -152,7 +152,7 @@ sub global_perms {
                 push @perms, "'$name'";
             }
         }
-        return join ',', @perms;
+        return join ',', sort @perms;
     }
 
     sub add_permissions {
@@ -831,7 +831,7 @@ sub _load_inheritance_permissions {
             my ( $s, $p ) = split /\./, $_;
             $hash->{$p} = 1;
         }
-        @$perms = keys %$hash;
+        @$perms = sort keys %$hash;
     }
 
     return $perms;
@@ -865,7 +865,7 @@ sub load_permissions_from_action {
     my $permissions = __PACKAGE__->perms_from_registry();
     my $perms;
 
-    foreach my $p ( keys %$permissions ) {
+    foreach my $p ( sort keys %$permissions ) {
         push @$perms, $p
             if $pkg->_confirm_action( $p, $action, $permissions );
     }

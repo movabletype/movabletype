@@ -152,21 +152,6 @@ sub list_props {
             count_col    => 'author_id',
             filter_type  => 'author_id',
         },
-        comment_count => {
-            base         => 'author.entry_count',
-            label        => 'Comments',
-            filter_label => '__COMMENT_COUNT',
-            display      => 'default',
-            order        => 400,
-            count_class  => 'comment',
-            count_col    => 'commenter_id',
-            filter_type  => 'commenter_id',
-            raw          => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( $prop->count_class )
-                    ->count( { commenter_id => $obj->id } );
-            },
-        },
         author_name => {
             base        => '__virtual.author_name',
             label       => 'Created by',
@@ -347,10 +332,6 @@ sub commenter_list_props {
         nickname => {
             base  => 'author.nickname',
             order => 200,
-        },
-        comment_count => {
-            base  => 'author.comment_count',
-            order => 300,
         },
         author_name => {
             base  => 'author.author_name',
@@ -533,21 +514,6 @@ sub member_list_props {
             count_args => { unique => 1, },
             order      => 400,
         },
-        comment_count => {
-            base        => '__virtual.object_count',
-            label       => 'Comments',
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            list_screen => 'comment',
-            count_terms => sub {
-                my $prop = shift;
-                my ($opts) = @_;
-                return { blog_id => $opts->{blog_ids} };
-            },
-            count_args => { unique => 1, },
-            order      => 500,
-        },
         type => {
             label     => 'Type',
             base      => '__virtual.single_select',
@@ -589,14 +555,6 @@ sub member_system_filters {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             order => 100,
-        },
-        external_users => {
-            label     => 'Externally Authenticated Commenters',
-            items     => [ { type => 'type', args => { value => 2 }, }, ],
-            condition => sub {
-                MT->config->SingleCommunity ? 0 : 1;
-            },
-            order => 200,
         },
     };
 }

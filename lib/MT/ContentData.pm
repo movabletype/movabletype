@@ -10,7 +10,6 @@ use strict;
 use warnings;
 use base qw( MT::Object MT::Revisable );
 
-use JSON  ();
 use POSIX ();
 
 use MT;
@@ -487,7 +486,7 @@ sub data {
     if (@_) {
         my $json;
         if ( ref $_[0] ) {
-            $json = eval { JSON::encode_json( $_[0] ) } || '{}';
+            $json = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
         }
         else {
             $json = $_[0];

@@ -2178,6 +2178,8 @@ BEGIN {
             # RebuildTrigger - MT7
             'DefaultAccessAllowed' => { default => 1 },
             'AccessOverrides'      => undef,
+
+            'JSONCanonicalization' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

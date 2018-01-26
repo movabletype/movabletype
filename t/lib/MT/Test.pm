@@ -130,7 +130,7 @@ sub init_app {
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1;" or die "Can't load $app";
 
-    $app->instance( $cfg ? ( Config => $cfg ) : () );
+    $app->set_instance( $app->new( $cfg ? ( Config => $cfg ) : () ) );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
@@ -184,7 +184,7 @@ sub init_cms {
     my ($cfg) = @_;
 
     require MT::App::CMS;
-    MT::App::CMS->instance( $cfg ? ( Config => $cfg ) : () );
+    MT->set_instance( MT::App::CMS->new( $cfg ? ( Config => $cfg ) : () ) );
 }
 
 sub init_time {
@@ -1850,6 +1850,8 @@ sub _run_tasks {
     for my $t (@$tasks) {
         MT::Session->remove( { id => "Task:$t" } );
     }
+
+    MT->set_instance( MT->new );
 
     require MT::TaskMgr;
     MT::TaskMgr->run_tasks(@$tasks);

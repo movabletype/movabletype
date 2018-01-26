@@ -17,9 +17,9 @@ use MT;
 use MT::Test;
 use MT::Test::Permission;
 
-MT::Test->init_cms;
-
 $test_env->prepare_fixture('db');
+
+MT::Test->init_cms;
 
 # Create records
 my $admin = MT::Author->load(1);

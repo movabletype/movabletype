@@ -2786,7 +2786,7 @@ BLOG: for my $blog_id (@id) {
                     || $tmpl->type eq 'individual' )
                 {
                     my $mappings = $val->{mappings};
-                    foreach my $map_key ( keys %$mappings ) {
+                    foreach my $map_key ( sort keys %$mappings ) {
                         my $m  = $mappings->{$map_key};
                         my $at = $m->{archive_type};
 

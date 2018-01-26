@@ -68,6 +68,7 @@
   <mt:if name="blog_id">
     <mtapp:settinggroup id="system-feedback-controls">
       <legend class="h3"><__trans phrase="External Notifications"></legend>
+      <mt:if name="enabled_plugins{Trackback}">
       <mtapp:setting
          id="ping_blogs"
          label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">"
@@ -97,6 +98,7 @@
         </label>
         <textarea name="ping_others" id="ping_others" class="form-control text low"><mt:var name="ping_others" escape="html"></textarea>
       </mtapp:setting>
+      </mt:if>
 
     </mtapp:settinggroup>
   </mt:if>
