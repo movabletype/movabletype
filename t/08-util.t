@@ -41,6 +41,9 @@ use MT::I18N qw( encode_text );
 $test_env->prepare_fixture('db_data');
 
 my $mt = MT->new;
+
+MT->set_instance($mt);
+
 $mt->config( 'NoHTMLEntities', 1 );
 
 if ( $^O eq 'MSWin32' ) {

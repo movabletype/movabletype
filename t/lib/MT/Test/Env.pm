@@ -241,6 +241,10 @@ sub prepare_fixture {
     my @addons = _find_addons_and_plugins();
     my $uid    = substr( md5_hex( join '+', sort @addons ), 0, 7 );
 
+    my $app = $ENV{MT_APP} || 'MT::App';
+    eval "require $app; 1" or die $@;
+    MT->set_instance( $app->new );
+
     my $fixture_dir = "$MT_HOME/t/fixture/$uid";
 
     my $id = (caller)[1];    # file
