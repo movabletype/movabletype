@@ -1138,7 +1138,7 @@ $test_env->prepare_fixture(sub {
             ],
         );
 
-        foreach my $key ( keys %suite ) {
+        foreach my $key ( sort keys %suite ) {
             my $templatemap;
             if ( $key eq 'Monthly' ) {
                 $templatemap = $tm_mo;
