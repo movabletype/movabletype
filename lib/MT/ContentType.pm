@@ -9,8 +9,6 @@ package MT::ContentType;
 use strict;
 use base qw( MT::Object );
 
-use JSON ();
-
 use MT;
 use MT::CategorySet;
 use MT::ContentField;
@@ -191,7 +189,7 @@ sub fields {
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
         my $sorted_fields = _sort_fields( \@fields );
-        my $json = eval { JSON::encode_json($sorted_fields) } || '[]';
+        my $json = eval { MT::Util::to_json($sorted_fields, { utf8 => 1 }) } || '[]';
         $obj->column( 'fields', $json );
     }
     else {
