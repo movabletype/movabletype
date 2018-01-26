@@ -2921,6 +2921,18 @@ sub build_menus {
                         $sub->{current} = 1;
                     }
                 }
+                elsif (( $app_param_type || '' ) eq 'category'
+                    && ( $sub->{args}{_type} || '' ) eq 'category_set'
+                    && $app->param('is_category_set') )
+                {
+
+                    $param->{screen_group} = 'category_set';
+                    if ( $sub_id eq 'category_set:create'
+                        && !$app->param('id') )
+                    {
+                        $sub->{current} = 1;
+                    }
+                }
             }
             else {
                 if ( $sub->{mode} eq $mode ) {
