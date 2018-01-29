@@ -767,6 +767,7 @@ sub core_content_actions {
                 permit_action => {
                     permit_action => 'export_blog_log',
                     include_all   => 1,
+                    system_action => 'export_system_log',
                 },
             },
         },
