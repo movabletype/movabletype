@@ -122,6 +122,10 @@ __PACKAGE__->install_properties(
             'operation_if_exists'       => 'integer meta',
             'normalize_orientation'     => 'boolean meta',
             'auto_rename_non_ascii'     => 'boolean meta',
+            ## rebuild trigger
+            'blog_content_accessible' => 'boolean meta',
+            'default_mt_sites_action' => 'boolean meta',
+            'default_mt_sites_sites'  => 'string meta',
         },
         meta    => 1,
         audit   => 1,

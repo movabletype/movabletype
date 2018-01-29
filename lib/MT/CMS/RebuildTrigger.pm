@@ -22,16 +22,21 @@ sub config {
     if ($rebuild_trigger) {
         my $data = MT::Util::from_json( $rebuild_trigger->data );
         for my $key (
-            qw/ all_triggers
-            blog_content_accessible blogs_in_website_triggers
-            default_mt_sites_action default_mt_sites_sites
-            rebuild_triggers /
-            )
+            qw/ all_triggers blogs_in_website_triggers rebuild_triggers /)
         {
             $param->{$key} = $data->{$key} if $data->{$key};
         }
         $param->{default_access_allowed}
             = $app->config('DefaultAccessAllowed');
+
+        if ( my $blog = $app->blog ) {
+            $param->{blog_content_accessible}
+                = $blog->blog_content_accessible || 0;
+            $param->{default_mt_sites_action}
+                = $blog->default_mt_sites_action || 1;
+            $param->{default_mt_sites_sites}
+                = $blog->default_mt_sites_sites || '';
+        }
 
         load_config( $app, $param,
             ( $blog_id ? "blog:$blog_id" : 'system' ) );
@@ -229,17 +234,28 @@ sub save {
     my @p = $app->multi_param;
     my %params;
     for my $key (
-        qw/ all_triggers
-        blog_content_accessible blogs_in_website_triggers
-        default_mt_sites_action default_mt_sites_sites
-        rebuild_triggers /
-        )
+        qw/ all_triggers blogs_in_website_triggers rebuild_triggers /)
     {
         $params{$key} = $app->multi_param($key) if $app->multi_param($key);
     }
+
     $app->config( 'DefaultAccessAllowed',
-        $app->multi_param('default_access_allowed'), 1 );
+        $app->multi_param('default_access_allowed'), 1 )
+        if $app->multi_param('default_access_allowed');
     $app->config->save_config;
+
+    if ( my $blog = $app->blog ) {
+        $blog->blog_content_accessible(
+            $app->multi_param('blog_content_accessible') );
+        $blog->default_mt_sites_action(
+            $app->multi_param('default_mt_sites_action') )
+            if $app->multi_param('default_mt_sites_action');
+        $blog->default_mt_sites_sites(
+            $app->multi_param('default_mt_sites_sites') )
+            if $app->multi_param('default_mt_sites_sites');
+        $blog->save;
+    }
+
     my $rebuild_trigger
         = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
     unless ($rebuild_trigger) {

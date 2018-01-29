@@ -86,12 +86,9 @@ sub apply_default_settings {
     my $s = {
         system => { all_triggers => undef, },
         blog   => {
-            rebuild_triggers           => '',
-            blog_content_accessible    => '',
-            other_triggers             => undef,
-            blogs_in_website_triggers  => undef,
-            default_mtmultiblog_action => 1,
-            default_mtmulitblog_blogs  => '',
+            rebuild_triggers          => '',
+            other_triggers            => undef,
+            blogs_in_website_triggers => undef,
         },
     };
 
@@ -479,6 +476,8 @@ sub update_trigger_cache {
 
     if ( $blog_id > 0 ) {
 
+        my $blog = MT->model('blog')->load($blog_id);
+
         # Save blog-level content aggregation policy to single
         # system config hash for easy lookup
         my ( $cfg_old, $cfg_new ) = 0;
@@ -486,7 +485,7 @@ sub update_trigger_cache {
             = MT->config('AccessOverrides')
             ? MT::Util::from_json( MT->config('AccessOverrides') )
             : {};
-        $cfg_new = $data->{blog_content_accessible} || 0;
+        $cfg_new = $blog ? $blog->blog_content_accessible || 0 : 0;
         if ( exists $override->{$blog_id} ) {
             $cfg_old = $override->{$blog_id};
         }

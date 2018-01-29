@@ -110,14 +110,12 @@ sub _hdlr_websites {
         || $args->{exclude_websites}
         || $args->{site_ids} )
     {
-        require MT::RebuildTrigger;
-        my $id = $ctx->stash('blog_id');
+        my $blog = $ctx->stash('blog');
         my $is_include
-            = MT::RebuildTrigger->get_config_value( 'default_mt_sites_action',
-            $id );
-        my $blogs
-            = MT::RebuildTrigger->get_config_value( 'default_mt_sites_sites',
-            $id );
+            = defined $blog->default_mt_sites_action
+            ? $blog->default_mt_sites_action
+            : 1;
+        my $blogs = $blog->default_mt_sites_sites || '';
 
         my $tag_name = $ctx->stash('tag');
 
