@@ -163,6 +163,24 @@ parameters:
 <mt:setvarblock name="modal_footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+
+    <button
+       type="submit"
+       accesskey="x"
+       data-mt-modal-close
+       class="cancel action button mt-close-dialog btn btn-link btn-sm"
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel"></button>
+
+    <mt:unless name="panel_first">
+    <button
+       type="submit"
+       accesskey="b"
+       title="<__trans phrase="Back (b)">"
+       class="action previous button btn btn-default">
+      <__trans phrase="Back"></button>
+    </mt:unless>
+
     <mt:if name="panel_last">
       <button
          type="submit"
@@ -180,21 +198,7 @@ parameters:
          disabled="true">
         <__trans phrase="Continue"></button>
     </mt:if>
-    <mt:unless name="panel_first">
-      <button
-         type="submit"
-         accesskey="b"
-         title="<__trans phrase="Back (b)">"
-         class="action previous button btn btn-default">
-        <__trans phrase="Back"></button>
-    </mt:unless>
-      <button
-         type="submit"
-         accesskey="x"
-         data-mt-modal-close
-         class="cancel action button mt-close-dialog btn btn-default"
-         title="<__trans phrase="Cancel (x)">">
-        <__trans phrase="Cancel"></button>
+
     </form>
   </div>
 </mt:setvarblock>
