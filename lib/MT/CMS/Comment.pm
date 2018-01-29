@@ -765,7 +765,7 @@ sub dialog_post_comment {
     return $app->errtrans("You cannot reply to unapproved comment.")
         unless $parent->is_published;
 
-    my $perms = $app->{perms};
+    my $perms = $app->permissions;
     return unless $perms;
 
     my $entry_class = $app->_load_driver_for('entry');
