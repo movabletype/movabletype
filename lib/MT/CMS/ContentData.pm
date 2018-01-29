@@ -942,6 +942,7 @@ sub make_menus {
             condition => sub {
                 $ct->blog_id == MT->app->blog->id;
             },
+            permission => 'manage_content_data',
         };
         if ( $blog->is_blog ) {
             $blog_order += 100;
