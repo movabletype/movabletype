@@ -262,7 +262,7 @@ function resize_upload_overlay() {
 
   // Change "width" and "left" properties when dialog width is bigger than parent frame width.
   if (isDialog) {
-    offset_left = top.jQuery('iframe.embed-responsive-item').offset().left;
+    offset_left = window.top.jQuery('.mt-modal iframe.embed-responsive-item:visible').offset().left;
     if (offset_left < 0) {
 
       // width

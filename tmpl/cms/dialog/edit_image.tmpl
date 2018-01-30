@@ -150,7 +150,8 @@
            type="submit"
            accesskey="x"
            class="cancel action button image-editor-close-dialog btn btn-default"
-           title="<__trans phrase="Cancel (x)">">
+           title="<__trans phrase="Cancel (x)">"
+           data-mt-modal-close>
           <__trans phrase="Cancel"></button>
       </form>
     </div>
@@ -320,7 +321,10 @@
         });
 
         // Set parameters and submit form.
-        jQuery('button.primary').click(function() {
+        jQuery('button.primary').click(function(e) {
+            window.onbeforeunload = null;
+            jQuery('button.action').attr('disabled', 'disabled');
+
             var $form = jQuery('form');
             $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
             if (jQuery('input#remove-gps-metadata:checked').length > 0) {
@@ -329,6 +333,20 @@
             if (jQuery('input#remove-all-metadata:checked').length > 0) {
                 $form.children('input[name=remove_all_metadata]').val(1);
             }
+
+            var $iframes = window.top.jQuery('.mt-modal iframe');
+            if ($iframes.length > 1) {
+                var prevIframe = $iframes.get(-2);
+                prevIframe.contentWindow.onbeforeunload = null;
+                $form.attr('target', prevIframe.name);
+                window.top.jQuery(prevIframe).on('load.post-form', function () {
+                    window.top.jQuery(prevIframe).off('load.post-form');
+                    window.top.jQuery.fn.mtModal.close();
+                });
+            }
+
+            $form.submit();
+            return false;
         });
 
         // Enable submit button when clicking checkbox/button.
@@ -339,34 +357,18 @@
         });
 
         // Confirm before closing dialog.
-        function closeModalWithCheck() {
-          if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
-              var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
-              if (confirm(message)) {
-                  return true;
-              }
-          } else {
-              return true;
-          }
+        window.onbeforeunload = function () {
+            if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
+                var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
+                if (confirm(message)) {
+                    return true;
+                }
+            } else {
+                return true;
+            }
 
-          return false;
+            return false;
         }
-
-        jQuery('button.image-editor-close-dialog').on('click', function () {
-          if (!closeModalWithCheck()) {
-            return false;
-          }
-          window.parent.jQuery('.mt-modal').off('hide.bs.modal');
-          jQuery.fn.mtModal.close();
-          return false;
-        });
-
-        window.parent.jQuery('.mt-modal').on('hide.bs.modal', function (e) {
-          if (!closeModalWithCheck()) {
-            return false;
-          }
-          window.parent.jQuery('.mt-modal').off('hide.bs.modal');
-        });
 
         // Cancel cropping when clicking escape key.
         function cancelCropping(event) {
