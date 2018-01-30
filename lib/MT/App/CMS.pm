@@ -339,14 +339,6 @@ sub core_methods {
         },
 
         ## DEPRECATED ##
-        'list_entries'      => "${pkg}Entry::list",
-        'list_pages'        => "${pkg}Page::list",
-        'list_authors'      => "${pkg}User::list",
-        'list_assets'       => "${pkg}Asset::list",
-        'list_cat'          => "${pkg}Category::list",
-        'list_blogs'        => "${pkg}Blog::list",
-        'list_associations' => "${pkg}User::list_association",
-        'list_roles'        => "${pkg}User::list_role",
         'upload_userpic'    => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
@@ -1838,6 +1830,7 @@ sub core_menus {
             mode       => 'list_ct_boilerplates',
             permission => 'administer',
             view       => ['system'],
+            permission => 'manage_content_types',
         },
         'content_type:manage_content_type' => {
             label      => 'Manage',
@@ -1853,6 +1846,7 @@ sub core_menus {
             args  => { _type => 'content_type' },
             order => 200,
             view  => [ 'website', 'blog' ],
+            permission => 'manage_content_types',
         },
 
         'tag:manage' => {
@@ -2918,6 +2912,18 @@ sub build_menus {
                     $content_type_id ||= 0;
 
                     if ( "content_data:$content_type_id" eq $sub_id ) {
+                        $sub->{current} = 1;
+                    }
+                }
+                elsif (( $app_param_type || '' ) eq 'category'
+                    && ( $sub->{args}{_type} || '' ) eq 'category_set'
+                    && $app->param('is_category_set') )
+                {
+
+                    $param->{screen_group} = 'category_set';
+                    if ( $sub_id eq 'category_set:create'
+                        && !$app->param('id') )
+                    {
                         $sub->{current} = 1;
                     }
                 }

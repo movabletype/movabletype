@@ -1681,6 +1681,7 @@ function initModal() {
   if ($modal.length == 0) {
     var modalHtml = getModalHtml();
     $(document.body).append(modalHtml);
+    $modal = $('.mt-modal');
 
     // Disable drag & drop on overlay.
     $modal.on('dragover drop', function(e) {

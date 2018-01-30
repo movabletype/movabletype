@@ -60,7 +60,7 @@ sub save {
         split /,/, $blog_at
         if $blog_at ne 'None';
     push @ats, $map->archive_type;
-    my $new_at = join ',', @ats;
+    my $new_at = join ',', sort @ats;
 
     if ( $new_at ne $blog_at ) {
         $blog->archive_type($new_at);

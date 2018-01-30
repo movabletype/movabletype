@@ -396,7 +396,7 @@ sub _template_sort {
     }
 
     # both a, b == widgetset or both a, b != widgetset
-    return $a->{order} <=> $b->{order};
+    return $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key};
 }
 
 1;

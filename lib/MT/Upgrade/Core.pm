@@ -382,7 +382,7 @@ sub upgrade_templates {
         for my $map_set (@arch_tmpl) {
             my $tmpl     = $map_set->{template};
             my $mappings = $map_set->{mappings};
-            foreach my $map_key ( keys %$mappings ) {
+            foreach my $map_key ( sort keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
 
