@@ -17,21 +17,14 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 
-my $site;
-my $user;
-
 ### Make test data
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture('db_data');
 
-        $site = MT::Test::Permission->make_website( name => 'my website' );
+my $site = MT::Test::Permission->make_website( name => 'my website' );
 
-        $user = MT::Test::Permission->make_author(
-            name     => 'aikawa',
-            nickname => 'Ichiro Aikawa',
-        );
-    }
+my $user = MT::Test::Permission->make_author(
+    name     => 'aikawa',
+    nickname => 'Ichiro Aikawa',
 );
 
 my $content_type = MT::Test::Permission->make_content_type(
