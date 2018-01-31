@@ -576,9 +576,16 @@ sub schema_version {
     my $self = shift;
     my %versions = (
         core => MT->schema_version,
-        %{ MT->config->PluginSchemaVersion || {} },
+        $self->plugin_schema_version,
     );
     return join "; ", map { $_ . " " . $versions{$_} } sort keys %versions;
+}
+
+sub plugin_schema_version {
+    my $self = shift;
+    return map { $_->id => $_->schema_version }
+        grep { defined $_->schema_version && $_->schema_version ne '' }
+        @MT::Plugins;
 }
 
 sub DESTROY {
