@@ -90,7 +90,7 @@ sub AUTOLOAD {
     my $cache = shift;
     ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $cache->{memcached};
-    return unless __validate_key(@_);
+    return unless __validate_key( $method, @_ );
     return $cache->{memcached}->$method(@_);
 }
 
