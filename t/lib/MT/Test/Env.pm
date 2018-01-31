@@ -368,6 +368,7 @@ sub load_schema_and_fixture {
         }
         my $sql_maker = SQL::Maker->new( driver => $self->{driver} );
         for my $table ( keys %$fixture ) {
+            next if $table eq 'schema_version';
             my $data = $fixture->{$table};
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
