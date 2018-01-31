@@ -65,12 +65,28 @@ sub purge_stale {
     1;
 }
 
+sub __validate_key{
+    my $key = shift;
+    my @keys;
+    if ( 'ARRAY' eq ref $key ) {
+        @keys = @$key;
+    }
+    else {
+        @keys = ( $key );
+    }
+    foreach my $k ( @keys ) {
+        return if $k =~/[\x00-\x20\x7f-\xff]/ || length($key) > 200;
+    }
+    1;
+}
+
 sub DESTROY { }
 
 sub AUTOLOAD {
     my $cache = shift;
     ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $cache->{memcached};
+    return unless __validate_key( @_ );
     return $cache->{memcached}->$method(@_);
 }
 
