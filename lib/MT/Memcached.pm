@@ -65,17 +65,21 @@ sub purge_stale {
     1;
 }
 
-sub __validate_key{
-    my $key = shift;
+sub __validate_key {
+    my $method = shift;
+
+    return 1 if 'disconnect_all' eq $method or 'flush_all' eq $method;
+
     my @keys;
-    if ( 'ARRAY' eq ref $key ) {
-        @keys = @$key;
+    if ( 'get_multi' eq $method ) {
+        (@keys) = @_;
     }
     else {
-        @keys = ( $key );
+        push @keys, shift;
     }
-    foreach my $k ( @keys ) {
-        return if $k =~/[\x00-\x20\x7f-\xff]/ || length($key) > 200;
+
+    foreach my $k (@keys) {
+        return if $k =~ /[\x00-\x20\x7f-\xff]/ || length($k) > 200;
     }
     1;
 }
@@ -86,7 +90,7 @@ sub AUTOLOAD {
     my $cache = shift;
     ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $cache->{memcached};
-    return unless __validate_key( @_ );
+    return unless __validate_key(@_);
     return $cache->{memcached}->$method(@_);
 }
 
