@@ -123,7 +123,7 @@ jQuery(window).load(init);
 <mt:if name="asset_type" eq="image">
   <mt:if name="has_thumbnail">
       <div class="image-editor">
-        <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">&return_args=<mt:var name="return_args" escape="html" escape="url">%26magic_token%3D<mt:var name="magic_token">" class="btn btn-default button mt-open-dialog">
+        <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">&return_args=<mt:var name="return_args" escape="html" escape="url">%26magic_token%3D<mt:var name="magic_token">" class="btn btn-default button">
           <__trans phrase="Edit Image">
         </a>
       </div>
@@ -192,7 +192,32 @@ jQuery(window).load(init);
 
 <mt:setvarblock name="js_include" append="1">
 <script>
+
 var isDirty = false;
+
+function closeModalWithCheck() {
+    if (isDirty) {
+        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?" escape="js">';
+        if ( confirm(msg) ) {
+            return true;
+        }
+    } else {
+        return true;
+    }
+    return false;
+}
+
+function openEditImageModal(href) {
+    window.top.jQuery.fn.mtModal.open(href, { large: true });
+}
+
+window.onbeforeunload = closeModalWithCheck;
+
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+
 jQuery('#save').click(function(){
   jQuery('#msg-block').empty();
   jQuery.ajax({
@@ -231,47 +256,12 @@ jQuery(':input:visible').on('keydown', function(){
 });
 
 jQuery('.image-editor a').click(function(event) {
-    if (isDirty) {
-        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
-        if ( confirm(msg) ) {
-            jQuery.fn.mtModal.open(jQuery(this).attr('href'), { full: true });
-            isDirty = false;
-        }
-    }
-    else {
-        jQuery.fn.mtModal.open(jQuery(this).attr('href'), { full: true });
-    }
-    return false;
-});
-
-function closeModalWithCheck() {
-    if (isDirty) {
-        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?" escape="js">';
-        if ( confirm(msg) ) {
-            return true;
-        }
-    } else {
-        return true;
-    }
-    return false;
-}
-
-jQuery('button.close-dialog').click(function() {
     if (!closeModalWithCheck()) {
         return false;
     }
-    window.parent.jQuery('.mt-modal').off('hide.bs.modal');
-    window.parent.jQuery.fn.mtDialog.close();
+    openEditImageModal(jQuery(this).attr('href'));
     return false;
 });
-
-window.parent.jQuery('.mt-modal').on('hide.bs.modal', function (e) {
-    if (!closeModalWithCheck()) {
-        return false;
-    }
-    window.parent.jQuery('.mt-modal').off('hide.bs.modal');
-});
-</script>
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">

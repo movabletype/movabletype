@@ -6283,7 +6283,7 @@ button.bg-dark:focus {
   display: table-cell !important;
 }
 
-.d-flex, .mt-productHeader, .mt-draggable, .mt-draggable__area, .mt-contentfield .mt-collapse__container, .mt-collapse__container {
+.d-flex, .mt-productHeader, .mt-draggable, .mt-contentfield .mt-collapse__container, .mt-collapse__container {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6563,7 +6563,7 @@ button.bg-dark:focus {
           justify-content: flex-end !important;
 }
 
-.justify-content-center, .mt-draggable__area {
+.justify-content-center {
   -webkit-box-pack: center !important;
       -ms-flex-pack: center !important;
           justify-content: center !important;
@@ -9818,10 +9818,16 @@ fieldset.form-group {
 }
 
 .mt-draggable__area {
-  height: 400px;
+  display: table;
+  width: 100%;
   border: 4px dotted #A5A5A5;
   border-radius: 0.25rem;
+}
+
+.mt-draggable__empty {
+  display: table-cell;
   text-align: center;
+  vertical-align: middle;
 }
 
 .mt-draggable__area--dragover {
