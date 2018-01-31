@@ -17,33 +17,47 @@ sub config {
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
-    my ($rebuild_trigger)
+    $param->{default_access_allowed} = $app->config('DefaultAccessAllowed');
+
+    if ( my $blog = $app->blog ) {
+        $param->{blog_content_accessible}
+            = $blog->blog_content_accessible || 0;
+        $param->{default_mt_sites_action}
+            = $blog->default_mt_sites_action || 1;
+        $param->{default_mt_sites_sites}
+            = $blog->default_mt_sites_sites || '';
+    }
+
+    my @rebuild_triggers
         = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
-    if ($rebuild_trigger) {
-        my $data = MT::Util::from_json( $rebuild_trigger->data );
-        for my $key (
-            qw/ all_triggers blogs_in_website_triggers rebuild_triggers /)
-        {
-            $param->{$key} = $data->{$key} if $data->{$key};
-        }
-        $param->{default_access_allowed}
-            = $app->config('DefaultAccessAllowed');
 
-        if ( my $blog = $app->blog ) {
-            $param->{blog_content_accessible}
-                = $blog->blog_content_accessible || 0;
-            $param->{default_mt_sites_action}
-                = $blog->default_mt_sites_action || 1;
-            $param->{default_mt_sites_sites}
-                = $blog->default_mt_sites_sites || '';
-        }
+    foreach my $rt (@rebuild_triggers) {
+        my $action
+            = $rt->action == MT::RebuildTrigger::ACTION_RI() ? 'ri' : 'rip';
+        my $target
+            = $rt->target == MT::RebuildTrigger::TARGET_ALL() ? '_all'
+            : $rt->target == MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+            ? '_blogs_in_website'
+            : $rt->target_blog_id;
+        my $objct_type
+            = $rt->object_type == MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+            ? 'entry'
+            : 'content';
+        my $event
+            = $rt->event == MT::RebuildTrigger::EVENT_SAVE()    ? 'save'
+            : $rt->event == MT::RebuildTrigger::EVENT_PUBLISH() ? 'pub'
+            :                                                     'unpub';
+        my $new_trigger = join ':', $action, $target,
+            $objct_type . '_' . $event;
+        $param->{rebuild_triggers}
+            = $param->{rebuild_triggers}
+            ? join '|', $param->{rebuild_triggers}, $new_trigger
+            : $new_trigger;
+    }
 
+    if ( $param->{rebuild_triggers} ) {
         load_config( $app, $param,
             ( $blog_id ? "blog:$blog_id" : 'system' ) );
-    }
-    else {
-        require MT::RebuildTrigger;
-        MT::RebuildTrigger->apply_default_settings( $param, $blog_id );
     }
 
     $param->{saved} = $app->param('saved');
@@ -233,10 +247,78 @@ sub save {
     my $blog_id = $app->blog ? $app->blog->id : 0;
     my @p = $app->multi_param;
     my %params;
+
+    my @rebuild_triggers
+        = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
+    my @new_triggers = ();
+
     for my $key (
         qw/ all_triggers blogs_in_website_triggers rebuild_triggers /)
     {
-        $params{$key} = $app->multi_param($key) if $app->multi_param($key);
+        if ( $app->multi_param($key) ) {
+            my @triggers = split '\|', $app->multi_param($key);
+            foreach my $trigger (@triggers) {
+                my ( $action, $id, $event ) = split ':', $trigger;
+                $action
+                    = $action eq 'ri'
+                    ? MT::RebuildTrigger::ACTION_RI()
+                    : MT::RebuildTrigger::ACTION_RIP();
+                my $object_type
+                    = $event =~ /^entry_.*/
+                    ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+                    : MT::RebuildTrigger::TYPE_CONTENT();
+                $event
+                    = $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
+                    : $event =~ /.*_pub$/
+                    ? MT::RebuildTrigger::EVENT_PUBLISH()
+                    : MT::RebuildTrigger::EVENT_UNPUBLISH();
+                my $target
+                    = $id eq '_all' ? MT::RebuildTrigger::TARGET_ALL()
+                    : $id eq '_blogs_in_website'
+                    ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+                    : MT::RebuildTrigger::TARGET_BLOG();
+                my $target_blog_id = $id =~ /\d+/ ? $id : 0;
+                my ($rt) = grep {
+                           $_->blog_id == $blog_id
+                        && $_->object_type == $object_type
+                        && $_->action == $action
+                        && $_->event == $event
+                        && $_->target == $target
+                        && $_->target_blog_id == $target_blog_id
+                } @rebuild_triggers;
+
+                unless ($rt) {
+                    $rt = MT->model('rebuild_trigger')->new;
+                    $rt->blog_id($blog_id);
+                    $rt->object_type($object_type);
+                    $rt->action($action);
+                    $rt->event($event);
+                    $rt->target($target);
+                    $rt->target_blog_id($target_blog_id);
+                }
+                push @new_triggers, $rt;
+            }
+        }
+    }
+
+    # Remove
+    foreach my $rt (@rebuild_triggers) {
+        my ($exist) = grep {
+                   $_->blog_id == $rt->blog_id
+                && $_->object_type == $rt->object_type
+                && $_->action == $rt->action
+                && $_->event == $rt->event
+                && $_->target == $rt->target
+                && $_->target_blog_id == $rt->target_blog_id
+        } @new_triggers;
+        unless ($exist) {
+            $rt->remove or return $app->error( $rt->errstr );
+        }
+    }
+
+    # Save
+    foreach my $rt (@new_triggers) {
+        $rt->save or return $app->error( $rt->errstr );
     }
 
     $app->config( 'DefaultAccessAllowed',
@@ -255,15 +337,6 @@ sub save {
             if $app->multi_param('default_mt_sites_sites');
         $blog->save;
     }
-
-    my $rebuild_trigger
-        = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
-    unless ($rebuild_trigger) {
-        $rebuild_trigger = MT->model('rebuild_trigger')->new();
-        $rebuild_trigger->blog_id($blog_id);
-    }
-    $rebuild_trigger->data( MT::Util::to_json( \%params ) );
-    $rebuild_trigger->save;
 
     $app->add_return_arg( 'saved' => 1 );
     $app->call_return;

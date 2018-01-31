@@ -9,11 +9,49 @@ package MT::RebuildTrigger;
 use strict;
 use base qw( MT::Object );
 
+use Exporter 'import';
+our @EXPORT_OK = qw(
+    TYPE_BLOG_OR_PAGE TYPE_CONTENT TYPE_COMMENT TYPE_PING
+    ACTION_RI ACTION_RIP
+    TRIGGER_SAVE TRIGGER_PUBLISH TRIGGER_UNPUBLISH
+);
+our %EXPORT_TAGS = (
+    constants => [
+        qw(
+            TYPE_BLOG_OR_PAGE TYPE_CONTENT TYPE_COMMENT TYPE_PING
+            ACTION_RI ACTION_RIP
+            TRIGGER_SAVE TRIGGER_PUBLISH TRIGGER_UNPUBLISH
+            )
+    ]
+);
+
+sub TYPE_ENTRY_OR_PAGE() {1}
+sub TYPE_CONTENT()       {2}
+sub TYPE_COMMENT()       {3}
+sub TYPE_PING()          {4}
+
+sub ACTION_RI()  {1}    # rebuild index pages
+sub ACTION_RIP() {2}    # rebuild index pages and send update ping
+
+sub EVENT_SAVE()      {1}
+sub EVENT_PUBLISH()   {2}
+sub EVENT_UNPUBLISH() {3}
+
+sub TARGET_ALL()              {1}
+sub TARGET_BLOGS_IN_WEBSITE() {2}
+sub TARGET_BLOG()             {3}
+
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'data'    => 'blob',
+            'id'             => 'integer not null auto_increment',
+            'blog_id'        => 'integer not null',
+            'object_type'    => 'integer',
+            'ct_id'          => 'integer',
+            'ct_unique_id'   => 'string(40)',
+            'action'         => 'integer',
+            'event'          => 'integer',
+            'target'         => 'integer',
+            'target_blog_id' => 'integer',
         },
         indexes     => { blog_id => 1 },
         datasource  => 'rebuild_trigger',
@@ -456,19 +494,19 @@ sub _post_content_common {
     }
 }
 
-sub save {
-    my $self = shift;
-
-    my $data
-        = $self->data()
-        ? MT::Util::from_json( $self->data() )
-        : {};
-    $self->update_trigger_cache( $data, $self->blog_id );
-
-    MT->request( 'config_rebuild_trigger', undef );
-
-    $self->SUPER::save(@_);
-}
+#sub save {
+#    my $self = shift;
+#
+#    my $data
+#        = $self->data()
+#        ? MT::Util::from_json( $self->data() )
+#        : {};
+#    $self->update_trigger_cache( $data, $self->blog_id );
+#
+#    MT->request( 'config_rebuild_trigger', undef );
+#
+#    $self->SUPER::save(@_);
+#}
 
 sub update_trigger_cache {
     my $self = shift;
