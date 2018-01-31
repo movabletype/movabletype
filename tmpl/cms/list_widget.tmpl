@@ -77,7 +77,12 @@ function init() {
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="id-head" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="id-head"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
       <th class="head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
       <th class="head widgetmanager-widgets primary"><span class="col-label"><__trans phrase="Installed Widgets"></span></th>
     </tr>
@@ -88,7 +93,12 @@ function init() {
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="id_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
+          <label class="custom-control-label" for="id_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
       <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
       <td class="widgetmanager-widgets"><mt:var name="names" escape="html"></td>
     </tr>
