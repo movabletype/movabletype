@@ -25,6 +25,10 @@ isa_ok( $mt, 'MT' );
 {
     my $author = MT::Author->load( { name => 'Chuck D' } );
     isa_ok( $author, 'MT::Author' );
+
+    $author->set_password('bass');
+    $author->save or die $author->errstr;
+
     ok( $author->is_valid_password('bass'),   'bass is valid' );
     ok( !$author->is_valid_password('wrong'), 'wrong is invalid' );
 

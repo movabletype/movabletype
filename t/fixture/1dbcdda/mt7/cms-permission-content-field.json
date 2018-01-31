@@ -24,18 +24,6 @@
             "__NOW__",
             "1",
             "1"
-         ],
-         [
-            "2",
-            "2",
-            null,
-            "__NOW__",
-            "0",
-            "2",
-            null,
-            "__NOW__",
-            "10",
-            "1"
          ]
       ]
    },
@@ -447,44 +435,6 @@
          ]
       ]
    },
-   "mt_cf" : {
-      "cols" : [
-         "cf_blog_id",
-         "cf_content_type_id",
-         "cf_created_by",
-         "cf_created_on",
-         "cf_default",
-         "cf_description",
-         "cf_id",
-         "cf_modified_by",
-         "cf_modified_on",
-         "cf_name",
-         "cf_related_cat_set_id",
-         "cf_related_content_type_id",
-         "cf_required",
-         "cf_type",
-         "cf_unique_id"
-      ],
-      "rows" : [
-         [
-            "2",
-            "1",
-            null,
-            "__NOW__",
-            null,
-            "This is a sample single_line_text field.",
-            "1",
-            null,
-            "__NOW__",
-            "single line text",
-            null,
-            null,
-            null,
-            "single_line_text",
-            "b55d55c38ac2f2ebf3001f234b6078a3eeafc64e"
-         ]
-      ]
-   },
    "mt_config" : {
       "cols" : [
          "config_data",
@@ -494,38 +444,6 @@
          [
             "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion multiblog=2.8\nSchemaVersion 7.0024\n",
             "1"
-         ]
-      ]
-   },
-   "mt_content_type" : {
-      "cols" : [
-         "content_type_blog_id",
-         "content_type_created_by",
-         "content_type_created_on",
-         "content_type_description",
-         "content_type_fields",
-         "content_type_id",
-         "content_type_modified_by",
-         "content_type_modified_on",
-         "content_type_name",
-         "content_type_unique_id",
-         "content_type_user_disp_option",
-         "content_type_version"
-      ],
-      "rows" : [
-         [
-            "2",
-            null,
-            "__NOW__",
-            "This is a sample.",
-            "[{\"id\":\"1\",\"options\":{\"label\":\"single line text\"},\"order\":1,\"type\":\"single_line_text\",\"unique_id\":\"b55d55c38ac2f2ebf3001f234b6078a3eeafc64e\"}]",
-            "1",
-            null,
-            "__NOW__",
-            "test content type",
-            "462bb785cb39dbb95a6fe17b4f3472944b195b67",
-            null,
-            null
          ]
       ]
    },
@@ -591,22 +509,6 @@
             "__NOW__",
             null,
             "'sign_in_cms','sign_in_data_api'",
-            null,
-            "0",
-            null
-         ],
-         [
-            "2",
-            "2",
-            null,
-            null,
-            "__NOW__",
-            null,
-            "4",
-            null,
-            "__NOW__",
-            null,
-            "'content_type:462bb785cb39dbb95a6fe17b4f3472944b195b67-content_field:b55d55c38ac2f2ebf3001f234b6078a3eeafc64e'",
             null,
             "0",
             null
@@ -760,21 +662,6 @@
             "__NOW__",
             "Content Designer",
             "'manage_content_types','manage_content_data','manage_category_set'",
-            null,
-            null,
-            null,
-            null
-         ],
-         [
-            null,
-            "__NOW__",
-            null,
-            "10",
-            "0",
-            null,
-            "__NOW__",
-            "Edit Content Field \"single line text\"",
-            "'content_type:462bb785cb39dbb95a6fe17b4f3472944b195b67-content_field:b55d55c38ac2f2ebf3001f234b6078a3eeafc64e'",
             null,
             null,
             null,

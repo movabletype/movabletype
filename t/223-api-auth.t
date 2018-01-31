@@ -19,6 +19,9 @@ $test_env->prepare_fixture('db_data');
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(2);
+$author->set_password('bass');
+$author->api_password('seecret');
+$author->save or die $author->errstr;
 
 use MT::DataAPI::Endpoint::Auth;
 use MT::AccessToken;
