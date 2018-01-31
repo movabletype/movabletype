@@ -269,8 +269,10 @@ sub init_core_callbacks {
             $pkg
                 . 'delete_permission_filter.content_data' =>
                 "${pfx}ContentData::can_delete",
-            $pkg . 'post_save.cd'   => "${pfx}ContentData::post_save",
-            $pkg . 'post_delete.cd' => "${pfx}ContentData::post_delete",
+            $pkg . 'post_save.content_data' => "${pfx}ContentData::post_save",
+            $pkg
+                . 'post_delete.content_data' =>
+                "${pfx}ContentData::post_delete",
 
             # content_type
             $pkg
@@ -289,7 +291,6 @@ sub init_core_callbacks {
             $pkg
                 . 'post_delete.content_type' =>
                 "${pfx}ContentType::post_delete",
-
         }
     );
 }
