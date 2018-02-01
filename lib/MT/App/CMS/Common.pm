@@ -258,14 +258,8 @@ sub init_core_callbacks {
 
             # content_data
             $pkg
-                . 'save_permission_filter.cd' =>
-                "${pfx}ContentData::can_save",
-            $pkg
                 . 'save_permission_filter.content_data' =>
                 "${pfx}ContentData::can_save",
-            $pkg
-                . 'delete_permission_filter.cd' =>
-                "${pfx}ContentData::can_delete",
             $pkg
                 . 'delete_permission_filter.content_data' =>
                 "${pfx}ContentData::can_delete",

@@ -537,7 +537,8 @@ sub save {
     my $block_editor_data = $app->param('blockeditor-data');
     $content_data->block_editor_data($block_editor_data);
 
-    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data',
+        $app, $content_data, $orig );
 
     $content_data->save
         or return $app->error(
@@ -672,7 +673,8 @@ sub delete {
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;
 
-        $app->run_callbacks( 'cms_delete_permission_filter.cd', $app, $obj )
+        $app->run_callbacks( 'cms_delete_permission_filter.content_data',
+            $app, $obj )
             or return $app->permission_denied;
 
         my %recipe;
@@ -689,7 +691,7 @@ sub delete {
         $obj->remove()
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
-        $app->run_callbacks( 'cms_post_delete.cd', $app, $obj );
+        $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
@@ -1504,7 +1506,8 @@ sub _update_content_data_status {
 
         MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
 
-        $app->run_callbacks( 'cms_post_bulk_save.cd', $app, \@objects );
+        $app->run_callbacks( 'cms_post_bulk_save.content_data',
+            $app, \@objects );
 
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
