@@ -111,23 +111,23 @@ sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
 
-    $hash->{'cd.content_html'} = $self->_generate_content_html;
+    $hash->{'content_data.content_html'} = $self->_generate_content_html;
 
-    $hash->{'cd.permalink'} = $self->permalink;
-    $hash->{'cd.status_text'}
+    $hash->{'content_data.permalink'} = $self->permalink;
+    $hash->{'content_data.status_text'}
         = MT::ContentStatus::status_text( $self->status );
-    $hash->{ 'cd.status_is_' . $self->status } = 1;
-    $hash->{'cd.created_on_iso'}
+    $hash->{ 'content_data.status_is_' . $self->status } = 1;
+    $hash->{'content_data.created_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
-    $hash->{'cd.modified_on_iso'}
+    $hash->{'content_data.modified_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->modified_on ) };
-    $hash->{'cd.authored_on_iso'}
+    $hash->{'content_data.authored_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
 
     # Populate author info
     my $auth = $self->author or return $hash;
     my $auth_hash = $auth->to_hash;
-    $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+    $hash->{"content_data.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
     $hash;
 }

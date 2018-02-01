@@ -1675,7 +1675,7 @@ sub to_hash {
     my $obj    = shift;
     my $hash   = {};
     my $props  = $obj->properties;
-    my $pfx    = $obj->datasource;
+    my $pfx    = $obj->long_datasource;
     my $values = $obj->get_values;
     foreach ( keys %$values ) {
         $hash->{"${pfx}.$_"} = $values->{$_};
