@@ -49,9 +49,11 @@ sub field_html_params {
 
     my $required = $options->{required} ? 'required' : '';
 
-    {   multiple => $multiple,
-        required => $required,
-        tags     => $tag_names,
+    {   multiple  => $multiple,
+        required  => $required,
+        tag_delim => chr( $app->user->entry_prefs->{tag_delim} ),
+        tags      => $tag_names,
+        tags_js   => MT::Tag->get_tags_js( $app->blog->id ),
     };
 }
 
