@@ -1616,7 +1616,7 @@ sub __parse_def {
         if ( $props->{primary_key} ) && ( $props->{primary_key} eq $col );
     $def{auto}       = 1 if $def =~ m/\bauto[_ ]increment\b/i;
     $def{revisioned} = 1 if $def =~ m/\brevisioned\b/i;
-    $def{default} = $props->{defaults}{$col}
+    $def{default}    = $props->{defaults}{$col}
         if exists $props->{defaults}{$col};
     \%def;
 }
@@ -1789,6 +1789,11 @@ sub assets {
             )
         ];
     }
+}
+
+sub long_datasource {
+    my $class = shift;
+    $class->properties->{long_datasource} || $class->datasource;
 }
 
 package MT::Object::Meta;
