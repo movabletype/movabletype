@@ -2115,7 +2115,7 @@ sub build_revision_table {
         #    $app->translate( $label );
         #} @{ $revision->[1] };
         #$row->{changed_columns} = \@changed;
-        if ( $type =~ /^(entry|page|cd)$/ ) {
+        if ( $type =~ /^(entry|page|content_data)$/ ) {
             $row->{rev_status} = $revision->[0]->status;
         }
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
@@ -2158,7 +2158,7 @@ sub list_revision {
     my $obj  = $obj_promise->force();
     my $blog = $obj->blog || MT::Blog->load($blog_id);
     my $js   = "parent.location.href='" . $app->uri;
-    if ( $type eq 'cd' ) {
+    if ( $type eq 'content_data' ) {
         $js .= '?__mode=view&amp;_type=content_data&amp;content_type_id='
             . $obj->content_type_id;
     }

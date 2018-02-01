@@ -703,7 +703,7 @@ sub dialog_list_content_data {
     $app->listing(
         {   terms    => $terms,
             args     => $args,
-            type     => 'cd',
+            type     => 'content_data',
             code     => $hasher,
             template => 'include/content_data_list.tmpl',
             params   => {

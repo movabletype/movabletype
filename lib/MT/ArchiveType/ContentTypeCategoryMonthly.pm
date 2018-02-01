@@ -172,7 +172,7 @@ sub archive_group_iter {
             else {
                 my $set_id
                     = $args->{category_set_id} || $category->category_set_id;
-                my @fields = MT->model('cf')
+                my @fields = MT->model('content_field')
                     ->load( { related_cat_set_id => $set_id } );
                 foreach my $field (@fields) {
                     $loop_sub->( $category, $field->id );
