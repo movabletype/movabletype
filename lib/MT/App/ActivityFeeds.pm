@@ -36,18 +36,18 @@ sub init_core_callbacks {
     my $app = shift;
 
     MT->_register_core_callbacks(
-        {   'ActivityFeed.system'  => \&_feed_system,
-            'ActivityFeed.blog'    => \&_feed_blog,
-            'ActivityFeed.debug'   => \&_feed_debug,
-            'ActivityFeed.entry'   => \&_feed_entry,
-            'ActivityFeed.page'    => \&_feed_page,
+        {   'ActivityFeed.system' => \&_feed_system,
+            'ActivityFeed.blog'   => \&_feed_blog,
+            'ActivityFeed.debug'  => \&_feed_debug,
+            'ActivityFeed.entry'  => \&_feed_entry,
+            'ActivityFeed.page'   => \&_feed_page,
 
             # Alias
             'ActivityFeed.log' => \&_feed_system,
 
             # Filter
-            'ActivityFeed.filter_object.entry'   => \&_filter_entry,
-            'ActivityFeed.filter_object.page'    => \&_filter_page,
+            'ActivityFeed.filter_object.entry' => \&_filter_entry,
+            'ActivityFeed.filter_object.page'  => \&_filter_page,
 
             # Content Data
             $app->_generate_content_data_callbacks,
@@ -784,9 +784,10 @@ sub _filter_content_data {
     my $user = $app->user;
     my $view = $app->param('view');
 
-    return 0 if !exists $item->{'log.cd.id'};
+    return 0 if !exists $item->{'log.content_data.id'};
 
-    my $content_data = MT->model('content_data')->load( $item->{'log.cd.id'} )
+    my $content_data
+        = MT->model('content_data')->load( $item->{'log.content_data.id'} )
         or return 0;
 
     my $own  = $content_data->author_id == $user->id;
@@ -801,11 +802,11 @@ sub _filter_content_data {
             && !$perm->can_do("edit_all_${view}");    # TODO: fix permission
     }
 
-    $item->{'log.cd.can_edit'}
+    $item->{'log.content_data.can_edit'}
         = $perm->can_edit_content_data( $content_data, $user ) ? 1 : 0;
 
     # TODO: fix permission
-    $item->{'log.cd.can_change_status'}
+    $item->{'log.content_data.can_change_status'}
         = $perm->can_do("publish_all_${view}") ? 1
         : $own && $perm->can_do("publish_own_${view}") ? 1
         :                                                0;
