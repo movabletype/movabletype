@@ -291,3 +291,7 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
+.circleci
+
+# Test
+.proverc
