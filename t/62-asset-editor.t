@@ -37,6 +37,10 @@ use MT::PSGI;
 
 $test_env->prepare_fixture('db_data');
 
+my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
+$author->set_password('Nelson');
+$author->save or die $author->errstr;
+
 my $wight = Test::Wight->new;
 $wight->spawn_psgi( MT::PSGI->new->to_app );
 

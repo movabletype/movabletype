@@ -75,6 +75,9 @@ isa_ok($blog, 'MT::Blog');
 my $author = MT::Author->load({ name => 'Chuck D' });
 isa_ok($author, 'MT::Author');
 
+$author->set_password('bass');
+$author->save or die $author->errstr;
+
 ok($author && $author->is_valid_password('bass'), 'valid');
 ok($author && !$author->is_valid_password('wrong'), 'invalid');
 
