@@ -49,7 +49,7 @@ sub install_properties {
     my $pkg        = shift;
     my ($class)    = @_;
     my $props      = $class->properties;
-    my $datasource = $class->datasource;
+    my $datasource = $class->long_datasource;
 
     $props->{column_defs}{current_revision} = {
         label    => 'Revision Number',
