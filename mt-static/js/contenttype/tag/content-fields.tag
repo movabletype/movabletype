@@ -65,9 +65,12 @@
   <form>
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
-      <div id="installed-fields" class="sortable" ondrop={ onDrop } ondragover={ onDragOver }>
-        <div show={ isEmpty }>{ trans('Please add a piece of content field.') }</div>
-        <div class="mt-contentfield"  draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
+      <div class="mt-draggable__area" style="height:400px;" ondrop={ onDrop } ondragover={ onDragOver } ondragleave={ onDragLeave }>
+        <div show={ isEmpty } class="mt-draggable__empty">
+          <img src="{ StaticURI }images/dragdrop.gif" alt="{ trans('Drag and drop area') }" width="240" height="120">
+          <p>{ trans('Please add a content field.') }</p>
+        </div>
+        <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
       </div>
     </fieldset>
   </form>
@@ -96,16 +99,20 @@
     self.draggedItem = null
     self.placeholder = document.createElement("div")
     self.placeholder.className = 'placeholder'
+    self.dragoverState = false
 
+    // Drag start from content field list
     self.observer.on('mtDragStart', function() {
       self.droppable = true
     })
 
+    // Drag end from content field list
     self.observer.on('mtDragEnd', function() {
       self.droppable = false
       self.onDragEnd()
     })
 
+    // Hide detail modal
     jQuery(document).on('hide.bs.modal', '#editDetail', function(e){
       if ( jQuery('#name-field > input').mtValidate('simple') ) {
         self.opts.name = jQuery('#name-field > input').val()
@@ -117,24 +124,39 @@
       }
     })
 
-    stopSubmitting(e) {
-      if (e.which == 13) {
-        e.preventDefault()
-        return false
-      }
-      return true
-    }
+    // Shown collaped block
+    jQuery(document).on('shown.bs.collapse', '.mt-collapse__content', function(e) {
+      self.recalcHeight(e.target.parentNode.parentNode);
+    })
+
+    // Hide collaped block
+    jQuery(document).on('hidden.bs.collapse', '.mt-collapse__content', function(e) {
+      self.recalcHeight(e.target.parentNode.parentNode);
+    })
 
     onDragOver(e) {
+
       // Allowed only for Content Field and Content Field Type.
       if (self.droppable ) {
-        if (e.target.className != 'sortable' && e.target.className != 'mt-draggable' && e.target.className != 'mt-contentfield') {
+
+        if (e.target.className != 'mt-draggable__area' &&
+            e.target.className != 'mt-draggable' &&
+            e.target.className != 'mt-contentfield') {
           e.preventDefault()
           return
         }
 
+        // Highlight droppable area
+        if (!self.dragoverState) {
+          if (e.target.classList.contains('mt-draggable__area'))
+            e.target.classList.add('mt-draggable__area--dragover')
+          else if (e.target.classList.contains('mt-contentfield'))
+            e.target.parentNode.classList.add('mt-draggable__area--dragover')
+          self.dragoverState = true
+        }
+
         if (self.dragged) {
-          if (e.target.className == 'mt-draggable' || e.target.className == 'mt-contentfield') {
+          if (e.target.className == 'mt-contentfield') {
             // Inside the dragOver method
             self.over = e.target
             var targetRect = e.target.getBoundingClientRect()
@@ -143,11 +165,11 @@
               parent.insertBefore(self.placeholder, e.target.nextElementSibling)
             }
             else {
-              parent.insertBefore(this.placeholder, e.target)
+              parent.insertBefore(self.placeholder, e.target)
             }
           }
-          if (e.target.className == 'sortable') {
-            var fields = e.target.getElementsByClassName('mt-draggable')
+          if (e.target.className == 'mt-draggable__area') {
+            var fields = e.target.getElementsByClassName('mt-contentfield')
             if (fields.length == 0 || ( fields.length == 1 && fields[0] == self.dragged)){
               e.target.appendChild(self.placeholder);
             }
@@ -156,7 +178,10 @@
         }
         else {
           // Dragged from content field types
-          e.target.parentNode.appendChild(self.placeholder)
+          if (e.target.classList.contains('mt-draggable__area'))
+            e.target.appendChild(self.placeholder)
+          else if (e.target.classList.contains('mt-contentfield'))
+            e.target.parentNode.appendChild(self.placeholder)
         }
 
         e.preventDefault()
@@ -171,9 +196,8 @@
           children = self.placeholder.parentNode.children
         }
         for(var i = 0; i < children.length; i++){
-          if(children[i] == self.placeholder) 
-          break;
-          if(children[i] != self.dragged && children[i].classList.contains("mt-draggable")) {
+          if(children[i] == self.placeholder) break;
+          if(children[i] != self.dragged && children[i].classList.contains("mt-contentfield")) {
             pos++;
           }
         }
@@ -200,9 +224,24 @@
         self.update({
           isEmpty: false
         })
+        if ( e.target.classList.contains('mt-draggable__area') )
+          self.recalcHeight(e.target)
+        else
+          self.recalcHeight(e.target.parentNode)
       }
 
+      e.target.classList.remove('mt-draggable__area--dragover')
       e.preventDefault()
+    }
+
+    onDragLeave(e) {
+      if (self.dragoverState) {
+        if (e.target.classList.contains('mt-draggable__area'))
+          e.target.classList.remove('mt-draggable__area--dragover')
+        else if (e.target.classList.contains('mt-contentfield'))
+          e.target.parentNode.classList.remove('mt-draggable__area--dragover')
+        self.dragoverState = false
+      }
     }
 
     onDragStart(e) {
@@ -219,35 +258,16 @@
       self.droppable = false
       self.dragged = null
       self.draggedItem = null
+      self.dragoverState = false
       self.update()
     }
 
-    _moveField(item, pos){
-      for (var i = 0; i < self.fields.length; i++) {
-        var field = self.fields[i];
-        if (field.id == item.id) {
-          self.fields.splice(i, 1)
-          break
-        }
+    stopSubmitting(e) {
+      if (e.which == 13) {
+        e.preventDefault()
+        return false
       }
-      self.fields.splice(pos, 0, field)
-      for (var i = 0; i < self.fields.length; i++) {
-        self.fields[i].order = i + 1
-      }
-    }
-
-   _validateFields() {
-     var requiredFieldsAreValid    = jQuery('.html5-form')
-                                        .mtValidate('simple')
-     var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
-                                        .mtValidate('simple');
-     var tableIsValid              = jQuery('.values-option-table')
-                                        .mtValidate('selection-field-values-option')
-     var contentFieldBlockIsValid  = jQuery('.content-field-block')
-                                        .mtValidate('content-field-block')
-
-     return requiredFieldsAreValid && textFieldsInTableAreValid
-         && tableIsValid && contentFieldBlockIsValid
+      return true
     }
 
     canSubmit() {
@@ -309,6 +329,52 @@
       }
       self.update()
       document.forms['content-type-form'].submit()
+    }
+
+    recalcHeight(droppableArea) {
+      // Calculate droppable area height
+      var contentFields = droppableArea.getElementsByClassName('mt-contentfield')
+      var clientHeight = 0;
+      for (var i = 0; i < contentFields.length; i++){
+        clientHeight += contentFields[i].offsetHeight
+      }
+      if ( clientHeight >= droppableArea.clientHeight ) {
+        jQuery(droppableArea).height(clientHeight + 100)
+      }
+      else {
+        if ( clientHeight >= 400 )
+          jQuery(droppableArea).height(clientHeight + 100)
+        else
+          jQuery(droppableArea).height(400 - 8)
+      }
+    }
+
+    _moveField(item, pos){
+      for (var i = 0; i < self.fields.length; i++) {
+        var field = self.fields[i];
+        if (field.id == item.id) {
+          self.fields.splice(i, 1)
+          break
+        }
+      }
+      self.fields.splice(pos, 0, field)
+      for (var i = 0; i < self.fields.length; i++) {
+        self.fields[i].order = i + 1
+      }
+    }
+
+   _validateFields() {
+     var requiredFieldsAreValid    = jQuery('.html5-form')
+                                        .mtValidate('simple')
+     var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
+                                        .mtValidate('simple');
+     var tableIsValid              = jQuery('.values-option-table')
+                                        .mtValidate('selection-field-values-option')
+     var contentFieldBlockIsValid  = jQuery('.content-field-block')
+                                        .mtValidate('content-field-block')
+
+     return requiredFieldsAreValid && textFieldsInTableAreValid
+         && tableIsValid && contentFieldBlockIsValid
     }
 
   </script>
