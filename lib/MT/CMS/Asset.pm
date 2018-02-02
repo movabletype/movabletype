@@ -41,20 +41,7 @@ sub edit {
             }
             $param->{'auth_pref_tag_delim'} = $tag_delim;
         }
-        require MT::ObjectTag;
-        my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
-                    undef,
-                    {   join => [
-                            'MT::ObjectTag', 'tag_id',
-                            { blog_id => $obj->blog_id }, { unique => 1 }
-                        ]
-                    }
-                )
-            ]
-        );
-        $tags_js =~ s!/!\\/!g;
-        $param->{tags_js} = $tags_js;
+        $param->{tags_js} = MT::Tag->get_tags_js( $obj->blog_id );
 
         my @related;
         if ( $obj->parent ) {
