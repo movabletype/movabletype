@@ -395,57 +395,6 @@ subtest 'mode = cc_return' => sub {
     done_testing();
 };
 
-subtest 'mode = cfg_feedback' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'cfg_feedback',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_feedback" );
-    ok( $out !~ m!permission=1!i, "cfg_feedback by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'cfg_feedback',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_feedback" );
-    ok( $out !~ m!permission=1!i, "cfg_feedback by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $suda,
-            __request_method => 'POST',
-            __mode           => 'cfg_feedback',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_feedback" );
-    ok( $out =~ m!permission=1!i, "cfg_feedback by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'cfg_feedback',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_feedback" );
-    ok( $out =~ m!permission=1!i, "cfg_feedback by other permission" );
-    done_testing();
-};
-
 subtest 'mode = cfg_prefs' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -494,57 +443,6 @@ subtest 'mode = cfg_prefs' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: cfg_prefs" );
     ok( $out =~ m!permission=1!i, "cfg_prefs by other permission" );
-    done_testing();
-};
-
-subtest 'mode = cfg_registration' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'cfg_registration',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_registration" );
-    ok( $out !~ m!permission=1!i, "cfg_registration by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'cfg_registration',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_registration" );
-    ok( $out !~ m!permission=1!i, "cfg_registration by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $suda,
-            __request_method => 'POST',
-            __mode           => 'cfg_registration',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_registration" );
-    ok( $out =~ m!permission=1!i, "cfg_registration by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'cfg_registration',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_registration" );
-    ok( $out =~ m!permission=1!i, "cfg_registration by other permission" );
     done_testing();
 };
 

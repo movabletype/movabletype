@@ -358,15 +358,6 @@ sub _default_roles {
                 'Can create entries, edit their own entries, and comment.'),
             perms => [ 'comment', 'create_post' ],
         },
-        {   name        => MT->translate('Moderator'),
-            description => MT->translate('Can comment and manage feedback.'),
-            perms       => [ 'comment', 'manage_feedback' ],
-        },
-        {   name        => MT->translate('Commenter'),
-            description => MT->translate('Can comment.'),
-            role_mask   => 2**0,
-            perms       => ['comment'],
-        },
         {   name        => MT->translate('Content Designer'),
             description => MT->translate(
                 'Can manage content types, content data, edit their own content types, content data.'
