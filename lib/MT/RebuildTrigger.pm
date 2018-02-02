@@ -11,22 +11,24 @@ use base qw( MT::Object );
 
 use Exporter 'import';
 our @EXPORT_OK = qw(
-    TYPE_BLOG_OR_PAGE TYPE_CONTENT TYPE_COMMENT TYPE_PING
+    TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
     ACTION_RI ACTION_RIP
-    TRIGGER_SAVE TRIGGER_PUBLISH TRIGGER_UNPUBLISH
+    EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
+    TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
 );
 our %EXPORT_TAGS = (
     constants => [
         qw(
-            TYPE_BLOG_OR_PAGE TYPE_CONTENT TYPE_COMMENT TYPE_PING
+            TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
             ACTION_RI ACTION_RIP
-            TRIGGER_SAVE TRIGGER_PUBLISH TRIGGER_UNPUBLISH
+            EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
+            TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
             )
     ]
 );
 
 sub TYPE_ENTRY_OR_PAGE() {1}
-sub TYPE_CONTENT()       {2}
+sub TYPE_CONTENT_TYPE()  {2}
 sub TYPE_COMMENT()       {3}
 sub TYPE_PING()          {4}
 
@@ -493,20 +495,6 @@ sub _post_content_common {
         $code->($d);
     }
 }
-
-#sub save {
-#    my $self = shift;
-#
-#    my $data
-#        = $self->data()
-#        ? MT::Util::from_json( $self->data() )
-#        : {};
-#    $self->update_trigger_cache( $data, $self->blog_id );
-#
-#    MT->request( 'config_rebuild_trigger', undef );
-#
-#    $self->SUPER::save(@_);
-#}
 
 sub update_trigger_cache {
     my $self = shift;

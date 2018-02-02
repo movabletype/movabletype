@@ -31,9 +31,7 @@ function returnTrigger(ok) {
         if (labels.length == 0) return;
         var blog_name = labels[0].innerHTML;
 
-        var trigger = frm.multiblog_blog_trigger.options[frm.multiblog_blog_trigger.selectedIndex];
-        var action = frm.multiblog_blog_action.options[frm.multiblog_blog_action.selectedIndex];
-        win.addMultiBlogTrigger(action.text, action.value, blog_name, blog_id, trigger.text, trigger.value);
+        win.addMultiBlogTrigger('<mt:var name="action_text">', '<mt:var name="action_value">', blog_name, blog_id, '<mt:var name="trigger_text">', '<mt:var name="trigger_value">', '<mt:var name="content_type_text">', '<mt:var name="content_type_id">');
         jQuery.fn.mtModal.close();
     }
 }
@@ -55,16 +53,7 @@ TC.attachLoadEvent( init );
 <mt:setvarblock name="after_listing_panel">
 <form class="form-inline multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
   <mt:var name="trigger_caption">
-  <select name="multiblog_blog_trigger" size="1" class="custom-select form-control">
-  <mt:loop name="multiblog_trigger_loop">
-    <option value="<mt:var name="trigger_key">"><mt:var name="trigger_name"></option>
-  </mt:loop>
-  </select>
-  <select name="multiblog_blog_action" size="1" class="custom-select form-control">
-  <mt:loop name="multiblog_action_loop">
-    <option value="<mt:var name="action_id">"><mt:var name="action_name"></option>
-  </mt:loop>
-  </select>
+  <mt:var name="trigger_label">
 </form>
 </mt:setvarblock>
 

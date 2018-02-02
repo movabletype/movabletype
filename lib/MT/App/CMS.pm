@@ -339,7 +339,7 @@ sub core_methods {
         },
 
         ## DEPRECATED ##
-        'upload_userpic'    => "${pkg}User::upload_userpic",
+        'upload_userpic' => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
@@ -382,9 +382,10 @@ sub core_methods {
         'start_export_content' => "${pkg}ContentData::start_export",
 
         ## MT7 Rebuild Trigger
-        'cfg_rebuild_trigger'  => "${pkg}RebuildTrigger::config",
-        'add_rebuild_trigger'  => "${pkg}RebuildTrigger::add",
-        'save_rebuild_trigger' => {
+        'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
+        'start_add_rebuild_trigger' => "${pkg}RebuildTrigger::start_add",
+        'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
+        'save_rebuild_trigger'      => {
             code      => "${pkg}RebuildTrigger::save",
             no_direct => 1,
         },
@@ -1848,11 +1849,11 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
-            label => 'New',
-            mode  => 'view',
-            args  => { _type => 'content_type' },
-            order => 200,
-            view  => [ 'website', 'blog' ],
+            label      => 'New',
+            mode       => 'view',
+            args       => { _type => 'content_type' },
+            order      => 200,
+            view       => [ 'website', 'blog' ],
             permission => 'manage_content_types',
         },
 
