@@ -126,12 +126,14 @@
 
     // Shown collaped block
     jQuery(document).on('shown.bs.collapse', '.mt-collapse__content', function(e) {
-      self.recalcHeight(e.target.parentNode.parentNode);
+      var target = document.getElementsByClassName('mt-draggable__area')[0]
+      self.recalcHeight(target);
     })
 
     // Hide collaped block
     jQuery(document).on('hidden.bs.collapse', '.mt-collapse__content', function(e) {
-      self.recalcHeight(e.target.parentNode.parentNode);
+      var target = document.getElementsByClassName('mt-draggable__area')[0]
+      self.recalcHeight(target);
     })
 
     onDragOver(e) {
