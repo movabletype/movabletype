@@ -34,10 +34,11 @@ __PACKAGE__->install_properties(
             content_type_id => 1,
             unique_id       => { unique => 1 },
         },
-        datasource  => 'cf',
-        primary_key => 'id',
-        audit       => 1,
-        child_of    => ['MT::ContentType'],
+        datasource      => 'cf',
+        long_datasource => 'content_field',
+        primary_key     => 'id',
+        audit           => 1,
+        child_of        => ['MT::ContentType'],
     }
 );
 

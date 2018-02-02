@@ -88,13 +88,14 @@ __PACKAGE__->install_properties(
                     [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
             },
         },
-        defaults    => { status => 0 },
-        datasource  => 'cd',
-        primary_key => 'id',
-        audit       => 1,
-        meta        => 1,
-        child_of    => ['MT::ContentType'],
-        class_type  => 'content_data',
+        defaults        => { status => 0 },
+        datasource      => 'cd',
+        long_datasource => 'content_data',
+        primary_key     => 'id',
+        audit           => 1,
+        meta            => 1,
+        child_of        => ['MT::ContentType'],
+        class_type      => 'content_data',
     }
 );
 
@@ -110,23 +111,23 @@ sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
 
-    $hash->{'cd.content_html'} = $self->_generate_content_html;
+    $hash->{'content_data.content_html'} = $self->_generate_content_html;
 
-    $hash->{'cd.permalink'} = $self->permalink;
-    $hash->{'cd.status_text'}
+    $hash->{'content_data.permalink'} = $self->permalink;
+    $hash->{'content_data.status_text'}
         = MT::ContentStatus::status_text( $self->status );
-    $hash->{ 'cd.status_is_' . $self->status } = 1;
-    $hash->{'cd.created_on_iso'}
+    $hash->{ 'content_data.status_is_' . $self->status } = 1;
+    $hash->{'content_data.created_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
-    $hash->{'cd.modified_on_iso'}
+    $hash->{'content_data.modified_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->modified_on ) };
-    $hash->{'cd.authored_on_iso'}
+    $hash->{'content_data.authored_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
 
     # Populate author info
     my $auth = $self->author or return $hash;
     my $auth_hash = $auth->to_hash;
-    $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+    $hash->{"content_data.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
     $hash;
 }
@@ -486,7 +487,8 @@ sub data {
     if (@_) {
         my $json;
         if ( ref $_[0] ) {
-            $json = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
+            $json
+                = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
         }
         else {
             $json = $_[0];

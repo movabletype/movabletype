@@ -1048,10 +1048,6 @@ sub _tags_registry {
         data_type  => 'integer',
         order      => 180,
         icon_class => 'ic_tag',
-
-      # prototype
-      # data_load_handler =>
-      #     '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Tags::data_load_handler',
         field_html => 'field_html/field_html_tags.tmpl',
