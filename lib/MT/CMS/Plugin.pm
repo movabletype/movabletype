@@ -312,24 +312,24 @@ sub build_plugin_table {
             my $block_tags    = $plugin->registry( 'tags', 'block' );
             my $function_tags = $plugin->registry( 'tags', 'function' );
             my $modifiers     = $plugin->registry( 'tags', 'modifier' );
-            my $junk_filters = $plugin->registry('junk_filters');
-            my $text_filters = $plugin->registry('text_filters');
+            my $junk_filters  = $plugin->registry('junk_filters');
+            my $text_filters  = $plugin->registry('text_filters');
 
             $row->{plugin_tags} = MT::App::CMS::listify(
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { !/^<\$?MTplugin\$?>$/ } (
+                    sort grep { !/^<\$?MTplugin\$?>$/ } (
                         (
 
                             # Format all 'block' tags with <MT(name)>
-                            map { s/\?$//; "<MT$_>" }
+                            sort map { s/\?$//; "<MT$_>" }
                                 ( keys %{ $block_tags || {} } )
                         ),
                         (
 
                             # Format all 'function' tags with <$MT(name)$>
-                            map {"<\$MT$_\$>"}
+                            sort map {"<\$MT$_\$>"}
                                 ( keys %{ $function_tags || {} } )
                         )
                     )
@@ -339,7 +339,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $modifiers || {} }
                 ]
             ) if $modifiers;
@@ -347,7 +347,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $junk_filters || {} }
                 ]
             ) if $junk_filters;
@@ -355,7 +355,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $text_filters || {} }
                 ]
             ) if $text_filters;
