@@ -40,6 +40,18 @@ sub init {
     $app;
 }
 
+sub _has_feedback_plugins {
+    my $switch = MT->config->PluginSwitch || {};
+    for my $plugin (qw/ Comments Trackback /) {
+        return 1
+            if exists $MT::Plugins{$plugin}
+            && ( !defined $MT::Plugins{$plugin}{enabled}
+            || $MT::Plugins{$plugin}{enabled} )
+            && ( !defined $switch->{$plugin} || $switch->{$plugin} );
+    }
+    return;
+}
+
 sub core_methods {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
@@ -109,10 +121,12 @@ sub core_methods {
         },
 
         ## Blog configuration screens
-        'cfg_prefs'        => "${pkg}Blog::cfg_prefs",
-        'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
+        'cfg_prefs'    => "${pkg}Blog::cfg_prefs",
+        'cfg_feedback' => {
+            code      => "${pkg}Blog::cfg_feedback",
+            condition => \&_has_feedback_plugins,
+        },
         'cfg_plugins'      => "${pkg}Plugin::cfg_plugins",
-        'cfg_registration' => "${pkg}Blog::cfg_registration",
         'cfg_entry'        => "${pkg}Entry::cfg_entry",
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
@@ -339,7 +353,7 @@ sub core_methods {
         },
 
         ## DEPRECATED ##
-        'upload_userpic'    => "${pkg}User::upload_userpic",
+        'upload_userpic' => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
@@ -1841,11 +1855,11 @@ sub core_menus {
             view       => [ 'website', 'blog' ],
         },
         'content_type:create_content_type' => {
-            label => 'New',
-            mode  => 'view',
-            args  => { _type => 'content_type' },
-            order => 200,
-            view  => [ 'website', 'blog' ],
+            label      => 'New',
+            mode       => 'view',
+            args       => { _type => 'content_type' },
+            order      => 200,
+            view       => [ 'website', 'blog' ],
             permission => 'manage_content_types',
         },
 
@@ -1920,14 +1934,7 @@ sub core_menus {
             permission => 'administer_site,edit_config,set_publish_paths',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
-        },
-        'settings:registration' => {
-            label      => "Registration",
-            order      => 500,
-            mode       => 'cfg_registration',
-            permission => 'administer_site,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => [ "blog", 'website' ],
+            condition         => \&_has_feedback_plugins,
         },
         'settings:web_services' => {
             label      => "Web Services",
@@ -2249,12 +2256,6 @@ sub core_enable_object_methods {
             save   => sub { $app->param('id') ? 1 : 0 },
         },
         category_set => { delete => 1 },
-        comment      => {
-            delete => 1,
-            edit   => sub { $app->param('id') ? 1 : 0 },
-            save   => sub { $app->param('id') ? 1 : 0 },
-        },
-        commenter    => { edit   => 1, },
         content_type => { delete => 1, },
         entry        => { edit   => 1 },
         page         => {
@@ -2269,11 +2270,6 @@ sub core_enable_object_methods {
         },
         notification => {
             delete => 1,
-            save   => 1,
-        },
-        ping => {
-            delete => 1,
-            edit   => 1,
             save   => 1,
         },
         role     => { delete => 1 },
