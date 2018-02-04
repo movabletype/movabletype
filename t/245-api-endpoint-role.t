@@ -159,7 +159,7 @@ sub suite {
         {    # Same name role exists.
             path   => '/v2/roles',
             method => 'POST',
-            params => { role => { name => 'Moderator' } },
+            params => { role => { name => 'Designer' } },
             code   => 409,
             error  => "Another role already exists by that name.\n",
         },
