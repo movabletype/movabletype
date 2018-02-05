@@ -27,7 +27,7 @@ function returnTrigger(ok) {
         var blog_id = inp.value;
         var row = TC.getParentByTagName( inp, "tr" );
         if (!row) return;
-        var labels = row.getElementsByTagName('label');
+        var labels = row.getElementsByClassName('panel-label');
         if (labels.length == 0) return;
         var blog_name = labels[0].innerHTML;
 
