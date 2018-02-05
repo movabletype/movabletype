@@ -1358,17 +1358,18 @@ div.mce-notification-error {
 <mt:if name="field_html">
 
   <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-    <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+    <div class="mt-draggable" draggable="true" aria-grabbed="false">
       <div class="col-auto field-header">
         <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
       </div>
       <div class="col">
-        <p>
-          <mt:var name="label_encoded">
+          <label class="form-control-label"><mt:var name="label_encoded"></label>
   <mt:if name="required">
           <span class="badge badge-danger"><__trans phrase="Required"></span>
   </mt:if>
-        </p>
+      </div>
+      <div class="mt-flexBreak"></div>
+      <div class="mt-draggable__content">
         <mt:var name="field_html">
   <mt:if name="show_hint">
         <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
@@ -1459,12 +1460,15 @@ div.mce-notification-error {
     </mt:if>
 
     <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><__trans phrase="Tags"></p>
+          <label class="form-control-label" for="tags"><__trans phrase="Tags"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
           <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
           <div id="tags-suggestion">
@@ -1477,12 +1481,15 @@ div.mce-notification-error {
   <mt:else eq="excerpt">
 
     <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><mt:var name="field_label"></p>
+          <label class="form-control-label" for="excerpt"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
         </div>
       </div>
@@ -1491,12 +1498,15 @@ div.mce-notification-error {
   <mt:else eq="keywords">
 
     <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable mt-3 p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><mt:var name="field_label"></p>
+          <label class="form-control-label" for="keywords"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
         </div>
       </div>
