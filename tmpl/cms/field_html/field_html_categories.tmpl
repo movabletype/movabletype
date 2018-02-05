@@ -127,7 +127,7 @@
           /* ]]> */
           </script>
 
-          <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="card mb-3 p-2 category-selector hidden" style="display: none;">
+          <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
               <div class="category-selector-header">
                   <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
@@ -138,7 +138,7 @@
                   <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></span></a>
               </div>
           </mt:if>
-              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="category-selector-list"></div>
+              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="card p-2 category-selector-list"></div>
           </div><!-- /category-selector -->
 
         </div>
