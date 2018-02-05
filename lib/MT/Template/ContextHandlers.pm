@@ -4238,7 +4238,7 @@ sub _hdlr_app_contentfield_option_group {
     className = this.root.className
     this.root.className = className.replace(/\\s*show\\s*/,'')
     var target = document.getElementsByClassName('mt-draggable__area')[0]
-    this.parent.parent.recalcHeight(target)XS
+    this.parent.parent.recalcHeight(target)
 
     jQuery("a[aria-controls='field-options-" + this.fieldId + "']").attr('aria-expanded', false)
   }
