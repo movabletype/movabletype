@@ -242,21 +242,22 @@ TC.TagComplete.prototype.onDivMouseOut = function()
 TC.TagComplete.prototype.constructCompletionBox = function()
 {
     var div = this.completion_box;
-    while ( div.hasChildNodes() )
-        div.removeChild( div.firstChild );
+    var ul = div.children[0];
+    while ( ul.children[0] )
+        ul.children[0].remove();
     for ( var i = 0; i < this.suggestedCompletions.length; i++ )
     {
-        var inner = document.createElement('div');
-        div.appendChild(inner);
+        var inner = document.createElement('span');
+        inner.className = 'mt-suggest__select';
         inner.innerHTML = this.suggestedCompletions[ i ];
         inner.onmousedown = TC.TagComplete.prototype.onDivMouseDown;
-        inner.onmouseover = TC.TagComplete.prototype.onDivMouseOver;
-        inner.onmouseout = TC.TagComplete.prototype.onDivMouseOut;
         inner.tagComplete = this;
+
+        var li = document.createElement('li');
+        li.appendChild(inner);
+        ul.appendChild(li);
     }
-    div.style.display = 'block';
-    if (div.firstChild)
-        div.firstChild.className = 'complete-highlight';
+    div.parentElement.style.display = 'block';
 }
 
 TC.TagComplete.prototype.clearCompletions = function()
@@ -266,7 +267,7 @@ TC.TagComplete.prototype.clearCompletions = function()
     this.suggestedCompletions = new Array();
     this.selectedCompletion = 0;
     if (this.completion_box)
-        this.completion_box.style.display = 'none';
+        this.completion_box.parentElement.style.display = 'none';
 }
 
 TC.TagComplete.prototype.keyCodeToAChar = function( keyCode )

@@ -816,23 +816,6 @@
 div.mce-notification-error {
     display: none;
 }
-
-#tags_completion {
-    display: none;
-    min-width: 200px;
-    max-width: 100%;
-    position: absolute;
-    z-index: 50;
-    border: 1px solid #c0c6c9;
-    background-color: #f3f3f3;
-}
-#tags_completion div {
-    padding: 2px 5px;
-}
-#tags_completion .complete-highlight {
-    color: #1A1A1A;
-    background-color: #dcdddd;
-}
 </style>
 </mt:setvarblock>
 
@@ -1471,8 +1454,10 @@ div.mce-notification-error {
         <div class="mt-draggable__content">
           <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
           <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-          <div id="tags-suggestion">
-            <div id="tags_completion"></div>
+          <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+            <div id="tags_completion" class="mt_suggest__list">
+              <ul></ul>
+            </div>
           </div>
         </div>
       </div>
