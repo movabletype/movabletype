@@ -5,12 +5,12 @@
     <div class="mt-collapse__container">
       <div class="col"></div>
       <div class="col-auto">
-        <a data-toggle="collapse" href="#collapseExample<mt:var name="content_field_id" escape="html">" aria-expanded="false" aria-controls="collapseExample<mt:var name="content_field_id" escape="html">">
+        <a data-toggle="collapse" href="#categories-<mt:var name="content_field_id" escape="html">" aria-expanded="false" aria-controls="categories-<mt:var name="content_field_id" escape="html">">
           <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
         </a>
       </div>
     </div>
-    <div class="collapse mt-collapse__content" id="collapseExample<mt:var name="content_field_id" escape="html">">
+    <div class="collapse mt-collapse__content" id="categories-<mt:var name="content_field_id" escape="html">">
       <div class="row">
         <div class="col">
 
@@ -117,10 +117,10 @@
                       }
                   );
                   selector.redraw();
+                  selector.open();
 
                   if ( selectedCategoryList.length === 0 ) {
-                      var cs = DOM.getElement( 'open-category-selector-' + contentFieldId );
-                      selector.open( cs );
+                      jQuery('#categories-' + contentFieldId).collapse('show');
                   }
 
               }, 100, 1);
