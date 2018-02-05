@@ -1,7 +1,7 @@
 # File    : Net::FTPSSL
 # Author  : cleach <cleach at cpan dot org>
 # Created : 01 March 2005
-# Version : 0.38
+# Version : 0.39
 # Revision: -Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 cleach Exp -
 
 package Net::FTPSSL;
@@ -88,7 +88,7 @@ my $debug_log_msg;  # Used if Debug is turned on
 
 
 BEGIN {
-    $VERSION = "0.38";              # The version of this module!
+    $VERSION = "0.39";              # The version of this module!
 
     my $type = "IO::Socket::SSL";
     $ipv6 = 0;                      # Assume IPv4 only ...
@@ -219,9 +219,9 @@ sub new {
   my $buf_size     = $arg->{Buffer} || 10240;
   my $data_prot    = ($encrypt_mode eq CLR_CRYPT) ? DATA_PROT_CLEAR
                                  : ($arg->{DataProtLevel} || DATA_PROT_PRIVATE);
-  my $use_ssl      = $arg->{useSSL} || 0;
   my $die          = $arg->{Croak}  || $arg->{Die};
   my $pres_ts      = $arg->{PreserveTimestamp} || 0;
+  my $use_ssl      = $arg->{useSSL} || 0;       # Being depreciated.
 
   my ($use_logfile, $use_glob) = (0, 0);
   if ( $debug && defined $arg->{DebugLogFile} ) {
@@ -391,20 +391,21 @@ sub new {
      ${*$obj}{_SSL_opened} = 0;      # To get rid of SSL warning on quit ...
 
   } else {
-     # Determine the SSL_version to use ...
-     my $mode = $use_ssl ? "SSLv23" : "TLSv1";
-
      # Determine the options to use in start_SSL() ...
      # ------------------------------------------------------------------------
      # Reset SSL_version & Timeout in %ssl_args so these options can be
      # applied to the SSL_Client_Certificate functionality.
      # ------------------------------------------------------------------------
+     my $mode;
      if (defined $ssl_args{SSL_version}) {
-        $mode = $ssl_args{SSL_version};        # Mode was overridden.
+        $mode = $ssl_args{SSL_version};             # Mode was overridden.
         # Reset use_ssl flag in case it conflicts ...
-        $use_ssl = ( $mode =~ m/^SSLv/i );     # Bug ID 115296
+        $use_ssl = ( $mode =~ m/^SSLv/i );          # Bug ID 115296
+     } elsif ( $use_ssl ) {
+        $mode = $ssl_args{SSL_version} = "SSLv23";  # SSL per override
+        warn ("Option useSSL has been depreciated.  Use option SSL_version instead.\n");
      } else {
-        $ssl_args{SSL_version} = $mode;        # Nothing overridden.
+        $mode = $ssl_args{SSL_version} = "TLSv12";  # TLS v1.2 per defaults
      }
      $ssl_args{Timeout} = $timeout  unless (exists $ssl_args{Timeout});
 
@@ -4322,9 +4323,9 @@ __END__
 
 =head1 NAME
 
-Net::FTPSSL - A FTP over SSL/TLS class
+Net::FTPSSL - A FTP over TLS/SSL class
 
-=head1 VERSION 0.38
+=head1 VERSION 0.39
 
 Z<>
 
@@ -4353,9 +4354,11 @@ for any messy error checking in my code example!
 
 =head1 DESCRIPTION
 
-C<Net::FTPSSL> is a class implementing a simple FTP client over a Secure
-Sockets Layer (SSL) or Transport Layer Security (TLS) connection written in
-Perl as described in RFC959 and RFC2228.  It will use TLS by default.
+C<Net::FTPSSL> is a class implementing a simple FTP client over a Transport
+Layer Security (B<TLS>) or Secure Sockets Layer (B<SSL>) connection written in
+Perl as described in RFC959 and RFC2228.  It will use TLS v1.2 by default,
+since TLS is more secure than SSL.  But if you wish to downgrade you may use
+B<SSL_version> to do so.
 
 =head1 CONSTRUCTOR
 
@@ -4390,10 +4393,6 @@ B<DATA_PROT_PRIVATE>, where the data is also encrypted. B<DATA_PROT_CLEAR> is
 for data sent as clear text.  B<DATA_PROT_SAFE> and B<DATA_PROT_CONFIDENTIAL>
 are not currently supported.  If B<CLR_CRYPT> was selected, the data channel
 is always B<DATA_PROT_CLEAR> and can't be overridden.
-
-B<useSSL> - Use this option to connect to the server using SSL instead of TLS.
-TLS is the default encryption type and the more secure of the two protocols.
-Set B<useSSL =E<gt> 1> to use SSL.  (Or you may use I<SSL_version> to do this.)
 
 B<ProxyArgs> - A hash reference to pass to the proxy server.  When a proxy
 server is encountered, this class uses I<Net::HTTPTunnel> to get through to
@@ -4513,6 +4512,10 @@ I<fix_supported()> for more details.
 
 This option can also be usefull when your server doesn't support the I<HELP>
 command itself and you need to trigger some of the conditional logic.
+
+B<useSSL> - This option is being depreciated in favor of L<IO::Socket::SSL>'s
+B<SSL_version> option.  It's just a quick and dirty way to downgrade your
+connection from B<TLS> to B<SSL> which is no longer recomended.
 
 =back
 
@@ -5210,7 +5213,7 @@ collection of modules (libnet).
 
 Please report any bugs with a FTPS log file created via options B<Debug=E<gt>1>
 and B<DebugLogFile=E<gt>"file.txt"> along with your sample code at
-L<http://search.cpan.org/~cleach/Net-FTPSSL-0.38/FTPSSL.pm> or
+L<http://search.cpan.org/~cleach/Net-FTPSSL-0.39/FTPSSL.pm> or
 L<https://metacpan.org/pod/Net::FTPSSL>.
 
 Patches are appreciated when a log file and sample code are also provided.
