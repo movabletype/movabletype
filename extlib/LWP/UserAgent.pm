@@ -15,7 +15,7 @@ use LWP::Protocol ();
 use Scalar::Util qw(blessed);
 use Try::Tiny qw(try catch);
 
-our $VERSION = '6.26';
+our $VERSION = '6.31';
 
 sub new
 {
@@ -387,7 +387,7 @@ sub request {
             }
             $scheme = $1;                  # untainted now
             my $class = "LWP::Authen::\u$scheme";
-            $class =~ s/-/_/g;
+            $class =~ tr/-/_/;
 
             no strict 'refs';
             unless (%{"$class\::"}) {
@@ -660,13 +660,11 @@ sub redirect_ok
     return 1;
 }
 
-
-sub credentials
-{
-    my $self = shift;
-    my $netloc = lc(shift);
-    my $realm = shift || "";
-    my $old = $self->{basic_authentication}{$netloc}{$realm};
+sub credentials {
+    my $self   = shift;
+    my $netloc = lc(shift || '');
+    my $realm  = shift || "";
+    my $old    = $self->{basic_authentication}{$netloc}{$realm};
     if (@_) {
         $self->{basic_authentication}{$netloc}{$realm} = [@_];
     }
@@ -674,7 +672,6 @@ sub credentials
     return @$old if wantarray;
     return join(":", @$old);
 }
-
 
 sub get_basic_credentials
 {
@@ -900,16 +897,20 @@ sub handlers {
 
 sub run_handlers {
     my($self, $phase, $o) = @_;
+
+    # here we pass $_[2] to the callbacks, instead of $o, so that they
+    # can assign to it; e.g. request_prepare is documented to allow
+    # that
     if (defined(wantarray)) {
         for my $h ($self->handlers($phase, $o)) {
-            my $ret = $h->{callback}->($o, $self, $h);
+            my $ret = $h->{callback}->($_[2], $self, $h);
             return $ret if $ret;
         }
         return undef;
     }
 
     for my $h ($self->handlers($phase, $o)) {
-        $h->{callback}->($o, $self, $h);
+        $h->{callback}->($_[2], $self, $h);
     }
 }
 
@@ -1459,7 +1460,7 @@ that have a valid certificate matching the expected hostname.  If FALSE no
 checks are made and you can't be sure that you communicate with the expected peer.
 The no checks behaviour was the default for libwww-perl-5.837 and earlier releases.
 
-This option is initialized from the L<PERL_LWP_SSL_VERIFY_HOSTNAME> environment
+This option is initialized from the C<PERL_LWP_SSL_VERIFY_HOSTNAME> environment
 variable.  If this environment variable isn't set; then C<verify_hostname>
 defaults to 1.
 

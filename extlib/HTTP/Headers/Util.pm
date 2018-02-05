@@ -1,7 +1,9 @@
 package HTTP::Headers::Util;
-$HTTP::Headers::Util::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 use base 'Exporter';
 
@@ -101,7 +103,7 @@ HTTP::Headers::Util - Header value parsing utility functions
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 

@@ -1,8 +1,8 @@
-package Try::Tiny; # git description: v0.27-8-g8dc27c7
+package Try::Tiny; # git description: v0.29-2-g3b23a06
 use 5.006;
 # ABSTRACT: Minimal try/catch with proper preservation of $@
 
-our $VERSION = '0.28';
+our $VERSION = '0.30';
 
 use strict;
 use warnings;
@@ -70,8 +70,7 @@ sub try (&;@) {
   # $catch->();
 
   # name the blocks if we have Sub::Name installed
-  my $caller = caller;
-  _subname("${caller}::try {...} " => $try)
+  _subname(caller().'::try {...} ' => $try)
     if _HAS_SUBNAME;
 
   # set up scope guards to invoke the finally blocks at the end.
@@ -140,8 +139,7 @@ sub catch (&;@) {
 
   croak 'Useless bare catch()' unless wantarray;
 
-  my $caller = caller;
-  _subname("${caller}::catch {...} " => $block)
+  _subname(caller().'::catch {...} ' => $block)
     if _HAS_SUBNAME;
   return (
     bless(\$block, 'Try::Tiny::Catch'),
@@ -154,8 +152,7 @@ sub finally (&;@) {
 
   croak 'Useless bare finally()' unless wantarray;
 
-  my $caller = caller;
-  _subname("${caller}::finally {...} " => $block)
+  _subname(caller().'::finally {...} ' => $block)
     if _HAS_SUBNAME;
   return (
     bless(\$block, 'Try::Tiny::Finally'),
@@ -208,7 +205,7 @@ Try::Tiny - Minimal try/catch with proper preservation of $@
 
 =head1 VERSION
 
-version 0.28
+version 0.30
 
 =head1 SYNOPSIS
 
@@ -399,8 +396,10 @@ not yet handled.
 C<$@> must be properly localized before invoking C<eval> in order to avoid this
 issue.
 
-More specifically, C<$@> is clobbered at the beginning of the C<eval>, which
-also makes it impossible to capture the previous error before you die (for
+More specifically,
+L<before Perl version 5.14.0|perl5140delta/"Exception Handling">
+C<$@> was clobbered at the beginning of the C<eval>, which
+also made it impossible to capture the previous error before you die (for
 instance when making exception objects with error stacks).
 
 For this reason C<try> will actually set C<$@> to its previous value (the one
@@ -443,7 +442,7 @@ because due to the previous caveats it may have been unset.
 C<$@> could also be an overloaded error object that evaluates to false, but
 that's asking for trouble anyway.
 
-The classic failure mode is:
+The classic failure mode (fixed in L<Perl 5.14.0|perl5140delta/"Exception Handling">) is:
 
   sub Object::DESTROY {
     eval { ... }
@@ -479,9 +478,11 @@ be sure the C<eval> was aborted due to an error:
 This is because an C<eval> that caught a C<die> will always return a false
 value.
 
-=head1 SHINY SYNTAX
+=head1 ALTERNATE SYNTAX
 
-Using Perl 5.10 you can use L<perlsyn/"Switch statements">.
+Using Perl 5.10 you can use L<perlsyn/"Switch statements"> (but please don't,
+because that syntax has since been deprecated because there was too much
+unexpected magical behaviour).
 
 =for stopwords topicalizer
 
@@ -626,8 +627,8 @@ confusing behavior:
     }
   }
 
-Note that this behavior was changed once again in L<Perl5 version 18
-|https://metacpan.org/module/perldelta#given-now-aliases-the-global-_>.
+Note that this behavior was changed once again in
+L<Perl5 version 18|https://metacpan.org/module/perldelta#given-now-aliases-the-global-_>.
 However, since the entirety of lexical C<$_> is now L<considered experimental
 |https://metacpan.org/module/perldelta#Lexical-_-is-now-experimental>, it
 is unclear whether the new version 18 behavior is final.
@@ -699,7 +700,7 @@ Jesse Luehrs <doy@tozt.net>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge Peter Rabbitson Ricardo Signes Mark Fowler Graham Knop Lukas Mai Dagfinn Ilmari Mannsåker Paul Howarth Rudolf Leermakers anaxagoras awalker chromatic Alex cm-perl Andrew Yates David Lowe Glenn Hans Dieter Pearcey Jonathan Yu Marc Mims Stosberg Pali
+=for stopwords Karen Etheridge Peter Rabbitson Ricardo Signes Mark Fowler Graham Knop Lukas Mai Aristotle Pagaltzis Dagfinn Ilmari Mannsåker Paul Howarth Rudolf Leermakers anaxagoras awalker chromatic Alex cm-perl Andrew Yates David Lowe Glenn Hans Dieter Pearcey Jens Berthold Jonathan Yu Marc Mims Stosberg Pali
 
 =over 4
 
@@ -726,6 +727,10 @@ Graham Knop <haarg@haarg.org>
 =item *
 
 Lukas Mai <l.mai@web.de>
+
+=item *
+
+Aristotle Pagaltzis <pagaltzis@gmx.de>
 
 =item *
 
@@ -774,6 +779,10 @@ Glenn Fowler <cebjyre@cpan.org>
 =item *
 
 Hans Dieter Pearcey <hdp@weftsoar.net>
+
+=item *
+
+Jens Berthold <jens@jebecs.de>
 
 =item *
 

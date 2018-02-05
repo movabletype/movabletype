@@ -8,7 +8,7 @@ use strict;
 use warnings;
 #/;
 
-$CGI::VERSION='4.36';
+$CGI::VERSION='4.38';
 
 use CGI::Util qw(rearrange rearrange_header make_attributes unescape escape expires ebcdic2ascii ascii2ebcdic);
 
@@ -2688,11 +2688,11 @@ sub url {
     my $request_uri =  $self->request_uri || '';
     my $query_str   =  $query ? $self->query_string : '';
 
+    $script_name    =~ s/\?.*$//s; # remove query string
     $request_uri    =~ s/\?.*$//s; # remove query string
     $request_uri    =  unescape($request_uri);
 
     my $uri         =  $rewrite && $request_uri ? $request_uri : $script_name;
-    $uri            =~ s/\?.*$//s; # remove query string
 
 	if ( defined( $ENV{PATH_INFO} ) ) {
 		# IIS sometimes sets PATH_INFO to the same value as SCRIPT_NAME so only sub it out
