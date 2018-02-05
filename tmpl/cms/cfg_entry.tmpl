@@ -168,7 +168,7 @@
           <input type="checkbox" name="allow_comments_default" id="allow_comments_default" class="custom-control-input" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> />
           <label class="custom-control-label" for="allow_comments_default"><__trans phrase="Accept Comments"></label>
         </div>
-    <m  t:unless name="system_allow_comments">
+    <mt:unless name="system_allow_comments">
         <p>
           <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
           <span class="text-warning alert-warning-inline">
@@ -195,7 +195,7 @@
           <input type="checkbox" value="1" name="allow_pings_default" class="custom-control-input" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> />
           <label class="custom-control-label" for="allow_pings_default"><__trans phrase="Accept TrackBacks"></label>
         </div>
-    <m  t:unless name="system_allow_pings">
+    <mt:unless name="system_allow_pings">
         <p>
           <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
           <span class="text-warning alert-warning-inline">
