@@ -64,7 +64,7 @@
                           <div style="width: [#= 165 - (item.path.length * 10) #]px;">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" /> [#|h item.label #]
                           <mt:if name="options{can_add}">
-                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a>
+                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a>
                           </mt:if>
                           </div>
                       </div>
@@ -142,7 +142,7 @@
     </div>
     <div class="mt-collapse__container">
       <div class="col">
-        <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container"></div>
+        <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" mt:content-field-id="<mt:var name="content_field_id" escape="html">"></div>
         <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
       </div>
     </div>

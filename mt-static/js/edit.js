@@ -343,20 +343,23 @@ MT.App.CategoryList = new Class( Object, {
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
         var id = DOM.getMouseEventAttribute( event, "mt:id" );
+        var contentFieldId = DOM.getMouseEventAttribute( event, 'mt:content-field-id' );
+        var categorySelector = contentFieldId
+            ? app.fieldCategorySelectors[contentFieldId]
+            : app.categorySelector;
         switch( command ) {
 
             case "primary":
                 if ( !defined( id ) )
                     return;
                 /* make category primary */
-                var idx = this.selectedCategoryList.indexOf( id );
+                var idx = categorySelector.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                this.selectedCategoryList.splice( idx, 1 );
-                this.selectedCategoryList.splice( 0, 0, id );
-                this.redraw();
-                this.getCategorySelector().redraw();
-                if (this.contentFieldId) {
+                categorySelector.selectedCategoryList.splice( idx, 1 );
+                categorySelector.selectedCategoryList.splice( 0, 0, id );
+                categorySelector.redraw();
+                if (contentFieldId) {
                     setDirty(true);
                 }
                 break;
@@ -365,23 +368,22 @@ MT.App.CategoryList = new Class( Object, {
                 if ( !defined( id ) )
                     return;
                 /* remove a category */
-                var idx = this.selectedCategoryList.indexOf( id );
+                var idx = categorySelector.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                this.selectedCategoryList.splice( idx, 1 );
-                this.redraw();
-                this.getCategorySelector().redraw();
-                if (this.contentFieldId) {
+                categorySelector.selectedCategoryList.splice( idx, 1 );
+                categorySelector.redraw();
+                if (contentFieldId) {
                     setDirty(true);
                 }
                 break;
                 
             case "openCategorySelector":
-                this.getCategorySelector().open( event.commandElement );
+                categorySelector.open( event.commandElement );
                 break;
 
             case "closeCategorySelector":
-                this.getCategorySelector().close( event.commandElement );
+                categorySelector.close( event.commandElement );
                 break;
 
             default:
@@ -389,14 +391,6 @@ MT.App.CategoryList = new Class( Object, {
 
         }
         return event.stop();
-    },
-
-    getCategorySelector: function () {
-        if ( this.contentFieldId ) {
-            return app.fieldCategorySelectors[ this.contentFieldId ];
-        } else {
-            return app.categorySelector;
-        }
     }
 } );
 
