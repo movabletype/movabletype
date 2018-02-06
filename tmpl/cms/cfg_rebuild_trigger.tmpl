@@ -103,7 +103,7 @@ rebuildMultiBlogTriggerTable();
                   + content_type
                   + "</td>";
               str += "<td scope=\"col\">" + multiBlogRebuilds[i][0] + "</td>";
-              str += "<td scope=\"col\" class=\"si\"><a href=\"javascript:void(0)\" onclick=\"removeMultiBlogTrigger(" + i + ")\"><img alt=\"<__trans phrase="Remove">\" src=\"<mt:var name="static_uri">images/nav_icons/mini/delete.gif\" /></a></td>";
+              str += "<td scope=\"col\" class=\"si\"><a href=\"javascript:void(0)\" onclick=\"removeMultiBlogTrigger(" + i + ")\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></a></td>";
               str += "</tr>\n";
               values[i] = multiBlogRebuilds[i][1];
               values[i] += ":";
@@ -113,7 +113,7 @@ rebuildMultiBlogTriggerTable();
               values[i] += ":";
               values[i] += multiBlogRebuilds[i][7];
           }
-          str = "<table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Content Type" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><img alt=\"<__trans phrase="Remove">\" src=\"<mt:var name="static_uri">images/nav_icons/mini/delete.gif\" /></th></tr></thead>\n" + str + "</table>";
+          str = "<table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Content Type" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></th></tr></thead>\n" + str + "</table>";
           getByID('multiblog_blog_list').innerHTML = str;
           getByID('rebuild_triggers').value = values.join('|');
       }
