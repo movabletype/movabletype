@@ -1036,7 +1036,7 @@ sub core_list_actions {
                 },
                 code      => "${pkg}Tools::recover_passwords",
                 condition => sub {
-                    ( $app->user->is_superuser()
+                    ( $app->user->can_manage_users_groups()
                             && MT::Auth->can_recover_password );
                 },
             },
@@ -1049,7 +1049,10 @@ sub core_list_actions {
                         : MT->translate("_WARNING_DELETE_USER");
                 },
                 code          => "${pkg}Common::delete",
-                permit_action => 'delete_user_via_list',
+                permit_action => {
+                    permit_action => 'delete_user_via_list',
+                    system_action => 'delete_user_via_list',
+                },
             },
             'enable' => {
                 label      => 'Enable',
@@ -1093,7 +1096,10 @@ sub core_list_actions {
                 mode          => 'remove_user_assoc',
                 button        => 1,
                 js_message    => 'remove',
-                permit_action => 'remove_user_assoc',
+                permit_action => {
+                    permit_action => 'remove_user_assoc',
+                    system_action => 'remove_user_assoc',
+                },
             },
         },
         'blog' => {
@@ -1435,7 +1441,8 @@ sub core_menu_actions {
         rebuild => {
             class     => 'mt-rebuild',
             condition => sub {
-                $app->blog ? 1 : 0;
+                return ($app->blog
+                && $app->can_do('rebuild'));
             },
             icon  => 'ic_build',
             label => 'Rebuild',
@@ -1633,15 +1640,15 @@ sub core_menus {
             mode              => 'list',
             args              => { _type => 'member' },
             view              => [ "blog", "website" ],
-            permission        => 'administer_site,manage_users',
-            system_permission => 'administer',
+            permit_action => "manage_users",
         },
         'user:manage' => {
             label      => "Manage",
             order      => 100,
             mode       => "list",
             args       => { _type => "author" },
-            permission => "administer",
+            permission => "administer,manage_users",
+            system_permission => "administer,manage_users_groups",
             view       => "system",
         },
 
@@ -1675,7 +1682,8 @@ sub core_menus {
             order      => 200,
             mode       => "view",
             args       => { _type => "author" },
-            permission => "administer",
+            permission => "administer,manage_users",
+            system_permission => "administer,manage_users_groups",
             condition  => sub {
                 return !MT->config->ExternalUserManagement;
             },
@@ -2598,7 +2606,8 @@ sub build_blog_selector {
         = MT::Permission->join_on( 'blog_id',
         { author_id => $auth->id, permissions => { not => "'comment'" } } )
         if !$auth->is_superuser
-        && !$auth->permissions(0)->can_do('edit_templates');
+        && !$auth->permissions(0)->can_do('edit_templates')
+        && !$auth->permissions(0)->can_do('access_to_website_list');
     $terms{class}     = 'blog';
     $terms{parent_id} = \">0";    # FOR-EDITOR";
     $args{limit}      = 6;        # Don't load over 6 blogs
@@ -2607,7 +2616,6 @@ sub build_blog_selector {
 # Special case. If this user can access 5 blogs or smaller then load those blogs.
     $param->{selector_hide_blog_chooser} = 1;
     if ( @blogs && scalar @blogs == 6 ) {
-
         # This user can access over 6 blogs.
         if (@fav_blogs) {
             @blogs
@@ -2639,7 +2647,8 @@ sub build_blog_selector {
             { author_id => $auth->id, permissions => { not => "'comment'" } }
             )
             if !$auth->is_superuser
-            && !$auth->permissions(0)->can_do('edit_templates');
+            && !$auth->permissions(0)->can_do('edit_templates')
+            && !$auth->permissions(0)->can_do('access_to_website_list');
         $terms{class} = 'website';
         my $not_ids;
         push @$not_ids, @fav_websites;
@@ -2696,6 +2705,7 @@ sub build_blog_selector {
                 $param->{curr_website_can_link}
                     = (    $auth->is_superuser
                         || $auth->permissions(0)->can_do('edit_templates')
+                        || $auth->permissions(0)->can_do('access_to_website_list')
                         || @perms > 0 ) ? 1 : 0;
             }
             else {
@@ -2705,6 +2715,7 @@ sub build_blog_selector {
                 $fav_data->{fav_website_can_link}
                     = (    $auth->is_superuser
                         || $auth->permissions(0)->can_do('edit_templates')
+                        || $auth->permissions(0)->can_do('access_to_website_list')
                         || @perms > 0 ) ? 1 : 0;
 
                 push @website_data, \%$fav_data;
@@ -2787,6 +2798,7 @@ FAV_BLOG: for my $fav_blog ( @{ $param->{fav_blog_loop} } ) {
         my $can_link
             = $app->user->is_superuser
             || $app->user->permissions(0)->can_do('edit_templates')
+            || $app->user->permissions(0)->can_do('access_to_blog_list')
             || MT::Permission->count(
             {   author_id => $app->user->id,
                 blog_id   => $fav_blog->{fav_parent_id}
@@ -3921,7 +3933,8 @@ sub add_to_favorite_sites {
     return
            unless $user->has_perm($fav)
         || $user->is_superuser
-        || $user->permissions(0)->can_do('edit_templates');
+        || $user->permissions(0)->can_do('edit_templates')
+        || $user->permissions(0)->can_do('access_to_website_list');
 
     my @current = @{ $user->favorite_sites || [] };
 
@@ -3951,7 +3964,8 @@ sub add_to_favorite_blogs {
     return
            unless $auth->has_perm($fav)
         || $auth->is_superuser
-        || $auth->permissions(0)->can_do('edit_templates');
+        || $auth->permissions(0)->can_do('edit_templates')
+        || $auth->permissions(0)->can_do('access_to_blog_list');
 
     my @current = @{ $auth->favorite_blogs || [] };
 
@@ -3994,7 +4008,8 @@ sub add_to_favorite_websites {
     return
            unless $trust
         || $auth->is_superuser
-        || $auth->permissions(0)->can_do('edit_templates');
+        || $auth->permissions(0)->can_do('edit_templates')
+        || $auth->permissions(0)->can_do('access_to_website_list');
 
     my @current = @{ $auth->favorite_websites || [] };
 
