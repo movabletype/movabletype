@@ -148,7 +148,7 @@ sub edit {
         $app->user->is_superuser
         ? $app->uri(
             mode => 'list',
-            args => { '_type' => 'author', }
+            args => { '_type' => 'author', blog_id => 0 }
             )
         : undef
     );

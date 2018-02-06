@@ -40,7 +40,7 @@ sub list_props {
         blog_count => {
             label        => 'Child Sites',
             filter_label => 'Child Site Count',
-            order        => 200,
+            order        => 250,
             base         => '__virtual.object_count',
             display      => 'default',
             count_class  => 'blog',

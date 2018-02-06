@@ -1,7 +1,9 @@
 package HTTP::Request::Common;
-$HTTP::Request::Common::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 our $DYNAMIC_FILE_UPLOAD ||= 0;  # make it defined (don't know why)
 
@@ -215,7 +217,7 @@ sub form_data   # RFC1867
 		    # or perhaps a file in the /proc file system where
 		    # stat may return a 0 size even though reading it
 		    # will produce data.  So we cannot make
-		    # a Content-Length header.  
+		    # a Content-Length header.
 		    undef $length;
 		    last;
 		}
@@ -259,7 +261,7 @@ sub form_data   # RFC1867
 		}
 		if ($buflength) {
 		    defined $length && ($length -= $buflength);
-		    return $buf 
+		    return $buf
 	    	}
 	    }
 	};
@@ -310,7 +312,7 @@ HTTP::Request::Common - Construct common HTTP::Request objects
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 
@@ -318,13 +320,19 @@ version 6.13
   $ua = LWP::UserAgent->new;
   $ua->request(GET 'http://www.sn.no/');
   $ua->request(POST 'http://somewhere/foo', [foo => bar, bar => foo]);
+  $ua->request(PATCH 'http://somewhere/foo', [foo => bar, bar => foo]);
+  $ua->request(PUT 'http://somewhere/foo', [foo => bar, bar => foo]);
 
 =head1 DESCRIPTION
 
-This module provide functions that return newly created C<HTTP::Request>
+This module provides functions that return newly created C<HTTP::Request>
 objects.  These functions are usually more convenient to use than the
-standard C<HTTP::Request> constructor for the most common requests.  The
-following functions are provided:
+standard C<HTTP::Request> constructor for the most common requests.
+
+Note that L<LWP::UserAgent> has several convenience methods, including
+C<get>, C<head>, C<delete>, C<post> and C<put>.
+
+The following functions are provided:
 
 =over 4
 
@@ -332,7 +340,7 @@ following functions are provided:
 
 =item GET $url, Header => Value,...
 
-The GET() function returns an C<HTTP::Request> object initialized with
+The C<GET> function returns an L<HTTP::Request> object initialized with
 the "GET" method and the specified URL.  It is roughly equivalent to the
 following call
 
@@ -344,11 +352,11 @@ following call
 but is less cluttered.  What is different is that a header named
 C<Content> will initialize the content part of the request instead of
 setting a header field.  Note that GET requests should normally not
-have a content, so this hack makes more sense for the PUT(), PATCH()
- and POST() functions described below.
+have a content, so this hack makes more sense for the C<PUT>, C<PATCH>
+ and C<POST> functions described below.
 
-The get(...) method of C<LWP::UserAgent> exists as a shortcut for
-$ua->request(GET ...).
+The C<get(...)> method of L<LWP::UserAgent> exists as a shortcut for
+C<< $ua->request(GET ...) >>.
 
 =item HEAD $url
 
@@ -356,37 +364,39 @@ $ua->request(GET ...).
 
 Like GET() but the method in the request is "HEAD".
 
-The head(...)  method of "LWP::UserAgent" exists as a shortcut for
-$ua->request(HEAD ...).
-
-=item PUT $url
-
-=item PUT $url, Header => Value,...
-
-=item PUT $url, Header => Value,..., Content => $content
-
-Like GET() but the method in the request is "PUT".
-
-The content of the request can be specified using the "Content"
-pseudo-header.  This steals a bit of the header field namespace as
-there is no way to directly specify a header that is actually called
-"Content".  If you really need this you must update the request
-returned in a separate statement.
-
-=item PATCH $url
-
-=item PATCH $url, Header => Value,...
-
-=item PATCH $url, Header => Value,..., Content => $content
-
-Like PUT() but the method in the request is "PATCH".
+The C<head(...)>  method of L<LWP::UserAgent> exists as a shortcut for
+C<< $ua->request(HEAD ...) >>.
 
 =item DELETE $url
 
 =item DELETE $url, Header => Value,...
 
-Like GET() but the method in the request is "DELETE".  This function
+Like C<GET> but the method in the request is C<DELETE>.  This function
 is not exported by default.
+
+=item PATCH $url
+
+=item PATCH $url, Header => Value,...
+
+=item PATCH $url, $form_ref, Header => Value,...
+
+=item PATCH $url, Header => Value,..., Content => $form_ref
+
+=item PATCH $url, Header => Value,..., Content => $content
+
+The same as C<POST> below, but the method in the request is C<PATCH>.
+
+=item PUT $url
+
+=item PUT $url, Header => Value,...
+
+=item PUT $url, $form_ref, Header => Value,...
+
+=item PUT $url, Header => Value,..., Content => $form_ref
+
+=item PUT $url, Header => Value,..., Content => $content
+
+The same as C<POST> below, but the method in the request is C<PUT>
 
 =item POST $url
 
@@ -398,13 +408,24 @@ is not exported by default.
 
 =item POST $url, Header => Value,..., Content => $content
 
-This works mostly like PUT() with "POST" as the method, but this
-function also takes a second optional array or hash reference
-parameter $form_ref.  As for PUT() the content can also be specified
-directly using the "Content" pseudo-header, and you may also provide
-the $form_ref this way.
+C<POST>, C<PATCH> and C<PUT> all work with the same parameters.
 
-The $form_ref argument can be used to pass key/value pairs for the
+  %data = ( title => 'something', body => something else' );
+  $ua = LWP::UserAgent->new();
+  $request = HTTP::Request::Common::POST( $url, [ %data ] );
+  $response = $ua->request($request);
+
+They take a second optional array or hash reference
+parameter C<$form_ref>.  The content can also be specified
+directly using the C<Content> pseudo-header, and you may also provide
+the C<$form_ref> this way.
+
+The C<Content> pseudo-header steals a bit of the header field namespace as
+there is no way to directly specify a header that is actually called
+"Content".  If you really need this you must update the request
+returned in a separate statement.
+
+The C<$form_ref> argument can be used to pass key/value pairs for the
 form content.  By default we will initialize a request using the
 C<application/x-www-form-urlencoded> content type.  This means that
 you can emulate an HTML E<lt>form> POSTing like this:
@@ -417,7 +438,7 @@ you can emulate an HTML E<lt>form> POSTing like this:
          perc   => '3%',
        ];
 
-This will create an HTTP::Request object that looks like this:
+This will create an L<HTTP::Request> object that looks like this:
 
   POST http://www.perl.org/survey.cgi
   Content-Length: 66
@@ -431,7 +452,7 @@ name or by passing the value as an array reference.
 The POST method also supports the C<multipart/form-data> content used
 for I<Form-based File Upload> as specified in RFC 1867.  You trigger
 this content format by specifying a content type of C<'form-data'> as
-one of the request headers.  If one of the values in the $form_ref is
+one of the request headers.  If one of the values in the C<$form_ref> is
 an array reference, then it is treated as a file part specification
 with the following interpretation:
 
@@ -449,7 +470,7 @@ want to suppress sending the filename when you provide a $file value.
 
 If a $file is provided by no C<Content-Type> header, then C<Content-Type>
 and C<Content-Encoding> will be filled in automatically with the values
-returned by LWP::MediaTypes::guess_media_type()
+returned by C<LWP::MediaTypes::guess_media_type()>
 
 Sending my F<~/.profile> to the survey used as example above can be
 achieved by this:
@@ -463,7 +484,7 @@ achieved by this:
                          init   => ["$ENV{HOME}/.profile"],
                        ]
 
-This will create an HTTP::Request object that almost looks this (the
+This will create an L<HTTP::Request> object that almost looks this (the
 boundary and the content of your F<~/.profile> is likely to be
 different):
 
@@ -496,26 +517,29 @@ different):
 
   --6G+f--
 
-If you set the $DYNAMIC_FILE_UPLOAD variable (exportable) to some TRUE
+If you set the C<$DYNAMIC_FILE_UPLOAD> variable (exportable) to some TRUE
 value, then you get back a request object with a subroutine closure as
 the content attribute.  This subroutine will read the content of any
 files on demand and return it in suitable chunks.  This allow you to
 upload arbitrary big files without using lots of memory.  You can even
 upload infinite files like F</dev/audio> if you wish; however, if
-the file is not a plain file, there will be no Content-Length header
+the file is not a plain file, there will be no C<Content-Length> header
 defined for the request.  Not all servers (or server
 applications) like this.  Also, if the file(s) change in size between
-the time the Content-Length is calculated and the time that the last
+the time the C<Content-Length> is calculated and the time that the last
 chunk is delivered, the subroutine will C<Croak>.
 
-The post(...)  method of "LWP::UserAgent" exists as a shortcut for
-$ua->request(POST ...).
+The C<post(...)>  method of L<LWP::UserAgent> exists as a shortcut for
+C<< $ua->request(POST ...) >>.
 
 =back
 
 =head1 SEE ALSO
 
 L<HTTP::Request>, L<LWP::UserAgent>
+
+Also, there are some examples in L<HTTP::Request/"EXAMPLES"> that you might
+find useful. For example, batch requests are explained there.
 
 =head1 AUTHOR
 
@@ -534,4 +558,3 @@ __END__
 
 
 #ABSTRACT: Construct common HTTP::Request objects
-

@@ -16,7 +16,7 @@
   <mtapp:ContentFieldOption
      id="number-decimal_places"
      label="<__trans phrase="Number of decimal places">">
-    <input ref="decimal_places" type="text" name="decimal_places" id="number-decimal_places" class="form-control w-25" min="0" value={ options.decimal_places }>
+    <input ref="decimal_places" type="number" name="decimal_places" id="number-decimal_places" class="form-control html5-form w-25" min="0" max="<mt:var name="config.numberfielddecimalplaces" escape="html">" value={ options.decimal_places } >
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption

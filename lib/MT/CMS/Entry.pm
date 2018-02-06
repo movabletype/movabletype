@@ -416,20 +416,8 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        require MT::ObjectTag;
-        my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
-                    undef,
-                    {   join => [
-                            'MT::ObjectTag', 'tag_id',
-                            { blog_id => $blog_id }, { unique => 1 }
-                        ]
-                    }
-                )
-            ]
-        );
-        $tags_js =~ s!/!\\/!g;
-        $param->{tags_js} = $tags_js;
+        require MT::Tag;
+        $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
 
         $param->{can_edit_categories} = $perms->can_do('edit_categories');
     }

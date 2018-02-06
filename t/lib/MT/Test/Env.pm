@@ -368,6 +368,7 @@ sub load_schema_and_fixture {
         }
         my $sql_maker = SQL::Maker->new( driver => $self->{driver} );
         for my $table ( keys %$fixture ) {
+            next if $table eq 'schema_version';
             my $data = $fixture->{$table};
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
@@ -576,9 +577,16 @@ sub schema_version {
     my $self = shift;
     my %versions = (
         core => MT->schema_version,
-        %{ MT->config->PluginSchemaVersion || {} },
+        $self->plugin_schema_version,
     );
     return join "; ", map { $_ . " " . $versions{$_} } sort keys %versions;
+}
+
+sub plugin_schema_version {
+    my $self = shift;
+    return map { $_->id => $_->schema_version }
+        grep { defined $_->schema_version && $_->schema_version ne '' }
+        @MT::Plugins;
 }
 
 sub DESTROY {

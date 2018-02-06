@@ -1,5 +1,5 @@
 package LWP::Debug::TraceHTTP;
-$LWP::Debug::TraceHTTP::VERSION = '6.26';
+
 # Just call:
 #
 #   require LWP::Debug::TraceHTTP;
@@ -11,8 +11,11 @@ $LWP::Debug::TraceHTTP::VERSION = '6.26';
 use strict;
 use base 'LWP::Protocol::http';
 
-package LWP::Debug::TraceHTTP::Socket;
-$LWP::Debug::TraceHTTP::Socket::VERSION = '6.26';
+our $VERSION = '6.31';
+
+package # hide from PAUSE
+    LWP::Debug::TraceHTTP::Socket;
+
 use Data::Dump 1.13;
 use Data::Dump::Trace qw(autowrap mcall);
 

@@ -1,7 +1,9 @@
 package HTTP::Config;
-$HTTP::Config::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 use URI;
 
@@ -243,7 +245,7 @@ HTTP::Config - Configuration for request and response objects
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 
@@ -297,7 +299,7 @@ You can either pass separate key/value pairs or a hash reference.
 =item $conf->remove( %spec )
 
 Removes (and returns) the entries that have matches for all the key/value pairs in %spec.
-If %spec is empty this will match all entries; so it will empty the configuation object.
+If %spec is empty this will match all entries; so it will empty the configuration object.
 
 =item $conf->matching( $uri, $request, $response )
 

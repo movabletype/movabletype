@@ -3,7 +3,7 @@ package URI::Split;
 use strict;
 use warnings;
 
-our $VERSION = '1.72';
+our $VERSION = '1.73';
 $VERSION = eval $VERSION;
 
 use Exporter 5.57 'import';

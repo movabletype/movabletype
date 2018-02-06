@@ -43,9 +43,10 @@ sub core_backup_instructions {
     # and/or special instructions.
     # Every other class will have the order of '500'.
     return {
-        'website' => { 'order' => 350 },
-        'blog'    => { 'order' => 400 },
-        'author'  => { 'order' => 420 },
+        'website'      => { 'order' => 350 },
+        'blog'         => { 'order' => 400 },
+        'author'       => { 'order' => 420 },
+        'category_set' => { 'order' => 490 },
 
         # These 'association' classes should be backed up
         # after the object classes.
@@ -1479,7 +1480,16 @@ sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'),     MT->model('website') ],
         parent  => [ MT->model('category'), MT->model('folder') ],
+        category_set_id =>
+            { class => MT->model('category_set'), optional => 1 },
     };
+}
+
+package MT::CategorySet;
+
+sub parents {
+    my $obj = shift;
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Comment;

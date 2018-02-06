@@ -2,7 +2,7 @@ package LWP::Authen::Ntlm;
 
 use strict;
 
-our $VERSION = '6.26';
+our $VERSION = '6.31';
 
 use Authen::NTLM "1.02";
 use MIME::Base64 "2.12";
