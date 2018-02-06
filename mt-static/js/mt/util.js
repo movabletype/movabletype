@@ -401,5 +401,43 @@
   	return element;
   }
 
+  MT.Util.isValidDate = function (ts) {
+    if (!ts) return false;
+
+    var matched = ts.match(/^(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2})(?::?(\d{2}))?$/);
+    if (!matched) return false;
+
+    var year = matched[1];
+    var month = matched[2];
+    var day = matched[3];
+    var hour = matched[4];
+    var minute = matched[5];
+    var second = matched[6] || 0;
+
+    if (second > 59 || second < 0) return false;
+    if (minute > 59 || minute < 0) return false;
+    if (hour > 23 || hour < 0) return false;
+    if (month > 12 || month < 1) return false;
+    if (day < 1) return false;
+    if (MT.Util.daysIn(month, year) < day && !MT.Util.leapDay(year, month, day)) return false;
+
+    return true;
+  };
+
+  MT.Util._daysIn = [ -1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+  MT.Util.daysIn = function ( month, year ) {
+    if ( month != 2 ) return MT.Util._daysIn[month];
+    return year % 4 == 0 && ( year % 100 != 0 || year % 400 == 0 )
+      ? 29
+      : 28;
+  };
+
+  MT.Util.leapDay = function ( year, month, day ) {
+    return month == 2
+      && day == 29
+      && ( year % 4 == 0 )
+      && ( year % 100 != 0 || year % 400 == 0 );
+  };
 
 })(window);
