@@ -347,17 +347,21 @@ MT.App.CategoryList = new Class( Object, {
         var categorySelector = contentFieldId
             ? app.fieldCategorySelectors[contentFieldId]
             : app.categorySelector;
+        var categoryList = contentFieldId
+            ? categorySelector.catList
+            : this;
         switch( command ) {
 
             case "primary":
                 if ( !defined( id ) )
                     return;
                 /* make category primary */
-                var idx = categorySelector.selectedCategoryList.indexOf( id );
+                var idx = categoryList.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                categorySelector.selectedCategoryList.splice( idx, 1 );
-                categorySelector.selectedCategoryList.splice( 0, 0, id );
+                categoryList.selectedCategoryList.splice( idx, 1 );
+                categoryList.selectedCategoryList.splice( 0, 0, id );
+                categoryList.redraw();
                 categorySelector.redraw();
                 if (contentFieldId) {
                     setDirty(true);
@@ -368,10 +372,11 @@ MT.App.CategoryList = new Class( Object, {
                 if ( !defined( id ) )
                     return;
                 /* remove a category */
-                var idx = categorySelector.selectedCategoryList.indexOf( id );
+                var idx = categoryList.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                categorySelector.selectedCategoryList.splice( idx, 1 );
+                categoryList.selectedCategoryList.splice( idx, 1 );
+                categoryList.redraw();
                 categorySelector.redraw();
                 if (contentFieldId) {
                     setDirty(true);
