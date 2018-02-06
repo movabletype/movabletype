@@ -1,4 +1,60 @@
 <mt:unless name="invalid_category_set">
+
+<mt:unless name="setup_categories_css">
+<mt:var name="setup_categories_css" value="1">
+<mt:setvarblock name="css_include" append="1">
+<style>
+.category-selector-list a:hover,
+.category-list a:hover {
+    text-decoration: none;
+}
+
+.category-selector-list a:hover {
+    text-decoration: none;
+}
+
+.category-selector-list .list-item.odd {
+    background-color: #f4f4f4;
+}
+
+.category-selector-list .list-item:hover {
+    background-color: #cacaca;
+}
+
+.category-selector-list .list-item.selected {
+    background-color: #a5a5a5;
+}
+
+.category-list li:not(:first-child) > span:first-child {
+    display: none;
+}
+
+.category-list li:not(:first-child) > span:not(:first-child) {
+    display: inline-block;
+}
+
+.category-list li:not(:first-child):hover > span:first-child {
+    display: inline-block;
+}
+
+.category-list li:not(:first-child):hover > span:not(:first-child) {
+    display: none;
+}
+
+.category-list li:not(:hover) a.delete {
+    display: none !important;
+}
+.category-list li:hover a.delete:not(:hover) span:not(:first-child) {
+    display: none;
+}
+
+.category-list li a.delete:hover span:first-child {
+    display: none;
+}
+</style>
+</mt:setvarblock>
+</mt:unless>
+
 <div class="group-container">
 
   <div class="mt-collapse">
@@ -47,9 +103,38 @@
                       } #]
                       [# if ( multiple ) { #]
                           [# if ( i == 0 ) { #]
-                          <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]"><mtapp:svgicon id="ic_fav" title="Primary" size="sm"><strong>[#= label #]</strong><a href="javascript:void(0);" mt:command="remove" class="ml-1 delete" title="[#|h trans("Remove") #]"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></span></a></li>
+                          <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                            <mtapp:svgicon id="ic_fav" color="success" title="Primary" size="sm">
+                            <strong>[#= label #]</strong>
+                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 d-inline-block delete" title="[#|h trans("Remove") #]">
+                              <span>
+                                <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
+                              </span>
+                              <span>
+                                <mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm">
+                              </span>
+                            </a>
+                          </li>
                           [# } else { #]
-                          <li style="margin-left: 1.1rem;" mt:focus-hover="1" mt:id="[#= cat.id #]"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-inline-block" title="[#|h "Remove" #]"><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></a></li>
+                          <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                            <span>
+                              <mtapp:svgicon id="ic_fav" title="Primary" size="sm">
+                            </span>
+                            <span>
+                              <mtapp:svgicon id="ic_blank" title="Blank" size="sm">
+                            </span>
+                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
+                              [#= label #]
+                            </a>
+                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-inline-block" title="[#|h "Remove" #]">
+                              <span>
+                                <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
+                              </span>
+                              <span>
+                                <mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm">
+                              </span>
+                            </a>
+                          </li>
                           [# } #]
                       [# } else { #]
                       <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -67,14 +152,14 @@
                                   [#|h item.label #]
                               </label>
                           <mt:if name="options{can_add}">
-                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a>
+                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
                           </mt:if>
                           </div>
                       </div>
               </mt:section>';
 
               Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-              [# div.className="form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" title="Remove" size="sm"></span></a>
+              [# div.className="form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a>
               </mt:section>';
 
               new Timer(function () {
@@ -129,12 +214,12 @@
           <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
               <div class="category-selector-header">
-                  <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
+                  <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
               </div>
               <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="form-inline add-category-form hidden" style="display: none;">
                   <input id="add-category-input-<mt:var name="content_field_id" escape="html">" class="form-control add-category-input input-hint" type="text" value="" placeholder="<__trans phrase="Category Name">" />
-                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"></span></a>
-                  <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></span></a>
+                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></span></a>
+                  <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="<__trans phrase="Remove">" size="sm"></span></a>
               </div>
           </mt:if>
               <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="card mt-2 p-2 category-selector-list"></div>
