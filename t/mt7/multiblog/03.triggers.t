@@ -33,16 +33,41 @@ my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
+my $rt1 = MT::RebuildTrigger->new;
+$rt1->blog_id(2);
+$rt1->object_type( MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() );
+$rt1->action( MT::RebuildTrigger::ACTION_RI() );
+$rt1->event( MT::RebuildTrigger::EVENT_SAVE() );
+$rt1->target_blog_id(1);
+$rt1->save;
 my $rt2 = MT::RebuildTrigger->new;
 $rt2->blog_id(2);
-my $data2 = {
-    rebuild_triggers =>
-        'ri:1:entry_save|ri:1:entry_pub|ri:1:entry_unpub|ri:1:comment_pub|ri:1:tb_pub',
-    blog_content_accessible => 1,
-    old_rebuild_triggers    => '',
-};
-$rt2->data( MT::Util::to_json($data2) );
+$rt2->object_type( MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() );
+$rt2->action( MT::RebuildTrigger::ACTION_RI() );
+$rt2->event( MT::RebuildTrigger::EVENT_PUBLISH() );
+$rt2->target_blog_id(1);
 $rt2->save;
+my $rt3 = MT::RebuildTrigger->new;
+$rt3->blog_id(2);
+$rt3->object_type( MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() );
+$rt3->action( MT::RebuildTrigger::ACTION_RI() );
+$rt3->event( MT::RebuildTrigger::EVENT_UNPUBLISH() );
+$rt3->target_blog_id(1);
+$rt3->save;
+my $rt4 = MT::RebuildTrigger->new;
+$rt4->blog_id(2);
+$rt4->object_type( MT::RebuildTrigger::TYPE_COMMENT() );
+$rt4->action( MT::RebuildTrigger::ACTION_RI() );
+$rt4->event( MT::RebuildTrigger::EVENT_PUBLISH() );
+$rt4->target_blog_id(1);
+$rt4->save;
+my $rt5 = MT::RebuildTrigger->new;
+$rt5->blog_id(2);
+$rt5->object_type( MT::RebuildTrigger::TYPE_PING() );
+$rt5->action( MT::RebuildTrigger::ACTION_RI() );
+$rt5->event( MT::RebuildTrigger::EVENT_PUBLISH() );
+$rt5->target_blog_id(1);
+$rt5->save;
 
 ### initialize mock
 my $rebuild_count = 0;

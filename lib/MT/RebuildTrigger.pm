@@ -15,6 +15,7 @@ our @EXPORT_OK = qw(
     ACTION_RI ACTION_RIP
     EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
     TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
+    type_text action_text event_text
 );
 our %EXPORT_TAGS = (
     constants => [
@@ -23,6 +24,7 @@ our %EXPORT_TAGS = (
             ACTION_RI ACTION_RIP
             EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
             TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
+            type_text action_text event_text
             )
     ]
 );
@@ -42,6 +44,38 @@ sub EVENT_UNPUBLISH() {3}
 sub TARGET_ALL()              {1}
 sub TARGET_BLOGS_IN_WEBSITE() {2}
 sub TARGET_BLOG()             {3}
+
+sub type_text {
+    my $s = $_[0];
+          $s == TYPE_ENTRY_OR_PAGE ? "entry"
+        : $s == TYPE_CONTENT_TYPE  ? "content"
+        : $s == TYPE_COMMENT       ? "comment"
+        : $s == TYPE_PING          ? "tb"
+        :                            '';
+}
+
+sub action_text {
+    my $s = $_[0];
+          $s == ACTION_RI  ? "ri"
+        : $s == ACTION_RIP ? "rip"
+        :                    '';
+}
+
+sub event_text {
+    my $s = $_[0];
+          $s == EVENT_SAVE      ? "save"
+        : $s == EVENT_PUBLISH   ? "pub"
+        : $s == EVENT_UNPUBLISH ? "unpub"
+        :                         '';
+}
+
+sub target_text {
+    my $s = $_[0];
+          $s == TARGET_ALL              ? "_all"
+        : $s == TARGET_BLOGS_IN_WEBSITE ? "_blogs_in_website"
+        : $s == TARGET_BLOG             ? "_blog"
+        :                                 '';
+}
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -82,71 +116,24 @@ sub post_contents_bulk_save {
 sub get_config_value {
     my $self = shift;
     my ( $var, $blog_id ) = @_;
-    my $config = $self->get_config_hash($blog_id);
-    return exists $config->{ $_[0] } ? $config->{ $_[0] } : undef;
-}
 
-sub get_config_hash {
-    my $self = shift;
-    my $data = $self->get_config_obj(@_)->data();
-    $data ? MT::Util::from_json($data) : {};
-}
-
-sub get_config_obj {
-    my $self = shift;
-    my ($blog_id) = @_;
-    $blog_id = 0 unless defined $blog_id;
-
-    my $cfg = MT->request('config_rebuild_trigger');
-    unless ($cfg) {
-        $cfg = {};
-        MT->request( 'config_rebuild_trigger', $cfg );
+    my @rebuild_triggers
+        = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
+    my $data = {};
+    foreach my $rt (@rebuild_triggers) {
+        next if $rt->target_blog_id && $blog_id == $rt->target_blog_id;
+        my $trigger
+            = type_text( $rt->object_type ) . '_' . event_text( $rt->event );
+        my $target_blog_id
+            = $rt->target == TARGET_BLOG()
+            ? $rt->target_blog_id
+            : target_text( $rt->target );
+        my $content_type_id = $rt->ct_id ? $rt->ct_id : '';
+        my $action = action_text( $rt->action );
+        $data->{$trigger}{$blog_id}{$action}
+            = $target_blog_id . ( $rt->ct_id ? ':' . $rt->ct_id : '' );
     }
-    return $cfg->{$blog_id} if $cfg->{$blog_id};
-
-    my $rebuild_trigger = MT::RebuildTrigger->load( { blog_id => $blog_id } );
-    if ( !$rebuild_trigger ) {
-        $rebuild_trigger = MT::RebuildTrigger->new();
-        $rebuild_trigger->blog_id($blog_id);
-    }
-    my $data
-        = $rebuild_trigger->data()
-        ? MT::Util::from_json( $rebuild_trigger->data() )
-        : {};
-    $self->apply_default_settings( $data, $blog_id );
-    $rebuild_trigger->data( MT::Util::to_json($data) );
-    $cfg->{$blog_id} = $rebuild_trigger;
-    $rebuild_trigger;
-}
-
-sub apply_default_settings {
-    my $self = shift;
-    my ( $data, $blog_id ) = @_;
-
-    my $s = {
-        system => { all_triggers => undef, },
-        blog   => {
-            rebuild_triggers          => '',
-            other_triggers            => undef,
-            blogs_in_website_triggers => undef,
-        },
-    };
-
-    my $scope = $blog_id;
-    if ( $scope > 0 ) {
-        $scope = 'blog';
-    }
-    else {
-        $scope = 'system';
-    }
-    my $defaults;
-
-    #my $s = $plugin->settings;
-    if ( $s && ( $defaults = $s->{$scope} ) ) {
-        foreach ( keys %$defaults ) {
-            $data->{$_} = $defaults->{$_} if !exists $data->{$_};
-        }
-    }
+    return $data;
 }
 
 sub post_content_save {

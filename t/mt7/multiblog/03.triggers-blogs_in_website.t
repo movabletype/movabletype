@@ -32,15 +32,14 @@ my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
-my $rt2 = MT::RebuildTrigger->new;
-$rt2->blog_id(2);
-my $data2 = {
-    rebuild_triggers        => 'ri:_blogs_in_website:entry_pub',
-    blog_content_accessible => 1,
-    old_rebuild_triggers    => '',
-};
-$rt2->data( MT::Util::to_json($data2) );
-$rt2->save;
+my $rt = MT::RebuildTrigger->new;
+$rt->blog_id(2);
+$rt->object_type( MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() );
+$rt->action( MT::RebuildTrigger::ACTION_RI() );
+$rt->event( MT::RebuildTrigger::EVENT_PUBLISH() );
+$rt->target( MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE() );
+$rt->target_blog_id(0);
+$rt->save;
 
 ### initialize mock
 my $rebuild_count = 0;
