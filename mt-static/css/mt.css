@@ -9118,7 +9118,9 @@ Badges
 Icons
 User Badge
 Pagination
+Suggestion
 Progress Bar
+Adjustments
 */
 html {
   font-size: 14px;
@@ -10012,6 +10014,10 @@ fieldset.form-group {
 /* Draggable */
 .mt-draggable {
   padding: 0.5rem 0.5rem 0.5rem 0;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
   border: 1px solid #A5A5A5;
   border-radius: 0.25rem;
   cursor: move;
@@ -10024,6 +10030,13 @@ fieldset.form-group {
 .mt-draggable[aria-grabbed="true"] {
   border-color: #5FBCEB;
   font-weight: bold;
+}
+
+.mt-draggable__content {
+  padding: 0.5rem 1rem;
+  width: 100%;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
 }
 
 .mt-draggable__area {
@@ -10437,6 +10450,43 @@ a:hover .mt-icon--secondary {
   border-color: #E0E0E0;
 }
 
+/* Suggestion */
+.mt-suggest {
+  border: 1px solid #A5A5A5;
+  border-top-color: #e9ecef;
+  border-radius: 0 0 0.25rem 0.25rem;
+  background: #FFFFFF;
+}
+
+.mt_suggest__list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mt_suggest__list li {
+  margin: 0;
+}
+
+.mt_suggest__list li:first-child {
+  margin-top: 0.5rem;
+}
+
+.mt_suggest__list li:last-child {
+  margin-bottom: 0.5rem;
+}
+
+.mt-suggest__select {
+  display: block;
+  margin: 0;
+  padding: 0.2rem 1rem;
+  cursor: pointer;
+}
+
+.mt-suggest__select:hover {
+  background: #e9ecef;
+}
+
 /* Progress Bar */
 .mt-progress {
   border: 1px solid #CACACA;
@@ -10445,5 +10495,15 @@ a:hover .mt-icon--secondary {
 
 .mt-progress .progress {
   margin: 1px;
+}
+
+/* Progress Bar */
+/* Used to "line break" flex elements */
+.mt-flexBreak {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  width: 0px;
+  height: 0px;
+  overflow: hidden;
 }
 /*# sourceMappingURL=mt.css.map */

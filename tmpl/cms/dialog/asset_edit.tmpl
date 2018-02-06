@@ -1,5 +1,5 @@
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tag_complete.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var tag_delim = '<mt:var name="auth_pref_tag_delim">';
@@ -48,7 +48,7 @@ function initTags() {
     }
     if (!tagList || tagList.length == 0) return;
 
-    autoTag = new MT.TagComplete("tags", tagList);
+    autoTag = new TC.TagComplete("tags", tagList);
     autoTag.delimiter = tag_delim;
 }
 
@@ -160,8 +160,10 @@ jQuery(window).load(init);
    label_class="top-label">
     <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
     <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-    <div id="tags-suggestion">
-      <div id="tags_completion"></div>
+    <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+      <div id="tags_completion" class="mt_suggest__list">
+        <ul></ul>
+      </div>
     </div>
 </mtapp:setting>
   </div>
