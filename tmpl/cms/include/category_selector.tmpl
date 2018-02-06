@@ -13,7 +13,7 @@
                 <mt:if name="can_edit_categories">
                     <div class="col">
                         <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
-                            <mtapp:svgicon id="ic_add" size="sm" title="Add">
+                            <mtapp:svgicon id="ic_add" size="sm" color="success" title="Add">
                         </a>
                     </div>
                 </mt:if>
@@ -21,9 +21,9 @@
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" size="sm" title="Cancel"></a>
+        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
 <mt:else>
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" size="sm" title="Cancel"></a>
+        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
 </mt:if>
         </mt:section>';
     <mt:ignore>
@@ -39,7 +39,7 @@
     <mt:if name="can_edit_categories">
     <div class="text-right category-selector-header">
         <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>">
-            <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add">
+            <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add">
         </a>
     </div>
     </mt:if>
@@ -48,14 +48,14 @@
     <div id="add-category-form" class="form-inline add-category-form" style="display: none;">
         <input id="add-category-input" class="form-control add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
         <a href="javascript:void(0);" mt:command="add" class="add-category-save-link">
-          <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add">">
+          <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">">
         </a>
         <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link">
-          <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Cancel">">
+          <mtapp:svgicon id="ic_remove" color="danger" size="sm" title="<__trans phrase="Cancel">">
         </a>
     </div>
 </mt:if>
-    <div class="card px-1" style="height: 120px; overflow: auto; overflow-x: hidden;">
+    <div class="card p-1" style="height: 120px; overflow: auto; overflow-x: hidden;">
       <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="card-block category-selector-list"></div>
     </div>
 </div><!-- /category-selector -->
