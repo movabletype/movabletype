@@ -1534,7 +1534,7 @@ BEGIN {
             author => {
                 object_label        => 'Author',
                 primary             => 'name',
-                permission          => 'manage_users',
+                permission          => 'manage_users_groups',
                 data_api_permission => undef,
                 default_sort_key    => 'name',
                 view                => 'system',
