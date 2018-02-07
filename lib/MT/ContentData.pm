@@ -15,7 +15,6 @@ use POSIX ();
 use MT;
 use MT::Asset;
 use MT::Author;
-use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
@@ -1233,6 +1232,44 @@ sub gather_changed_cols {
     $obj->{changed_revisioned_cols} = @$changed_cols ? $changed_cols : undef;
 
     1;
+}
+
+sub preview_data {
+    my $self         = shift;
+    my $content_type = $self->content_type;
+    return [] unless $content_type;
+
+    my $registry = MT->registry('content_field_types');
+    my @data;
+    for my $f ( @{ $content_type->fields } ) {
+        next unless defined $f->{type} && $f->{type} ne '';
+        next unless $registry->{ $f->{type} };
+
+        my $preview_handler = $registry->{ $f->{type} }{preview_handler};
+        if ( $preview_handler && !ref $preview_handler ) {
+            $preview_handler = MT->handler_to_coderef($preview_handler)
+                or next;
+        }
+
+        my $field_data = $self->data->{ $f->{id} };
+        $field_data
+            = ref $field_data
+            ? [ map { MT::Util::encode_html($_) } @$field_data ]
+            : MT::Util::encode_html($field_data);
+        $field_data
+            = $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
+            if $preview_handler;
+
+        my $field_label = ( $f->{options} || +{} )->{label}
+            || MT->translate('(No label)');
+
+        push @data,
+            +{
+            field_label => $field_label,
+            field_data  => $field_data,
+            };
+    }
+    \@data;
 }
 
 1;

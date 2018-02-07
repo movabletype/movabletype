@@ -18,7 +18,16 @@
     <div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
       <div class="row">
         <div class="col">
-          <mt:var name="cd_data" to_json="1">
+  <mt:loop name="cd_data">
+          <div class="mb-3">
+            <div>
+              <b><mt:var name="field_label" escape="html">:</b>
+            </div>
+            <div class="ml-5">
+              <mt:var name="field_data">
+            </div>
+          </div>
+  </mt:loop>
           <a href="javascript:void(0)" class="btn btn-default remove float-right">
             <__trans phrase="Remove">
           </a>

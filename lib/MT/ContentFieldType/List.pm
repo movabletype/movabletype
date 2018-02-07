@@ -114,5 +114,18 @@ sub feed_value_handler {
     return "<ul>$contents</ul>";
 }
 
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my $contents = join '',
+        map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
+    return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
 1;
 
