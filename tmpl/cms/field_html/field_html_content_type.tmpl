@@ -3,19 +3,19 @@
 <div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="content_data_loop">
-  <div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false" data-mt-count="<mt:var name="__counter__" escape="html">">
+  <div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
     <div class="col-auto">
       <mtapp:svgicon id="ic_move" title="Draggable">
     </div>
     <div class="col">
       <a href="<mt:var name="script_url">?__mode=view&_type=content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="cd_content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank">(ID:<mt:var name="cd_id" escape="html">)</a>
-      <a data-toggle="collapse" class="float-right" href="#collapse<mt:var name="__counter__" escape="html">" aria-expanded="false" aria-controls="collapse<mt:var name="__counter__" escape="html">">
+      <a data-toggle="collapse" class="float-right" href="#collapse<mt:var name="cd_id" escape="html">" aria-expanded="false" aria-controls="collapse<mt:var name="cd_id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse<mt:var name="__counter__" escape="html">">
+    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse<mt:var name="cd_id" escape="html">">
       <div class="row">
         <div class="col">
           <mt:var name="cd_data" to_json="1">
