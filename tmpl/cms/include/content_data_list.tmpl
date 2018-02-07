@@ -39,9 +39,12 @@
         <tbody>
 <mt:loop name="object_loop">
           <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb">
+            <td scope="row" class="cb">
               <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+              <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
+                <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+              </div>
             </td>
             <td class="content-data-id primary"><mt:var name="id" escape="html"></td>
             <td class="content-data-modified-date">

@@ -75,13 +75,7 @@ jQuery('.actions-bar button.primary').click(function() {
   var contentFieldId = '<mt:var name="content_field_id" escape="js">';
   var canMulti = <mt:if name="can_multi">true<mt:else>false</mt:if>;
 
-  var $ul = parent.jQuery('#content-field-' + contentFieldId + '-list-content-data')
-  $ul.children('li.empty-content-data-list').remove();
-  if (!canMulti) {
-    $ul.children().remove();
-  }
-
-  var getEditUrl = function (id) {
+  function getEditUrl(id) {
     var query = {
       __mode: 'view',
       _type: 'content_data',
@@ -90,36 +84,61 @@ jQuery('.actions-bar button.primary').click(function() {
       id: id
     };
     return '<mt:var name="script_url">?' + jQuery.param(query);
-  };
+  }
 
-  jQuery('input[name=id]:checked').each(function (i, e) {
-    var id = e.value;
-    if ($ul.find('input[value=' + id + ']').length) {
+  function getCollapseHtml(id, count) {
+    return ''
+      + '<div class="mt-collapse">'
+      +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
+      +   '<div class="mt-collapse__container">'
+      +     '<div class="col">'
+      +       '<a href="<mt:var name="script_url">?__mode=view&_type=content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id='+id+'" target="_blank">(ID:'+id+')</a>'
+      +     '</div>'
+      +     '<div class="col-auto">'
+      +       '<a data-toggle="collapse" href="#collapse'+count+'" aria-expanded="false" aria-controls="collapse'+count+'">'
+      +         '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">'
+      +       '</a>'
+      +     '</div>'
+      +   '</div>'
+      +   '<div class="collapse mt-collapse__content" id="collapse'+count+'">'
+      +     '<div class="row">'
+      +       '<div class="col">'
+      +         'cd_data'
+      +         '<a href="javascript:void(0)" class="btn btn-default remove float-right">'
+      +           '<__trans phrase="Remove">'
+      +         '</a>'
+      +       '</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>';
+  }
+
+  var $contentDataContainer = parent.jQuery('#content-type-field-' + contentFieldId);
+  if (!canMulti) {
+    $contentDataContainer.remove('.mt-collapse');
+  }
+
+  var $ul = parent.jQuery('#content-field-' + contentFieldId + '-list-content-data')
+  $ul.children('li.empty-content-data-list').remove();
+  if (!canMulti) {
+    $ul.children().remove();
+  }
+
+  var count = $contentDataContainer.children('.mt-collapse:last-child').data('mtCount') + 1;
+
+  jQuery('input[name=id]:checked').each(function (index, input) {
+    var id = input.value;
+    if ($contentDataContainer.find('input[value=' + id + ']').length) {
       return;
     }
 
-    var id = jQuery(e).parent().next().text();
-    var editUrl = getEditUrl(id);
-    var $inputId = jQuery('<input/>').attr({type: 'hidden', name: 'content-field-' + contentFieldId}).val(id);
-    var $editAnchor = jQuery('<a/>').attr({href: editUrl, target: '_blank'}).text('(ID:' + id + ')');
-    var $removeAnchor = jQuery('<a/>').addClass('icon-remove icon16 action-icon')
-                                      .css('cursor', 'pointer')
-                                      .attr('href', 'javascript:void(0)');
-    $removeAnchor.get(0).innerHTML = '<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-    var $inputCol = jQuery('<div/>').addClass('col text-truncate')
-                                    .append($inputId, $editAnchor);
-    var $removeCol = jQuery('<div/>').addClass('col-1')
-                                     .append($removeAnchor);
-    var $row = jQuery('<div/>').addClass('row')
-                               .append($inputCol, $removeCol);
-    var $li = jQuery('<li/>').append($row);
-    $ul.append($li);
+    var html = getCollapseHtml(id, count);
+    $contentDataContainer.children('.alert').before(html);
+    count++;
   });
 
-  var $container = parent.jQuery('#content-type-field-' + contentFieldId);
-  var ns = parent.jQuery.data($container.get(0), 'mtValidator');
-  if (ns) {
-    $container.mtValid({ focus: false });
+  if ($contentDataContainer.data('mtValidator')) {
+    $contentDataContainer.mtValid({ focus: false });
   }
 
   parent.setDirty(true);
