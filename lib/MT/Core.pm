@@ -2984,6 +2984,7 @@ sub load_core_permissions {
                 'access_to_blog_member_list' => 1,
                 'grant_role_for_blog'        => 1,
                 'manage_users'               => 1,
+                'search_members'             => 1,
                 'search_authors'             => 1,
                 'remove_user_assoc'          => 1,
                 'revoke_role'                => 1,
