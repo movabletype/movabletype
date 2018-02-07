@@ -18,7 +18,6 @@ MT::Test->init_app;
 use MT::Author;
 
 my $blog_id = 1;
-my $admin   = MT::Author->load(1);
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
@@ -49,6 +48,7 @@ $test_env->prepare_fixture(sub {
 
 my $ct = MT::ContentType->load( { name => 'test content type' } );
 
+my $admin   = MT::Author->load(1);
 my $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $admin,
