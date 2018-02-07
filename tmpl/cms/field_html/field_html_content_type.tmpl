@@ -10,12 +10,12 @@
     </div>
     <div class="col">
       <a href="<mt:var name="script_url">?__mode=view&_type=content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="cd_content_type_id" escape="html">&id=<mt:var name="cd_id" escape="html">" target="_blank">(ID:<mt:var name="cd_id" escape="html">)</a>
-      <a data-toggle="collapse" class="float-right" href="#collapse<mt:var name="cd_id" escape="html">" aria-expanded="false" aria-controls="collapse<mt:var name="cd_id" escape="html">">
+      <a data-toggle="collapse" class="float-right" href="#collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse<mt:var name="cd_id" escape="html">">
+    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
       <div class="row">
         <div class="col">
           <mt:var name="cd_data" to_json="1">
