@@ -1478,6 +1478,9 @@ sub save {
     my $perms = $app->permissions
         or return $app->permission_denied();
 
+    return $app->errtrans('Invalid request.')
+        if $app->param('class');
+
     my $id = $app->param('id');
     if ( !$id ) {
         if ( $type eq 'page' ) {

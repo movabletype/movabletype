@@ -22,6 +22,9 @@ sub save {
     return $app->errtrans("Invalid request.")
         unless $type;
 
+    return $app->errtrans('Invalid request.')
+        if exists $class->properties->{class_type} and $app->param('class');
+
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
         unshift @types_for_event, $type;
