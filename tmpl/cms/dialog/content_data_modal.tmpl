@@ -88,19 +88,19 @@ jQuery('.actions-bar button.primary').click(function() {
 
   function getCollapseHtml(id, count) {
     return ''
-      + '<div class="mt-collapse">'
+      + '<div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false" data-mt-count="'+count+'">'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
-      +   '<div class="mt-collapse__container">'
-      +     '<div class="col">'
-      +       '<a href="<mt:var name="script_url">?__mode=view&_type=content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id='+id+'" target="_blank">(ID:'+id+')</a>'
-      +     '</div>'
-      +     '<div class="col-auto">'
-      +       '<a data-toggle="collapse" href="#collapse'+count+'" aria-expanded="false" aria-controls="collapse'+count+'">'
-      +         '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">'
-      +       '</a>'
-      +     '</div>'
+      +   '<div class="col-auto">'
+      +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
       +   '</div>'
-      +   '<div class="collapse mt-collapse__content" id="collapse'+count+'">'
+      +   '<div class="col">'
+      +     '<a href="<mt:var name="script_url">?__mode=view&_type=content_data&blog_id=<mt:var name="blog_id">&content_type_id=<mt:var name="content_type_id" escape="html">&id='+id+'" target="_blank">(ID:'+id+')</a>'
+      +     '<a data-toggle="collapse" class="float-right" href="#collapse'+count+'" aria-expanded="false" aria-controls="collapse'+count+'">'
+      +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1">'
+      +     '</a>'
+      +   '</div>'
+      +   '<div class="mt-flexBreak"></div>'
+      +   '<div class="collapse mt-collapse__content mt-draggable__content" id="collapse'+count+'">'
       +     '<div class="row">'
       +       '<div class="col">'
       +         'cd_data'
@@ -115,16 +115,10 @@ jQuery('.actions-bar button.primary').click(function() {
 
   var $contentDataContainer = parent.jQuery('#content-type-field-' + contentFieldId);
   if (!canMulti) {
-    $contentDataContainer.remove('.mt-collapse');
+    $contentDataContainer.children('.mt-collapse').remove();
   }
 
-  var $ul = parent.jQuery('#content-field-' + contentFieldId + '-list-content-data')
-  $ul.children('li.empty-content-data-list').remove();
-  if (!canMulti) {
-    $ul.children().remove();
-  }
-
-  var count = $contentDataContainer.children('.mt-collapse:last-child').data('mtCount') + 1;
+  var count = ($contentDataContainer.children('.mt-collapse:last-child').data('mtCount') || 0) + 1;
 
   jQuery('input[name=id]:checked').each(function (index, input) {
     var id = input.value;
