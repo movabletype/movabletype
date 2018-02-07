@@ -1240,7 +1240,8 @@ sub preview_data {
     return [] unless $content_type;
 
     my $registry = MT->registry('content_field_types');
-    my @data;
+
+    my $data = '';
     for my $f ( @{ $content_type->fields } ) {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
@@ -1251,25 +1252,21 @@ sub preview_data {
                 or next;
         }
 
-        my $field_data = $self->data->{ $f->{id} };
-        $field_data
-            = ref $field_data
-            ? [ map { MT::Util::encode_html($_) } @$field_data ]
-            : MT::Util::encode_html($field_data);
-        $field_data
-            = $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
-            if $preview_handler;
+        my $field_data
+            = $preview_handler
+            ? $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
+            : $self->data->{ $f->{id} };
+        $field_data = '' unless defined $field_data && $field_data ne '';
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
 
-        push @data,
-            +{
-            field_label => $field_label,
-            field_data  => $field_data,
-            };
+        my $escaped_field_label = MT::Util::encode_html($field_label);
+
+        $data
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
     }
-    \@data;
+    $data;
 }
 
 1;

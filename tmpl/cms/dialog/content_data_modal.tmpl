@@ -86,7 +86,7 @@ jQuery('.actions-bar button.primary').click(function() {
     return '<mt:var name="script_url">?' + jQuery.param(query);
   }
 
-  function getCollapseHtml(id) {
+  function getCollapseHtml(id, previewData) {
     return ''
       + '<div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
@@ -101,9 +101,9 @@ jQuery('.actions-bar button.primary').click(function() {
       +   '</div>'
       +   '<div class="mt-flexBreak"></div>'
       +   '<div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
-      +     '<div class="row">'
+      +     '<div class="row preview-data">'
       +       '<div class="col">'
-      +         'cd_data'
+      +         previewData
       +         '<a href="javascript:void(0)" class="btn btn-default remove float-right">'
       +           '<__trans phrase="Remove">'
       +         '</a>'
@@ -124,7 +124,8 @@ jQuery('.actions-bar button.primary').click(function() {
       return;
     }
 
-    var html = getCollapseHtml(id);
+    var previewData = jQuery(input).parents('tr').find('.preview-data').html();
+    var html = getCollapseHtml(id, previewData);
     $contentDataContainer.children('.alert').before(html);
   });
 

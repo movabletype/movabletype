@@ -46,7 +46,10 @@
                 <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
               </div>
             </td>
-            <td class="content-data-id primary"><mt:var name="id" escape="html"></td>
+            <td class="content-data-id primary">
+              <mt:var name="id" escape="html">
+              <span class="preview-data" style="display: none;"><mt:var name="preview_data"></span>
+            </td>
             <td class="content-data-modified-date">
               <mt:var name="modified_date" escape="html">
             </td>

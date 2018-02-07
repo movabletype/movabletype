@@ -737,6 +737,7 @@ sub _build_content_data_hasher {
             = $obj->author
             ? ( $obj->author->nickname || $obj->author->name )
             : $app->translate('*User deleted*');
+        $row->{preview_data} = $obj->preview_data;
 
         $row;
     };
