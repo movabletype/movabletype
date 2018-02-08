@@ -24,8 +24,7 @@ sub save {
 
     if ( exists $class->properties->{class_type} and $app->param('class') ) {
         return $app->errtrans('Invalid request.')
-            unless $app->run_callbacks( 'cms_can_accept_class_param', $app,
-            $type );
+            if $app->run_callbacks( 'cms_class_param_filter.' . $type, $app );
     }
 
     if ( $id && $type eq 'website' ) {
