@@ -1813,7 +1813,7 @@ sub core_menus {
             permission => '',
             view       => [ "system", "blog", 'website' ],
             condition  => sub {
-                return 1 if $app->user->is_superuser;
+                return 1 if ( $app->user->is_superuser || $app->user->permissions(0)->can_do('access_to_asset_list') );
 
                 my $blog = $app->blog;
                 my $blog_ids

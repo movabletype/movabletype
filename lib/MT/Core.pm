@@ -3288,6 +3288,7 @@ sub load_core_permissions {
             group            => 'sys_admin',
             label            => 'Manage Content Data',
             order            => 900,
+            inherit_from     => ['blog.manage_content_data','blog.edit_assets'],
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
@@ -3312,6 +3313,8 @@ sub load_core_permissions {
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
                 'access_to_system_dashboard'              => 1,
+                'access_to_website_list'                  => 1,
+                'access_to_blog_list'                     => 1,
             },
         },
         'system.manage_content_types' => {
