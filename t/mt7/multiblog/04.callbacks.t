@@ -35,6 +35,8 @@ my $request = MT::Request->instance;
 my $rebuild_trigger = MT::RebuildTrigger->new();
 my $new_blog        = $app->model('blog')->new;
 $new_blog->id(9999);
+my $new_content_type = $app->model('content_type')->new;
+$new_content_type->id(99999);
 
 ### Utilities
 sub is_restored {
@@ -46,6 +48,9 @@ sub is_restored {
     foreach my $key (qw/ action target target_blog_id object_type event /) {
         $rebuild_trigger->$key( $original->{$key} );
     }
+    $rebuild_trigger->ct_id( $original->{ct_id} )
+        if $original->{object_type}
+        == MT::RebuildTrigger::TYPE_CONTENT_TYPE();
     $rebuild_trigger->save;
     MT::RebuildTrigger->post_restore( $objects, undef, undef, sub { } );
     my $new_blog_id
@@ -58,6 +63,9 @@ sub is_restored {
     foreach my $key (qw/ action target target_blog_id object_type event /) {
         $data->{$key} = $rebuild_trigger_restored->$key;
     }
+    $data->{ct_id} = $rebuild_trigger_restored->ct_id
+        if $rebuild_trigger_restored->object_type
+        == MT::RebuildTrigger::TYPE_CONTENT_TYPE();
     is_deeply( $data, $restored, $message );
 }
 
@@ -154,6 +162,117 @@ is_restored(
         target_blog_id => 9999,
         object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
         event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
+    'If restoring data has a trigger for other_triggers.'
+);
+
+# Content Type
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
+        'MT::ContentType#1'    => $new_content_type,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 99999,
+    },
+    'If restoring data has a trigger for a blog.'
+);
+
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Website#1'        => $new_blog,
+        'MT::ContentType#1'    => $new_content_type,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 99999,
+    },
+    'If restoring data has a trigger for a website.'
+);
+
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_ALL(),
+        target_blog_id => 0,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
+        'MT::ContentType#1'    => $new_content_type,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_ALL(),
+        target_blog_id => 0,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 99999,
+    },
+    'If restoring data has a trigger for all.'
+);
+
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
+        'MT::ContentType#1'    => $new_content_type,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 99999,
+    },
+    'If restoring data has a trigger for blogs_in_website.'
+);
+
+is_restored(
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 1,
+    },
+    {   'MT::RebuildTrigger#1' => $rebuild_trigger,
+        'MT::Blog#1'           => $new_blog,
+        'MT::ContentType#1'    => $new_content_type,
+    },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+        ct_id          => 99999,
     },
     'If restoring data has a trigger for other_triggers.'
 );

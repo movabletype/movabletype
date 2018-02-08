@@ -268,17 +268,15 @@ sub post_restore {
     foreach my $key ( keys %$objects ) {
         next unless $key =~ /^MT::RebuildTrigger#\d+$/;
         my $rt = $objects->{$key};
-        my $new_blog_id;
-        my $new_target_blog_id;
-        my $blog_restored        = 0;
-        my $target_blog_restored = 0;
-        my $target               = target_text( $rt->target );
+        my ( $new_blog_id,   $new_target_blog_id,   $new_content_type_id );
+        my ( $blog_restored, $target_blog_restored, $content_type_restored )
+            = ( 0, 0, 0 );
+        my $target = target_text( $rt->target );
         if ( $target eq '_all' ) {
             $new_blog_id   = 0;
             $blog_restored = 1;
         }
-        elsif ( $target eq '_blogs_in_website' ) {
-
+        else {
             # target_blog_id
             my $target_id      = $rt->target_blog_id;
             my $new_target_obj = $objects->{ 'MT::Blog#' . $target_id };
@@ -293,45 +291,49 @@ sub post_restore {
                 );
                 $new_target_blog_id   = $new_target_obj->id;
                 $target_blog_restored = 1;
+            }
+
+            if ( $target ne '_blogs_in_website' ) {
+
+                # blog_id
+                my $id      = $rt->blog_id;
+                my $new_obj = $objects->{ 'MT::Blog#' . $id };
+                $new_obj = $objects->{ 'MT::Website#' . $id }
+                    unless $new_obj;
+                if ($new_obj) {
+                    $callback->(
+                        MT->translate(
+                            'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                            $id
+                        )
+                    );
+                    $new_blog_id   = $new_obj->id;
+                    $blog_restored = 1;
+                }
             }
         }
-        else {
-            # blog_id
-            my $id      = $rt->blog_id;
-            my $new_obj = $objects->{ 'MT::Blog#' . $id };
-            $new_obj = $objects->{ 'MT::Website#' . $id }
-                unless $new_obj;
-            if ($new_obj) {
-                $callback->(
-                    MT->translate(
-                        'Restoring MultiBlog rebuild trigger for blog #[_1]...',
-                        $id
-                    )
-                );
-                $new_blog_id   = $new_obj->id;
-                $blog_restored = 1;
-            }
 
-            # target_blog_id
-            my $target_id      = $rt->target_blog_id;
-            my $new_target_obj = $objects->{ 'MT::Blog#' . $target_id };
-            $new_target_obj = $objects->{ 'MT::Website#' . $target_id }
-                unless $new_target_obj;
-            if ($new_target_obj) {
+        # content_type_id
+        if ( $rt->object_type == TYPE_CONTENT_TYPE() ) {
+            my $content_type_id = $rt->ct_id;
+            my $new_content_type_obj
+                = $objects->{ 'MT::ContentType#' . $content_type_id };
+            if ($new_content_type_obj) {
                 $callback->(
                     MT->translate(
-                        'Restoring MultiBlog rebuild trigger for blog #[_1]...',
-                        $target_id
+                        'Restoring Rebuild Trigger for Content Type #[_1]...',
+                        $content_type_id
                     )
                 );
-                $new_target_blog_id   = $new_target_obj->id;
-                $target_blog_restored = 1;
+                $new_content_type_id   = $new_content_type_obj->id;
+                $content_type_restored = 1;
             }
         }
 
         if ( $blog_restored || $target_blog_restored ) {
             $rt->blog_id($new_blog_id)               if $blog_restored;
             $rt->target_blog_id($new_target_blog_id) if $target_blog_restored;
+            $rt->ct_id($new_content_type_id) if $content_type_restored;
             $rt->save;
         }
     }
