@@ -300,12 +300,41 @@
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    <mtapp:svgicon id="ic_fav" size="sm" color="success" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
+                    &nbsp;
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <span>
+                      <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    </span>
+                    <span>
+                      <mtapp:svgicon id="ic_blank" size="sm" title="Blank">
+                    </span>
+                  <mt:if name="object_type" eq="entry">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
+                      [#= label #]
+                    </a>
+                  </mt:if>
+                    &nbsp;
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
+                  </li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -323,7 +352,7 @@
 </mt:if>
 <mt:include name="include/category_selector.tmpl">
 <mt:if name="object_type" eq="entry">
-  <div mt:delegate="category-list" id="category-list"></div>
+  <div mt:delegate="category-list" id="category-list" class="mt-3"></div>
 </mt:if>
   <input id="category-ids" type="hidden" name="category_ids" value="<$mt:var name="selected_category_loop" glue=","$>" />
 </mtapp:setting>
@@ -765,7 +794,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header mb-2">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
-        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
+        <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>
@@ -816,6 +845,67 @@
 div.mce-notification-error {
     display: none;
 }
+
+#entry-category-widget #category-field > label:first-child {
+    display: none;
+}
+
+#category-selector-list a:hover,
+#category-list a:hover {
+    text-decoration: none;
+}
+
+#category-selector-list .list-item.odd,
+#folder-selector-list .list-item.odd {
+    background-color: #f4f4f4;
+}
+
+#category-selector-list .list-item:hover,
+#folder-selector-list .list-item:hover {
+    background-color: #cacaca;
+}
+
+#category-selector-list .list-item.selected,
+#folder-selector-list .list-item.selected {
+    background-color: #e0e0e0;
+}
+
+#category-selector-list .list-item .add-category-new-link {
+    display: none;
+}
+
+#category-selector-list .list-item:hover .add-category-new-link {
+    display: block;
+}
+
+#category-list li:not(:hover) a.delete {
+    display: none !important;
+}
+
+#category-list li:not(:first-child) > span:first-child {
+    display: none;
+}
+
+#category-list li:not(:first-child) > span:not(:first-child) {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:first-child {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:not(:first-child) {
+    display: none;
+}
+
+#category-list li:hover a.delete:not(:hover) span:not(:first-child) {
+    display: none;
+}
+
+#category-list li a.delete:hover span:first-child {
+    display: none;
+}
+
 </style>
 </mt:setvarblock>
 

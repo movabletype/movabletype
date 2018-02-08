@@ -881,6 +881,16 @@ sub cb_restore_objects {
                 }
             }
         }
+        elsif ( $key =~ /^MT::CategorySet#\d+$/ ) {
+            my $category_set = $all_objects->{$key};
+            my $old_order    = $category_set->order or next;
+            my $new_order    = join ',', map { $_->id }
+                grep { defined $_ }
+                map  { $all_objects->{"MT::Category#$_"} }
+                split ',', $old_order;
+            $category_set->order($new_order);
+            $category_set->save;
+        }
     }
 
     my $i = 0;

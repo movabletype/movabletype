@@ -104,6 +104,7 @@
     }
 
     _validateFields() {
+      var dateTimeFieldsAreValid    = jQuery('.date-field, .time-field').mtValidate('simple');
       var requiredFieldsAreValid    = jQuery('.html5-form')
                                         .mtValidate('simple')
       var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
@@ -113,7 +114,7 @@
       var contentFieldBlockIsValid  = jQuery('.content-field-block')
                                         .mtValidate('content-field-block')
 
-      return requiredFieldsAreValid && textFieldsInTableAreValid
+      return dateTimeFieldsAreValid && requiredFieldsAreValid && textFieldsInTableAreValid
           && tableIsValid && contentFieldBlockIsValid
     }
 

@@ -72,7 +72,7 @@ sub delete {
 sub unlock {
     my ( $app, $endpoint ) = @_;
 
-    return $app->error(403) if !$app->user->is_superuser;
+    return $app->error(403) if !$app->user->can_manage_users_groups();
 
     my ($user) = context_objects(@_) or return;
 
@@ -87,7 +87,7 @@ sub unlock {
 sub recover_password {
     my ( $app, $endpoint ) = @_;
 
-    if ( !( $app->user->is_superuser() && MT::Auth->can_recover_password ) ) {
+    if ( !( $app->user->can_manage_users_groups() && MT::Auth->can_recover_password ) ) {
         return $app->error(403);
     }
 

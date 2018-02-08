@@ -2689,7 +2689,7 @@ sub recover_passwords {
     my @id  = $app->multi_param('id');
 
     return $app->permission_denied()
-        unless $app->user->is_superuser();
+        unless $app->user->can_manage_users_groups();
 
     my $class
         = ref $app eq 'MT::App::Upgrader'

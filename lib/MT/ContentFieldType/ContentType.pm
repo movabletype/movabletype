@@ -18,8 +18,7 @@ sub field_html_params {
     $value = [$value] unless ref $value eq 'ARRAY';
 
     my %tmp_cd;
-    my $iter = MT::ContentData->load_iter( { id => $value },
-        { fetchonly => { id => 1, blog_id => 1, content_type_id => 1 } } );
+    my $iter = MT::ContentData->load_iter( { id => $value } );
     while ( my $cd = $iter->() ) {
         $tmp_cd{ $cd->id } = $cd;
     }
@@ -28,6 +27,7 @@ sub field_html_params {
         {   cd_id              => $_->id,
             cd_blog_id         => $_->blog_id,
             cd_content_type_id => $_->content_type_id,
+            cd_data            => $_->preview_data,
         }
     } @content_data;
 
@@ -275,6 +275,18 @@ sub field_type_validation_handler {
         );
     }
     return;
+}
+
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
+    return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
 1;
