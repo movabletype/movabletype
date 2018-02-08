@@ -1456,8 +1456,7 @@ sub core_menu_actions {
         rebuild => {
             class     => 'mt-rebuild',
             condition => sub {
-                return ($app->blog
-                && $app->can_do('rebuild'));
+                return ( $app->blog && $app->can_do('rebuild') );
             },
             icon  => 'ic_build',
             label => 'Rebuild',
@@ -1650,21 +1649,21 @@ sub core_menus {
         },
 
         'user:member' => {
-            label             => "Manage",
-            order             => 100,
-            mode              => 'list',
-            args              => { _type => 'member' },
-            view              => [ "blog", "website" ],
+            label         => "Manage",
+            order         => 100,
+            mode          => 'list',
+            args          => { _type => 'member' },
+            view          => [ "blog", "website" ],
             permit_action => "manage_users",
         },
         'user:manage' => {
-            label      => "Manage",
-            order      => 100,
-            mode       => "list",
-            args       => { _type => "author" },
-            permission => "administer,manage_users",
+            label             => "Manage",
+            order             => 100,
+            mode              => "list",
+            args              => { _type => "author" },
+            permission        => "administer,manage_users",
             system_permission => "administer,manage_users_groups",
-            view       => "system",
+            view              => "system",
         },
 
         'role:manage' => {
@@ -1693,13 +1692,13 @@ sub core_menus {
         },
 
         'user:create' => {
-            label      => "New",
-            order      => 200,
-            mode       => "view",
-            args       => { _type => "author" },
-            permission => "administer,manage_users",
+            label             => "New",
+            order             => 200,
+            mode              => "view",
+            args              => { _type => "author" },
+            permission        => "administer,manage_users",
             system_permission => "administer,manage_users_groups",
-            condition  => sub {
+            condition         => sub {
                 return !MT->config->ExternalUserManagement;
             },
             view => "system",
@@ -1813,7 +1812,10 @@ sub core_menus {
             permission => '',
             view       => [ "system", "blog", 'website' ],
             condition  => sub {
-                return 1 if $app->user->is_superuser;
+                return 1
+                    if ( $app->user->is_superuser
+                    || $app->user->permissions(0)
+                    ->can_do('access_to_asset_list') );
 
                 my $blog = $app->blog;
                 my $blog_ids
@@ -2613,6 +2615,7 @@ sub build_blog_selector {
 # Special case. If this user can access 5 blogs or smaller then load those blogs.
     $param->{selector_hide_blog_chooser} = 1;
     if ( @blogs && scalar @blogs == 6 ) {
+
         # This user can access over 6 blogs.
         if (@fav_blogs) {
             @blogs
@@ -2702,8 +2705,11 @@ sub build_blog_selector {
                 $param->{curr_website_can_link}
                     = (    $auth->is_superuser
                         || $auth->permissions(0)->can_do('edit_templates')
-                        || $auth->permissions(0)->can_do('access_to_website_list')
-                        || @perms > 0 ) ? 1 : 0;
+                        || $auth->permissions(0)
+                        ->can_do('access_to_website_list')
+                        || @perms > 0 )
+                    ? 1
+                    : 0;
             }
             else {
                 my $fav_data;
@@ -2712,8 +2718,11 @@ sub build_blog_selector {
                 $fav_data->{fav_website_can_link}
                     = (    $auth->is_superuser
                         || $auth->permissions(0)->can_do('edit_templates')
-                        || $auth->permissions(0)->can_do('access_to_website_list')
-                        || @perms > 0 ) ? 1 : 0;
+                        || $auth->permissions(0)
+                        ->can_do('access_to_website_list')
+                        || @perms > 0 )
+                    ? 1
+                    : 0;
 
                 push @website_data, \%$fav_data;
             }

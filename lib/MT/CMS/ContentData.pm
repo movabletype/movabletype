@@ -342,11 +342,18 @@ sub save {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_site );
+    my $perms = $app->permissions or return $app->permission_denied();
+
+    my $content_data_id = $app->param('id');
+    if ( !$content_data_id ) {
+        return $app->permission_denied()
+            unless $perms->can_do('create_new_content_data');
+    }
+    else {
+        return $app->permission_denied()
+            unless $perms->can_edit_content_data( $content_data_id,
+            $app->user );
+    }
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -355,8 +362,6 @@ sub save {
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $field_data   = $content_type->fields;
-
-    my $content_data_id = $app->param('id');
 
     my $content_field_types = $app->registry('content_field_types');
 
