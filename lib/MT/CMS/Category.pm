@@ -203,7 +203,8 @@ sub bulk_update {
 
         if ($is_category_set) {
             return $app->json_error( $app->translate('Permission defined.') )
-                unless $app->can_do('save_category_set');
+                unless ( $app->user->can_manage_content_types
+                || $app->can_do('save_category_set') );
         }
     }
     elsif ( 'folder' eq $model ) {
