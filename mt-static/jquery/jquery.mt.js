@@ -1345,35 +1345,6 @@ $.mtValidateRules = {
         }
         return true;
     },
-    'div.content-type-field-container': function ($e) {
-        var contentTypeName = $e.data('mt-content-type-name');
-        var multiple = $e.data('mt-multiple') ? true : false;
-        var max = Number($e.data('mt-max-select')) || 0;
-        var min = Number($e.data('mt-min-select')) || 0;
-        var required = $e.data('mt-required') ? true : false;
-        var selectedCount = $e.children('.mt-collapse').length;
-        if ( multiple && max && max < selectedCount ) {
-            this.error = true;
-            this.errstr = trans('[_1] less than or equal to [_2] must be selected', contentTypeName, max);
-            return false;
-        }
-        if ( multiple && min && min > selectedCount ) {
-            this.error = true;
-            this.errstr = trans('[_1] greater than or equal to [_2] must be selected', contentTypeName, min);
-            return false;
-        }
-        if ( !multiple && selectedCount > 1 ) {
-            this.error = true;
-            this.errstr = trans('Only 1 [_1] can be selected', contentTypeName);
-            return false;
-        }
-        if ( required && selectedCount === 0 ) {
-            this.error = true;
-            this.errstr = trans('This field is required');
-            return false;
-        }
-        return true;
-    },
     '.html5-form': function ($e) {
         if (!$e.get(0).checkValidity || $e.get(0).checkValidity()) {
             return true;
