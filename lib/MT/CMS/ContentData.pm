@@ -944,9 +944,41 @@ sub make_menus {
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
             condition => sub {
-                $ct->blog_id == MT->app->blog->id;
+
+                return 0 if $ct->blog_id != MT->app->blog->id;
+
+                my $app = MT->instance;
+                return 1
+                    if ( $app->user->is_superuser
+                    || $app->user->can_manage_content_data );
+
+                my $blog = $app->blog;
+                my $blog_ids
+                    = !$blog         ? undef
+                    : $blog->is_blog ? [ $blog->id ]
+                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {   author_id => $app->user->id,
+                        (   $blog_ids
+                            ? ( blog_id => $blog_ids )
+                            : ( blog_id => { not => 0 } )
+                        ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->has( 'manage_content_data:' . $ct->unique_id );
+
+                    $cond = 1, last
+                        if $p->has( 'create_content_data:' . $ct->unique_id );
+                }
+                return $cond ? 1 : 0;
+
             },
-            permission => 'manage_content_data',
         };
         if ( $blog->is_blog ) {
             $blog_order += 100;
