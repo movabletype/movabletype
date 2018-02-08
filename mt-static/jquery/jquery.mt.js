@@ -1351,7 +1351,7 @@ $.mtValidateRules = {
         var max = Number($e.data('mt-max-select')) || 0;
         var min = Number($e.data('mt-min-select')) || 0;
         var required = $e.data('mt-required') ? true : false;
-        var selectedCount = $e.find('li:not(.empty-content-data-list)').length;
+        var selectedCount = $e.children('.mt-collapse').length;
         if ( multiple && max && max < selectedCount ) {
             this.error = true;
             this.errstr = trans('[_1] less than or equal to [_2] must be selected', contentTypeName, max);

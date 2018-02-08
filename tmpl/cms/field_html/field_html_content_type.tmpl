@@ -48,9 +48,10 @@
 
   <mt:setvarblock name="jq_js_include" append="1">
 jQuery('.content-type-field-container').on('click', 'a.remove', function () {
+  var $container = jQuery(this).parents('.content-type-field-container');
+
   jQuery(this).parents('.mt-collapse').remove();
 
-  var $container = jQuery(this).parents('.content-type-field-container');
   if ($container.data('mtValidator')) {
     $container.mtValid({ focus: false });
   }
