@@ -1624,14 +1624,10 @@ BEGIN {
             },
             template     => { data_api_scope_mode => 'strict', },
             category_set => {
-                object_label     => 'Category Set',
-                primary          => 'name',
-                view             => [ 'website', 'blog' ],
-                default_sort_key => 'name',
-                permission       => {
-                    permit_action => 'access_to_category_set_list',
-                    inherit       => 0,
-                },
+                object_label        => 'Category Set',
+                primary             => 'name',
+                view                => [ 'website', 'blog' ],
+                default_sort_key    => 'name',
                 data_api_permission => undef,
                 scope_mode          => 'this',
             },
@@ -3319,10 +3315,11 @@ sub load_core_permissions {
             },
         },
         'system.manage_content_types' => {
-            group            => 'sys_admin',
-            label            => 'Manage Content Types',
-            order            => 1000,
-            inherit_from     => ['system.manage_content_data'],
+            group => 'sys_admin',
+            label => 'Manage Content Types',
+            order => 1000,
+            inherit_from =>
+                [ 'system.manage_content_data', 'blog.manage_category_set' ],
             permitted_action => {
                 'access_to_system_dashboard' => 1,
                 'create_new_content_type'    => 1,
@@ -3334,6 +3331,8 @@ sub load_core_permissions {
                 'save_folder'                => 1,
                 'save_multiple_content_type' => 1,
                 'save_page'                  => 1,
+                'access_to_website_list'     => 1,
+                'access_to_blog_list'        => 1,
             },
         },
     };
