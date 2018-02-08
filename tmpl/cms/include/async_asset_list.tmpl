@@ -6,11 +6,11 @@
   <form action="" method="get" id="modal-type-filter" class="form-inline">
     <span><__trans phrase="Asset Type: "></span>
     <select name="asset-class" id="asset-class" class="custom-select form-control">
-      <option value=""<mt:if name="class_filter_loop"><mt:if name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="">
         <__trans phrase="All Types">
       </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"<mt:elseif name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
         <mt:var name="label">
       </option>
 </mt:loop>
