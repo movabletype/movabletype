@@ -40,77 +40,121 @@ $new_blog->id(9999);
 sub is_restored {
     my ( $original, $objects, $restored, $message ) = @_;
 
-    $rebuild_trigger->blog_id(1);
-    $rebuild_trigger->data( MT::Util::to_json($original) );
+    my $old_blog_id
+        = $original->{target} == MT::RebuildTrigger::TARGET_BLOG() ? 1 : 0;
+    $rebuild_trigger->blog_id($old_blog_id);
+    foreach my $key (qw/ action target target_blog_id object_type event /) {
+        $rebuild_trigger->$key( $original->{$key} );
+    }
     $rebuild_trigger->save;
     MT::RebuildTrigger->post_restore( $objects, undef, undef, sub { } );
-    my $rebuild_triggers = $restored->{rebuild_triggers};
-    my ( $action, $restored_id, $trigger )
-        = $rebuild_triggers
-        ? split ':', $rebuild_triggers
-        : ( '', '', '' );
     my $new_blog_id
-        = (    $restored_id =~ m/[_all|_blogs_in_website]/
-            || $restored->{other_triggers} )
-        ? 0
-        : $new_blog->id;
+        = $original->{target} == MT::RebuildTrigger::TARGET_BLOG()
+        ? $restored->{target_blog_id}
+        : 0;
     my $rebuild_trigger_restored
         = MT::RebuildTrigger->load( { blog_id => $new_blog_id } );
-    my $data
-        = $rebuild_trigger_restored->data()
-        ? MT::Util::from_json( $rebuild_trigger_restored->data() )
-        : {};
+    my $data = {};
+    foreach my $key (qw/ action target target_blog_id object_type event /) {
+        $data->{$key} = $rebuild_trigger_restored->$key;
+    }
     is_deeply( $data, $restored, $message );
 }
 
 ### Do test
 
 is_restored(
-    { rebuild_triggers => 'ri:1:entry_save', },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     {   'MT::RebuildTrigger#1' => $rebuild_trigger,
         'MT::Blog#1'           => $new_blog,
     },
-    { rebuild_triggers => 'ri:9999:entry_save' },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     'If restoring data has a trigger for a blog.'
 );
 
 is_restored(
-    { rebuild_triggers => 'ri:1:entry_save', },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     {   'MT::RebuildTrigger#1' => $rebuild_trigger,
         'MT::Website#1'        => $new_blog,
     },
-    { rebuild_triggers => 'ri:9999:entry_save' },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     'If restoring data has a trigger for a website.'
 );
 
 is_restored(
-    { rebuild_triggers => 'ri:_all:entry_save', },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_ALL(),
+        target_blog_id => 0,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     {   'MT::RebuildTrigger#1' => $rebuild_trigger,
         'MT::Blog#1'           => $new_blog,
     },
-    { rebuild_triggers => 'ri:_all:entry_save' },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_ALL(),
+        target_blog_id => 0,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     'If restoring data has a trigger for all.'
 );
 
 is_restored(
-    {   rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
-        blogs_in_website_triggers => { 'ri' => { 1 => 1, } },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
     },
     {   'MT::RebuildTrigger#1' => $rebuild_trigger,
         'MT::Blog#1'           => $new_blog,
     },
-    {   rebuild_triggers          => 'ri:_blogs_in_website:entry_save',
-        blogs_in_website_triggers => { 'ri' => { 9999 => 1, } },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
     },
     'If restoring data has a trigger for blogs_in_website.'
 );
 
 is_restored(
-    { other_triggers => { 'ri' => { 1 => 1, } }, },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 1,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     {   'MT::RebuildTrigger#1' => $rebuild_trigger,
         'MT::Blog#1'           => $new_blog,
     },
-    { other_triggers => { 'ri' => { 9999 => 1, } }, },
+    {   action         => MT::RebuildTrigger::ACTION_RI(),
+        target         => MT::RebuildTrigger::TARGET_BLOG(),
+        target_blog_id => 9999,
+        object_type    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
+        event          => MT::RebuildTrigger::EVENT_SAVE(),
+    },
     'If restoring data has a trigger for other_triggers.'
 );
 
