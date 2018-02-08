@@ -867,12 +867,6 @@ sub _image_registry {
                 html => '$Core::MT::ContentFieldType::Asset::html',
                 single_select_options =>
                     '$Core::MT::ContentFieldType::Asset::single_select_options',
-                sub_fields => [
-                    {   class   => 'thumbnail',
-                        label   => 'Thumbnail',
-                        display => 'default',
-                    },
-                ],
                 terms =>
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },

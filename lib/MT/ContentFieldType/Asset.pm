@@ -399,7 +399,6 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $is_image  = $prop->idx_type eq 'asset_image';
     my $cd_id     = $content_data->id;
     my $field_id  = $prop->content_field_id;
     my $asset_ids = $content_data->data->{$field_id} || [];
@@ -412,6 +411,7 @@ sub html {
     my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
 
     my $can_double_encode = 1;
+    my $static_uri        = $app->static_path;
 
     my ( @labels, @thumbnails );
     for my $asset (@assets) {
@@ -419,50 +419,23 @@ sub html {
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
 
-        push @labels,
-            qq{<a href="${edit_link}" class="asset-field-label">${label}</a>};
-        if ($is_image) {
-            my $thumbnail_html = _thumbnail_html( $app, $asset );
-            push @thumbnails,
-                qq{<a href="${edit_link}">${thumbnail_html}</a>};
+        my $static_uri = $app->static_path;
+        my $thumbnail;
+        if ( $asset->class eq 'image' ) {
+            $thumbnail = _thumbnail_html( $app, $asset );
         }
+        else {
+            my $asset_class = $asset->class;
+            $thumbnail
+                = qq{<img src="${static_uri}images/asset/$asset_class-20.png">};
+        }
+
+        push @labels,
+            qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
     }
 
-    my $labels_html
-        = qq{<span id="asset-labels-${cd_id}-${field_id}" class="label">}
-        . join( '', @labels )
-        . '</span>';
-
-    if ($is_image) {
-        my $thumbnails_html
-            = qq{<span id="asset-thumbnails-${cd_id}-${field_id}" class="thumbnail">}
-            . join( '', @thumbnails )
-            . '</span>';
-        my $js = <<"__JS__";
-<script>
-jQuery(document).ready(function() {
-  jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").change(function() {
-    changeLabels();
-  });
-
-  function changeLabels() {
-    if (jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").prop('checked')) {
-      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'none');
-    } else {
-      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'inline');
-    }
-  }
-
-  changeLabels();
-});
-</script>
-__JS__
-
-        $labels_html . $thumbnails_html . $js;
-    }
-    else {
-        $labels_html;
-    }
+    '<ul class="list-unstyled">'
+        . join( '', map {"<li>$_</li>"} @labels ) . '</ul>';
 }
 
 sub _edit_link {
@@ -480,7 +453,7 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $thumb_size = 45;
+    my $thumb_size = 20;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
     my $img
@@ -540,18 +513,9 @@ sub ss_validator {
     my $field_type       = $field_data->{type};
     my $field_type_label = $field_data->{type_label};
 
-    my $asset_class
-        = $field_type eq 'asset'        ? '*'
-        : $field_type =~ /^asset_(.*)$/ ? $1
-        :                                 undef;
-    return $app->translate( '[_1] is invalid asset type ([_2].',
-        $field_label, $field_type )
-        unless $asset_class;
-
     my $iter = MT::Asset->load_iter(
         {   id      => $data,
             blog_id => $app->blog->id,
-            class   => $asset_class
         },
         { fetchonly => { id => 1 } }
     );
