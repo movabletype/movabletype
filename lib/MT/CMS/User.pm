@@ -325,7 +325,7 @@ sub edit_role {
         $app->translate('Roles'),
         $app->uri(
             mode => 'list',
-            args => { '_type' => 'role', }
+            args => { '_type' => 'role', blog_id => 0 }
         )
     );
     if ($id) {
