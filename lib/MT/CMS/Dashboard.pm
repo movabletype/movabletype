@@ -1007,14 +1007,15 @@ sub site_list_widget {
             }
         );
         while ( my $ct = $ct_iter->() ) {
+            my $perm = $user->permissions($site->id);
             my $item;
             $item->{name} = $ct->name;
             $item->{can_create}
-                = $user->can_do( "create_content_data_" . $ct->id ) ? 1 : 0;
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id ) ? 1 : 0;
             $item->{can_list}
-                = $user->can_do( "create_content_data_" . $ct->id )   ? 1
-                : $user->can_do( "publish_content_data_" . $ct->id )  ? 1
-                : $user->can_do( "edit_all_content_data_" . $ct->id ) ? 1
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )   ? 1
+                : $perm->can_do( "publish_content_data_via_list_" . $ct->unique_id )  ? 1
+                : $perm->can_do( "edit_all_content_data_" . $ct->unique_id ) ? 1
                 :                                                       0;
             $item->{type_id}         = 'content_data_' . $ct->id;
             $item->{content_type_id} = $ct->id;
