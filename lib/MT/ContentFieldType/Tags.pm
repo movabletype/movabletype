@@ -307,5 +307,28 @@ sub feed_value_handler {
     return "<ul>$contents</ul>";
 }
 
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @tags = MT->model('tag')
+        ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
+    my %name_hash = map { $_->id => $_->name } @tags;
+
+    my $contents = '';
+    for my $id (@$values) {
+        my $name = $name_hash{$id};
+        $name = '' unless defined $name && $name ne '';
+        my $encoded_name = MT::Util::encode_html($name);
+        $contents .= "<li>$encoded_name (ID:$id)</li>";
+    }
+
+    return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
 1;
 

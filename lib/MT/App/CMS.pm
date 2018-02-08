@@ -2925,7 +2925,8 @@ sub build_menus {
                     $param->{screen_group} = $id;
 
                     my ($content_type_id)
-                        = $app->param('type') =~ /^content_data_([0-9]+)$/;
+                        = ( $app->param('type') || '' )
+                        =~ /^content_data_([0-9]+)$/;
                     $content_type_id ||= $app->param('content_type_id');
                     $content_type_id ||= 0;
 

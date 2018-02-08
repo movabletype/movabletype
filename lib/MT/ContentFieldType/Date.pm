@@ -93,5 +93,10 @@ sub feed_value_handler {
     return MT::Util::format_ts( '%Y-%m-%d', $value, $app->blog );
 }
 
+sub preview_handler {
+    my ( $value, $field_id, $content_data ) = @_;
+    MT::Util::format_ts( '%Y-%m-%d', $value, MT->app->blog );
+}
+
 1;
 

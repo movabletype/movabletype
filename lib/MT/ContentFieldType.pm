@@ -50,6 +50,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::ContentType::preview_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         theme_export_handler =>
@@ -233,6 +235,8 @@ sub _date_time_registry {
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::DateTime::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::DateTime::preview_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -278,6 +282,8 @@ sub _date_registry {
             '$Core::MT::ContentFieldType::Date::data_load_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Date::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Date::preview_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -323,6 +329,8 @@ sub _time_registry {
             '$Core::MT::ContentFieldType::Time::data_load_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Time::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Time::preview_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Common::ss_validator_datetime',
         list_props => {
@@ -368,6 +376,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         list_props => {
             select_box => {
                 filter_tmpl =>
@@ -411,6 +421,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         list_props => {
             radio_button => {
                 filter_tmpl =>
@@ -453,6 +465,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         list_props => {
             checkboxes => {
                 filter_tmpl =>
@@ -501,6 +515,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Asset::preview_handler',
         list_props => {
             asset => {
                 filter_tmpl =>
@@ -614,6 +630,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Asset::preview_handler',
         list_props => {
             asset_audio => {
                 filter_tmpl =>
@@ -726,6 +744,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Asset::preview_handler',
         list_props => {
             asset_video => {
                 filter_tmpl =>
@@ -838,6 +858,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Asset::preview_handler',
         list_props => {
             asset_image => {
                 filter_tmpl =>
@@ -995,6 +1017,8 @@ sub _categories_registry {
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Categories::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Categories::preview_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
         theme_export_handler =>
@@ -1044,6 +1068,8 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::field_value_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Tags::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Tags::preview_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
         tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
         list_props   => {
@@ -1086,6 +1112,8 @@ sub _list_registry {
         tag_handler => '$Core::MT::ContentFieldType::List::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::List::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::List::preview_handler',
         list_props => {
             list => {
                 base            => '__virtual.string',
@@ -1120,6 +1148,8 @@ sub _table_registry {
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Table::feed_value_handler',
+        preview_handler =>
+            '$Core::MT::ContentFieldType::Table::preview_handler',
         list_props => {
             tables => {
                 base            => '__virtual.string',

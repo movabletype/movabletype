@@ -415,7 +415,8 @@ sub html {
 
     my ( @labels, @thumbnails );
     for my $asset (@assets) {
-        my $label = MT::Util::encode_html( $asset->label, $can_double_encode );
+        my $label
+            = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
 
         push @labels,
@@ -627,6 +628,41 @@ sub feed_value_handler {
     }
 
     return "<ul>$contents</ul>";
+}
+
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @assets = MT->model('asset')->load( { id => $values, class => '*' } );
+    my %asset_hash = map { $_->id => $_ } @assets;
+
+    my $contents = '';
+    for my $id (@$values) {
+        my $asset = $asset_hash{$id} or next;
+
+        my $label = $asset->label;
+        $label = '' unless defined $label && $label ne '';
+        my $encoded_label = MT::Util::encode_html($label);
+
+        my ( $url, $w, $h )
+            = $asset->thumbnail_url( Width => 45, Height => 45, Square => 1 );
+
+        unless ($url) {
+            my $static_uri  = MT->static_path;
+            my $asset_class = $asset->class;
+            $url = "${static_uri}images/asset/$asset_class-45.png";
+        }
+
+        $contents
+            .= qq{<li><img class="img-thumbnail p-0" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+    }
+
+    return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
 1;

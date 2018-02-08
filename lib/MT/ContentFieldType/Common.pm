@@ -431,5 +431,26 @@ sub feed_value_handler_multiple {
     return "<ul>$contents</ul>";
 }
 
+sub preview_handler_multiple {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my $field_data = $content_data->content_type->get_field($field_id);
+    my %value_label_hash = map { $_->{value} => $_->{label} }
+        @{ $field_data->{options}{values} || [] };
+
+    my $contents = '';
+    for my $v (@$values) {
+        my $encoded_v     = MT::Util::encode_html($v);
+        my $encoded_label = MT::Util::encode_html( $value_label_hash{$v} );
+        $contents .= "<li>$encoded_label ($encoded_v)</li>";
+    }
+    return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
 1;
 
