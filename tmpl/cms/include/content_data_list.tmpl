@@ -28,7 +28,10 @@
           <th class="head string" scope="col">
             <span class="col-label"><__trans phrase="ID"></span>
           </th>
-          <th class="head string" scope="col" style="width: 20%">
+          <th class="head string" scope="col">
+            <span class="col-label"><__trans phrase="Data"></span>
+          </th>
+          <th class="head string" scope="col">
             <span class="col-label"><__trans phrase="Date Modified"></span>
           </th>
           <th class="head string" scope="col">
@@ -48,7 +51,21 @@
             </td>
             <td class="content-data-id primary">
               <mt:var name="id" escape="html">
-              <span class="preview-data" style="display: none;"><mt:var name="preview_data"></span>
+            </td>
+            <td class="content-data-data">
+              <p>
+                <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+                  <span><__trans phrase="Open"></span>
+                  <span><__trans phrase="Close"></span>
+                </a>
+              </p>
+              <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
+                <div class="card">
+                  <div class="card-body">
+                    <mt:var name="preview_data">
+                  </div>
+                </div>
+              </div>
             </td>
             <td class="content-data-modified-date">
               <mt:var name="modified_date" escape="html">
@@ -74,6 +91,19 @@
     </div>
   </div>
 </div>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+td.content-data-data [aria-expanded=false] span:last-child,
+td.content-data-data [aria-expanded=true] span:first-child {
+  display: none;
+}
+
+td.content-data-data table td {
+  border: 1px solid #000000;
+}
+</style>
+</mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
 <script src="<mt:var name="static_uri">js/list_table.js"></script>

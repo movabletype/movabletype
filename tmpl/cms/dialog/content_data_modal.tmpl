@@ -124,7 +124,7 @@ jQuery('.actions-bar button.primary').click(function() {
       return;
     }
 
-    var previewData = jQuery(input).parents('tr').find('.preview-data').html();
+    var previewData = jQuery(input).parents('tr').find('.content-data-data .card-body').html();
     var html = getCollapseHtml(id, previewData);
     $contentDataContainer.children('.alert').before(html);
   });
