@@ -2953,8 +2953,9 @@ sub build_menus {
                         $sub->{current} = 1;
                     }
                 }
-                elsif ( ( $app_param_type || '' ) eq 'category'
-                    && $mode eq 'view' )
+                elsif (( $app_param_type || '' ) eq 'category'
+                    && $mode eq 'view'
+                    && !$app->param('is_category_set') )
                 {
                     my $is_category_set = $app->model('category')->exist(
                         {   id => $app->param('id') || 0,
