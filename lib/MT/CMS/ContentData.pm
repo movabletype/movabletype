@@ -952,6 +952,8 @@ sub make_menus {
                     if ( $app->user->is_superuser
                     || $app->user->can_manage_content_data );
 
+                return 1 if $app->can_do('edit_all_content_data');
+
                 my $blog = $app->blog;
                 my $blog_ids
                     = !$blog         ? undef

@@ -3312,6 +3312,7 @@ sub load_core_permissions {
                 'access_to_system_dashboard'              => 1,
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
+                'use_tools:search'                        => 0,
             },
         },
         'system.manage_content_types' => {
@@ -3333,6 +3334,8 @@ sub load_core_permissions {
                 'save_page'                  => 1,
                 'access_to_website_list'     => 1,
                 'access_to_blog_list'        => 1,
+                'use_tools:search'           => 0,
+
             },
         },
     };
