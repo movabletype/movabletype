@@ -6283,7 +6283,7 @@ button.bg-dark:focus {
   display: table-cell !important;
 }
 
-.d-flex, .mt-productHeader, .mt-draggable, .mt-contentfield .mt-collapse__container, .mt-collapse__container {
+.d-flex, .mt-productHeader, .mt-draggable, .mt-contentfield .mt-collapse__container, .mt-collapse__container, .modal-description, .modal-selections {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -6536,7 +6536,7 @@ button.bg-dark:focus {
           flex-direction: column-reverse !important;
 }
 
-.flex-wrap {
+.flex-wrap, .modal-selections {
   -ms-flex-wrap: wrap !important;
       flex-wrap: wrap !important;
 }
@@ -6569,7 +6569,7 @@ button.bg-dark:focus {
           justify-content: center !important;
 }
 
-.justify-content-between, .mt-primaryNavigation__header, .mt-primaryNavigation__header--invert {
+.justify-content-between, .mt-primaryNavigation__header, .mt-primaryNavigation__header--invert, .modal-description {
   -webkit-box-pack: justify !important;
       -ms-flex-pack: justify !important;
           justify-content: space-between !important;
@@ -10218,6 +10218,16 @@ fieldset.form-group {
 }
 
 /* Modal */
+.modal-header {
+  border-bottom: 0;
+  background: #495057;
+  color: #FFFFFF;
+}
+
+.modal-header button {
+  color: #FFFFFF;
+}
+
 .modal-title {
   margin-top: 0;
 }
@@ -10225,6 +10235,40 @@ fieldset.form-group {
 .modal-body {
   max-height: 32rem;
   overflow-y: auto;
+}
+
+.modal-description {
+  padding: 1rem 1rem 0 1rem;
+}
+
+.modal-label {
+  margin: 0;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.modal-selections {
+  padding: 1rem 1rem 0 1rem;
+  max-height: 4.8rem;
+  overflow: auto;
+}
+
+.modal-selections .badge {
+  margin: 0 0.5rem 0.2rem 0;
+  cursor: pointer;
+}
+
+.modal-selections .badge:hover {
+  border-color: #004B9A;
+}
+
+.modal-cancel,
+.modal-cancel:not([href]):not([tabindex]) {
+  display: inline-block;
+  margin: 0 1rem 0 0;
+  color: #004B9A;
+  text-decoration: underline;
+  vertical-align: middle;
 }
 
 /* Alert */
