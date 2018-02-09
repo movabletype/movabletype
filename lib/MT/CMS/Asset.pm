@@ -148,6 +148,19 @@ sub edit {
 
         $param->{broken_metadata} = $obj->is_metadata_broken;
     }
+
+    $app->add_breadcrumb(
+        $app->translate('Assets'),
+        $app->uri(
+            'mode' => 'list',
+            args   => {
+                _type   => 'asset',
+                blog_id => $app->blog ? $app->blog->id : 0,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $obj->label ) if $id;
+
     1;
 }
 
