@@ -41,6 +41,12 @@ sub edit {
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
+    my $perm = $app->permissions;
+    $param->{can_publish_post} = 1 if (
+      $perm->can_do('publish_all_content_data')
+      || $perm->can_do('edit_all_content_data')
+      || $perm->can_do('publish_content_data_via_list_'.$content_type->unique_id));
+
     if ( $content_type->blog_id != $blog->id ) {
         return $app->return_to_dashboard( redirect => 1 );
     }
@@ -1105,6 +1111,8 @@ sub _get_form_data {
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 
+    my $terms = $load_options->{terms} || {};
+
     my $object_ds = $filter->object_ds;
     $object_ds =~ /content_data_(\d+)/;
     my $content_type_id = $1;
@@ -1113,7 +1121,56 @@ sub cms_pre_load_filtered_list {
         $type =~ /content_data_(\d+)/;
         $content_type_id = $1;
     }
-    $load_options->{terms}{content_type_id} = $content_type_id;
+    $terms->{content_type_id} = $content_type_id;
+    my $content_type = MT::ContentType->load({ id => $content_type_id });
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    my $blog_ids;
+    $blog_ids = delete $terms->{blog_id}
+        if exists $terms->{blog_id};
+    delete $terms->{author_id}
+        if exists $terms->{author_id};
+
+    if ( !$blog_ids ) {
+        my $blog_id = $app->param('blog_id') || 0;
+        my $blog = $blog_id ? $app->blog : undef;
+        $blog_ids
+            = !$blog         ? undef
+            : $blog->is_blog ? [$blog_id]
+            :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+    }
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        {   author_id => $user->id,
+            (   $blog_ids
+                ? ( blog_id => $blog_ids )
+                : ( blog_id => { 'not' => 0 } )
+            ),
+        }
+    );
+
+    my $filters;
+    while ( my $perm = $iter->() ) {
+        my $user_filter;
+        $user_filter->{blog_id} = $perm->blog_id;
+        if (   !$perm->can_do('publish_all_content_data')
+            && !$perm->can_do('edit_all_content_data'))
+        {
+            $user_filter->{author_id} = $user->id;
+        }
+        push @$filters, ( '-or', $user_filter );
+    }
+
+    my $new_terms;
+    push @$new_terms, ($terms)
+        if ( keys %$terms );
+    push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
+    $load_options->{terms} = $new_terms;
+
+
 }
 
 sub start_import {
