@@ -2946,6 +2946,17 @@ sub build_menus {
                         $sub->{current} = 1;
                     }
                 }
+                elsif ( ( $app_param_type || '' ) eq 'category'
+                    && $mode eq 'view' )
+                {
+                    my $is_category_set = $app->model('category')->exist(
+                        {   id => $app->param('id') || 0,
+                            category_set_id => { not => 0 }
+                        }
+                    );
+                    $param->{screen_group}
+                        = $is_category_set ? 'category_set' : 'entry';
+                }
             }
             else {
                 if ( $sub->{mode} eq $mode ) {
