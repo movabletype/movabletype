@@ -831,11 +831,10 @@ function setSyntaxHighlight(on_or_off) {
        label="<__trans phrase="Server Side Include">"
        label_class="top-label">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" id="server-side-include" name="include_with_ssi" class="custom-control-input" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></span>
-        </label>
+          <label class="custom-control-label" for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
+        </div>
       </div>
     </mtapp:setting>
   <mt:ignore>
@@ -861,20 +860,18 @@ function setSyntaxHighlight(on_or_off) {
     <mt:else>
       <ul id="cache-options" class="list-unstyled">
         <li>
-          <label class="custom-control custom-radio">
+          <div class="custom-control custom-radio">
             <input type="radio" value="0" name="cache_expire_type" id="no-cache" class="custom-control-input" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="No caching"></span>
-          </label>
+            <label class="custom-control-label" for="no-cache"><__trans phrase="No caching"></label>
+          </div>
         </li>
         <li>
           <div class="form-row align-items-center">
             <div class="col">
-              <label class="custom-control custom-radio">
+              <div class="custom-control custom-radio">
                 <input type="radio" value="1" name="cache_expire_type" id="expire-time" class="custom-control-input" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Expire after"></span>
-              </label>
+                <label class="custom-control-label" for="expire-time"><__trans phrase="Expire after"></label>
+              </div>
             </div>
             <div class="col">
               <input type="text" id="cache-time-value" class="text num form-control" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
@@ -891,67 +888,62 @@ function setSyntaxHighlight(on_or_off) {
           </div>
         </li>
         <li>
-          <label class="custom-control custom-radio">
+          <div class="custom-control custom-radio">
             <input type="radio" value="2" name="cache_expire_type" id="expire-event" class="custom-control-input" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>>
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Expire upon creation or modification of:"></span>
-          </label>
+            <label class="custom-control-label" for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
+          </div>
           <div id="cache-events" class="form-group">
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Entry"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-entry"><__trans phrase="Entry"></label>
+              </div>
             </div>
+            <mt:if name="enabled_plugins{Comments}">
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Comment"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-comment"><__trans phrase="Comment"></label>
+              </div>
             </div>
+            </mt:if>
+            <mt:if name="enabled_plugins{Trackback}">
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="TrackBack"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
+              </div>
             </div>
+            </mt:if>
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Page"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-page"><__trans phrase="Page"></label>
+              </div>
             </div>
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="User"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-author"><__trans phrase="User"></label>
+              </div>
             </div>
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Category"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-category"><__trans phrase="Category"></label>
+              </div>
             </div>
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Folder"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-folder"><__trans phrase="Folder"></label>
+              </div>
             </div>
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" class="custom-control-input" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Asset"></span>
-              </label>
+                <label class="custom-control-label" for="cache-event-asset"><__trans phrase="Asset"></label>
+              </div>
             </div>
           </div>
         </li>

@@ -77,16 +77,41 @@ sub edit {
     ## author_id parameter of the author currently logged in.
     delete $param->{'author_id'};
 
-    $app->add_breadcrumb(
-        $app->model($type)->class_label_plural,
-        $app->uri(
-            mode => 'list',
-            args => {
-                _type   => $type,
-                blog_id => $blog->id,
-            },
-        ),
-    );
+    if ( $obj->category_set_id ) {
+        $app->add_breadcrumb(
+            $app->model('category_set')->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+        $app->add_breadcrumb(
+            $obj->category_set->name,
+            $app->uri(
+                mode => 'view',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                    id      => $obj->category_set_id,
+                },
+            ),
+        );
+    }
+    else {
+        $app->add_breadcrumb(
+            $app->model($type)->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => $type,
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+    }
     $app->add_breadcrumb( $obj->label );
 
     1;
@@ -178,7 +203,8 @@ sub bulk_update {
 
         if ($is_category_set) {
             return $app->json_error( $app->translate('Permission defined.') )
-                unless $app->can_do('save_category_set');
+                unless ( $app->user->can_manage_content_types
+                || $app->can_do('save_category_set') );
         }
     }
     elsif ( 'folder' eq $model ) {
@@ -213,10 +239,10 @@ sub bulk_update {
     if ($is_category_set) {
         if ($set_id) {
             $set = MT->model('category_set')->load($set_id)
-                or return $app->errtrans( 'Invalid category_set_id: [_1]',
-                $set_id );
+                or return $app->json_error(
+                $app->tranlsate( 'Invalid category_set_id: [_1]', $set_id ) );
             $set->name( scalar $app->param('set_name') );
-            $set->save or return $app->error( $set->errstr );
+            $set->save or return $app->json_error( $set->errstr );
         }
         else {
             $set = MT->model('category_set')->new;
@@ -225,7 +251,7 @@ sub bulk_update {
                     name    => scalar $app->param('set_name'),
                 }
             );
-            $set->save or return $app->error( $set->errstr );
+            $set->save or return $app->json_error( $set->errstr );
             $set_id = $set->id;
             $app->param( 'set_id', $set_id );
         }

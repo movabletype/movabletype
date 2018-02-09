@@ -14,7 +14,10 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my $res = filtered_list( $app, $endpoint, 'category' ) or return;
+    my $res
+        = filtered_list( $app, $endpoint, 'category',
+        { category_set_id => 0 } )
+        or return;
 
     +{  totalResults => $res->{count},
         items =>

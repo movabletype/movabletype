@@ -90,5 +90,11 @@ sub feed_value_handler {
     return qq{<table border="1">$value</table>};
 }
 
+sub preview_handler {
+    my ( $value, $field_id, $content_data ) = @_;
+    return '' unless $value;
+    return qq{<table border="1" cellpadding="3">$value</table>};
+}
+
 1;
 

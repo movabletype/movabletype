@@ -47,6 +47,7 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
     }.bind(this)
 
     this._validateFields = function() {
+      var dateTimeFieldsAreValid    = jQuery('.date-field, .time-field').mtValidate('simple');
       var requiredFieldsAreValid    = jQuery('.html5-form')
                                         .mtValidate('simple')
       var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
@@ -56,7 +57,7 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
       var contentFieldBlockIsValid  = jQuery('.content-field-block')
                                         .mtValidate('content-field-block')
 
-      return requiredFieldsAreValid && textFieldsInTableAreValid
+      return dateTimeFieldsAreValid && requiredFieldsAreValid && textFieldsInTableAreValid
           && tableIsValid && contentFieldBlockIsValid
     }.bind(this)
 

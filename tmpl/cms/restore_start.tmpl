@@ -20,9 +20,10 @@ function progress(str, id) {
 </script>
 
   <div class="mt-mainContent">
+    <mt:include name="include/breadcrumbs.tmpl">
     <mt:include name="include/page_title.tmpl">
 
     <div class="import-process">
-      <div id="progressbar" class="progressbar indeterminate"></div>
+      <div id="progressbar" class="mt-progress mb-3"><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>></div></div>
       <div class="card card-block">
-        <pre class="progress-log"><__trans phrase="Importing Movable Type">
+        <pre class="progress-log p-3"><__trans phrase="Importing Movable Type">

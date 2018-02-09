@@ -1,7 +1,9 @@
 package HTTP::Headers::ETag;
-$HTTP::Headers::ETag::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 require HTTP::Date;
 
@@ -105,7 +107,7 @@ HTTP::Headers::ETag
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 AUTHOR
 

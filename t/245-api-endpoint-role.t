@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -23,6 +24,10 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+use MT::Test::Permission;
+my $role = MT::Test::Permission->make_role( name => 'Test Role' );
+my $role_id = $role->id;
 
 # test.
 my $suite = suite();
@@ -159,7 +164,7 @@ sub suite {
         {    # Same name role exists.
             path   => '/v2/roles',
             method => 'POST',
-            params => { role => { name => 'Moderator' } },
+            params => { role => { name => 'Designer' } },
             code   => 409,
             error  => "Another role already exists by that name.\n",
         },
@@ -191,7 +196,7 @@ sub suite {
             },
             restrictions => { 0 => [qw/ save_role /], },
             code         => 403,
-            error => 'Do not have permission to create a role.',
+            error        => 'Do not have permission to create a role.',
         },
 
         # create_role - normal tests
@@ -235,14 +240,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/roles/10',
+            path      => "/v2/roles/$role_id",
             method    => 'GET',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/roles/10',
+            path         => "/v2/roles/$role_id",
             method       => 'GET',
             restrictions => { 0 => [qw/ edit_role /], },
             code         => 403,
@@ -250,9 +255,9 @@ sub suite {
         },
 
         # get_role - normal tests
-        {   path   => '/v2/roles/10',
+        {   path   => "/v2/roles/$role_id",
             method => 'GET',
-            result => sub { MT->model('role')->load(10) },
+            result => sub { MT->model('role')->load($role_id) },
         },
 
         # update_role - irregular tests
@@ -277,7 +282,7 @@ sub suite {
         },
         {
             # No resource.
-            path   => '/v2/roles/10',
+            path   => "/v2/roles/$role_id",
             method => 'PUT',
             code   => 400,
             result => sub {
@@ -289,7 +294,7 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path   => '/v2/roles/10',
+            path   => "/v2/roles/$role_id",
             method => 'PUT',
             params => {
                 role => {
@@ -302,7 +307,7 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/roles/10',
+            path   => "/v2/roles/$role_id",
             method => 'PUT',
             params => {
                 role => {
@@ -312,11 +317,11 @@ sub suite {
             },
             restrictions => { 0 => [qw/ save_role /], },
             code         => 403,
-            error => 'Do not have permission to update a role.',
+            error        => 'Do not have permission to update a role.',
         },
 
         # update_role - normal tests
-        {   path   => '/v2/roles/10',
+        {   path   => "/v2/roles/$role_id",
             method => 'PUT',
             params => {
                 role => {
@@ -341,7 +346,7 @@ sub suite {
             ],
             result => sub {
                 MT->model('role')
-                    ->load( { id => 10, name => 'update_role' } );
+                    ->load( { id => $role_id, name => 'update_role' } );
             },
         },
 
@@ -360,14 +365,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/roles/10',
+            path      => "/v2/roles/$role_id",
             method    => 'DELETE',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/roles/10',
+            path         => "/v2/roles/$role_id",
             method       => 'DELETE',
             restrictions => { 0 => [qw/ delete_role /], },
             code         => 403,
@@ -375,7 +380,7 @@ sub suite {
         },
 
         # delete_role - normal tests
-        {   path      => '/v2/roles/10',
+        {   path      => "/v2/roles/$role_id",
             method    => 'DELETE',
             callbacks => [
                 {   name =>
@@ -387,7 +392,7 @@ sub suite {
                 },
             ],
             complete => sub {
-                my $deleted = MT->model('role')->load(10);
+                my $deleted = MT->model('role')->load($role_id);
                 is( $deleted, undef, 'deleted' );
             },
         },

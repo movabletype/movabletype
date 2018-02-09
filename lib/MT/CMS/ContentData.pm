@@ -342,11 +342,18 @@ sub save {
 
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || ( $perms
-        && $perms->can_administer_site );
+    my $perms = $app->permissions or return $app->permission_denied();
+
+    my $content_data_id = $app->param('id');
+    if ( !$content_data_id ) {
+        return $app->permission_denied()
+            unless $perms->can_do('create_new_content_data');
+    }
+    else {
+        return $app->permission_denied()
+            unless $perms->can_edit_content_data( $content_data_id,
+            $app->user );
+    }
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -355,8 +362,6 @@ sub save {
 
     my $content_type = MT::ContentType->load($content_type_id);
     my $field_data   = $content_type->fields;
-
-    my $content_data_id = $app->param('id');
 
     my $content_field_types = $app->registry('content_field_types');
 
@@ -537,7 +542,8 @@ sub save {
     my $block_editor_data = $app->param('blockeditor-data');
     $content_data->block_editor_data($block_editor_data);
 
-    $app->run_callbacks( 'cms_pre_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_pre_save.content_data',
+        $app, $content_data, $orig );
 
     $content_data->save
         or return $app->error(
@@ -547,7 +553,8 @@ sub save {
         )
         );
 
-    $app->run_callbacks( 'cms_post_save.cd', $app, $content_data, $orig );
+    $app->run_callbacks( 'cms_post_save.content_data',
+        $app, $content_data, $orig );
 
     # Delete old archive files.
     if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
@@ -671,7 +678,8 @@ sub delete {
         my $obj   = $class->load($id);
         return $app->call_return unless $obj;
 
-        $app->run_callbacks( 'cms_delete_permission_filter.cd', $app, $obj )
+        $app->run_callbacks( 'cms_delete_permission_filter.content_data',
+            $app, $obj )
             or return $app->permission_denied;
 
         my %recipe;
@@ -688,7 +696,7 @@ sub delete {
         $obj->remove()
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
-        $app->run_callbacks( 'cms_post_delete.cd', $app, $obj );
+        $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
@@ -936,7 +944,42 @@ sub make_menus {
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
             condition => sub {
-                $ct->blog_id == MT->app->blog->id;
+
+                return 0 if $ct->blog_id != MT->app->blog->id;
+
+                my $app = MT->instance;
+                return 1
+                    if ( $app->user->is_superuser
+                    || $app->user->can_manage_content_data );
+
+                return 1 if $app->can_do('edit_all_content_data');
+
+                my $blog = $app->blog;
+                my $blog_ids
+                    = !$blog         ? undef
+                    : $blog->is_blog ? [ $blog->id ]
+                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {   author_id => $app->user->id,
+                        (   $blog_ids
+                            ? ( blog_id => $blog_ids )
+                            : ( blog_id => { not => 0 } )
+                        ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->has( 'manage_content_data:' . $ct->unique_id );
+
+                    $cond = 1, last
+                        if $p->has( 'create_content_data:' . $ct->unique_id );
+                }
+                return $cond ? 1 : 0;
+
             },
         };
         if ( $blog->is_blog ) {
@@ -1441,8 +1484,7 @@ sub _update_content_data_status {
         return $app->permission_denied
             unless $app_author->is_superuser
             || $app_author->permissions( $content_data->id )
-            ->can_edit_content_data( $content_data, $app_author,
-            MT::ContentStatus::HOLD() );
+            ->can_edit_content_data( $content_data, $app_author );
 
         if (   $app->config('DeleteFilesAtRebuild')
             && $content_data->status == MT::ContentStatus::RELEASE() )
@@ -1503,7 +1545,8 @@ sub _update_content_data_status {
 
         MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
 
-        $app->run_callbacks( 'cms_post_bulk_save.cd', $app, \@objects );
+        $app->run_callbacks( 'cms_post_bulk_save.content_data',
+            $app, \@objects );
 
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
@@ -1511,6 +1554,54 @@ sub _update_content_data_status {
     MT::Util::Log->info('--- End   update_entry_status.');
 
     $tmpl;
+}
+
+sub can_save {
+    my ( $eh, $app, $id, $obj, $original ) = @_;
+
+    return 0 unless $obj;
+
+    my $perms = $app->permissions
+        or return 0;
+
+    if ($id) {
+        $original ||= MT->model('content_data')->load($id)
+            or return 0;
+
+        return 0
+            unless $perms->can_edit_content_data( $original, $app->user );
+    }
+    else {
+        my $user         = $app->user         or return 0;
+        my $content_type = $obj->content_type or return 0;
+
+        return 0
+            unless $user->can_do('create_new_content_data')
+            || $perms->can_do('create_new_content_data')
+            || $perms->can_do(
+            'create_new_content_data_' . $content_type->unique_id );
+
+        return 0
+            unless $obj->status == MT::ContentStatus::HOLD()
+            || $user->can_do('publish_all_content_data')
+            || $perms->can_do('publish_all_content_data')
+            || $perms->can_do(
+            'publish_all_content_data_' . $content_type->unique_id )
+            || (
+            $obj->author_id == $user->id
+            && $perms->can_do(
+                'publish_own_content_data_' . $content_type->unique_id
+            )
+            );
+    }
+
+    1;
+}
+
+sub can_delete {
+    my ( $eh, $app, $obj ) = @_;
+    my $user = $app->user or return;
+    $user->permissions(0)->can_edit_content_data( $obj, $user );
 }
 
 1;

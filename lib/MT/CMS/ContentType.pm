@@ -37,6 +37,9 @@ sub edit {
     my $id = $app->param('id') || undef;
     my $class = $app->model('content_type');
 
+    return $app->permission_denied
+        unless can_view( undef, $app, $id );
+
     # Content Type
     my $field_data;
     if ($id) {
@@ -273,14 +276,9 @@ sub save {
         or return $app->permission_denied();
 
     my $content_type_id = $app->param('id');
-    if ( !$content_type_id ) {
-        return $app->permission_denied()
-            unless $perms->can_do('create_new_content_type');
-    }
-    else {
-        return $app->permission_denied()
-            unless $perms->can_do('edit_all_content_types');
-    }
+
+    return $app->permission_denied
+        unless can_save( undef, $app, $content_type_id );
 
     my $blog_id = $app->param('blog_id')
         or return $app->errtrans("Invalid request.");
@@ -705,7 +703,7 @@ sub dialog_list_content_data {
     $app->listing(
         {   terms    => $terms,
             args     => $args,
-            type     => 'cd',
+            type     => 'content_data',
             code     => $hasher,
             template => 'include/content_data_list.tmpl',
             params   => {
@@ -739,6 +737,7 @@ sub _build_content_data_hasher {
             = $obj->author
             ? ( $obj->author->nickname || $obj->author->name )
             : $app->translate('*User deleted*');
+        $row->{preview_data} = $obj->preview_data;
 
         $row;
     };
@@ -971,6 +970,58 @@ sub post_delete {
             category => 'delete'
         }
     );
+}
+
+sub can_save {
+    my ( $eh, $app, $id ) = @_;
+    my $user = $app->user or return;
+    return unless $app->blog;
+
+    my $blog_perm = $user->permissions( $app->blog->id );
+
+    return 1
+        if $user->can_do('edit_all_content_types')
+        || ( $blog_perm && $blog_perm->can_do('edit_all_content_types') );
+
+    return 1
+        if !$id
+        && ( $user->can_do('create_new_content_type')
+        || ( $blog_perm && $blog_perm->can_do('create_new_content_type') ) );
+
+    0;
+}
+
+sub can_view {
+    my ( $eh, $app, $id ) = @_;
+    my $user = $app->user or return;
+    return unless $app->blog;
+
+    my $blog_perm = $user->permissions( $app->blog->id );
+
+    $user->can_do('edit_all_content_types')
+        || ( $blog_perm && $blog_perm->can_do('edit_all_content_types') );
+}
+
+sub can_list {
+    my ( $eh, $app, $terms, $args, $options ) = @_;
+    my $user = $app->user or return;
+    return unless $app->blog;
+
+    my $blog_perm = $user->permissions( $app->blog->id );
+
+    $user->can_do('manage_content_types')
+        || ( $blog_perm && $blog_perm->can_do('manage_content_types') );
+}
+
+sub can_delete {
+    my ( $eh, $app, $obj ) = @_;
+    my $user = $app->user or return;
+    return unless $app->blog;
+
+    my $blog_perm = $user->permissions( $app->blog->id );
+
+    $user->can_do('delete_content_type')
+        || ( $blog_perm && $blog_perm->can_do('delete_content_type') );
 }
 
 1;

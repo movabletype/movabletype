@@ -1,4 +1,4 @@
-.PHONY: docker_build_image docker_build_dist docker_run_test docker_test docker_label docker_stop docker_clean
+.PHONY: docker_build_image docker_build_dist docker_run_test docker_test docker_label docker_stop docker_clean docker-test-php-lint
 
 DOCKER_IMAGE ?= mt
 
@@ -35,4 +35,9 @@ docker_stop:
 
 docker_clean:
 	docker run --rm -v $$PWD:/var/www/mt -w /var/www/mt $(DOCKER_IMAGE) bash -c "make clean"
+
+PHP_DOCKER_IMAGE ?= php:5.3
+
+docker-test-php-lint:
+	docker run --rm -it -v $$PWD:/php -w /php $(PHP_DOCKER_IMAGE) bash -c "PHP_LINT_DIR=$(PHP_LINT_DIR) make test-php-lint"
 

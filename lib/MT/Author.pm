@@ -152,21 +152,6 @@ sub list_props {
             count_col    => 'author_id',
             filter_type  => 'author_id',
         },
-        comment_count => {
-            base         => 'author.entry_count',
-            label        => 'Comments',
-            filter_label => '__COMMENT_COUNT',
-            display      => 'default',
-            order        => 400,
-            count_class  => 'comment',
-            count_col    => 'commenter_id',
-            filter_type  => 'commenter_id',
-            raw          => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( $prop->count_class )
-                    ->count( { commenter_id => $obj->id } );
-            },
-        },
         author_name => {
             base        => '__virtual.author_name',
             label       => 'Created by',
@@ -325,126 +310,6 @@ sub system_filters {
     };
 }
 
-sub commenter_list_props {
-    return {
-        name => {
-            auto       => 1,
-            label      => 'Username',
-            display    => 'force',
-            order      => 100,
-            sub_fields => [
-                {   class   => 'userpic',
-                    label   => 'Userpic',
-                    display => 'optional',
-                },
-                {   class   => 'user-info',
-                    label   => 'User Info',
-                    display => 'optional',
-                },
-            ],
-            bulk_html => \&_bulk_author_name_html,
-        },
-        nickname => {
-            base  => 'author.nickname',
-            order => 200,
-        },
-        comment_count => {
-            base  => 'author.comment_count',
-            order => 300,
-        },
-        author_name => {
-            base  => 'author.author_name',
-            order => 400,
-        },
-        created_on => {
-            base  => '__virtual.created_on',
-            order => 500,
-        },
-        modified_on => {
-            base  => '__virtual.modified_on',
-            order => 600,
-        },
-
-        email  => { base => 'author.email' },
-        status => {
-            base    => '__virtual.single_select',
-            display => 'none',
-            label   => 'Status',
-            col     => 'status',
-            terms   => sub {
-                my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
-                my $val = $args->{value};
-                $db_args->{joins} ||= [];
-                my $blog_id
-                    = MT->config->SingleCommunity ? 0 : $opts->{blog_ids};
-                if ( $val eq 'enabled' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   permissions => { like => '%\'comment\'%', },
-                            author_id => \'= author_id',
-                            blog_id   => $blog_id,
-                        }
-                        );
-                }
-                elsif ( $val eq 'disabled' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   restrictions => { like => '%\'comment\'%', },
-                            author_id => \'= author_id',
-                            blog_id   => $blog_id,
-                        }
-                        );
-                }
-                elsif ( $val eq 'pending' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   permissions  => \'IS NULL',        # FOR-EDITOR',
-                            restrictions => \'IS NULL',        # FOR-EDITOR',
-                            author_id    => \'= author_id',    # FOR-EDITOR',
-                            blog_id      => $blog_id,
-                        }
-                        );
-                }
-                return;
-
-            },
-            single_select_options => [
-                {   label => MT->translate('__COMMENTER_APPROVED'),
-                    value => 'enabled',
-                },
-                { label => MT->translate('Banned'),  value => 'disabled', },
-                { label => MT->translate('Pending'), value => 'pending', },
-            ],
-        },
-    };
-}
-
-sub commenter_system_filters {
-    return {
-        enabled => {
-            label => 'Enabled Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'enabled' }, }, ],
-            order => 100,
-        },
-        disabled => {
-            label => 'Disabled Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'disabled' }, }, ],
-            order => 200,
-        },
-        pending => {
-            label => 'Pending Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'pending' }, }, ],
-            order => 300,
-        },
-    };
-}
-
 sub member_list_props {
     return {
         name => {
@@ -533,21 +398,6 @@ sub member_list_props {
             count_args => { unique => 1, },
             order      => 400,
         },
-        comment_count => {
-            base        => '__virtual.object_count',
-            label       => 'Comments',
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            list_screen => 'comment',
-            count_terms => sub {
-                my $prop = shift;
-                my ($opts) = @_;
-                return { blog_id => $opts->{blog_ids} };
-            },
-            count_args => { unique => 1, },
-            order      => 500,
-        },
         type => {
             label     => 'Type',
             base      => '__virtual.single_select',
@@ -589,14 +439,6 @@ sub member_system_filters {
                 MT->config->SingleCommunity ? 0 : 1;
             },
             order => 100,
-        },
-        external_users => {
-            label     => 'Externally Authenticated Commenters',
-            items     => [ { type => 'type', args => { value => 2 }, }, ],
-            condition => sub {
-                MT->config->SingleCommunity ? 0 : 1;
-            },
-            order => 200,
         },
     };
 }
@@ -1032,13 +874,17 @@ sub is_superuser {
 }
 
 sub can_create_blog {
-    my $author = shift;
+    my $author  = shift;
+    my $app     = MT->instance;
+    my $blog    = $app->can('blog') ? $app->blog : undef;
+    my $blog_id = $blog ? $blog->id : 0;
+
     if (@_) {
-        $author->permissions(0)->can_create_blog(@_);
+        $author->permissions($blog_id)->can_create_site(@_);
     }
     else {
         $author->is_superuser()
-            || $author->permissions(0)->can_create_blog(@_);
+            || $author->permissions($blog_id)->can_create_site(@_);
     }
 }
 

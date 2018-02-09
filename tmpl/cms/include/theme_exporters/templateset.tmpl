@@ -21,16 +21,16 @@
     <mt:setvarblock name="table_header">
       <tr>
         <th class="head cb">
-          <label class="custom-control custom-checkbox">
-            <input type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-            <span class="custom-control-indicator"></span>
-          </label>
+          <div class="custom-control custom-checkbox">
+            <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+            <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="sr-only"><__trans phrase="Select All"></span></label>
+          </div>
         </th>
         <th class="head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
       <mt:if name="template_type" eq="index">
         <th class="head output-file"><span class="col-label"><__trans phrase="Output File"></span></th>
       </mt:if>
-      <mt:if name="template_type" eq="archive">
+      <mt:if name="template_type" like="/(archive|ct)/">
         <th class="head output-file"><span class="col-label"><__trans phrase="Archive Path"></span></th>
       </mt:if>
       </tr>
@@ -39,32 +39,30 @@
       <thead>
         <mt:var name="table_header">
       </thead>
-      <tfoot>
-        <mt:var name="table_header">
-      </tfoot>
       <tbody>
     </mt:if>
 
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
           <td class="cb">
-            <label class="custom-control custom-checkbox">
+            <div class="custom-control custom-checkbox">
               <input
                  type="checkbox"
                  name="template_set_export_ids"
                  class="custom-control-input select template_set_id"
+                 id="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"
                  value="<mt:var name="tmpl_id">"
                  <mt:if name="includes">tmpl_includes="<mt:loop includes glue=","><mt:var name="__value__"></mt:loop>"</mt:if>
                  <mt:if name="checked">checked="checked"</mt:if>
                  />
-              <span class="custom-control-indicator"></span>
-            </label>
+              <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+            </div>
           </td>
           <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>
-        <mt:if name="template_type" like="/(index|archive)/">
+        <mt:if name="template_type" like="/(index|archive|ct)/">
           <td class="output-file">
           <mt:if name="outfile">
             <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
-          <mt:else name="template_type" eq="archive">
+          <mt:else name="template_type" like="/(archive|ct)/">
             <ul class="list-unstyled">
             <mt:loop name="archive_types">
               <mt:loop name="archive_tmpl_loop">

@@ -47,31 +47,13 @@ sub field_html_params {
         $multiple .= qq{ data-mt-min-select="${min}"} if $min;
     }
 
-    # -- prototype
-    # my $required = $options->{required} ? 'data-mt-required="1"' : '';
-    #
-    # my @tag_list;
-    # my $iter = MT::Tag->load_iter( { id => $value }, { sort => 'name' } );
-    # while ( my $t = $iter->() ) {
-    #     push @tag_list,
-    #         {
-    #         id       => $t->id,
-    #         label    => $t->name,
-    #         basename => $t->name,
-    #         path     => [],
-    #         fields   => [],
-    #         };
-    # }
-
     my $required = $options->{required} ? 'required' : '';
 
-    {   multiple => $multiple,
-        required => $required,
-
-        # -- prototype
-        # tag_list          => \@tag_list,
-        # selected_tag_loop => $value,
-        tags => $tag_names,
+    {   multiple  => $multiple,
+        required  => $required,
+        tag_delim => chr( $app->user->entry_prefs->{tag_delim} ),
+        tags      => $tag_names,
+        tags_js   => MT::Tag->get_tags_js( $app->blog->id ),
     };
 }
 
@@ -144,31 +126,6 @@ sub html {
 
     join $tag_delim, @links;
 }
-
-# prototype
-# sub ss_validator {
-#     my ( $app, $field_data, $data ) = @_;
-#
-#     my $options = $field_data->{options} || {};
-#     my $field_label = $options->{label};
-#
-#     my $iter
-#         = MT::Tag->load_iter( { id => $data }, { fetchonly => { id => 1 } } );
-#     my %valid_tags;
-#     while ( my $tag = $iter->() ) {
-#         $valid_tags{ $tag->id } = 1;
-#     }
-#     if ( my @invalid_tag_ids = grep { !$valid_tags{$_} } @{$data} ) {
-#         my $invalid_tag_ids = join ', ', sort(@invalid_tag_ids);
-#         return $app->translate( 'Invalid Tag IDs: [_1] in "[_2]" field.',
-#             $invalid_tag_ids, $field_label );
-#     }
-#
-#     my $type_label        = 'tag';
-#     my $type_label_plural = 'tags';
-#     MT::ContentFieldType::Common::ss_validator_multiple( @_, $type_label,
-#         $type_label_plural );
-# }
 
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
@@ -348,6 +305,29 @@ sub feed_value_handler {
     }
 
     return "<ul>$contents</ul>";
+}
+
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @tags = MT->model('tag')
+        ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
+    my %name_hash = map { $_->id => $_->name } @tags;
+
+    my $contents = '';
+    for my $id (@$values) {
+        my $name = $name_hash{$id};
+        $name = '' unless defined $name && $name ne '';
+        my $encoded_name = MT::Util::encode_html($name);
+        $contents .= "<li>$encoded_name (ID:$id)</li>";
+    }
+
+    return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
 1;

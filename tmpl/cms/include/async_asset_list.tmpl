@@ -6,11 +6,11 @@
   <form action="" method="get" id="modal-type-filter" class="form-inline">
     <span><__trans phrase="Asset Type: "></span>
     <select name="asset-class" id="asset-class" class="custom-select form-control">
-      <option value=""<mt:if name="class_filter_loop"><mt:if name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="">
         <__trans phrase="All Types">
       </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"<mt:elseif name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
         <mt:var name="label">
       </option>
 </mt:loop>
@@ -56,18 +56,18 @@
     <mt:if name="can_multi">
             <td class="cb">
               <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                <span class="custom-control-indicator">
-              </label>
+                <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+              </div>
             </td>
     <mt:else>
             <td class="cb">
               <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <label class="custom-control custom-radio">
+              <div class="custom-control custom-radio">
                 <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" />
-                <span class="custom-control-indicator">
-              </label>
+                <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+              </div>
             </td>
     </mt:if>
             <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">

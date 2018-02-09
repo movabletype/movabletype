@@ -119,7 +119,7 @@
   <div class="revision-info">
       <mt:if name="rev_date">
     <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
-    <a href="<mt:var name="script_url">?__mode=list_revision&_type=cd&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=content_data&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
       <__trans phrase="View revisions">
     </a>
       <mt:else>
@@ -400,6 +400,14 @@
 <style>
 div.mce-notification-error {
     display: none;
+}
+
+#content_data .custom-control-input.is-invalid:not(:checked) ~ .custom-control-label::before {
+    background-color: white !important;
+}
+
+#content_data .custom-control-input.is-invalid ~ .custom-control-label {
+    color: black !important;
 }
 </style>
 </mt:setvarblock>

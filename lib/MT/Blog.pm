@@ -229,17 +229,6 @@ sub list_props {
             count_args         => { no_class => 1 },
             list_permit_action => 'access_to_asset_list',
         },
-        comment_count => {
-            label              => 'Comments',
-            filter_label       => '__COMMENT_COUNT',
-            order              => 600,
-            base               => '__virtual.object_count',
-            count_class        => 'comment',
-            count_col          => 'blog_id',
-            filter_type        => 'blog_id',
-            list_screen        => 'comment',
-            list_permit_action => 'access_to_comment_list',
-        },
 
         # not in use in 5.1
         # member_count => {
@@ -514,7 +503,7 @@ sub create_default_templates {
         for my $map_set (@arch_tmpl) {
             my $tmpl     = $map_set->{template};
             my $mappings = $map_set->{mappings};
-            foreach my $map_key ( keys %$mappings ) {
+            foreach my $map_key ( sort keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
 
@@ -628,7 +617,7 @@ sub create_default_templates {
         }
     }
 
-    $blog->archive_type( join ',', keys %archive_types );
+    $blog->archive_type( join ',', sort keys %archive_types );
     foreach my $at (qw( Individual Daily Weekly Monthly Category )) {
         $blog->archive_type_preferred($at), last
             if exists $archive_types{$at};
@@ -1837,6 +1826,29 @@ sub to_hash {
     return $hash;
 }
 
+sub junk_score_threshold {
+    my $self = shift;
+    if (@_) {
+        my $adjusted_value = _adjust_threshold( $_[0] );
+        return $self->column( 'junk_score_threshold', $adjusted_value );
+    }
+    else {
+        return _adjust_threshold( $self->column('junk_score_threshold') );
+    }
+}
+
+sub _adjust_threshold {
+    my $value = shift;
+    if ( defined $value && $value =~ /^[+-]?[0-9]+\.?[0-9]*$/ ) {
+        return -10 if $value < -10;
+        return 10  if $value > 10;
+        return $value + 0;
+    }
+    else {
+        return 0;
+    }
+}
+
 1;
 __END__
 
@@ -2119,7 +2131,10 @@ When a new comment is entered, it is checked if it is spam using spam
 filters. each filter is voting by returning a number between -10 to 10,
 (or ABSTAIN) and then numbers are merged to a single spam score. if this
 score is bigger then junk_score_threshold, this comment is considered
-spam
+spam.
+
+If this value is out of range between -10 to 10, rounded value will
+be returned.
 
 =item * basename_limit
 

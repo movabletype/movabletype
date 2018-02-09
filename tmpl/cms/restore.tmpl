@@ -36,8 +36,10 @@
        id="overwrite_global_templates"
        label="<__trans phrase="Options">"
        show_label="0">
-      <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
-      <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+      <div class="custom-control custom-checkbox">
+        <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
+        <label class="custom-control-label" for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+      </div>
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">

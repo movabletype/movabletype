@@ -38,7 +38,7 @@
         id="nickname"
         label="<__trans phrase="Display Name">"
         label_class="top-label"
-        required="1"
+        required="1">
         <input type="text" name="nickname" id="nickname" class="form-control text full" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
@@ -46,7 +46,7 @@
         id="email"
         label="<__trans phrase="Email Address">"
         label_class="top-label"
-        required="$email_required"
+        required="$email_required">
         <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 
@@ -54,7 +54,7 @@
 	<mtapp:setting
 	   id="old_pass"
 	   label="<__trans phrase="Current Password">"
-       label_class="top-label"
+       label_class="top-label">
 	  <input type="password" name="old_pass" id="old_pass" class="form-control text password" value="" />
 	</mtapp:setting>
 
@@ -113,7 +113,7 @@
         <!-- end-customfield_<$mt:Var name="basename"$> -->
     </mt:Loop>
 
-    <div class="actions-bar actions-bar-login">
+    <div class="actions-bar actions-bar-login text-right">
         <button
             type="submit"
             accesskey="s"

@@ -1,4 +1,10 @@
 <?php
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
 require_once "archive_lib.php";
 function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author'), common_loop_vars());

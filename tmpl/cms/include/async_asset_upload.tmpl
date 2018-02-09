@@ -202,11 +202,10 @@ h1.dialog-title {
   label="<__trans phrase="Rename filename">"
   show_label="1">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Rename non-ascii filename automatically"></span>
-        </label>
+          <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+        </div>
       </div>
 </mtapp:setting>
 <mtapp:setting
@@ -232,11 +231,10 @@ h1.dialog-title {
   label="<__trans phrase="Normalize orientation">"
   show_label="1">
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description"><__trans phrase="Enable orientation normalization"></span>
-        </label>
+          <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+        </div>
       </div>
 </mtapp:setting>
 </fieldset>
@@ -264,7 +262,7 @@ function resize_upload_overlay() {
 
   // Change "width" and "left" properties when dialog width is bigger than parent frame width.
   if (isDialog) {
-    offset_left = top.jQuery('iframe.embed-responsive-item').offset().left;
+    offset_left = window.top.jQuery('.mt-modal iframe.embed-responsive-item:visible').offset().left;
     if (offset_left < 0) {
 
       // width
@@ -317,12 +315,11 @@ jQuery(window).load(function () {
       );
   }
 
-  // Initialize upload overlay size.
-  resize_upload_overlay();
-
   // Bind events.
   jQuery(window)
     .on('dragover', function(e) {  // Show upload overlay.
+      // Refresh upload overlay size.
+      resize_upload_overlay();
       e.preventDefault();
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
       jQuery('#upload-overlay-container').show();
@@ -436,7 +433,7 @@ function createUploadBlock () {
   this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
   this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
-  this.progressbar  = jQuery('<div class="progress"><div class="progress-bar"></div></div>').appendTo(this.leftContent);
+  this.progressbar  = jQuery('<div class="mt-progress"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
@@ -446,7 +443,8 @@ function createUploadBlock () {
 
   this.editAsset.hide();
 </mt:unless>
-  this.progressbar.children().css('width', '0');
+  this.progressbar.find('.progress-bar').css('width', '0')
+                                        .attr('aria-valuenow', '0');
   jQuery('#upload-progress').prepend(this.uploadBlockPanel);
 
   // Recalculate block height
@@ -461,7 +459,8 @@ function createUploadBlock () {
   }
 
   this.setProgress = function(val) {
-    this.progressbar.children().css('width', val + '%');
+    this.progressbar.find('.progress-bar').css('width', val + '%')
+                                          .attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
       this.filename.hide();
       this.cancelUpload.hide();

@@ -25,9 +25,14 @@
   <mt:if name="__first__">
     <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
       <th class="head status si">
-        <img src="<$mt:var name="static_uri"$>images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" />
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
       </th>
       <th class="head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
       <mt:unless name="is_blog">
@@ -42,15 +47,15 @@
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
   </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
   <mt:if name="has_edit_access">
-      <input type="checkbox" name="id" value="<$mt:var name="id"$>" class="select" />
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
   <mt:else>
         &#160;
   </mt:if>
@@ -65,8 +70,20 @@
         </select>
       </td>
   <mt:else>
-      <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_review"> status-review</mt:if><mt:if name="status_future"> status-future</mt:if><mt:if name="status_spam"> status-spam</mt:if><mt:if name="status_unpublish"> status-unpublish</mt:if>">
-        <img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
+      <td class="status si">
+    <mt:if name="status_draft">
+        <mtapp:svgicon id="ic_statusdraft" title="<__trans phrase="Draft">" size="sm">
+    <mt:elseif name="status_publish">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
+    <mt:elseif name="status_review">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Review">" size="sm" color="warning">
+    <mt:elseif name="status_future">
+        <mtapp:svgicon id="ic_time" title="<__trans phrase="Future">" size="sm" color="info">
+    <mt:elseif name="status_spam">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+    <mt:elseif name="status_unpublish">
+        <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublish">" size="sm" color="danger">
+    </mt:if>
       </td>
   </mt:if>
       <td class="title">
@@ -165,7 +182,13 @@
       </td>
       <td class="view status-view">
   <mt:if name="entry_permalink">
-        <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" title="<mt:if name="object_type" eq="entry"><__trans phrase="View entry"><mt:else><__trans phrase="View page"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<mt:if name="object_type" eq="entry"><__trans phrase="View entry"><mt:else><__trans phrase="View page"></mt:if>" width="13" height="9" /></a>
+        <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" title="<mt:if name="object_type" eq="entry"><__trans phrase="View entry"><mt:else><__trans phrase="View page"></mt:if>">
+    <mt:if name="object_type" eq="entry">
+          <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View entry">" size="sm">
+    <mt:else>
+          <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View page">" size="sm">
+    </mt:if>
+        </a>
   <mt:else>
         &#160;
   </mt:if>

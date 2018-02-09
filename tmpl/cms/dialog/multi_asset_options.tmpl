@@ -49,13 +49,12 @@
      id="display_asset_prefs-<mt:var name="id">"
      label='<__trans phrase="Display [_1] in entry/page" params="<mt:var name="class_label">">'>
       <div class="form-group">
-        <label class="custom-control custom-checkbox">
+        <div class="custom-control custom-checkbox">
           <input type="checkbox" name="include" id="display_asset_prefs-<mt:var name="id">" class="custom-control-input" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-          <span class="custom-control-indicator"></span>
-          <span class="custom-control-description">
+          <label class="custom-control-label" for="display_asset_prefs-<mt:var name="id" escape="html">">
             <__trans phrase="Display [_1] in entry/page" params="<mt:var name="class_label">">
-          </span>
-        </label>
+          </label>
+        </div>
       </div>
   </mtapp:setting>
       </div>

@@ -15,8 +15,12 @@
   <input type="hidden" name="author_id" value="" />
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
       <th class="head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
       <th class="head name primary"><span class="col-label"><__trans phrase="Name"></span></th>
     <mt:if name="can_manage">
@@ -32,28 +36,64 @@
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="cb"><input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<$mt:var name="id"$>" class="select" /></td>
-    <mt:if name="usertype_author">
-      <td class="<mt:if name="status_enabled">user-status-enabled<mt:else><mt:if name="status_pending">user-status-pending<mt:else>user-status-disabled</mt:if></mt:if> si">
-        <img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_ENABLED">" class="status-icon" width="13" height="9" />
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input<mt:if name="is_administrator"><mt:if n ame="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" id="select_<mt:var name="id" escape="html">" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
       </td>
-      <td class="username"><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+    <mt:if name="usertype_author">
+      <td class="username">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="User">" size="sm">
+
+      <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">">
+      </mt:if>
+          <mt:var name="name" escape="html">
+      <mt:if name="has_edit_access">
+        </a>
+      </mt:if>
+
+      <mt:if name="status_enabled">
+        <span class="badge badge-success"><__trans phrase="Enabled"></span>
+      <mt:elseif name="status_pending">
+        <span class="badge badge-warning"><__trans phrase="Pending"></span>
+      <mt:else>
+        <span class="badge badge-default"><__trans phrase="Disabled"></span>
+      </mt:if>
+      </td>
     <mt:else>
-      <td class="<mt:if name="status_trusted">status-trusted<mt:else>user-status-enabled</mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_trusted"><__trans phrase="Trusted commenter"><mt:else><__trans phrase="Commenter"></mt:if>" width="13" height="9" /></td>
-      <td class="username"><mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" /> </mt:if><mt:if name="user_id" eq="PSEUDO"><mt:var name="user_name"><mt:else><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></mt:if></td>
+      <td class="username">
+      <mt:if name="auth_icon_url">
+        <img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" />
+      </mt:if>
+
+      <mt:if name="user_id" eq="PSEUDO">
+        <mt:var name="user_name">
+      <mt:else>
+        <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">">
+        </mt:if>
+          <mt:var name="name" escape="html">
+        <mt:if name="has_edit_access">
+          </a>
+        </mt:if>
+      </mt:if>
+
+      <mt:if name="status_trusted">
+        <span class="badge badge-success"><__trans phrase="Trusted"><span>
+      </mt:if>
+      </td>
     </mt:if>
       <td class="name">
         <mt:if name="nickname">
           <span class="status-name"><mt:var name="nickname" escape="html"></span><mt:elseif name="user_nickname"><span class="status-name"><mt:var name="user_nickname" escape="html"></span>
         </mt:if>
         <mt:if name="email">
-          <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:statuicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a></span>
+          <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a></span>
         </mt:if>
         <mt:if name="url">
           <span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a></span>

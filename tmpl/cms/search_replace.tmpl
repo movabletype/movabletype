@@ -1,5 +1,19 @@
 <mt:setvarblock name="page_title"><__trans phrase="Search &amp; Replace"></mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+/* copy from ".mt-table thead th" in mt.css and fix borders */
+.mt-table tfoot th {
+  background: #F4F4F4;
+  border-top: 1px solid #A5A5A5;
+  border-bottom: 0;
+  color: #2F2F2F;
+  font-weight: bold;
+  white-space: nowrap;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -99,7 +113,7 @@ function blurDateFields(s) {
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
-<div id="search-form">
+<div id="search-form" class="mt-3 mb-5">
   <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="search_replace" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
@@ -138,26 +152,26 @@ function blurDateFields(s) {
     <div id="search-bar" class="line">
     <mt:if name="have_results">
       <mt:if name="can_replace">
-      <div id="search-bar-toggle" class="mod">
+      <div id="search-bar-toggle" class="mt-3 mod">
       <ul class="list-inline multiple-selection">
-          <li>
-            <label for="search-replace-toggle-search">
-              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" />
-              <__trans phrase="Search Again">
-            </label>
+          <li class="list-inline-item">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="custom-control-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
+            </div>
           </li>
-          <li>
-            <label for="search-replace-toggle-replace">
-              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" />
-              <__trans phrase="Search &amp; Replace">
-            </label>
+          <li class="list-inline-item">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="custom-control-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
+            </div>
           </li>
         </ul>
       </div>
       </mt:if>
     </mt:if>
 
-      <div id="search-bar-search-field" class="mod">
+      <div id="search-bar-search-field" class="mt-3 mod">
         <mtapp:setting
            id="search"
            label="<__trans phrase="Search">"
@@ -167,64 +181,70 @@ function blurDateFields(s) {
         </mtapp:setting>
         <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
           <li class="list-inline-item">
-            <label for="case">
-              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" />
-              <__trans phrase="Case Sensitive">
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="case"><__trans phrase="Case Sensitive"></label>
+            </div>
           </li>
           <li class="list-inline-item">
-            <label for="is_regex">
-              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" />
-              <__trans phrase="Regex Match">
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="is_regex"><__trans phrase="Regex Match"></label>
+            </div>
           </li>
           <li class="list-inline-item">
-            <label for="is_limited">
-              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" />
-              <__trans phrase="Limited Fields">
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <label class="custom-control-label" for="is_limited"><__trans phrase="Limited Fields"></label>
+            </div>
           </li>
         <mt:if name="can_search_by_date">
           <li class="list-inline-item">
-            <label for="is_dateranged">
-              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" />
-              <__trans phrase="Date Range">
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
+              <label class="custom-control-label" for="is_dateranged"><__trans phrase="Date Range"></label>
+            </div>
           </li>
         </mt:if>
         <mt:if name="can_search_junk">
           <li class="list-inline-item">
-            <label for="is_junk">
-              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" />
-              <__trans phrase="Reported as Spam?">
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
+            </div>
           </li>
         </mt:if>
         </ul>
         <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
         <mt:if name="search_cols">
           <div id="<mt:var name="object_type">-fields" class="card card-block">
-            <ul class="list-inline multiple-selection">
+            <ul class="list-inline mb-0 multiple-selection">
             <mt:loop name="search_cols">
-              <li>
-                <label for="search_cols-<mt:var name="field" escape="html">">
-                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" />
-                  <mt:var name="label" escape="html">
-                </label>
+              <li class="list-inline-item m-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="custom-control-input cb" />
+                  <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"></label>
+                </div>
               </li>
             </mt:loop>
             </ul>
           </div>
         </mt:if>
         </div>
-        <div id="date-range" class="card card-block form-inline mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
-          <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
-          <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
-          <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
-          <label for="dateto"><__trans phrase="_DATE_TO">:</label>
-          <input placeholder="YYYY-MM-DD" type="text" name="to" id="to" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+        <div id="date-range" class="card card-block mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+          <div class="form-inline p-2">
+            <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
+            <div class="form-group">
+              <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+            </div>
+            <div class="form-group mx-3">
+              <label for="dateto"><__trans phrase="_DATE_TO">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="to" id="to" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+            </div>
+          </div>
         </div>
-        <div class="actions-bar">
+        <div class="actions-bar mt-3">
           <button
              onclick="doSearch()"
              type="submit"

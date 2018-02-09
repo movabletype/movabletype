@@ -33,11 +33,19 @@ sub dashboard {
     my $scope = $app->view;
 
     return $app->error(
-        $app->translate('Error: This blog does not have a parent website.') )
-        if $blog && $blog->is_blog && !$blog->website;
+        $app->translate(
+            'Error: This child site does not have a parent site.')
+    ) if $blog && $blog->is_blog && !$blog->website;
 
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
+
+    if ( ( defined $blog_id && $blog_id eq '0' )
+        && !( $user && $user->can_do('access_to_system_dashboard') ) )
+    {
+        return $app->return_to_user_dashboard( permission => 1 );
+    }
+
     if ( defined $blog_id && $blog_id ) {
         my $blog = MT->model('blog')->load($blog_id);
         my $trust;
@@ -479,10 +487,8 @@ sub site_stats_widget_pageview_lines {
         $ten_days_ago_tl->[3],
     );
     my @ts = MT::Util::offset_time_list( time, $blog_id );
-    my $today = sprintf( '%04d-%02d-%02d',
-        $ts[5] + 1900,
-        $ts[4] + 1,
-        $ts[ 3 ] );
+    my $today
+        = sprintf( '%04d-%02d-%02d', $ts[5] + 1900, $ts[4] + 1, $ts[3] );
     my $for_date = $provider->pageviews_for_date(
         $app,
         {   startDate => $ten_days_ago,
@@ -1001,14 +1007,18 @@ sub site_list_widget {
             }
         );
         while ( my $ct = $ct_iter->() ) {
+            my $perm = $user->permissions($site->id);
             my $item;
             $item->{name} = $ct->name;
             $item->{can_create}
-                = $user->can_do( "create_content_data_" . $ct->id ) ? 1 : 0;
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id ) ? 1 
+                : $app->can_do( "edit_all_content_data" ) ? 1
+                : 0;
             $item->{can_list}
-                = $user->can_do( "create_content_data_" . $ct->id )   ? 1
-                : $user->can_do( "publish_content_data_" . $ct->id )  ? 1
-                : $user->can_do( "edit_all_content_data_" . $ct->id ) ? 1
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )   ? 1
+                : $perm->can_do( "publish_content_data_via_list_" . $ct->unique_id )  ? 1
+                : $perm->can_do( "edit_all_content_data_" . $ct->unique_id ) ? 1
+                : $app->can_do( "edit_all_content_data" ) ? 1
                 :                                                       0;
             $item->{type_id}         = 'content_data_' . $ct->id;
             $item->{content_type_id} = $ct->id;

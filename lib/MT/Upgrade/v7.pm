@@ -77,6 +77,11 @@ sub upgrade_functions {
             version_limit => 7.0023,
             priority      => 3.5,
         },
+        'v7_remove_create_child_sites' => {
+            code          => \&_v7_remove_create_child_sites,
+            version_limit => 7.0024,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -405,7 +410,7 @@ sub _migrate_site_archive_type {
 
     my @archive_type = split ',', $site->archive_type;
     my %hash = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
-    my @unique_archive_type = keys %hash;
+    my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );
     $site->save
         or return $self->error(
@@ -597,7 +602,7 @@ sub _v7_rebuild_content_field_permissions {
     $self->progress(
         $self->translate_escape('Rebuilding content field permissions...') );
 
-    # because when role saved callback, add permissions. 
+    # because when role saved callback, add permissions.
     my $perm_iter = MT->model('permission')
         ->load_iter( { permissions => { 'like' => '%content-field:%' } } );
     while ( my $perm = $perm_iter->() ) {
@@ -639,6 +644,23 @@ sub _v7_rebuild_content_field_permissions {
             )
             );
 
+    }
+
+}
+
+sub _v7_remove_create_child_sites {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Removing create child site permissions...')
+    );
+
+    my $iter = MT->model('permission')->load_iter( { blog_id => 0 } );
+    while ( my $perm = $iter->() ) {
+        if ( $perm->can_create_blog ) {
+            $perm->can_create_blog(0);
+            $perm->save();
+        }
     }
 
 }

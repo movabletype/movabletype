@@ -41,20 +41,7 @@ sub edit {
             }
             $param->{'auth_pref_tag_delim'} = $tag_delim;
         }
-        require MT::ObjectTag;
-        my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
-                    undef,
-                    {   join => [
-                            'MT::ObjectTag', 'tag_id',
-                            { blog_id => $obj->blog_id }, { unique => 1 }
-                        ]
-                    }
-                )
-            ]
-        );
-        $tags_js =~ s!/!\\/!g;
-        $param->{tags_js} = $tags_js;
+        $param->{tags_js} = MT::Tag->get_tags_js( $obj->blog_id );
 
         my @related;
         if ( $obj->parent ) {
@@ -161,6 +148,19 @@ sub edit {
 
         $param->{broken_metadata} = $obj->is_metadata_broken;
     }
+
+    $app->add_breadcrumb(
+        $app->translate('Assets'),
+        $app->uri(
+            'mode' => 'list',
+            args   => {
+                _type   => 'asset',
+                blog_id => $app->blog ? $app->blog->id : 0,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $obj->label ) if $id;
+
     1;
 }
 
@@ -2552,8 +2552,9 @@ sub cms_pre_load_filtered_list {
     $load_options->{args}->{no_class} = 1;
 
     my $user = $app->user;
-    return if $user->is_superuser;
-
+    return
+        if ( $user->is_superuser
+        || $user->permissions(0)->can_do('edit_assets') );
     my $load_blog_ids = $load_options->{blog_ids};
 
     require MT::Permission;
@@ -2830,7 +2831,7 @@ sub dialog_edit_image {
     # Retrive data of thumbnail.
     my $param  = {};
     my $hasher = build_asset_hasher($app);
-    $hasher->( $asset, $param, ThumbWidth => 500, ThumbHeight => 500 );
+    $hasher->( $asset, $param, ThumbWidth => 400, ThumbHeight => 400 );
 
     # Disable browser cache for image.
     $param->{modified_on} = $asset->modified_on;
@@ -2868,8 +2869,8 @@ sub thumbnail_image {
     my $blog_id = $app->param('blog_id') || 0;
 
     # Thumbnail size on "Edit Image" screen is 240.
-    my $width  = $app->param('width')  || 500;
-    my $height = $app->param('height') || 500;
+    my $width  = $app->param('width')  || 400;
+    my $height = $app->param('height') || 400;
 
     my $asset;
 

@@ -8,8 +8,9 @@
     border: 1px dashed #c0c6c9;
     border-radius: .25em;
     background-color: #fbfbfb;
-    padding: 0.25rem;       /* .p-1 */
-    margin-bottom: 0.5rem;  /* .mb-2 */
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0;
 }
 </style>
 </mt:setvarblock>
@@ -63,8 +64,6 @@
       </div>
     </mt:setvarblock>
 
-    <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1" settings_bar="1">
-
     <div class="row">
       <div class="col">
         <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
@@ -78,14 +77,15 @@
            label="<__trans phrase="Available Widgets">">
           <div id="available-column-items" class="connectSortable p-2">
           <mt:loop name="available">
-            <div id="module-<mt:var name="id" escape="html">" class="card widget widget-item p-1 mb-2" style="cursor: move;">
-              <div class="row card-block widget-header">
-                <div class="col-10 widget-label">
-                  <mt:var name="name" escape="html">
-                </div>
-                <div class="col-2 text-right widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
-                </div>
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                  <mtapp:svgicon id="ic_edit" title="edit">
+                </a>
               </div>
             </div>
           </mt:loop>
@@ -98,14 +98,15 @@
            label="<__trans phrase="Installed Widgets">">
           <div id="installed-column-items" class="connectSortable p-2">
           <mt:loop name="installed">
-            <div id="module-<mt:var name="id" escape="html">" class="card widget widget-item p-1 mb-2" style="cursor: move;">
-              <div class="row card-block widget-header">
-                <div class="col-10 widget-label">
-                  <mt:var name="name" escape="html">
-                </div>
-                <div class="col-2 text-right widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
-                </div>
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                  <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                    <mtapp:svgicon id="ic_edit" title="edit">
+                  </a>
               </div>
             </div>
           </mt:loop>
@@ -125,7 +126,13 @@
         distance: 3,
         cursor: 'move',
         forcePlaceholderSize: true,
-        tolerance: 'pointer'
+        tolerance: 'pointer',
+        start: function (event, ui) {
+            ui.item.attr('aria-grabbed', true);
+        },
+        stop: function (event, ui) {
+            ui.item.attr('aria-grabbed', false);
+        }
     }).disableSelection();
 
     jQuery('button.save').click( function () {

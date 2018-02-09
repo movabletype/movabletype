@@ -94,11 +94,10 @@ function toggleHidden( ids ) {
         hint_id="refreshTemplates"
         hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
         <div class="form-group field-header">
-            <label class="custom-control custom-radio">
+            <div class="custom-control custom-radio">
               <input type="radio" name="refresh_type" id="refresh_type_refresh" class="custom-control-input" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description"><$mt:var name="refresh_label"$></span>
-            </label>
+              <label class="custom-control-label" for="refresh_type_refresh"><$mt:var name="refresh_label"$></label>
+            </div>
         </div>
     </mtapp:setting>
     <mtapp:setting
@@ -111,22 +110,20 @@ function toggleHidden( ids ) {
         label_class="top-label">
 
         <div class="form-group field-header">
-            <label class="custom-control custom-radio">
+            <div class="custom-control custom-radio">
               <input type="radio" name="refresh_type" id="refresh_type_clean" class="custom-control-input" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description"><$mt:var name="new_label"$></span>
-            </label>
+              <label class="custom-control-label" for="refresh_type_clean"><$mt:var name="new_label"$></label>
+            </div>
         </div>
     </mtapp:setting>
 
         <div class="form-group">
-            <label class="custom-control custom-checkbox">
+            <div class="custom-control custom-checkbox">
                 <input type="checkbox" id="backup" class="custom-control-input" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">
+                <label class="custom-control-label" for="backup">
                     <__trans phrase="Make backups of existing templates first">
-                <span>
-            </label>
+                <label>
+            </div>
         </div>
     </div>
 

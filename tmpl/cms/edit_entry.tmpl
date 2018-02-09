@@ -95,12 +95,14 @@
     <$mt:var name="view_link"$>
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="enabled_plugins{Trackback}">
 <mt:if name="ping_errors">
   <mtapp:statusmsg
      id="ping-errors"
      class="alert">
     <__trans phrase="One or more errors occurred when sending update pings or TrackBacks."> <mt:if name="can_view_log"><__trans phrase="_USAGE_VIEW_LOG" params="<$mt:var name="script_url"$>?__mode=list&amp;_type=log&amp;blog_id=<$mt:var name="blog_id"$>"></mt:if>
   </mtapp:statusmsg>
+</mt:if>
 </mt:if>
 <mt:if name="saved_prefs">
   <mtapp:statusmsg
@@ -109,6 +111,7 @@
     <__trans phrase="Your customization preferences have been saved, and are visible in the form below.">
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="enabled_plugin{Comments}">
 <mt:if name="saved_comment">
   <mtapp:statusmsg
      id="saved-comment"
@@ -117,6 +120,7 @@
      can_close="0">
     <__trans phrase="Your changes to the comment have been saved.">
   </mtapp:statusmsg>
+</mt:if>
 </mt:if>
 <mt:if name="saved_notify">
   <mtapp:statusmsg
@@ -148,6 +152,7 @@
   </mt:if>
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="enabled_plugins{Comments}">
 <mt:if name="saved_deleted">
   <mtapp:statusmsg
      id="saved-deleted"
@@ -155,12 +160,15 @@
   <__trans phrase="You have successfully deleted the checked comment(s).">
   </mtapp:statusmsg>
 </mt:if>
+</mt:if>
+<mt:if name="enabled_plugins{Trackback}">
 <mt:if name="saved_deleted_ping">
   <mtapp:statusmsg
      id="saved-deleted-ping"
      class="success">
     <__trans phrase="You have successfully deleted the checked TrackBack(s).">
   </mtapp:statusmsg>
+</mt:if>
 </mt:if>
 <mt:if name="loaded_revision">
   <mtapp:statusmsg
@@ -292,12 +300,41 @@
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    <mtapp:svgicon id="ic_fav" size="sm" color="success" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
+                    &nbsp;
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <span>
+                      <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    </span>
+                    <span>
+                      <mtapp:svgicon id="ic_blank" size="sm" title="Blank">
+                    </span>
+                  <mt:if name="object_type" eq="entry">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
+                      [#= label #]
+                    </a>
+                  </mt:if>
+                    &nbsp;
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
+                  </li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -315,7 +352,7 @@
 </mt:if>
 <mt:include name="include/category_selector.tmpl">
 <mt:if name="object_type" eq="entry">
-  <div mt:delegate="category-list" id="category-list"></div>
+  <div mt:delegate="category-list" id="category-list" class="mt-3"></div>
 </mt:if>
   <input id="category-ids" type="hidden" name="category_ids" value="<$mt:var name="selected_category_loop" glue=","$>" />
 </mtapp:setting>
@@ -680,6 +717,7 @@
 </mt:if>
 </div>
 
+<mt:if name="enabled_plugins{CommentsTrackback}">
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
@@ -691,12 +729,12 @@
        help_page="entries"
        help_section="accept_comments">
       <ul class="list-unstyled">
+        <mt:if name="enabled_plugins{Comments}">
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Accept Comments"></span>
-          </label>
+            <label class="custom-control-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
+          </div>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
             <mtapp:svgicon id="ic_comment" title="<__trans phrase="Accept Comments">" size="sm">
@@ -704,12 +742,13 @@
           </span>
         </mt:unless>
         </li>
+        </mt:if>
+        <mt:if name="enabled_plugins{Trackback}">
         <li>
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Accept Trackbacks"></span>
-          </label>
+            <label class="custom-control-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+          </div>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
             <mtapp:svgicon id="ic_trackback" title="<__trans phrase="Accept Trackbacks">" size="sm">
@@ -717,9 +756,11 @@
           </span>
         </mt:unless>
         </li>
+        </mt:if>
       </ul>
     </mtapp:setting>
 
+  <mt:if name="enabled_plugins{Trackback}">
   <mt:unless name="new_object">
     <mt:if name="has_any_pinged_urls">
       <mt:setvar name="show_ping_urls_hint" value="1">
@@ -740,8 +781,10 @@
        help_section="urls_to_ping">
       <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
+  </mt:if>
   </mtapp:widget>
 </div>
+</mt:if>
 
 <mt:if name="object_type" like="(entry|page)">
 <div id="assets-field"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
@@ -751,7 +794,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header mb-2">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
-        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
+        <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>
@@ -791,42 +834,10 @@
 
 <mt:setvarblock name="css_include" append="1">
 <style>
-.sort-enabled {
-    margin-bottom: 15px;
-    padding: 0;
-    border: 1px solid #c0c6c9;
-    background-color: #fff;
-    border-radius: 3px;
-}
-.sort-enabled:hover {
-    border: 1px solid #adadad;
-    border-top-color: #cfd0d0;
-    border-left-color: #cfd0d0;
-}
-.sort-enabled .field-header {
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    border-bottom: 1px solid #fff;
-    background-image: url(<mt:var name="static_uri">images/sort_handle.png);
-    background-repeat: no-repeat;
-    background-position: 5px center;
-    border-radius: 3px 3px 0 0;
-}
-.sort-enabled .field-header:hover {
-    cursor: move;
-}
-.sort-enabled .field-header label {
-    margin-left: 20px;
-}
-.sort-enabled .field-content {
-    padding: 0 10px 10px;
-}
-
 .placeholder {
     margin-bottom: 15px;
     border: 1px dashed #c0c6c9;
     background-color: #fbfbfb;
-    padding: 0.5rem;   /* .p-2 */
     margin-top: 1rem;  /* .mt-3 */
 }
 
@@ -834,6 +845,67 @@
 div.mce-notification-error {
     display: none;
 }
+
+#entry-category-widget #category-field > label:first-child {
+    display: none;
+}
+
+#category-selector-list a:hover,
+#category-list a:hover {
+    text-decoration: none;
+}
+
+#category-selector-list .list-item.odd,
+#folder-selector-list .list-item.odd {
+    background-color: #f4f4f4;
+}
+
+#category-selector-list .list-item:hover,
+#folder-selector-list .list-item:hover {
+    background-color: #cacaca;
+}
+
+#category-selector-list .list-item.selected,
+#folder-selector-list .list-item.selected {
+    background-color: #e0e0e0;
+}
+
+#category-selector-list .list-item .add-category-new-link {
+    display: none;
+}
+
+#category-selector-list .list-item:hover .add-category-new-link {
+    display: block;
+}
+
+#category-list li:not(:hover) a.delete {
+    display: none !important;
+}
+
+#category-list li:not(:first-child) > span:first-child {
+    display: none;
+}
+
+#category-list li:not(:first-child) > span:not(:first-child) {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:first-child {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:not(:first-child) {
+    display: none;
+}
+
+#category-list li:hover a.delete:not(:hover) span:not(:first-child) {
+    display: none;
+}
+
+#category-list li a.delete:hover span:first-child {
+    display: none;
+}
+
 </style>
 </mt:setvarblock>
 
@@ -874,7 +946,7 @@ div.mce-notification-error {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="html_head" prepend="1">
   <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js"></script>
@@ -1273,19 +1345,17 @@ div.mce-notification-error {
         <mt:unless name="system_field">
           <mt:unless name="lock_field">
             <div class="form-check form-check-inline">
-              <label class="custom-control custom-checkbox">
+              <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
-              </label>
+                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              </div>
             </div>
           <mt:else>
             <div class="form-check form-check-inline">
-             <label class="custom-control custom-checkbox">
+             <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><$mt:var name="field_label" escape="html"$></span>
-              </label>
+                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              </div>
             </div>
           </mt:unless>
         </mt:unless>
@@ -1301,26 +1371,25 @@ div.mce-notification-error {
       <div>
       <mt:if name="object_type" ne="page">
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Categories"></span>
-          </label>
+            <label class="custom-control-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
+          </div>
+        </div>
+      </mt:if>
+      <mt:if name="enabled_plugins{Comments}">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <label class="custom-control-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
+          </div>
         </div>
       </mt:if>
         <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="Comments"></span>
-          </label>
-        </div>
-        <div class="form-check form-check-inline">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <span class="custom-control-indicator"></span>
-            <span class="custom-control-description"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></span>
-          </label>
+            <label class="custom-control-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
+          </div>
         </div>
       </div>
     </mtapp:setting>
@@ -1335,22 +1404,22 @@ div.mce-notification-error {
 
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
-  <ul class="list-inline text-right object-nav">
-    <li id="previous-link" class="list-inline-item">
+  <div class="row mb-4">
+    <div class="col-6 pr-0">
       <mt:if name="previous_entry_id">
-        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">&lsaquo; <__trans phrase="Prev"></a>
+        <a class="btn btn-default w-100" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev"></a>
       <mt:else>
-        <span>&lsaquo; <__trans phrase="Prev"></span>
+        <span class="btn btn-default w-100 disabled"><mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev"></span>
       </mt:if>
-    </li>
-    <li id="next-link" class="list-inline-item">
+    </div>
+    <div class="col-6 pl-0">
       <mt:if name="next_entry_id">
-        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"> &rsaquo;</a>
+        <a class="btn btn-default w-100" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm"></a>
       <mt:else>
-        <span><__trans phrase="Next"> &rsaquo;</span>
+        <span class="btn btn-default w-100 disabled"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm"></span>
       </mt:if>
-    </li>
-  </ul>
+    </div>
+  </div>
 </mt:setvarblock>
 </mt:unless>
 
@@ -1360,18 +1429,28 @@ div.mce-notification-error {
 <mt:var name="description" escape="html" setvar="desc_encoded">
 
 <mt:if name="field_html">
-  <mtapp:setting
-     id="$field_id"
-     class="card card-block mt-3 p-2 sort-enabled"
-     label="$label_encoded"
-     label_class="$label_class"
-     hint="$desc_encoded"
-     shown="$show_field"
-     show_hint="$show_hint"
-     field_header="1"
-     required="$required">
-    <$mt:var name="field_html"$>
-  </mtapp:setting>
+
+  <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+    <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="col-auto field-header">
+        <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+      </div>
+      <div class="col">
+          <label class="form-control-label"><mt:var name="label_encoded"></label>
+  <mt:if name="required">
+          <span class="badge badge-danger"><__trans phrase="Required"></span>
+  </mt:if>
+      </div>
+      <div class="mt-flexBreak"></div>
+      <div class="mt-draggable__content">
+        <mt:var name="field_html">
+  <mt:if name="show_hint">
+        <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
+  </mt:if>
+      </div>
+    </div>
+  </div>
+
 <mt:else>
   <mt:if name="field_name" eq="title">
   <mtapp:setting
@@ -1452,47 +1531,61 @@ div.mce-notification-error {
         <mt:setvarblock name="tags_hint"><__trans phrase="(delimited by '[_1]')" params="<$mt:var name="auth_pref_tag_delim"$>"></mt:setvarblock>
       </mt:if>
     </mt:if>
-    <mtapp:setting
-       id="tags"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="<__trans phrase="Tags">"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="entry_tags">
-      <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-      <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-      <div id="tags-suggestion">
-        <div id="tags_completion"></div>
+
+    <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <label class="form-control-label" for="tags"><__trans phrase="Tags"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
+          <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+          <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+          <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+            <div id="tags_completion" class="mt_suggest__list">
+              <ul></ul>
+            </div>
+          </div>
+        </div>
       </div>
-    </mtapp:setting>
+    </div>
 
   <mt:else eq="excerpt">
-    <mtapp:setting
-       id="excerpt"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="$field_label"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="excerpt">
-      <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
-    </mtapp:setting>
+
+    <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <label class="form-control-label" for="excerpt"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
+          <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+        </div>
+      </div>
+    </div>
 
   <mt:else eq="keywords">
-    <mtapp:setting
-       id="keywords"
-       class="card card-block mt-3 p-2 sort-enabled"
-       shown="$show_field"
-       label="$field_label"
-       label_class="top-label"
-       field_header="1"
-       help_page="entries"
-       help_section="keywords">
-      <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-    </mtapp:setting>
+
+    <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+        <div class="col-auto field-header">
+          <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+        </div>
+        <div class="col">
+          <label class="form-control-label" for="keywords"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
+          <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+        </div>
+      </div>
+    </div>
 
   </mt:if>
 </mt:if>
@@ -1500,7 +1593,7 @@ div.mce-notification-error {
 <!-- / Sortable --></div>
 
 
-  <div id="quickpost">
+  <div id="quickpost" class="mt-3">
     <p><mt:var name="quickpost_js"></p>
   </div>
 
@@ -1580,8 +1673,13 @@ div.mce-notification-error {
         opacity: 0.8,
         cursor: 'move',
         forcePlaceholderSize: true,
-        handle: '.field-header',
         containment: 'body',
+        start: function (event, ui) {
+            ui.item.children('.mt-draggable').attr('aria-grabbed', true);
+        },
+        stop: function (event, ui) {
+            ui.item.children('.mt-draggable').attr('aria-grabbed', false);
+        },
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
             sendEntryPrefs({ sort_only: true });

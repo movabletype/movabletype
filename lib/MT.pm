@@ -34,7 +34,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0023' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0024' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -1599,272 +1599,20 @@ sub rebuild_archives {
         or return $mt->error( $mt->publisher->errstr );
 }
 
-sub ping {
-    my $mt    = shift;
-    my %param = @_;
-    my $blog;
-    require MT::Entry;
-    require MT::Util;
-    unless ( $blog = $param{Blog} ) {
-        my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
-            or return $mt->trans_error( "Loading of blog '[_1]' failed: [_2]",
-            $blog_id, MT::Blog->errstr );
-    }
-
-    my (@res);
-
-    my $send_updates = 1;
-    if ( exists $param{OldStatus} ) {
-        ## If this is a new entry (!$old_status) OR the status was previously
-        ## set to draft, and is now set to publish, send the update pings.
-        my $old_status = $param{OldStatus};
-        if ( $old_status && $old_status eq MT::Entry::RELEASE() ) {
-            $send_updates = 0;
-        }
-    }
-
-    if ( $send_updates && !( MT->config->DisableNotificationPings ) ) {
-        ## Send update pings.
-        my @updates = $mt->update_ping_list($blog);
-        for my $url (@updates) {
-            require MT::XMLRPC;
-            if (MT::XMLRPC->ping_update( 'weblogUpdates.ping', $blog, $url ) )
-            {
-                push @res, { good => 1, url => $url, type => "update" };
-            }
-            else {
-                my $err = MT::XMLRPC->errstr;
-                $err = Encode::decode_utf8($err)
-                    if ( $err && !Encode::is_utf8($err) );
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $url,
-                    type  => "update",
-                    error => $err,
-                    };
-            }
-        }
-        if ( $blog->mt_update_key ) {
-            require MT::XMLRPC;
-            if ( MT::XMLRPC->mt_ping($blog) ) {
-                push @res,
-                    {
-                    good => 1,
-                    url  => $mt->{cfg}->MTPingURL,
-                    type => "update"
-                    };
-            }
-            else {
-                my $err = MT::XMLRPC->errstr;
-                $err = Encode::decode_utf8($err)
-                    if ( $err && !Encode::is_utf8($err) );
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $mt->{cfg}->MTPingURL,
-                    type  => "update",
-                    error => $err,
-                    };
-            }
-        }
-    }
-
-    my $cfg     = $mt->{cfg};
-    my $send_tb = $cfg->OutboundTrackbackLimit;
-    return \@res if $send_tb eq 'off';
-
-    my @tb_domains;
-    if ( $send_tb eq 'selected' ) {
-        @tb_domains = $cfg->OutboundTrackbackDomains;
-    }
-    elsif ( $send_tb eq 'local' ) {
-        my $iter = MT::Blog->load_iter();
-        while ( my $b = $iter->() ) {
-            next if $b->id == $blog->id;
-            push @tb_domains, MT::Util::extract_domains( $b->site_url );
-        }
-    }
-    my $tb_domains = join '|', map { lc quotemeta $_ } @tb_domains;
-    $tb_domains = qr/(?:^|\.)$tb_domains$/ if $tb_domains;
-
-    ## Send TrackBack pings.
-    if ( my $entry = $param{Entry} ) {
-        my $pings = $entry->to_ping_url_list;
-
-        my %pinged = map { $_ => 1 } @{ $entry->pinged_url_list };
-        my $cats = $entry->categories;
-        for my $cat (@$cats) {
-            push @$pings, grep !$pinged{$_}, @{ $cat->ping_url_list };
-        }
-
-        my $ua = MT->new_ua;
-
-        # Get the hostname of MT in HTTPS.
-        my $base = MT->config->CGIPath;
-        $base =~ s/^http:/https:/;
-
-        ## Build query string to be sent on each ping.
-        my @qs;
-        push @qs, 'title=' . MT::Util::encode_url( $entry->title );
-        push @qs, 'url=' . MT::Util::encode_url( $entry->permalink );
-        push @qs, 'excerpt=' . MT::Util::encode_url( $entry->get_excerpt );
-        push @qs, 'blog_name=' . MT::Util::encode_url( $blog->name );
-        my $qs = join '&', @qs;
-
-        ## Character encoding--best guess.
-        my $enc = $mt->{cfg}->PublishCharset;
-
-        for my $url (@$pings) {
-            $url =~ s/^\s*//;
-            $url =~ s/\s*$//;
-            my $url_domain;
-            ($url_domain) = MT::Util::extract_domains($url);
-            next if $tb_domains && ( lc($url_domain) !~ $tb_domains );
-
-            # Do not verify SSL certificate
-            # when sending a trackback ping to self.
-            my %ssl_opts;
-            my $changed_ssl_opts;
-            if ( $base && $url =~ m/^$base/ ) {
-                $ssl_opts{verify_hostname} = $ua->ssl_opts('verify_hostname');
-                $ua->ssl_opts( verify_hostname => 0 );
-                $changed_ssl_opts = 1;
-            }
-
-            my $req = HTTP::Request->new( POST => $url );
-            $req->content_type(
-                "application/x-www-form-urlencoded; charset=$enc");
-            $req->content($qs);
-            my $res = $ua->request($req);
-
-            # Restore ssl_opts.
-            if ($changed_ssl_opts) {
-                $ua->ssl_opts(
-                    'verify_hostname' => $ssl_opts{verify_hostname} );
-            }
-
-            if ( substr( $res->code, 0, 1 ) eq '2' ) {
-                my $c = $res->content;
-                $c = Encode::decode_utf8($c) if !Encode::is_utf8($c);
-                my ( $error, $msg )
-                    = $c =~ m!<error>(\d+).*<message>(.+?)</message>!s;
-                if ($error) {
-                    push @res,
-                        {
-                        good  => 0,
-                        url   => $url,
-                        type  => 'trackback',
-                        error => $msg,
-                        };
-                }
-                else {
-                    push @res,
-                        { good => 1, url => $url, type => 'trackback' };
-                }
-            }
-            else {
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $url,
-                    type  => 'trackback',
-                    error => "HTTP error: " . $res->status_line
-                    };
-            }
-        }
-    }
-    \@res;
-}
+sub ping { return [] }
 
 sub ping_and_save {
     my $mt    = shift;
     my %param = @_;
     if ( my $entry = $param{Entry} ) {
-        my $results = MT::ping( $mt, @_ ) or return;
-        my %still_ping;
-        my $pinged = $entry->pinged_url_list;
-        for my $res (@$results) {
-            next if $res->{type} ne 'trackback';
-            if ( !$res->{good} ) {
-                $still_ping{ $res->{url} } = 1;
-            }
-            push @$pinged,
-                $res->{url}
-                . (
-                $res->{good}
-                ? ''
-                : ' ' . $res->{error}
-                );
-        }
-        $entry->pinged_urls( join "\n", @$pinged );
-        $entry->to_ping_urls( join "\n", keys %still_ping );
         $entry->save or return $mt->error( $entry->errstr );
-        return $results;
+        return [];
     }
     1;
 }
 
-sub needs_ping {
-    my $mt    = shift;
-    my %param = @_;
-    my $blog  = $param{Blog};
-    my $entry = $param{Entry};
-    require MT::Entry;
-    return unless $entry->status == MT::Entry::RELEASE();
-    my $old_status = $param{OldStatus};
-    my %list;
-    ## If this is a new entry (!$old_status) OR the status was previously
-    ## set to draft, and is now set to publish, send the update pings.
-    if ( ( !$old_status || $old_status ne MT::Entry::RELEASE() )
-        && !( MT->config->DisableNotificationPings ) )
-    {
-        my @updates = $mt->update_ping_list($blog);
-        @list{@updates} = (1) x @updates;
-        $list{ $mt->{cfg}->MTPingURL } = 1 if $blog && $blog->mt_update_key;
-    }
-    if ($entry) {
-        @list{ @{ $entry->to_ping_url_list } } = ();
-        my %pinged = map { $_ => 1 } @{ $entry->pinged_url_list };
-        my $cats = $entry->categories;
-        for my $cat (@$cats) {
-            @list{ grep !$pinged{$_}, @{ $cat->ping_url_list } } = ();
-        }
-    }
-    my @list = keys %list;
-    return unless @list;
-    \@list;
-}
-
-sub update_ping_list {
-    my $mt = shift;
-    my ($blog) = @_;
-
-    my @updates;
-    if ( my $pings = MT->registry('ping_servers') ) {
-        my $up = $blog->update_pings;
-        if ($up) {
-            foreach ( split ',', $up ) {
-                next unless exists $pings->{$_};
-                push @updates, $pings->{$_}->{url};
-            }
-        }
-    }
-    if ( my $others = $blog->ping_others ) {
-        push @updates, split /\r?\n/, $others;
-    }
-    my %updates;
-    for my $url (@updates) {
-        for ($url) {
-            s/^\s*//;
-            s/\s*$//;
-        }
-        next unless $url =~ /\S/;
-        $updates{$url}++;
-    }
-    keys %updates;
-}
+sub needs_ping { return }
+sub update_ping_list { return }
 
 {
     my $LH;
@@ -2346,6 +2094,17 @@ sub set_default_tmpl_params {
             $param->{template_filename} = $fname;
         }
     }
+
+    my $switch = $mt->config->PluginSwitch || {};
+    my %enabled_plugins;
+    for my $plugin_sig ( keys %MT::Plugins ) {
+        next if defined $MT::Plugins{$plugin_sig}{enabled} && !$MT::Plugins{$plugin_sig}{enabled};
+        next if defined $switch->{$plugin_sig} && !$switch->{$plugin_sig};
+        $enabled_plugins{$plugin_sig} = 1;
+    }
+    $enabled_plugins{CommentsTrackback} = 1 if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
+    $param->{enabled_plugins} = \%enabled_plugins;
+
     $tmpl->param($param);
 }
 

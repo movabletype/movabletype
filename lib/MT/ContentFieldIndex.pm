@@ -36,9 +36,10 @@ __PACKAGE__->install_properties(
             value_integer  => 1,
             value_float    => 1
         },
-        datasource  => 'cf_idx',
-        primary_key => 'id',
-        audit       => 1,
+        datasource      => 'cf_idx',
+        long_datasource => 'content_field_index',
+        primary_key     => 'id',
+        audit           => 1,
     }
 );
 

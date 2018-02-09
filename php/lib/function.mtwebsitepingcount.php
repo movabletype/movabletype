@@ -6,7 +6,6 @@
 # $Id$
 
 function smarty_function_mtwebsitepingcount($args, &$ctx) {
-    $count = $ctx->mt->db()->blog_ping_count($args);
-    return $ctx->count_format($count, $args);
+    return '';
 }
 ?>

@@ -134,6 +134,16 @@ var plugin_ids = [];
 </script>
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+
+.custom-control .custom-control-description {
+  font-weight: normal;
+}
+
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -168,17 +178,6 @@ function activatePlugin(flag, plugin_sig) {
         f.submit();
     }
     return false;
-}
-
-if ( location.hash ) {
-    // Open plugin contents.
-    jQuery('div'+location.hash+' .plugin-name').trigger('click');
-
-    // If there is Settings tab, open it.
-    if ( jQuery('a'+location.hash+'-config') ) {
-        var last_tab_index = jQuery(location.hash+'-content li.tab').length - 1;
-        jQuery(location.hash+'-content').tabs( 'option', 'active', last_tab_index );
-    }
 }
 
 function junkScoreNudge(amount, id, max) {
@@ -236,8 +235,16 @@ function toggleAdvancedPrefs(evt, c) {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
-  jQuery('.collapse.plugin-content').collapse('hide');
+if ( location.hash ) {
+  // Open plugin contents.
+  jQuery('a'+location.hash).trigger('click');
+
+  // If there is Settings tab, open it.
+  jQuery('a'+location.hash+'-config-tab').trigger('click');
+}
+
+jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
+  jQuery('.collapse.mt-collapse__content').collapse('hide');
 });
 </mt:setvarblock>
 
@@ -257,109 +264,94 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
   <div class="plugin-list">
     </mt:if>
   <mt:else>
-    <div id="plugin-<mt:var name="plugin_id">" class="card plugin<mt:if name="plugin_disabled"> plugin-disabled disabled</mt:if>">
-      <script type="text/javascript">
-      /* <![CDATA[ */
-      plugin_ids.push('<mt:var name="plugin_id">');
-      /* ]]> */
-      </script>
-      <div class="card-header plugin-header">
-        <div class="row">
-          <div class="col-8">
-            <h4 class="plugin-name">
-        <mt:if name="plugin_disabled">
-              <span class="pr-3">
-                <mtapp:svgicon id="ic_stop" title="<__trans phrase="Disabled">" color="danger">
+    <div class="mt-pluginpanel">
+      <div class="mt-collapse__container align-items-center">
+        <div class="col">
+    <mt:if name="plugin_disabled">
+          <svg title="Disabled" role="img" class="mt-icon mt-pluginpanel__icon">
+            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty" />
+          </svg>
+          <span class="plugin-name-disabled text-muted">
+            <$mt:var name="plugin_name" escape="html"$>
+            <mt:if name="plugin_version">
+              <span class="plugin-version">
+                <mt:var name="plugin_version">
               </span>
-              <span class="plugin-name-disabled text-secondary">
-                <$mt:var name="plugin_name" escape="html"$>
-                <mt:if name="plugin_version">
-                  <span class="plugin-version">
-                    <mt:var name="plugin_version">
-                  </span>
-                </mt:if>
-              </span>
-        <mt:else>
-              <span>
-            <mt:unless name="plugin_error">
-              <mt:if name="plugin_icon" like="#ic_plugin">
-                <mt:var name="plugin_icon">
-              <mt:else>
-                <img src="<mt:var name="plugin_icon">" />
-              </mt:if>
-            <mt:else>
-                <mtapp:svgicon id="ic_stop" title="<__trans phrase="Disabled">" color="danger">
-            </mt:unless>
-              </span>
-              <a class="btn btn-link" aria-expanded="false" aria-controls="plugin-<mt:var name="plugin_id" escape="html">-content" href="#plugin-<mt:var name="plugin_id" escape="html">-content" title="<__trans phrase="Settings for [_1]" params="<mt:var name="plugin_name" escape="html">">" data-toggle="collapse">
-                <$mt:var name="plugin_name" escape="html"$>
-                <mt:if name="plugin_version">
-                  <span class="plugin-version">
-                    <mt:var name="plugin_version">
-                  </span>
-                </mt:if>
-              </a>
-        </mt:if>
-            </h4>
-          </div>
-          <div class="col-4 text-right">
-        <mt:if name="can_config">
-            <div class="plugin-status">
-          <mt:unless name="blog_view">
-            <mt:if name="plugin_error">
-              <span class="alert-error-inline icon-left icon-error">
-                <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
-                <__trans phrase="Failed to Load">
-              </span>
-              <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(0, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Disable"></a>
-            <mt:else>
-              <mt:unless name="plugin_disabled">
-              <span class="icon-left icon-success">
-                <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
-                <__trans phrase="Enabled">
-              </span>
-              <a class="button btn btn-default" href="javascript:void(0)" onclick="return activatePlugin(0, '<mt:var name="plugin_sig" escape="js">')">
-                <__trans phrase="Disable">
-              </a>
-              <mt:else>
-              <span class="text-secondary icon-left icon-neutral">
-                <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
-                <__trans phrase="Disabled">
-              </span>
-                <mt:if name="use_plugins">
-              <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(1, '<mt:var name="plugin_sig" escape="js">'); return false;">
-                <__trans phrase="Enable">
-              </a>
-                </mt:if>
-              </mt:unless>
             </mt:if>
+          </span>
+    <mt:else>
+          <svg title="Enabled" role="img" class="mt-icon--secondary mt-pluginpanel__icon">
+            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_plugin" />
+          </svg>
+          <a id="plugin-<mt:var name="plugin_id" escape="html">" data-toggle="collapse" href="#collapse-plugin-<mt:var name="plugin_id" escape="html">-content" aria-expanded="false" aria-controls="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
+            <mt:var name="plugin_name" escape="html">
+            <mt:if name="plugin_version">
+              <span class="plugin-version">
+                <mt:var name="plugin_version">
+              </span>
+            </mt:if>
+          </a>
+    </mt:if>
+        </div>
+    <mt:if name="can_config">
+        <div class="col-auto">
+          <div class="plugin-status">
+      <mt:unless name="blog_view">
+        <mt:if name="plugin_error">
+            <span class="alert-error-inline icon-left icon-error text-muted">
+              <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
+              <__trans phrase="Failed to Load">
+            </span>
+            <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(0, '<mt:var name="plugin_sig" escape="js">'); return false;"><__trans phrase="Disable"></a>
+        <mt:else>
+          <mt:unless name="plugin_disabled">
+            <span class="icon-left icon-success">
+              <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
+              <__trans phrase="Enabled">
+            </span>
+            <a class="button btn btn-default" href="javascript:void(0)" onclick="return activatePlugin(0, '<mt:var name="plugin_sig" escape="js">')">
+              <__trans phrase="Disable">
+            </a>
           <mt:else>
-            <mt:if name="plugin_error">
-              <span class="alert-error-inline icon-left icon-error">
-                <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
-                <__trans phrase="Failed to Load">
-              </span>
-            <mt:else>
-              <mt:unless name="plugin_disabled">
-              <span class="icon-left icon-success">
-                <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
-                <__trans phrase="Enabled">
-              </span>
-              <mt:else>
-              <span class="text-secondary icon-left icon-neutral">
-                <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
-                <__trans phrase="Disabled">
-              </span>
-              </mt:unless>
+            <span class="text-muted icon-left icon-neutral">
+              <svg title="<__trans phrase="Disabled">" role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
+                <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove" />
+              </svg>
+              <__trans phrase="Disabled">
+            </span>
+            <mt:if name="use_plugins">
+            <a class="button btn btn-default" href="javascript:void(0)" onclick="activatePlugin(1, '<mt:var name="plugin_sig" escape="js">'); return false;">
+              <__trans phrase="Enable">
+            </a>
             </mt:if>
           </mt:unless>
-            </div>
         </mt:if>
-           </div>
+      <mt:else>
+        <mt:if name="plugin_error">
+            <span class="alert-error-inline icon-left icon-error text-muted">
+              <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
+              <__trans phrase="Failed to Load">
+            </span>
+        <mt:else>
+          <mt:unless name="plugin_disabled">
+            <span class="icon-left icon-success">
+              <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
+              <__trans phrase="Enabled">
+            </span>
+          <mt:else>
+            <span class="text-muted icon-left icon-neutral">
+              <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
+              <__trans phrase="Disabled">
+            </span>
+          </mt:unless>
+        </mt:if>
+      </mt:unless>
+          </div>
         </div>
-      <!-- /Plugin Header --></div>
-
+    </mt:if>
+      </div>
     <mt:unless name="plugin_disabled">
+
       <mt:if name="mt_debug">
         <mt:if name="plugin_compat_errors">
           <mtapp:statusmsg
@@ -384,148 +376,164 @@ jQuery('.collapse.plugin-content').on('show.bs.collapse', function (e) {
         </mtapp:statusmsg>
       </mt:if>
 
-      <div id="plugin-<mt:var name="plugin_id">-content" class="collapse plugin-content">
-      <div class="card-block">
-        <ul class="nav nav-tabs plugin-tabs-list tabs"> <!-- Plugin Tab -->
-          <li class="nav-item tab">
-            <a href="#plugin-<mt:var name="plugin_id">-info" class="nav-link active icon-mini-left icon-mini-comments" data-toggle="tab">
-              <mtapp:svgicon id="ic_file" size="sm" title="<__trans phrase="Info">">
-              <__trans phrase="Info">
-            </a>
-          </li>
+      <div class="collapse mt-collapse__content" id="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
+        <div class="row pb-2">
+          <div class="col">
+            <ul class="nav mt-tabs" id="plugin-<mt:var name="plugin_id" escape="html">-tab" role="tablist">
+              <li class="nav-item">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-info-tab" class="nav-link active" href="#plugin-<mt:var name="plugin_id" escape="html">-info" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-info" aria-selected="true">
+                  <__trans phrase="Info">
+                </a>
+              </li>
       <mt:if name="plugin_resources">
-          <li class="nav-item tab">
-            <a href="#plugin-<mt:var name="plugin_id">-resources" class="nav-link icon-mini-left icon-mini-templates" data-toggle="tab">
-              <mtapp:svgicon id="ic_permalink" size="sm" title="<__trans phrase="Resources">">
-              <__trans phrase="Resources">
-            </a>
-          </li>
+              <li class="nav-item">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-resources-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-resources" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-resources" aria-selected="false">
+                  <__trans phrase="Resources">
+                </a>
+              </li>
       </mt:if>
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-          <li class="nav-item tab">
-            <a href="#plugin-<mt:var name="plugin_id">-config" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
-              <mtapp:svgicon id="ic_setting" size="sm" title="<__trans phrase="Settings">">
-              <__trans phrase="Settings">
-            </a>
-          </li>
+              <li class="nav-item">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-config-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-config" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-config" aria-selected="false">
+                  <__trans phrase="Settings">
+                </a>
+              </li>
         </mt:if>
         <mt:if name="plugin_config_link">
-          <mt:if name="plugin_config_html">
-          <li class="nav-item tab">
-            <a href="<mt:var name="plugin_page">" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
-              <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
-            </a>
-          </li>
-          <mt:else>
-          <li class="nav-item tab">
-            <a href="<mt:var name="plugin_page">" class="nav-link icon-mini-left icon-mini-settings" data-toggle="tab">
-              <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
-            </a>
-          </li>
-          </mt:if>
+              <li class="nav-item">
+                <a id="tabContent4-tab" class="nav-link" href="#tabContent4" data-toggle="tab" role="tab" aria-control="tabContent4" aria-selected="false">
+                  <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
+                </a>
+              </li>
         </mt:if>
       </mt:if>
-        </ul>
-
-      <div class="tab-content p-3">
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="tab-content" id="plugin-<mt:var name="plugin_id" escape="html">-tag-content">
 
       <mt:if name="plugin_infos">
-      <div id="plugin-<mt:var name="plugin_id">-info" class="tab-pane active">
-      <mt:if name="plugin_desc">
-        <p><mt:var name="plugin_desc"></p>
-      </mt:if>
-        <div class="plugin-metadata">
-          <ul class="list-inline plugin-metadata-list">
-      <mt:if name="plugin_doc_link">
-            <li><a href="<mt:var name="plugin_doc_link">" class="icon-mini-left icon-mini-docs" title="<__trans phrase="Documentation for [_1]" params="<mt:var name="plugin_name" escape="html">">"><__trans phrase="Documentation"></a></li>
-      </mt:if>
-      <mt:if name="plugin_plugin_link">
-            <li><a href="<mt:var name="plugin_plugin_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="More about [_1]" params="<mt:var name="plugin_name" escape="html">">"><__trans phrase="Plugin Home"></a></li>
-      </mt:if>
-      <mt:if name="plugin_author_name">
-            <li><mt:if name="plugin_author_link"><a href="<mt:var name="plugin_author_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">"><mt:var name="plugin_author_name"></a><mt:else><mt:var name="plugin_author_name"></mt:if></li>
-      </mt:if>
-          </ul>
-        </div>
-      <!-- /Plugin Description --></div>
+              <div id="plugin-<mt:var name="plugin_id">-info" class="tab-pane show pt-3 active" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-info-tab">
+        <mt:if name="plugin_desc">
+                <p><mt:var name="plugin_desc"></p>
+        </mt:if>
+                <div class="plugin-metadata">
+                  <ul class="list-inline plugin-metadata-list">
+        <mt:if name="plugin_doc_link">
+                    <li class="list-inline-item">
+                      <a href="<mt:var name="plugin_doc_link">" class="icon-mini-left icon-mini-docs" title="<__trans phrase="Documentation for [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                        <__trans phrase="Documentation">
+                      </a>
+                    </li>
+        </mt:if>
+        <mt:if name="plugin_plugin_link">
+                    <li class="list-inline-item">
+                      <a href="<mt:var name="plugin_plugin_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="More about [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                        <__trans phrase="Plugin Home">
+                      </a>
+                    </li>
+        </mt:if>
+        <mt:if name="plugin_author_name">
+                    <li class="list-inline-item">
+                      <mt:if name="plugin_author_link">
+                        <a href="<mt:var name="plugin_author_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                          <mt:var name="plugin_author_name">
+                        </a>
+                      <mt:else>
+                        <mt:var name="plugin_author_name">
+                      </mt:if>
+                    </li>
+        </mt:if>
+                  </ul>
+                </div>
+              <!-- /Plugin Description --></div>
       </mt:if>
 
       <mt:if name="plugin_resources">
-        <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane<mt:unless name="plugin_infos"> active</mt:unless> resources">
-          <ul class="list-unstyled">
+              <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane pt-3<mt:unless name="plugin_infos"> active</mt:unless> resources" role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-resources-tab">
+                <ul class="list-unstyled">
         <mt:if name="plugin_tags">
-            <li><strong><__trans phrase="Tags:"></strong>
+                  <li><strong><__trans phrase="Tags:"></strong></li>
+                  <li>
           <mt:loop name="plugin_tags">
-            <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
+                  <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
           </mt:loop>
-            </li>
+                  </li>
         </mt:if>
         <mt:if name="plugin_attributes">
-            <li><strong><__trans phrase="Tag Attributes:"></strong>
+                  <li><strong><__trans phrase="Tag Attributes:"></strong></li>
+                  <li>
           <mt:loop name="plugin_attributes">
-            <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
+                  <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
           </mt:loop>
-            </li>
+                  </li>
         </mt:if>
         <mt:if name="plugin_text_filters">
-            <li><strong><__trans phrase="Text Filters"></strong>:
+                  <li><strong><__trans phrase="Text Filters"></strong>:</li>
+                  <li>
           <mt:loop name="plugin_text_filters">
-            <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
+                  <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
           </mt:loop>
-            </li>
+                  </li>
         </mt:if>
         <mt:if name="plugin_junk_filters">
-            <li><strong><__trans phrase="Junk Filters:"></strong>
+                  <li><strong><__trans phrase="Junk Filters:"></strong></li>
+                  <li>
           <mt:loop name="plugin_junk_filters">
-            <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
+                  <mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless>
           </mt:loop>
-            </li>
+                  </li>
         </mt:if>
-          </ul>
-        <!-- /Plugin Resources --></div>
+                </ul>
+              <!-- /Plugin Resources --></div>
       </mt:if>
 
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-        <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config">
-          <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
-            <input type="hidden" name="__mode" value="save_plugin_config" />
-          <mt:if name="blog_id">
-            <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-          </mt:if>
-            <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-            <input type="hidden" name="plugin_sig" value="<mt:var name="plugin_sig" escape="html">" />
-            <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-            <fieldset>
-              <mt:var name="plugin_config_html">
-            </fieldset>
+              <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane p-3<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-config-tab" role="tabpanel">
+                <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
+                  <input type="hidden" name="__mode" value="save_plugin_config" />
+                <mt:if name="blog_id">
+                  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+                </mt:if>
+                  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+                  <input type="hidden" name="plugin_sig" value="<mt:var name="plugin_sig" escape="html">" />
+                  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+                  <fieldset>
+                    <mt:var name="plugin_config_html">
+                  </fieldset>
 
-            <div class="actions-bar settings-actions-bar">
-              <button
-                 mt:mode="save_plugin_config"
-                 type="submit"
-                 class="save action primary button btn btn-primary">
-                <__trans phrase="Save Changes">
-              </button>
-          <mt:if name="plugin_settings_id">
-              <button
-                 onclick="resetPlugin(getByID('plugin-<mt:var name="plugin_id">-form')); return false"
-                 type="submit"
-                 class="reset action button btn btn-default">
-                <__trans phrase="Reset to Defaults">
-              </button>
-          </mt:if>
-            <!-- /Actions Bar --></div>
-          </form>
-        <!-- /Plugin Config --></div>
+                  <div class="actions-bar settings-actions-bar">
+                    <button
+                       mt:mode="save_plugin_config"
+                       type="submit"
+                       class="save action primary button btn btn-primary">
+                      <__trans phrase="Save Changes">
+                    </button>
+                <mt:if name="plugin_settings_id">
+                    <button
+                       onclick="resetPlugin(getByID('plugin-<mt:var name="plugin_id">-form')); return false"
+                       type="submit"
+                       class="reset action button btn btn-default">
+                      <__trans phrase="Reset to Defaults">
+                    </button>
+                </mt:if>
+                  <!-- /Actions Bar --></div>
+                </form>
+              <!-- /Plugin Config --></div>
         </mt:if>
       </mt:if>
+
+            </div>
+          </div>
+        </div>
       </div>
-      </div>
-      <!-- /Plugin Content --></div>
     </mt:unless>
-    <!-- /Plugin --></div>
+    </div>
+
     <mt:if name="__last__">
   <!-- /Plugin List End --></div>
 <!-- /Plugin Group End --></div>

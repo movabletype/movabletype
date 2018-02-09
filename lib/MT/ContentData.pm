@@ -10,13 +10,11 @@ use strict;
 use warnings;
 use base qw( MT::Object MT::Revisable );
 
-use JSON  ();
 use POSIX ();
 
 use MT;
 use MT::Asset;
 use MT::Author;
-use MT::ContentData;
 use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
@@ -89,13 +87,14 @@ __PACKAGE__->install_properties(
                     [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
             },
         },
-        defaults    => { status => 0 },
-        datasource  => 'cd',
-        primary_key => 'id',
-        audit       => 1,
-        meta        => 1,
-        child_of    => ['MT::ContentType'],
-        class_type  => 'content_data',
+        defaults        => { status => 0 },
+        datasource      => 'cd',
+        long_datasource => 'content_data',
+        primary_key     => 'id',
+        audit           => 1,
+        meta            => 1,
+        child_of        => ['MT::ContentType'],
+        class_type      => 'content_data',
     }
 );
 
@@ -111,23 +110,23 @@ sub to_hash {
     my $self = shift;
     my $hash = $self->SUPER::to_hash();
 
-    $hash->{'cd.content_html'} = $self->_generate_content_html;
+    $hash->{'content_data.content_html'} = $self->_generate_content_html;
 
-    $hash->{'cd.permalink'} = $self->permalink;
-    $hash->{'cd.status_text'}
+    $hash->{'content_data.permalink'} = $self->permalink;
+    $hash->{'content_data.status_text'}
         = MT::ContentStatus::status_text( $self->status );
-    $hash->{ 'cd.status_is_' . $self->status } = 1;
-    $hash->{'cd.created_on_iso'}
+    $hash->{ 'content_data.status_is_' . $self->status } = 1;
+    $hash->{'content_data.created_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->created_on ) };
-    $hash->{'cd.modified_on_iso'}
+    $hash->{'content_data.modified_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->modified_on ) };
-    $hash->{'cd.authored_on_iso'}
+    $hash->{'content_data.authored_on_iso'}
         = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
 
     # Populate author info
     my $auth = $self->author or return $hash;
     my $auth_hash = $auth->to_hash;
-    $hash->{"cd.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
+    $hash->{"content_data.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
     $hash;
 }
@@ -187,6 +186,13 @@ sub save {
     ## If there's no identifier specified, set unique_id.
     if ( !defined( $self->identifier ) || ( $self->identifier eq '' ) ) {
         $self->identifier( $self->unique_id );
+    }
+
+    if ( !$self->id && !$self->authored_on ) {
+        my @ts = MT::Util::offset_time_list( time, $self->blog_id );
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+        $self->authored_on($ts);
     }
 
     # Week Number for authored_on
@@ -480,7 +486,8 @@ sub data {
     if (@_) {
         my $json;
         if ( ref $_[0] ) {
-            $json = eval { JSON::encode_json( $_[0] ) } || '{}';
+            $json
+                = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
         }
         else {
             $json = $_[0];
@@ -756,6 +763,34 @@ sub is_in_category {
     0;
 }
 
+sub list_props_for_data_api {
+    +{  authored_on => {
+            base    => 'entry.authored_on',
+            display => 'none',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'none',
+        },
+        id => {
+            base    => '__virtual.id',
+            display => 'none',
+        },
+        identifier => {
+            auto    => 1,
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        status => {
+            base    => 'entry.status',
+            display => 'none',
+        },
+    };
+}
+
 sub make_list_props {
     my $props = {};
 
@@ -775,10 +810,20 @@ sub make_list_props {
 
         $props->{$key} = {
             id => {
-                base    => '__virtual.id',
-                display => 'force',
-                order   => 100,
-                html    => \&_make_id_html,
+                base       => '__virtual.id',
+                display    => 'force',
+                order      => 100,
+                html       => \&_make_id_html,
+                sub_fields => [
+                    {   class   => 'status',
+                        label   => 'Status',
+                        display => 'default',
+                    },
+                    {   class   => 'view-link',
+                        label   => 'Link',
+                        display => 'default',
+                    },
+                ],
             },
             author_name => {
                 base  => '__virtual.author_name',
@@ -848,6 +893,44 @@ sub _make_id_html {
     my ( $prop, $obj ) = @_;
     my $app = MT->instance;
 
+    my $status = $obj->status;
+    my $status_class
+        = $status == MT::Entry::HOLD()      ? 'Draft'
+        : $status == MT::Entry::RELEASE()   ? 'Published'
+        : $status == MT::Entry::REVIEW()    ? 'Review'
+        : $status == MT::Entry::FUTURE()    ? 'Future'
+        : $status == MT::Entry::JUNK()      ? 'Junk'
+        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+        :                                     '';
+    my $lc_status_class = lc $status_class;
+
+    my $status_icon_id
+        = $status == MT::Entry::HOLD()      ? 'ic_statusdraft'
+        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
+        : $status == MT::Entry::REVIEW()    ? 'ic_error'
+        : $status == MT::Entry::FUTURE()    ? 'ic_time'
+        : $status == MT::Entry::JUNK()      ? 'ic_error'
+        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
+        :                                     '';
+    my $status_icon_color_class
+        = $status == MT::Entry::HOLD()      ? ''
+        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
+        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
+        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
+        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
+        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
+        :                                     '';
+
+    my $status_img = '';
+    if ($status_icon_id) {
+        my $static_uri = MT->static_path;
+        $status_img = qq{
+          <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+              <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+          </svg>
+        };
+    }
+
     my $id        = $obj->id;
     my $edit_link = $app->uri(
         mode => 'view',
@@ -859,7 +942,27 @@ sub _make_id_html {
         },
     );
 
-    return qq{<a href="$edit_link">$id</a>};
+    my $permalink  = MT::Util::encode_html( $obj->permalink );
+    my $static_uri = MT->static_path;
+    my $view_link  = $status == MT::ContentStatus::RELEASE()
+        ? qq{
+            <span class="view-link">
+              <a href="$permalink" class="d-inline-block" target="_blank">
+                <svg title="View" role="img" class="mt-icon mt-icon--sm">
+                  <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                </svg>
+              </a>
+            </span>
+        }
+        : '';
+
+    return qq{
+        <span class="icon status $lc_status_class">
+          <a href="$edit_link" class="d-inline-block">$status_img</a>
+        </span>
+        <a href="$edit_link">$id</a>
+        $view_link
+    };
 }
 
 sub _make_field_list_props {
@@ -1129,6 +1232,41 @@ sub gather_changed_cols {
     $obj->{changed_revisioned_cols} = @$changed_cols ? $changed_cols : undef;
 
     1;
+}
+
+sub preview_data {
+    my $self         = shift;
+    my $content_type = $self->content_type;
+    return [] unless $content_type;
+
+    my $registry = MT->registry('content_field_types');
+
+    my $data = '';
+    for my $f ( @{ $content_type->fields } ) {
+        next unless defined $f->{type} && $f->{type} ne '';
+        next unless $registry->{ $f->{type} };
+
+        my $preview_handler = $registry->{ $f->{type} }{preview_handler};
+        if ( $preview_handler && !ref $preview_handler ) {
+            $preview_handler = MT->handler_to_coderef($preview_handler)
+                or next;
+        }
+
+        my $field_data
+            = $preview_handler
+            ? $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
+            : $self->data->{ $f->{id} };
+        $field_data = '' unless defined $field_data && $field_data ne '';
+
+        my $field_label = ( $f->{options} || +{} )->{label}
+            || MT->translate('(No label)');
+
+        my $escaped_field_label = MT::Util::encode_html($field_label);
+
+        $data
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
+    }
+    $data;
 }
 
 1;

@@ -11,6 +11,7 @@ use File::Temp 'tempdir';
 use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
+use Digest::SHA;
 
 our $MT_HOME;
 
@@ -29,6 +30,7 @@ sub new {
     my $root = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
+    $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
 
     my $self = bless {
         root   => $root,
@@ -239,6 +241,10 @@ sub prepare_fixture {
     my @addons = _find_addons_and_plugins();
     my $uid    = substr( md5_hex( join '+', sort @addons ), 0, 7 );
 
+    my $app = $ENV{MT_APP} || 'MT::App';
+    eval "require $app; 1" or die $@;
+    MT->set_instance( $app->new );
+
     my $fixture_dir = "$MT_HOME/t/fixture/$uid";
 
     my $id = (caller)[1];    # file
@@ -326,11 +332,18 @@ sub load_schema_and_fixture {
     my ( $s, $m, $h, $d, $mo, $y ) = gmtime;
     my $now = sprintf( "%04d%02d%02d%02d%02d%02d",
         $y + 1900, $mo + 1, $d, $h, $m, $s );
+    my @pool = ( 'a' .. 'z', 0 .. 9 );
+    my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
+    my $salt = join '', map { $pool[ rand @pool ] } 1 .. 16;
+    # Tentative password; update it later when necessary
+    my $author_pass = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
     my $schema  = _slurp($schema_file)  or return;
     my $fixture = _slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
+    $fixture =~ s/\b__API_PASS__\b/$api_pass/g;
+    $fixture =~ s/\b__AUTHOR_PASS__\b/$author_pass/g;
     require JSON;
     $fixture = eval { JSON::decode_json($fixture) };
 
@@ -338,6 +351,13 @@ sub load_schema_and_fixture {
         warn "Fixture is empty or broken";
         return;
     }
+
+    my $fixture_schema_version = $fixture->{schema_version};
+    if ( !$fixture_schema_version or $fixture_schema_version ne $self->schema_version ) {
+        diag "FIXTURE IS IGNORED: please update fixture";
+        return;
+    }
+
     my $dbh = $self->dbh;
     $dbh->begin_work;
     eval {
@@ -348,6 +368,7 @@ sub load_schema_and_fixture {
         }
         my $sql_maker = SQL::Maker->new( driver => $self->{driver} );
         for my $table ( keys %$fixture ) {
+            next if $table eq 'schema_version';
             my $data = $fixture->{$table};
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
@@ -466,6 +487,12 @@ sub save_fixture {
                             $value = '__NOW__';
                         }
                     }
+                    elsif ( $key eq 'author_api_password' ) {
+                        $value = '__API_PASS__';
+                    }
+                    elsif ( $key eq 'author_password' ) {
+                        $value = '__AUTHOR_PASS__';
+                    }
                     else {
                         $value =~ s/^$root/__TEST_ROOT__/;
                         $value =~ s/^$MT_HOME/__MT_HOME__/;
@@ -487,12 +514,14 @@ sub save_fixture {
         return;
     }
 
-    require JSON;
+    $data{schema_version} = $self->schema_version;
+
+    require JSON::PP;
     my $dir = dirname($file);
     mkpath $dir unless -d $dir;
     open my $fh, '>', $file or die $!;
     flock $fh, LOCK_EX;
-    print $fh JSON->new->pretty->canonical->utf8->encode( \%data );
+    print $fh JSON::PP->new->pretty->canonical->utf8->encode( \%data );
     close $fh;
 }
 
@@ -505,7 +534,7 @@ sub disable_addon {
     if ( -f $config ) {
         rename( $config, $disabled )
             or plan skip_all => "$config cannot be renamed.: $!";
-        push @{ $self->{disabled} ||= [] }, $name;
+        $self->{disabled_addons}{$name} = 1;
     }
 }
 
@@ -514,16 +543,62 @@ sub enable_addon {
     my $config   = "$MT_HOME/addons/$name/config.yaml";
     my $disabled = "$config.disabled";
 
-    if ( -f $disabled ) {
+    if ( -f $disabled && $self->{disabled_addons}{$name} ) {
         rename( $disabled, $config ) or warn $!;
+        delete $self->{disabled_addons}{$name};
     }
+}
+
+sub disable_plugin {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    # Want a lock?
+    if ( -f $config ) {
+        rename( $config, $disabled )
+            or plan skip_all => "$config cannot be renamed.: $!";
+        $self->{disabled_plugins}{$name} = 1;
+    }
+}
+
+sub enable_plugin {
+    my ( $self, $name ) = @_;
+    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $disabled = "$config.disabled";
+
+    if ( -f $disabled && $self->{disabled_plugins}{$name} ) {
+        rename( $disabled, $config ) or warn $!;
+        delete $self->{disabled_plugins}{$name};
+    }
+}
+
+sub schema_version {
+    my $self = shift;
+    my %versions = (
+        core => MT->schema_version,
+        $self->plugin_schema_version,
+    );
+    return join "; ", map { $_ . " " . $versions{$_} } sort keys %versions;
+}
+
+sub plugin_schema_version {
+    my $self = shift;
+    return map { $_->id => $_->schema_version }
+        grep { defined $_->schema_version && $_->schema_version ne '' }
+        @MT::Plugins;
 }
 
 sub DESTROY {
     my $self = shift;
-    if ( my @disabled = @{ $self->{disabled} || [] } ) {
+    if ( my @disabled = keys %{ $self->{disabled_addons} || {} } ) {
         for my $name (@disabled) {
             $self->enable_addon($name);
+        }
+    }
+    if ( my @disabled = keys %{ $self->{disabled_plugins} || {} } ) {
+        for my $name (@disabled) {
+            $self->enable_plugin($name);
         }
     }
 }

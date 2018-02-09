@@ -42,6 +42,10 @@ my $base_uri = '/mt-xmlrpc.cgi';
 my $username = 'Chuck D';
 my $password = 'seecret';
 
+my $author = MT->model('author')->load(2) or die MT->model('author')->errstr;
+$author->api_password($password);
+$author->save or die $author->errstr;
+
 use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
 my $deser = XMLRPC::Deserializer->new();

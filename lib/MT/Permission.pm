@@ -152,7 +152,7 @@ sub global_perms {
                 push @perms, "'$name'";
             }
         }
-        return join ',', @perms;
+        return join ',', sort @perms;
     }
 
     sub add_permissions {
@@ -162,7 +162,7 @@ sub global_perms {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
-            if ( $more =~ /\'create_site\'/ ) {
+            if ( $more =~ /\'administer_site\'/ ) {
                 $more = _all_perms('blog');
             }
             else {
@@ -498,7 +498,7 @@ sub can_post {
 sub can_edit_authors {
     my $perms  = shift;
     my $author = $perms->user;
-    $perms->can_administer_site || ( $author && $author->is_superuser() );
+    $perms->can_administer_site || ( $author && $author->can_manage_users_groups() );
 }
 
 sub can_edit_entry {
@@ -587,9 +587,14 @@ sub can_view_feedback {
 
 sub can_edit_content_data {
     my $self = shift;
-    my ( $content_data, $author, $status ) = @_;
+    my ( $content_data, $author ) = @_;
+
     die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
+
+    return 1
+        if $author->is_superuser
+        || $author->can_do('edit_all_content_data');
+
     unless ( ref $content_data ) {
         $content_data = MT::ContentData->load($content_data)
             or return;
@@ -605,27 +610,30 @@ sub can_edit_content_data {
 
     return 1 if $self->can_do('edit_all_content_data');
 
-    my $content_type_unique_id = $content_data->ct_unique_id;
+    my $content_type = $content_data->content_type or return 0;
 
     return 1
         if $self->can_do(
-        'edit_all_content_data_' . $content_type_unique_id );
+        'edit_all_content_data_' . $content_type->unique_id );
 
     my $own_content_data = $content_data->author_id == $author->id;
 
-    if ( defined $status ) {
+    require MT::ContentStatus;
+    if ( $content_data->status == MT::ContentStatus::RELEASE() ) {
+        return 1
+            if $self->can_do(
+            'edit_all_published_content_data_' . $content_type->unique_id );
         return $own_content_data
-            ? $self->can_do(
-            'edit_own_published_content_data_' . $content_type_unique_id )
-            : $self->can_do(
-            'edit_all_published_content_data_' . $content_type_unique_id );
+            && $self->can_do(
+            'edit_own_published_content_data_' . $content_type->unique_id );
     }
     else {
+        return 1
+            if $self->can_do(
+            'edit_all_unpublished_content_data_' . $content_type->unique_id );
         return $own_content_data
-            ? $self->can_do(
-            'edit_own_unpublished_content_data_' . $content_type_unique_id )
-            : $self->can_do(
-            'edit_all_unpublished_content_data_' . $content_type_unique_id );
+            && $self->can_do(
+            'edit_own_unpublished_content_data_' . $content_type->unique_id );
     }
 }
 
@@ -823,7 +831,7 @@ sub _load_inheritance_permissions {
             my ( $s, $p ) = split /\./, $_;
             $hash->{$p} = 1;
         }
-        @$perms = keys %$hash;
+        @$perms = sort keys %$hash;
     }
 
     return $perms;
@@ -857,7 +865,7 @@ sub load_permissions_from_action {
     my $permissions = __PACKAGE__->perms_from_registry();
     my $perms;
 
-    foreach my $p ( keys %$permissions ) {
+    foreach my $p ( sort keys %$permissions ) {
         push @$perms, $p
             if $pkg->_confirm_action( $p, $action, $permissions );
     }

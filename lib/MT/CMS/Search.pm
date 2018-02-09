@@ -75,144 +75,6 @@ sub core_search_apis {
                 $args->{direction} = 'descend';
             }
         },
-        'comment' => {
-            'order'     => 200,
-            'condition' => sub {
-                my $author = MT->app->user;
-                return 1 if $author->is_superuser;
-
-                my $cnt = MT->model('permission')->count(
-                    [   {   (     ($blog_id)
-                                ? ( blog_id => $blog_id )
-                                : ( blog_id => \'> 0' )
-                            ),
-                            author_id => $author->id,
-                        },
-                        '-and',
-                        [   {   permissions => { like => "\%'create_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'publish_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'edit_all_posts'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'manage_feedback'\%" }
-                            },
-                        ],
-                    ]
-                );
-
-                return ( $cnt && $cnt > 0 ) ? 1 : 0;
-            },
-            'handler'    => '$Core::MT::CMS::Comment::build_comment_table',
-            'label'      => 'Comments',
-            'perm_check' => sub {
-                my $author = MT->app->user;
-                return 1
-                    if $author->permissions( $_[0]->blog_id )
-                    ->can_do('manage_feedback');
-
-                my $entry = MT->model('entry')->load( $_[0]->entry_id );
-                return 1
-                    if $author->permissions( $entry->blog_id )
-                    ->can_edit_entry( $entry, $author );
-
-                return 0;
-            },
-            'search_cols' => {
-                'url'    => sub { $app->translate('URL') },
-                'text'   => sub { $app->translate('Comment Text') },
-                'email'  => sub { $app->translate('Email Address') },
-                'ip'     => sub { $app->translate('IP Address') },
-                'author' => sub { $app->translate('Name') },
-            },
-            'replace_cols'       => [qw(text)],
-            'can_replace'        => 1,
-            'can_search_by_date' => 1,
-            'setup_terms_args'   => sub {
-                my ( $terms, $args, $blog_id ) = @_;
-                $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
-            }
-        },
-        'ping' => {
-            'order'     => 300,
-            'condition' => sub {
-                my $author = MT->app->user;
-                return 1 if $author->is_superuser;
-
-                my $cnt = MT->model('permission')->count(
-                    [   {   (     ($blog_id)
-                                ? ( blog_id => $blog_id )
-                                : ( blog_id => \'> 0' )
-                            ),
-                            author_id => $author->id,
-                        },
-                        '-and',
-                        [   {   permissions => { like => "\%'create_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'publish_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'edit_all_posts'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'manage_feedback'\%" }
-                            },
-                        ],
-                    ]
-                );
-
-                return ( $cnt && $cnt > 0 ) ? 1 : 0;
-            },
-            'label'      => 'TrackBacks',
-            'handler'    => '$Core::MT::CMS::TrackBack::build_ping_table',
-            'perm_check' => sub {
-                my $author = MT->app->user;
-                my $ping   = shift;
-                require MT::Trackback;
-                my $tb = MT::Trackback->load( $ping->tb_id )
-                    or return undef;
-                if ( $tb->entry_id ) {
-                    my $entry = MT->model('entry')->load( $tb->entry_id );
-                    return 1
-                        if $author->permissions( $entry->blog_id )
-                        ->can_do('manage_feedback')
-                        || $author->permissions( $entry->blog_id )
-                        ->can_edit_entry( $entry, $author );
-                }
-                elsif ( $tb->category_id ) {
-                    return 1
-                        if $author->permissions( $tb->blog_id )
-                        ->can_do('search_category_trackbacks');
-                }
-                return 0;
-            },
-            'search_cols' => {
-                'title'      => sub { $app->translate('Title') },
-                'excerpt'    => sub { $app->translate('Excerpt') },
-                'source_url' => sub { $app->translate('Source URL') },
-                'ip'         => sub { $app->translate('IP Address') },
-                'blog_name'  => sub { $app->translate('Site Name') },
-            },
-            'replace_cols'       => [qw(title excerpt)],
-            'can_replace'        => 1,
-            'can_search_by_date' => 1,
-            'setup_terms_args'   => sub {
-                my ( $terms, $args, $blog_id ) = @_;
-                $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
-            }
-        },
         'page' => {
             'order'     => 400,
             'condition' => sub {
@@ -570,7 +432,7 @@ sub core_search_apis {
 }
 
 sub can_search_replace {
-    my $app = shift;
+    my $app     = shift;
     my $blog_id = $app->param('blog_id');
 
     return 1 if $app->user->is_superuser;
@@ -838,8 +700,7 @@ sub do_search_replace {
                     $blog = MT::Blog->load($blog_id) if $blog_id;
                     if (   $blog
                         && !$blog->is_blog
-                        && ( $author->permissions($blog_id)
-                            ->has('create_site')
+                        && ($author->permissions($blog_id)->has('create_site')
                             || $author->is_superuser )
                         )
                     {
@@ -862,8 +723,7 @@ sub do_search_replace {
                 $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
-                    && $author->permissions($blog_id)
-                    ->has('create_site') )
+                    && $author->permissions($blog_id)->has('create_site') )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
                     my @blog_ids = map { $_->id } @blogs;
@@ -1309,13 +1169,16 @@ sub do_search_replace {
         object_label        => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type         => $type,
-        search              => ( $do_replace ? $orig_search : $search ) || '',
-        searched            => (
-              $do_replace
-            ? $orig_search
+        search              => (
+            $do_replace ? scalar $app->param('orig_search')
+            : scalar $app->param('search')
+            )
+            || '',
+        searched => (
+            $do_replace ? scalar $app->param('orig_search')
             : (        $do_search
-                    && defined $search
-                    && $search ne '' )
+                    && defined $app->param('search')
+                    && $app->param('search') ne '' )
             )
             || $show_all
             || defined $publish_status

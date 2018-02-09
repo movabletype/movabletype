@@ -67,15 +67,28 @@
     </mtapp:setting>
 
     <div id="remember-me" class="checkbox">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox" id="remember" class="custom-control-input" name="remember" value="1" accesskey="r" />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description"><__trans phrase="Remember me?"></span>
-      </label>
+        <label class="custom-control-label" for="remember"><__trans phrase="Remember me?"></label>
+      </div>
     </div>
 
-    <div class="row actions-bar actions-bar-login">
-      <div class="col-4">
+    <div class="row align-items-center actions-bar actions-bar-login">
+      <div class="col-8">
+    <mt:if name="can_recover_password">
+      <div id="forget-password">
+        <a href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>">
+          <__trans phrase="Forgot your password?">
+        </a>
+      </div>
+    </mt:if>
+    <mt:if name="registration_allowed">
+      <div id="sign-up">
+        <__trans phrase="Not a member? <a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id" escape="js"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>">
+      </div>
+    </mt:if>
+      </div>
+      <div class="col-4 text-right">
         <button
            type="submit"
            accesskey="s"
@@ -83,20 +96,6 @@
            class="sign-in action primary button btn btn-primary">
           <__trans phrase="Sign in">
         </button>
-      </div>
-      <div class="col-8">
-    <mt:if name="can_recover_password">
-      <div id="forget-password">
-        <a class="float-right" href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>">
-          <__trans phrase="Forgot your password?">
-        </a>
-      </div>
-    </mt:if>
-    <mt:if name="registration_allowed">
-      <div id="sign-up" class="float-right">
-        <__trans phrase="Not a member? <a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id" escape="js"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>">
-      </div>
-    </mt:if>
       </div>
     </div>
   </form>

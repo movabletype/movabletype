@@ -1345,35 +1345,6 @@ $.mtValidateRules = {
         }
         return true;
     },
-    'div.content-type-field-container': function ($e) {
-        var contentTypeName = $e.data('mt-content-type-name');
-        var multiple = $e.data('mt-multiple') ? true : false;
-        var max = Number($e.data('mt-max-select')) || 0;
-        var min = Number($e.data('mt-min-select')) || 0;
-        var required = $e.data('mt-required') ? true : false;
-        var selectedCount = $e.find('li:not(.empty-content-data-list)').length;
-        if ( multiple && max && max < selectedCount ) {
-            this.error = true;
-            this.errstr = trans('[_1] less than or equal to [_2] must be selected', contentTypeName, max);
-            return false;
-        }
-        if ( multiple && min && min > selectedCount ) {
-            this.error = true;
-            this.errstr = trans('[_1] greater than or equal to [_2] must be selected', contentTypeName, min);
-            return false;
-        }
-        if ( !multiple && selectedCount > 1 ) {
-            this.error = true;
-            this.errstr = trans('Only 1 [_1] can be selected', contentTypeName);
-            return false;
-        }
-        if ( required && selectedCount === 0 ) {
-            this.error = true;
-            this.errstr = trans('This field is required');
-            return false;
-        }
-        return true;
-    },
     '.html5-form': function ($e) {
         if (!$e.get(0).checkValidity || $e.get(0).checkValidity()) {
             return true;
@@ -1632,16 +1603,9 @@ $.fn.mtModal = function (options) {
 
 $.fn.mtModalClose = function () {
   return this.each(function () {
-    var url = $(this).data().mtModalClose;
+    var url = window.top.jQuery(this).data().mtModalClose;
     $(this).on('click', function () {
-      $.fn.mtModal.close();
-      if (url) {
-        var $modal = window.parent.jQuery('.mt-modal');
-        if ($modal.length > 0) {
-          window.parent.location = url;
-        }
-      }
-      return false;
+      return window.top.jQuery.fn.mtModal.close(url);
     });
   });
 };
@@ -1657,40 +1621,64 @@ $.fn.mtModal.open = function (url, options) {
 };
 
 $.fn.mtModal.close = function (url) {
-  var $modal = window.parent.jQuery('.mt-modal');
-  if ($modal.length > 0) {
-    $modal.modal('hide');
-  }
-  if (url) {
-      window.location = url;
-  }
+  var $modal = window.top.jQuery('.mt-modal');
+  $modal.modal('hide');
+  if (url) window.top.location = url;
+  return false;
 };
 
 function getModalHtml() {
-  return '<div class="modal fade mt-modal">'
+  return '<style>iframe.embed-response-item:not(:last-child) { display: none; }</style>'
+    + '<div class="modal fade mt-modal">'
     + '<div class="modal-dialog">'
     + '<div class="modal-content embed-responsive">'
-    + '<iframe id="mt-dialog-iframe" class="embed-responsive-item"></iframe>'
     + '</div>'
     + '</div>'
     + '</div>';
 }
 
 function initModal() {
-  var $modal = $('.mt-modal');
-  if ($modal.length == 0) {
-    var modalHtml = getModalHtml();
-    $(document.body).append(modalHtml);
+  var $modal = window.top.jQuery('.mt-modal');
+  if ($modal.length > 0) return;
 
-    // Disable drag & drop on overlay.
-    $modal.on('dragover drop', function(e) {
+  window.top.jQuery(window.top.document.body).append(getModalHtml());
+  $modal = window.top.jQuery('.mt-modal');
+
+  // Disable drag & drop on overlay.
+  $modal.on('dragover drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  $modal.on('hide.bs.modal', function (e) {
+    var $m = window.top.jQuery('.mt-modal');
+    var iframeCountBeforeRemove = $m.find('iframe').length;
+    var $iframe = $m.find('iframe:last-child');
+    var iframeWindow = $iframe.get(0).contentWindow;
+    var iframeBeforeunloadEvent = iframeWindow.onbeforeunload;
+
+    if (iframeBeforeunloadEvent && !iframeBeforeunloadEvent.call(iframeWindow)) {
       e.preventDefault();
-      e.stopPropagation();
-    });
+      e.stopImmediatePropagation();
+      return false;
+    }
 
-    $('iframe.embed-responsive-item').load(resizeModal);
-    $(window).on('resize', resizeModal);
-  }
+    if (iframeCountBeforeRemove <= 1) {
+      return true;
+    } else {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      $iframe.remove();
+      return false;
+    }
+  });
+
+  $modal.on('hidden.bs.modal', function (e) {
+    var $iframe = window.top.jQuery('.mt-modal iframe:last-child');
+    $iframe.remove();
+  });
+
+  window.top.jQuery(window.top).on('resize', resizeModal);
 }
 
 function openModal(href, opts) {
@@ -1704,7 +1692,7 @@ function openModal(href, opts) {
     openModalWithoutForm(href, opts);
   }
 
-  var $modal = $('.mt-modal');
+  var $modal = window.top.jQuery('.mt-modal');
 
   if (opts.full) {
     $modal.find('.modal-dialog').css('width', '100%');
@@ -1720,9 +1708,30 @@ function openModal(href, opts) {
     $modal.find('.modal-dialog').removeClass('modal-lg');
   }
 
-  $modal.find('iframe.embed-responsive-item').attr('src', href);
+  var $iframe = getIframe();
+  $iframe.attr('src', href);
+  $modal.find('.modal-content').append($iframe);
 
   $modal.modal(getModalOptions(opts));
+}
+
+function getNextIframeId() {
+  var id = 0;
+  var $lastIframe = window.top.jQuery('.mt-modal iframe:last-child');
+  if ($lastIframe.length > 0) {
+    var lastName = $lastIframe.attr('name');
+    var lastId = lastName.replace(/modal-(\d)+/, "$1");
+    id = Number(lastId) + 1;
+  }
+  return id;
+}
+
+function getIframe() {
+  var id = getNextIframeId();
+  var html = '<iframe class="mt-dialog-iframe embed-responsive-item" name="modal-'+id+'"></iframe>';
+  var $iframe = window.top.jQuery(html);
+  $iframe.on('load', resizeModal);
+  return $iframe;
 }
 
 function getModalOptions(opts) {
@@ -1739,7 +1748,7 @@ function getModalOptions(opts) {
       modalOptions[key] = opts[key];
     }
   });
-  if (!modalOptions.hasOwnProperty('keyboard')) {
+  if (!modalOptions.hasOwnProperty('keyboard') && opts.hasOwnProperty('esckeyclose')) {
     modalOptions.keyboard = opts.esckeyclose;
   }
 
@@ -1756,7 +1765,7 @@ function openModalWithoutForm(href, opts) {
 
 function resizeModal() {
   var modalHeight;
-  var $iframeContents = $('iframe.embed-responsive-item').contents();
+  var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
   if ($iframeContents.find('body .modal-body').length > 0) {
     modalHeight = $iframeContents.find('body').outerHeight(true);
   } else {

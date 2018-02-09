@@ -1507,6 +1507,7 @@ sub dialog_select_weblog {
         $confirm_js = 'saveFavorite';
     }
     if (   !$auth->is_superuser
+        && !$auth->permissions(0)->can_do('access_to_blog_list')
         && !$auth->permissions(0)->can_do('edit_templates') )
     {
         use MT::Permission;
@@ -1583,7 +1584,7 @@ sub can_save {
             && $app->param('cfg_screen') eq 'cfg_publish_profile' );
     }
     else {
-        return $app->can_do('create_blog');
+        return $app->can_do('create_site');
     }
 }
 
@@ -1989,7 +1990,7 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
         unless $app->user->is_superuser
-        || $app->user->can_create_blog
+        || $app->user->can_do('create_site')
         || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
@@ -2066,20 +2067,10 @@ sub post_save {
         my $assoc_class = $app->model('association');
         my $role_class  = $app->model('role');
         my $role;
-        if ( $obj->is_blog ) {
-            my @roles = $role_class->load_by_permission("administer_site");
-            foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_site\'/;
-                $role = $r;
-                last;
-            }
-        }
-        else {
-            my @roles = $role_class->load_by_permission("administer_site");
-            foreach my $r (@roles) {
-                $role = $r;
-                last;
-            }
+        my @roles = $role_class->load_by_permission("administer_site");
+        foreach my $r (@roles) {
+            $role = $r;
+            last;
         }
         $assoc_class->link( $auth => $role => $obj );
 
@@ -3142,6 +3133,8 @@ sub clone {
 
     $app->validate_magic() or return;
 
+    $app->{hide_goback_button} = 1;
+
     my @id = $app->multi_param('id');
 
     if ( !@id ) {
@@ -3464,7 +3457,7 @@ sub print_status_page {
     <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
     <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
         <div id="clone-process" class="process-msg card-block">
-            <ul class="list-unstyled">
+            <ul class="list-unstyled p-3">
 HTML
 
     my $new_blog;
@@ -3545,7 +3538,7 @@ HTML
             . $app->uri(
             mode => 'list',
             args => {
-                '_type' => 'blog',
+                '_type' => $app->blog ? 'blog' : 'website',
                 blog_id => ( $app->blog ? $new_blog->website->id : 0 )
             }
             );
@@ -3562,7 +3555,7 @@ HTML
             </ul>
         </div>
     </div>
-    <p><strong><__trans phrase="Finished!"></strong></p>
+    <p class="mt-3"><strong><__trans phrase="Finished!"></strong></p>
 </div>
 
 <div class="modal-footer">
@@ -3635,6 +3628,7 @@ sub cms_pre_load_filtered_list {
 
     my $user = $load_options->{user} || $app->user;
     if (   $user->is_superuser
+        || $user->permissions(0)->can_do('access_to_blog_list')
         || $user->permissions(0)->can_do('edit_templates') )
     {
         if ( $terms->{class} eq 'blog' ) {
@@ -3684,12 +3678,15 @@ sub cms_pre_load_filtered_list {
 }
 
 sub can_view_blog_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if !$blog || $blog->is_blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('access_to_blog_list');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
@@ -3822,6 +3819,19 @@ sub _determine_total {
     }
 
     return $total;
+}
+
+sub filtered_list_param {
+    my ( $cb, $app, $param, $objs ) = @_;
+    my %obj_hash = map { $_->id => $_ } @$objs;
+    my $objects = $param->{objects};
+    return unless $objects && @$objects > 0;
+    for my $obj (@$objects) {
+        my $id = $obj->[0] or next;
+        if ( $obj_hash{$id} && !$obj_hash{$id}->is_blog ) {
+            $obj->[0] = undef;
+        }
+    }
 }
 
 1;

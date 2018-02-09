@@ -3428,10 +3428,10 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li>' . $msg . '</li>' . "\n";
+                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
                         }
                     }
-                    $trace = "<li>"
+                    $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'
                         . sprintf( "Request completed in %.3f seconds.",
                         Time::HiRes::time() - $app->{start_request_time} )
                         . "</li>\n"
@@ -3440,13 +3440,13 @@ sub run {
                         my $debug_panel_header
                             = $app->translate('Warnings and Log Messages');
                         my $panel = <<"__HTML__";
-                          <div class="col-12">
+                          <div class="col-12 mt-3">
                             <div class="card debug-panel" style="margin: 0 -15px;">
                               <div class="card-header text-white" style="background: #EF7678;">
                                 <h4 class="my-0">$debug_panel_header</h4>
                               </div>
                               <div class="card-block p-4 debug-panel-inner" style="background: #FFE0E0;">
-                                <ul class="list-unstyled">
+                                <ul class="list-unstyled" style="list-style: none; text-align: left">
                                   $trace
                                 </ul>
                               </div>

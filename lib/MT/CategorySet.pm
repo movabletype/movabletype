@@ -28,9 +28,9 @@ __PACKAGE__->install_properties(
             blog_id => 1,
             name    => 1,
         },
-        defaults => { name => '', cat_count => 0, ct_count => 0 },
-        child_of => 'MT::Blog',
-        audit    => 1,
+        defaults      => { name => '', cat_count => 0, ct_count => 0 },
+        child_of      => 'MT::Blog',
+        audit         => 1,
         child_classes => ['MT::Category'],
         datasource    => 'category_set',
         primary_key   => 'id',
@@ -226,6 +226,13 @@ sub _content_type_name_terms {
 
 sub save {
     my $self = shift;
+    if ( $self->is_name_empty ) {
+        return $self->error( MT->translate('name is required.') );
+    }
+    if ( $self->exist_same_name_in_site ) {
+        return $self->error(
+            MT->translate( 'name "[_1]" is already used.', $self->name ) );
+    }
     if ( $self->id ) {
         if ( my $blog = $self->blog ) {
             $self->modified_on( $blog->current_timestamp );
@@ -238,6 +245,21 @@ sub save {
         $self->_calculate_ct_count;
     }
     $self->SUPER::save(@_);
+}
+
+sub is_name_empty {
+    my $self = shift;
+    !( defined $self->name && $self->name ne '' );
+}
+
+sub exist_same_name_in_site {
+    my $self = shift;
+    __PACKAGE__->exist(
+        {   blog_id => $self->blog_id,
+            name    => $self->name,
+            $self->id ? ( id => { not => $self->id } ) : (),
+        }
+    );
 }
 
 sub _calculate_cat_count {
@@ -284,20 +306,11 @@ sub categories {
     $self->cache_property(
         'categories',
         sub {
-            my $join = MT::ObjectCategory->join_on(
-                'category_id',
-                undef,
-                {   sort      => 'is_primary',
-                    direction => 'descend',
-                },
-            );
             my @cats;
-            my $iter = MT::Category->load_iter(
-                { category_set_id => $self->id },
-                { join            => $join },
-            );
-            while ( my $cat = $iter->() ) {
-                push @cats, $cat;
+            my $iter = MT->model('category')
+                ->load_iter( { category_set_id => $self->id } );
+            while ( my $c = $iter->() ) {
+                push @cats, $c;
             }
             \@cats;
         },

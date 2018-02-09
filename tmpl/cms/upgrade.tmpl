@@ -14,7 +14,7 @@
     <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="Do you want to proceed with the upgrade anyway?"></p>
-    <div class="actions-bar">
+    <div class="actions-bar text-right">
       <input type="hidden" name="continue" value="1" />
       <button
          onclick="dismiss('version-warning'); show('warning_gone'); return false;"
@@ -57,7 +57,7 @@
     <form method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <input type="hidden" name="__mode" value="upgrade" />
-      <div class="actions-bar">
+      <div class="actions-bar text-right">
         <button
            type="submit"
            accesskey="s"
@@ -74,7 +74,7 @@
   <p><__trans phrase="Congratulations, you have successfully upgraded to Movable Type [_1]." params="<mt:var name="mt_version">"></p>
 
   <form method="get" action="<mt:var name="mt_url">">
-    <div class="actions-bar">
+    <div class="actions-bar text-right">
       <button
          type="submit"
          accesskey="s"
@@ -89,7 +89,7 @@
   <p><__trans phrase="Your Movable Type installation is already up to date."></p>
 
   <form method="get" action="<mt:var name="mt_url">">
-    <div class="actions-bar">
+    <div class="actions-bar text-right">
       <button
          type="submit"
          accesskey="s"

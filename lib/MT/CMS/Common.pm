@@ -38,7 +38,7 @@ sub save {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'save', $t );
+            unless is_enabled_mode( $app, 'save', $t );
     }
 
     $app->param( 'allow_pings', 0 )
@@ -627,7 +627,7 @@ sub edit {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'edit', $t );
+            unless is_enabled_mode( $app, 'edit', $t );
     }
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
@@ -1790,7 +1790,7 @@ sub delete {
     }
 
     return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'delete', $type );
+        unless is_enabled_mode( $app, 'delete', $type );
 
     my $parent  = $app->param('parent');
     my $blog_id = $app->param('blog_id');
@@ -2115,7 +2115,7 @@ sub build_revision_table {
         #    $app->translate( $label );
         #} @{ $revision->[1] };
         #$row->{changed_columns} = \@changed;
-        if ( $type =~ /^(entry|page|cd)$/ ) {
+        if ( $type =~ /^(entry|page|content_data)$/ ) {
             $row->{rev_status} = $revision->[0]->status;
         }
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
@@ -2158,7 +2158,7 @@ sub list_revision {
     my $obj  = $obj_promise->force();
     my $blog = $obj->blog || MT::Blog->load($blog_id);
     my $js   = "parent.location.href='" . $app->uri;
-    if ( $type eq 'cd' ) {
+    if ( $type eq 'content_data' ) {
         $js .= '?__mode=view&amp;_type=content_data&amp;content_type_id='
             . $obj->content_type_id;
     }
@@ -2310,6 +2310,26 @@ sub is_disabled_mode {
 
     my $res;
     if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res  = $code->();
+            }
+            else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
+}
+
+sub is_enabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry( 'enable_object_methods', $type ) ) {
         if ( defined $reg->{$mode} ) {
             if ( 'CODE' eq ref $reg->{$mode} ) {
                 my $code = $reg->{$mode};

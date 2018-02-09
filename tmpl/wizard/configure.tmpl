@@ -33,7 +33,7 @@
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your database configuration is complete."></span> <__trans phrase="You may proceed to the next step."></p>
   <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
-  <div id="success" class="actions-bar">
+  <div id="success" class="actions-bar text-right">
     <button
        name="continue"
        type="submit"
@@ -117,7 +117,7 @@
       </div>
 
     <mt:unless name="success">
-      <div id="submit" class="actions-bar" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+      <div id="submit" class="actions-bar text-right" <mt:unless name="dbtype">style="display: none"</mt:unless>>
         <button
            name="test"
            type="submit"
@@ -135,7 +135,7 @@
         </button>
       </div>
 
-      <div id="goback" class="actions-bar" <mt:if name="dbtype">style="display: none"</mt:if>>
+      <div id="goback" class="actions-bar text-right" <mt:if name="dbtype">style="display: none"</mt:if>>
         <button
            name="back"
            type="submit"
@@ -147,7 +147,7 @@
     </mt:unless>
 
     <mt:if name="success">
-      <div id="continue" class="actions-bar">
+      <div id="continue" class="actions-bar text-right">
         <button
            name="continue"
            type="submit"

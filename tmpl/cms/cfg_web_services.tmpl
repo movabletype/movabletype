@@ -51,17 +51,16 @@
        id="enable-data-api"
        label="<__trans phrase="Data API">">
     <div class="form-group">
-      <label class="custom-control custom-checkbox">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" class="custom-control-input" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
-        <span class="custom-control-indicator"></span>
-        <span class="custom-control-description">
+        <label class="custom-control-label" for="enable-data-api">
       <mt:if name="blog_id">
           <__trans phrase="Enable Data API in this site.">
       <mt:else>
           <__trans phrase="Enable Data API in system scope.">
       </mt:if>
-        </span>
-      </label>
+        </label>
+      </div>
     </div>
     </mtapp:setting>
   </mtapp:settinggroup>
@@ -69,6 +68,7 @@
   <mt:if name="blog_id">
     <mtapp:settinggroup id="system-feedback-controls">
       <legend class="h3"><__trans phrase="External Notifications"></legend>
+      <mt:if name="enabled_plugins{Trackback}">
       <mtapp:setting
          id="ping_blogs"
          label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">"
@@ -84,11 +84,10 @@
         <mt:if name="pings_loop">
         <mt:loop name="pings_loop">
           <li>
-            <label class="custom-control custom-checkbox">
+            <div class="custom-control custom-checkbox">
               <input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" class="custom-control-input" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" />
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description"><mt:var name="label" escape="html"></span>
-            </label>
+              <label class="custom-control-label" for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+            </div>
           </li>
         </mt:loop>
         </mt:if>
@@ -99,6 +98,7 @@
         </label>
         <textarea name="ping_others" id="ping_others" class="form-control text low"><mt:var name="ping_others" escape="html"></textarea>
       </mtapp:setting>
+      </mt:if>
 
     </mtapp:settinggroup>
   </mt:if>

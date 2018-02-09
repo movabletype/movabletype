@@ -162,6 +162,7 @@ function toggleFile() {
 
   <mt:unless name="category_set_id">
 
+    <mt:if name="enabled_plugins{Trackback}">
     <mtapp:settinggroup id="category-inbound-ping">
 
       <legend class="h3 title"><__trans phrase="Inbound TrackBacks"></legend>
@@ -172,10 +173,10 @@ function toggleFile() {
          help_page="categories"
          help_section="accept_category_pings">
         <div class="form-group">
-          <label class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb custom-control-input" />
-            <span class="custom-control-indicator"></span>
-          </label>
+            <label class="custom-control-label" for="allow_pings"><span class="sr-only"><__trans phrase="Allow pings"></span></label>
+          </div>
         </div>
       </mtapp:setting>
 
@@ -232,6 +233,7 @@ function toggleFile() {
       </mtapp:setting>
     </mtapp:settinggroup>
 
+  </mt:if>
   </mt:unless>
 
   <mt:setvarblock name="action_buttons">

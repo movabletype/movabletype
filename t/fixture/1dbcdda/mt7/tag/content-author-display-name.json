@@ -61,7 +61,7 @@
       ],
       "rows" : [
          [
-            "lu8h42sj",
+            "__API_PASS__",
             "MT",
             "authorce2f3",
             null,
@@ -80,7 +80,7 @@
             "__NOW__",
             "Melody",
             "Abby",
-            "$6$rhvNukkEJyZQ708Q$Vlh55+fdJGdHA2/2xqK0STdSrZllPpwVpoiwebGFKfyd0uHI83N0Si+n10YKdPgj1Y8CVNmwdpM0m4exBjeedQ",
+            "__AUTHOR_PASS__",
             "en_US",
             null,
             null,
@@ -347,15 +347,15 @@
             "1",
             null,
             "__NOW__",
-            "e7bee1c3b94df39a5c3a0ad5ab5e26677c9889b1",
+            "2de60766c5f097033934fb46e8fb73d70a671734",
             "0",
             null,
             "1",
-            "09c61bac3e4ad26db1e6672e38accadbaa165561",
+            "fd0ba3e75e4de918012fdc8efef746a1ce457efd",
             null,
             "__NOW__",
             "2",
-            "09c61bac3e4ad26db1e6672e38accadbaa165561",
+            "fd0ba3e75e4de918012fdc8efef746a1ce457efd",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -368,7 +368,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion multiblog=2.8\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0023\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion multiblog=2.8\nSchemaVersion 7.0024\n",
             "1"
          ]
       ]
@@ -399,43 +399,9 @@
             null,
             "__NOW__",
             "test content data",
-            "e7bee1c3b94df39a5c3a0ad5ab5e26677c9889b1",
+            "2de60766c5f097033934fb46e8fb73d70a671734",
             null,
             null
-         ]
-      ]
-   },
-   "mt_log" : {
-      "cols" : [
-         "log_author_id",
-         "log_blog_id",
-         "log_category",
-         "log_class",
-         "log_created_by",
-         "log_created_on",
-         "log_id",
-         "log_ip",
-         "log_level",
-         "log_message",
-         "log_metadata",
-         "log_modified_by",
-         "log_modified_on"
-      ],
-      "rows" : [
-         [
-            "0",
-            "0",
-            "callback",
-            "system",
-            null,
-            "__NOW__",
-            "1",
-            null,
-            "4",
-            "Unnamed plugin died with: Can't locate object method \"reboot\" via package \"MT\" at lib/MT/ContentType.pm line 319.\n",
-            null,
-            null,
-            "__NOW__"
          ]
       ]
    },
@@ -468,7 +434,7 @@
             null,
             "__NOW__",
             null,
-            "'administer','edit_templates','manage_plugins','view_log','manage_content_types','create_site','create_blog','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_data'",
+            "'administer','edit_templates','manage_plugins','view_log','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_types','manage_content_data'",
             null,
             "0",
             null
@@ -484,7 +450,7 @@
             null,
             "__NOW__",
             null,
-            "'manage_users','rebuild','edit_notifications','view_blog_log','edit_templates','edit_tags','manage_pages','manage_content_types','edit_categories','edit_config','manage_feedback','edit_all_posts','administer_site','create_post','upload','manage_themes','manage_content_data','send_notifications','create_site','edit_assets','set_publish_paths','manage_category_set','publish_post','comment'",
+            "'administer_blog','administer_site','administer_website','comment','create_post','create_site','edit_all_posts','edit_assets','edit_categories','edit_config','edit_notifications','edit_tags','edit_templates','manage_category_set','manage_content_data','manage_content_types','manage_feedback','manage_member_blogs','manage_pages','manage_themes','manage_users','publish_post','rebuild','send_notifications','set_publish_paths','upload','view_blog_log'",
             null,
             "0",
             null
@@ -679,16 +645,16 @@
             "__NOW__",
             "0",
             "1",
-            "lockout-user",
+            "comment_throttle",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "User Lockout",
+            "Comment throttle",
             null,
             "1",
-            "This email is to notify you that a Movable Type user account has been locked out.\n\nUsername: <mt:AuthorName> \nDisplay Name: <mt:AuthorDisplayName>\nEmail: <mt:AuthorEmail>\n\nIf you want to permit this user to participate again, click the link below.\n\n<mt:var name=\"recover_lockout_link\">\n\n<mt:include module=\"Mail Footer\">\n",
+            "<mt:SetVarBlock name=\"message\">If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address <$mt:Var name=\"throttled_ip\"$> from the list of banned addresses.</mt:SetVarBlock>\nA visitor to your blog <$mt:BlogName$> has automatically been banned by adding more than the allowed number of comments in the last <$mt:Var name=\"throttle_seconds\"$> seconds.\n\nThis was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is\n\n<$mt:Var name=\"throttled_ip\"$>\n\n<$mt:Var name=\"message\"$>\n",
             "email"
          ],
          [
@@ -701,16 +667,16 @@
             "__NOW__",
             "0",
             "2",
-            "lockout-ip",
+            "commenter_confirm",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "IP Address Lockout",
+            "Commenter Confirm",
             null,
             "1",
-            "This email is to notify you that an IP address has been locked out.\n\nIP Address: <mt:var name=\"ip_address\"> \nRecovery: <mt:Date ts=\"$recovery_time\">\n\n<mt:include module=\"Mail Footer\">\n",
+            "Thank you for registering an account to comment on <$mt:BlogName$>. \n\nFor your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on <$mt:BlogName$>.\n\nTo confirm your account, please click on the following URL, or cut and paste this URL into a web browser:\n\n<$mt:Var name=\"confirm_url\"$>\n\nIf you did not make this request, or you don't want to register for an account to comment on <$mt:BlogName$>, then no further action is required.\n\nSincerely,\n<mt:If tag=\"AuthorDisplayName\"><$mt:AuthorDisplayName encode_html=\"1\"$><mt:Else>Movable Type</mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
             "email"
          ],
          [
@@ -745,28 +711,6 @@
             "__NOW__",
             "0",
             "4",
-            "comment_throttle",
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "Comment throttle",
-            null,
-            "1",
-            "<mt:SetVarBlock name=\"message\">If this was an error, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, choosing Blog Config - IP Banning, and deleting the IP address <$mt:Var name=\"throttled_ip\"$> from the list of banned addresses.</mt:SetVarBlock>\nA visitor to your blog <$mt:BlogName$> has automatically been banned by adding more than the allowed number of comments in the last <$mt:Var name=\"throttle_seconds\"$> seconds.\n\nThis was done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is\n\n<$mt:Var name=\"throttled_ip\"$>\n\n<$mt:Var name=\"message\"$>\n",
-            "email"
-         ],
-         [
-            "0",
-            "0",
-            "0",
-            "1",
-            null,
-            null,
-            "__NOW__",
-            "0",
-            "5",
             "footer-email",
             null,
             null,
@@ -788,17 +732,39 @@
             null,
             "__NOW__",
             "0",
-            "6",
-            "notify-entry",
+            "5",
+            "lockout-ip",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Entry Notify",
+            "IP Address Lockout",
             null,
             "1",
-            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
+            "This email is to notify you that an IP address has been locked out.\n\nIP Address: <mt:var name=\"ip_address\"> \nRecovery: <mt:Date ts=\"$recovery_time\">\n\n<mt:include module=\"Mail Footer\">\n",
+            "email"
+         ],
+         [
+            "0",
+            "0",
+            "0",
+            "1",
+            null,
+            null,
+            "__NOW__",
+            "0",
+            "6",
+            "lockout-user",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "User Lockout",
+            null,
+            "1",
+            "This email is to notify you that a Movable Type user account has been locked out.\n\nUsername: <mt:AuthorName> \nDisplay Name: <mt:AuthorDisplayName>\nEmail: <mt:AuthorEmail>\n\nIf you want to permit this user to participate again, click the link below.\n\n<mt:var name=\"recover_lockout_link\">\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
          ],
          [
@@ -833,28 +799,6 @@
             "__NOW__",
             "0",
             "8",
-            "recover-password",
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "Password Recovery",
-            null,
-            "1",
-            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
-            "email"
-         ],
-         [
-            "0",
-            "0",
-            "0",
-            "1",
-            null,
-            null,
-            "__NOW__",
-            "0",
-            "9",
             "new-ping",
             null,
             null,
@@ -876,19 +820,58 @@
             null,
             "__NOW__",
             "0",
-            "10",
-            "commenter_confirm",
+            "9",
+            "notify-entry",
             null,
             null,
             null,
             null,
             "__NOW__",
-            "Commenter Confirm",
+            "Entry Notify",
             null,
             "1",
-            "Thank you for registering an account to comment on <$mt:BlogName$>. \n\nFor your security and to prevent fraud, we ask you to confirm your account and email address before continuing. Once your account is confirmed, you will immediately be allowed to comment on <$mt:BlogName$>.\n\nTo confirm your account, please click on the following URL, or cut and paste this URL into a web browser:\n\n<$mt:Var name=\"confirm_url\"$>\n\nIf you did not make this request, or you don't want to register for an account to comment on <$mt:BlogName$>, then no further action is required.\n\nSincerely,\n<mt:If tag=\"AuthorDisplayName\"><$mt:AuthorDisplayName encode_html=\"1\"$><mt:Else>Movable Type</mt:If>\n\n<$mt:Include module=\"Mail Footer\"$>\n",
+            "A new <$mt:entryclasslabel$> entitled '<$mt:EntryTitle$>' has been published to <$mt:BlogName$>.\n\n<mt:If name=\"object_type\" eq=\"entry\">View entry:<mt:Else>View page:</mt:If> <<mt:SetVarBlock name=\"entry_status\"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name=\"entry_status\" eq=\"Publish\"><$mt:EntryPermalink$><mt:Else><$mt:Var name=\"entry_editurl\"$></mt:If>>\n\n------------------------------------------------------------------------\n<$mt:EntryClassLabel lower_case=\"1\"$> Title: <$mt:EntryTitle$>\nPublish Date: <$mt:EntryDate mail=\"1\"$>\n<mt:If name=\"send_excerpt\">\n\n<$mt:EntryExcerpt wrap_text=\"72\"$>\n</mt:If>\n------------------------------------------------------------------------\n\n<mt:If name=\"message\">Message from Sender:\n<$mt:Var name=\"message\"$></mt:If>\n<mt:If name=\"send_body\">\n------------------------------------------------------------------------\n\n<$mt:EntryBody remove_html=\"1\" wrap_text=\"72\"$>\n\n------------------------------------------------------------------------</mt:If>\n\nYou are receiving this email either because you have elected to receive notifications about new content on <$mt:BlogName$>, or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:\n\n<mt:if name=\"entry_author\"><$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>><mt:else><$mt:var name=\"from_address\"$></mt:if>\n",
+            "email"
+         ],
+         [
+            "0",
+            "0",
+            "0",
+            "1",
+            null,
+            null,
+            "__NOW__",
+            "0",
+            "10",
+            "recover-password",
+            null,
+            null,
+            null,
+            null,
+            "__NOW__",
+            "Password Recovery",
+            null,
+            "1",
+            "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
          ]
       ]
-   }
+   },
+   "mt_touch" : {
+      "cols" : [
+         "touch_blog_id",
+         "touch_id",
+         "touch_modified_on",
+         "touch_object_type"
+      ],
+      "rows" : [
+         [
+            "0",
+            "1",
+            "__NOW__",
+            "author"
+         ]
+      ]
+   },
+   "schema_version" : "WidgetManager 1.1; core 7.0024; formattedtext 1.00; multiblog 2.8"
 }

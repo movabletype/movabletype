@@ -24,7 +24,7 @@
     <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
-    <div class="actions-bar">
+    <div class="actions-bar text-right">
       <input type="hidden" name="continue" value="1" />
       <button
          onclick="dismiss('version-warning'); show('welcome'); return false;"
@@ -92,11 +92,12 @@
              hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
              hind_id="systemEmail"
              show_hint="1">
-            <label class="custom-control custom-checkbox">
-              <input type="checkbox" class="custom-control-input" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description"><__trans phrase="Use this as system email address"></span>
-            </label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="use_system_email" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
+              <label class="custom-control-label" for="use_system_email">
+                <__trans phrase="Use this as system email address">
+              </label>
+            </div>
           </mtapp:setting>
       </mt:unless>
 
@@ -157,7 +158,7 @@
       </mtapp:setting>
     </mt:if>
 
-      <div class="actions-bar">
+      <div class="actions-bar text-right">
         <input type="hidden" name="continue" value="1" />
         <button
            type="submit"

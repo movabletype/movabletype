@@ -15,14 +15,32 @@
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
   <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> text-light</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false"><mt:if name="author_userpic_url"><img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle"><mt:else><img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1"></mt:if><mt:var name="user_screen_name"></button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdownMenu">
+    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false">
+  <mt:if name="author_userpic_url">
+      <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
+  <mt:else>
+      <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
+  </mt:if>
+      <mt:var name="user_screen_name">
+      <svg title="<__trans phrase="Open Panel">" role="img" class="mt-icon mt-user-control">
+        <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open" />
+      </svg>
+    </button>
+    <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
+  <mt:if name="user_actions">
+      <ul>
+  </mt:if>
   <mt:loop name="user_actions">
-      <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
-      <a href="<mt:var name="user_action_href">" class="dropdown-item">
-        <__trans phrase="<mt:var name="label">" escape="html">
-      </a>
+        <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+        <li>
+          <a href="<mt:var name="user_action_href">" class="dropdown-item">
+            <__trans phrase="<mt:var name="label">" escape="html">
+          </a>
+        </li>
   </mt:loop>
+  <mt:if name="user_actions">
+      </ul>
+  </mt:if>
     </div>
   </div>
 </mt:if>
@@ -51,23 +69,25 @@ function stopPropagation(e) {
 
 <div class="mt-primaryNavigation__container">
 <mt:if name="scope_type" eq="system">
-  <div class="mt-primaryNavigation__header--invert" style="background-color: #595959;">
+  <div class="mt-primaryNavigation__header--invert<mt:if name="scope_type" eq="system"> mr-0</mt:if>" style="background-color: #595959;">
 <mt:else>
   <div class="mt-primaryNavigation__header">
 </mt:if>
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
+        <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 <mt:if name="scope_type" eq="system">
-        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+          <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
 <mt:else>
-        <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
+          <img src="<mt:var name="static_uri">images/logo-mark.svg" alt="Movable Type" width="32" height="32">
 </mt:if>
+        </a>
         <span class="mt-productHeader__name">
           <mt:var name="product_header_name">
         </span>
       </h1>
     </div>
-    <div class="col-2">
+    <div class="col-2<mt:if name="scope_type" eq="system"> pr-0</mt:if>">
       <a href="javascript:void(0)" class="mt-primaryNavigation__siteMenu" onclick="openSiteMenu(event); return false;">
         <mtapp:svgicon id="ic_menu" title="<__trans phrase="Open Site Menu">">
       </a>
@@ -132,7 +152,13 @@ function stopPropagation(e) {
   <div class="mt-primaryNavigation__header--invert">
     <div class="col-10">
       <h1 class="mt-productHeader__logo">
-        <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+<mt:if name="scope_type" ne="user">
+        <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
+</mt:if>
+          <img src="<mt:var name="static_uri">images/logo-mark-mono.svg" alt="Movable Type" width="32" height="32">
+<mt:if name="scope_type" ne="user">
+        </a>
+</mt:if>
         <span class="mt-productHeader__name">
           <mt:var name="product_header_name">
         </span>
@@ -195,11 +221,14 @@ function stopPropagation(e) {
 
   <div class="mt-primaryNavigation__content">
 <mt:if name="scope_type" ne="system">
+  <mt:if name="can_access_to_system_dashboard">
     <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
       <__trans phrase="System">
     </a>
+  </mt:if>
 </mt:if>
-<mt:if name="scope_type" ne="user">
+<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
+<mt:if name="show_dashboard_link">
     <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
       <__trans phrase="Dashboard">
     </a>

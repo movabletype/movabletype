@@ -9,8 +9,6 @@ package MT::ContentType;
 use strict;
 use base qw( MT::Object );
 
-use JSON ();
-
 use MT;
 use MT::CategorySet;
 use MT::ContentField;
@@ -142,8 +140,31 @@ sub unique_id {
     }
 }
 
+sub is_name_empty {
+    my $self = shift;
+    !( defined $self->name && $self->name ne '' );
+}
+
+sub exist_same_name_in_site {
+    my $self = shift;
+    __PACKAGE__->exist(
+        {   blog_id => $self->blog_id,
+            name    => $self->name,
+            $self->id ? ( id => { not => $self->id } ) : (),
+        }
+    );
+}
+
 sub save {
     my $self = shift;
+
+    if ( $self->is_name_empty ) {
+        return $self->error( MT->translate('name is required.') );
+    }
+    if ( $self->exist_same_name_in_site ) {
+        return $self->error(
+            MT->translate( 'name "[_1]" is already used.', $self->name ) );
+    }
 
     if ( !$self->id && !defined $self->unique_id ) {
         my $unique_id
@@ -168,7 +189,8 @@ sub fields {
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
         my $sorted_fields = _sort_fields( \@fields );
-        my $json = eval { JSON::encode_json($sorted_fields) } || '[]';
+        my $json = eval { MT::Util::to_json( $sorted_fields, { utf8 => 1 } ) }
+            || '[]';
         $obj->column( 'fields', $json );
     }
     else {
@@ -181,7 +203,8 @@ sub fields {
 sub _sort_fields {
     my $fields = shift;
     return [] unless $fields && ref $fields eq 'ARRAY';
-    my @sorted_fields = sort { $a->{order} <=> $b->{order} } @{$fields};
+    my @sorted_fields
+        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @{$fields};
     \@sorted_fields;
 }
 
@@ -189,7 +212,8 @@ sub get_field {
     my $self = shift;
     my ($field_id) = @_ or return;
     my ($field)
-        = grep { $_->{id} && $_->{id} == $field_id } @{ $self->fields };
+        = grep { $_->{id} && $field_id && $_->{id} == $field_id }
+        @{ $self->fields };
     $field;
 }
 
@@ -221,12 +245,24 @@ sub permission {
 }
 
 sub _manage_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my $field_permission = $self->field_permissions;
+
+    my @permissions = (
+        $self->_create_content_data_permission,
+        $self->_publish_content_data_permission,
+        $self->_edit_all_content_data_permission,
+        %$field_permission,
+    );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group => $self->permission_group,
-            label => 'Manage Content Data',
-            order => 100,
+            group        => $self->permission_group,
+            label        => 'Manage Content Data',
+            order        => 100,
+            inherit_from => \@perms,
         }
     );
 }
@@ -238,12 +274,18 @@ sub _create_content_data_permission {
             group => $self->permission_group,
             label => 'Create Content Data',
             order => 200,
+            permitted_action =>
+                { 'create_new_content_data_' . $self->unique_id => 1, },
         }
     );
 }
 
 sub _publish_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my @permissions = ( $self->_create_content_data_permission, );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
@@ -255,7 +297,9 @@ sub _publish_content_data_permission {
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
+                'rebuild'                                               => 1,
             },
+            inherit_from => \@perms,
         }
     );
 }

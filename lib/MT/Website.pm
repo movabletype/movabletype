@@ -40,7 +40,7 @@ sub list_props {
         blog_count => {
             label        => 'Child Sites',
             filter_label => 'Child Site Count',
-            order        => 200,
+            order        => 250,
             base         => '__virtual.object_count',
             display      => 'default',
             count_class  => 'blog',
@@ -93,15 +93,6 @@ sub list_props {
         },
         asset_count => {
             base => 'blog.asset_count',
-            html => sub {
-                my $prop = shift;
-                my $html = $prop->super(@_);
-                $html =~ s/"(.+)"/"$1&filter=current_context"/;
-                return $html;
-            },
-        },
-        comment_count => {
-            base => 'blog.comment_count',
             html => sub {
                 my $prop = shift;
                 my $html = $prop->super(@_);

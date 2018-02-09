@@ -43,22 +43,23 @@ If specified, selects category sets defined for the content type matching the gi
 sub _hdlr_category_sets {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $blog         = $ctx->stash('blog');
     my $content_type = $ctx->stash('content_type');
-    my $blog_id      = $args->{blog_id} || $blog->id || '';
+    my $blog_id
+        = $args->{blog_id}    ? $args->{blog_id}
+        : $ctx->stash('blog') ? $ctx->stash('blog')->id
+        :                       0;
 
     my @category_sets;
     if ( my $set_id = $args->{id} ) {
-        my $category_set = MT->model('category_set')->load($set_id)
-            or return $ctx->_no_category_set_error();
-        push @category_sets, $category_set;
+        my $category_set = MT->model('category_set')->load($set_id);
+        push @category_sets, $category_set
+            if $category_set;
     }
     elsif ( my $name = $args->{name} ) {
         my ($category_set)
             = MT->model('category_set')
-            ->load( { blog_id => $blog_id, name => $name } )
-            or return $ctx->_no_category_set_error();
-        push @category_sets, $category_set;
+            ->load( { blog_id => $blog_id, name => $name } );
+        push @category_sets, $category_set if $category_set;
     }
     else {
         $content_type = $ctx->get_content_type_context( $args, $cond );
@@ -73,14 +74,9 @@ sub _hdlr_category_sets {
                 = MT->model('category_set')->load( { id => [@set_ids] } )
                 if @set_ids;
         }
-        else {
-            my $blog_id
-                = $content_type ? $content_type->blog_id
-                : $blog         ? $blog->id
-                :                 '';
+        elsif ($blog_id) {
             @category_sets
-                = MT->model('category_set')->load( { blog_id => $blog_id } )
-                if $blog_id;
+                = MT->model('category_set')->load( { blog_id => $blog_id } );
         }
     }
 
@@ -101,8 +97,8 @@ sub _hdlr_category_sets {
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
         local $vars->{__even__}        = ( $i % 2 ) == 1;
         local $vars->{__counter__}     = $i + 1;
-        local $ctx->{__stash}{blog}    = $blog;
-        local $ctx->{__stash}{blog_id} = $blog->id;
+        local $ctx->{__stash}{blog}    = $category_set->blog;
+        local $ctx->{__stash}{blog_id} = $category_set->blog_id;
         local $ctx->{__stash}{category_set} = $category_set;
         local $ctx->{__stash}{content_type} = $content_type if $content_type;
 

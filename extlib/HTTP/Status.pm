@@ -1,7 +1,9 @@
 package HTTP::Status;
-$HTTP::Status::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 require 5.002;   # because we use prototypes
 
@@ -18,6 +20,7 @@ my %StatusCode = (
     100 => 'Continue',
     101 => 'Switching Protocols',
     102 => 'Processing',                      # RFC 2518 (WebDAV)
+    103 => 'Early Hints',                     # RFC 8297
     200 => 'OK',
     201 => 'Created',
     202 => 'Accepted',
@@ -121,7 +124,7 @@ HTTP::Status - HTTP Status code processing
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 
@@ -151,6 +154,7 @@ tag to import them all.
    HTTP_CONTINUE                        (100)
    HTTP_SWITCHING_PROTOCOLS             (101)
    HTTP_PROCESSING                      (102)
+   HTTP_EARLY_HINTS                     (103)
 
    HTTP_OK                              (200)
    HTTP_CREATED                         (201)

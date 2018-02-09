@@ -28,8 +28,8 @@ sub edit {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild}  = 1 if $app->param('need_full_rebuild');
         $param->{need_index_rebuild} = 1 if $app->param('need_index_rebuild');
-        $param->{show_ip_info} = $cfg->ShowIPInformation;
-        $param->{use_plugins}  = $cfg->UsePlugins;
+        $param->{show_ip_info}       = $cfg->ShowIPInformation;
+        $param->{use_plugins}        = $cfg->UsePlugins;
 
         $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -412,12 +412,15 @@ sub can_view {
 }
 
 sub can_view_website_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if $blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('access_to_website_list');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
@@ -538,6 +541,8 @@ sub dialog_select_website {
 sub dialog_move_blogs {
     my $app = shift;
 
+    $app->{hide_goback_button} = 1;
+
     my $blog_id = $app->param('blog_id');
 
     my $terms = {};
@@ -552,6 +557,11 @@ sub dialog_move_blogs {
     };
 
     my @id = $app->multi_param('id');
+    if ( MT->model('website')->exist( { id => \@id, class => 'website' } ) ) {
+        return $app->error(
+            $app->translate('This action cannot move top-level site.') );
+    }
+
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',

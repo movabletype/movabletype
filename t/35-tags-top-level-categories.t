@@ -89,3 +89,12 @@ abc
 def
 ghi
 
+=== MTTopLevelCategories with category_set context
+--- template
+<MTCategorySets id="1"><MTTopLevelCategories><MTCategoryLabel>
+</MTTopLevelCategories></MTCategorySets>
+--- expected
+abc
+def
+ghi
+
