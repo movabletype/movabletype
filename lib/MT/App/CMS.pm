@@ -1848,6 +1848,13 @@ sub core_menus {
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
         },
+        'asset:edit' => {
+            order   => 10000,
+            mode    => 'view',
+            args    => { _type => 'asset' },
+            view    => [ "blog", 'website', 'system' ],
+            display => 0,
+        },
 
         'content_type:boilerplates' => {
             label      => '_CONTENT_TYPE_BOILERPLATES',
