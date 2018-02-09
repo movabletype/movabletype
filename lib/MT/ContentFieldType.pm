@@ -80,7 +80,6 @@ sub _content_type_registry {
                 required
                 display
                 multiple
-                can_add
                 max
                 min
                 source
