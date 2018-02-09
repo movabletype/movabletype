@@ -133,9 +133,9 @@ sub data_load_handler_multiple {
 
 sub data_load_handler_asset {
     my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my $asset_ids = $app->param( 'content-field-' . $field_id ) || '';
-    [ split ',', $asset_ids ];
+    my $field_id  = $field_data->{id};
+    my @asset_ids = $app->multi_param( 'content-field-' . $field_id );
+    \@asset_ids;
 }
 
 sub ss_validator_datetime {
