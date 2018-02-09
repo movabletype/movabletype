@@ -105,6 +105,48 @@ sub class_label {
     MT->translate("Rebuild Trigger");
 }
 
+sub get_config_value {
+    my $self = shift;
+    my ( $var, $blog_id ) = @_;
+
+    my $blog = MT->model('blog')->load($blog_id);
+    my $target_blog_id = $var == TARGET_BLOG() ? $blog_id : 0;
+    my @rebuild_triggers
+        = MT->model('rebuild_trigger')
+        ->load( { target_blog_id => $target_blog_id } );
+    my $data = {};
+    foreach my $rt (@rebuild_triggers) {
+        my $target = $rt->target;
+        next unless $target eq $var;
+        my @blog_ids = ();
+        if ( $target == TARGET_ALL() ) {
+            my @websites = MT->model('website')->load();
+            my @blogs    = MT->model('blog')->load();
+            @blog_ids = map { $_->id } @websites;
+            push @blog_ids, map { $_->id } @blogs;
+        }
+        elsif ( $target == TARGET_BLOGS_IN_WEBSITE() ) {
+            next if $blog->is_blog();
+            my @child_blogs = @{ $blog->blogs() };
+            push @blog_ids, $blog->id;
+            push @blog_ids, map { $_->id } @child_blogs;
+        }
+        else {
+            push @blog_ids, $rt->blog_id;
+        }
+
+        my $trigger
+            = type_text( $rt->object_type ) . '_' . event_text( $rt->event );
+        my $action = action_text( $rt->action );
+        my $content_type_id = $rt->ct_id ? $rt->ct_id : 0;
+
+        foreach my $blog_id (@blog_ids) {
+            $data->{$trigger}{$blog_id}{$action} = $content_type_id;
+        }
+    }
+    return $data;
+}
+
 sub post_contents_bulk_save {
     my $self = shift;
     my ( $app, $contents ) = @_;
@@ -113,59 +155,42 @@ sub post_contents_bulk_save {
     }
 }
 
-sub get_config_value {
-    my $self = shift;
-    my ( $var, $blog_id ) = @_;
-
-    my @rebuild_triggers
-        = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );
-    my $data = {};
-    foreach my $rt (@rebuild_triggers) {
-        next if $rt->target_blog_id && $blog_id == $rt->target_blog_id;
-        my $trigger
-            = type_text( $rt->object_type ) . '_' . event_text( $rt->event );
-        my $target_blog_id
-            = $rt->target == TARGET_BLOG()
-            ? $rt->target_blog_id
-            : target_text( $rt->target );
-        my $content_type_id = $rt->ct_id ? $rt->ct_id : '';
-        my $action = action_text( $rt->action );
-        $data->{$trigger}{$blog_id}{$action}
-            = $target_blog_id . ( $rt->ct_id ? ':' . $rt->ct_id : '' );
-    }
-    return $data;
-}
-
 sub post_content_save {
     my $self = shift;
     my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id || 0;
-    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
         my ($d) = @_;
         while ( my ( $id, $a ) = each( %{ $d->{'content_save'} } ) ) {
             next if $id == $blog_id;
-            perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            foreach my $action ( keys %$a ) {
+                next if $a->{$action} ne $content->content_type_id;
+                perform_mb_action( $app, $id, $action );
+            }
         }
 
         require MT::ContentStatus;
         if ( ( $content->status || 0 ) == MT::ContentStatus::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'content_pub'} } ) ) {
                 next if $id == $blog_id;
-                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+                foreach my $action ( keys %$a ) {
+                    next if $a->{$action} ne $content->content_type_id;
+                    perform_mb_action( $app, $id, $action );
+                }
             }
         }
     };
 
-    $self->post_content_common( \@blog_ids, $code, $content->blog );
+    $self->_post_content_common( \@blog_ids, $code, $content->blog );
 }
 
 sub post_content_pub {
     my $self = shift;
     my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id;
-    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
         my ($d) = @_;
@@ -174,7 +199,10 @@ sub post_content_pub {
         if ( ( $content->status || 0 ) == MT::ContentStatus::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'content_pub'} } ) ) {
                 next if $id == $blog_id;
-                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+                foreach my $action ( keys %$a ) {
+                    next if $a->{$action} ne $content->content_type_id;
+                    perform_mb_action( $app, $id, $action );
+                }
             }
         }
     };
@@ -186,7 +214,7 @@ sub post_content_unpub {
     my $self = shift;
     my ( $app, $content ) = @_;
     my $blog_id = $content->blog_id;
-    my @blog_ids = $blog_id ? (0) : ( $blog_id, 0 );
+    my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
         my ($d) = @_;
@@ -195,7 +223,10 @@ sub post_content_unpub {
         if ( ( $content->status || 0 ) == MT::ContentStatus::UNPUBLISH() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'content_unpub'} } ) ) {
                 next if $id == $blog_id;
-                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+                foreach my $action ( keys %$a ) {
+                    next if $a->{$action} ne $content->content_type_id;
+                    perform_mb_action( $app, $id, $action );
+                }
             }
         }
     };
@@ -450,14 +481,14 @@ sub _post_content_common {
 
     foreach my $blog_id (@$blog_ids) {
         my $d = $self->get_config_value(
-            $blog_id == 0 ? 'all_triggers' : 'other_triggers', $blog_id );
+            $blog_id == 0 ? TARGET_ALL() : TARGET_BLOG(), $blog_id );
         $code->($d);
     }
 
     if ( my $website = $blog->website ) {
         my $blog_id = $website->id;
-        my $d       = $self->get_config_value( 'blogs_in_website_triggers',
-            $blog_id );
+        my $d
+            = $self->get_config_value( TARGET_BLOGS_IN_WEBSITE(), $blog_id );
         $code->($d);
     }
 }
