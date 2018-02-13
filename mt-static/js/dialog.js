@@ -160,9 +160,10 @@ SelectionList = new Class(Object, {
             l.replace(/\s/g, '&nbsp;');
             var link = doc.createElement("span");
             link.setAttribute("id","selected-"+p);
-            link.setAttribute("class","badge badge-default sticky-label selected-item");
+            link.setAttribute("class","badge badge-pill badge-default sticky-label selected-item");
+            link.setAttribute("aria-label", "Close")
             link.onclick = makeclosure(p);
-            link.innerHTML = l + "&nbsp;<span class='tag-pill remove clickable' style='cursor: pointer;'>x</span>";
+            link.innerHTML = l + "&nbsp;<span aria-hidden='true' class='tag-pill remove clickable' style='cursor: pointer;'>×</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }

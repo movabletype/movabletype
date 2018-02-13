@@ -91,18 +91,79 @@ function returnRoleSelection(ok) {
 
 
 function init() {
+    TC.TableSelect.prototype.click = function( evt ) {
+        evt = evt || event;
+        var element = evt.target || evt.srcElement;
+        this.shiftKey = evt.shiftKey;
+
+        // get tag name
+        var tagName = element.tagName ? element.tagName.toLowerCase() : null;
+
+        // handle checkboxes
+        if ( tagName == "input" &&
+            TC.hasClassName( element, "select" ) ) {
+            if ((element.type == "checkbox") || (element.type == "radio"))
+                var parent = TC.getParentByTagName( element, "tr" );
+                if (parent) this.setFocus( parent );
+                evt.preventDefault();
+                return this.select( element );
+        }
+
+        // handle rows
+        if ( !this.rowSelect && tagName != "td" ) return;
+        if ( ( tagName == 'a') || ( TC.getParentByTagName( element, "a" ) ) )
+            return;
+
+        var parent;
+        if ( ( tagName == "li" || tagName == "label" || tagName == "span" )) {
+            if(tagName == "li") {
+                parent = element;
+            } else {
+                if( TC.hasClassName( TC.getParentByTagName( element, "li" ), "child_obj") ) {
+                    parent = TC.getParentByTagName( element, "li" );
+                } else {
+                    parent = TC.getParentByTagName( element, "tr" );
+                }
+            }
+        } else {
+            parent = TC.getParentByTagName( element, "tr" );
+        }
+        while ( TC.hasClassName( parent, "slave" ) )
+            parent = this.getPreviousSibling( parent );
+
+        if ( parent ) {
+            this.setFocus( parent );
+            var elements = TC.getElementsByTagAndClassName( "input", "select", parent );
+            for ( var i = 0; i < elements.length; i++ ) {
+                element = elements[ i ];
+                if ( (element.type == "checkbox") || (element.type == "radio") ) {
+                    if ( element.disabled ) return;
+                    element.checked = !element.checked;
+                    evt.preventDefault();
+                    return this.select( element, parent );
+                }
+            }
+        }
+    };
     dialog = new Dialog.MultiPanel("assoc");
     panels = [];
     var panel;<mt:loop name="panel_loop">
+
     panel = new ListingPanel("<mt:var name="panel_type">");
     <mt:if name="panel_type" eq="site">panel.listChanged = function(ts, row, checked) {
         if (this.selectionList) {
             var self = this;
             if (checked){
-                this.selectionList.add(row.id);
+                if(jQuery(row).hasClass('child_obj')){
+                    var label = jQuery(row).parents('.has_child').find('.panel-label').text() + '/' + jQuery(row).find('.child-panel-label').text();
+                    self.selectionList.add(row.id, {label: label});
+                } else {
+                    self.selectionList.add(row.id);
+                }
                 if(jQuery(row).hasClass('has_child')){
                   jQuery(row).find('.list-unstyled li').each(function(){
-                    self.selectionList.add(this.id);
+                    var label = jQuery(row).find('.panel-label').text() + '/' + jQuery(this).find('.child-panel-label').text();
+                    self.selectionList.add(this.id, {label: label});
                   });
                 }
             } else {
@@ -131,7 +192,28 @@ function init() {
                 this.closeButton.disabled = count == 0;
             }
         }
-    };</mt:if>
+    };
+    panel.selectionList.remove = function(name) {
+        var self = this;
+        if(jQuery('#'+name).hasClass('has_child')){
+            jQuery('#'+name).find('.list-unstyled li').each(function(){
+              self.remove.call(self, this.id);
+            });
+        }
+        if (name in this.itemHash) {
+            var pos;
+            for (pos = 0; pos < this.itemList.length; pos++) {
+                if (this.itemList[pos] == name) {
+                    this.itemList.splice(pos, 1);
+                    this.changed(false, name, this.itemHash[name]);
+                    delete this.itemHash[name];
+                    this.render();
+                    return;
+                }
+            }
+        }
+    }
+    </mt:if>
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
@@ -161,7 +243,7 @@ function init() {
     var datasource = panel.datasource;
     datasource.type = null;
 
-    jQuery('.select_assoc_type :radio').on('click', function(){
+    jQuery('.select_assoc_type').on('change', function(){
         if (datasource.searching) return;
 
         var doc = TC.getOwnerDocument(datasource.element);
@@ -205,7 +287,6 @@ function init() {
         }
         args += '&json=1&no_limit=1';
 
-
         TC.Client.call({
             'load': function(c,r) { datasource.searched(r); },
             'error': function() { alert("Error during search."); datasource.searched(null); },
@@ -217,7 +298,8 @@ function init() {
         args = args.replace(/&search=\w+/, '');
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
-    jQuery('.select_assoc_type :radio:eq(0)').trigger('click');
+    jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
+    jQuery('.select_assoc_type').trigger('change');
 </mt:if>
 }
 
@@ -297,29 +379,11 @@ TC.attachLoadEvent(init);
 <div class="modal-body">
 
 <mt:if name="has_group">
-    <ul class="select_assoc_type list-inline">
-        <li class="list-inline-item">
-            <label class="custom-control custom-radio">
-                <input type="radio" name="search_object" class="custom-control-input search_object" value="both" checked="checked">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="All"></span>
-            </label>
-        </li>
-        <li class="list-inline-item">
-            <label class="custom-control custom-radio">
-                <input type="radio" name="search_object" class="custom-control-input search_object" value="group">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Groups"></span>
-            </label>
-        </li>
-        <li class="list-inline-item">
-            <label class="custom-control custom-radio">
-                <input type="radio" name="search_object" class="custom-control-input search_object" value="author">
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description"><__trans phrase="Users"></span>
-            </label>
-        </li>
-    </ul>
+  <select class="custom-select form-control select_assoc_type mr-3">
+    <option value="both" selected><__trans phrase="all"></option>
+    <option value="group"><__trans phrase="Groups"></option>
+    <option value="author"><__trans phrase="Users"></option>
+  </select>
 </mt:if>
 
     <mt:loop name="panel_loop">

@@ -587,7 +587,9 @@ sub upload_userpic {
         or return $app->errtrans("Invalid request.");
 
     my $appuser = $app->user;
-    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
+    if (   ( !$appuser->can_manage_users_groups )
+        && ( $user->id != $appuser->id ) )
+    {
         return $app->permission_denied();
     }
 
@@ -1271,8 +1273,11 @@ PERMCHECK: {
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         my $type = $app->param('type') || '';
-        if ( $type eq 'site' ) {
-            if ( $row->{class} eq 'website' && $obj->has_blog() ) {
+        if ( $type && $type eq 'site' ) {
+            if (   $row->{class}
+                && $row->{class} eq 'website'
+                && $obj->has_blog() )
+            {
                 $row->{has_child} = 1;
                 my $child_blogs = $obj->blogs();
                 my $child_sites = [];
@@ -1292,21 +1297,27 @@ PERMCHECK: {
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
-        if (   $type eq 'blog'
+        if (   $type
+            && $type eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
-        if (   $type eq 'website'
+        if (   $type
+            && $type eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
         if ( UNIVERSAL::isa( $obj, 'MT::Author' ) ) {
-            $row->{icon}
-                = MT->static_path . 'images/nav_icons/color/user.gif';
+            if($obj->userpic_url){
+              $row->{icon} = $obj->userpic_url();
+            } else {
+              $row->{icon}
+                  = MT->static_path . 'images/user-default.svg';
+            }
         }
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
             $row->{icon}
@@ -1583,7 +1594,9 @@ sub remove_userpic {
         or return;
 
     my $appuser = $app->user;
-    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
+    if (   ( !$appuser->can_manage_users_groups )
+        && ( $user->id != $appuser->id ) )
+    {
         return $app->permission_denied();
     }
     if ( $user->userpic_asset_id ) {
@@ -1656,7 +1669,7 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $author = $app->user;
     return 1 if $author->can_manage_users_groups;
-    if ( $id ) {
+    if ($id) {
         return $author->id == $id;
     }
 }

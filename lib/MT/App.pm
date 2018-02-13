@@ -712,7 +712,8 @@ sub multi_listing {
         $app->param( 'json', 0 );
         $options->{no_html} = 1;
         $app->param( 'search_type', $type )
-            if $app->param('search_type') ne $type;
+            if ( $app->param('search_type')
+            && $app->param('search_type') ne $type );
         $app->param( 'offset', 0 );
 
         $options->{code}
@@ -3428,7 +3429,9 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
+                            $trace
+                                .= '<li style="padding: 0.2em 0.5em; margin: 0">'
+                                . $msg . '</li>' . "\n";
                         }
                     }
                     $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'
