@@ -23,8 +23,39 @@ sub save {
         unless $type;
 
     if ( exists $class->properties->{class_type} and $app->param('class') ) {
-        return $app->errtrans('Invalid request.')
-            if $app->run_callbacks( 'cms_class_param_filter.' . $type, $app );
+        my $classParamFilter
+            = lc $app->config('DefaultClassParamFilter') || 'all';
+        if ( $classParamFilter ne 'none' ) {
+
+            # Respect result of callbacks
+            my $res;
+            $res
+                = $app->run_callbacks( 'cms_class_param_filter.' . $type,
+                $app )
+                if $app->is_callback_registered(
+                'cms_class_param_filter.' . $type );
+
+            if ( !$res ) {
+
+                # all callbacks not returns true, or no callbacks found
+                if ( $classParamFilter eq 'moderate' ) {
+
+                    # MT core object only
+                    my @list
+                        = qw ( MT::Asset MT::Entry MT::Page MT::Category MT::Folder MT::Blog MT::Website );
+                    foreach my $o (@list) {
+                        if ( $class->isa($o) ) {
+                            $res = 0;
+                            last;
+                        }
+                    }
+                }
+            }
+
+            # Raise error when state is still active
+            return $app->errtrans('Invalid request.')
+                if !$res;
+        }
     }
 
     if ( $id && $type eq 'website' ) {

@@ -633,6 +633,16 @@ sub remove_callback {
     @$cbarr = grep { $_ != $cb } @$cbarr;
 }
 
+sub is_callback_registered {
+    my $class    = shift;
+    my ( $meth ) = @_;
+
+    foreach my $list ( @Callbacks ) {
+        return 1 if exists $list->{$meth};
+    }
+    return 0;
+}
+
 # For use by MT internal code
 sub _register_core_callbacks {
     my $class = shift;
@@ -3813,6 +3823,9 @@ Removes a callback that was previously registered.
 Registers several callbacks simultaneously. Each element in the array
 parameter given should be a hashref containing these elements: C<name>, 
 C<priority>, C<plugin> and C<code>.
+
+=head2 MT->is_callback_registered( $method )
+Return tru if a callback registered.
 
 =head2 MT->run_callbacks($meth[, $arg1, $arg2, ...])
 

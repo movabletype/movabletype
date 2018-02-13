@@ -2122,7 +2122,8 @@ BEGIN {
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
 
-            'RequiredUserEmail' => { default => 1 },
+            'RequiredUserEmail'       => { default => 1 },
+            'DefaultClassParamFilter' => { default => 'all' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
