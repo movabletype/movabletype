@@ -31,17 +31,39 @@ sub field_html_params {
     my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    require MT::CMS::Asset;
+    my $hasher = MT::CMS::Asset::build_asset_hasher(
+        $app,
+        PreviewWidth  => 120,
+        PreviewHeight => 120,
+    );
+
     my @asset_loop;
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
     my $iter = $app->model($type)->load_iter( { id => $value } );
+    my %asset_hash;
     while ( my $asset = $iter->() ) {
+        $asset_hash{ $asset->id } = $asset;
+    }
+    for my $asset_id (@$value) {
+        my $asset = $asset_hash{$asset_id} or next;
+
+        my $row = $asset->get_values;
+        $hasher->( $asset, $row );
+
         push @asset_loop,
             {
-            asset_id      => $asset->id,
-            asset_blog_id => $asset->blog_id,
-            asset_label   => $asset->label,
-            asset_thumb   => $asset->thumbnail_url( Width => 100 ),
+            asset_id             => $row->{id},
+            asset_blog_id        => $row->{blog_id},
+            asset_dimensions     => $row->{'Actual Dimensions'},
+            asset_file_name      => $row->{file_name},
+            asset_file_size      => $row->{file_size},
+            asset_label          => $row->{label},
+            asset_preview_url    => $row->{preview_url},
+            asset_preview_height => $row->{preview_height},
+            asset_preview_width  => $row->{preivew_width},
+            asset_type           => $row->{class},
             };
     }
 
@@ -61,11 +83,11 @@ sub field_html_params {
     my $asset_class = $app->model($type);
 
     {   asset_loop => @asset_loop ? \@asset_loop : undef,
-        asset_type => $asset_class->class_type,
-        multiple   => $multiple,
-        required   => $required,
-        type_label => $asset_class->class_label,
-        type_label_plural => $asset_class->class_label_plural,
+        asset_type_for_field => $asset_class->class_type,
+        multiple             => $multiple,
+        required             => $required,
+        type_label           => $asset_class->class_label,
+        type_label_plural    => $asset_class->class_label_plural,
     };
 }
 
@@ -414,7 +436,7 @@ sub html {
     my $static_uri        = $app->static_path;
 
     my ( @labels, @thumbnails );
-    for my $asset (@assets) {
+    for my $asset ( @assets > 3 ? @assets[ 0 .. 2 ] : @assets ) {
         my $label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
@@ -427,11 +449,28 @@ sub html {
         else {
             my $asset_class = $asset->class;
             $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-20.png">};
+                = qq{<img src="${static_uri}images/asset/$asset_class-45.png">};
         }
 
         push @labels,
             qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
+    }
+
+    if ( @assets > 3 ) {
+        my $href = $app->uri(
+            mode => 'list',
+            args => {
+                _type           => 'asset',
+                blog_id         => $app->blog->id,
+                filter          => 'content_field',
+                filter_val      => $field_id,
+                content_data_id => $cd_id,
+            },
+        );
+        push @labels,
+              qq{<a href="$href">(}
+            . $app->translate( 'Show all [_1] assets', scalar @assets )
+            . ')</a>';
     }
 
     '<ul class="list-unstyled">'
@@ -453,7 +492,7 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $thumb_size = 20;
+    my $thumb_size = 45;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
     my $img

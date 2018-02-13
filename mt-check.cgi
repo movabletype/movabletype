@@ -112,6 +112,7 @@ $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
     $version = '7.0';
 }
+my $release_version = 'r.2401';
 
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -834,7 +835,7 @@ if ($version) {
     $version = $cgi->escapeHTML($version);
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version ($version)</code></li>
 </ul>
 INFO
 }

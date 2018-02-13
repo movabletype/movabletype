@@ -3211,19 +3211,47 @@ sub insert_asset {
         }
     }
 
-    my $tmpl;
-    $tmpl = $app->load_tmpl(
-        'dialog/asset_insert.tmpl',
-        {   upload_html => $text || '',
-            edit_field => $edit_field,
-            content_field_id => $content_field_id,
-            $content_field_id ? ( can_multi => $can_multi ) : (),
-        },
-    );
-
-    my $ctx = $tmpl->context;
-    $ctx->stash( 'assets', $assets );
-    return $tmpl;
+    if ($content_field_id) {
+        my @assets_data;
+        my $hasher = build_asset_hasher(
+            $app,
+            PreviewWidth  => 120,
+            PreviewHeight => 120
+        );
+        for my $obj (@$assets) {
+            my $row = $obj->get_values;
+            $hasher->( $obj, $row );
+            push @assets_data,
+                {
+                asset_dimensions     => $row->{'Actual Dimensions'},
+                asset_file_name      => $row->{file_name},
+                asset_id             => $row->{id},
+                asset_label          => $row->{label},
+                asset_preview_url    => $row->{preview_url},
+                asset_preview_height => $row->{preview_height},
+                asset_preview_width  => $row->{preview_width},
+                asset_type           => $row->{class},
+                };
+        }
+        return $app->load_tmpl(
+            'dialog/asset_field_insert.tmpl',
+            {   assets           => \@assets_data,
+                can_multi        => $can_multi,
+                content_field_id => $content_field_id,
+            }
+        );
+    }
+    else {
+        my $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {   upload_html => $text || '',
+                edit_field => $edit_field,
+            },
+        );
+        my $ctx = $tmpl->context;
+        $ctx->stash( 'assets', $assets );
+        return $tmpl;
+    }
 }
 
 sub _make_thumbnail_url {

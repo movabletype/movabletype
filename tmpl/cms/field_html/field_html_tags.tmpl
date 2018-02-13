@@ -16,6 +16,10 @@
 <mt:setvarblock name="jq_js_include" append="1">
   var tagList = <mt:var name="tags_js">;
   var tag_delim = '<$mt:var name="tag_delim"$>';
+
+  $('div.form-group').each(function () {
+    $(this).has('.mt-suggest').addClass('position-relative');
+  });
 </mt:setvarblock>
 </mt:unless>
 

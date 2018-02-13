@@ -10013,11 +10013,14 @@ fieldset.form-group {
 
 /* Draggable */
 .mt-draggable {
+  margin: 0 0 0.1rem 0;
   padding: 0.5rem 0.5rem 0.5rem 0;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-flow: row wrap;
           flex-flow: row wrap;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
   border: 1px solid #A5A5A5;
   border-radius: 0.25rem;
   cursor: move;
@@ -10496,6 +10499,8 @@ a:hover .mt-icon--secondary {
 
 /* Suggestion */
 .mt-suggest {
+  position: absolute;
+  width: 100%;
   border: 1px solid #A5A5A5;
   border-top-color: #e9ecef;
   border-radius: 0 0 0.25rem 0.25rem;

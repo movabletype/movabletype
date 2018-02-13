@@ -133,9 +133,9 @@ sub data_load_handler_multiple {
 
 sub data_load_handler_asset {
     my ( $app, $field_data ) = @_;
-    my $field_id = $field_data->{id};
-    my $asset_ids = $app->param( 'content-field-' . $field_id ) || '';
-    [ split ',', $asset_ids ];
+    my $field_id  = $field_data->{id};
+    my @asset_ids = $app->multi_param( 'content-field-' . $field_id );
+    \@asset_ids;
 }
 
 sub ss_validator_datetime {
@@ -283,6 +283,23 @@ sub html_datetime_common {
         ? $app->user->preferred_language
         : undef );
 
+}
+
+sub html_text {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $content_field = MT::ContentField->load( $prop->content_field_id );
+    my $text          = $content_data->data->{ $prop->content_field_id };
+    return '' unless defined $text;
+
+    my $escaped_text = MT::Util::encode_html($text);
+    if ( length $escaped_text > 40 ) {
+        return substr( $escaped_text, 0, 40 ) . '...';
+    }
+    else {
+        return $escaped_text;
+    }
 }
 
 sub single_select_options_multiple {
