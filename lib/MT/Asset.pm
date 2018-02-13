@@ -453,6 +453,64 @@ __FILTER_TMPL__
                 return +{ id => @id ? \@id : 0 };
             },
         },
+        content_field => {
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $content_data_id = $app->param('content_data_id') || 0;
+                +{  content_field_id => $val || 0,
+                    content_data_id => $content_data_id,
+                };
+            },
+            display         => 'none',
+            filter_editable => 0,
+            label           => 'Content Field',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app, $content_field_id ) = @_;
+                $content_field_id ||= 0;
+
+                my $content_field
+                    = $app->model('content_field')->load($content_field_id)
+                    or return $prop->error(
+                    $app->translate(
+                        'Content Field ( id: [_1] ) does not exists.',
+                        $content_field_id
+                    )
+                    );
+
+                my $content_data_id = $app->param('content_data_id') || 0;
+                my $content_data
+                    = $app->model('content_data')->load($content_data_id)
+                    or return $prop->error(
+                    $app->translate(
+                        'Content Data ( id: [_1] ) does not exists.'
+                            . $content_data_id
+                    )
+                    );
+
+                return $app->translate( 'Assets in [_1] field of [_2]',
+                    $content_field->name, $content_data->content_type->name );
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+
+                my $app = MT->instance;
+
+                my $content_field
+                    = $app->model('content_field')
+                    ->load( $args->{content_field_id} );
+                my $content_data
+                    = $app->model('content_data')
+                    ->load( $args->{content_data_id} );
+
+                my $asset_ids = $content_data->data->{ $content_field->id };
+                $asset_ids = [$asset_ids] unless ref $asset_ids eq 'ARRAY';
+
+                +{ id => $asset_ids };
+            },
+        },
     };
 }
 

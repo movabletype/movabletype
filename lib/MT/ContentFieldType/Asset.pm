@@ -436,7 +436,7 @@ sub html {
     my $static_uri        = $app->static_path;
 
     my ( @labels, @thumbnails );
-    for my $asset (@assets) {
+    for my $asset ( @assets > 3 ? @assets[ 0 .. 2 ] : @assets ) {
         my $label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
@@ -449,11 +449,28 @@ sub html {
         else {
             my $asset_class = $asset->class;
             $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-20.png">};
+                = qq{<img src="${static_uri}images/asset/$asset_class-45.png">};
         }
 
         push @labels,
             qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
+    }
+
+    if ( @assets > 3 ) {
+        my $href = $app->uri(
+            mode => 'list',
+            args => {
+                _type           => 'asset',
+                blog_id         => $app->blog->id,
+                filter          => 'content_field',
+                filter_val      => $field_id,
+                content_data_id => $cd_id,
+            },
+        );
+        push @labels,
+              qq{<a href="$href">(}
+            . $app->translate( 'Show all [_1] assets', scalar @assets )
+            . ')</a>';
     }
 
     '<ul class="list-unstyled">'
@@ -475,7 +492,7 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $thumb_size = 20;
+    my $thumb_size = 45;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
     my $img
