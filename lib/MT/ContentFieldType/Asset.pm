@@ -31,17 +31,39 @@ sub field_html_params {
     my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    require MT::CMS::Asset;
+    my $hasher = MT::CMS::Asset::build_asset_hasher(
+        $app,
+        PreviewWidth  => 120,
+        PreviewHeight => 120,
+    );
+
     my @asset_loop;
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
     my $iter = $app->model($type)->load_iter( { id => $value } );
+    my %asset_hash;
     while ( my $asset = $iter->() ) {
+        $asset_hash{ $asset->id } = $asset;
+    }
+    for my $asset_id (@$value) {
+        my $asset = $asset_hash{$asset_id} or next;
+
+        my $row = $asset->get_values;
+        $hasher->( $asset, $row );
+
         push @asset_loop,
             {
-            asset_id      => $asset->id,
-            asset_blog_id => $asset->blog_id,
-            asset_label   => $asset->label,
-            asset_thumb   => $asset->thumbnail_url( Width => 100 ),
+            asset_id             => $row->{id},
+            asset_blog_id        => $row->{blog_id},
+            asset_dimensions     => $row->{'Actual Dimensions'},
+            asset_file_name      => $row->{file_name},
+            asset_file_size      => $row->{file_size},
+            asset_label          => $row->{label},
+            asset_preview_url    => $row->{preview_url},
+            asset_preview_height => $row->{preview_height},
+            asset_preview_width  => $row->{preivew_width},
+            asset_type           => $row->{class},
             };
     }
 
@@ -61,11 +83,11 @@ sub field_html_params {
     my $asset_class = $app->model($type);
 
     {   asset_loop => @asset_loop ? \@asset_loop : undef,
-        asset_type => $asset_class->class_type,
-        multiple   => $multiple,
-        required   => $required,
-        type_label => $asset_class->class_label,
-        type_label_plural => $asset_class->class_label_plural,
+        asset_type_for_field => $asset_class->class_type,
+        multiple             => $multiple,
+        required             => $required,
+        type_label           => $asset_class->class_label,
+        type_label_plural    => $asset_class->class_label_plural,
     };
 }
 

@@ -820,11 +820,7 @@ sub main {
         $param->{mt_version_incremented} = 1;
         MT->log(
             {   message => MT->translate(
-                    "Movable Type has been upgraded to version [_1].",
-                    (     $cur_rel
-                        ? $cur_version . '.' . $cur_rel
-                        : $cur_version
-                    ),
+                    "Movable Type has been upgraded to version [_1].", $app->release_version_id,
                 ),
                 class    => 'system',
                 category => 'upgrade',
@@ -838,8 +834,7 @@ sub main {
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version}
-        = $cur_rel ? $cur_version . '.' . $cur_rel : $cur_version;
+    $param->{mt_version} = $app->release_version_id;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

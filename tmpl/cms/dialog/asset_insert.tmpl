@@ -11,55 +11,43 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
   <mt:var name="insert_script">
 </mt:if>
 
-<mt:if name="content_field_id">
-  <mt:setvarblock name="id_prefix">content-field-<mt:var name="content_field_id">-</mt:setvarblock>
-</mt:if>
-
 // Set dirty flag
 window.parent.app.setDirty();
 
 // remove the no assets text if it's there
-var Node = window.parent.document.getElementById("<mt:var name="id_prefix">empty-asset-list");
+var Node = window.parent.document.getElementById("empty-asset-list");
 if (Node) {
     Node.parentNode.removeChild(Node);
 }
 
 // make sure asset list is present in an entry edit page
-var AssetList = window.parent.document.getElementById("<mt:var name="id_prefix">asset-list");
+var AssetList = window.parent.document.getElementById("asset-list");
 
 if (AssetList) {
-<mt:if name="content_field_id">
-  <mt:unless name="can_multi">
-    jQuery(AssetList.children).each(function (i, e) {
-        AssetList.removeChild(e);
-    });
-    window.parent.document.getElementById('<mt:var name="id_prefix">include_asset_ids').value = '';
-  </mt:unless>
-</mt:if>
 
     // make sure the asset isn't there already and that we're in the edit entry page
     var Asset;
 <mt:Assets>
   <mt:setvarblock name="asset_class"><mt:AssetProperty property="class"></mt:setvarblock>
 
-    Asset = window.parent.document.getElementById("<mt:var name="id_prefix">list-asset-<mt:AssetID>");
+    Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
 
     if (Asset) {
         // do nothing
     }
     else {
         // add the asset's id to the include_asset_ids hidden input
-        var asset_ids = window.parent.document.getElementById("<mt:var name="id_prefix">include_asset_ids").value;
+        var asset_ids = window.parent.document.getElementById("include_asset_ids").value;
         if ( asset_ids.length > 0 ) {
             asset_ids += ',';
         }
-        window.parent.document.getElementById("<mt:var name="id_prefix">include_asset_ids").value = asset_ids + "<mt:AssetID>";
+        window.parent.document.getElementById("include_asset_ids").value = asset_ids + "<mt:AssetID>";
 
         // create the link to the asset page with asset name as label
         var myAssetLink = window.document.createElement('a');
         myAssetLink.setAttribute('href', '<mt:var name="script_url">?__mode=view&_type=asset&blog_id=<mt:AssetBlogID>&id=<mt:AssetID>');
         myAssetLink.setAttribute('class', 'asset-title');
-        myAssetLink.appendChild(document.createTextNode('<mt:if name="id_prefix"><mt:AssetLabel encode_js="1"><mt:else><mt:AssetFileName encode_js="1"></mt:if>'));
+        myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
 
         // create the link col
         var myAssetLinkCol = window.document.createElement('div');
@@ -71,11 +59,7 @@ if (AssetList) {
         myRemoveLink.setAttribute('type', 'button');
         myRemoveLink.setAttribute('class', 'close');
         myRemoveLink.setAttribute('aria-label', 'Close');
-  <mt:if name="content_field_id">
-        myRemoveLink.setAttribute('onclick', "removeAssetFromList(<mt:AssetID>, 'content-field-<mt:var name="content_field_id">-', <mt:var name="content_field_id">);");
-  <mt:else>
         myRemoveLink.setAttribute('onclick', 'removeAssetFromList(<mt:AssetID>);');
-  </mt:if>
         myRemoveLink.innerHTML = '<span aria-hidden="true">&times;</span>';
 
         // create the remove link col
@@ -91,31 +75,20 @@ if (AssetList) {
 
         // create the asset list item
         var myElement = window.document.createElement('li');
-        myElement.setAttribute('id', '<mt:var name="id_prefix">list-asset-<mt:AssetID>');
+        myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
         myElement.setAttribute('class', 'asset-type-<mt:AssetProperty property="class"$>');
         <mt:If name="asset_class" eq="image">
-            myElement.setAttribute('onmouseover', 'show(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
-            myElement.setAttribute('onmouseout','hide(\'<mt:var name="id_prefix">list-image-<mt:AssetID>\', window.parent.document)');
+            myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
+            myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
         </mt:If>
         myElement.appendChild(myRow);
 
-        window.parent.document.getElementById("<mt:var name="id_prefix">asset-list").appendChild(myElement);
+        window.parent.document.getElementById("asset-list").appendChild(myElement);
     }
 </mt:Assets>
 
-<mt:if name="content_field_id">
-    var divId = 'asset-field-<mt:var name="content_field_id" escape="js">';
-    var div = window.parent.document.getElementById(divId);
-    var ns = window.parent.jQuery.data( div, 'mtValidator' );
-    if ( ns ) {
-        window.parent.jQuery(div).mtValid({ focus: false });
-    }
-
-    window.parent.setDirty(true);
-    log('found dirty form');
-    window.parent.app.setDirty();
-</mt:if>
 }
+
 <mt:unless name="extension_message">
   jQuery.fn.mtModal.close();
 </mt:unless>
