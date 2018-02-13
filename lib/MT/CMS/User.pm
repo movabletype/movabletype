@@ -145,7 +145,7 @@ sub edit {
 
     $app->add_breadcrumb(
         $app->translate("Users"),
-        $app->user->is_superuser
+        $app->user->can_manage_users_groups
         ? $app->uri(
             mode => 'list',
             args => { '_type' => 'author', blog_id => 0 }
@@ -325,7 +325,7 @@ sub edit_role {
         $app->translate('Roles'),
         $app->uri(
             mode => 'list',
-            args => { '_type' => 'role', }
+            args => { '_type' => 'role', blog_id => 0 }
         )
     );
     if ($id) {
@@ -412,7 +412,7 @@ sub set_object_status {
 
     $app->validate_magic() or return;
     return $app->permission_denied()
-        unless $app->user->is_superuser;
+        unless $app->user->can_manage_users_groups;
     return $app->error( $app->translate("Invalid request.") )
         if $app->request_method ne 'POST';
 
@@ -506,7 +506,7 @@ sub unlock {
 
     $app->validate_magic() or return;
     return $app->permission_denied()
-        unless $app->user->is_superuser;
+        unless $app->user->can_manage_users_groups;
     return $app->error( $app->translate("Invalid request.") )
         if $app->request_method ne 'POST';
 
@@ -587,7 +587,7 @@ sub upload_userpic {
         or return $app->errtrans("Invalid request.");
 
     my $appuser = $app->user;
-    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
         return $app->permission_denied();
     }
 
@@ -959,7 +959,7 @@ sub grant_role {
     @blogs = grep { defined $_ } @blogs;
 
     my @can_grant_administer = map 1, 1 .. @blogs;
-    if ( !$user->is_superuser ) {
+    if ( !$user->can_manage_users_groups ) {
         for ( my $i = 0; $i < scalar(@blogs); $i++ ) {
             my $perm = $user->permissions( $blogs[$i] );
             if ( !$perm->can_do('grant_administer_role') ) {
@@ -1078,7 +1078,7 @@ sub dialog_select_author {
     }
     push @blog_ids, $blog->id;
 
-    if ( !$app->user->is_superuser ) {
+    if ( !$app->user->can_manage_users_groups ) {
         my @ids;
         @ids = map { $_->id } @{ $blog->blogs }
             if !$blog->is_blog;
@@ -1479,7 +1479,7 @@ sub remove_userpic {
         or return;
 
     my $appuser = $app->user;
-    if ( ( !$appuser->is_superuser ) && ( $user->id != $appuser->id ) ) {
+    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
         return $app->permission_denied();
     }
     if ( $user->userpic_asset_id ) {
@@ -1499,7 +1499,7 @@ sub can_delete_association {
 
     my $blog_id = $app->param('blog_id');
     my $user    = $app->user;
-    if ( !$user->is_superuser ) {
+    if ( !$user->can_manage_users_groups ) {
         if (   !$blog_id
             || !$user->permissions($blog_id)->can_do('delete_association') )
         {
@@ -1542,16 +1542,17 @@ sub template_param_list {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
+
+    my $author = $app->user;
+    return 1 if $author->can_manage_users_groups;
     return $id && ( $app->user->id == $id );
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $author = $app->user;
-    if ( !$id ) {
-        return $author->is_superuser;
-    }
-    else {
+    return 1 if $author->can_manage_users_groups;
+    if ( $id ) {
         return $author->id == $id;
     }
 }
@@ -1563,7 +1564,7 @@ sub can_delete {
         return $eh->error(
             MT->translate("You cannot delete your own user record.") );
     }
-    return 1 if $author->is_superuser();
+    return 1 if $author->can_manage_users_groups;
     if ( !( $obj->created_by && $obj->created_by == $author->id ) ) {
         return $eh->error(
             MT->translate(
@@ -1882,7 +1883,7 @@ sub build_author_table {
     return [] unless $iter;
     my $blog_id = $app->param('blog_id');
     my $param   = $args{param};
-    $param->{has_edit_access}  = $app->user->is_superuser();
+    $param->{has_edit_access}  = $app->user->can_manage_users_groups();
     $param->{is_administrator} = $app->user->is_superuser();
     my %entry_count_refs;
     while ( my $author = $iter->() ) {

@@ -419,6 +419,7 @@ sub can_view_website_list {
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('access_to_website_list');
 
     my $blog_ids
         = !$blog         ? undef

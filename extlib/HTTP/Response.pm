@@ -1,7 +1,9 @@
 package HTTP::Response;
-$HTTP::Response::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 use base 'HTTP::Message';
 
@@ -21,8 +23,9 @@ sub new
 sub parse
 {
     my($class, $str) = @_;
+    Carp::carp('Undefined argument to parse()') if $^W && ! defined $str;
     my $status_line;
-    if ($str =~ s/^(.*)\n//) {
+    if (defined $str && $str =~ s/^(.*)\n//) {
 	$status_line = $1;
     }
     else {
@@ -30,17 +33,21 @@ sub parse
 	$str = "";
     }
 
+    $status_line =~ s/\r\z// if defined $status_line;
+
     my $self = $class->SUPER::parse($str);
-    my($protocol, $code, $message);
-    if ($status_line =~ /^\d{3} /) {
-       # Looks like a response created by HTTP::Response->new
-       ($code, $message) = split(' ', $status_line, 2);
-    } else {
-       ($protocol, $code, $message) = split(' ', $status_line, 3);
+    if (defined $status_line) {
+        my($protocol, $code, $message);
+        if ($status_line =~ /^\d{3} /) {
+           # Looks like a response created by HTTP::Response->new
+           ($code, $message) = split(' ', $status_line, 2);
+        } else {
+           ($protocol, $code, $message) = split(' ', $status_line, 3);
+        }
+        $self->protocol($protocol) if $protocol;
+        $self->code($code) if defined($code);
+        $self->message($message) if defined($message);
     }
-    $self->protocol($protocol) if $protocol;
-    $self->code($code) if defined($code);
-    $self->message($message) if defined($message);
     $self;
 }
 
@@ -344,7 +351,7 @@ HTTP::Response - HTTP style response message
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 
@@ -490,10 +497,10 @@ received some redirect responses first.
 
 If none of these sources provide an absolute URI, undef is returned.
 
-When the LWP protocol modules produce the HTTP::Response object, then
-any base URI embedded in the document (step 1) will already have
-initialized the "Content-Base:" header. This means that this method
-only performs the last 2 steps (the content is not always available
+When the LWP protocol modules produce the HTTP::Response object, then any base
+URI embedded in the document (step 1) will already have initialized the
+"Content-Base:" header. (See L<LWP::UserAgent/parse_head>).  This means that
+this method only performs the last 2 steps (the content is not always available
 either).
 
 =item $r->filename

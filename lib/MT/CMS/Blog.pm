@@ -520,9 +520,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}      = $app->param('no_writedir');
-    $param{no_cachedir}      = $app->param('no_cachedir');
-    $param{no_writecache}    = $app->param('no_writecache');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -1507,6 +1507,7 @@ sub dialog_select_weblog {
         $confirm_js = 'saveFavorite';
     }
     if (   !$auth->is_superuser
+        && !$auth->permissions(0)->can_do('access_to_blog_list')
         && !$auth->permissions(0)->can_do('edit_templates') )
     {
         use MT::Permission;
@@ -3627,6 +3628,7 @@ sub cms_pre_load_filtered_list {
 
     my $user = $load_options->{user} || $app->user;
     if (   $user->is_superuser
+        || $user->permissions(0)->can_do('access_to_blog_list')
         || $user->permissions(0)->can_do('edit_templates') )
     {
         if ( $terms->{class} eq 'blog' ) {
@@ -3683,6 +3685,7 @@ sub can_view_blog_list {
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('access_to_blog_list');
 
     my $blog_ids
         = !$blog         ? undef

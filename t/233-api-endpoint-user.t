@@ -612,6 +612,7 @@ sub suite {
         {    # No permissions.
             path   => '/v2/users',
             method => 'POST',
+            author_id => 4,
             params => {
                 user => {
                     name         => 'create-user',
@@ -747,6 +748,7 @@ sub suite {
         {    # No permissions.
             path   => '/v2/users/3',
             method => 'PUT',
+            author_id => 4,
             params =>
                 { user => { systemPermissions => [qw( create_site )], }, },
             code  => 403,
@@ -802,6 +804,7 @@ sub suite {
             path   => '/v2/users/3/unlock',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             result => sub {
                 return +{
                     error => {
@@ -836,6 +839,7 @@ sub suite {
             path   => '/v2/users/3/recover_password',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             result => sub {
                 return +{
                     error => {
@@ -870,6 +874,7 @@ sub suite {
             path   => '/v2/users/3/recover_password',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             error  => 'Do not have permission to recover password for user.',
         },
 
@@ -1018,6 +1023,7 @@ sub suite {
             method       => 'DELETE',
             is_superuser => 0,
             code         => 403,
+            author_id    => 4,
             error        => 'Do not have permission to delete a user.',
         },
 

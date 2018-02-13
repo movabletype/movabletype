@@ -33,8 +33,16 @@
       <input type="hidden" name="use_absolute_archive" value="<mt:var name="use_absolute_archive" escape="html">" />
       <input type="hidden" name="overwrite" value="<mt:var name="overwrite" escape="html">" />
       <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages" escape="html">" />
+    <mt:if name="enabled_plugins{Comments}">
       <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments" escape="html">" />
+    <mt:else>
+      <input type="hidden" name="clone_prefs_comments" value="on" />
+    </mt:if>
+    <mt:if name="enabled_plugins{Trackback}">
       <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
+    <mt:else>
+      <input type="hidden" name="clone_prefs_trackbacks" value="on" />
+    </mt:if>
       <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
       <mt:unless name="clone_prefs_input"></mt:unless>
       <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
@@ -156,11 +164,15 @@
   <mt:if name="clone_prefs_entries_pages" eq="on">
     <li><__trans phrase="Exclude Entries/Pages"></li>
   </mt:if>
+  <mt:if name="enabled_plugins{Comments}">
   <mt:if name="clone_prefs_comments" eq="on">
     <li><__trans phrase="Exclude Comments"></li>
   </mt:if>
+  </mt:if>
+  <mt:if name="enabled_plugins{Trackback}">
   <mt:if name="clone_prefs_trackbacks" eq="on">
     <li><__trans phrase="Exclude Trackbacks"></li>
+  </mt:if>
   </mt:if>
   <mt:if name="clone_prefs_categories" eq="on">
     <li><__trans phrase="Exclude Categories/Folders"></li>
@@ -437,18 +449,22 @@
           <label class="custom-control-label" for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
         </div>
       </li>
+      <mt:if name="enabled_plugins{Comments}">
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="custom-control-input cb" />
           <label class="custom-control-label" for="clone-prefs-comments"><__trans phrase="Comments"></label>
         </div>
       </li>
+      </mt:if>
+      <mt:if name="enabled_plugins{Trackback}">
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="custom-control-input cb" />
           <label class="custom-control-label" for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
         </div>
       </li>
+      </mt:if>
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="custom-control-input cb" />

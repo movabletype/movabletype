@@ -43,9 +43,10 @@ sub core_backup_instructions {
     # and/or special instructions.
     # Every other class will have the order of '500'.
     return {
-        'website' => { 'order' => 350 },
-        'blog'    => { 'order' => 400 },
-        'author'  => { 'order' => 420 },
+        'website'      => { 'order' => 350 },
+        'blog'         => { 'order' => 400 },
+        'author'       => { 'order' => 420 },
+        'category_set' => { 'order' => 490 },
 
         # These 'association' classes should be backed up
         # after the object classes.
@@ -870,6 +871,16 @@ sub cb_restore_objects {
                 }
             }
         }
+        elsif ( $key =~ /^MT::CategorySet#\d+$/ ) {
+            my $category_set = $all_objects->{$key};
+            my $old_order    = $category_set->order or next;
+            my $new_order    = join ',', map { $_->id }
+                grep { defined $_ }
+                map  { $all_objects->{"MT::Category#$_"} }
+                split ',', $old_order;
+            $category_set->order($new_order);
+            $category_set->save;
+        }
     }
 
     my $i = 0;
@@ -1469,7 +1480,16 @@ sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'),     MT->model('website') ],
         parent  => [ MT->model('category'), MT->model('folder') ],
+        category_set_id =>
+            { class => MT->model('category_set'), optional => 1 },
     };
+}
+
+package MT::CategorySet;
+
+sub parents {
+    my $obj = shift;
+    { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
 package MT::Comment;

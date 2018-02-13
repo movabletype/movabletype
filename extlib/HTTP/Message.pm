@@ -1,7 +1,9 @@
 package HTTP::Message;
-$HTTP::Message::VERSION = '6.13';
+
 use strict;
 use warnings;
+
+our $VERSION = '6.14';
 
 require HTTP::Headers;
 require Carp;
@@ -428,7 +430,7 @@ sub decodable
     };
     eval {
         require IO::Uncompress::Bunzip2;
-        push(@enc, "x-bzip2");
+        push(@enc, "x-bzip2", "bzip2");
     };
     # we don't care about announcing the 'identity', 'base64' and
     # 'quoted-printable' stuff
@@ -460,7 +462,7 @@ sub encode
 
     my $content = $self->content;
     for my $encoding (@enc) {
-	if ($encoding eq "identity") {
+	if ($encoding eq "identity" || $encoding eq "none") {
 	    # nothing to do
 	}
 	elsif ($encoding eq "base64") {
@@ -481,7 +483,7 @@ sub encode
 		or die "Can't deflate content: $IO::Compress::Deflate::DeflateError";
 	    $content = $output;
 	}
-	elsif ($encoding eq "x-bzip2") {
+	elsif ($encoding eq "x-bzip2" || $encoding eq "bzip2") {
 	    require IO::Compress::Bzip2;
 	    my $output;
 	    IO::Compress::Bzip2::bzip2(\$content, \$output)
@@ -779,7 +781,7 @@ HTTP::Message - HTTP style message (base class)
 
 =head1 VERSION
 
-version 6.13
+version 6.14
 
 =head1 SYNOPSIS
 

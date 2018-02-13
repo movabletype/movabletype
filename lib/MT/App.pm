@@ -3296,10 +3296,10 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li>' . $msg . '</li>' . "\n";
+                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
                         }
                     }
-                    $trace = "<li>"
+                    $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'
                         . sprintf( "Request completed in %.3f seconds.",
                         Time::HiRes::time() - $app->{start_request_time} )
                         . "</li>\n"
@@ -3314,7 +3314,7 @@ sub run {
                                 <h4 class="my-0">$debug_panel_header</h4>
                               </div>
                               <div class="card-block p-4 debug-panel-inner" style="background: #FFE0E0;">
-                                <ul class="list-unstyled">
+                                <ul class="list-unstyled" style="list-style: none; text-align: left">
                                   $trace
                                 </ul>
                               </div>

@@ -3,7 +3,7 @@ package URI::urn::isbn;  # RFC 3187
 use strict;
 use warnings;
 
-our $VERSION = '1.72';
+our $VERSION = '1.73';
 
 use parent 'URI::urn';
 

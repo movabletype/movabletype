@@ -439,4 +439,40 @@ sub field_type_validation_handler {
     return;
 }
 
+sub preview_handler {
+    my ( $values, $field_id, $content_data ) = @_;
+    return '' unless $values;
+    unless ( ref $values eq 'ARRAY' ) {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @categories
+        = MT->model('category')
+        ->load( { id => $values },
+        { fetchonly => { id => 1, label => 1 } }, );
+    my %label_hash = map { $_->id => $_->label } @categories;
+
+    my $static_uri = MT->static_path;
+
+    my $contents   = '';
+    my $is_primary = 1;
+    for my $id (@$values) {
+        my $label = $label_hash{$id};
+        $label = '' unless defined $label && $label ne '';
+        my $encoded_label = MT::Util::encode_html($label);
+
+        my $icon
+            = $is_primary
+            ? qq{<svg title="Primary" role="img" class="mt-icon--success mt-icon--sm"><use xlink:href="${static_uri}images/sprite.svg#ic_fav"></svg>}
+            : qq{<svg title="Blank" role="img" class="mt-icon mt-icon--sm"><use xlink:href="${static_uri}images/sprite.svg#ic_blank"></svg>};
+
+        $contents .= "<li>$icon&nbsp;$encoded_label (ID:$id)</li>";
+        $is_primary = 0;
+    }
+
+    return qq{<ul class="list-unstyled">$contents</ul>};
+
+}
+
 1;

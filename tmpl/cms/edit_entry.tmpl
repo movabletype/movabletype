@@ -300,12 +300,41 @@
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
                   <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    <mtapp:svgicon id="ic_fav" size="sm" color="success" title="Primary">
                     <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a>
+                    &nbsp;
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" style="margin-left: 1.5rem;"><mt:if name="object_type" eq="entry"><a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">[#= label #]</a></mt:if><a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">&nbsp;<mtapp:svgicon id="ic_remove" size="sm" title="Remove"></a></li>
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <span>
+                      <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    </span>
+                    <span>
+                      <mtapp:svgicon id="ic_blank" size="sm" title="Blank">
+                    </span>
+                  <mt:if name="object_type" eq="entry">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
+                      [#= label #]
+                    </a>
+                  </mt:if>
+                    &nbsp;
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h "Remove" #]">
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
+                      </span>
+                      <span>
+                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                      </span>
+                    </a>
+                  </li>
               [# } #]
               <mt:else>
               <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
@@ -323,7 +352,7 @@
 </mt:if>
 <mt:include name="include/category_selector.tmpl">
 <mt:if name="object_type" eq="entry">
-  <div mt:delegate="category-list" id="category-list"></div>
+  <div mt:delegate="category-list" id="category-list" class="mt-3"></div>
 </mt:if>
   <input id="category-ids" type="hidden" name="category_ids" value="<$mt:var name="selected_category_loop" glue=","$>" />
 </mtapp:setting>
@@ -765,7 +794,7 @@
      label="$widget_label">
     <div class="text-right asset-list-header mb-2">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
-        <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Add Entry Asset">">
+        <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
       </a>
     </div>
@@ -817,22 +846,66 @@ div.mce-notification-error {
     display: none;
 }
 
-#tags_completion {
+#entry-category-widget #category-field > label:first-child {
     display: none;
-    min-width: 200px;
-    max-width: 100%;
-    position: absolute;
-    z-index: 50;
-    border: 1px solid #c0c6c9;
-    background-color: #f3f3f3;
 }
-#tags_completion div {
-    padding: 2px 5px;
+
+#category-selector-list a:hover,
+#category-list a:hover {
+    text-decoration: none;
 }
-#tags_completion .complete-highlight {
-    color: #1A1A1A;
-    background-color: #dcdddd;
+
+#category-selector-list .list-item.odd,
+#folder-selector-list .list-item.odd {
+    background-color: #f4f4f4;
 }
+
+#category-selector-list .list-item:hover,
+#folder-selector-list .list-item:hover {
+    background-color: #cacaca;
+}
+
+#category-selector-list .list-item.selected,
+#folder-selector-list .list-item.selected {
+    background-color: #e0e0e0;
+}
+
+#category-selector-list .list-item .add-category-new-link {
+    display: none;
+}
+
+#category-selector-list .list-item:hover .add-category-new-link {
+    display: block;
+}
+
+#category-list li:not(:hover) a.delete {
+    display: none !important;
+}
+
+#category-list li:not(:first-child) > span:first-child {
+    display: none;
+}
+
+#category-list li:not(:first-child) > span:not(:first-child) {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:first-child {
+    display: inline-block;
+}
+
+#category-list li:not(:first-child):hover > span:not(:first-child) {
+    display: none;
+}
+
+#category-list li:hover a.delete:not(:hover) span:not(:first-child) {
+    display: none;
+}
+
+#category-list li a.delete:hover span:first-child {
+    display: none;
+}
+
 </style>
 </mt:setvarblock>
 
@@ -1358,17 +1431,18 @@ div.mce-notification-error {
 <mt:if name="field_html">
 
   <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-    <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+    <div class="mt-draggable" draggable="true" aria-grabbed="false">
       <div class="col-auto field-header">
         <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
       </div>
       <div class="col">
-        <p>
-          <mt:var name="label_encoded">
+          <label class="form-control-label"><mt:var name="label_encoded"></label>
   <mt:if name="required">
           <span class="badge badge-danger"><__trans phrase="Required"></span>
   </mt:if>
-        </p>
+      </div>
+      <div class="mt-flexBreak"></div>
+      <div class="mt-draggable__content">
         <mt:var name="field_html">
   <mt:if name="show_hint">
         <small class="form-text text-muted"><mt:var name="desc_encoded"></small>
@@ -1459,16 +1533,21 @@ div.mce-notification-error {
     </mt:if>
 
     <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><__trans phrase="Tags"></p>
+          <label class="form-control-label" for="tags"><__trans phrase="Tags"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
           <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-          <div id="tags-suggestion">
-            <div id="tags_completion"></div>
+          <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+            <div id="tags_completion" class="mt_suggest__list">
+              <ul></ul>
+            </div>
           </div>
         </div>
       </div>
@@ -1477,12 +1556,15 @@ div.mce-notification-error {
   <mt:else eq="excerpt">
 
     <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><mt:var name="field_label"></p>
+          <label class="form-control-label" for="excerpt"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <textarea name="excerpt" id="excerpt" class="form-control text full low" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
         </div>
       </div>
@@ -1491,12 +1573,15 @@ div.mce-notification-error {
   <mt:else eq="keywords">
 
     <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable mt-3 p-2" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <p><mt:var name="field_label"></p>
+          <label class="form-control-label" for="keywords"><mt:var name="field_label"></label>
+        </div>
+        <div class="mt-flexBreak"></div>
+        <div class="mt-draggable__content">
           <input type="text" name="keywords" id="keywords" class="form-control text full" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
         </div>
       </div>

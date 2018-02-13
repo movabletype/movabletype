@@ -148,6 +148,19 @@ sub edit {
 
         $param->{broken_metadata} = $obj->is_metadata_broken;
     }
+
+    $app->add_breadcrumb(
+        $app->translate('Assets'),
+        $app->uri(
+            'mode' => 'list',
+            args   => {
+                _type   => 'asset',
+                blog_id => $app->blog ? $app->blog->id : 0,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $obj->label ) if $id;
+
     1;
 }
 
@@ -2539,8 +2552,9 @@ sub cms_pre_load_filtered_list {
     $load_options->{args}->{no_class} = 1;
 
     my $user = $app->user;
-    return if $user->is_superuser;
-
+    return
+        if ( $user->is_superuser
+        || $user->permissions(0)->can_do('edit_assets') );
     my $load_blog_ids = $load_options->{blog_ids};
 
     require MT::Permission;

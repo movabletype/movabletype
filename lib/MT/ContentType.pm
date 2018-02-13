@@ -189,7 +189,8 @@ sub fields {
     if (@_) {
         my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
         my $sorted_fields = _sort_fields( \@fields );
-        my $json = eval { MT::Util::to_json($sorted_fields, { utf8 => 1 }) } || '[]';
+        my $json = eval { MT::Util::to_json( $sorted_fields, { utf8 => 1 } ) }
+            || '[]';
         $obj->column( 'fields', $json );
     }
     else {
@@ -244,12 +245,24 @@ sub permission {
 }
 
 sub _manage_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my $field_permission = $self->field_permissions;
+
+    my @permissions = (
+        $self->_create_content_data_permission,
+        $self->_publish_content_data_permission,
+        $self->_edit_all_content_data_permission,
+        %$field_permission,
+    );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group => $self->permission_group,
-            label => 'Manage Content Data',
-            order => 100,
+            group        => $self->permission_group,
+            label        => 'Manage Content Data',
+            order        => 100,
+            inherit_from => \@perms,
         }
     );
 }
@@ -268,7 +281,11 @@ sub _create_content_data_permission {
 }
 
 sub _publish_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my @permissions = ( $self->_create_content_data_permission, );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
@@ -280,7 +297,9 @@ sub _publish_content_data_permission {
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
+                'rebuild'                                               => 1,
             },
+            inherit_from => \@perms,
         }
     );
 }

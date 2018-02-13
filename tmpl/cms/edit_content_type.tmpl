@@ -120,6 +120,16 @@
       return $e.find('.has-error').length == 0;
     },
 
+    '.date-field': function ($e) {
+      if (!$e.val()) return true;
+      return MT.Util.isValidDate($e.val() + ' 00:00:00');
+    },
+
+    '.time-field': function ($e) {
+      if (!$e.val()) return true;
+      return MT.Util.isValidDate('1970-01-01 ' + $e.val());
+    },
+
     '.values-option-table': function ($e) {
       var hasNoValuesOption = $e.find('tbody tr').length == 0;
       if (hasNoValuesOption) {
@@ -137,6 +147,11 @@
 
       return true;
     }
+  });
+
+  jQuery.mtValidateAddMessages({
+    '.date-field': jQuery.mtValidateMessages['.date'],
+    '.time-field': jQuery.mtValidateMessages['.time']
   });
 
   jQuery(document).on('after-mt-valid', '.values-option-table input[type=text]', function () {
