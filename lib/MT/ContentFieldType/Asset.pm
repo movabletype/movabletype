@@ -449,7 +449,7 @@ sub html {
         else {
             my $asset_class = $asset->class;
             $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-20.png">};
+                = qq{<img src="${static_uri}images/asset/$asset_class-45.png">};
         }
 
         push @labels,
@@ -475,7 +475,7 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $thumb_size = 20;
+    my $thumb_size = 45;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
     my $img
