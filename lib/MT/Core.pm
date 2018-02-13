@@ -1955,16 +1955,6 @@ BEGIN {
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
 
-# 'MTNewsURL' => {
-#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-# },
-#            'LearningNewsURL' => {
-#                default => 'http://learning.movabletype.org/newsbox.html',
-#            },
-
-            # 'HackingNewsURL' => {
-            #     default => 'http://hacking.movabletype.org/newsbox.html',
-            # },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
