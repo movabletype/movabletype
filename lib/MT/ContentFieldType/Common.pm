@@ -293,12 +293,11 @@ sub html_text {
     my $text          = $content_data->data->{ $prop->content_field_id };
     return '' unless defined $text;
 
-    my $escaped_text = MT::Util::encode_html($text);
-    if ( length $escaped_text > 40 ) {
-        return substr( $escaped_text, 0, 40 ) . '...';
+    if ( length $text > 40 ) {
+        return MT::Util::encode_html( substr( $text, 0, 40 ) ) . '...';
     }
     else {
-        return $escaped_text;
+        return MT::Uti::encode_html($text);
     }
 }
 
