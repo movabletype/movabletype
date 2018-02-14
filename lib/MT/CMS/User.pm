@@ -1316,12 +1316,12 @@ PERMCHECK: {
               $row->{icon} = $obj->userpic_url();
             } else {
               $row->{icon}
-                  = MT->static_path . 'images/user-default.svg';
+                  = MT->static_path . 'images/icons/ic_user-auth.svg';
             }
         }
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
             $row->{icon}
-                = MT->static_path . 'images/nav_icons/color/group.gif';
+                = MT->static_path . 'images/icons/ic_group.svg';
         }
 
     };
