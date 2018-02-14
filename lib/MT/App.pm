@@ -711,9 +711,7 @@ sub multi_listing {
         $options->{json} = 0;
         $app->param( 'json', 0 );
         $options->{no_html} = 1;
-        $app->param( 'search_type', $type )
-            if ( $app->param('search_type')
-            && $app->param('search_type') ne $type );
+        $app->param( 'search_type', $type );
         $app->param( 'offset', 0 );
 
         $options->{code}
