@@ -440,20 +440,8 @@ sub html {
         my $label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
-
-        my $static_uri = $app->static_path;
-        my $thumbnail;
-        if ( $asset->class eq 'image' ) {
-            $thumbnail = _thumbnail_html( $app, $asset );
-        }
-        else {
-            my $asset_class = $asset->class;
-            $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-45.png">};
-        }
-
         push @labels,
-            qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
+            qq{<a href="$edit_link" class="asset-field-label">$label</a>};
     }
 
     if ( @assets > 3 ) {
