@@ -1,3 +1,4 @@
+<mt:setvarblock name="css_include" append="1">
 <style>
 #drop-handler {
     height: 150px;
@@ -90,7 +91,6 @@ h1.dialog-title {
 #open-file-dialog {
     padding: 0.3em;
     font-weight: normal;
-    color: #fff;
 }
 
 #open-file-dialog img {
@@ -129,20 +129,25 @@ h1.dialog-title {
   font-size: 18px;
   color: #0D76BF;
 }
+
+#upload-progress .card {
+  min-height: 4.5rem;
+}
 </style>
+</mt:setvarblock>
 
 <form id="upload">
 
-<fieldset class="form-group">
+<fieldset class="form-group text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <button class="action button primary btn btn-primary" id="open-file-dialog">
-    <mtapp:svgicon id="ic_upload" title="<__trans phrase="Upload">" color="inverse" size="sm">
+  <a href="javascript:void(0)" id="open-file-dialog" class="d-inline-block">
+    <mtapp:svgicon id="ic_upload" title="<__trans phrase="Upload">" color="primary" size="xlg">
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload or drag files."></span>
   <mt:else>
     <span><__trans phrase="Choose file to upload or drag file."></span>
   </mt:if>
-  </button>
+  </a>
 </fieldset>
 
 <fieldset class="form-group">
@@ -417,17 +422,20 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlockPanel = jQuery('<div class="card"><div class="card-block p-2"></div></div>');
+  this.uploadBlockPanel = jQuery('<div class="card mb-1"><div class="card-block px-4 py-2"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
   this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
   this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
-  this.progressbar  = jQuery('<div class="mt-progress"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
+
+  this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
+
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
-  this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+
+  this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
 <mt:unless name="filter" eq="userpic">
   this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
 
@@ -495,9 +503,13 @@ function createUploadBlock () {
 
 <mt:unless name="filter" eq="userpic">
   this.enableEditAsset = function(Asset) {
-    var link = jQuery('<a>');
-    link.attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">').append('<__trans phrase="Edit">').appendTo(this.editAsset);
-    link.mtModal({ large: true });
+    var editLink = jQuery('<a>')
+      .attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">')
+      .attr('class', 'd-inline-block')
+      .append('<mtapp:svgicon id="ic_edit" title="Edit" size="sm" strip_linefeeds="1">')
+      .append('<span class="ml-2"><__trans phrase="Edit"><span>')
+      .appendTo(this.editAsset);
+    editLink.mtModal({ large: true });
     this.editAsset.show();
   }
 </mt:unless>
