@@ -2376,10 +2376,6 @@ sub set_default_tmpl_params {
 
     $param->{debug_panels} = [];
 
-    # TODO - remove after testing or after new IA is defined
-    $param->{app_layout_fixed} = 0;
-    $param->{athena_nav}       = 1;
-
     $param->{"auth_mode_$pref"} = 1;
     $param->{mt_news}           = $app->config('NewsURL');
     $param->{mt_support}        = $app->config('SupportURL');
