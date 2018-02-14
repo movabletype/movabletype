@@ -421,42 +421,20 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $cd_id     = $content_data->id;
-    my $field_id  = $prop->content_field_id;
-    my $asset_ids = $content_data->data->{$field_id} || [];
+    my $cd_id       = $content_data->id;
+    my $field_id    = $prop->content_field_id;
+    my $asset_ids   = $content_data->data->{$field_id} || [];
+    my $asset_count = MT::Asset->count( { id => $asset_ids } ) || 0;
 
-    my %assets;
-    my $iter = MT::Asset->load_iter( { id => $asset_ids } );
-    while ( my $asset = $iter->() ) {
-        $assets{ $asset->id } = $asset;
-    }
-    my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
-
-    my $can_double_encode = 1;
-    my $static_uri        = $app->static_path;
-
-    my ( @labels, @thumbnails );
-    for my $asset ( @assets > 3 ? @assets[ 0 .. 2 ] : @assets ) {
-        my $label
+    if ( $asset_count == 1 ) {
+        my $can_double_encode = 1;
+        my $asset = MT::Asset->load( { id => $asset_ids } );
+        my $encoded_label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
-
-        my $static_uri = $app->static_path;
-        my $thumbnail;
-        if ( $asset->class eq 'image' ) {
-            $thumbnail = _thumbnail_html( $app, $asset );
-        }
-        else {
-            my $asset_class = $asset->class;
-            $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-45.png">};
-        }
-
-        push @labels,
-            qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
+        return qq{<a href="$edit_link">$encoded_label</a>};
     }
-
-    if ( @assets > 3 ) {
+    elsif ( $asset_count > 1 ) {
         my $href = $app->uri(
             mode => 'list',
             args => {
@@ -467,14 +445,11 @@ sub html {
                 content_data_id => $cd_id,
             },
         );
-        push @labels,
+        return
               qq{<a href="$href">(}
-            . $app->translate( 'Show all [_1] assets', scalar @assets )
+            . $app->translate( 'Show all [_1] assets', $asset_count )
             . ')</a>';
     }
-
-    '<ul class="list-unstyled">'
-        . join( '', map {"<li>$_</li>"} @labels ) . '</ul>';
 }
 
 sub _edit_link {
