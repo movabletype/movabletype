@@ -1956,7 +1956,6 @@ sub external_authenticators {
         my $auth = $cas{$key} or next;
 
         if (   $key ne 'OpenID'
-            && $key ne 'Vox'
             && $key ne 'LiveJournal' )
         {
             push @external_authenticators,
@@ -1979,8 +1978,6 @@ sub external_authenticators {
         }
     }
 
-    unshift @external_authenticators, $otherauths{'Vox'}
-        if exists $otherauths{'Vox'};
     unshift @external_authenticators, $otherauths{'LiveJournal'}
         if exists $otherauths{'LiveJournal'};
     unshift @external_authenticators, $otherauths{'OpenID'}
