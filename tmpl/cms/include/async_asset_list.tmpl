@@ -20,7 +20,14 @@
 <div>
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
-    <input type="image" id="search-button" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+    <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
+      <mtapp:svgicon id="ic_search" title="Search">
+    </a>
+    <button id="search-button" class="search-command search-submit" style="display: none;">
+      <span class="sr-only">
+        <__trans phrase="Search">
+      </span>
+    </button>
     <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
   </form>
 </div>
