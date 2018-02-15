@@ -464,6 +464,17 @@ __FILTER_TMPL__
             },
             display         => 'none',
             filter_editable => 0,
+            filter_tmpl     => sub {
+                my @args  = @_;
+                my $app   = MT->instance;
+                my $stash = $app->request('content_field_filter') || {};
+                MT->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $stash->{content_field}->name,
+                    $stash->{content_type}->name,
+                    $stash->{content_data}->id,
+                );
+            },
             label           => 'Content Field',
             label_via_param => sub {
                 my $prop = shift;
@@ -484,17 +495,31 @@ __FILTER_TMPL__
                     = $app->model('content_data')->load($content_data_id)
                     or return $prop->error(
                     $app->translate(
-                        'Content Data ( id: [_1] ) does not exists.'
-                            . $content_data_id
+                        'Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
                     )
                     );
 
+                my $content_type = $content_data->content_type
+                    or return $prop->error(
+                    $app->translate(
+                        'Content type of Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
+                    )
+                    );
+
+                $app->request(
+                    'content_field_filter' => {
+                        content_data  => $content_data,
+                        content_field => $content_field,
+                        content_type  => $content_type,
+                    }
+                );
+
                 return $app->translate(
                     'Assets in [_1] field of [_2] (ID:[_3])',
-                    $content_field->name,
-                    $content_data->content_type->name,
-                    $content_data->id,
-                );
+                    $content_field->name, $content_type->name,
+                    $content_data->id, );
             },
             terms => sub {
                 my $prop = shift;
