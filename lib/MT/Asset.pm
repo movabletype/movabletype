@@ -101,7 +101,7 @@ sub list_props {
                     my $fmgr      = MT::FileMgr->new('Local');
                     my $file_path = $obj->file_path;
                     ## FIXME: Hardcoded
-                    my $thumb_size = 45;
+                    my $thumb_size = 60;
                     my $userpic_sticker
                         = $is_userpic{ $obj->id }
                         ? q{<span class="badge badge-default">Userpic</span>}
@@ -168,8 +168,8 @@ sub list_props {
 
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -182,7 +182,7 @@ sub list_props {
                             push @rows, qq{
                                 <div class="pull-left">
                                     <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -190,7 +190,7 @@ sub list_props {
                             push @rows, qq{
                                 <div class="pull-left">
                                     <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -204,7 +204,7 @@ sub list_props {
                         push @rows, qq{
                             <div class="pull-left">
                                 <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                             </div>
                         };
                     }
