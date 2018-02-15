@@ -173,7 +173,7 @@ sub list_props {
                         }
                         elsif ( $class_type eq 'image' ) {
                             my $svg = qq{
-                              <svg title="image" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                              <svg title="image" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
                                 <use xlink:href="${static_uri}images/sprite.svg#ic_image">
                               </svg>
                             };
@@ -193,7 +193,7 @@ sub list_props {
                         }
                         else {
                             my $svg = qq{
-                              <svg title="$class_type" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                              <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
                                 <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type">
                               </svg>
                             };
@@ -207,7 +207,7 @@ sub list_props {
                     }
                     else {
                         my $svg = qq{
-                          <svg title="$class_type" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                          <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
                             <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type"
                           </svg>
                         };
