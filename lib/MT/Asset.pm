@@ -467,7 +467,8 @@ __FILTER_TMPL__
             filter_tmpl     => sub {
                 my @args  = @_;
                 my $app   = MT->instance;
-                my $stash = $app->request('content_field_filter') || {};
+                my $stash = $app->request('content_field_filter')
+                    or return '';
                 MT->translate(
                     'Assets in [_1] field of [_2] (ID:[_3])',
                     $stash->{content_field}->name,
