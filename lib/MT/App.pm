@@ -1118,14 +1118,23 @@ sub _cb_mark_blog {
         $type = $obj->class_type;
     }
     if ( $type
-        !~ m/^(entry|comment|page|folder|category|tbping|asset|author|template)$/
+        !~ m/^(entry|comment|page|folder|category|tbping|asset|author|template|content_data|content_type)$/
         )
     {
         undef $type;
     }
 
+
     if ( $obj_type eq 'MT::Blog' ) {
         delete $blogs_touched->{ $obj->id };
+    }
+    elsif ( $obj_type eq 'MT::ContentData' ) {
+        if ( $obj->blog_id ) {
+            my $th = $blogs_touched->{ $obj->blog_id } ||= {};
+            if ( my $ct = $obj->content_type ) {
+                $th->{'content_data_'.$ct->unique_id} = 1;
+            }
+        }
     }
     else {
         if ( $obj->blog_id ) {
