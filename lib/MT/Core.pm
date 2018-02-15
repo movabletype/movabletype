@@ -1925,15 +1925,10 @@ BEGIN {
             'DeepCopyRecursiveLimit'   => { default => 2 },
             'BulkLoadMetaObjectsLimit' => { default => 100 },
             'DisableMetaObjectCache'   => { default => 1, },
-            'RegKeyURL' =>
-                { default => 'http://www.typekey.com/extras/regkeys.txt', },
-            'IdentitySystem' =>
-                { default => 'http://www.typekey.com/t/typekey', },
             'SignOnURL' =>
                 { default => 'https://www.typekey.com/t/typekey/login?', },
             'SignOffURL' =>
                 { default => 'https://www.typekey.com/t/typekey/logout?', },
-            'IdentityURL' => { default => "http://profile.typekey.com/", },
             'ReturnToURL' => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },

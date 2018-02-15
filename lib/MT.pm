@@ -2509,36 +2509,10 @@ sub core_commenter_authenticators {
             disable => 1,    # overriden by OpenID plugin
         },
         'TypeKey' => {
-            disable           => 1,
-            class             => 'MT::Auth::TypeKey',
-            label             => 'TypePad',
-            login_form        => 'comment/auth_typepad.tmpl',
-            login_form_params => sub {
-                my ( $key, $blog_id, $entry_id, $static ) = @_;
-                my $entry;
-                $entry = MT::Entry->load($entry_id) if $entry_id;
-
-                ## TypeKey URL
-                require MT::Template::Context;
-                my $ctx = MT::Template::Context->new;
-                $ctx->stash( 'blog_id', $blog_id );
-                my $blog = MT::Blog->load($blog_id);
-                $ctx->stash( 'blog',  $blog );
-                $ctx->stash( 'entry', $entry );
-                my $params = {};
-                require MT::Template::Tags::Comment;
-                $params->{tk_signin_url}
-                    = MT::Template::Tags::Comment::_hdlr_remote_sign_in_link(
-                    $ctx, { static => $static } );
-                return $params;
-            },
+            disable    => 1,
+            label      => 'TypePad',
             logo       => 'images/comment/signin_typepad.png',
             logo_small => 'images/comment/typepad_logo.png',
-            condition  => sub {
-                my ($blog) = @_;
-                return 1 unless $blog;
-                return $blog->remote_auth_token ? 1 : 0;
-            },
             order => 17,
         },
         'YahooJP' => {
