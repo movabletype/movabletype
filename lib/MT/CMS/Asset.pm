@@ -581,7 +581,8 @@ sub js_upload_file {
         $thumb_type = 'image';
     }
     else {
-        $thumb_type = $asset->class_type eq 'video' ? 'movie' : $asset->class_type;
+        $thumb_type
+            = $asset->class_type eq 'video' ? 'movie' : $asset->class_type;
     }
 
     # Check extension auto-change
@@ -595,9 +596,9 @@ sub js_upload_file {
     }
 
     my $metadata = {
-        id        => $asset->id,
-        filename  => $asset->file_name,
-        blog_id   => $asset->blog_id,
+        id             => $asset->id,
+        filename       => $asset->file_name,
+        blog_id        => $asset->blog_id,
         thumbnail_type => $thumb_type,
         $thumb_url ? ( thumbnail => $thumb_url ) : (),
         ( $extension_message ? ( message => $extension_message ) : () ),
@@ -3117,6 +3118,7 @@ sub dialog_insert_options {
             thumbnail => _make_thumbnail_url(
                 $a, { size => $default_thumbnail_size }
             ),
+            thumbnail_type => $a->class eq 'video' ? 'movie' : $a->class,
             class_label => $a->class_label,
         };
         my $html = $a->insert_options($param) || '';
@@ -3290,13 +3292,6 @@ sub _make_thumbnail_url {
         else {
             $thumb_url = $asset->url;
         }
-    }
-    else {
-        $thumb_url
-            = MT->static_path
-            . 'images/asset/'
-            . $asset->class_type
-            . '-45.png';
     }
 
     return $thumb_url;
