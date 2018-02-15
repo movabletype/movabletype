@@ -554,6 +554,7 @@ sub js_upload_file {
 
     # Make thumbnail
     my $thumb_url;
+    my $thumb_type;
     my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         my ( $orig_height, $orig_width )
@@ -577,13 +578,10 @@ sub js_upload_file {
         else {
             $thumb_url = $asset->url;
         }
+        $thumb_type = 'image';
     }
     else {
-        $thumb_url
-            = MT->static_path
-            . 'images/asset/'
-            . $asset->class_type
-            . '-45.png';
+        $thumb_type = $asset->class_type eq 'video' ? 'movie' : $asset->class_type;
     }
 
     # Check extension auto-change
@@ -600,7 +598,8 @@ sub js_upload_file {
         id        => $asset->id,
         filename  => $asset->file_name,
         blog_id   => $asset->blog_id,
-        thumbnail => $thumb_url,
+        thumbnail_type => $thumb_type,
+        $thumb_url ? ( thumbnail => $thumb_url ) : (),
         ( $extension_message ? ( message => $extension_message ) : () ),
     };
     return $app->json_result( { asset => $metadata } );

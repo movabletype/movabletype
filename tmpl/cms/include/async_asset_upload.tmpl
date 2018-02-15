@@ -474,8 +474,22 @@ function createUploadBlock () {
     });
   }
 
-  this.setThumbnail = function(url, fname, id, msg) {
-    var data = '<img class="img-thumbnail" src="' + url + '">&nbsp;<span class="filename">' + fname;
+  this.setThumbnail = function(asset) {
+    var url = asset.thumbnail;
+    var type = asset.thumbnail_type;
+    var fname = asset.filename;
+    var id = asset.id;
+    var msg = asset.message;
+
+    var data = '';
+
+    if (url) {
+      data = '<img class="img-thumbnail" width="60" height="60" src="' + url + '">';
+    } else {
+      data = '<svg title="'+type+'" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_'+type+'"></svg>';
+    }
+
+    data += '&nbsp;<span class="filename">' + fname;
     if ( msg ) {
       data += ' <span class="bg-warning msg-warning" style="padding:0.5em">' + msg + '</span>';
     }
@@ -629,7 +643,7 @@ function uploadFile( formData, uploadBlock ) {
     else {
       // Success
       uploadBlock.setProgress(100);
-      uploadBlock.setThumbnail(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id, data.result.asset.message);
+      uploadBlock.setThumbnail(data.result.asset);
 
       uploadBlock.progressbar.hide();
 <mt:unless name="filter" eq="userpic">
