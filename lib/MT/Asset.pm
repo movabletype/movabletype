@@ -489,8 +489,12 @@ __FILTER_TMPL__
                     )
                     );
 
-                return $app->translate( 'Assets in [_1] field of [_2]',
-                    $content_field->name, $content_data->content_type->name );
+                return $app->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $content_field->name,
+                    $content_data->content_type->name,
+                    $content_data->id,
+                );
             },
             terms => sub {
                 my $prop = shift;
