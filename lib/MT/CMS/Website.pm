@@ -42,7 +42,6 @@ sub edit {
             && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
-        $param->{identity_system}     = $app->config('IdentitySystem');
         $param->{handshake_return}    = $app->base . $app->mt_uri;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
         $param->{ "moderate_comments_"
@@ -236,7 +235,6 @@ sub edit {
             }
             $param->{allow_reg_comments}     = $blog->allow_reg_comments;
             $param->{allow_unreg_comments}   = $blog->allow_unreg_comments;
-            $param->{require_typekey_emails} = $obj->require_typekey_emails;
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );

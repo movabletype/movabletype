@@ -72,7 +72,6 @@ $test_env->prepare_fixture(sub {
         $blog->id($i);
         $blog->class('blog');
         $blog->parent_id(2);
-        $blog->commenter_authenticators('enabled_TypeKey');
         $blog->save() or die "Couldn't save blog: " . $i . $blog->errstr;
     }
 });

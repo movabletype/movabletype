@@ -1627,10 +1627,6 @@ sub make_commenter_session {
         $url  = $user->url;
     }
 
-    # test
-    $session_key = $app->param('sig')
-        if $user && $user->auth_type eq 'TypeKey';
-
     require MT::Session;
     my $sess_obj = MT::Session->new();
     $sess_obj->id($session_key);
@@ -1959,8 +1955,7 @@ sub external_authenticators {
 
         my $auth = $cas{$key} or next;
 
-        if (   $key ne 'TypeKey'
-            && $key ne 'OpenID'
+        if (   $key ne 'OpenID'
             && $key ne 'Vox'
             && $key ne 'LiveJournal' )
         {
@@ -1984,8 +1979,6 @@ sub external_authenticators {
         }
     }
 
-    unshift @external_authenticators, $otherauths{'TypeKey'}
-        if exists $otherauths{'TypeKey'};
     unshift @external_authenticators, $otherauths{'Vox'}
         if exists $otherauths{'Vox'};
     unshift @external_authenticators, $otherauths{'LiveJournal'}
