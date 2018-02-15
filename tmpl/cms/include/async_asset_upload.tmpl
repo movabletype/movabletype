@@ -141,7 +141,7 @@ h1.dialog-title {
 <fieldset class="form-group text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <a href="javascript:void(0)" id="open-file-dialog" class="d-inline-block">
-    <mtapp:svgicon id="ic_upload" title="<__trans phrase="Upload">" color="primary" size="xlg">
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload or drag files."></span>
   <mt:else>
