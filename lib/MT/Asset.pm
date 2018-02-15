@@ -60,7 +60,8 @@ sub list_props {
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my @userpics = MT->model('objecttag')->load(
+                my $static_uri = MT->static_path;
+                my @userpics   = MT->model('objecttag')->load(
                     {   blog_id           => 0,
                         object_datasource => 'asset',
                         object_id         => [ map { $_->id } @$objs ],
@@ -96,6 +97,8 @@ sub list_props {
                         },
                     );
                     my $class_type = $obj->class_type;
+                    my $svg_type
+                        = $class_type eq 'video' ? 'movie' : $class_type;
 
                     require MT::FileMgr;
                     my $fmgr      = MT::FileMgr->new('Local');
@@ -108,11 +111,6 @@ sub list_props {
                         : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
-                        my $img
-                            = MT->static_path
-                            . 'images/asset/'
-                            . $class_type
-                            . '-45.png';
                         if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
@@ -174,36 +172,55 @@ sub list_props {
                             };
                         }
                         elsif ( $class_type eq 'image' ) {
-                            my $img
-                                = MT->static_path
-                                . 'images/asset/'
-                                . $class_type
-                                . '-warning-45.png';
+                            my $svg = qq{
+                              <svg title="image" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_image">
+                              </svg>
+                            };
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                    <div class="mt-user">
+                                        $svg
+                                        <div class="mt-user__badge--danger">
+                                            <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                            </svg>
+                                        </div>
+                                    </div>
                                     <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                         else {
+                            my $svg = qq{
+                              <svg title="$class_type" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type">
+                              </svg>
+                            };
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                    $svg
                                     <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                     }
                     else {
-                        my $img
-                            = MT->static_path
-                            . 'images/asset/'
-                            . $class_type
-                            . '-warning-45.png';
+                        my $svg = qq{
+                          <svg title="$class_type" role="img" class="mt-icon" style="width: 60px; height: 60px;">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type"
+                          </svg>
+                        };
                         push @rows, qq{
                             <div class="pull-left">
-                                <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
+                                <div class="mt-user">
+                                    $svg
+                                    <div class="mt-user__badge--danger">
+                                        <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                            <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                        </svg>
+                                    </div>
+                                </div>
                                 <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
                             </div>
                         };
