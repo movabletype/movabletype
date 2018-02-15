@@ -297,7 +297,7 @@ sub html_text {
         return MT::Util::encode_html( substr( $text, 0, 40 ) ) . '...';
     }
     else {
-        return MT::Uti::encode_html($text);
+        return MT::Util::encode_html($text);
     }
 }
 
