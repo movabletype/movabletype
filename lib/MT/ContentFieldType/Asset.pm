@@ -464,61 +464,6 @@ sub _edit_link {
     );
 }
 
-sub _thumbnail_html {
-    my ( $app, $asset ) = @_;
-
-    my $thumb_size = 45;
-    my $class_type = $asset->class_type;
-    my $file_path  = $asset->file_path;
-    my $img
-        = MT->static_path
-        . 'images/asset/'
-        . $class_type . '-'
-        . $thumb_size . '.png';
-
-    my ( $orig_width, $orig_height )
-        = ( $asset->image_width, $asset->image_height );
-    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height );
-    if (   $orig_width > $thumb_size
-        && $orig_height > $thumb_size )
-    {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Height => $thumb_size,
-            Width  => $thumb_size,
-            Square => 1,
-            Ts     => 1
-            );
-    }
-    elsif ( $orig_width > $thumb_size ) {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Width => $thumb_size,
-            Ts    => 1
-            );
-    }
-    elsif ( $orig_height > $thumb_size ) {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Height => $thumb_size,
-            Ts     => 1
-            );
-    }
-    else {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) = (
-            $asset->url . '?ts=' . $asset->modified_on,
-            $orig_width, $orig_height
-        );
-    }
-
-    my $thumbnail_width_offset
-        = int( ( $thumb_size - $thumbnail_width ) / 2 );
-    my $thumbnail_height_offset
-        = int( ( $thumb_size - $thumbnail_height ) / 2 );
-
-    qq{<img alt="" src="${thumbnail_url}" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />};
-}
-
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
@@ -619,6 +564,8 @@ sub preview_handler {
     my @assets = MT->model('asset')->load( { id => $values, class => '*' } );
     my %asset_hash = map { $_->id => $_ } @assets;
 
+    my $static_uri = MT->static_path;
+
     my $contents = '';
     for my $id (@$values) {
         my $asset = $asset_hash{$id} or next;
@@ -628,16 +575,19 @@ sub preview_handler {
         my $encoded_label = MT::Util::encode_html($label);
 
         my ( $url, $w, $h )
-            = $asset->thumbnail_url( Width => 45, Height => 45, Square => 1 );
+            = $asset->thumbnail_url( Width => 60, Height => 60, Square => 1 );
 
-        unless ($url) {
-            my $static_uri  = MT->static_path;
-            my $asset_class = $asset->class;
-            $url = "${static_uri}images/asset/$asset_class-45.png";
+        if ($url) {
+            $contents
+                .= qq{<li><img class="img-thumbnail p-0" width="60" height="60" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
         }
-
-        $contents
-            .= qq{<li><img class="img-thumbnail p-0" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+        else {
+            my $svg_class
+                = $asset->class eq 'video' ? 'movie' : $asset->class;
+            my $svg
+                = qq{<svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class"></svg>};
+            $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+        }
     }
 
     return qq{<ul class="list-unstyled">$contents</ul>};
