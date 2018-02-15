@@ -107,7 +107,7 @@ sub list_props {
                     my $thumb_size = 60;
                     my $userpic_sticker
                         = $is_userpic{ $obj->id }
-                        ? q{<span class="badge badge-default">Userpic</span>}
+                        ? q{<span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>}
                         : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
@@ -167,7 +167,7 @@ sub list_props {
                             push @rows, qq{
                                 <div class="pull-left">
                                     <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
-                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -187,7 +187,7 @@ sub list_props {
                                             </svg>
                                         </div>
                                     </div>
-                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -200,7 +200,7 @@ sub list_props {
                             push @rows, qq{
                                 <div class="pull-left">
                                     $svg
-                                    <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
@@ -221,7 +221,7 @@ sub list_props {
                                         </svg>
                                     </div>
                                 </div>
-                                <span class="title ml-4 mr-2"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                             </div>
                         };
                     }
