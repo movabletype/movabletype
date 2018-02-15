@@ -24,12 +24,12 @@ parameters:
 <!-- Listing Panel -->
 <div id="<mt:var name="panel_type">-panel" style="display: none;">
 <mt:if name="use_page_content">
-  <div class="panel-body">
+  <div class="panel-body modal-body">
 </mt:if>
 
-  <div class="panel-header">
+  <div class="panel-header modal-description">
   <mt:if name="panel_title">
-    <h4 class="title"><mt:var name="panel_title"></h4>
+    <div><h4 class="title modal-label"><mt:var name="panel_title"></h4></div>
   </mt:if>
   <mt:if name="panel_has_steps">
     <div class="text-right"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>

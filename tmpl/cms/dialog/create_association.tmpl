@@ -376,20 +376,17 @@ TC.attachLoadEvent(init);
     </form>
 </div>
 <mt:else>
-<div class="modal-body">
-
-<mt:if name="has_group">
-  <select class="custom-select form-control select_assoc_type mr-3">
-    <option value="both" selected><__trans phrase="all"></option>
-    <option value="group"><__trans phrase="Groups"></option>
-    <option value="author"><__trans phrase="Users"></option>
-  </select>
-</mt:if>
+    <mt:if name="has_group">
+      <select class="custom-select form-control select_assoc_type mr-3">
+        <option value="both" selected><__trans phrase="all"></option>
+        <option value="group"><__trans phrase="Groups"></option>
+        <option value="author"><__trans phrase="Users"></option>
+      </select>
+    </mt:if>
 
     <mt:loop name="panel_loop">
       <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>
-</div>
 </mt:if>
 
 </mt:setvarblock>
