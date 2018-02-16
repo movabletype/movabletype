@@ -183,57 +183,6 @@ sub create_stats_directory {
         . $low_dir;
 }
 
-# @Deprecated, @CompatV3
-sub generate_dashboard_stats {
-    my $app = shift;
-    my ( $param, $tab, $tab_id, $path ) = @_;
-
-    my $gen_stats = $tab->{stats};
-    $gen_stats = $app->handler_to_coderef($gen_stats);
-
-    my %counts = $gen_stats->( $app, $tab );
-
-    unless ( create_dashboard_stats_file( $app, $path, \%counts ) ) {
-        delete $param->{stat_url}->{$tab_id};
-    }
-
-    1;
-}
-
-# @Deprecated, @CompatV3
-sub create_dashboard_stats_file {
-    my $app = shift;
-    my ( $file, $data ) = @_;
-
-    my $support_dir = $app->support_directory_path;
-
-    my $FOUT;
-    if ( !open( $FOUT, ">", $file ) ) {
-        return;
-    }
-
-    print $FOUT <<EOT;
-<?xml version="1.0"?>
-<rsp status_code="0" status_message="Success">
-  <daily_counts>
-EOT
-    my $now = time;
-    for ( my $i = 120; $i >= 1; $i-- ) {
-        my $ds
-            = substr(
-            epoch2ts( $app->blog, $now - ( ( $i - 1 ) * 60 * 60 * 24 ) ),
-            0, 8 )
-            . 'T00:00:00';
-        my $count = $data->{$ds} || 0;
-        print $FOUT qq{    <count date="$ds">$count</count>\n};
-    }
-    print $FOUT <<EOT;
-  </daily_counts>
-</rsp>
-EOT
-    close $FOUT;
-}
-
 sub site_stats_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;
