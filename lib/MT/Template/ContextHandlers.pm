@@ -4981,7 +4981,9 @@ B<Example:> Passing Parameters to a Template Module
             return $out;
         }
         else {
-            return defined $arg->{default} ? $arg->{default} : '';
+            return $arg->{default} if defined $arg->{default};
+            warn "Template not found: $app_file" if $MT::DebugMode;
+            return '';
         }
     }
 }
