@@ -4,27 +4,6 @@
 <mt:var name="setup_categories_css" value="1">
 <mt:setvarblock name="css_include" append="1">
 <style>
-.category-selector-list a:hover,
-.category-list a:hover {
-    text-decoration: none;
-}
-
-.category-selector-list a:hover {
-    text-decoration: none;
-}
-
-.category-selector-list .list-item.odd {
-    background-color: #f4f4f4;
-}
-
-.category-selector-list .list-item:hover {
-    background-color: #cacaca;
-}
-
-.category-selector-list .list-item.selected {
-    background-color: #e0e0e0;
-}
-
 .category-list li:not(:first-child) > span:first-child {
     display: none;
 }
@@ -50,6 +29,11 @@
 
 .category-list li a.delete:hover span:first-child {
     display: none;
+}
+
+.mt-suggest {
+    border-radius: 0.25rem;
+    border-top-color: #a5a5a5;
 }
 </style>
 </mt:setvarblock>
@@ -145,7 +129,7 @@
 
               Template.templates.categorySelectorList<mt:var name="content_field_id" escape="js"> = '<mt:section encode_js="1">
                       [# if ( item.path == null ) item.path = [] #]
-                      <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
+                      <div class="mt-suggest__select" style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                           <div class="custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if>" style="width: [#= 165 - (item.path.length * 10) #]px;">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
                               <label class="custom-control-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
@@ -222,7 +206,10 @@
                   <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="<__trans phrase="Remove">" size="sm"></span></a>
               </div>
           </mt:if>
-              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="card mt-2 p-2 category-selector-list"></div>
+            <div class="mt-suggest position-relative">
+              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="category-selector-list mt_suggest__list p-4">
+              </div>
+            </div>
           </div><!-- /category-selector -->
 
         </div>

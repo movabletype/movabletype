@@ -32,20 +32,15 @@
         </a>
       </li>
       <li class="list-inline-item">
-        <a href="<__trans phrase="http://wiki.movabletype.org/">">
-          <__trans phrase="Wiki">
-        </a>
-      </li>
-      <li class="list-inline-item">
         <a href="<mt:var name="mt_support">">
           <__trans phrase="Support">
         </a>
-      </li>
+      </li><mt:if name="language_id" eq="ja">
       <li class="list-inline-item">
         <a href="<__trans phrase="http://forums.movabletype.org/">">
           <__trans phrase="Forums">
         </a>
-      </li>
+      </li></mt:if>
       <li class="list-inline-item">
         <a href="<mt:var name="mt_feedback_url">">
           <__trans phrase="Send Us Feedback">

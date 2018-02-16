@@ -56,7 +56,6 @@ $blog->set_values({
 	file_extension       => 'html',
 });
 $blog->id(2);
-$blog->commenter_authenticators('enabled_TypeKey');
 $blog->save() or die "Couldn't save blog 2: " . $blog->errstr;
 
 # Create a new author for blog 2 and add author role for him

@@ -428,8 +428,6 @@ class MT {
             $cfg['signonurl'] = 'https://www.typekey.com/t/typekey/login?';
         isset($cfg['signoffurl']) or
             $cfg['signoffurl'] = 'https://www.typekey.com/t/typekey/logout?';
-        isset($cfg['identityurl']) or
-            $cfg['identityurl'] = 'http://profile.typekey.com/';
         isset($cfg['publishcommentericon']) or
             $cfg['publishcommentericon'] = '1';
         isset($cfg['allowcomments']) or

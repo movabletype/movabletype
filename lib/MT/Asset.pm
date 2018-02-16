@@ -453,6 +453,94 @@ __FILTER_TMPL__
                 return +{ id => @id ? \@id : 0 };
             },
         },
+        content_field => {
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $content_data_id = $app->param('content_data_id') || 0;
+                +{  content_field_id => $val || 0,
+                    content_data_id => $content_data_id,
+                };
+            },
+            display         => 'none',
+            filter_editable => 0,
+            filter_tmpl     => sub {
+                my @args  = @_;
+                my $app   = MT->instance;
+                my $stash = $app->request('content_field_filter')
+                    or return '';
+                MT->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $stash->{content_field}->name,
+                    $stash->{content_type}->name,
+                    $stash->{content_data}->id,
+                );
+            },
+            label           => 'Content Field',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app, $content_field_id ) = @_;
+                $content_field_id ||= 0;
+
+                my $content_field
+                    = $app->model('content_field')->load($content_field_id)
+                    or return $prop->error(
+                    $app->translate(
+                        'Content Field ( id: [_1] ) does not exists.',
+                        $content_field_id
+                    )
+                    );
+
+                my $content_data_id = $app->param('content_data_id') || 0;
+                my $content_data
+                    = $app->model('content_data')->load($content_data_id)
+                    or return $prop->error(
+                    $app->translate(
+                        'Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
+                    )
+                    );
+
+                my $content_type = $content_data->content_type
+                    or return $prop->error(
+                    $app->translate(
+                        'Content type of Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
+                    )
+                    );
+
+                $app->request(
+                    'content_field_filter' => {
+                        content_data  => $content_data,
+                        content_field => $content_field,
+                        content_type  => $content_type,
+                    }
+                );
+
+                return $app->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $content_field->name, $content_type->name,
+                    $content_data->id, );
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+
+                my $app = MT->instance;
+
+                my $content_field
+                    = $app->model('content_field')
+                    ->load( $args->{content_field_id} );
+                my $content_data
+                    = $app->model('content_data')
+                    ->load( $args->{content_data_id} );
+
+                my $asset_ids = $content_data->data->{ $content_field->id };
+                $asset_ids = [$asset_ids] unless ref $asset_ids eq 'ARRAY';
+
+                +{ id => $asset_ids };
+            },
+        },
     };
 }
 

@@ -2205,7 +2205,7 @@ Default setting for embedded images in entries
 =item * commenter_authenticators
 
 A comma-delimited list of authentication options for commenters.
-for example: "MovableType,TypeKey,LiveJournal"
+for example: "MovableType,LiveJournal"
 
 =item * require_typekey_emails
 

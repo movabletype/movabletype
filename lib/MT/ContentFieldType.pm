@@ -139,6 +139,7 @@ sub _multi_line_text_registry {
             multi_line_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
+                html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },
@@ -986,6 +987,7 @@ sub _embedded_text_registry {
             embedded_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
+                html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },

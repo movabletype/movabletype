@@ -473,7 +473,6 @@ sub init_data {
     );
     $website->id(2);
     $website->class('website');
-    $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website 2: " . $website->errstr;
     my $classic_website = MT::Theme->load('classic_website')
         or die MT::Theme->errstr;
@@ -517,7 +516,6 @@ sub init_data {
     $blog->id(1);
     $blog->class('blog');
     $blog->parent_id(2);
-    $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
     my $classic_blog = MT::Theme->load('classic_blog')

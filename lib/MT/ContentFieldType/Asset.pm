@@ -421,43 +421,35 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $cd_id     = $content_data->id;
-    my $field_id  = $prop->content_field_id;
-    my $asset_ids = $content_data->data->{$field_id} || [];
+    my $cd_id       = $content_data->id;
+    my $field_id    = $prop->content_field_id;
+    my $asset_ids   = $content_data->data->{$field_id} || [];
+    my $asset_count = MT::Asset->count( { id => $asset_ids } ) || 0;
 
-    my %assets;
-    my $iter = MT::Asset->load_iter( { id => $asset_ids } );
-    while ( my $asset = $iter->() ) {
-        $assets{ $asset->id } = $asset;
-    }
-    my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
-
-    my $can_double_encode = 1;
-    my $static_uri        = $app->static_path;
-
-    my ( @labels, @thumbnails );
-    for my $asset (@assets) {
-        my $label
+    if ( $asset_count == 1 ) {
+        my $can_double_encode = 1;
+        my $asset = MT::Asset->load( { id => $asset_ids } );
+        my $encoded_label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
-
-        my $static_uri = $app->static_path;
-        my $thumbnail;
-        if ( $asset->class eq 'image' ) {
-            $thumbnail = _thumbnail_html( $app, $asset );
-        }
-        else {
-            my $asset_class = $asset->class;
-            $thumbnail
-                = qq{<img src="${static_uri}images/asset/$asset_class-20.png">};
-        }
-
-        push @labels,
-            qq{<a href="$edit_link" class="asset-field-label">$thumbnail&nbsp;$label</a>};
+        return qq{<a href="$edit_link">$encoded_label</a>};
     }
-
-    '<ul class="list-unstyled">'
-        . join( '', map {"<li>$_</li>"} @labels ) . '</ul>';
+    elsif ( $asset_count > 1 ) {
+        my $href = $app->uri(
+            mode => 'list',
+            args => {
+                _type           => 'asset',
+                blog_id         => $app->blog->id,
+                filter          => 'content_field',
+                filter_val      => $field_id,
+                content_data_id => $cd_id,
+            },
+        );
+        return
+              qq{<a href="$href">(}
+            . $app->translate( 'Show all [_1] assets', $asset_count )
+            . ')</a>';
+    }
 }
 
 sub _edit_link {
@@ -475,7 +467,7 @@ sub _edit_link {
 sub _thumbnail_html {
     my ( $app, $asset ) = @_;
 
-    my $thumb_size = 20;
+    my $thumb_size = 45;
     my $class_type = $asset->class_type;
     my $file_path  = $asset->file_path;
     my $img

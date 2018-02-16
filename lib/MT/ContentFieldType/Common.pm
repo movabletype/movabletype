@@ -302,6 +302,22 @@ sub html_datetime_common {
 
 }
 
+sub html_text {
+    my $prop = shift;
+    my ( $content_data, $app, $opts ) = @_;
+
+    my $content_field = MT::ContentField->load( $prop->content_field_id );
+    my $text          = $content_data->data->{ $prop->content_field_id };
+    return '' unless defined $text;
+
+    if ( length $text > 40 ) {
+        return MT::Util::encode_html( substr( $text, 0, 40 ) ) . '...';
+    }
+    else {
+        return MT::Util::encode_html($text);
+    }
+}
+
 sub single_select_options_multiple {
     my $prop = shift;
     my $app = shift || MT->app;
