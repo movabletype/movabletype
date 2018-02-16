@@ -1,0 +1,31 @@
+<mt:setvar name="page_title" value="<__trans phrase="Trackback">">
+<mt:setvar name="screen_class" value="pinging-screen">
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function doRedirect () {
+    window.location.replace('<mt:var name="script_url">?__mode=ping&blog_id=<mt:var name="blog_id" escape="url">&entry_id=<mt:var name="entry_id" escape="url">&is_new=<mt:var name="is_new" escape="url">&old_status=<mt:var name="old_status" escape="url">&magic_token=<mt:var name="magic_token">');
+}
+setTimeout('doRedirect()', 1000);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mtapp:statusmsg
+   id="pinging"
+   class="info"
+   can_close="0">
+  <__trans phrase="Pinging sites...">
+  <ul>
+  <mt:loop name="url_list">
+    <li><mt:var name="url" escape="html"></li>
+  </mt:loop>
+  </ul>
+</mtapp:statusmsg>
+</mt:setvarblock>
+
+<mt:setvar name="hide_breadcrumbs" value="1">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
