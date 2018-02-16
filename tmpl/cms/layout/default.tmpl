@@ -19,7 +19,7 @@
   <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
 
   <mt:if name="has_info">
-    <div class="mt-secondaryPanel">
+    <div class="<mt:var name="secondary_panel_class" default="mt-secondaryPanel">">
     <mt:if name="object_nav">
       <mt:var name="object_nav">
     </mt:if>
