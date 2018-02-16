@@ -29,7 +29,7 @@
             forced_root_block: '',
 
             // Buttons using both in source and wysiwyg modes.
-            // plugin_mt_common_buttons1: 'mt_source_mode',
+            plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
             plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image',
