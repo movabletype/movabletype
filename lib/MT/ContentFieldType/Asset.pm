@@ -564,6 +564,8 @@ sub preview_handler {
     my @assets = MT->model('asset')->load( { id => $values, class => '*' } );
     my %asset_hash = map { $_->id => $_ } @assets;
 
+    require MT::FileMgr;
+    my $fmgr       = MT::FileMgr->new('Local');
     my $static_uri = MT->static_path;
 
     my $contents = '';
@@ -574,18 +576,38 @@ sub preview_handler {
         $label = '' unless defined $label && $label ne '';
         my $encoded_label = MT::Util::encode_html($label);
 
-        my ( $url, $w, $h )
-            = $asset->thumbnail_url( Width => 60, Height => 60, Square => 1 );
+        my $svg_class = $asset->class eq 'video' ? 'movie' : $asset->class;
 
-        if ($url) {
-            $contents
-                .= qq{<li><img class="img-thumbnail p-0" width="60" height="60" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+        if ( $fmgr->exists( $asset->file_path ) ) {
+            my ( $url, $w, $h ) = $asset->thumbnail_url(
+                Width  => 60,
+                Height => 60,
+                Square => 1
+            );
+
+            if ($url) {
+                $contents
+                    .= qq{<li><img class="img-thumbnail p-0" width="60" height="60" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+            }
+            else {
+                my $svg
+                    = qq{<svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class"></svg>};
+                $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+            }
         }
         else {
-            my $svg_class
-                = $asset->class eq 'video' ? 'movie' : $asset->class;
-            my $svg
-                = qq{<svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class"></svg>};
+            my $svg = qq{
+              <div class="mt-user">
+                <svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+                  <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class">
+                </svg>
+                <div class="mt-user__badge--danger">
+                  <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                    <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                  </svg>
+                </div>
+              </div>
+            };
             $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
         }
     }
