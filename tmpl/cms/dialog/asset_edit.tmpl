@@ -87,19 +87,25 @@ jQuery(window).load(init);
 
 <div class="container-fluid">
   <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
-    <div class="col-4 asset-preview-thumb">
 <mt:if name="has_thumbnail">
+    <div class="col-auto asset-preview-thumb">
       <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
-<mt:elseif name="asset_type" eq="image">
-      <mtapp:statusmsg
-        id="warning-has-no-thumbnail"
-        class="warning"
-        can_close="0">
-        <__trans phrase="Error creating thumbnail file.">
-      </mtapp:statusmsg>
-</mt:if>
     </div>
-    <div class="col-8 asset-metadata">
+<mt:elseif name="asset_type" eq="image">
+    <mtapp:statusmsg
+      id="warning-has-no-thumbnail"
+      class="warning"
+      can_close="0">
+      <__trans phrase="Error creating thumbnail file.">
+    </mtapp:statusmsg>
+<mt:else>
+    <div class="col-auto asset-type-icon picture small">
+      <svg title="<mt:var name="asset_type" escape="html">" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+        <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_<mt:if name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>">
+      </svg>
+    </div>
+</mt:if>
+    <div class="col asset-metadata">
       <ul class="list-unstyled metadata">
         <li class="metadata-item asset-name">
           <strong><__trans phrase="File Name">:</strong>
