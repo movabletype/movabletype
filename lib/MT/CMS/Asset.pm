@@ -11,6 +11,8 @@ use Symbol;
 use MT::Util
     qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
 
+my $default_thumbnail_size = 60;
+
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
@@ -148,6 +150,19 @@ sub edit {
 
         $param->{broken_metadata} = $obj->is_metadata_broken;
     }
+
+    $app->add_breadcrumb(
+        $app->translate('Assets'),
+        $app->uri(
+            'mode' => 'list',
+            args   => {
+                _type   => 'asset',
+                blog_id => $app->blog ? $app->blog->id : 0,
+            },
+        ),
+    );
+    $app->add_breadcrumb( $obj->label ) if $id;
+
     1;
 }
 
@@ -539,7 +554,8 @@ sub js_upload_file {
 
     # Make thumbnail
     my $thumb_url;
-    my $thumb_size = $app->param('thumbnail_size') || 45;
+    my $thumb_type;
+    my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         my ( $orig_height, $orig_width )
             = ( $asset->image_width, $asset->image_height );
@@ -562,13 +578,11 @@ sub js_upload_file {
         else {
             $thumb_url = $asset->url;
         }
+        $thumb_type = 'image';
     }
     else {
-        $thumb_url
-            = MT->static_path
-            . 'images/asset/'
-            . $asset->class_type
-            . '-45.png';
+        $thumb_type
+            = $asset->class_type eq 'video' ? 'movie' : $asset->class_type;
     }
 
     # Check extension auto-change
@@ -582,10 +596,11 @@ sub js_upload_file {
     }
 
     my $metadata = {
-        id        => $asset->id,
-        filename  => $asset->file_name,
-        blog_id   => $asset->blog_id,
-        thumbnail => $thumb_url,
+        id             => $asset->id,
+        filename       => $asset->file_name,
+        blog_id        => $asset->blog_id,
+        thumbnail_type => $thumb_type,
+        $thumb_url ? ( thumbnail => $thumb_url ) : (),
         ( $extension_message ? ( message => $extension_message ) : () ),
     };
     return $app->json_result( { asset => $metadata } );
@@ -1016,9 +1031,16 @@ sub build_asset_hasher {
         if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail}  = 1;
             $row->{can_edit_image} = 1;
-            my $height = $thumb_height || $default_thumb_height || 45;
-            my $width  = $thumb_width  || $default_thumb_width  || 45;
-            my $square = $height == 45 && $width == 45;
+            my $height
+                = $thumb_height
+                || $default_thumb_height
+                || $default_thumbnail_size;
+            my $width
+                = $thumb_width
+                || $default_thumb_width
+                || $default_thumbnail_size;
+            my $square = $height == $default_thumbnail_size
+                && $width == $default_thumbnail_size;
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
                 = $obj->thumbnail_url(
                 Height => $height,
@@ -3089,11 +3111,14 @@ sub dialog_insert_options {
     my $options_loop;
     foreach my $a (@$assets) {
         my $param = {
-            id          => $a->id,
-            filename    => $a->file_name,
-            url         => $a->url,
-            label       => $a->label,
-            thumbnail   => _make_thumbnail_url( $a, { size => 45 } ),
+            id        => $a->id,
+            filename  => $a->file_name,
+            url       => $a->url,
+            label     => $a->label,
+            thumbnail => _make_thumbnail_url(
+                $a, { size => $default_thumbnail_size }
+            ),
+            thumbnail_type => $a->class eq 'video' ? 'movie' : $a->class,
             class_label => $a->class_label,
         };
         my $html = $a->insert_options($param) || '';
@@ -3198,26 +3223,55 @@ sub insert_asset {
         }
     }
 
-    my $tmpl;
-    $tmpl = $app->load_tmpl(
-        'dialog/asset_insert.tmpl',
-        {   upload_html => $text || '',
-            edit_field => $edit_field,
-            content_field_id => $content_field_id,
-            $content_field_id ? ( can_multi => $can_multi ) : (),
-        },
-    );
-
-    my $ctx = $tmpl->context;
-    $ctx->stash( 'assets', $assets );
-    return $tmpl;
+    if ($content_field_id) {
+        my @assets_data;
+        my $hasher = build_asset_hasher(
+            $app,
+            PreviewWidth  => 120,
+            PreviewHeight => 120
+        );
+        for my $obj (@$assets) {
+            my $row = $obj->get_values;
+            $hasher->( $obj, $row );
+            push @assets_data,
+                {
+                asset_dimensions     => $row->{'Actual Dimensions'},
+                asset_file_name      => $row->{file_name},
+                asset_id             => $row->{id},
+                asset_label          => $row->{label},
+                asset_preview_url    => $row->{preview_url},
+                asset_preview_height => $row->{preview_height},
+                asset_preview_width  => $row->{preview_width},
+                asset_type           => $row->{class},
+                };
+        }
+        return $app->load_tmpl(
+            'dialog/asset_field_insert.tmpl',
+            {   assets           => \@assets_data,
+                can_multi        => $can_multi,
+                content_field_id => $content_field_id,
+            }
+        );
+    }
+    else {
+        my $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {   upload_html => $text || '',
+                edit_field => $edit_field,
+            },
+        );
+        my $ctx = $tmpl->context;
+        $ctx->stash( 'assets', $assets );
+        return $tmpl;
+    }
 }
 
 sub _make_thumbnail_url {
     my $asset = shift;
     my ($param) = @_;
     my $thumb_url;
-    my $thumb_size = $param && $param->{size} ? $param->{size} : 45;
+    my $thumb_size
+        = $param && $param->{size} ? $param->{size} : $default_thumbnail_size;
 
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         my ( $orig_height, $orig_width )
@@ -3238,13 +3292,6 @@ sub _make_thumbnail_url {
         else {
             $thumb_url = $asset->url;
         }
-    }
-    else {
-        $thumb_url
-            = MT->static_path
-            . 'images/asset/'
-            . $asset->class_type
-            . '-45.png';
     }
 
     return $thumb_url;

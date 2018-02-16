@@ -17,8 +17,8 @@ use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
-    $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
-    $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL
+    $PRODUCT_NAME,   $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID,
+    $RELEASE_NUMBER, $PORTAL_URL,   $RELEASE_VERSION_ID
 );
 our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
@@ -37,11 +37,13 @@ BEGIN {
     ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0025' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
+        $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
         '7.0',                '__PRODUCT_VERSION_ID__',
-        '__RELEASE_NUMBER__', '__PORTAL_URL__'
+        '__RELEASE_NUMBER__', '__PORTAL_URL__',
+        '__RELEASE_VERSION_ID__',
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -58,6 +60,10 @@ BEGIN {
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
         $RELEASE_NUMBER = 0;
+    }
+
+    if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
+        $RELEASE_VERSION_ID = 'r.2401';
     }
 
     $DebugMode = 0;
@@ -93,13 +99,14 @@ sub VERSION {
     return UNIVERSAL::VERSION(@_);
 }
 
-sub version_number  {$VERSION}
-sub version_id      {$VERSION_ID}
-sub product_code    {$PRODUCT_CODE}
-sub product_name    {$PRODUCT_NAME}
-sub product_version {$PRODUCT_VERSION}
-sub schema_version  {$SCHEMA_VERSION}
-sub release_number  {$RELEASE_NUMBER}
+sub version_number     {$VERSION}
+sub version_id         {$VERSION_ID}
+sub product_code       {$PRODUCT_CODE}
+sub product_name       {$PRODUCT_NAME}
+sub product_version    {$PRODUCT_VERSION}
+sub schema_version     {$SCHEMA_VERSION}
+sub release_number     {$RELEASE_NUMBER}
+sub release_version_id {$RELEASE_VERSION_ID}
 
 sub portal_url {
     if ( my $url = const('PORTAL_URL') ) {
@@ -740,7 +747,8 @@ sub init_config {
                 foreach (@paths) {
                     next if File::Spec->file_name_is_absolute($path);
                     my $abs_path = File::Spec->catfile( $config_dir, $path );
-                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                        unless -d $abs_path;
                     $_ = $abs_path;
                 }
                 $cfg->$meth( \@paths );
@@ -749,7 +757,8 @@ sub init_config {
                 next if ref($path);    # unexpected referene, ignore
                 if ( !File::Spec->file_name_is_absolute($path) ) {
                     my $abs_path = File::Spec->catfile( $config_dir, $path );
-                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                        unless -d $abs_path;
                     $cfg->$meth($abs_path);
                 }
             }
@@ -759,7 +768,8 @@ sub init_config {
             my $path = $cfg->default($meth);
             if ( defined $path ) {
                 my $abs_path = File::Spec->catfile( $config_dir, $path );
-                $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path ) unless -d $abs_path;
+                $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                    unless -d $abs_path;
                 $cfg->$meth($abs_path);
             }
         }
@@ -1611,8 +1621,8 @@ sub ping_and_save {
     1;
 }
 
-sub needs_ping { return }
-sub update_ping_list { return }
+sub needs_ping       {return}
+sub update_ping_list {return}
 
 {
     my $LH;
@@ -2061,15 +2071,16 @@ sub set_default_tmpl_params {
     }
     $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
     $param->{mt_beta}  = 1 if MT->version_id =~ m/^\d+\.\d+(?:b|rc)/;
-    $param->{mt_alpha_or_beta}  = $param->{mt_alpha} || $param->{mt_beta};
-    $param->{static_uri}        = $mt->static_path;
-    $param->{mt_version}        = MT->version_number;
-    $param->{mt_version_id}     = MT->version_id;
-    $param->{mt_product_code}   = MT->product_code;
-    $param->{mt_product_name}   = $mt->translate( MT->product_name );
-    $param->{language_tag}      = substr( $mt->current_language, 0, 2 );
-    $param->{language_encoding} = $mt->charset;
-    $param->{optimize_ui}       = $mt->build_id && !$MT::DebugMode;
+    $param->{mt_alpha_or_beta}      = $param->{mt_alpha} || $param->{mt_beta};
+    $param->{static_uri}            = $mt->static_path;
+    $param->{mt_version}            = MT->version_number;
+    $param->{mt_version_id}         = MT->version_id;
+    $param->{mt_release_version_id} = MT->release_version_id;
+    $param->{mt_product_code}       = MT->product_code;
+    $param->{mt_product_name}       = $mt->translate( MT->product_name );
+    $param->{language_tag}          = substr( $mt->current_language, 0, 2 );
+    $param->{language_encoding}     = $mt->charset;
+    $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
@@ -2098,11 +2109,14 @@ sub set_default_tmpl_params {
     my $switch = $mt->config->PluginSwitch || {};
     my %enabled_plugins;
     for my $plugin_sig ( keys %MT::Plugins ) {
-        next if defined $MT::Plugins{$plugin_sig}{enabled} && !$MT::Plugins{$plugin_sig}{enabled};
+        next
+            if defined $MT::Plugins{$plugin_sig}{enabled}
+            && !$MT::Plugins{$plugin_sig}{enabled};
         next if defined $switch->{$plugin_sig} && !$switch->{$plugin_sig};
         $enabled_plugins{$plugin_sig} = 1;
     }
-    $enabled_plugins{CommentsTrackback} = 1 if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
+    $enabled_plugins{CommentsTrackback} = 1
+        if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
     $param->{enabled_plugins} = \%enabled_plugins;
 
     $tmpl->param($param);
@@ -2446,107 +2460,81 @@ sub commenter_authenticators {
 sub core_commenter_authenticators {
     return {
         'OpenID' => {
-            label             => 'OpenID',
-            logo              => 'images/comment/signin_openid.png',
-            logo_small        => 'images/comment/openid_logo.png',
-            order             => 10,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'OpenID',
+            logo       => 'images/comment/signin_openid.png',
+            logo_small => 'images/comment/openid_logo.png',
+            order      => 10,
+            disable => 1,    # overriden by OpenID plugin
         },
         'LiveJournal' => {
-            label             => 'LiveJournal',
-            logo              => 'images/comment/signin_livejournal.png',
-            logo_small        => 'images/comment/livejournal_logo.png',
-            order             => 11,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'LiveJournal',
+            logo       => 'images/comment/signin_livejournal.png',
+            logo_small => 'images/comment/livejournal_logo.png',
+            order      => 11,
+            disable => 1,    # overriden by OpenID plugin
         },
         'Vox' => {
-            label             => 'Vox',
-            logo              => 'images/comment/signin_vox.png',
-            logo_small        => 'images/comment/vox_logo.png',
-            order             => 12,
-            disable           => 1,
+            label      => 'Vox',
+            logo       => 'images/comment/signin_vox.png',
+            logo_small => 'images/comment/vox_logo.png',
+            order      => 12,
+            disable    => 1,
         },
         'Google' => {
             label      => 'Google',
-            logo              => 'images/comment/google.png',
-            logo_small        => 'images/comment/google_logo.png',
-            order             => 13,
-            disable           => 1,
+            logo       => 'images/comment/google.png',
+            logo_small => 'images/comment/google_logo.png',
+            order      => 13,
+            disable    => 1,
         },
         'Yahoo' => {
-            label             => 'Yahoo!',
-            logo              => 'images/comment/yahoo.png',
-            logo_small        => 'images/comment/favicon_yahoo.png',
-            order             => 14,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'Yahoo!',
+            logo       => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            order      => 14,
+            disable => 1,    # overriden by OpenID plugin
         },
         AIM => {
-            label             => 'AIM',
-            logo              => 'images/comment/aim.png',
-            logo_small        => 'images/comment/aim_logo.png',
-            order             => 15,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'AIM',
+            logo       => 'images/comment/aim.png',
+            logo_small => 'images/comment/aim_logo.png',
+            order      => 15,
+            disable => 1,    # overriden by OpenID plugin
         },
         'WordPress' => {
-            label             => 'WordPress.com',
-            logo              => 'images/comment/wordpress.png',
-            logo_small        => 'images/comment/wordpress_logo.png',
-            order             => 16,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'WordPress.com',
+            logo       => 'images/comment/wordpress.png',
+            logo_small => 'images/comment/wordpress_logo.png',
+            order      => 16,
+            disable => 1,    # overriden by OpenID plugin
         },
         'TypeKey' => {
-            disable           => 1,
-            class             => 'MT::Auth::TypeKey',
-            label             => 'TypePad',
-            login_form        => 'comment/auth_typepad.tmpl',
-            login_form_params => sub {
-                my ( $key, $blog_id, $entry_id, $static ) = @_;
-                my $entry;
-                $entry = MT::Entry->load($entry_id) if $entry_id;
-
-                ## TypeKey URL
-                require MT::Template::Context;
-                my $ctx = MT::Template::Context->new;
-                $ctx->stash( 'blog_id', $blog_id );
-                my $blog = MT::Blog->load($blog_id);
-                $ctx->stash( 'blog',  $blog );
-                $ctx->stash( 'entry', $entry );
-                my $params = {};
-                require MT::Template::Tags::Comment;
-                $params->{tk_signin_url}
-                    = MT::Template::Tags::Comment::_hdlr_remote_sign_in_link(
-                    $ctx, { static => $static } );
-                return $params;
-            },
+            disable    => 1,
+            label      => 'TypePad',
             logo       => 'images/comment/signin_typepad.png',
             logo_small => 'images/comment/typepad_logo.png',
-            condition  => sub {
-                my ($blog) = @_;
-                return 1 unless $blog;
-                return $blog->remote_auth_token ? 1 : 0;
-            },
             order => 17,
         },
         'YahooJP' => {
-            label             => 'Yahoo! JAPAN',
-            logo              => 'images/comment/yahoo.png',
-            logo_small        => 'images/comment/favicon_yahoo.png',
-            order             => 18,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'Yahoo! JAPAN',
+            logo       => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            order      => 18,
+            disable => 1,    # overriden by OpenID plugin
         },
         'livedoor' => {
-            label             => 'livedoor',
-            logo              => 'images/comment/signin_livedoor.png',
-            logo_small        => 'images/comment/livedoor_logo.png',
-            order             => 20,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'livedoor',
+            logo       => 'images/comment/signin_livedoor.png',
+            logo_small => 'images/comment/livedoor_logo.png',
+            order      => 20,
+            disable => 1,    # overriden by OpenID plugin
         },
         'Hatena' => {
-            label             => 'Hatena',
-            logo              => 'images/comment/signin_hatena.png',
-            logo_small        => 'images/comment/hatena_logo.png',
-            order             => 21,
-            disable           => 1, # overriden by OpenID plugin
+            label      => 'Hatena',
+            logo       => 'images/comment/signin_hatena.png',
+            logo_small => 'images/comment/hatena_logo.png',
+            order      => 21,
+            disable => 1,    # overriden by OpenID plugin
         },
     };
 }
@@ -3486,6 +3474,12 @@ Returns the version of the MT database schema.
 
 Returns the release number of MT. For example, if I<version_id> returned C<5.2.7>,
 I<release_number> would return C<7>.
+
+=head2 MT->release_version_id
+
+Returns the public release numbner of MT. This number contains schema version and
+build number. For example, if I<schema_version> returned C<7.0024> and build number
+returned C<1>, I<release_version_id> would return C<r.2401>.
 
 =head2 $mt->id
 

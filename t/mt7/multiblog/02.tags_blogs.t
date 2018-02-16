@@ -84,7 +84,6 @@ sub register_3rd_blog {
     $blog->id(3);
     $blog->class('blog');
     $blog->parent_id(2);
-    $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
     my $classic_blog = MT::Theme->load('classic_blog')

@@ -86,7 +86,6 @@ sub make_website {
     my $website = MT::Website->new();
     $website->set_values($values);
     $website->class('website');
-    $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website: " . $website->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
@@ -147,7 +146,6 @@ sub make_blog {
     my $blog = MT::Blog->new();
     $blog->set_values($values);
     $blog->class('blog');
-    $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );

@@ -245,12 +245,24 @@ sub permission {
 }
 
 sub _manage_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my $field_permission = $self->field_permissions;
+
+    my @permissions = (
+        $self->_create_content_data_permission,
+        $self->_publish_content_data_permission,
+        $self->_edit_all_content_data_permission,
+        %$field_permission,
+    );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group => $self->permission_group,
-            label => 'Manage Content Data',
-            order => 100,
+            group        => $self->permission_group,
+            label        => 'Manage Content Data',
+            order        => 100,
+            inherit_from => \@perms,
         }
     );
 }
@@ -269,7 +281,11 @@ sub _create_content_data_permission {
 }
 
 sub _publish_content_data_permission {
-    my $self            = shift;
+    my $self = shift;
+
+    my @permissions = ( $self->_create_content_data_permission, );
+    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
@@ -281,7 +297,9 @@ sub _publish_content_data_permission {
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
+                'rebuild'                                               => 1,
             },
+            inherit_from => \@perms,
         }
     );
 }
@@ -331,11 +349,12 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types = eval { __PACKAGE__->load };
-    if ($@) {
-        @content_types = ();
+    my $iter  = __PACKAGE__->load_iter();
+    my @all_permissions;
+    while ( my $content_type = $iter->() ) {
+        push( @all_permissions, $content_type->permissions );
     }
-    my %all_permission = map { %{ $_->permissions } } @content_types;
+    my %all_permission = map { %{$_} } @all_permissions;
     return \%all_permission;
 }
 

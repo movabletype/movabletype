@@ -1625,14 +1625,10 @@ BEGIN {
             },
             template     => { data_api_scope_mode => 'strict', },
             category_set => {
-                object_label     => 'Category Set',
-                primary          => 'name',
-                view             => [ 'website', 'blog' ],
-                default_sort_key => 'name',
-                permission       => {
-                    permit_action => 'access_to_category_set_list',
-                    inherit       => 0,
-                },
+                object_label        => 'Category Set',
+                primary             => 'name',
+                view                => [ 'website', 'blog' ],
+                default_sort_key    => 'name',
                 data_api_permission => undef,
                 scope_mode          => 'this',
             },
@@ -1930,15 +1926,10 @@ BEGIN {
             'DeepCopyRecursiveLimit'   => { default => 2 },
             'BulkLoadMetaObjectsLimit' => { default => 100 },
             'DisableMetaObjectCache'   => { default => 1, },
-            'RegKeyURL' =>
-                { default => 'http://www.typekey.com/extras/regkeys.txt', },
-            'IdentitySystem' =>
-                { default => 'http://www.typekey.com/t/typekey', },
             'SignOnURL' =>
                 { default => 'https://www.typekey.com/t/typekey/login?', },
             'SignOffURL' =>
                 { default => 'https://www.typekey.com/t/typekey/logout?', },
-            'IdentityURL' => { default => "http://profile.typekey.com/", },
             'ReturnToURL' => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
@@ -1960,16 +1951,6 @@ BEGIN {
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
 
-# 'MTNewsURL' => {
-#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-# },
-#            'LearningNewsURL' => {
-#                default => 'http://learning.movabletype.org/newsbox.html',
-#            },
-
-            # 'HackingNewsURL' => {
-            #     default => 'http://hacking.movabletype.org/newsbox.html',
-            # },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
@@ -3321,13 +3302,15 @@ sub load_core_permissions {
                 'access_to_system_dashboard'              => 1,
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
+                'use_tools:search'                        => 0,
             },
         },
         'system.manage_content_types' => {
-            group            => 'sys_admin',
-            label            => 'Manage Content Types',
-            order            => 1000,
-            inherit_from     => ['system.manage_content_data'],
+            group => 'sys_admin',
+            label => 'Manage Content Types',
+            order => 1000,
+            inherit_from =>
+                [ 'system.manage_content_data', 'blog.manage_category_set' ],
             permitted_action => {
                 'access_to_system_dashboard' => 1,
                 'create_new_content_type'    => 1,
@@ -3339,6 +3322,10 @@ sub load_core_permissions {
                 'save_folder'                => 1,
                 'save_multiple_content_type' => 1,
                 'save_page'                  => 1,
+                'access_to_website_list'     => 1,
+                'access_to_blog_list'        => 1,
+                'use_tools:search'           => 0,
+
             },
         },
     };

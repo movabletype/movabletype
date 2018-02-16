@@ -32,9 +32,10 @@ sub core_content_field_types {
 }
 
 sub _content_type_registry {
-    {   label     => 'Content Type',
-        data_type => 'integer',
-        order     => 10,
+    {   label      => 'Content Type',
+        data_type  => 'integer',
+        order      => 10,
+        icon_class => 'ic_contentstype',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_content_type.tmpl',
@@ -80,7 +81,6 @@ sub _content_type_registry {
                 required
                 display
                 multiple
-                can_add
                 max
                 min
                 source
@@ -93,6 +93,7 @@ sub _single_line_text_registry {
     {   label      => 'Single Line Text',
         data_type  => 'varchar',
         order      => 20,
+        icon_class => 'ic_singleline',
         field_html => 'field_html/field_html_single_line_text.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::SingleLineText::field_html_params',
@@ -126,9 +127,10 @@ sub _single_line_text_registry {
 }
 
 sub _multi_line_text_registry {
-    {   label     => 'Multi Line Text',
-        data_type => 'blob',
-        order     => 30,
+    {   label      => 'Multi Line Text',
+        data_type  => 'blob',
+        order      => 30,
+        icon_class => 'ic_multiline',
         data_load_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
         field_value_handler =>
@@ -137,6 +139,7 @@ sub _multi_line_text_registry {
             multi_line_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
+                html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },
@@ -273,6 +276,7 @@ sub _date_registry {
     {   label      => 'Date',
         data_type  => 'datetime',
         order      => 70,
+        icon_class => 'ic_date',
         field_html => 'field_html/field_html_date.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Date::field_html_params',
@@ -320,6 +324,7 @@ sub _time_registry {
     {   label      => 'Time',
         data_type  => 'datetime',
         order      => 80,
+        icon_class => 'ic_time',
         field_html => 'field_html/field_html_time.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Time::field_html_params',
@@ -362,9 +367,10 @@ sub _time_registry {
 }
 
 sub _select_box_registry {
-    {   label     => 'Select Box',
-        data_type => 'varchar',
-        order     => 90,
+    {   label      => 'Select Box',
+        data_type  => 'varchar',
+        order      => 90,
+        icon_class => 'ic_selectbox',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_select_box.tmpl',
@@ -412,6 +418,7 @@ sub _radio_button_registry {
     {   label      => 'Radio Button',
         data_type  => 'varchar',
         order      => 100,
+        icon_class => 'ic_radio',
         field_html => 'field_html/field_html_radio_button.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::RadioButton::field_html_params',
@@ -451,9 +458,10 @@ sub _radio_button_registry {
 }
 
 sub _checkboxes_registry {
-    {   label     => 'Checkboxes',
-        data_type => 'varchar',
-        order     => 110,
+    {   label      => 'Checkboxes',
+        data_type  => 'varchar',
+        order      => 110,
+        icon_class => 'ic_checkbox',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_checkboxes.tmpl',
@@ -500,9 +508,10 @@ sub _checkboxes_registry {
 }
 
 sub _asset_registry {
-    {   label     => 'Asset',
-        data_type => 'integer',
-        order     => 120,
+    {   label      => 'Asset',
+        data_type  => 'integer',
+        order      => 120,
+        icon_class => 'ic_asset',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
@@ -615,9 +624,10 @@ sub _asset_registry {
 }
 
 sub _audio_registry {
-    {   label     => 'Audio Asset',
-        data_type => 'integer',
-        order     => 130,
+    {   label      => 'Audio Asset',
+        data_type  => 'integer',
+        order      => 130,
+        icon_class => 'ic_audio',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
@@ -843,9 +853,10 @@ sub _video_registry {
 }
 
 sub _image_registry {
-    {   label     => 'Image Asset',
-        data_type => 'integer',
-        order     => 150,
+    {   label      => 'Image Asset',
+        data_type  => 'integer',
+        order      => 150,
+        icon_class => 'ic_image',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_asset',
         field_html => 'field_html/field_html_asset.tmpl',
@@ -867,12 +878,6 @@ sub _image_registry {
                 html => '$Core::MT::ContentFieldType::Asset::html',
                 single_select_options =>
                     '$Core::MT::ContentFieldType::Asset::single_select_options',
-                sub_fields => [
-                    {   class   => 'thumbnail',
-                        label   => 'Thumbnail',
-                        display => 'default',
-                    },
-                ],
                 terms =>
                     '$Core::MT::ContentFieldType::Common::terms_multiple',
             },
@@ -982,6 +987,7 @@ sub _embedded_text_registry {
             embedded_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
+                html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },
@@ -1000,9 +1006,10 @@ sub _embedded_text_registry {
 }
 
 sub _categories_registry {
-    {   label     => 'Categories',
-        data_type => 'integer',
-        order     => 170,
+    {   label      => 'Categories',
+        data_type  => 'integer',
+        order      => 170,
+        icon_class => 'ic_category',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Categories::data_load_handler',
         field_html => 'field_html/field_html_categories.tmpl',
@@ -1056,9 +1063,10 @@ sub _categories_registry {
 }
 
 sub _tags_registry {
-    {   label     => 'Tags',
-        data_type => 'integer',
-        order     => 180,
+    {   label      => 'Tags',
+        data_type  => 'integer',
+        order      => 180,
+        icon_class => 'ic_tag',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Tags::data_load_handler',
         field_html => 'field_html/field_html_tags.tmpl',
@@ -1101,9 +1109,10 @@ sub _tags_registry {
 }
 
 sub _list_registry {
-    {   label     => 'list',
-        data_type => 'varchar',
-        order     => 190,
+    {   label      => 'list',
+        data_type  => 'varchar',
+        order      => 190,
+        icon_class => 'ic_list',
         data_load_handler =>
             '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
         field_html => 'field_html/field_html_list.tmpl',

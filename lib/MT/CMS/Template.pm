@@ -904,6 +904,23 @@ sub edit {
             foreach my $name (@events) {
                 $param->{ 'cache_expire_event_' . $name } = 1;
             }
+
+            if ($blog) {
+                my @ct_list;
+                my $ct_iter = $app->model('content_type')
+                    ->load_iter( { blog_id => $blog->id, } );
+                while ( my $ct = $ct_iter->() ) {
+                    my $key  = 'content_data_' . $ct->unique_id;
+                    my $item = {
+                        label => $ct->name,
+                        type  => $key,
+                    };
+                    $item->{enabled} = 1
+                        if $param->{ 'cache_expire_event_' . $key };
+                    push @ct_list, $item;
+                }
+                $param->{cache_expire_event_ct_loop} = \@ct_list;
+            }
         }
     }
 

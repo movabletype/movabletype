@@ -1118,14 +1118,23 @@ sub _cb_mark_blog {
         $type = $obj->class_type;
     }
     if ( $type
-        !~ m/^(entry|comment|page|folder|category|tbping|asset|author|template)$/
+        !~ m/^(entry|comment|page|folder|category|tbping|asset|author|template|content_data|content_type)$/
         )
     {
         undef $type;
     }
 
+
     if ( $obj_type eq 'MT::Blog' ) {
         delete $blogs_touched->{ $obj->id };
+    }
+    elsif ( $obj_type eq 'MT::ContentData' ) {
+        if ( $obj->blog_id ) {
+            my $th = $blogs_touched->{ $obj->blog_id } ||= {};
+            if ( my $ct = $obj->content_type ) {
+                $th->{'content_data_'.$ct->unique_id} = 1;
+            }
+        }
     }
     else {
         if ( $obj->blog_id ) {
@@ -1618,10 +1627,6 @@ sub make_commenter_session {
         $url  = $user->url;
     }
 
-    # test
-    $session_key = $app->param('sig')
-        if $user && $user->auth_type eq 'TypeKey';
-
     require MT::Session;
     my $sess_obj = MT::Session->new();
     $sess_obj->id($session_key);
@@ -1950,9 +1955,7 @@ sub external_authenticators {
 
         my $auth = $cas{$key} or next;
 
-        if (   $key ne 'TypeKey'
-            && $key ne 'OpenID'
-            && $key ne 'Vox'
+        if (   $key ne 'OpenID'
             && $key ne 'LiveJournal' )
         {
             push @external_authenticators,
@@ -1975,10 +1978,6 @@ sub external_authenticators {
         }
     }
 
-    unshift @external_authenticators, $otherauths{'TypeKey'}
-        if exists $otherauths{'TypeKey'};
-    unshift @external_authenticators, $otherauths{'Vox'}
-        if exists $otherauths{'Vox'};
     unshift @external_authenticators, $otherauths{'LiveJournal'}
         if exists $otherauths{'LiveJournal'};
     unshift @external_authenticators, $otherauths{'OpenID'}
@@ -3296,10 +3295,10 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li>' . $msg . '</li>' . "\n";
+                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
                         }
                     }
-                    $trace = "<li>"
+                    $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'
                         . sprintf( "Request completed in %.3f seconds.",
                         Time::HiRes::time() - $app->{start_request_time} )
                         . "</li>\n"
@@ -3314,7 +3313,7 @@ sub run {
                                 <h4 class="my-0">$debug_panel_header</h4>
                               </div>
                               <div class="card-block p-4 debug-panel-inner" style="background: #FFE0E0;">
-                                <ul class="list-unstyled">
+                                <ul class="list-unstyled" style="list-style: none; text-align: left">
                                   $trace
                                 </ul>
                               </div>

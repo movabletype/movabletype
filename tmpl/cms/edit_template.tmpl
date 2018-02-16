@@ -945,6 +945,14 @@ function setSyntaxHighlight(on_or_off) {
                 <label class="custom-control-label" for="cache-event-asset"><__trans phrase="Asset"></label>
               </div>
             </div>
+      <mt:loop name="cache_expire_event_ct_loop">
+            <div class="form-check form-check-inline">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" value="<mt:var name="type" escape="html">" name="cache_expire_event" id="cache-event-<mt:var name="type" escape="html">" class="custom-control-input"<mt:if name="enabled"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
+                <label class="custom-control-label" for="cache-event-<mt:var name="type" escape="html">"><mt:var name="label" escape="html"></Label>
+              </div>
+            </div>
+      </mt:loop>
           </div>
         </li>
       </ul>

@@ -50,7 +50,6 @@ sub edit {
             && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
-        $param->{identity_system}     = $app->config('IdentitySystem');
         $param->{handshake_return}    = $app->base . $app->mt_uri;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
         $param->{ "moderate_comments_"
@@ -71,8 +70,6 @@ sub edit {
                     $cmtauth{$auth}->{disabled} = 1
                         unless $c->( $blog, \$reason );
                     $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
-                    delete $cmtauth{TypeKey}
-                        if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
                 }
             }
         }
@@ -520,9 +517,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}      = $app->param('no_writedir');
-    $param{no_cachedir}      = $app->param('no_cachedir');
-    $param{no_writecache}    = $app->param('no_writecache');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -605,7 +602,6 @@ sub cfg_registration {
     }
     $param{allow_reg_comments}     = $blog->allow_reg_comments;
     $param{allow_unreg_comments}   = $blog->allow_unreg_comments;
-    $param{require_typekey_emails} = $blog->require_typekey_emails;
     $param{require_comment_emails} = $blog->require_comment_emails;
     $param{allow_commenter_regist} = $blog->allow_commenter_regist;
 
@@ -624,8 +620,6 @@ sub cfg_registration {
                 $cmtauth{$auth}->{disabled} = 1
                     unless $c->( $blog, \$reason );
                 $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
-                delete $cmtauth{TypeKey}
-                    if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
             }
         }
     }
@@ -1507,6 +1501,7 @@ sub dialog_select_weblog {
         $confirm_js = 'saveFavorite';
     }
     if (   !$auth->is_superuser
+        && !$auth->permissions(0)->can_do('access_to_blog_list')
         && !$auth->permissions(0)->can_do('edit_templates') )
     {
         use MT::Permission;
@@ -1624,8 +1619,7 @@ sub pre_save {
         }
         elsif ( $screen eq 'cfg_registration' ) {
             @fields = qw( allow_commenter_regist
-                require_comment_emails allow_unreg_comments
-                require_typekey_emails );
+                require_comment_emails allow_unreg_comments );
         }
         elsif ( $screen eq 'cfg_entry' ) {
             @fields = qw( allow_comments_default
@@ -1742,15 +1736,6 @@ sub pre_save {
             my $c_old = $obj->commenter_authenticators;
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;
-            if ( $app->param('enabled_TypeKey') ) {
-                my $require_typekey_emails
-                    = $app->param('require_typekey_emails');
-                $rebuild = $obj->require_typekey_emails ? 0 : 1;
-                $obj->require_typekey_emails($require_typekey_emails);
-            }
-            else {
-                $obj->require_typekey_emails(0);
-            }
             my $tok = '';
             ( $tok = $obj->remote_auth_token ) =~ s/\s//g;
             $obj->remote_auth_token($tok);
@@ -3627,6 +3612,7 @@ sub cms_pre_load_filtered_list {
 
     my $user = $load_options->{user} || $app->user;
     if (   $user->is_superuser
+        || $user->permissions(0)->can_do('access_to_blog_list')
         || $user->permissions(0)->can_do('edit_templates') )
     {
         if ( $terms->{class} eq 'blog' ) {

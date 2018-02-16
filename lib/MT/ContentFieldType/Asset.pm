@@ -31,17 +31,39 @@ sub field_html_params {
     my $value = $field_data->{value} || [];
     $value = [$value] unless ref $value eq 'ARRAY';
 
+    require MT::CMS::Asset;
+    my $hasher = MT::CMS::Asset::build_asset_hasher(
+        $app,
+        PreviewWidth  => 120,
+        PreviewHeight => 120,
+    );
+
     my @asset_loop;
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
     my $iter = $app->model($type)->load_iter( { id => $value } );
+    my %asset_hash;
     while ( my $asset = $iter->() ) {
+        $asset_hash{ $asset->id } = $asset;
+    }
+    for my $asset_id (@$value) {
+        my $asset = $asset_hash{$asset_id} or next;
+
+        my $row = $asset->get_values;
+        $hasher->( $asset, $row );
+
         push @asset_loop,
             {
-            asset_id      => $asset->id,
-            asset_blog_id => $asset->blog_id,
-            asset_label   => $asset->label,
-            asset_thumb   => $asset->thumbnail_url( Width => 100 ),
+            asset_id             => $row->{id},
+            asset_blog_id        => $row->{blog_id},
+            asset_dimensions     => $row->{'Actual Dimensions'},
+            asset_file_name      => $row->{file_name},
+            asset_file_size      => $row->{file_size},
+            asset_label          => $row->{label},
+            asset_preview_url    => $row->{preview_url},
+            asset_preview_height => $row->{preview_height},
+            asset_preview_width  => $row->{preivew_width},
+            asset_type           => $row->{class},
             };
     }
 
@@ -61,11 +83,11 @@ sub field_html_params {
     my $asset_class = $app->model($type);
 
     {   asset_loop => @asset_loop ? \@asset_loop : undef,
-        asset_type => $asset_class->class_type,
-        multiple   => $multiple,
-        required   => $required,
-        type_label => $asset_class->class_label,
-        type_label_plural => $asset_class->class_label_plural,
+        asset_type_for_field => $asset_class->class_type,
+        multiple             => $multiple,
+        required             => $required,
+        type_label           => $asset_class->class_label,
+        type_label_plural    => $asset_class->class_label_plural,
     };
 }
 
@@ -399,69 +421,34 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $is_image  = $prop->idx_type eq 'asset_image';
-    my $cd_id     = $content_data->id;
-    my $field_id  = $prop->content_field_id;
-    my $asset_ids = $content_data->data->{$field_id} || [];
+    my $cd_id       = $content_data->id;
+    my $field_id    = $prop->content_field_id;
+    my $asset_ids   = $content_data->data->{$field_id} || [];
+    my $asset_count = MT::Asset->count( { id => $asset_ids } ) || 0;
 
-    my %assets;
-    my $iter = MT::Asset->load_iter( { id => $asset_ids } );
-    while ( my $asset = $iter->() ) {
-        $assets{ $asset->id } = $asset;
-    }
-    my @assets = grep {$_} map { $assets{$_} } @$asset_ids;
-
-    my $can_double_encode = 1;
-
-    my ( @labels, @thumbnails );
-    for my $asset (@assets) {
-        my $label
+    if ( $asset_count == 1 ) {
+        my $can_double_encode = 1;
+        my $asset = MT::Asset->load( { id => $asset_ids } );
+        my $encoded_label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
-
-        push @labels,
-            qq{<a href="${edit_link}" class="asset-field-label">${label}</a>};
-        if ($is_image) {
-            my $thumbnail_html = _thumbnail_html( $app, $asset );
-            push @thumbnails,
-                qq{<a href="${edit_link}">${thumbnail_html}</a>};
-        }
+        return qq{<a href="$edit_link">$encoded_label</a>};
     }
-
-    my $labels_html
-        = qq{<span id="asset-labels-${cd_id}-${field_id}" class="label">}
-        . join( '', @labels )
-        . '</span>';
-
-    if ($is_image) {
-        my $thumbnails_html
-            = qq{<span id="asset-thumbnails-${cd_id}-${field_id}" class="thumbnail">}
-            . join( '', @thumbnails )
-            . '</span>';
-        my $js = <<"__JS__";
-<script>
-jQuery(document).ready(function() {
-  jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").change(function() {
-    changeLabels();
-  });
-
-  function changeLabels() {
-    if (jQuery("#custom-prefs-content_field_${field_id}\\\\.thumbnail").prop('checked')) {
-      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'none');
-    } else {
-      jQuery('#asset-labels-${cd_id}-${field_id}').css('display', 'inline');
-    }
-  }
-
-  changeLabels();
-});
-</script>
-__JS__
-
-        $labels_html . $thumbnails_html . $js;
-    }
-    else {
-        $labels_html;
+    elsif ( $asset_count > 1 ) {
+        my $href = $app->uri(
+            mode => 'list',
+            args => {
+                _type           => 'asset',
+                blog_id         => $app->blog->id,
+                filter          => 'content_field',
+                filter_val      => $field_id,
+                content_data_id => $cd_id,
+            },
+        );
+        return
+              qq{<a href="$href">(}
+            . $app->translate( 'Show all [_1] assets', $asset_count )
+            . ')</a>';
     }
 }
 
@@ -477,61 +464,6 @@ sub _edit_link {
     );
 }
 
-sub _thumbnail_html {
-    my ( $app, $asset ) = @_;
-
-    my $thumb_size = 45;
-    my $class_type = $asset->class_type;
-    my $file_path  = $asset->file_path;
-    my $img
-        = MT->static_path
-        . 'images/asset/'
-        . $class_type . '-'
-        . $thumb_size . '.png';
-
-    my ( $orig_width, $orig_height )
-        = ( $asset->image_width, $asset->image_height );
-    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height );
-    if (   $orig_width > $thumb_size
-        && $orig_height > $thumb_size )
-    {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Height => $thumb_size,
-            Width  => $thumb_size,
-            Square => 1,
-            Ts     => 1
-            );
-    }
-    elsif ( $orig_width > $thumb_size ) {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Width => $thumb_size,
-            Ts    => 1
-            );
-    }
-    elsif ( $orig_height > $thumb_size ) {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-            = $asset->thumbnail_url(
-            Height => $thumb_size,
-            Ts     => 1
-            );
-    }
-    else {
-        ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) = (
-            $asset->url . '?ts=' . $asset->modified_on,
-            $orig_width, $orig_height
-        );
-    }
-
-    my $thumbnail_width_offset
-        = int( ( $thumb_size - $thumbnail_width ) / 2 );
-    my $thumbnail_height_offset
-        = int( ( $thumb_size - $thumbnail_height ) / 2 );
-
-    qq{<img alt="" src="${thumbnail_url}" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />};
-}
-
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
@@ -540,18 +472,9 @@ sub ss_validator {
     my $field_type       = $field_data->{type};
     my $field_type_label = $field_data->{type_label};
 
-    my $asset_class
-        = $field_type eq 'asset'        ? '*'
-        : $field_type =~ /^asset_(.*)$/ ? $1
-        :                                 undef;
-    return $app->translate( '[_1] is invalid asset type ([_2].',
-        $field_label, $field_type )
-        unless $asset_class;
-
     my $iter = MT::Asset->load_iter(
         {   id      => $data,
             blog_id => $app->blog->id,
-            class   => $asset_class
         },
         { fetchonly => { id => 1 } }
     );
@@ -641,6 +564,10 @@ sub preview_handler {
     my @assets = MT->model('asset')->load( { id => $values, class => '*' } );
     my %asset_hash = map { $_->id => $_ } @assets;
 
+    require MT::FileMgr;
+    my $fmgr       = MT::FileMgr->new('Local');
+    my $static_uri = MT->static_path;
+
     my $contents = '';
     for my $id (@$values) {
         my $asset = $asset_hash{$id} or next;
@@ -649,17 +576,40 @@ sub preview_handler {
         $label = '' unless defined $label && $label ne '';
         my $encoded_label = MT::Util::encode_html($label);
 
-        my ( $url, $w, $h )
-            = $asset->thumbnail_url( Width => 45, Height => 45, Square => 1 );
+        my $svg_class = $asset->class eq 'video' ? 'movie' : $asset->class;
 
-        unless ($url) {
-            my $static_uri  = MT->static_path;
-            my $asset_class = $asset->class;
-            $url = "${static_uri}images/asset/$asset_class-45.png";
+        if ( $fmgr->exists( $asset->file_path ) ) {
+            my ( $url, $w, $h ) = $asset->thumbnail_url(
+                Width  => 60,
+                Height => 60,
+                Square => 1
+            );
+
+            if ($url) {
+                $contents
+                    .= qq{<li><img class="img-thumbnail p-0" width="60" height="60" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+            }
+            else {
+                my $svg
+                    = qq{<svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class"></svg>};
+                $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+            }
         }
-
-        $contents
-            .= qq{<li><img class="img-thumbnail p-0" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+        else {
+            my $svg = qq{
+              <div class="mt-user">
+                <svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+                  <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class">
+                </svg>
+                <div class="mt-user__badge--danger">
+                  <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                    <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                  </svg>
+                </div>
+              </div>
+            };
+            $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+        }
     }
 
     return qq{<ul class="list-unstyled">$contents</ul>};

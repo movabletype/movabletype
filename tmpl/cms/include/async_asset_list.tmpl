@@ -6,11 +6,11 @@
   <form action="" method="get" id="modal-type-filter" class="form-inline">
     <span><__trans phrase="Asset Type: "></span>
     <select name="asset-class" id="asset-class" class="custom-select form-control">
-      <option value=""<mt:if name="class_filter_loop"><mt:if name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="">
         <__trans phrase="All Types">
       </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"<mt:elseif name="content_field_id"> disabled="disabled"</mt:if></mt:if>>
+      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
         <mt:var name="label">
       </option>
 </mt:loop>
@@ -20,7 +20,14 @@
 <div>
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
-    <input type="image" id="search-button" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+    <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
+      <mtapp:svgicon id="ic_search" title="Search">
+    </a>
+    <button id="search-button" class="search-command search-submit" style="display: none;">
+      <span class="sr-only">
+        <__trans phrase="Search">
+      </span>
+    </button>
     <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
   </form>
 </div>
@@ -71,7 +78,11 @@
             </td>
     </mt:if>
             <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
-               <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
+    <mt:if name="file_is_missing">
+              <mtapp:svgicon id="ic_error" size="sm" color="warning">
+    <mt:else>
+              <mtapp:svgicon id="ic_checkbox" size="sm" color="success">
+    </mt:if>
             </td>
             <td class="asset-label primary">
     <mt:if name="has_thumbnail">

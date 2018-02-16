@@ -13,7 +13,9 @@ sub view {
     my $app = shift;
 
     return $app->permission_denied
-        unless $app->can_do('edit_category_set');
+        if ( !$app->user->is_superuser()
+        && !$app->user->can_manage_content_types()
+        && !$app->can_do('edit_category_set') );
 
     if ( my $set_id = $app->param('id') ) {
         unless ( MT::CategorySet->exist($set_id) ) {
@@ -28,13 +30,13 @@ sub view {
 
 sub list_actions {
     {   delete => {
-            label         => 'Delete',
-            code          => '$Core::MT::Common::delete',
-            mode          => 'delete',
-            order         => 100,
-            js_message    => 'delete',
-            button        => 1,
-            permit_action => 'delete_category_set',
+            label      => 'Delete',
+            code       => '$Core::MT::Common::delete',
+            mode       => 'delete',
+            order      => 100,
+            js_message => 'delete',
+            button     => 1,
+            permission => 'manage_category_set,manage_content_types',
         },
     };
 }
@@ -43,7 +45,10 @@ sub can_list {
     my ( $eh, $app, $terms, $args, $options ) = @_;
     my $user = $app->user;
     return unless $user;
-    return 1 if $user->is_superuser;
+
+    return 1
+        if ( $user->is_superuser() || $user->can_manage_content_types() );
+
     $user->permissions( $app->blog->id )
         ->can_do('access_to_category_set_list');
 }
@@ -54,7 +59,7 @@ sub can_view {
 
     my $user = $app->user;
     return unless $user;
-    return 1 if $user->is_superuser;
+    return 1 if ( $user->is_superuser || $user->can_manage_content_types() );
 
     my $obj = $objp->force or return 0;
     $user->permissions( $obj->blog_id )->can_do('edit_category_set');
@@ -64,14 +69,17 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $user = $app->user;
     return unless $user;
-    return 1 if $user->is_superuser;
+
+    return 1
+        if ( $user->is_superuser() || $user->can_manage_content_types() );
     $app->can_do('save_category_set');
 }
 
 sub can_delete {
     my ( $eh, $app, $set ) = @_;
     my $author = $app->user;
-    return 1 if $author->is_superuser();
+    return 1
+        if ( $author->is_superuser() || $author->can_manage_content_types() );
 
     if ( $set && !ref $set ) {
         $set = MT::CategorySet->load($set)
@@ -83,4 +91,3 @@ sub can_delete {
 }
 
 1;
-

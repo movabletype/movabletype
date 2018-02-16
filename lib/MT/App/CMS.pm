@@ -343,8 +343,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
-
         ## Debug
         'vcs_revision' => {
             code      => "${pkg}Debug::vcs_revision",
@@ -1855,6 +1853,13 @@ sub core_menus {
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
         },
+        'asset:edit' => {
+            order   => 10000,
+            mode    => 'view',
+            args    => { _type => 'asset' },
+            view    => [ "blog", 'website', 'system' ],
+            display => 0,
+        },
 
         'content_type:boilerplates' => {
             label      => '_CONTENT_TYPE_BOILERPLATES',
@@ -2120,7 +2125,7 @@ sub core_menus {
             label      => 'Manage',
             order      => 100,
             mode       => 'list',
-            permission => 'manage_category_set',
+            permission => 'manage_category_set,manage_content_types',
             args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
         },
@@ -2128,7 +2133,7 @@ sub core_menus {
             label      => 'New',
             order      => 200,
             mode       => 'view',
-            permission => 'manage_category_set',
+            permission => 'manage_category_set,manage_content_types',
             args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
         },
@@ -2378,10 +2383,6 @@ sub set_default_tmpl_params {
     my ($pref) = split /\s+/, $auth_mode;
 
     $param->{debug_panels} = [];
-
-    # TODO - remove after testing or after new IA is defined
-    $param->{app_layout_fixed} = 0;
-    $param->{athena_nav}       = 1;
 
     $param->{"auth_mode_$pref"} = 1;
     $param->{mt_news}           = $app->config('NewsURL');
@@ -2959,6 +2960,18 @@ sub build_menus {
                     {
                         $sub->{current} = 1;
                     }
+                }
+                elsif (( $app_param_type || '' ) eq 'category'
+                    && $mode eq 'view'
+                    && !$app->param('is_category_set') )
+                {
+                    my $is_category_set = $app->model('category')->exist(
+                        {   id => $app->param('id') || 0,
+                            category_set_id => { not => 0 }
+                        }
+                    );
+                    $param->{screen_group}
+                        = $is_category_set ? 'category_set' : 'entry';
                 }
             }
             else {

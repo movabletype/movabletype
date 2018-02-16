@@ -77,16 +77,41 @@ sub edit {
     ## author_id parameter of the author currently logged in.
     delete $param->{'author_id'};
 
-    $app->add_breadcrumb(
-        $app->model($type)->class_label_plural,
-        $app->uri(
-            mode => 'list',
-            args => {
-                _type   => $type,
-                blog_id => $blog->id,
-            },
-        ),
-    );
+    if ( $obj->category_set_id ) {
+        $app->add_breadcrumb(
+            $app->model('category_set')->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+        $app->add_breadcrumb(
+            $obj->category_set->name,
+            $app->uri(
+                mode => 'view',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                    id      => $obj->category_set_id,
+                },
+            ),
+        );
+    }
+    else {
+        $app->add_breadcrumb(
+            $app->model($type)->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => $type,
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+    }
     $app->add_breadcrumb( $obj->label );
 
     1;
@@ -178,7 +203,8 @@ sub bulk_update {
 
         if ($is_category_set) {
             return $app->json_error( $app->translate('Permission defined.') )
-                unless $app->can_do('save_category_set');
+                unless ( $app->user->can_manage_content_types
+                || $app->can_do('save_category_set') );
         }
     }
     elsif ( 'folder' eq $model ) {

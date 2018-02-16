@@ -68,7 +68,6 @@ use_ok('MT::App::Search::TagSearch');
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');
 use_ok('MT::Auth::BasicAuth');
-use_ok('MT::Auth::TypeKey');
 
 # MT::Objects
 use_ok('MT::Object');
