@@ -353,11 +353,12 @@ sub permission_groups {
 # class method
 sub all_permissions {
     my $class = shift;
-    my @content_types = eval { __PACKAGE__->load };
-    if ($@) {
-        @content_types = ();
+    my $iter  = __PACKAGE__->load_iter();
+    my @all_permissions;
+    while ( my $content_type = $iter->() ) {
+        push( @all_permissions, $content_type->permissions );
     }
-    my %all_permission = map { %{ $_->permissions } } @content_types;
+    my %all_permission = map { %{$_} } @all_permissions;
     return \%all_permission;
 }
 
