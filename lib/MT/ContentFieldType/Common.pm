@@ -15,10 +15,6 @@ our @EXPORT_OK = qw(
 );
 
 use MT;
-use MT::Asset;
-use MT::ContentData;
-use MT::ContentField;
-use MT::ContentFieldIndex;
 use MT::Util;
 
 sub get_cd_ids_by_inner_join {
@@ -27,7 +23,7 @@ sub get_cd_ids_by_inner_join {
     my $join_args  = shift || {};
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $join = MT::ContentFieldIndex->join_on(
+    my $join = MT->model('content_field_index')->join_on(
         undef,
         {   content_data_id  => \'= cd_id',
             content_field_id => $prop->content_field_id,
@@ -46,7 +42,7 @@ sub get_cd_ids_by_left_join {
     my $join_args  = shift || {};
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $join = MT::ContentFieldIndex->join_on(
+    my $join = MT->model('content_field_index')->join_on(
         undef,
         $join_terms,
         {   type      => 'left',
@@ -65,7 +61,7 @@ sub field_type_icon {
     my ( $id, $title ) = @_;
 
     $id = 'ic_contentstype' unless $id;
-    if ( $title ) {
+    if ($title) {
         $title = qq { title=$title};
     }
     else {
@@ -74,14 +70,15 @@ sub field_type_icon {
 
     my $static_uri = MT->static_path;
 
-    return qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+    return
+        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
 }
 
 sub _get_cd_ids {
     my ( $db_terms, $join ) = @_;
     my @cd_ids;
-    my $iter = MT::ContentData->load_iter( $db_terms,
-        { join => $join, fetchonly => { id => 1 } } );
+    my $iter = MT->model('content_data')
+        ->load_iter( $db_terms, { join => $join, fetchonly => { id => 1 } } );
     while ( my $cd = $iter->() ) {
         push @cd_ids, $cd->id;
     }
@@ -268,7 +265,8 @@ sub html_multiple {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $content_field = MT::ContentField->load( $prop->content_field_id );
+    my $content_field
+        = MT->model('content_field')->load( $prop->content_field_id );
     my %label_hash = map { $_->{value} => $_->{label} }
         @{ $content_field->options->{values} };
 
@@ -288,7 +286,8 @@ sub html_datetime_common {
     my ( $obj, $app, $opts, $date_format ) = @_;
     my $ts = $obj->data->{ $prop->{content_field_id} } or return '';
 
-    my $content_field = MT::ContentField->load( $prop->{content_field_id} )
+    my $content_field
+        = MT->model('content_field')->load( $prop->{content_field_id} )
         or return '';
     $date_format = eval { $content_field->options->{date_format} }
         || $date_format;
@@ -306,8 +305,9 @@ sub html_text {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $content_field = MT::ContentField->load( $prop->content_field_id );
-    my $text          = $content_data->data->{ $prop->content_field_id };
+    my $content_field
+        = MT->model('content_field')->load( $prop->content_field_id );
+    my $text = $content_data->data->{ $prop->content_field_id };
     return '' unless defined $text;
 
     if ( length $text > 40 ) {
@@ -323,7 +323,7 @@ sub single_select_options_multiple {
     my $app = shift || MT->app;
 
     my $content_field_id = $prop->{content_field_id};
-    my $content_field    = MT::ContentField->load($content_field_id);
+    my $content_field = MT->model('content_field')->load($content_field_id);
     return $content_field->options->{values} || [];
 }
 
@@ -392,7 +392,7 @@ sub tag_handler_asset {
     };
     my $asset_args = { null => { parent => 1 } };
 
-    my $iter = MT::Asset->load_iter( $asset_terms, $asset_args );
+    my $iter = MT->model('asset')->load_iter( $asset_terms, $asset_args );
     my %assets;
     while ( my $asset = $iter->() ) {
         $assets{ $asset->id } = $asset;
