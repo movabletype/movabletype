@@ -41,6 +41,7 @@ sub save {
                 if ( $classParamFilter eq 'moderate' ) {
 
                     # MT core object only
+                    $res = 1;
                     my @list
                         = qw ( MT::Asset MT::Entry MT::Page MT::Category MT::Folder MT::Blog MT::Website );
                     foreach my $o (@list) {
