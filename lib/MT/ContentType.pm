@@ -17,19 +17,23 @@ use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'               => 'integer not null auto_increment',
-            'blog_id'          => 'integer not null',
-            'name'             => 'string(255)',
-            'description'      => 'text',
-            'version'          => 'integer',
-            'unique_id'        => 'string(40) not null',
-            'fields'           => 'blob',
-            'user_disp_option' => 'boolean',
+            'id'                      => 'integer not null auto_increment',
+            'blog_id'                 => 'integer not null',
+            'name'                    => 'string(255)',
+            'description'             => 'text',
+            'version'                 => 'integer',
+            'unique_id'               => 'string(40) not null',
+            'content_type_data_label' => 'string(40)',
+            'fields'                  => 'blob',
+            'user_disp_option'        => 'boolean',
         },
-        indexes     => { blog_id => 1, unique_id => { unique => 1 } },
-        datasource  => 'content_type',
-        primary_key => 'id',
-        audit       => 1,
+        indexes => {
+            blog_id   => 1,
+            unique_id => { unique => 1 }
+        },
+        datasource    => 'content_type',
+        primary_key   => 'id',
+        audit         => 1,
         child_of      => [ 'MT::Blog', 'MT::Website' ],
         child_classes => [
             'MT::ContentData', 'MT::ContentField', 'MT::ContentFieldIndex'

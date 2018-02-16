@@ -51,7 +51,13 @@ __PACKAGE__->install_properties(
             'content_type_id' => 'integer not null',
             'unique_id'       => 'string(40) not null',
             'ct_unique_id'    => 'string(40) not null',
-            'data'            => {
+            'label'           => {
+                type       => 'string',
+                size       => 255,
+                label      => 'Data Label',
+                revisioned => 1,
+            },
+            'data' => {
                 type       => 'blob',
                 label      => 'Data',
                 revisioned => 1,
@@ -82,6 +88,7 @@ __PACKAGE__->install_properties(
             ct_unique_id    => 1,
             status          => 1,
             unique_id       => { unique => 1 },
+            label           => 1,
             site_author     => {
                 columns =>
                     [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
