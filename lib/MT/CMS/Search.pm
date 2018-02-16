@@ -426,7 +426,24 @@ sub core_search_apis {
                 $args->{sort}      = 'name';
                 $args->{direction} = 'ascend';
             }
-        }
+        },
+        'content_type' => {
+            'order'     => 1100,
+            'condition' => sub {
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+            },
+            'handler' =>
+                '$Core::MT::CMS::ContentType::build_content_type_table',
+            'label'       => 'Content Types',
+            'search_cols' => { 'name' => sub { $app->translate('Name') }, },
+            'setup_terms_args' => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                $terms->{blog_id}  = $blog_id if $blog_id;
+                $args->{sort}      = 'name';
+                $args->{direction} = 'ascend';
+            }
+        },
     };
     return $types;
 }

@@ -64,56 +64,6 @@ sub config {
     $app->load_tmpl( 'cfg_rebuild_trigger.tmpl', $param );
 }
 
-sub start_add {
-    my $app   = shift;
-    my $param = {};
-
-    return $app->translate("Permission denied.")
-        unless $app->user->is_superuser()
-        || ( $app->blog
-        && $app->user->permissions( $app->blog->id )->can_administer_site() );
-
-    my $blog_id = $app->blog->id;
-
-    # Object Types
-    require MT::RebuildTrigger;
-    my @object_types = (
-        {   label => 'Entry or Page',
-            id    => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(),
-        },
-        {   label => 'Content Type',
-            id    => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),
-        },
-    );
-    eval { require Comments; };
-    unless ($@) {
-        my @comment_and_trackback = (
-            {   label => 'Comment',
-                id    => MT::RebuildTrigger::TYPE_COMMENT(),
-            },
-            {   label => 'Trackback',
-                id    => MT::RebuildTrigger::TYPE_TRACKBACK(),
-            },
-        );
-        push @object_types, @comment_and_trackback;
-    }
-    $param->{object_types} = \@object_types;
-    $param->{actions}      = action_loop($app);
-
-    # Content Types
-    my @content_types
-        = MT->model('content_type')->load( { blog_id => $blog_id } );
-    foreach my $ct (@content_types) {
-        push @{ $param->{content_types} },
-            {
-            label => $ct->name,
-            id    => $ct->id,
-            };
-    }
-
-    $app->load_tmpl( 'dialog/start_create_trigger.tmpl', $param );
-}
-
 sub add {
     my $app = shift;
 
@@ -124,111 +74,255 @@ sub add {
 
     my $blog_id = $app->blog->id;
 
-    my $object_type  = $app->multi_param('object_type');
-    my $event        = $app->multi_param('event');
-    my $action       = $app->multi_param('action');
-    my $content_type = $app->multi_param('content_type');
-
-    require MT::RebuildTrigger;
-    my $prefix
-        = $object_type == MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() ? 'entry'
-        : $object_type == MT::RebuildTrigger::TYPE_CONTENT_TYPE()  ? 'content'
-        : $object_type == MT::RebuildTrigger::TYPE_COMMENT()       ? 'comment'
-        :                                                            'tb';
-    my $suffix
-        = $event == MT::RebuildTrigger::EVENT_SAVE()    ? 'save'
-        : $event == MT::RebuildTrigger::EVENT_PUBLISH() ? 'pub'
-        :                                                 'unpub';
-    my $trigger = $prefix . '_' . $suffix;
-    my $ct
-        = $object_type == MT::RebuildTrigger::TYPE_CONTENT_TYPE()
-        && $content_type
-        ? MT->model('content_type')->load($content_type)
-        : undef;
-    my $trigger_label
-        = trigger_hash($app)->{$trigger}
-        . ( $ct ? ' / ' . $ct->name : '' ) . ' / '
-        . action_hash($app)->{$action};
-
-    my $dialog_tmpl = $app->load_tmpl(
-        $app->param('json')
-        ? 'include/listing_panel.tmpl'
-        : 'dialog/create_trigger.tmpl'
+    my @panels = (
+        { type => 'blog',         'name' => 'site' },
+        { type => 'content_type', 'name' => 'content_type' },
     );
-    my $tmpl = $app->listing(
-        {   template => $dialog_tmpl,
-            type     => 'blog',
-            code     => sub {
-                my ( $obj, $row ) = @_;
-                if ($obj) {
-                    $row->{label} = $obj->name;
-                    $row->{link}  = $obj->site_url;
-                }
-            },
-            terms => {
-                id => { not => [$blog_id] },
-                class => [ 'website', 'blog' ]
-            },
-            params => {
-                panel_type   => 'blog',
-                dialog_title => $app->translate('Rebuild Trigger'),
-                panel_title  => $app->translate('Create Rebuild Trigger'),
-                panel_label  => $app->translate("Site/Child Site"),
+
+    my $panel_info = {
+        'blog' => {
+            panel_title       => $app->translate("Select Trigger Site"),
+            panel_label       => $app->translate("Site Name"),
+            panel_description => $app->translate("Description"),
+        },
+        'content_type' => {
+            panel_title => $app->translate("Select Trigger Content Type"),
+            panel_label => $app->translate("Content Type Name"),
+            panel_description => $app->translate("Description"),
+        },
+    };
+
+    my $type = $app->param('_type') || '';
+
+    my $hasher = sub {
+        my ( $obj, $row ) = @_;
+        if ($obj) {
+            $row->{label} = $obj->name;
+            $row->{link}  = $obj->site_url
+                if $type eq 'blog';
+        }
+    };
+
+    my $terms = {};
+    if ( $type eq 'blog' ) {
+        $terms->{id} = { not => [$blog_id] };
+        $terms->{class} = [ 'website', 'blog' ];
+    }
+    elsif ( my $select_blog_id = $app->param('select_blog_id') ) {
+        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/\d+/;
+    }
+
+    if ( $app->param('search') || $app->param('json') ) {
+        my $params = {
+            panel_type   => $type,
+            list_noncron => 1,
+            panel_multi  => 0,
+        };
+        $app->listing(
+            {   terms    => $terms,
+                args     => { sort => 'name' },
+                type     => $type,
+                code     => $hasher,
+                params   => $params,
+                template => 'include/listing_panel.tmpl',
+                $app->param('search') ? ( no_limit => 1 ) : (),
+            }
+        );
+    }
+    else {
+        my $params = {};
+        $params->{panel_multi}  = 0;
+        $params->{blog_id}      = $blog_id;
+        $params->{dialog_title} = $app->translate("Create Rebuild Trigger");
+        $params->{panel_loop}   = [];
+
+        for ( my $i = 0; $i <= $#panels; $i++ ) {
+            my $source       = $panels[$i]->{type};
+            my $name         = $panels[$i]->{name};
+            my $id           = $panels[$i]->{id};
+            my $panel_params = {
+                panel_type => $name,
+                %{ $panel_info->{$source} },
+                list_noncron => 1,
+
+                #panel_last       => $i == $#panels,
+                panel_last       => 0,
+                panel_first      => $i == 0,
+                panel_number     => $i + 1,
+                panel_total      => $#panels + 1,
+                panel_has_steps  => ( $#panels == '0' ? 0 : 1 ),
+                panel_searchable => (
+                    $source eq 'object'
+                        || $source eq 'event' || $source eq 'trigger'
+                    ? 0
+                    : 1
+                ),
                 search_prompt =>
                     $app->translate("Search Sites and Child Sites") . ':',
-                panel_description => $app->translate("Description"),
-                panel_multi       => 0,
-                panel_first       => 1,
-                panel_last        => 1,
-                panel_searchable  => 1,
+            };
 
-                trigger_label     => $trigger_label,
-                trigger_text      => trigger_hash($app)->{$trigger},
-                trigger_value     => $trigger,
-                action_text       => action_hash($app)->{$action},
-                action_value      => $action,
-                content_type_text => $ct ? $ct->name : '',
-                content_type_id   => $content_type,
-                list_noncron      => 1,
-                trigger_caption   => $app->translate('When this'),
-            },
-            pre_build => sub {
-                my ($param) = @_;
-                my $offset = $app->param('offset') || 0;
-                my $limit  = $param->{limit};
-                my $count  = 0;
-                if ( !$app->param('search') ) {
-                    if ( ( my $loop = $param->{object_loop} ) && !$offset ) {
-                        if ( $app->blog && !$app->blog->is_blog ) {
-                            $count++;
-                            unshift @$loop,
+            my $limit = $app->param('limit') || 25;
+            my $terms = {};
+            if ( $source eq 'blog' ) {
+                $terms->{id} = { not => [$blog_id] };
+                $terms->{class} = [ 'website', 'blog' ];
+            }
+            elsif ( $source eq 'content_type' ) {
+                $terms->{blog_id} = $id if $id;
+            }
+            my $args = {};
+            if ( $source eq 'blog' || $source eq 'content_type' ) {
+                $args->{sort}  = 'name';
+                $args->{limit} = $limit;
+            }
+
+            $app->listing(
+                {   type      => $source,
+                    code      => $hasher,
+                    terms     => $terms,
+                    args      => $args,
+                    params    => $panel_params,
+                    pre_build => sub {
+                        my ($param) = @_;
+                        my $offset = $app->param('offset') || 0;
+                        my $limit  = $param->{limit};
+                        my $count  = 0;
+                        if ( $source eq 'blog' ) {
+                            if ( !$app->param('search') ) {
+                                if ( ( my $loop = $param->{object_loop} )
+                                    && !$offset )
                                 {
-                                id    => '_blogs_in_website',
-                                label => $app->translate(
-                                    '(All child sites in this site)'),
-                                description => $app->translate(
-                                    'Select to apply this trigger to all child sites in this site.'
-                                ),
-                                };
+                                    if ( $app->blog && !$app->blog->is_blog )
+                                    {
+                                        $count++;
+                                        unshift @$loop,
+                                            {
+                                            id    => '_blogs_in_website',
+                                            label => $app->translate(
+                                                '(All child sites in this site)'
+                                            ),
+                                            description => $app->translate(
+                                                'Select to apply this trigger to all child sites in this site.'
+                                            ),
+                                            };
+                                    }
+                                    $count++;
+                                    unshift @$loop,
+                                        {
+                                        id    => '_all',
+                                        label => $app->translate(
+                                            '(All sites and child sites in this system)'
+                                        ),
+                                        description => $app->translate(
+                                            'Select to apply this trigger to all sites and child sites in this system.'
+                                        ),
+                                        };
+                                    splice( @$loop, $limit )
+                                        if scalar(@$loop) > $limit;
+                                }
+                            }
                         }
-                        $count++;
-                        unshift @$loop,
-                            {
-                            id    => '_all',
-                            label => $app->translate(
-                                '(All sites and child sites in this system)'),
-                            description => $app->translate(
-                                'Select to apply this trigger to all sites and child sites in this system.'
-                            ),
-                            };
-                        splice( @$loop, $limit ) if scalar(@$loop) > $limit;
-                    }
-                }
-                return $count;
-            },
+                        elsif ( $source eq 'object' ) {
+                            if ( !$app->param('search') ) {
+                                if ( ( my $loop = $param->{object_loop} )
+                                    && !$offset )
+                                {
+                                    push @$loop,
+                                        {
+                                        id    => '1',
+                                        label => $app->translate(
+                                            'Entry or Page'
+                                        ),
+                                        description => $app->translate(''),
+                                        };
+                                    push @$loop,
+                                        {
+                                        id => '2',
+                                        label =>
+                                            $app->translate('Content Type'),
+                                        description => $app->translate(''),
+                                        };
+                                    push @$loop,
+                                        {
+                                        id    => '3',
+                                        label => $app->translate('Comment'),
+                                        description => $app->translate(''),
+                                        };
+                                    push @$loop,
+                                        {
+                                        id    => '4',
+                                        label => $app->translate('Trackback'),
+                                        description => $app->translate(''),
+                                        };
+                                    $count = $count + 4;
+                                    splice( @$loop, $limit )
+                                        if scalar(@$loop) > $limit;
+                                }
+                            }
+                        }
+                        return $count;
+                    },
+                },
+            );
+
+            if (!$panel_params->{object_loop}
+                || ( $panel_params->{object_loop}
+                    && @{ $panel_params->{object_loop} } < 1 )
+                )
+            {
+                $params->{"missing_$source"} = 1;
+                $params->{"missing_data"}    = 1;
+            }
+
+            push @{ $params->{panel_loop} }, $panel_params;
         }
-    );
-    return $app->build_page($tmpl);
+        $params->{return_args} = $app->return_args;
+
+        $params->{confirm_js} = $app->param('confirm_js')
+            if $app->param('confirm_js');
+
+        $params->{build_compose_menus} = 0;
+        $params->{build_user_menus}    = 0;
+
+        require MT::RebuildTrigger;
+        $params->{object_type_loop} = [
+            {   id => MT::RebuildTrigger::type_text(
+                    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+                ),
+                label => $app->translate("Entry or Page")
+            },
+            {   id => MT::RebuildTrigger::type_text(
+                    MT::RebuildTrigger::TYPE_CONTENT_TYPE()
+                ),
+                label => $app->translate("Content Type")
+            },
+        ];
+        eval { require Comments; };
+
+        unless ($@) {
+            push @{ $params->{object_type_loop} },
+                {
+                id => MT::RebuildTrigger::type_text(
+                    MT::RebuildTrigger::TYPE_COMMENT()
+                ),
+                label => $app->translate("Comment")
+                };
+        }
+        eval { require Trackback; };
+        unless ($@) {
+            push @{ $params->{object_type_loop} },
+                {
+                id => MT::RebuildTrigger::type_text(
+                    MT::RebuildTrigger::TYPE_PING()
+                ),
+                label => $app->translate("Trackback")
+                };
+        }
+        $params->{action_loop}  = action_loop($app);
+        $params->{trigger_loop} = trigger_loop($app);
+
+        $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
+    }
 }
 
 sub trigger_loop {
@@ -264,7 +358,8 @@ sub trigger_hash {
     my $app          = shift;
     my $trigger_hash = {};
     foreach my $trigger ( @{ trigger_loop($app) } ) {
-        $trigger_hash->{ $trigger->{trigger_key} } = $trigger->{trigger_name};
+        $trigger_hash->{ $trigger->{trigger_key} }
+            = $trigger->{trigger_name};
     }
     return $trigger_hash;
 }
@@ -284,7 +379,8 @@ sub action_hash {
     my $app         = shift;
     my $action_hash = {};
     foreach my $action ( @{ action_loop($app) } ) {
-        $action_hash->{ $action->{action_id} } = $action->{action_name};
+        $action_hash->{ $action->{action_id} }
+            = $action->{action_name};
     }
     return $action_hash;
 }
@@ -299,7 +395,8 @@ sub load_config {
         require MT::Blog;
 
         $args->{multiblog_trigger_loop} = trigger_loop($app);
-        my %triggers = map { $_->{trigger_key} => $_->{trigger_name} }
+        my %triggers
+            = map { $_->{trigger_key} => $_->{trigger_name} }
             @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop($app);
@@ -318,7 +415,8 @@ sub load_config {
                 {   action_name  => $actions{$action},
                     action_value => $action,
                     blog_name    => $app->translate(
-                        '(All sites and child sites in this system)'),
+                        '(All sites and child sites in this system)'
+                    ),
                     blog_id           => $id,
                     trigger_name      => $triggers{$trigger},
                     trigger_value     => $trigger,
@@ -378,8 +476,10 @@ sub save {
         if ( $app->multi_param($key) ) {
             my @triggers = split '\|', $app->multi_param($key);
             foreach my $trigger (@triggers) {
-                my ( $action, $id, $event, $content_type_id ) = split ':',
+                my ( $action, $id, $event, $content_type_id )
+                    = split ':',
                     $trigger;
+                $content_type_id = 0 if $content_type_id eq 'undefined';
                 $action
                     = $action eq 'ri'
                     ? MT::RebuildTrigger::ACTION_RI()

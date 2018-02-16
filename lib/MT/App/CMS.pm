@@ -397,7 +397,6 @@ sub core_methods {
 
         ## MT7 Rebuild Trigger
         'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
-        'start_add_rebuild_trigger' => "${pkg}RebuildTrigger::start_add",
         'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
         'save_rebuild_trigger'      => {
             code      => "${pkg}RebuildTrigger::save",

@@ -1024,4 +1024,43 @@ sub can_delete {
         || ( $blog_perm && $blog_perm->can_do('delete_content_type') );
 }
 
+sub build_content_type_table {
+    my $app = shift;
+    my (%args) = @_;
+
+    my $iter;
+    if ( $args{load_args} ) {
+        $iter = MT->model('content_type')->load_iter( @{ $args{load_args} } );
+    }
+    elsif ( $args{iter} ) {
+        $iter = $args{iter};
+    }
+    elsif ( $args{items} ) {
+        $iter = sub { shift @{ $args{items} } };
+    }
+    return [] unless $iter;
+    my $limit         = $args{limit};
+    my $is_power_edit = $args{is_power_edit} || 0;
+    my $param         = $args{param} || {};
+
+    my @data;
+    while ( my $content_type = $iter->() ) {
+        my $row = {
+            id          => $content_type->id,
+            blog_id     => $content_type->blog_id,
+            name        => $content_type->name,
+            description => $content_type->description,
+        };
+        $row->{object} = $content_type;
+        push @data, $row;
+    }
+
+    if (@data) {
+        $param->{content_type_table}[0]{object_loop} = \@data;
+        $param->{object_loop} = $param->{content_type_table}[0]{object_loop};
+    }
+
+    \@data;
+}
+
 1;
