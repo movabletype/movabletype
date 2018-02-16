@@ -107,49 +107,6 @@ my $tag = MT::Tag->load({ name => 'alpha' });
 # Run
 my ( $app, $out );
 
-subtest 'mode = js_recent_entries_for_tag' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'js_recent_entries_for_tag',
-            blog_id          => $blog->id,
-            tag              => 'alpha',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'js_recent_entries_for_tag',
-            blog_id          => $blog->id,
-            tag              => 'alpha',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'js_recent_entries_for_tag',
-            blog_id          => $blog->id,
-            tag              => 'alpha',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out =~ m!permission denied!i, "js_recent_entries_for_tag by other blog" );
-
-    done_testing();
-};
-
 subtest 'mode = js_tag_check' => sub {
     $app = _run_app(
         'MT::App::CMS',
