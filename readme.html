@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Movable Type Read Me</title>
+    <style type="text/css">html{background-color:#f3f3f3}body{line-height:1.618;color:#2b2b2b;font-family:'Helvatica Neue',Helvatica,Arial,sans-serif;font-size:14px}a{color:#507ea4;outline:0}a:hover,a:active{color:#839b5c;text-decoration:none}h1,h2,h3,h4,h5,h6{margin-top:2em;color:#000}li{margin:.618em 0}.nav{position:absolute;top:0;left:0;width:100%;padding:0 1.618em}.nav li{display:inline;margin:0}.nav li:after{content:'\007C';margin:0 0 0 .3em}.nav li:last-child:after{display:none;}#container{position:relative;width:750px;margin:1.618em auto;padding:.618em 1.618em;border:1px solid #c0c6c9;background-color:#fff;border-radius:3px}#logo{margin:2.5em 0 1.62em;text-align:center}</style>
+    <script type="text/javascript">
+      var languages = new Array('de', 'en', 'es', 'fr', 'ja', 'nl');
+      function swapLanguage(lang) {
+          for(var i = 0; i < languages.length; i++) {
+              var d = document.getElementById(languages[i]);
+              if(d)
+                  d.style.display = 'none';
+          }
+
+          var ld = document.getElementById(lang);
+          if(ld)
+              ld.style.display = 'block';
+      }
+
+      // Attempt to detect the language
+      window.onload = function() {
+          var userLang = (navigator.language) ? navigator.language : navigator.userLanguage;
+          var re = /\-\w{2}$/;
+          userLang = userLang.replace(re, '');
+          swapLanguage(userLang.toLowerCase());
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="container">
+      <h1 id="logo">
+        <img alt="Movable Type" width="238" height="52" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22361%22%20height%3D%2273%22%20viewBox%3D%220%200%20361%2073%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20fill%3D%22%230076BF%22%20d%3D%22M19.926%2038.815c-2.57-.69-4.79-2.025-6.545-3.782-3.222-3.23-4.843-7.89-4.087-12.615l-6.658-1.785c-.167.577-.33%201.117-.48%201.573l-1.96%206.046c-.54%201.658.08%203.97%201.375%205.137l4.72%204.254c.648.584%201.476%201.38%202.287%202.192.81.81%201.606%201.638%202.19%202.286l4.254%204.72c1.168%201.297%203.48%201.917%205.137%201.38l6.046-1.96c.457-.15.996-.312%201.575-.48l-1.783-6.654c-1.964.314-4.022.236-6.07-.313%22%2F%3E%3Cpath%20fill%3D%22%235FBBEA%22%20d%3D%22M43.62%2033.324c.184-.853.458-1.967.755-3.075.297-1.11.617-2.212.886-3.04l1.964-6.047c.538-1.66-.082-3.97-1.376-5.137l-4.72-4.255c-.358-.32-.77-.707-1.2-1.123L35.05%2015.52c2.84%203.51%204.024%208.277%202.765%2012.97-1.257%204.694-4.67%208.228-8.882%209.846l1.784%206.66c.583-.146%201.132-.274%201.6-.373l6.218-1.323c1.705-.363%203.398-2.055%203.76-3.76l1.326-6.216z%22%2F%3E%3Cpath%20fill%3D%22%23004B9A%22%20d%3D%22M19.932%2010.6c2.396-.644%204.99-.69%207.56%200%202.045.55%203.867%201.51%205.412%202.766l4.872-4.87c-.417-.434-.803-.845-1.124-1.202L32.397%202.57C31.23%201.277%2028.92.657%2027.26%201.195l-6.046%201.96c-.828.27-1.93.588-3.04.885-1.107.296-2.22.57-3.075.752L8.882%206.115c-1.705.363-3.398%202.055-3.76%203.76L3.795%2016.09c-.1.47-.228%201.02-.373%201.604l6.658%201.785c1.71-4.47%205.446-7.695%209.852-8.88%22%2F%3E%3Cpath%20fill%3D%22%233F3A3A%22%20d%3D%22M89.018%2026.09h-3.403c-.746%200-1.338.41-1.636%201.147l-7.833%2021.028-8.17-21.052c-.285-.714-.896-1.124-1.673-1.124h-3.352c-.88%200-1.494.612-1.494%201.49v33.537c0%20.878.614%201.492%201.494%201.492h1.268c.88%200%201.493-.615%201.493-1.493v-28.35l8.03%2020.627c.326.722.967%201.136%201.758%201.136h1.12c.89%200%201.56-.44%201.834-1.192l7.65-20.08v27.86c0%20.877.614%201.49%201.492%201.49h1.422c.88%200%201.493-.613%201.493-1.49V27.58c0-.878-.613-1.49-1.492-1.49m27.23%2028.073c-.396%201.682-.97%202.895-1.724%203.62-.212.212-.44.394-.676.54-.24.146-.536.274-.882.384-.35.112-.813.192-1.38.236-.614.05-1.392.074-2.31.074-.88%200-1.622-.024-2.204-.074-.53-.043-.966-.122-1.296-.233-.326-.106-.6-.233-.818-.373-.23-.148-.456-.335-.69-.57-.74-.71-1.313-1.922-1.707-3.604-.418-1.8-.632-3.903-.632-6.257%200-2.42.205-4.516.608-6.23.377-1.597.942-2.767%201.695-3.49.23-.232.468-.434.712-.605.19-.133.452-.246.78-.336.388-.104.877-.187%201.45-.25.59-.063%201.35-.097%202.258-.097.873%200%201.615.034%202.205.096.57.064%201.047.146%201.415.248.324.094.598.213.814.357.247.163.488.36.728.602.737.71%201.302%201.88%201.68%203.478.405%201.712.61%203.807.61%206.228%200%202.35-.214%204.453-.634%206.257m1.83-18.258c-.99-1.065-2.18-1.837-3.533-2.294-1.317-.444-3.006-.66-5.165-.66-2.12%200-3.79.206-5.106.63-1.364.443-2.56%201.23-3.553%202.336-1.054%201.167-1.847%202.814-2.357%204.896-.49%201.998-.74%204.35-.74%206.992%200%202.607.257%205.025.764%207.186.53%202.276%201.288%203.973%202.32%205.194.962%201.12%202.13%201.902%203.47%202.33%201.278.406%202.946.605%205.1.605%202.15%200%203.84-.2%205.165-.604%201.387-.423%202.597-1.202%203.616-2.338%201.01-1.2%201.79-2.945%202.314-5.188.506-2.164.764-4.58.764-7.186%200-2.64-.25-4.985-.74-6.97-.51-2.05-1.28-3.698-2.318-4.93m29.278-2.69h-1.292c-1.07%200-1.555.665-1.654%201.272-.406%201.61-.936%203.584-1.582%205.86-.655%202.304-1.333%204.643-2.038%207.016-.69%202.327-1.385%204.59-2.06%206.726-.458%201.437-.863%202.687-1.218%203.74-.347-1.034-.75-2.272-1.216-3.74-.67-2.116-1.367-4.36-2.088-6.733-.724-2.375-1.43-4.715-2.12-7.022-.675-2.26-1.225-4.244-1.633-5.873-.207-.92-.88-1.247-1.442-1.247h-1.55c-.862%200-1.465.603-1.465%201.466l.03.24c.142.575.407%201.503.787%202.76.38%201.258.83%202.724%201.346%204.397.518%201.67%201.066%203.46%201.654%205.37.585%201.918%201.174%203.784%201.76%205.596l1.628%205.035c.5%201.554.93%202.82%201.288%203.782.157.4.433.71.792.89l.447.104h3.048c.198%200%20.398-.03.605-.09.245-.068.694-.277.952-.923.344-.928.782-2.18%201.302-3.72s1.064-3.218%201.635-5.033c.567-1.81%201.15-3.657%201.755-5.55.602-1.9%201.157-3.69%201.66-5.366.498-1.676.93-3.16%201.294-4.457.367-1.304.618-2.235.76-2.792l.028-.24c0-.864-.58-1.467-1.412-1.467m18.56%2026.034c-.464.016-.907.024-1.335.024-1.526%200-2.804-.087-3.792-.263-.895-.16-1.603-.424-2.107-.79-.46-.338-.776-.778-.966-1.348-.22-.656-.33-1.5-.33-2.51%200-.965.083-1.792.25-2.455.14-.57.383-1.013.742-1.36.364-.35.9-.62%201.594-.796.78-.2%201.82-.3%203.086-.3h5.876v9.598c-.102.022-.262.053-.507.076-.338.032-.72.055-1.14.072l-1.37.05zm5.076-24.106c-.78-.774-1.794-1.346-3.017-1.696-1.15-.328-2.566-.495-4.208-.495-1.358%200-2.716.088-4.042.26-1.326.176-2.516.408-3.548.693-.7.2-1.097.835-1.01%201.61l.017.107.197.88c.11.7.66%201.166%201.378%201.166.065%200%20.136-.003.208-.012l.13-.022c.772-.193%201.766-.367%202.955-.513%201.19-.148%202.407-.222%203.614-.222%201.152%200%202.093.107%202.795.314.615.185%201.085.474%201.436.888.364.43.626%201.018.777%201.75.172.83.26%201.864.26%203.077v2.365l-6.662.465c-1.933.143-3.444.41-4.616.814-1.245.428-2.224%201.046-2.91%201.832-.69.79-1.143%201.744-1.346%202.83-.18.972-.27%202.11-.27%203.382%200%201.49.18%202.778.535%203.823.388%201.14%201.078%202.08%202.055%202.79.924.674%202.137%201.168%203.61%201.465%201.397.282%203.165.427%205.253.427%201.342%200%202.66-.054%203.918-.158%201.288-.105%202.4-.287%203.282-.534.828-.207%201.1-.735%201.185-1.025.08-.26.12-.527.12-.793V42.216c0-1.566-.148-2.93-.44-4.06-.315-1.217-.872-2.232-1.653-3.015zm19.403%2024.03c-.946%200-1.903-.05-2.847-.148-.864-.09-1.583-.192-2.115-.304V37.353c.52-.125%201.18-.228%201.964-.31.942-.096%202-.146%203.148-.146%201.595%200%202.9.2%203.877.59.922.368%201.63.938%202.165%201.74.564.846.966%201.974%201.195%203.353.244%201.46.367%203.252.367%205.326%200%202.062-.14%203.857-.416%205.332-.262%201.403-.698%202.56-1.294%203.44-.576.847-1.315%201.456-2.264%201.857-.99.42-2.262.634-3.78.634m9.623-22.58c-.957-1.263-2.233-2.2-3.792-2.79-1.493-.565-3.355-.852-5.53-.852-1.674%200-3.046.09-4.08.27-.505.087-.892.144-1.185.18v-8.612c0-.878-.614-1.492-1.493-1.492h-1.32c-.88%200-1.493.614-1.493%201.492V60.76c0%20.257.088%201.116%201.288%201.472%201.13.24%202.387.45%203.74.624%201.357.174%202.768.262%204.188.262%202.365%200%204.364-.362%205.946-1.078%201.615-.736%202.905-1.798%203.834-3.163.903-1.326%201.543-2.954%201.907-4.84.35-1.815.526-3.877.526-6.13%200-2.56-.186-4.78-.553-6.6-.382-1.897-1.048-3.484-1.984-4.717m18.544%2022.58h-1.98c-.68%200-1.062-.075-1.266-.138-.1-.03-.202-.082-.304-.274-.095-.185-.22-.554-.27-1.268-.05-.684-.076-1.62-.076-2.774v-29.93c0-.878-.612-1.492-1.49-1.492h-1.322c-.877%200-1.492.614-1.492%201.492v30.08c0%201.348.053%202.506.16%203.44.116%201.025.37%201.894.752%202.58.43.768%201.05%201.33%201.844%201.667.723.312%201.623.462%202.75.462.61%200%201.155-.028%201.617-.082.436-.053.83-.114%201.185-.183.77-.107%201.282-.697%201.282-1.48v-.812c0-.622-.436-1.29-1.39-1.29m17.53-22.372c1.354%200%202.47.173%203.316.513.8.324%201.413.775%201.868%201.38.463.62.788%201.404.962%202.335.19%201.02.29%202.207.29%203.527%200%20.388-.01.66-.02.846h-13.503c.03-.982.134-1.957.305-2.906.198-1.098.56-2.09%201.07-2.95.49-.822%201.173-1.472%202.078-1.984.898-.505%202.12-.762%203.634-.762m8.794-.208c-.78-1.17-1.904-2.084-3.343-2.718-1.39-.61-3.223-.92-5.45-.92-2.255%200-4.147.397-5.62%201.18-1.485.79-2.686%201.897-3.57%203.29-.862%201.357-1.463%202.972-1.79%204.802-.314%201.757-.473%203.687-.473%205.736%200%201.976.15%203.877.446%205.65.31%201.86.95%203.516%201.91%204.915.978%201.428%202.348%202.565%204.076%203.383%201.703.805%203.956%201.213%206.696%201.213%202.8%200%205.306-.474%207.502-1.426.637-.317.974-.934.888-1.695l-.16-1.005c-.106-.54-.473-.94-.983-1.068-.122-.03-.25-.045-.374-.045-.225%200-.455.046-.71.15-.712.31-1.595.57-2.622.775-1.03.207-2.083.31-3.132.31-1.846%200-3.387-.21-4.58-.63-1.142-.4-2.02-.99-2.69-1.805-.677-.822-1.166-1.89-1.452-3.17-.27-1.208-.42-2.64-.453-4.265h15.423c.693%200%201.25-.192%201.66-.568.458-.425.646-1.15.646-2.502v-.762c0-1.735-.116-3.35-.344-4.803-.24-1.54-.745-2.894-1.5-4.025m58.45-3.13h-1.272c-.762%200-1.36.423-1.594%201.132l-.026.087c-.37%201.608-.876%203.53-1.51%205.715-.642%202.215-1.302%204.467-1.98%206.752-.67%202.256-1.34%204.427-1.998%206.455-.445%201.368-.847%202.58-1.2%203.62-.355-1.024-.76-2.236-1.226-3.628-.667-1.998-1.365-4.17-2.077-6.46-.712-2.286-1.406-4.537-2.083-6.755-.666-2.178-1.228-4.11-1.657-5.69-.2-.908-.862-1.23-1.416-1.23h-1.526c-.85%200-1.44.592-1.44%201.44l.024.225c.14.598.396%201.5.78%202.756.373%201.222.815%202.64%201.322%204.252.512%201.613%201.062%203.327%201.656%205.142.594%201.814%201.178%203.586%201.754%205.317.58%201.728%201.12%203.333%201.63%204.808.51%201.484.94%202.684%201.266%203.573.213.64.67%201.073%201.26%201.224-.424%201.103-.83%202.035-1.2%202.772-.395.772-.808%201.385-1.23%201.82-.383.395-.792.67-1.22.823-.47.164-1.06.248-1.757.248-.697%200-1.384-.047-2.022-.138-.097-.015-.18-.024-.258-.024-.682%200-1.194.515-1.194%201.196v1.322c0%20.743.45%201.15.867%201.285.275.1.662.162%201.27.203.533.035%201.012.054%201.438.054%201.423%200%202.643-.227%203.632-.672%201.008-.455%201.915-1.207%202.693-2.235.725-.962%201.414-2.23%202.054-3.773.61-1.478%201.3-3.335%202.05-5.518.308-.885.69-2.024%201.15-3.42.452-1.37.935-2.848%201.474-4.5.525-1.61%201.06-3.272%201.603-4.986.544-1.715%201.044-3.328%201.504-4.84.454-1.492.85-2.862%201.177-4.067.332-1.225.546-2.098.654-2.67l.018-.18c0-.848-.572-1.44-1.39-1.44m16.295%2025.204c-.84%200-1.722-.056-2.624-.17-.75-.092-1.394-.193-1.882-.288v-20.9c.495-.12%201.068-.216%201.708-.282.78-.082%201.756-.123%202.896-.123%201.632%200%203.006.152%204.085.448.99.272%201.755.732%202.34%201.402.595.68%201.026%201.633%201.278%202.83.273%201.305.412%203.007.412%205.06%200%202.174-.125%204.082-.372%205.667-.23%201.498-.652%202.74-1.254%203.69-.573.902-1.342%201.552-2.352%201.984-1.056.452-2.483.683-4.235.683m10.165-22.296c-.964-1.195-2.298-2.08-3.965-2.628-1.584-.522-3.637-.787-6.1-.787-1.428%200-2.78.088-4.024.264-1.203.168-2.416.375-3.603.61-.78.11-1.284.684-1.284%201.48V70.68c0%20.88.613%201.493%201.49%201.493h1.323c.88%200%201.492-.613%201.492-1.492v-8.45c.543.082%201.132.157%201.756.224.978.103%201.886.157%202.697.157%202.424%200%204.475-.342%206.096-1.017%201.674-.695%203.02-1.75%204.006-3.13.96-1.35%201.64-3.053%202.02-5.065.365-1.93.55-4.206.55-6.762%200-2.255-.17-4.235-.503-5.886-.353-1.742-1.01-3.217-1.952-4.386m19.573.432c1.354%200%202.472.173%203.315.513.805.324%201.415.775%201.87%201.38.462.62.787%201.405.962%202.335.194%201.023.29%202.208.29%203.527%200%20.39-.01.66-.02.846h-13.504c.03-.98.134-1.954.306-2.908.196-1.094.557-2.087%201.07-2.948.49-.822%201.17-1.472%202.078-1.984.896-.506%202.118-.762%203.633-.762m9.99%2011.883c.46-.425.65-1.15.65-2.502v-.762c0-1.735-.117-3.35-.343-4.803-.244-1.54-.748-2.895-1.5-4.025-.783-1.17-1.907-2.084-3.345-2.718-1.39-.61-3.223-.92-5.45-.92-2.256%200-4.146.397-5.62%201.18-1.485.79-2.687%201.897-3.57%203.29-.862%201.353-1.463%202.97-1.79%204.802-.313%201.76-.472%203.692-.472%205.736%200%201.976.15%203.877.445%205.65.31%201.862.952%203.516%201.912%204.915.974%201.428%202.346%202.565%204.074%203.383%201.703.805%203.956%201.213%206.696%201.213%202.8%200%205.307-.474%207.503-1.427.638-.318.97-.935.886-1.694l-.16-1.005c-.105-.54-.472-.94-.983-1.068-.12-.03-.248-.045-.375-.045-.225%200-.453.046-.707.15-.712.31-1.594.57-2.62.775-1.032.207-2.086.31-3.137.31-1.844%200-3.384-.21-4.577-.63-1.143-.4-2.023-.99-2.69-1.805-.678-.822-1.167-1.89-1.454-3.17-.27-1.21-.422-2.642-.452-4.265h15.423c.693%200%201.25-.192%201.658-.568m-78.143-22.59h-21.465c-.87%200-1.478.607-1.478%201.476v1.108c0%20.87.61%201.516%201.478%201.516h8.527v30.927c0%20.878.616%201.492%201.492%201.492h1.424c.878%200%201.49-.615%201.49-1.493V30.19h8.53c.87%200%201.48-.646%201.48-1.516v-1.108c0-.87-.61-1.477-1.48-1.477%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+      </h1>
+      <ul class="nav">
+        <li><a href="#" onclick="swapLanguage('de');">Deutsch</a></li>
+        <li><a href="#" onclick="swapLanguage('en');">English</a></li>
+        <li><a href="#" onclick="swapLanguage('es');">Español</a></li>
+        <li><a href="#" onclick="swapLanguage('fr');">Français</a></li>
+        <li><a href="#" onclick="swapLanguage('ja');">日本語</a></li>
+        <li><a href="#" onclick="swapLanguage('nl');">Nederlands</a></li>
+      </ul>
+      <div id="en"><!-- Start English -->
+        <p class="intro">Thank you for choosing Movable Type, the premiere solution for your blogging and website management needs. This file will explain how to get up and running; click on the highlighted sections for more information on that subject.</p>
+
+        <h2>Before You Begin</h2>
+        <p>Movable Type requires the following applications:</p>
+        <ul>
+          <li>Perl 5.8.1 or greater;</li>
+          <li>A web server like Apache or Windows IIS;</li>
+          <li>Access to a database like MySQL;</li>
+          <li>The following Perl modules:
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p>Consult the CPAN documentation to learn how to <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">determine if a Perl module is already installed</a> and, if they are not, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">how to install them</a>.</p>
+
+        <h2>Upgrading Movable Type</h2>
+        <p>If you are upgrading to Movable Type 6 from a previous version, we recommend that you first back up your old installation. Database backup is especially important to restore your system in case of any trouble during the upgrade process.</p>
+        <p>Upload Movable Type 6's files over the same files from the previous version of Movable Type. Access Movable Type as you normally do, and you will be taken through the upgrade process.</p>
+
+        <h2>Installing Movable Type</h2>
+        <p>Before you install Movable Type:</p>
+        <ol>
+          <li>Upload all of Movable Type's files into a directory or folder accessible via your web browser. We recommend that you separate your published content from the Movable Type executable programs by placing each in a separate directory. Typically, the installation directory is called 'mt' and is located in the root directory of your website or within an existing directory that is already configured to allow CGI script execution.</li>
+          <li>Make sure that the 'mt' directory containing the uploaded Movable Type files has been <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">enabled to execute CGI scripts</a>.</li>
+          <li>Make sure that each .cgi file (e.g. <code>mt.cgi</code>, <code>mt-search.cgi</code>, etc.) found in the Movable Type directory has the <a href="http://www.elated.com/articles/understanding-permissions/">execute permission</a> enabled.</li>
+          <li>Open that folder in your web browser (i.e. http://www.example.com/mt/).
+          <li>You should see a Movable Type welcome screen that will take you through the installation process. If the welcome screen does not appear, please consult Troubleshooting Movable Type below.</li>
+        </ol>
+
+        <h2>Troubleshooting Movable Type</h2>
+        <h3>Setting up your static web path</h3>
+        <p>Some web servers and configurations do not allow static files such as JavaScript, CSS and image files to be located inside of a directory where CGI scripts are located. If you installed Movable Type into a cgi-bin directory, you may need to relocate the 'mt-static' directory to another web accessible location. Read our documentation on setting up your <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static directory</a>.</p>
+
+        <h3>Internal Server Errors</h3>
+        <p>If you receive an <samp>Internal Server Error</samp> message, a configuration change may be required on your web server. Please consult our <a href="http://www.movabletype.org/documentation/installation/">installation guide</a> or search our <a href="http://www.sixapart.com/movabletype/kb/">knowledge base</a> to help resolve this issue.</p>
+
+        <h3>Finding more help</h3>
+        <p>Need additional information or support? Check out the <a href="http://www.movabletype.org/documentation/installation/">Detailed Installation Guide</a>.</p>
+      </div><!-- End English -->
+
+      <div id="de" style="display: none;"><!-- Start German -->
+        <p class="intro">Vielen Dank, daß Sie sich für Movable Type, die führende Plattform für Blogging und Website-Management, entschieden haben. Hier finden Sie alles, was Sie zur Installation wissen müssen. Die Links führen zu weitergehenden Informationen.</p>
+
+        <h2>Bevor Sie anfangen</h2>
+        <p>Movable Type erfordert folgende Software:</p>
+        <ul>
+          <li>Perl 5.8.1 oder höher,</li>
+          <li>einen Webserver, z.B. Apache oder Windows IIS,</li>
+          <li>Zugriff auf eine SQL-Datenbank, z.B. auf MySQL, sowie</li>
+          <li>diese Perl-Module:
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p><em>In der CPAN-Dokumentation ist beschrieben, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">wie Sie Perl-Module installieren</a> und wie Sie herausfinden,  <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">welche Module bereits installiert sind</a>.</em></p>
+
+        <h2>Eine vorhandene Movable Type-Installation aktualisieren</h2>
+        <p>Wenn Sie eine frühere Version auf Movable Type 6 aktualisieren möchten, sollten Sie zuerst eine Sicherungskopie der vorhandenen Installation und der zugehörigen Datenbank erstellen. So können Sie die vorhandene Installation wiederherstellen, falls während der Aktualisierung Schwierigkeiten auftreten.</p>
+        <p>Laden Sie danach die neue Movable Type-Dateien in Ihr  Movable Type-Verzeichnis hoch und überschreiben Sie die vorhandenen  Dateien. Rufen Sie Movable Type wie gewohnt auf. Sie werden Schritt für Schritt durch den Aktualisierungsvorgang geführt.</p>
+
+        <h2>Movable Type neu installieren</h2>
+        <p>Vor der Installation:</p>
+        <ol>
+          <li>Laden Sie alle zu Movable Type gehörenden Dateien auf Ihren Webserver hoch. Wählen Sie dazu ein Verzeichnis, das mit Ihrem Webbrowser erreichbar ist und in dem CGI-Skripte ausgeführt werden können. Wir empfehlen, daß Movable Type-System und damit erstellte Websites in unterschiedlichen Verzeichnissen abzulegen. Typischerweise wird Movable Type-Ordner in einem Ordner 'mt' im Wurzelverzeichnis der Website installiert.</li>
+          <li>Stellen Sie sicher, daß im Movable Type-Ordner befindliche CGI-Skripte <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ausgeführt werden können</a>.</li>
+          <li>Setzen Sie mittels chmod alle .cgi-Dateien im Movable Type-Ordner (<code>mt.cgi</code>, <code>mt-search.cgi</code>, etc.) auf <a href="http://www.elated.com/articles/understanding-permissions/">vom Webserver ausführbar</a>.</li>
+          <li>Rufen Sie den Movable Type-Ordner mit Ihrem Webbrowser auf (z.B. <code>http://www.meineseite.de/mt/</code>).
+          <li>Es erscheint eine Willkommensnachricht und Sie werden Schritt für Schritt durch den Installationsvorgang geführt. Erscheint die Willkommensnachricht nicht, beachten Sie bitte die Hinweise im nächsten Abschnitt.</li>
+        </ol>
+
+        <h2>Schwierigkeiten bei der Installation</h2>
+        <h3>Wahl des statischen Webpfads</h3>
+        <p>Einige Webserver sind so konfiguriert, daß Verzeichnisse, in denen CGI-Skripte ausgeführt werden können, keine statischen Dateien abgelegt sein dürfen. Wenn Sie Movable Type im Verzeichnis cgi-bin installiert haben, müssen Sie daher den Ordner 'mt-static' möglicherweise an einer anderer vom Webserver erreichbaren Stelle ablegen. Tragen Sie diese anschließend <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">in der Movable Type-Konfigurationsdatei ein</a>.</p>
+
+        <h3>Interne Serverfehler</h3>
+        <p>Kommt es zu internen Serverfehlern (<samp>Error 500 - Internal Server Error</samp>) ist ggf. der Webserver anders zu konfigurieren. Nähere Informationen finden Sie in der <a href="http://www.movabletype.org/documentation/installation/">Installationsanleitung</a> und der <a href="http://www.sixapart.com/movabletype/kb/">Wissensdatenbank</a>.</p>
+
+        <h3>Weitere Hilfe</h3>
+        <p>Brauchen Sie weitere Informationen oder Unterstützung? Rufen Sie bitte unsere <a href="http://www.movabletype.org/documentation/installation/">detaillierte Installationsanleitung </a> auf.</p>
+      </div><!-- End German -->
+
+      <div id="es" style="display: none;"><!-- Start Spanish -->
+        <p class="intro">Gracias por elegir Movable Type, la solución ideal para todos sus blogs. Este fichero le informa cómo ponerse en marcha; haga clic en las secciones destacadas para más información sobre esostemas.</p>
+
+        <h2>Antes de empezar</h2>
+        <p>Movable Type necesita las siguientes aplicaciones:</p>
+        <ul>
+          <li>Perl 5.8.1 o posterior;</li>
+          <li>Un servidor web como Apache o Windows IIS;</li>
+          <li>Acceso a una base de datos como MySQL;</li>
+          <li>Los siguientes módulos de Perl:
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p><em>Consulte la siguiente documentación para más información sobre cómo <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">determinar si un módulo de Perl ya está instalado</a> y, si no lo está, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">cómo instalarlo</a>.</em></p>
+
+        <h2>Actualización de Movable Type</h2>
+        <p>Si está actualizando Movable Type 6 desde una versión anterior, le recomendamos que primero haga una copia de seguridad de su antigua instalación. Luego, transfiera los ficheros de Movable Type 6 donde estén los ficheros antiguos. Acceda a Movable Type como normalmente lo hace y podrá iniciar el proceso de actualización.</p>
+
+        <h2>Instalación de Movable Type</h2>
+        <p>Antes de instalar Movable Type:</p>
+        <ol>
+          <li>Transfiera todos los ficheros de Movable Type a una carpeta accesible a través de su navegador. (Generalmente, esta carpeta se llama 'mt' y está situada en el directorio raíz de su web).</li>
+          <li>Asegúrese de que la carpeta 'mt' que contiene los ficheros transferidos de Movable Type tiene permisos de <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ejecución de scripts CGI</a>.</li>
+          <li>Asegúrese de que cada fichero .cgi (p.e. <code>mt.cgi</code>, <code>mt-search.cgi</code>, etc) que se encuentra en el directorio de Movable Type tiene los <a href="http://www.elated.com/articles/understanding-permissions/">permisos de ejecución</a> habilitados.</li>
+          <li>Abra dicha carpeta en su navegador (p.e. http://www.misitioweb.com/mt/).
+          <li>Verá una pantalla de bienvenida a Movable Type, que le guiará por el proceso de instalación. Si la pantalla de bienvenida no aparece, consulte nuestra Guía de Resolución de Problemas.</li>
+        </ol>
+
+        <h2>Resolución de Problemas de Movable Type</h2>
+        <h3>Configuración de la ruta del web estático</h3>
+        <p>En algunos servidores web (y en algunas configuraciones), los ficheros estáticos como los de javascript, hojas de estilo e imágenes, no están permitidos dentro de un directorio cgi-bin. Si instaló Movable Type en un directorio cgi-bin, deberá situar los ficheros estáticos en otro lugar accesible por el web. Consulte nuestra documentación sobre cómo configurar el <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">directorio mt-static</a>.</p>
+
+        <h3>Errores internos del servidor</h3>
+        <p>Si obtiene un mensaje de error interno del servidor (<samp>Internal Server Error</samp>), quizás el servidor web necesite cambios en la configuración. Por favor, consulte nuestra <a href="http://www.movabletype.org/documentation/installation/">guía de instalación</a> para ayudarle a resolver este asunto, o consulte nuestra <a href="http://www.sixapart.com/movabletype/kb/">base de conocimiento</a>.</p>
+
+        <h3>Buscando más ayuda</h3>
+        <p>¿Necesita información o soporte adicional? Consulte nuestra <a href="http://www.movabletype.org/documentation/installation/">Guía Detallada de Instalación</a>.</p>
+      </div><!-- End Spanish -->
+
+      <div id="fr" style="display: none;"><!-- Start French -->
+        <p class="intro">Merci d'avoir choisi Movable Type, la solution privilégiée pour tous vos besoins de publication. Ce fichier va vous montrer comment démarrer. Cliquez sur les sections surlignées pour avoir plus d'information sur ce sujet.</p>
+
+        <h2>Avant de démarrer</h2>
+        <p>Movable Type nécessite les applications suivantes:</p>
+        <ul>
+          <li>Perl 5.8.1 ou supérieur;</li>
+          <li>Un serveur Web comme Apache, ou Windows IIS;</li>
+          <li>Accès à une base de données comme MySQL;</li>
+          <li>Les modules Perl suivants:
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p><em>Consultez la documentation suivante pour apprendre comment <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">déterminer si un module perl est déjà installé </a> et, s'il ne l'est pas, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">comment l'installer</a>.</em></p>
+
+        <h2>Mettre à jour Movable Type</h2>
+        <p>Si vous mettez à jour Movable Type à partir d'une version précédente, nous recommandons que vous fassiez d'abord une sauvegarde de votre ancienne installation. Ensuite mettez les nouveaux fichiers de Movable Type 6 à la place des anciens fichiers. Accédez à Movable Type comme vous le faites d'habitude, et vous serez redirigé vers la procédure de mise à jour.</p>
+
+        <h2>Installer Movable Type</h2>
+        <p>Avant d'installer Movable Type:</p>
+        <ol>
+          <li>Mettez tous les fichiers de Movable Type dans un répertoire accessible via votre navigateur web. (Généralement, ce répertoire est nommé 'mt' à la racine de votre site web).</li>
+          <li>Assurez-vous que chaque fichier .cgi (ex: mt.cgi, mt-search.cgi, etc) qui se trouve dans le répertoire Movable Type a les <a href="http://www.elated.com/articles/understanding-permissions/">droits d'exécution</a> activés.</li>
+          <li>Assurez-vous que le répertoire 'mt' qui contient les fichiers de Movable Type est <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">autorisé à exécuter les scripts CGI</a>.</li>
+          <li>Ouvrez ce répertoire dans votre navigateur web (ex: http://www.monSiteWeb.com/mt/).
+          <li>Vous devriez voir un écran d'accueil Movable Type qui vous guidera à travers la procédure d'installation. Si le message d'accueil n'apparait pas, merci de consulter notre guide de dépannage ci-dessous.</li>
+        </ol>
+
+        <h2>Dépanner Movable Type</h2>
+        <h3>Régler votre répertoire web statique</h3>
+        <p>Avec certains serveurs web (et avec certaines configurations), les fichiers statiques comme les javascripts, les fichiers css et les images ne sont pas autorisés à l'intérieur des répertoires cgi-bin. Si vous avez installé Movable Type dans un répertoire cgi-bin vous devez placer vos fichiers statiques dans un autre répertoire accessible par le web. Lisez notre documentation pour régler votre <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">répertoire mt-static</a>.</p>
+
+        <h3>Erreurs internes de serveur</h3>
+        <p>Si vous recevez un message <samp>Internal Server Error</samp>, un changement de configuration peut être nécessaire sur votre serveur. Merci de consulter notre <a href="http://www.movabletype.org/documentation/installation/">guide d'installation</a> pour vous aider à résoudre ce problème, ou recherchez dans notre <a href="http://www.sixapart.com/movabletype/kb/">base de connaissance</a>.</p>
+
+        <h3>Trouver plus d'aide</h3>
+        <p>Vous avez besoin d'informations supplémentaires ou de support ? Lisez le <a href="http://www.movabletype.org/documentation/installation/">Guide d'installation détaillé</a>.</p>
+      </div><!-- End French -->
+
+      <div id="ja" style="display: none;"><!-- Start Japanese -->
+        <p class="intro">Movable Type をご利用いただきありがとうございます。このファイルには、Movable Type を動作させるために必要な情報を記載しています。</p>
+
+        <h2>はじめる前に</h2>
+        <p>Movable Type を実行するには次のアプリケーションが必要です。</p>
+        <ul>
+          <li>Perl 5.8.1 以上</li>
+          <li>ApacheやWindows IISなどのWebサーバー</li>
+          <li>MySQLなどのデータベースへのアクセス</li>
+          <li>以下のPerlモジュール
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p><em>Perlモジュールを<a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">インストールする方法</a>やPerlモジュールが<a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">すでにインストールされているかどうか確認する方法</a>については、それぞれのドキュメントを参照してください。</em></p>
+
+        <h2>Movable Type のアップグレード</h2>
+        <p>以前のバージョンからMovable Type 6へアップグレードする場合は、まず現在の環境のバックアップを作成してください。特に、データベースのバックアップは重要です。アップグレード中に何らかの問題が発生した場合に、以前の状態に復元するために必要です。Movable Typeのアップグレードは、以前のバージョンを上書きする方法と、別フォルダにアップロードする方法があります。いずれの場合も、アップロードしたフォルダにアクセスすると、Movable Typeは自動的にアップグレードを開始します。詳しくは、<a href="http://www.movabletype.jp/documentation/upgrade/">アップグレード・ガイド</a>をご覧ください。</p>
+
+        <h2>Movable Type のインストール</h2>
+        <p>Movable Type をインストールする前に</p>
+        <ol>
+          <li>Movable Typeのファイルを、Webブラウザからアクセスできるフォルダにアップロードします。アップロードするフォルダは、コンテンツを出力するフォルダとは別にします。例えば、専用のサブドメインを利用したり（mt.example.com）、Webサイトのルートの下に専用のフォルダを作成します（www.example.com/mt/）。</li>
+          <li>アップロードしたフォルダ内のcgiファイル（mt.cgi、mt-search.cgiなど）に実行権限を与えます。</li>
+          <li>アップロードしたフォルダで<a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">CGIスクリプトを実行できるように</a>します。</li>
+          <li>フォルダにWebブラウザでアクセスします（たとえば http://www.example.com/mt/）。</li>
+          <li>Movable Typeの既定のページが表示され、インストールプロセスを始めることができるようになります。ページが表示されない場合は以下のトラブルシューティングガイドに進んでください。</li>
+        </ol>
+
+        <h2>トラブルシューティングガイド</h2>
+        <h3>StaticWebPathの設定</h3>
+        <p>Webサーバー（やその設定）によっては、JavaScript、CSS、画像ファイルなどの静的ファイルはcgi-binフォルダからは取得できないようになっている場合があります。その場合は、Movable Typeが利用する静的ファイルを別の、Webブラウザから取得できる場所に移動する必要があります。<a href="http://www.movabletype.jp/faq/post-9.html">ドキュメントを参照</a>して設定してください。</p>
+
+        <h3>Internal Server Error</h3>
+        <p><samp>Internal Server Error</sapm> というメッセージが出た場合は、Webサーバー上で設定を変更する必要があるかもしれません。<a href="http://www.movabletype.jp/documentation/installation/">インストールガイド</a>に沿ってインストールを行ってください。また<a href="http://www.movabletype.jp/faq/">FAQ</a>もご確認ください。</p>
+
+        <h3>その他</h3>
+        <p>より詳しい情報は<a href="http://www.movabletype.jp/documentation/installation/">インストールガイド</a>に掲載しています。ご確認ください。</p>
+      </div><!-- End Japanese -->
+
+      <div id="nl" style="display: none;"><!-- Start Dutch -->
+        <p class="intro">Bedankt om voor Movable Type te kiezen, de beste oplossing voor al uw noden qua websitebeheer en bloggen. Dit bestand zal u tonen hoe u van start kunt gaan; klik op de gemarkeerde secties voor meer informatie over die onderwerpen.</p>
+
+        <h2>Voor u begint</h2>
+        <p>Movable Type vereist volgende applicaties:</p>
+        <ul>
+          <li>Perl 5.8.1 of hoger;</li>
+          <li>Een webserver als Apache of Windows IIS;</li>
+          <li>Toegang tot een database zoals MySQL;</li>
+          <li>Onderstaande Perl modules:
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>
+        <p><em>Consulteer deze documentatie om te leren hoe u kunt <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">bepalen of een perl module al is geïnstalleerd</a> en, indien niet, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">hoe u ze kunt installeren</a>.</em></p>
+
+        <h2>Movable Type Upgraden</h2>
+        <p>Als u Movable Type 6 aan het upgraden bent van een vorige versie, raden we aan om eerst een veiligheidskopie te maken van uw oude installatie. Upload vervolgens de bestanden van Movable Type 6 over uw oude bestanden. Meld u vervolgens op de gewone manier aan bij Movable Type en u zal door het upgradeproces worden geleid.</p>
+
+        <h2>Movable Type installeren</h2>
+        <p>Voor u Movable Type installeert:</p>
+        <ol>
+          <li>Upload alle bestanden van Movable Type naar een map die u kunt bereiken via uw webbrowser.  Wij raden aan Movable Type te installeren in een aparte map, dus niet op dezelfde plaats waar de gepubliceerde blog(s) of website(s) zullen komen. Meestal is de naam die men aan deze map geeft 'mt', in de hoofdmap van de website, of een andere map die zo is geconfigureerd dat cgi scripts er mogen uitgevoerd worden.</li>
+          <li>Controleer of de 'mt' map die de geuploade Movable Type bestanden bevat <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">is ingesteld om CGI scripts te laten uitvoerenen</a>.</li>
+          <li>Verzeker u ervan dat alle .cgi bestanden (bv. mt.cgi, mt-search.cgi, etc) die te vinden zijn in de Movable Type map de <a href="http://www.elated.com/articles/understanding-permissions/">execute permissie</a> hebben.</li>
+          <li>Open de map in uw webbrowser (m.a.w. surf naar http://www.mijwebsite.com/mt/).
+          <li>Er verschijnt een Movable Type verwelkomingsscherm dat u door het intstallatieproces zal leiden. Als het welkomstscherm niet verschijnt, kijk dan in onze troubleshooting gids hieronder.</li>
+        </ol>
+
+        <h2>Movable Type troubleshooten</h2>
+        <h3>Uw statisch webpad instellen</h3>
+        <p>Op sommige webserver (en bij sommige configuraties), mogen statische bestanden zoals javascript, css en afbeeldingen niet in een cgi-bin map staan. Als u Movable Type heeft geïnstalleerd in een cgi-bin map, dan moet u uw statische bestanden op een andere, webtoegankelijke plaats zetten. Lees onze documentatie over het instellen van uw <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static map</a>.</p>
+
+        <h3>Internal Server Errors</h3>
+        <p>Als u een <samp>Internal Server Error</samp> foutboodschap krijgt, kan het zijn dat er instellingen op uw webserver aangepast moeten worden. Gelieve onze <a href="http://www.movabletype.org/documentation/installation/">installatiegids</a> te consulteren om dit probleem op te lossen, of doorzoek onze <a href="http://www.sixapart.com/movabletype/kb/">kennisdatabank</a>.</p>
+
+        <h3>Meer hulp nodig?</h3>
+        <p>Bijkomende antwoorden of ondersteuning nodig? Kijk in de <a href="http://www.movabletype.org/documentation/installation/">gedetailleerde installatiegids</a>.</p>
+      </div><!-- End Dutch -->
+
+    </div>
+  </body>
+</html>
