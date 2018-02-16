@@ -4162,7 +4162,7 @@ sub _hdlr_app_contentfield_option_group {
 
   $insides
 
-  <div>
+  <div class="form-group-button">
     <button type="button" class="btn btn-default" onclick={ closePanel }><__trans phrase="Close"></button>
   </div>
 
@@ -4237,6 +4237,10 @@ sub _hdlr_app_contentfield_option_group {
   closePanel(e) {
     className = this.root.className
     this.root.className = className.replace(/\\s*show\\s*/,'')
+    var target = document.getElementsByClassName('mt-draggable__area')[0]
+    this.parent.parent.recalcHeight(target)
+
+    jQuery("a[aria-controls='field-options-" + this.fieldId + "']").attr('aria-expanded', false)
   }
 
   $script

@@ -19,6 +19,7 @@ use MT::CMS::Common;
 use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentFieldIndex;
+use MT::ContentFieldType::Common qw( field_type_icon );
 use MT::ContentType;
 use MT::ContentData;
 use MT::DateTime;
@@ -58,6 +59,11 @@ sub edit {
 
         $field_data = $obj->fields;
     }
+    else {
+        $param->{new_object} = 1;
+        $param->{name}       = '';
+    }
+
     if ( $app->param('error') ) {
         for my $col (qw{ name description user_disp_option }) {
             $param->{$col} = $app->param($col);
@@ -70,6 +76,7 @@ sub edit {
             $field_data = MT::Util::decode_js($field_data);
         }
         $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
+
     }
 
     # Content Field
@@ -140,12 +147,27 @@ sub edit {
             }
         }
 
+        # field type icon
+        my $icon;
+        if ( my $handler = $content_field_types->{$key}{icon_handler} ) {
+            $handler = MT->handler_to_coderef( $content_field_types->{$key}{icon_handler} );
+            if ( 'CODE' eq ref $handler ) {
+                $icon = $handler->($app);
+            }
+        }
+        else {
+            my $icon_class = $content_field_types->{$key}{icon_class} || undef;
+            my $icon_title = $content_field_types->{$key}{icon_title} || undef;
+            $icon = field_type_icon( $icon_class, $icon_title );
+        }
+
         push @type_array,
             {
             type    => $type,
             label   => $label,
             order   => $content_field_types->{$key}{order},
             warning => $warning,
+            icon    => $icon,
             };
     }
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
