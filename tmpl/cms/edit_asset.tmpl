@@ -318,15 +318,17 @@ jQuery(window).load( init );
 
         <mtapp:setting
            id="tags"
-           label_class="text-top position-relative"
+           label_class="text-top"
            label="<__trans phrase="Tags">"
            label_for="tags"
            label_class="top-label">
-          <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
-          <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-          <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
-            <div id="tags_completion" class="mt_suggest__list">
-              <ul></ul>
+          <div class="form-group position-relative">
+            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
+            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+            <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
+              <div id="tags_completion" class="mt_suggest__list">
+               <ul></ul>
+              </div>
             </div>
           </div>
         </mtapp:setting>
