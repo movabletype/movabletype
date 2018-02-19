@@ -145,20 +145,18 @@ sub add {
                 %{ $panel_info->{$source} },
                 list_noncron => 1,
 
-                #panel_last       => $i == $#panels,
                 panel_last       => 0,
                 panel_first      => $i == 0,
-                panel_number     => $i + 1,
-                panel_total      => $#panels + 1,
-                panel_has_steps  => ( $#panels == '0' ? 0 : 1 ),
-                panel_searchable => (
-                    $source eq 'object'
-                        || $source eq 'event' || $source eq 'trigger'
-                    ? 0
-                    : 1
-                ),
-                search_prompt =>
-                    $app->translate("Search Sites and Child Sites") . ':',
+                panel_number     => $i == 0 ? 1 : 3,
+                panel_total      => 5,
+                panel_has_steps  => 1,
+                panel_searchable => 1,
+                search_prompt    => (
+                      $i == 0
+                    ? $app->translate("Search Sites and Child Sites")
+                    : $app->translate("Search Content Type")
+                    )
+                    . ':',
             };
 
             my $limit = $app->param('limit') || 25;
