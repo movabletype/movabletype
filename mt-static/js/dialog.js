@@ -149,9 +149,12 @@ SelectionList = new Class(Object, {
     },
     render: function() {
         if (!this.container) return;
-        this.container.innerHTML = '';
         var doc = TC.getOwnerDocument(this.container);
         var self = this;
+        // remove child selected-item
+        jQuery(this.container).find('.selected-item').remove();
+        // remove none label
+        jQuery(this.container).find('.none_label').remove();
         var makeclosure = function(x) { return function() { self.remove(x) } };
         for (var i = 0; i < this.itemList.length; i++) {
             var p = this.itemList[i];
@@ -167,8 +170,13 @@ SelectionList = new Class(Object, {
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }
-        if (this.itemList.length == 0)
-            this.container.innerHTML = trans('(None)');
+        if (this.itemList.length == 0){
+            // append None label
+            var $none_text = jQuery('<span></span>');
+            $none_text.addClass('none_label');
+            $none_text.text(trans('(None)'));
+            jQuery(this.container).append($none_text);
+        }
     },
     items: function() {
         var items = [];
@@ -369,7 +377,7 @@ ListingPanel = new Class(Panel, {
         }
 
         // selections
-        var items = TC.getElementsByClassName("items",
+        var items = TC.getElementsByClassName("modal-selections",
             this.element);
         if (items && items.length) {
             this.selectionList = new SelectionList(items[0]);
