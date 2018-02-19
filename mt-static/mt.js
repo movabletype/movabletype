@@ -1080,10 +1080,10 @@ Datasource = new Class(Object, {
         if (!this.element) return;
         jQuery('div.alert').remove();
         if (jQuery(html).hasClass('alert')) {
-            jQuery(this.element).find('table.list-heading').hide();
+            jQuery(this.element).find('table.mt-table').hide();
             jQuery(this.element).append(html);
         } else {
-            jQuery(this.element).find('table.list-heading').show();
+            jQuery(this.element).find('table.mt-table').show();
             jQuery(this.element).find('tbody').remove();
             jQuery(this.element).find('thead').after(html);
         }
@@ -1290,68 +1290,105 @@ Pager = new Class(Object, {
             var listStart = (this.state.offset ? this.state.offset : 0) + 1;
             var listEnd = (this.state.offset ? this.state.offset : 0) + this.state.rows;
 
+            if (this.state.listTotal) {
+              // now page
+              var page = Math.ceil(Number(Number(this.state.offset)/Number(this.state.limit)))+1;
+              // page max
+              var page_max = Math.ceil(Number(Number(this.state.listTotal) / Number(this.state.limit)));
+            }
+
             var doc = TC.getOwnerDocument(this.element);
             var self = this;
             // pagination control structure
-            if (this.state.offset > 0) {
-                var link = doc.createElement('a');
-                link.href = 'javascript:void(0)';
-                link.onclick = function(e) { return self.first(e) };
-                link.className = 'pagenav start';
-                link.innerHTML = '&laquo; ' + trans('First');
-                this.element.appendChild(link);
-            } else {
-                var txt = doc.createElement('span');
-                txt.className = 'pagenav start disabled text-muted';
-                txt.innerHTML = '&laquo; ' + trans('First');
-                this.element.appendChild(txt);
+            var first_item = doc.createElement('li');
+            first_item.className = 'page-item';
+            var first_link = doc.createElement('a');
+            first_link.href = 'javascript:void(0)';
+            first_link.onclick = function(e) { return self.previous(e) };
+            first_link.className = 'page-link';
+            first_link.innerHTML = trans('Previous');
+            first_item.appendChild(first_link);
+            this.element.appendChild(first_item);
+            
+            if(page - 2 >= 1){
+              var item = doc.createElement('li');
+              item.className = 'page-item first-last';
+              var link = doc.createElement('a');
+              link.href = 'javascript:void(0)';
+              link.onclick = function(e) { return self.first(e) };
+              link.className = 'page-link';
+              link.innerHTML = '1';
+              item.appendChild(link);
+              this.element.appendChild(item);
+      
+              var hidden_item = doc.createElement('li');
+              hidden_item.className = 'page-item';
+              hidden_item.setAttribute('aria-hidden', 'true');
+              hidden_item.innerHTML = '...';
+              this.element.appendChild(hidden_item);
             }
-            if (this.previousOffset() != null) {
-                var link = doc.createElement('a');
-                link.href = 'javascript:void(0)';
-                link.onclick = function(e) { return self.previous(e) };
-                link.className = 'pagenav to-start';
-                link.innerHTML = '&lsaquo; ' + trans('Prev');
-                this.element.appendChild(link);
-            } else {
-                var txt = doc.createElement('span');
-                txt.className = 'pagenav to-start disabled text-muted';
-                txt.innerHTML = '&lsaquo; ' + trans('Prev');
-                this.element.appendChild(txt);
+            if(page -1 >= 1){
+              var item = doc.createElement('li');
+              item.className = 'page-item';
+              if(page -1 == 1) item.className = 'page-item first-last';
+              var link = doc.createElement('a');
+              link.href = 'javascript:void(0)';
+              link.onclick = function(){ return self.movePage(Number(page - 1)) };
+              link.className = 'page-link';
+              link.innerHTML = String(page - 1);
+              item.appendChild(link);
+              this.element.appendChild(item);
             }
-            var showing = doc.createElement('span');
-            showing.className = 'current-rows';
-            if (this.state.listTotal)
-                showing.innerHTML = trans('[_1] &ndash; [_2] of [_3]', listStart, listEnd, this.state.listTotal);
-            else
-                showing.innerHTML = trans('[_1] &ndash; [_2]', listStart, listEnd);
-            this.element.appendChild(showing);
-            if (this.nextOffset() != null) {
-                var link = doc.createElement('a');
-                link.href = 'javascript:void(0)';
-                link.onclick = function(e) { return self.next(e) };
-                link.className = 'pagenav to-end';
-                link.innerHTML = trans('Next') + ' &rsaquo;';
-                this.element.appendChild(link);
-            } else {
-                var txt = doc.createElement('span');
-                txt.className = 'pagenav to-end disabled text-muted';
-                txt.innerHTML = trans('Next') + ' &rsaquo;';
-                this.element.appendChild(txt);
+
+            var current_item = doc.createElement('li');
+            current_item.className = 'page-item active';
+            var current_link = doc.createElement('a');
+            // link.href = '#';
+            current_link.className = 'page-link';
+            current_link.innerHTML = page + '<span class="sr-only">(current)</span>';
+            current_item.appendChild(current_link);
+            this.element.appendChild(current_item);
+
+            if(page + 1 <= page_max){
+              var item = doc.createElement('li');
+              item.className = 'page-item';
+              if(page + 1 == page_max) item.className = 'page-item first-last';
+              var link = doc.createElement('a');
+              link.href = 'javascript:void(0)';
+              link.onclick = function(){ return self.movePage(Number(page + 1)) };
+              link.className = 'page-link';
+              link.innerHTML = String(page + 1);
+              item.appendChild(link);
+              this.element.appendChild(item);
             }
-            if (this.lastOffset() != null) {
-                var link = doc.createElement('a');
-                link.href = 'javascript:void(0)';
-                link.onclick = function(e) { return self.last(e) };
-                link.className = 'pagenav end';
-                link.innerHTML = trans('Last') + ' &raquo;';
-                this.element.appendChild(link);
-            } else {
-                var txt = doc.createElement('span');
-                txt.className = 'pagenav end disabled text-muted';
-                txt.innerHTML = trans('Last') + ' &raquo;';
-                this.element.appendChild(txt);
+            if(page + 2 <= page_max){
+              var hiddenitem = doc.createElement('li');
+              hiddenitem.className = 'page-item';
+              hiddenitem.setAttribute('aria-hidden', 'true');
+              hiddenitem.innerHTML = '...';
+              this.element.appendChild(hiddenitem);
+
+              var item = doc.createElement('li');
+              item.className = 'page-item first-last';
+              var link = doc.createElement('a');
+              link.href = 'javascript:void(0)';
+              link.onclick = function(e) { return self.last(e) };
+              link.className = 'page-link';
+              link.innerHTML = String(page_max);
+              item.appendChild(link);
+              this.element.appendChild(item);
             }
+
+            var last_item = doc.createElement('li');
+            last_item.className = 'page-item';
+            var last_link = doc.createElement('a');
+            last_link.href = 'javascript:void(0)';
+            last_link.onclick = function(e) { return self.next(e) };
+            last_link.className = 'page-link';
+            last_link.innerHTML = trans('Next');
+            last_item.appendChild(last_link);
+            this.element.appendChild(last_item);
+
 
             if ( window.top.innerHeight < window.innerHeight ) {
                 window.top.scrollTo(
@@ -1363,6 +1400,17 @@ Pager = new Class(Object, {
         } else {
             this.element.innerHTML = '';
         }
+    },
+    movePage: function(nex_page){
+      if (this.state.listTotal) {
+          var offset = this.state.limit * (nex_page-1);
+          if (offset >= this.state.listTotal) {
+              return false;
+          }
+          this.navigate(offset);
+          return TC.stopEvent(e || window.event);
+      }
+      return false;
     }
 });
 

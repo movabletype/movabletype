@@ -10278,6 +10278,12 @@ fieldset.form-group {
   border-color: #004B9A;
 }
 
+.modal-selections__label {
+  display: inline-block;
+  margin: 0 0.5rem .3rem 0;
+  font-weight: bold;
+}
+
 .modal-cancel,
 .modal-cancel:not([href]):not([tabindex]) {
   display: inline-block;

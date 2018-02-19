@@ -24,29 +24,32 @@ parameters:
 <!-- Listing Panel -->
 <div id="<mt:var name="panel_type">-panel" style="display: none;">
 <mt:if name="use_page_content">
-  <div class="panel-body">
+  <div class="panel-body modal-body">
 </mt:if>
 
-  <div class="panel-header">
+  <div class="panel-header modal-description">
   <mt:if name="panel_title">
-    <h4 class="title"><mt:var name="panel_title"></h4>
+    <div><h4 class="title modal-label"><mt:var name="panel_title"></h4></div>
   </mt:if>
   <mt:if name="panel_has_steps">
     <div class="text-right"><__trans phrase="Step [_1] of [_2]" params="<mt:var name="panel_number">%%<mt:var name="panel_total">"></div>
   </mt:if>
-  <mt:if name="panel_multi">
-    <div class="selected-items">
-      <span class="modal_added"><mt:var name="items_prompt">:</span> <span class="items"></span>
-    </div>
-  </mt:if>
   </div>
 
+  <mt:if name="panel_multi">
+  <div class="selected-items modal-selections pb-4">
+    <span class="modal-selections__label"><mt:var name="items_prompt">:</span>
+  </div>
+  </mt:if>
+
 <mt:if name="panel_searchable">
-  <form action="" method="get" id="modal-search" class="form-inline">
-    <input type="text" class="form-control search-input text med" value="" placeholder="<__trans phrase="Search">" />
-    <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
-    <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
-  </form>
+  <div class="align-items-center p-4 border rounded" style="background:#F4F4F4;">
+    <form action="" method="get" id="modal-search" class="form-inline">
+      <input type="text" class="form-control search-input text med" value="" placeholder="<__trans phrase="Search">" />
+      <input type="image" class="search-command search-submit ml-3 mr-3" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+      <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
+    </form>
+  </div>
 </mt:if>
 
   <div id="selector" class="selector listing list-data<mt:if name="panel_multi"> list-multi</mt:if>">
@@ -74,24 +77,32 @@ parameters:
         <tbody>
         <mt:loop name="object_loop">
           <mt:unless name="disabled">
-          <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="has_child"> has_child</mt:if>">
+          <tr id="<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="has_child"> has_child</mt:if>">
             <td class="cb" scope="row">
               <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
                 <input id="select_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
                 <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
               </div>
             </td>
-            <td class="panel-label">
-              <mt:var name="label" escape="html">
-              <mt:if name="has_child">
+            <td class="panel-label-tr">
+              <mt:if name="icon">
+                <div class="mt-user mr-3"><img src="<mt:var name="icon">" class="rounded-circle" width="32" height="32"></div>
+              </mt:if>
+              <span class="panel-label"><mt:var name="label" escape="html"></span>
+              <mt:if name="has_child"><mt:setvarblock name="parent_label"><mt:var name="label" escape="html"></mt:setvarblock>
               <div class="mt-table__hierarchy">
                 <ul class="list-unstyled">
-                  <mt:loop name="child_sites">
-                  <li id="<mt:var name="panel_type">-<mt:var name="id">">
+                  <mt:loop name="child_obj">
+                  <li id="<mt:var name="panel_type">-<mt:var name="id">" class="child_obj">
                     <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
-                      <input id="select_child_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
-                      <label class="custom-controllabel" for="select_child_<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                        <input id="select_child_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
+                        <mt:if name="icon">
+                          <div class="mt-user mr-3"><img src="<mt:var name="icon">" width="32" height="32"></div>
+                        </mt:if>
+                        <label class="custom-control-label" for="select_child_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                        <span class="child-panel-label"><mt:var name="label" escape="html"></span>
                     </div>
+
                   </li>
                   </mt:loop>
                 </ul>
@@ -151,7 +162,9 @@ parameters:
 
 <mt:unless name="json">
     </form>
-    <div class="text-right pagination" style="display: block;"></div>
+    <nav aria-label="Page Navigation" class="panel-pagination clearfix">
+      <ul class="float-right pagination"></ul>
+    </nav>
   </div>
   <mt:if name="after_listing_panel">
   <div class="listing-panel-options">
@@ -162,6 +175,24 @@ parameters:
 <mt:setvarblock name="modal_footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+
+    <a
+       accesskey="x"
+       data-dismiss="modal"
+       data-mt-modal-close
+       class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel"></a>
+
+    <mt:unless name="panel_first">
+    <button
+       type="submit"
+       accesskey="b"
+       title="<__trans phrase="Back (b)">"
+       class="action previous button btn btn-default">
+      <__trans phrase="Back"></button>
+    </mt:unless>
+
     <mt:if name="panel_last">
       <button
          type="submit"
@@ -179,21 +210,7 @@ parameters:
          disabled="true">
         <__trans phrase="Continue"></button>
     </mt:if>
-    <mt:unless name="panel_first">
-      <button
-         type="submit"
-         accesskey="b"
-         title="<__trans phrase="Back (b)">"
-         class="action previous button btn btn-default">
-        <__trans phrase="Back"></button>
-    </mt:unless>
-      <button
-         type="submit"
-         accesskey="x"
-         data-mt-modal-close
-         class="cancel action button mt-close-dialog btn btn-default"
-         title="<__trans phrase="Cancel (x)">">
-        <__trans phrase="Cancel"></button>
+
     </form>
   </div>
 </mt:setvarblock>

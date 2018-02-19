@@ -113,6 +113,10 @@ sub _authentication {
     my $session = $app->{session}
         or return $app->error( 'Invalid login', 401 );
 
+    # Check user permission
+    return $app->error( 'Invalid login', 401 )
+        unless $author->can_sign_in_data_api;
+
     my $access_token = make_access_token( $app, $session );
 
     my $response = {
