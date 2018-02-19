@@ -717,7 +717,11 @@ sub core_content_actions {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
                 icon          => 'ic_add',
-                mode          => 'dialog_select_assoc_type',
+                mode          => 'dialog_grant_role',
+                args          => {
+                    _type         => 'user',
+                    type          => 'site',
+                },
                 return_args   => 1,
                 permit_action => 'create_any_association',
                 order         => 100,

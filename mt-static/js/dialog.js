@@ -149,9 +149,12 @@ SelectionList = new Class(Object, {
     },
     render: function() {
         if (!this.container) return;
-        this.container.innerHTML = '';
         var doc = TC.getOwnerDocument(this.container);
         var self = this;
+        // remove child selected-item
+        jQuery(this.container).find('.selected-item').remove();
+        // remove none label
+        jQuery(this.container).find('.none_label').remove();
         var makeclosure = function(x) { return function() { self.remove(x) } };
         for (var i = 0; i < this.itemList.length; i++) {
             var p = this.itemList[i];
@@ -160,14 +163,20 @@ SelectionList = new Class(Object, {
             l.replace(/\s/g, '&nbsp;');
             var link = doc.createElement("span");
             link.setAttribute("id","selected-"+p);
-            link.setAttribute("class","badge badge-default sticky-label selected-item");
+            link.setAttribute("class","badge badge-pill badge-default sticky-label selected-item");
+            link.setAttribute("aria-label", "Close")
             link.onclick = makeclosure(p);
-            link.innerHTML = l + "&nbsp;<span class='tag-pill remove clickable' style='cursor: pointer;'>x</span>";
+            link.innerHTML = l + "&nbsp;<span aria-hidden='true' class='tag-pill remove clickable' style='cursor: pointer;'>×</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }
-        if (this.itemList.length == 0)
-            this.container.innerHTML = trans('(None)');
+        if (this.itemList.length == 0){
+            // append None label
+            var $none_text = jQuery('<span></span>');
+            $none_text.addClass('none_label');
+            $none_text.text(trans('(None)'));
+            jQuery(this.container).append($none_text);
+        }
     },
     items: function() {
         var items = [];
@@ -288,7 +297,7 @@ ListingPanel = new Class(Panel, {
 
         // FIXME: name != type...
         this.datasource = new Datasource(this.listData, name, searchtype);
-        this.pager = new Pager(TC.getElementsByTagAndClassName("div",
+        this.pager = new Pager(TC.getElementsByTagAndClassName("ul",
             "pagination", this.element)[0]);
         this.datasource.setPager(this.pager);
         this.datasource.onUpdate = function(ds) {
@@ -368,7 +377,7 @@ ListingPanel = new Class(Panel, {
         }
 
         // selections
-        var items = TC.getElementsByClassName("items",
+        var items = TC.getElementsByClassName("modal-selections",
             this.element);
         if (items && items.length) {
             this.selectionList = new SelectionList(items[0]);
