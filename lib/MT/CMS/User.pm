@@ -1769,7 +1769,6 @@ sub save_filter {
     }
 
     # MT::Auth::MT uses id, pass, pass_verify, old_pass
-    # MT::Auth::TypeKey uses name as well, but ...
     my $ori_name = $app->param('name');
     $app->param( 'name', $name );
     require MT::Auth;

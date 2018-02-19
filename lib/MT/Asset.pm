@@ -60,7 +60,8 @@ sub list_props {
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my @userpics = MT->model('objecttag')->load(
+                my $static_uri = MT->static_path;
+                my @userpics   = MT->model('objecttag')->load(
                     {   blog_id           => 0,
                         object_datasource => 'asset',
                         object_id         => [ map { $_->id } @$objs ],
@@ -96,23 +97,20 @@ sub list_props {
                         },
                     );
                     my $class_type = $obj->class_type;
+                    my $svg_type
+                        = $class_type eq 'video' ? 'movie' : $class_type;
 
                     require MT::FileMgr;
                     my $fmgr      = MT::FileMgr->new('Local');
                     my $file_path = $obj->file_path;
                     ## FIXME: Hardcoded
-                    my $thumb_size = 45;
+                    my $thumb_size = 60;
                     my $userpic_sticker
                         = $is_userpic{ $obj->id }
-                        ? q{<span class="badge badge-default">Userpic</span>}
+                        ? q{<span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>}
                         : '';
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
-                        my $img
-                            = MT->static_path
-                            . 'images/asset/'
-                            . $class_type
-                            . '-45.png';
                         if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
@@ -168,43 +166,62 @@ sub list_props {
 
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                         elsif ( $class_type eq 'image' ) {
-                            my $img
-                                = MT->static_path
-                                . 'images/asset/'
-                                . $class_type
-                                . '-warning-45.png';
+                            my $svg = qq{
+                              <svg title="image" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_image">
+                              </svg>
+                            };
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    <div class="mt-user">
+                                        $svg
+                                        <div class="mt-user__badge--danger">
+                                            <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                         else {
+                            my $svg = qq{
+                              <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type">
+                              </svg>
+                            };
                             push @rows, qq{
                                 <div class="pull-left">
-                                    <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                    <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                    $svg
+                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                             };
                         }
                     }
                     else {
-                        my $img
-                            = MT->static_path
-                            . 'images/asset/'
-                            . $class_type
-                            . '-warning-45.png';
+                        my $svg = qq{
+                          <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type"
+                          </svg>
+                        };
                         push @rows, qq{
                             <div class="pull-left">
-                                <img alt="$class_type" src="$img" class="img-thumbnail asset-type-icon asset-type-$class_type" />
-                                <span class="title"><a href="$edit_link">$label</a></span>$userpic_sticker
+                                <div class="mt-user">
+                                    $svg
+                                    <div class="mt-user__badge--danger">
+                                        <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                            <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                        </svg>
+                                    </div>
+                                </div>
+                                <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                             </div>
                         };
                     }
@@ -464,6 +481,18 @@ __FILTER_TMPL__
             },
             display         => 'none',
             filter_editable => 0,
+            filter_tmpl     => sub {
+                my @args  = @_;
+                my $app   = MT->instance;
+                my $stash = $app->request('content_field_filter')
+                    or return '';
+                MT->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $stash->{content_field}->name,
+                    $stash->{content_type}->name,
+                    $stash->{content_data}->id,
+                );
+            },
             label           => 'Content Field',
             label_via_param => sub {
                 my $prop = shift;
@@ -484,13 +513,31 @@ __FILTER_TMPL__
                     = $app->model('content_data')->load($content_data_id)
                     or return $prop->error(
                     $app->translate(
-                        'Content Data ( id: [_1] ) does not exists.'
-                            . $content_data_id
+                        'Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
                     )
                     );
 
-                return $app->translate( 'Assets in [_1] field of [_2]',
-                    $content_field->name, $content_data->content_type->name );
+                my $content_type = $content_data->content_type
+                    or return $prop->error(
+                    $app->translate(
+                        'Content type of Content Data ( id: [_1] ) does not exists.',
+                        $content_data_id
+                    )
+                    );
+
+                $app->request(
+                    'content_field_filter' => {
+                        content_data  => $content_data,
+                        content_field => $content_field,
+                        content_type  => $content_type,
+                    }
+                );
+
+                return $app->translate(
+                    'Assets in [_1] field of [_2] (ID:[_3])',
+                    $content_field->name, $content_type->name,
+                    $content_data->id, );
             },
             terms => sub {
                 my $prop = shift;

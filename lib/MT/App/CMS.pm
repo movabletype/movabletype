@@ -343,8 +343,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
-
         ## Debug
         'vcs_revision' => {
             code      => "${pkg}Debug::vcs_revision",

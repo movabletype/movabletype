@@ -23,6 +23,28 @@ $author->set_password('bass');
 $author->api_password('seecret');
 $author->save or die $author->errstr;
 
+my $disabled_user = MT->model('author')->new;
+$disabled_user->set_values(
+    {   name             => 'disabled',
+        nickname         => 'Disabled',
+        email            => 'disabled_user@example.com',
+        url              => 'http://disabled_user.com/',
+        userpic_asset_id => 3,
+        api_password     => 'seecret',
+        auth_type        => 'MT',
+        created_on       => '19780131074500',
+    }
+);
+$disabled_user->set_password('disabled');
+$disabled_user->type( MT::Author::AUTHOR() );
+$disabled_user->id(99);
+$disabled_user->is_superuser(0);
+$disabled_user->save()
+    or die "Couldn't save author record 99: " . $disabled_user->errstr;
+$disabled_user->can_sign_in_data_api(0);
+$disabled_user->save()
+    or die "Couldn't save author record 99: " . $disabled_user->errstr;
+
 use MT::DataAPI::Endpoint::Auth;
 use MT::AccessToken;
 
@@ -175,6 +197,29 @@ sub suite {
             code => 401,
         },
 
+        {   note   => 'Disabled user cannot sign in',
+            path   => '/v1/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'disabled',
+                password => 'secret',
+            },
+            code => 401,
+        },
+
+        # version 2
+        {   note   => 'v2 Disabled user cannot sign in',
+            path   => '/v2/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'disabled',
+                password => 'secret',
+            },
+            code => 401,
+        },
+
         # version 3
         {   note   => 'v3 authentication with user password is failed',
             path   => '/v3/authentication',
@@ -196,6 +241,30 @@ sub suite {
                 password => 'seecret',
             },
         },
+
+        {   note   => 'v3 Disabled user cannot sign in',
+            path   => '/v3/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'disabled',
+                password => 'secret',
+            },
+            code => 401,
+        },
+
+        # version 4
+        {   note   => 'v4 Disabled user cannot sign in',
+            path   => '/v4/authentication',
+            method => 'POST',
+            params => {
+                clientId => 'test',
+                username => 'disabled',
+                password => 'secret',
+            },
+            code => 401,
+        },
+
     ];
 }
 
