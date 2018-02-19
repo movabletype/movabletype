@@ -1541,12 +1541,14 @@ div.mce-notification-error {
           <label class="form-control-label" for="tags"><__trans phrase="Tags"></label>
         </div>
         <div class="mt-flexBreak"></div>
-        <div class="mt-draggable__content position-relative">
-          <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-          <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-          <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
-            <div id="tags_completion" class="mt_suggest__list">
-              <ul></ul>
+        <div class="mt-draggable__content">
+          <div class="form-group position-relative">
+            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+            <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
+              <div id="tags_completion" class="mt_suggest__list">
+                <ul></ul>
+              </div>
             </div>
           </div>
         </div>
