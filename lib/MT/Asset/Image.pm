@@ -66,6 +66,7 @@ sub metadata {
     $meta->{image_width}  = $width  if defined $width;
     $meta->{image_height} = $height if defined $height;
     $meta->{image_dimensions} = $meta->{ MT->translate("Actual Dimensions") }
+        = $meta->{'Actual Dimensions'}
         = MT->translate( "[_1] x [_2] pixels", $width, $height )
         if defined $width && defined $height;
 
