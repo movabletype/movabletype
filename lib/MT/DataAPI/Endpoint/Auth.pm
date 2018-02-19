@@ -115,7 +115,7 @@ sub _authentication {
 
     # Check user permission
     return $app->error( 'Invalid login', 401 )
-        if !$author->can_sign_in_data_api;
+        unless $author->can_sign_in_data_api;
 
     my $access_token = make_access_token( $app, $session );
 
