@@ -145,7 +145,7 @@ function init() {
         // Overwrite search & navigate function
         var panel = panels[2];
         var datasource = panel.datasource;
-        datasource.search= function(){
+        datasource.search = function(){
             if (datasource.searching) return;
 
             var str = jQuery('#content_type-panel').find('.search-input').val();
