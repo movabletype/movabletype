@@ -42,10 +42,14 @@ sub edit {
         or return $app->errtrans('Invalid request.');
 
     my $perm = $app->permissions;
-    $param->{can_publish_post} = 1 if (
-      $perm->can_do('publish_all_content_data')
-      || $perm->can_do('edit_all_content_data')
-      || $perm->can_do('publish_content_data_via_list_'.$content_type->unique_id));
+    $param->{can_publish_post} = 1
+        if (
+           $perm->can_do('publish_all_content_data')
+        || $perm->can_do('edit_all_content_data')
+        || $perm->can_do(
+            'publish_content_data_via_list_' . $content_type->unique_id
+        )
+        );
 
     if ( $content_type->blog_id != $blog->id ) {
         return $app->return_to_dashboard( redirect => 1 );
@@ -761,10 +765,6 @@ sub post_save {
         $sess_obj->remove if $sess_obj;
     }
 
-    # Rebuild Trigger
-    require MT::RebuildTrigger;
-    MT::RebuildTrigger->runner( 'post_content_save', $app, $obj, $orig_obj );
-
     my $ct = $obj->content_type or return;
     my $author = $app->user;
     my $message;
@@ -1128,7 +1128,7 @@ sub cms_pre_load_filtered_list {
         $content_type_id = $1;
     }
     $terms->{content_type_id} = $content_type_id;
-    my $content_type = MT::ContentType->load({ id => $content_type_id });
+    my $content_type = MT::ContentType->load( { id => $content_type_id } );
 
     my $user = $app->user;
     return if $user->is_superuser;
@@ -1163,7 +1163,7 @@ sub cms_pre_load_filtered_list {
         my $user_filter;
         $user_filter->{blog_id} = $perm->blog_id;
         if (   !$perm->can_do('publish_all_content_data')
-            && !$perm->can_do('edit_all_content_data'))
+            && !$perm->can_do('edit_all_content_data') )
         {
             $user_filter->{author_id} = $user->id;
         }
@@ -1175,7 +1175,6 @@ sub cms_pre_load_filtered_list {
         if ( keys %$terms );
     push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
-
 
 }
 
@@ -1608,11 +1607,6 @@ sub _update_content_data_status {
 
         $app->run_callbacks( 'cms_post_bulk_save.content_data',
             $app, \@objects );
-
-        # Rebuild Trigger
-        require MT::RebuildTrigger;
-        MT::RebuildTrigger->runner( 'post_contents_bulk_save', $app,
-            \@objects );
 
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }

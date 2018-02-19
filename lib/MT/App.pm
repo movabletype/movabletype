@@ -168,7 +168,10 @@ sub filter_conditional_list {
                 my $terms = {
                     author_id   => $app->user->id,
                     permissions => \'is not null',
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    (   $blog_ids
+                        ? ( blog_id => $blog_ids )
+                        : ( blog_id => { not => 0 } )
+                    ),
                 };
 
                 my $count = MT->model('permission')->count($terms);
@@ -901,6 +904,128 @@ sub run_callbacks {
         MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
         MT->add_callback( 'new_user_provisioning', 5, $app,
             \&_cb_user_provisioning );
+
+        ### MT7 ###
+        my $rt = MT->model('rebuild_trigger');
+
+        # Register entry post-save callback for rebuild triggers
+        MT->add_callback(
+            'cms_post_save.entry',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'api_post_save.entry',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'cms_post_bulk_save.entries',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entries_bulk_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'scheduled_post_published',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_pub', @_ );
+            }
+        );
+        MT->add_callback(
+            'unpublish_past_entries',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_unpub', @_ );
+            }
+        );
+
+        # Register page post-save callback for rebuild triggers
+        MT->add_callback(
+            'cms_post_save.page',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'api_post_save.page',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entry_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'cms_post_bulk_save.pages',
+            10, $app,
+            sub {
+                $rt->runner( 'post_entries_bulk_save', @_ );
+            }
+        );
+
+        # TODO: move to Comment/Trackback plugins.
+        # Register Comment/TB post-save callbacks for rebuild triggers
+        #MT->add_callback(
+        #    'MT::Comment::post_save',
+        #    10, $app,
+        #    sub {
+        #        $rt->runner( 'post_feedback_save', 'comment_pub', @_ );
+        #    }
+        #);
+        #MT->add_callback(
+        #    'MT::TBPing::post_save',
+        #    10, $app,
+        #    sub {
+        #        $rt->runner( 'post_feedback_save', 'tb_pub', @_ );
+        #    }
+        #);
+
+        # Register restore callback to restore blog assciation of triggers
+        MT->add_callback( 'restore', 10, $app,
+            sub { $rt->runner( 'post_restore', @_ ) } );
+
+        # Register entry post-save callback for rebuild triggers
+        MT->add_callback(
+            'cms_post_save.content_data',
+            10, $app,
+            sub {
+                $rt->runner( 'post_content_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'api_post_save.content_data',
+            10, $app,
+            sub {
+                $rt->runner( 'post_content_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'cms_post_bulk_save.content_data',
+            10, $app,
+            sub {
+                $rt->runner( 'post_contents_bulk_save', @_ );
+            }
+        );
+        MT->add_callback(
+            'scheduled_content_published',
+            10, $app,
+            sub {
+                $rt->runner( 'post_content_pub', @_ );
+            }
+        );
+        MT->add_callback(
+            'unpublish_past_contents',
+            10, $app,
+            sub {
+                $rt->runner( 'post_content_unpub', @_ );
+            }
+        );
+
         $callbacks_added = 1;
     }
 }
@@ -1124,7 +1249,6 @@ sub _cb_mark_blog {
         undef $type;
     }
 
-
     if ( $obj_type eq 'MT::Blog' ) {
         delete $blogs_touched->{ $obj->id };
     }
@@ -1132,7 +1256,7 @@ sub _cb_mark_blog {
         if ( $obj->blog_id ) {
             my $th = $blogs_touched->{ $obj->blog_id } ||= {};
             if ( my $ct = $obj->content_type ) {
-                $th->{'content_data_'.$ct->unique_id} = 1;
+                $th->{ 'content_data_' . $ct->unique_id } = 1;
             }
         }
     }
@@ -3295,7 +3419,9 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
+                            $trace
+                                .= '<li style="padding: 0.2em 0.5em; margin: 0">'
+                                . $msg . '</li>' . "\n";
                         }
                     }
                     $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'

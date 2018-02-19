@@ -515,11 +515,6 @@ sub restore_file {
     unless ($@) {
         MT->run_callbacks( 'restore', $objects, $deferred, $errors,
             $callback );
-
-        # Rebuild Trigger
-        require MT::RebuildTrigger;
-        MT::RebuildTrigger->runner( 'post_restore', $objects, $deferred,
-            $errors, $callback );
     }
     $$errormsg = join( '; ', @$errors );
     ( $deferred, $blog_ids );
@@ -669,11 +664,6 @@ sub restore_directory {
     unless ($@) {
         MT->run_callbacks( 'restore', \%objects, $deferred, $errors,
             $callback );
-
-        # Rebuild Trigger
-        require MT::RebuildTrigger;
-        MT::RebuildTrigger->runner( 'post_restore', \%objects, $deferred,
-            $errors, $callback );
     }
 
     MT::Util::Log->info('  End   callback restore.');

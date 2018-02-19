@@ -2528,11 +2528,6 @@ sub dialog_restore_upload {
     MT->run_callbacks( 'restore', $objects, $deferred, \@errors,
         sub { _progress( $app, @_ ) } );
 
-    # Rebuild Trigger
-    require MT::RebuildTrigger;
-    MT::RebuildTrigger->runner( 'post_restore', $objects, $deferred,
-        \@errors, sub { _progress( $app, @_ ) } );
-
     $app->print_encode(
         $app->build_page( 'dialog/restore_end.tmpl', $param ) );
     close $fh if $fh;
