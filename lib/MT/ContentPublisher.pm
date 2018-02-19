@@ -1960,7 +1960,7 @@ sub publish_future_contents {
             $this->post_scheduled( $content_data, $original,
                 MT->translate('Scheduled publishing.') );
 
-            MT->run_callbacks( 'scheduled_post_published', $mt,
+            MT->run_callbacks( 'scheduled_content_published', $mt,
                 $content_data );
 
             # Rebuild Trigger
