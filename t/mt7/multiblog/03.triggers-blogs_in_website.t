@@ -67,7 +67,7 @@ sub run_test(&) {
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MT::RebuildTrigger->post_entry_save( undef, $app, $entry );
+    MT::RebuildTrigger->post_entry_save( $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_save.' );
 };
 

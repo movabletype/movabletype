@@ -382,7 +382,7 @@ sub runner {
 
 sub post_feedback_save {
     my $self = shift;
-    my ( $trigger, $eh, $feedback ) = @_;
+    my ( $trigger, $feedback ) = @_;
     if ( $feedback->visible ) {
         my $blog_id  = $feedback->blog_id;
         my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
@@ -403,15 +403,15 @@ sub post_feedback_save {
 
 sub post_entries_bulk_save {
     my $self = shift;
-    my ( $eh, $app, $entries ) = @_;
+    my ( $app, $entries ) = @_;
     foreach my $entry (@$entries) {
-        &post_entry_save( $self, $eh, $app, $entry->{current} );
+        &post_entry_save( $self, $app, $entry->{current} );
     }
 }
 
 sub post_entry_save {
     my $self = shift;
-    my ( $eh, $app, $entry ) = @_;
+    my ( $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -436,7 +436,7 @@ sub post_entry_save {
 
 sub post_entry_pub {
     my $self = shift;
-    my ( $eh, $app, $entry ) = @_;
+    my ( $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -457,7 +457,7 @@ sub post_entry_pub {
 
 sub post_entry_unpub {
     my $self = shift;
-    my ( $eh, $app, $entry ) = @_;
+    my ( $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
