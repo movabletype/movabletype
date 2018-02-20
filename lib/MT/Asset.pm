@@ -181,7 +181,7 @@ sub list_props {
                                 <div class="pull-left">
                                     <div class="mt-user">
                                         $svg
-                                        <div class="mt-user__badge--danger">
+                                        <div class="mt-user__badge--warning">
                                             <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
                                                 <use xlink:href="${static_uri}images/sprite.svg#ic_error">
                                             </svg>
@@ -215,7 +215,7 @@ sub list_props {
                             <div class="pull-left">
                                 <div class="mt-user">
                                     $svg
-                                    <div class="mt-user__badge--danger">
+                                    <div class="mt-user__badge--warning">
                                         <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
                                             <use xlink:href="${static_uri}images/sprite.svg#ic_error">
                                         </svg>

@@ -10435,7 +10435,7 @@ a:hover .mt-icon--secondary {
   margin: 2px auto;
 }
 
-.mt-user__badge, .mt-user__badge--img, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--danger {
+.mt-user__badge, .mt-user__badge--img, .mt-user__badge--primary, .mt-user__badge--success, .mt-user__badge--warning, .mt-user__badge--danger {
   height: 22px;
   width: 22px;
   bottom: 0;
@@ -10456,6 +10456,10 @@ a:hover .mt-icon--secondary {
 
 .mt-user__badge--success {
   background: #399280;
+}
+
+.mt-user__badge--warning {
+  background: #F08C3C;
 }
 
 .mt-user__badge--danger {

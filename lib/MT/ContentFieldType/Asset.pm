@@ -601,7 +601,7 @@ sub preview_handler {
                 <svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
                   <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class">
                 </svg>
-                <div class="mt-user__badge--danger">
+                <div class="mt-user__badge--warning">
                   <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
                     <use xlink:href="${static_uri}images/sprite.svg#ic_error">
                   </svg>
