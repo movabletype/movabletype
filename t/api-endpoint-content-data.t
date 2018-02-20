@@ -608,6 +608,18 @@ sub normal_tests_for_list {
             status          => MT::ContentStatus::HOLD(),
         );
     }
+    my $exists_others = MT->model('content_data')->exist(
+        {   content_type_id => $other_content_type_id,
+            status          => MT::ContentStatus::RELEASE(),
+        }
+    );
+    unless ( $exists_others ) {
+        MT::Test::Permission->make_content_data(
+            blog_id         => $site_id,
+            content_type_id => $other_content_type_id,
+            status          => MT::ContentStatus::RELEASE(),
+        );
+    }
 
     test_data_api(
         {   note => 'not logged in',
