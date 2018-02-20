@@ -104,7 +104,7 @@ sub normal_tests_for_create_category {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method    => 'POST',
             params    => { category => { label => 'create-category', }, },
             callbacks => [
@@ -142,7 +142,7 @@ sub normal_tests_for_create_category {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             is_superuser => 1,
             params    => { category => { label => 'create-category-2', }, },
@@ -184,7 +184,7 @@ sub irregular_tests_for_create_category {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method    => 'POST',
             author_id => 0,
             params    => { category => { label => 'create-category-3', }, },
@@ -194,7 +194,7 @@ sub irregular_tests_for_create_category {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories",
+                "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'POST',
             params => { category => { label => 'create-category-3', }, },
             code   => 404,
@@ -202,7 +202,7 @@ sub irregular_tests_for_create_category {
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
-            path   => "/v4/sites/$site_id/category_sets/1000/categories",
+            path   => "/v4/sites/$site_id/categorySets/1000/categories",
             method => 'POST',
             params => { category => { label => 'create-category-3', }, },
             code   => 404,
@@ -210,7 +210,7 @@ sub irregular_tests_for_create_category {
     );
     test_data_api(
         {   note   => 'other site',
-            path   => "/v4/sites/2/category_sets/$category_set_id/categories",
+            path   => "/v4/sites/2/categorySets/$category_set_id/categories",
             method => 'POST',
             params => { category => { label => 'create-category-3', }, },
             code   => 404,
@@ -219,7 +219,7 @@ sub irregular_tests_for_create_category {
     test_data_api(
         {   note => 'no category_set permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             restrictions => { $site_id => ['save_category_set'], },
             params => { category => { label => 'create-category-3', }, },
@@ -229,7 +229,7 @@ sub irregular_tests_for_create_category {
     test_data_api(
         {   note => 'no category permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             restrictions => { $site_id => ['save_category'], },
             params => { category => { label => 'create-category-3', }, },
@@ -242,7 +242,7 @@ sub irregular_tests_for_get_category {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id",
             method => 'GET',
             code   => 404,
         }
@@ -250,14 +250,14 @@ sub irregular_tests_for_get_category {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/1000/categories/$category_id",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid category_id',
-            path   => "/v4/sites/$site_id/category_sets/1000/categories/1000",
+            path   => "/v4/sites/$site_id/categorySets/1000/categories/1000",
             method => 'GET',
             code   => 404,
         }
@@ -265,7 +265,7 @@ sub irregular_tests_for_get_category {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$category_id",
             method => 'GET',
             code   => 404,
         }
@@ -273,7 +273,7 @@ sub irregular_tests_for_get_category {
     test_data_api(
         {   note => 'other category set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id",
             method => 'GET',
             code   => 404,
         }
@@ -284,7 +284,7 @@ sub normal_tests_for_get_category {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -303,7 +303,7 @@ sub normal_tests_for_get_category {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -321,7 +321,7 @@ sub normal_tests_for_get_category {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -343,7 +343,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'PUT',
             author_id => 0,
             params    => { category => { label => 'update-category-2', }, },
@@ -353,7 +353,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id",
             method => 'PUT',
             params => { category => { label => 'update-category-2', }, },
             code   => 404,
@@ -362,7 +362,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/1000/categories/$category_id",
             method => 'PUT',
             params => { category => { label => 'update-category-2', }, },
             code   => 404,
@@ -371,7 +371,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/1000",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000",
             method => 'PUT',
             params => { category => { label => 'update-category-2', }, },
             code   => 404,
@@ -380,7 +380,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$category_id",
             method => 'PUT',
             params => { category => { label => 'update-category-2', }, },
             code   => 404,
@@ -389,7 +389,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'other category_set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id",
             method => 'PUT',
             params => { category => { label => 'update-category-2', }, },
             code   => 404,
@@ -398,7 +398,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'no category_set permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             restrictions => { $site_id => ['save_category_set'], },
             params => { category => { label => 'update-category-2', }, },
@@ -408,7 +408,7 @@ sub irregular_tests_for_update_category {
     test_data_api(
         {   note => 'no category permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             restrictions => { $site_id => ['save_category'], },
             params => { category => { label => 'update-category-2', }, },
@@ -421,7 +421,7 @@ sub normal_tests_for_update_category {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'PUT',
             params    => { category => { label => 'update-category', }, },
             callbacks => [
@@ -455,7 +455,7 @@ sub normal_tests_for_update_category {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             is_superuser => 1,
             params    => { category => { label => 'update-category-2', }, },
@@ -493,7 +493,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method    => 'POST',
             author_id => 0,
             params    => sub {
@@ -507,7 +507,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/permutate",
             method => 'POST',
             params => sub {
                 my @order = split ',', $category_set->order;
@@ -520,7 +520,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/permutate",
+                "/v4/sites/$site_id/categorySets/1000/categories/permutate",
             method => 'POST',
             params => sub {
                 my @order = split ',', $category_set->order;
@@ -533,7 +533,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/2/categorySets/$category_set_id/categories/permutate",
             method => 'POST',
             params => sub {
                 my @order = split ',', $category_set->order;
@@ -546,7 +546,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'no categories paramter',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method => 'POST',
             code   => 400,
         }
@@ -554,7 +554,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'insufficient categories parameter',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method => 'POST',
             params => sub {
                 my @order = split ',', $category_set->order;
@@ -567,7 +567,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'no category_set permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method       => 'POST',
             restrictions => { $site_id => ['save_category_set'], },
             params       => sub {
@@ -580,7 +580,7 @@ sub irregular_tests_for_permutate_categories {
     test_data_api(
         {   note => 'no category permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method       => 'POST',
             restrictions => { $site_id => ['edit_categories'], },
             params       => sub {
@@ -596,7 +596,7 @@ sub normal_tests_for_permutate_categories {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method => 'POST',
             params => sub {
                 my @order = split ',', $category_set->order;
@@ -628,7 +628,7 @@ sub normal_tests_for_permutate_categories {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/permutate",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/permutate",
             method       => 'POST',
             is_superuser => 1,
             params       => sub {
@@ -664,14 +664,14 @@ sub irregular_tests_for_list_categories {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories",
+                "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
-            path   => "/v4/sites/$site_id/category_sets/1000/categories",
+            path   => "/v4/sites/$site_id/categorySets/1000/categories",
             method => 'GET',
             code   => 404,
         }
@@ -682,7 +682,7 @@ sub normal_tests_for_list_categories {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method    => 'GET',
             author_id => 0,
             params    => { sortBy => 'id', },
@@ -709,7 +709,7 @@ sub normal_tests_for_list_categories {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method => 'GET',
             params => {
                 sortBy    => 'id',
@@ -744,7 +744,7 @@ sub normal_tests_for_list_categories {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -773,7 +773,7 @@ sub irregular_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$category_id/parents",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id/parents",
             method => 'GET',
             code   => 404,
         }
@@ -781,7 +781,7 @@ sub irregular_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$category_id/parents",
+                "/v4/sites/$site_id/categorySets/1000/categories/$category_id/parents",
             method => 'GET',
             code   => 404,
         }
@@ -789,7 +789,7 @@ sub irregular_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'invalid category_id',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/1000/parents",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000/parents",
             method => 'GET',
             code   => 404,
         }
@@ -797,7 +797,7 @@ sub irregular_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$category_id/parents",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$category_id/parents",
             method => 'GET',
             code   => 404,
         }
@@ -805,7 +805,7 @@ sub irregular_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'other category_set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$category_id/parents",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id/parents",
             method => 'GET',
             code   => 404,
         }
@@ -817,7 +817,7 @@ sub normal_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/parents",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/parents",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -840,7 +840,7 @@ sub normal_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/parents",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/parents",
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -863,7 +863,7 @@ sub normal_tests_for_list_parent_categories {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/parents",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/parents",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -890,7 +890,7 @@ sub irregular_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$category_id/siblings",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id/siblings",
             method => 'GET',
             code   => 404,
         }
@@ -898,7 +898,7 @@ sub irregular_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$category_id/siblings",
+                "/v4/sites/$site_id/categorySets/1000/categories/$category_id/siblings",
             method => 'GET',
             code   => 404,
         }
@@ -906,7 +906,7 @@ sub irregular_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'invalid category_id',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/1000/siblings",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000/siblings",
             method => 'GET',
             code   => 404,
         }
@@ -914,7 +914,7 @@ sub irregular_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$category_id/siblings",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$category_id/siblings",
             method => 'GET',
             code   => 404,
         }
@@ -922,7 +922,7 @@ sub irregular_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'other category_set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$category_id/siblings",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id/siblings",
             method => 'GET',
             code   => 404,
         }
@@ -933,7 +933,7 @@ sub normal_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/siblings",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/siblings",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -960,7 +960,7 @@ sub normal_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/siblings",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/siblings",
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -986,7 +986,7 @@ sub normal_tests_for_list_sibling_categories {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id/siblings",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id/siblings",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -1016,7 +1016,7 @@ sub irregular_tests_for_list_child_categories {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$parent_category_id/children",
             method => 'GET',
             code   => 404,
         }
@@ -1024,7 +1024,7 @@ sub irregular_tests_for_list_child_categories {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$parent_category_id/children",
+                "/v4/sites/$site_id/categorySets/1000/categories/$parent_category_id/children",
             method => 'GET',
             code   => 404,
         }
@@ -1032,7 +1032,7 @@ sub irregular_tests_for_list_child_categories {
     test_data_api(
         {   note => 'invalid category_id',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/1000/children",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000/children",
             method => 'GET',
             code   => 404,
         }
@@ -1040,7 +1040,7 @@ sub irregular_tests_for_list_child_categories {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$parent_category_id/children",
             method => 'GET',
             code   => 404,
         }
@@ -1048,7 +1048,7 @@ sub irregular_tests_for_list_child_categories {
     test_data_api(
         {   note => 'other category set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$parent_category_id/children",
             method => 'GET',
             code   => 404,
         }
@@ -1059,7 +1059,7 @@ sub normal_tests_for_list_child_categories {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$parent_category_id/children",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -1080,7 +1080,7 @@ sub normal_tests_for_list_child_categories {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$parent_category_id/children",
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -1100,7 +1100,7 @@ sub normal_tests_for_list_child_categories {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$parent_category_id/children",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$parent_category_id/children",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -1124,7 +1124,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'DELETE',
             author_id => 0,
             code      => 401,
@@ -1133,7 +1133,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id",
             method => 'DELETE',
             code   => 404,
         }
@@ -1141,7 +1141,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'invalid category_set_id',
             path =>
-                "/v4/sites/$site_id/category_sets/1000/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/1000/categories/$category_id",
             method => 'DELETE',
             code   => 404,
         }
@@ -1149,7 +1149,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'invalid category_id',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/1000",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000",
             method => 'DELETE',
             code   => 404,
         }
@@ -1157,7 +1157,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/2/categorySets/$category_set_id/categories/$category_id",
             method => 'DELETE',
             code   => 404,
         }
@@ -1165,7 +1165,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'other category_set',
             path =>
-                "/v4/sites/$site_id/category_sets/$other_category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id",
             method => 'DELETE',
             code   => 404,
         }
@@ -1173,7 +1173,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'no category_set permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'DELETE',
             restrictions => { $site_id => ['save_category_set'], },
             code         => 403,
@@ -1182,7 +1182,7 @@ sub irregular_tests_for_delete_category {
     test_data_api(
         {   note => 'no category permission',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'DELETE',
             restrictions => { $site_id => ['delete_category'], },
             code         => 403,
@@ -1194,7 +1194,7 @@ sub normal_tests_for_delete_category {
     test_data_api(
         {   note => 'non superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/$category_id",
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'DELETE',
             callbacks => [
                 {   name =>
@@ -1223,7 +1223,7 @@ sub normal_tests_for_delete_category {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/category_sets/$category_set_id/categories/"
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories/"
                 . $cat->id,
             method       => 'DELETE',
             is_superuser => 1,
