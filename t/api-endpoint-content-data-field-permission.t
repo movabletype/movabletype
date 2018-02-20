@@ -63,7 +63,7 @@ subtest 'without initial_value' => sub {
     test_data_api(
         {   note => 'with permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -92,7 +92,7 @@ subtest 'without initial_value' => sub {
     test_data_api(
         {   note => 'without permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],
@@ -170,7 +170,7 @@ subtest 'with initial_value' => sub {
     test_data_api(
         {   note => 'with permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -199,7 +199,7 @@ subtest 'with initial_value' => sub {
     test_data_api(
         {   note => 'without permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],

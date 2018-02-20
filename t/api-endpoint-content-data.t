@@ -82,7 +82,7 @@ sub irregular_tests_for_create {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method    => 'POST',
             author_id => 0,
             code      => 401,
@@ -91,14 +91,14 @@ sub irregular_tests_for_create {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/content_types/$content_type_id/content_data",
+                "/v4/sites/1000/contentTypes/$content_type_id/data",
             method => 'POST',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid content_type_id',
-            path   => "/v4/sites/$site_id/content_types/1000/content_data",
+            path   => "/v4/sites/$site_id/contentTypes/1000/data",
             method => 'POST',
             code   => 404,
         }
@@ -106,7 +106,7 @@ sub irregular_tests_for_create {
     test_data_api(
         {   note => 'no permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => {} },
             restrictions => {
@@ -127,7 +127,7 @@ sub irregular_tests_for_create {
     test_data_api(
         {   note => 'not draft content_data without publish permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => { status => 'Publish' } },
             restrictions => {
@@ -154,7 +154,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'system permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -211,7 +211,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'system permission and draft content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => { status => 'Draft', }, },
             restrictions => {
@@ -261,7 +261,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'blog.manage_content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -311,7 +311,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'blog.manage_content_data and draft content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => { status => 'Draft', }, },
             restrictions => {
@@ -361,7 +361,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'blog.manage_content_data:???',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -413,7 +413,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'blog.manage_content_data:??? and own content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -465,7 +465,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'blog.manage_content_data:??? and draft content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             params       => { content_data => { status => 'Draft' }, },
             restrictions => {
@@ -516,7 +516,7 @@ sub normal_tests_for_create {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method       => 'POST',
             is_superuser => 1,
             restrictions => {
@@ -567,28 +567,28 @@ sub irregular_tests_for_list {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/content_types/$content_type_id/content_data",
+                "/v4/sites/1000/contentTypes/$content_type_id/data",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid content_type_id',
-            path   => "/v4/sites/$site_id/content_types/1000/content_data",
+            path   => "/v4/sites/$site_id/contentTypes/1000/data",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note => 'other site',
-            path => "/v4/sites/2/content_types/$content_type_id/content_data",
+            path => "/v4/sites/2/contentTypes/$content_type_id/data",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note => 'system scope',
-            path => "/v4/sites/0/content_types/$content_type_id/content_data",
+            path => "/v4/sites/0/contentTypes/$content_type_id/data",
             method => 'GET',
             code   => 404,
         }
@@ -624,7 +624,7 @@ sub normal_tests_for_list {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -653,7 +653,7 @@ sub normal_tests_for_list {
     test_data_api(
         {   note => 'logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method    => 'GET',
             callbacks => [
                 {   name =>
@@ -686,7 +686,7 @@ sub irregular_tests_for_get {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/content_types/$content_type_id/content_data/"
+                "/v4/sites/1000/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'GET',
             code   => 404,
@@ -694,7 +694,7 @@ sub irregular_tests_for_get {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/content_types/1000/content_data/"
+            path => "/v4/sites/$site_id/contentTypes/1000/data/"
                 . $cd->id,
             method => 'GET',
             code   => 404,
@@ -703,14 +703,14 @@ sub irregular_tests_for_get {
     test_data_api(
         {   note => 'invalid content_data_id',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/1000",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/1000",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note => 'other site',
-            path => "/v4/sites/2/content_types/$content_type_id/content_data/"
+            path => "/v4/sites/2/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'GET',
             code   => 404,
@@ -719,7 +719,7 @@ sub irregular_tests_for_get {
     test_data_api(
         {   note => 'other content_type',
             path =>
-                "/v4/sites/$site_id/content_types/$other_content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$other_content_type_id/data/"
                 . $cd->id,
             method => 'GET',
             code   => 404,
@@ -731,7 +731,7 @@ sub irregular_tests_for_get {
     test_data_api(
         {   note => 'draft content_data without permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'GET',
             restrictions => {
@@ -756,7 +756,7 @@ sub irregular_tests_for_get {
     test_data_api(
         {   note => 'draft content_data when not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method    => 'GET',
             author_id => 0,
@@ -777,7 +777,7 @@ sub normal_tests_for_get {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             author_id => 0,
             method    => 'GET',
@@ -794,7 +794,7 @@ sub normal_tests_for_get {
     test_data_api(
         {   note => 'permitted user',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method    => 'GET',
             callbacks => [
@@ -812,7 +812,7 @@ sub normal_tests_for_get {
     test_data_api(
         {   note => 'draft content_data by permitted user',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'GET',
             restrictions => {
@@ -851,7 +851,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method    => 'PUT',
             author_id => 0,
@@ -861,7 +861,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/content_types/$content_type_id/content_data/"
+                "/v4/sites/1000/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'PUT',
             code   => 404,
@@ -869,7 +869,7 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/content_types/1000/content_data/"
+            path => "/v4/sites/$site_id/contentTypes/1000/data/"
                 . $cd->id,
             method => 'PUT',
             code   => 404,
@@ -878,7 +878,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'invalid content_data_id',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/1000",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/1000",
             method => 'PUT',
             code   => 404,
         }
@@ -886,7 +886,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/content_types/$content_type_id/content_data/"
+                "/v4/sites/2/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'PUT',
             code   => 404,
@@ -895,7 +895,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'other content_type',
             path =>
-                "/v4/sites/$site_id/content_types/$other_content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$other_content_type_id/data/"
                 . $cd->id,
             method => 'PUT',
             code   => 404,
@@ -904,7 +904,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'no permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {} },
@@ -932,7 +932,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'published permissions and draft content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {} },
@@ -961,7 +961,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'unpublished permissions and published content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {} },
@@ -990,7 +990,7 @@ sub irregular_tests_for_update {
     test_data_api(
         {   note => 'own permissions and other content_data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {} },
@@ -1027,7 +1027,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'system permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1074,7 +1074,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'blog permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1121,7 +1121,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'content_type permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1170,7 +1170,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'content_type edit_all_unpublished permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1219,7 +1219,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'content_type edit_all published permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1269,7 +1269,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'content_type edit_own_unpublished permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1318,7 +1318,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'content_type edit_own_published permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1365,7 +1365,7 @@ sub normal_tests_for_update {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'PUT',
             params       => { content_data => {}, },
@@ -1419,7 +1419,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method    => 'DELETE',
             author_id => 0,
@@ -1429,7 +1429,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'invalid site_id',
             path =>
-                "/v4/sites/1000/content_types/$content_type_id/content_data/"
+                "/v4/sites/1000/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'DELETE',
             code   => 404,
@@ -1437,7 +1437,7 @@ sub irregular_tests_for_delete {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/content_types/1000/content_data/"
+            path => "/v4/sites/$site_id/contentTypes/1000/data/"
                 . $cd->id,
             method => 'DELETE',
             code   => 404,
@@ -1446,7 +1446,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'invalid content_data_id',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/1000",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/1000",
             method => 'DELETE',
             code   => 404,
         }
@@ -1454,7 +1454,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'other site',
             path =>
-                "/v4/sites/2/content_types/$content_type_id/content_data/"
+                "/v4/sites/2/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'DELETE',
             code   => 404,
@@ -1463,7 +1463,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'other content_type',
             path =>
-                "/v4/sites/$site_id/content_types/$other_content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$other_content_type_id/data/"
                 . $cd->id,
             method => 'DELETE',
             code   => 404,
@@ -1472,7 +1472,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'no permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1500,7 +1500,7 @@ sub irregular_tests_for_delete {
         {   note =>
                 'remove published content data with unpublished permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1529,7 +1529,7 @@ sub irregular_tests_for_delete {
         {   note =>
                 'remove unpublished content data with published permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1558,7 +1558,7 @@ sub irregular_tests_for_delete {
     test_data_api(
         {   note => 'remove other published content data without permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1588,7 +1588,7 @@ sub irregular_tests_for_delete {
         {   note =>
                 'remove other unpublished content data without permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1622,7 +1622,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'system permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1665,7 +1665,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'site permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1708,7 +1708,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'content_type permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1754,7 +1754,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'content_type edit_own_published permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1790,7 +1790,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'content_data edit_all_published permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1836,7 +1836,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'content_type edit_own_unpublished permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1881,7 +1881,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'content_type edit_all_unpublished permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             restrictions => {
@@ -1924,7 +1924,7 @@ sub normal_tests_for_delete {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method       => 'DELETE',
             is_superuser => 1,

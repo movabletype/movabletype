@@ -70,7 +70,7 @@ sub irregular_tests_for_preview_by_id {
     test_data_api(
         {   note => 'not logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method    => 'POST',
             author_id => 0,
             params    => { content_data => {}, },
@@ -80,7 +80,7 @@ sub irregular_tests_for_preview_by_id {
     test_data_api(
         {   note => 'no permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -133,7 +133,7 @@ sub normal_tests_for_preview_by_id {
     test_data_api(
         {   note => 'system permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             is_superuser => 1,
@@ -159,7 +159,7 @@ sub normal_tests_for_preview_by_id {
     test_data_api(
         {   note => 'site permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             is_superuser => 1,
@@ -185,7 +185,7 @@ sub normal_tests_for_preview_by_id {
     test_data_api(
         {   note => 'content_type permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             is_superuser => 1,
@@ -211,7 +211,7 @@ sub normal_tests_for_preview_by_id {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/$cd_id/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/$cd_id/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             is_superuser => 1,
@@ -264,7 +264,7 @@ sub irregular_tests_for_preview {
     test_data_api(
         {   note => 'no logged in',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method    => 'POST',
             author_id => 0,
             params    => { content_data => {}, },
@@ -275,7 +275,7 @@ sub irregular_tests_for_preview {
     test_data_api(
         {   note => 'no permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -328,7 +328,7 @@ sub normal_tests_for_preview {
     test_data_api(
         {   note => 'system permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -353,7 +353,7 @@ sub normal_tests_for_preview {
     test_data_api(
         {   note => 'site permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -378,7 +378,7 @@ sub normal_tests_for_preview {
     test_data_api(
         {   note => 'content_type permission',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             restrictions => {
@@ -403,7 +403,7 @@ sub normal_tests_for_preview {
     test_data_api(
         {   note => 'superuser',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/preview",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/preview",
             method       => 'POST',
             params       => { content_data => {}, },
             is_superuser => 1,
