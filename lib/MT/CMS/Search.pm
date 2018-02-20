@@ -35,7 +35,7 @@ sub core_search_apis {
             },
             search_cols =>
                 { identifier => sub { MT->translate('Basename') }, },
-            replace_cols       => [qw( identifier )],
+            replace_cols       => [],
             can_replace        => 1,
             can_search_by_date => 1,
             date_column        => 'authored_on',
