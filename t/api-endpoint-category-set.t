@@ -58,7 +58,7 @@ normal_tests_for_delete_category_sets();
 sub irregular_tests_for_create_category_set {
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/category_sets",
+            path      => "/v4/sites/$site_id/categorySets",
             method    => 'POST',
             author_id => 0,
             params => { category_set => { name => 'create-category-set', }, },
@@ -67,7 +67,7 @@ sub irregular_tests_for_create_category_set {
     );
     test_data_api(
         {   note   => 'invalid site',
-            path   => '/v4/sites/1000/category_sets',
+            path   => '/v4/sites/1000/categorySets',
             method => 'POST',
             params => { category_set => { name => 'create-category-set', }, },
             code   => 404,
@@ -75,14 +75,14 @@ sub irregular_tests_for_create_category_set {
     );
     test_data_api(
         {   note   => 'no resource',
-            path   => "/v4/sites/$site_id/category_sets",
+            path   => "/v4/sites/$site_id/categorySets",
             method => 'POST',
             code   => 400,
         }
     );
     test_data_api(
         {   note   => 'no name',
-            path   => "/v4/sites/$site_id/category_sets",
+            path   => "/v4/sites/$site_id/categorySets",
             method => 'POST',
             params => { category_set => {}, },
             code   => 409,
@@ -90,7 +90,7 @@ sub irregular_tests_for_create_category_set {
     );
     test_data_api(
         {   note   => 'duplicated name',
-            path   => "/v4/sites/$site_id/category_sets",
+            path   => "/v4/sites/$site_id/categorySets",
             method => 'POST',
             params => { category_set => { name => 'create-category-set', }, },
             code   => 409,
@@ -98,7 +98,7 @@ sub irregular_tests_for_create_category_set {
     );
     test_data_api(
         {   note   => 'no permission',
-            path   => "/v4/sites/$site_id/category_sets",
+            path   => "/v4/sites/$site_id/categorySets",
             method => 'POST',
             params =>
                 { category_set => { name => 'create-category-set-3', }, },
@@ -111,7 +111,7 @@ sub irregular_tests_for_create_category_set {
 sub normal_tests_for_create_category_set {
     test_data_api(
         {   note   => 'non superuser',
-            path   => "/v4/sites/$site_id/category_sets",
+            path   => "/v4/sites/$site_id/categorySets",
             method => 'POST',
             params => { category_set => { name => 'create-category-set', }, },
             callbacks => [
@@ -143,7 +143,7 @@ sub normal_tests_for_create_category_set {
     );
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/category_sets",
+            path         => "/v4/sites/$site_id/categorySets",
             is_superuser => 1,
             method       => 'POST',
             params =>
@@ -180,7 +180,7 @@ sub normal_tests_for_create_category_set {
 sub irregular_tests_for_get_category_set {
     test_data_api(
         {   note   => 'invalid category_set id',
-            path   => "/v4/sites/$site_id/category_sets/1000",
+            path   => "/v4/sites/$site_id/categorySets/1000",
             method => 'GET',
             code   => 404,
         }
@@ -197,7 +197,7 @@ sub irregular_tests_for_get_category_set {
 sub normal_tests_for_get_category_set {
     test_data_api(
         {   note => 'not logged in',
-            path => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             author_id => 0,
             method    => 'GET',
             callbacks => [
@@ -217,7 +217,7 @@ sub normal_tests_for_get_category_set {
     );
     test_data_api(
         {   note   => 'non superuser',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'GET',
             callbacks => [
                 {   name =>
@@ -230,7 +230,7 @@ sub normal_tests_for_get_category_set {
     );
     test_data_api(
         {   note => 'superuser',
-            path => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             is_superuser => 1,
             method       => 'GET',
             callbacks    => [
@@ -247,7 +247,7 @@ sub normal_tests_for_get_category_set {
 sub irregular_tests_for_update_category_set {
     test_data_api(
         {   note   => 'not logged in',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             author_id => 0,
             params => { category_set => { name => 'update-category-set', }, },
@@ -256,7 +256,7 @@ sub irregular_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/category_sets/' . $category_set->id,
+            path   => '/v4/sites/1000/categorySets/' . $category_set->id,
             method => 'PUT',
             params => { category_set => { name => 'update-category-set', }, },
             code   => 404,
@@ -264,7 +264,7 @@ sub irregular_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'other site',
-            path   => '/v4/sites/2/category_sets/' . $category_set->id,
+            path   => '/v4/sites/2/categorySets/' . $category_set->id,
             method => 'PUT',
             params => { category_set => { name => 'update-category-set', }, },
             code   => 404,
@@ -272,7 +272,7 @@ sub irregular_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'empty name',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             params => { category_set => { name => '', }, },
             code   => 409,
@@ -280,7 +280,7 @@ sub irregular_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'duplicated name',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             params =>
                 { category_set => { name => 'create-category-set-2', }, },
@@ -289,7 +289,7 @@ sub irregular_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'no permission',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             restrictions => { $site_id => ['save_category_set'], },
             params => { category_set => { name => 'update-category-set', }, },
@@ -301,7 +301,7 @@ sub irregular_tests_for_update_category_set {
 sub normal_tests_for_update_category_set {
     test_data_api(
         {   note   => 'no superuser',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             params => { category_set => { name => 'update-category-set', }, },
             callbacks => [
@@ -335,7 +335,7 @@ sub normal_tests_for_update_category_set {
     );
     test_data_api(
         {   note   => 'superuser',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'PUT',
             is_superuser => 1,
             params =>
@@ -374,14 +374,14 @@ sub normal_tests_for_update_category_set {
 sub irregular_tests_for_list_category_sets {
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/category_sets',
+            path   => '/v4/sites/1000/categorySets',
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'system scope',
-            path   => '/v4/sites/0/category_sets',
+            path   => '/v4/sites/0/categorySets',
             method => 'GET',
             code   => 404,
         }
@@ -391,7 +391,7 @@ sub irregular_tests_for_list_category_sets {
 sub normal_tests_for_list_category_sets {
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/category_sets",
+            path      => "/v4/sites/$site_id/categorySets",
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -415,7 +415,7 @@ sub normal_tests_for_list_category_sets {
     );
     test_data_api(
         {   note      => 'non superuser',
-            path      => "/v4/sites/$site_id/category_sets",
+            path      => "/v4/sites/$site_id/categorySets",
             method    => 'GET',
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.category_set',
@@ -435,7 +435,7 @@ sub normal_tests_for_list_category_sets {
     );
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/category_sets",
+            path         => "/v4/sites/$site_id/categorySets",
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -459,7 +459,7 @@ sub normal_tests_for_list_category_sets {
 sub irregular_tests_for_delete_category_sets {
     test_data_api(
         {   note   => 'not logged in',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'DELETE',
             author_id => 0,
             code      => 401,
@@ -467,28 +467,28 @@ sub irregular_tests_for_delete_category_sets {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/category_sets/' . $category_set->id,
+            path   => '/v4/sites/1000/categorySets/' . $category_set->id,
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
-            path   => "/v4/sits/$site_id/category_sets/1000",
+            path   => "/v4/sits/$site_id/categorySets/1000",
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'other site',
-            path   => '/v4/sites/2/category_sets/' . $category_set->id,
+            path   => '/v4/sites/2/categorySets/' . $category_set->id,
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'no permission',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'DELETE',
             restrictions => { $site_id => ['delete_category_set'], },
             code         => 403,
@@ -499,7 +499,7 @@ sub irregular_tests_for_delete_category_sets {
 sub normal_tests_for_delete_category_sets {
     test_data_api(
         {   note   => 'non superuser',
-            path   => "/v4/sites/$site_id/category_sets/" . $category_set->id,
+            path   => "/v4/sites/$site_id/categorySets/" . $category_set->id,
             method => 'DELETE',
             callbacks => [
                 {   name =>
@@ -525,7 +525,7 @@ sub normal_tests_for_delete_category_sets {
 
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/category_sets/" . $cs->id,
+            path         => "/v4/sites/$site_id/categorySets/" . $cs->id,
             method       => 'DELETE',
             is_superuser => 1,
             callbacks    => [

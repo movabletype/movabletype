@@ -47,7 +47,7 @@ normal_tests_for_delete();
 sub normal_tests_for_create {
     test_data_api(
         {   note   => 'has system permission',
-            path   => "/v4/sites/$site_id/content_types",
+            path   => "/v4/sites/$site_id/contentTypes",
             method => 'POST',
             params => {
                 content_type => {
@@ -89,7 +89,7 @@ sub normal_tests_for_create {
     );
     test_data_api(
         {   note   => 'has site permission',
-            path   => "/v4/sites/$site_id/content_types",
+            path   => "/v4/sites/$site_id/contentTypes",
             method => 'POST',
             params => {
                 content_type => {
@@ -130,7 +130,7 @@ sub normal_tests_for_create {
     );
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'POST',
             is_superuser => 1,
             params       => {
@@ -177,7 +177,7 @@ sub normal_tests_for_create {
 sub irregular_tests_for_create {
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/content_types",
+            path      => "/v4/sites/$site_id/contentTypes",
             method    => 'POST',
             author_id => 0,
             code      => 401,
@@ -185,14 +185,14 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/content_types',
+            path   => '/v4/sites/1000/contentTypes',
             method => 'POST',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'no content_type resource',
-            path   => "/v4/sites/$site_id/content_types",
+            path   => "/v4/sites/$site_id/contentTypes",
             method => 'POST',
             params => {},
             code   => 400,
@@ -200,7 +200,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note   => 'no name',
-            path   => "/v4/sites/$site_id/content_types",
+            path   => "/v4/sites/$site_id/contentTypes",
             method => 'POST',
             params => { content_type => {}, },
             code   => 409,
@@ -208,7 +208,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note   => 'duplicated name',
-            path   => "/v4/sites/$site_id/content_types",
+            path   => "/v4/sites/$site_id/contentTypes",
             method => 'POST',
             params => { content_type => { name => 'create-content-type', } },
             code   => 409,
@@ -216,7 +216,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note         => 'no permission',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'POST',
             restrictions => {
                 0 => [ 'create_new_content_type', 'edit_all_content_types' ],
@@ -235,7 +235,7 @@ sub irregular_tests_for_create {
 sub irregular_tests_for_list {
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/content_types",
+            path      => "/v4/sites/$site_id/contentTypes",
             method    => 'GET',
             author_id => 0,
             code      => 401,
@@ -243,14 +243,14 @@ sub irregular_tests_for_list {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/content_types',
+            path   => '/v4/sites/1000/contentTypes',
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note         => 'no permission',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'GET',
             restrictions => {
                 0        => ['manage_content_types'],
@@ -261,7 +261,7 @@ sub irregular_tests_for_list {
     );
     test_data_api(
         {   note   => 'system scope',
-            path   => '/v4/sites/0/content_types',
+            path   => '/v4/sites/0/contentTypes',
             method => 'GET',
             code   => 404,
         }
@@ -271,7 +271,7 @@ sub irregular_tests_for_list {
 sub normal_tests_for_list {
     test_data_api(
         {   note         => 'has system permission',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'GET',
             restrictions => { $site_id => ['manage_content_types'], },
             callbacks    => [
@@ -294,7 +294,7 @@ sub normal_tests_for_list {
     );
     test_data_api(
         {   note         => 'has site permission',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'GET',
             restrictions => { 0 => ['manage_content_types'], },
             callbacks    => [
@@ -317,7 +317,7 @@ sub normal_tests_for_list {
     );
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/content_types",
+            path         => "/v4/sites/$site_id/contentTypes",
             method       => 'GET',
             is_superuser => 1,
             restrictions => {
@@ -350,7 +350,7 @@ sub irregular_tests_for_get {
 
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path      => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method    => 'GET',
             author_id => 0,
             code      => 401,
@@ -358,28 +358,28 @@ sub irregular_tests_for_get {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/content_types/' . $ct->id,
+            path   => '/v4/sites/1000/contentTypes/' . $ct->id,
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid content_type_id',
-            path   => "/v4/sites/$site_id/content_types/1000",
+            path   => "/v4/sites/$site_id/contentTypes/1000",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'other site',
-            path   => '/v4/sites/2/content_types/' . $ct->id,
+            path   => '/v4/sites/2/contentTypes/' . $ct->id,
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note         => 'no permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'GET',
             restrictions => {
                 0        => ['edit_all_content_types'],
@@ -396,7 +396,7 @@ sub normal_tests_for_get {
 
     test_data_api(
         {   note         => 'has system permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'GET',
             restrictions => { $site_id => ['edit_all_content_types'], },
             callbacks    => [
@@ -410,7 +410,7 @@ sub normal_tests_for_get {
     );
     test_data_api(
         {   note         => 'has site permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'GET',
             restrictions => { 0 => ['edit_all_content_types'], },
             callbacks    => [
@@ -424,7 +424,7 @@ sub normal_tests_for_get {
     );
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'GET',
             is_superuser => 1,
             restrictions => {
@@ -448,7 +448,7 @@ sub irregular_tests_for_update {
 
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path      => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method    => 'PUT',
             author_id => 0,
             code      => 401,
@@ -456,28 +456,28 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/content_types/' . $ct->id,
+            path   => '/v4/sites/1000/contentTypes/' . $ct->id,
             method => 'PUT',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid content_type_id',
-            path   => "/v4/sites/$site_id/content_types/1000",
+            path   => "/v4/sites/$site_id/contentTypes/1000",
             method => 'PUT',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'other site',
-            path   => '/v4/sites/2/content_types/' . $ct->id,
+            path   => '/v4/sites/2/contentTypes/' . $ct->id,
             method => 'PUT',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'no permission',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             params => { content_type => { name => $ct->name . ' update', }, },
             restrictions => {
@@ -489,14 +489,14 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note   => 'no content_type resource',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             code   => 400,
         }
     );
     test_data_api(
         {   note   => 'empty name',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             params => { content_type => { name => '', }, },
             code   => 409,
@@ -512,7 +512,7 @@ sub irregular_tests_for_update {
 
     test_data_api(
         {   name   => 'duplicated name',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             params => { content_type => { name => $ct2->name, }, },
             code   => 409,
@@ -527,7 +527,7 @@ sub normal_tests_for_update {
 
     test_data_api(
         {   note   => 'has system permission',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             params => { content_type => { name => $ct->name . ' update', }, },
             restrictions => { $site_id => ['edit_all_content_types'], },
@@ -567,7 +567,7 @@ sub normal_tests_for_update {
     $original_name = $ct->name;
     test_data_api(
         {   note   => 'has site permission',
-            path   => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path   => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method => 'PUT',
             params => { content_type => { name => $ct->name . ' update', }, },
             restrictions => { 0 => ['edit_all_content_types'], },
@@ -607,7 +607,7 @@ sub normal_tests_for_update {
     $original_name = $ct->name;
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'PUT',
             is_superuser => 1,
             params => { content_type => { name => $ct->name . ' update', }, },
@@ -655,7 +655,7 @@ sub irregular_tests_for_delete {
 
     test_data_api(
         {   note      => 'not logged in',
-            path      => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path      => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method    => 'DELETE',
             author_id => 0,
             code      => 401,
@@ -663,28 +663,28 @@ sub irregular_tests_for_delete {
     );
     test_data_api(
         {   note   => 'invalid site_id',
-            path   => '/v4/sites/1000/content_types/' . $ct->id,
+            path   => '/v4/sites/1000/contentTypes/' . $ct->id,
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid content_type_id',
-            path   => "/v4/sites/$site_id/content_types/1000",
+            path   => "/v4/sites/$site_id/contentTypes/1000",
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note   => 'other site',
-            path   => '/v4/sites/2/content_types/' . $ct->id,
+            path   => '/v4/sites/2/contentTypes/' . $ct->id,
             method => 'DELETE',
             code   => 404,
         }
     );
     test_data_api(
         {   note         => 'no permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'DELETE',
             restrictions => {
                 0        => ['delete_content_type'],
@@ -701,7 +701,7 @@ sub normal_tests_for_delete {
 
     test_data_api(
         {   note         => 'has system permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'DELETE',
             restrictions => { $site_id => ['delete_content_type'], },
             callbacks    => [
@@ -726,7 +726,7 @@ sub normal_tests_for_delete {
 
     test_data_api(
         {   note         => 'has site permission',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'DELETE',
             restrictions => { 0 => ['delete_content_type'], },
             callbacks    => [
@@ -751,7 +751,7 @@ sub normal_tests_for_delete {
 
     test_data_api(
         {   note         => 'superuser',
-            path         => "/v4/sites/$site_id/content_types/" . $ct->id,
+            path         => "/v4/sites/$site_id/contentTypes/" . $ct->id,
             method       => 'DELETE',
             is_superuser => 1,
             restrictions => {

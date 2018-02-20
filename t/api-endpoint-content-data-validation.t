@@ -58,7 +58,7 @@ subtest 'no validation' => sub {
     test_data_api(
         {   note => 'without data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => { content_data => {}, },
             result => sub {
@@ -75,7 +75,7 @@ subtest 'no validation' => sub {
     test_data_api(
         {   note => 'with data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -129,7 +129,7 @@ subtest 'required validation' => sub {
     test_data_api(
         {   note => 'without data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => { content_data => {}, },
             code   => 409,
@@ -139,7 +139,7 @@ subtest 'required validation' => sub {
     test_data_api(
         {   note => 'with data',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -195,7 +195,7 @@ subtest 'required validation with initial_value' => sub {
         {   note =>
                 'set initial_value when both parameter and data are empty',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => { content_data => {}, },
             result => sub {
@@ -220,7 +220,7 @@ subtest 'required validation with initial_value' => sub {
     test_data_api(
         {   note => 'do not set initial_value when data exists',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data/"
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
                 . $cd->id,
             method => 'PUT',
             params => { content_data => {}, },
@@ -235,7 +235,7 @@ subtest 'required validation with initial_value' => sub {
     test_data_api(
         {   note => 'do not set initial_value when parameter is set',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -289,7 +289,7 @@ subtest 'ss_validator' => sub {
     test_data_api(
         {   note => 'too short',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -306,7 +306,7 @@ subtest 'ss_validator' => sub {
     test_data_api(
         {   note => 'too long',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -323,7 +323,7 @@ subtest 'ss_validator' => sub {
     test_data_api(
         {   note => 'valid length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_data",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
