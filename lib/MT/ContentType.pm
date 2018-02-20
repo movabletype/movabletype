@@ -200,6 +200,19 @@ sub fields {
     }
 }
 
+my %replaceable_fields = (
+    single_line_text => 1,
+    multi_line_text  => 1,
+    url              => 1,
+    embedded_text    => 1,
+);
+
+sub replaceable_fields {
+    my $obj    = shift;
+    my $fields = $obj->fields;
+    [ grep { $replaceable_fields{ $_->{type} } } @$fields ];
+}
+
 sub _sort_fields {
     my $fields = shift;
     return [] unless $fields && ref $fields eq 'ARRAY';

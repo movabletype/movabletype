@@ -673,10 +673,27 @@ sub do_search_replace {
     if ($ids) {
         @ids = split /,/, $ids;
     }
+    my $content_type;
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') || 0;
+        $content_type
+            = $app->model('content_type')->load( { id => $content_type_id } )
+            || $app->model('content_type')->load(
+            { blog_id => $blog_id || \'> 0' },
+            { sort => 'name', limit => 1 },
+            );
+    }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
+        if ($content_type) {
+            %search_api_cols = (
+                %search_api_cols,
+                map { '__field_' . $_->{id} => 1 }
+                    @{ $content_type->replaceable_fields },
+            );
+        }
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
             @cols = split /,/, $cols[0];
         }
@@ -686,6 +703,11 @@ sub do_search_replace {
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
+        if ($content_type) {
+            push @cols,
+                map { '__field_' . $_->{id} }
+                @{ $content_type->replaceable_fields };
+        }
     }
     my $quicksearch_id;
     if ( $quicksearch && ( $search || '' ) ne '' && $search !~ m{ \D }xms ) {
@@ -871,7 +893,7 @@ sub do_search_replace {
         }
 
         my @terms;
-        if ( !$is_regex ) {
+        if ( !$is_regex && $type ne 'content_data' ) {
 
             # MT::Object doesn't like multi-term hashes within arrays
             if (%terms) {
@@ -889,7 +911,7 @@ sub do_search_replace {
                         # Direct ID search
                         push( @col_terms, { $col => $plain_search }, '-or' );
                     }
-                    else {
+                    elsif ( $col !~ /^__field_\d+$/ ) {
                         push( @col_terms,
                             { $col => { like => $query_string } }, '-or' );
                     }
@@ -1007,6 +1029,13 @@ sub do_search_replace {
         my %replace_cols;
         if ($do_replace) {
             %replace_cols = map { $_ => 1 } @{ $api->{replace_cols} };
+            if ($content_type) {
+                %replace_cols = (
+                    %replace_cols,
+                    map { '__field_' . $_->{id} => 1 }
+                        @{ $content_type->replaceable_fields }
+                );
+            }
         }
 
         my $re;
@@ -1029,12 +1058,27 @@ sub do_search_replace {
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
-                    my $text = $obj->column($col);
+                    my $text;
+                    my $content_field_id;
+                    if ( $col =~ /^__field_(\d+)$/ ) {
+                        $content_field_id = $1;
+                        $text             = $obj->data->{$content_field_id};
+                    }
+                    else {
+                        $text = $obj->column($col);
+                    }
                     $text = '' unless defined $text;
                     if ($do_replace) {
                         if ( $text =~ s!$re!$replace!g ) {
                             $match++;
-                            $obj->$col($text);
+                            if ($content_field_id) {
+                                my $data = $obj->data;
+                                $data->{$content_field_id} = $text;
+                                $obj->data($data);
+                            }
+                            else {
+                                $obj->$col($text);
+                            }
                         }
                     }
                     else {
@@ -1312,6 +1356,14 @@ sub do_search_replace {
             ? $search_api->{plugin}->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
         push @search_cols, \%search_field;
+    }
+    if ( $res{object_type} eq 'content_data' && $content_type ) {
+        push @search_cols, map {
+            +{  field    => '__field_' . $_->{id},
+                label    => $_->{options}{label},
+                selected => exists( $cols{ '__field_' . $_->{id} } ),
+                }
+        } @{ $content_type->replaceable_fields };
     }
     $res{'search_cols'} = \@search_cols;
 
