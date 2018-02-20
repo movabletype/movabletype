@@ -2,6 +2,15 @@
 <mt:setvarblock name="republish_button_title"><__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 <mt:setvarblock name="delete_button_title"><__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+#content_data-listing-table td.data [aria-expanded=false] span:last-child,
+#content_data-listing-table td.data [aria-expanded=true] span:first-child {
+  display: none;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="action_buttons">
   <mt:if name="can_republish">
 <button
@@ -35,6 +44,7 @@
         <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
       </th>
       <th class="head id primary"><span class="col-label"><__trans phrase="ID"></span></th>
+      <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
       </mt:unless>
@@ -88,6 +98,21 @@
   <mt:else>
         &#160;
   </mt:if>
+      </td>
+      <td class="data">
+        <p>
+          <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+            <span><__trans phrase="Open"></span>
+            <span><__trans phrase="Close"></span>
+          </a>
+        </p>
+        <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
+          <div class="card">
+            <div class="card-body">
+              <mt:var name="preview_data">
+            </div>
+          </div>
+        </div>
       </td>
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">

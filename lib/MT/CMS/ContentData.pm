@@ -1711,8 +1711,9 @@ sub build_content_data_table {
         my $row = {};
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
-        $row->{id}     = $content_data->id;
-        $row->{object} = $content_data;
+        $row->{id}           = $content_data->id;
+        $row->{object}       = $content_data;
+        $row->{preview_data} = $content_data->preview_data;
         $row->{status_text}
             = MT::ContentStatus::status_text( $content_data->status );
         $row->{ 'status_'
