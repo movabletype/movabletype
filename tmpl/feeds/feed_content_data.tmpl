@@ -74,7 +74,7 @@
         <mt:if name="log.content_data.author.id">
         &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=content_data&amp;type=content_data_<mt:var name="log.content_data.content_type_id">&amp;blog_id=<mt:var name="log.content_data.blog_id">&amp;filter=author_id&amp;filter_val=<mt:var name="log.content_data.author.id">"&gt;<__trans phrase="From this author">&lt;/a&gt;&lt;/li&gt;
         </mt:if>
-        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=content_data&amp;from=<mt:var name="log.content_data.authored_on">&amp;to=<mt:var name="log.content_data.authored_on">&amp;show_all=1&amp;blog_id=<mt:var name="log.content_data.blog_id">&amp;do_search=1"&gt;<__trans phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=content_data&amp;content_type_id=<mt:var name="log.content_data.content_type_id">&amp;from=<mt:var name="log.content_data.authored_on">&amp;to=<mt:var name="log.content_data.authored_on">&amp;is_dateranged=1&amp;show_all=1&amp;blog_id=<mt:var name="log.content_data.blog_id">&amp;do_search=1"&gt;<__trans phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
     &lt;/div&gt;
     &lt;br style="clear: both;" /&gt;
