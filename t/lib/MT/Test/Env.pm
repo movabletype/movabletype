@@ -172,12 +172,18 @@ sub _connect_info_mysql {
         $dsn =~ s/^DBI:mysql://i;
         my %opts = map { split '=', $_ } split ';', $dsn;
         $opts{dbname} = $info{Database};
+        if ( $opts{host} ) {
+            $info{DBHost} = $opts{host};
+        }
         if ( $opts{mysql_socket} ) {
             delete $info{DBHost};
             $info{DBSocket} = $opts{mysql_socket};
         }
         if ( $opts{user} ) {
             $info{DBUser} = $opts{user};
+        }
+        if ( $opts{port} ) {
+            $info{DBPort} = $opts{port};
         }
         $self->{dsn}
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
