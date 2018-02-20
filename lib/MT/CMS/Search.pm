@@ -15,6 +15,52 @@ sub core_search_apis {
     my $author  = $app->user;
 
     my $types = {
+        content_data => {
+            order     => 50,
+            condition => sub {
+                $app->model('content_type')
+                    ->exist( { blog_id => $blog_id || \'> 0' } );
+            },
+            handler =>
+                '$Core::MT::CMS::ContentData::build_content_data_table',
+            label      => 'Content Data',
+            perm_check => sub {
+                my ($content_data) = @_;
+                my $author = $app->user;
+                my $blog_perms
+                    = $author->permissions( $content_data->blog_id );
+                $blog_perms
+                    && $blog_perms->can_edit_content_data( $content_data,
+                    $author );
+            },
+            search_cols =>
+                { identifier => sub { MT->translate('Basename') }, },
+            replace_cols       => [qw( identifier )],
+            can_replace        => 1,
+            can_search_by_date => 1,
+            date_column        => 'authored_on',
+            setup_terms_args   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                if ( $app->param('filter') && $app->param('filter_val') ) {
+                    $terms->{ $app->param('filter') }
+                        = $app->param('filter_val');
+                }
+                my $content_type_id = $app->param('content_type_id') || 0;
+                my $content_type
+                    = $app->model('content_type')
+                    ->load( { id => $content_type_id } )
+                    || $app->model('content_type')->load(
+                    { blog_id => $blog_id || \'> 0' },
+                    { sort => 'name', limit => 0 }
+                    );
+                if ($content_type) {
+                    $terms->{content_type_id} = $content_type->id;
+                    $app->param( 'content_type_id', $content_type->id );
+                }
+                $args->{sort}      = 'authored_on';
+                $args->{direction} = 'descend';
+            },
+        },
         'entry' => {
             'order'     => 100,
             'condition' => sub {
@@ -514,6 +560,47 @@ sub search_replace {
             $param->{can_empty_junk}      = 1;
             $param->{state_editable}      = 1;
             $param->{publish_from_search} = 1;
+        }
+    }
+    elsif ( $param->{object_type} eq 'content_data' ) {
+        my $selected_content_type_id = $app->param('content_type_id');
+        my $selected_content_type;
+        my @content_types;
+        my $iter
+            = MT->model('content_type')
+            ->load_iter( { blog_id => $blog_id || \'> 0' },
+            { sort => 'name' } );
+        while ( my $content_type = $iter->() ) {
+            push @content_types,
+                +{
+                content_type_id   => $content_type->id,
+                content_type_name => $content_type->name,
+                (         !$selected_content_type_id
+                        || $content_type->id == $selected_content_type_id
+                    )
+                ? ( selected => 1 )
+                : (),
+                };
+            $selected_content_type_id ||= $content_type->id;
+            if ( $content_type->id == $selected_content_type_id ) {
+                $selected_content_type = $content_type;
+            }
+        }
+        $param->{content_types} = \@content_types;
+
+        my $user       = $app->user;
+        my $blog_perms = $user->permissions($blog_id);
+        if ( $user->is_superuser ) {
+            $param->{can_republish} = 1;
+        }
+        elsif ( $selected_content_type && $blog_perms ) {
+            my $unique_id = $selected_content_type->unique_id;
+            $param->{can_republish}
+                = $blog_perms->can_do(
+                "publish_content_data_via_list_$unique_id")
+                && $blog_perms->can_do("publish_all_content_data_$unique_id")
+                ? 1
+                : 0;
         }
     }
 

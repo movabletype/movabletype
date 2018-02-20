@@ -172,6 +172,21 @@ function blurDateFields(s) {
     </mt:if>
 
       <div id="search-bar-search-field" class="mt-3 mod">
+    <mt:if name="object_type" eq="content_data">
+        <mtapp:setting
+           id="content-type"
+           label="<__trans phrase="Content Type">"
+           label_class="top-label"
+           help_section="search-alt">
+           <select class="custom-select form-control" name="content_type_id">
+      <mt:loop name="content_types">
+             <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
+               <mt:var name="content_type_name" escape="html">
+             </option>
+      </mt:loop>
+           </select>
+        </mtapp:setting>
+    </mt:if>
         <mtapp:setting
            id="search"
            label="<__trans phrase="Search">"
@@ -260,6 +275,21 @@ function blurDateFields(s) {
     <mt:if name="have_results">
       <div id="search-bar-replace-fields" class="mod" style="display: none;">
         <!-- Search -->
+      <mt:if name="object_type" eq="content_data">
+        <mtapp:setting
+           id="content-type-alt"
+           label="<__trans phrase="Content Type">"
+           label_class="top-label"
+           help_section="content-type-alt">
+          <select name="content-type-alt" class="custom-select form-control" disabled>
+        <mt:loop name="content_types">
+          <mt:if name="selected">
+            <option value="content_type_id"><mt:var name="content_type_name" escape="html"></option>
+          </mt:if>
+        </mt:loop>
+           </select>
+        </mtapp:setting>
+      </mt:if>
         <mtapp:setting
            id="search-alt"
            label="<__trans phrase="Search For">"

@@ -897,8 +897,8 @@ sub make_list_actions {
             },
         },
     };
-    my $iter         = MT::ContentType->load_iter;
-    my $list_actions = {};
+    my $iter = MT::ContentType->load_iter;
+    my $list_actions = +{ content_data => $common_actions };
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
         $list_actions->{$key} = $common_actions;
@@ -909,10 +909,15 @@ sub make_list_actions {
 sub _check_permission {
     my (@actions) = @_;
 
-    my $app     = MT->app;
-    my $type    = $app->param('type');
-    my ($ct_id) = $type =~ /^content_data_([0-9]+)$/;
-    my $ct      = MT::ContentType->load( $ct_id || 0 );
+    my $app = MT->app;
+    my $ct_id;
+    if ( my $type = $app->param('type') ) {
+        ($ct_id) = $type =~ /^content_data_([0-9]+)$/;
+    }
+    else {
+        $ct_id = $app->param('content_type_id');
+    }
+    my $ct = MT::ContentType->load( $ct_id || 0 );
     return 0 unless $ct;
 
     my $terms = {
@@ -1664,4 +1669,93 @@ sub can_delete {
     $user->permissions(0)->can_edit_content_data( $obj, $user );
 }
 
+sub build_content_data_table {
+    my $app  = shift;
+    my %args = @_;
+
+    my $app_author = $app->user;
+    my $param      = $args{param} || {};
+    my $type       = $args{type};
+
+    my $content_type_id = $app->param('content_type_id') || 0;
+    my $content_type
+        = MT->model('content_type')->load( { id => $content_type_id } )
+        || MT->model('content_type')
+        ->load( { blog_id => ( $app->blog ? $app->blog->id : \'> 0' ) },
+        { sort => 'name', limit => 1 } );
+    return [] unless $content_type;
+    $param->{content_type_id}   = $content_type->id;
+    $param->{content_type_name} = $content_type->name;
+
+    my $iter;
+    if ( $args{load_args} ) {
+        $iter = MT->model('content_data')->load_iter( @{ $args{load_args} } );
+    }
+    elsif ( $args{iter} ) {
+        $iter = $args{iter};
+    }
+    elsif ( $args{items} ) {
+        $iter = sub { shift @{ $args{items} } };
+    }
+    return [] unless $iter;
+
+    my $date_format     = MT::App::CMS::LISTING_DATE_FORMAT();
+    my $datetime_format = MT::App::CMS::LISTING_DATETIME_FORMAT();
+
+    require MT::ContentStatus;
+    my @data;
+    while ( my $content_data = $iter->() ) {
+        my $author = $content_data->author;
+        my $blog   = $content_data->blog;
+
+        my $row = {};
+        $row->{author_name}
+            = $author ? $author->name : $app->translate('(user deleted)');
+        $row->{id}     = $content_data->id;
+        $row->{object} = $content_data;
+        $row->{status_text}
+            = MT::ContentStatus::status_text( $content_data->status );
+        $row->{ 'status_'
+                . MT::ContentStatus::status_text( $content_data->status ) }
+            = 1;
+
+        if ( $content_data->status == MT::ContentStatus::RELEASE() ) {
+            $row->{content_data_permalink}
+                = MT::Util::encode_html( $content_data->permalink );
+        }
+
+        if ( my $ts = $content_data->authored_on ) {
+            $row->{created_on_formatted}
+                = MT::Util::format_ts( $date_format, $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_time_formatted}
+                = MT::Util::format_ts( $datetime_format, $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_relative}
+                = MT::Util::relative_date( $ts, time, $blog );
+        }
+
+        if ($blog) {
+            $row->{weblog_id}   = $blog->id;
+            $row->{weblog_name} = $blog->name;
+        }
+
+        my $blog_perms = $app_author->blog_perm( $content_data->blog_id );
+        $row->{has_edit_access} = $app_author->is_superuser
+            || ( $blog_perms
+            && $blog_perms->can_edit_content_data( $content_data,
+                $app_author ) );
+
+        push @data, $row;
+    }
+
+    my $list_pref = $app->list_pref($type);
+    $param->{content_data_table}[0] = \%$list_pref;
+    $param->{object_loop} = $param->{entry_table}[0]{object_loop} = \@data;
+    $app->load_list_actions( $type, \%$param );
+
+    \@data;
+}
+
 1;
+
