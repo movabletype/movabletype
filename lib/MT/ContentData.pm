@@ -912,10 +912,10 @@ sub _make_id_html {
     my $lc_status_class = lc $status_class;
 
     my $status_icon_id
-        = $status == MT::Entry::HOLD()      ? 'ic_statusdraft'
+        = $status == MT::Entry::HOLD()      ? 'ic_draft'
         : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
         : $status == MT::Entry::REVIEW()    ? 'ic_error'
-        : $status == MT::Entry::FUTURE()    ? 'ic_time'
+        : $status == MT::Entry::FUTURE()    ? 'ic_clock'
         : $status == MT::Entry::JUNK()      ? 'ic_error'
         : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
         :                                     '';

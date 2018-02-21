@@ -45,7 +45,7 @@ done_testing;
 sub normal_tests {
     test_data_api(
         {   path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -76,7 +76,7 @@ sub irregular_tests_for_min_length {
     test_data_api(
         {   note => 'with non-number min_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -91,7 +91,7 @@ sub irregular_tests_for_min_length {
     test_data_api(
         {   note => 'with negative min_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -106,7 +106,7 @@ sub irregular_tests_for_min_length {
     test_data_api(
         {   note => 'with big min_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -124,7 +124,7 @@ sub irregular_tests_for_max_length {
     test_data_api(
         {   note => 'with non-number max_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -139,7 +139,7 @@ sub irregular_tests_for_max_length {
     test_data_api(
         {   note => 'with small max_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -154,7 +154,7 @@ sub irregular_tests_for_max_length {
     test_data_api(
         {   note => 'with big max_length',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -172,7 +172,7 @@ sub irregular_tests_for_initial_value {
     test_data_api(
         {   note => 'with big initial_value',
             path =>
-                "/v4/sites/$site_id/content_types/$content_type_id/content_fields",
+                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {

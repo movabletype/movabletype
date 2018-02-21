@@ -18,9 +18,6 @@ jQuery(document).ready(function () {
          +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1" escape="js">'
          +   '</div>'
          +   '<div class="col">'
-         +     '<button type="button" class="close mr-4" data-dismiss="alert" aria-label="Close">'
-         +       '<span aria-hidden="true">&times;</span>'
-         +     '</button>'
     <mt:if name="asset_type" eq="audio">
          +     '<mtapp:svgicon id="ic_audio" title="Audio" strip_linefeeds="1" escape="js">'
     <mt:elseif name="asset_type" eq="image">
@@ -30,8 +27,16 @@ jQuery(document).ready(function () {
     <mt:else>
          +     '<mtapp:svgicon id="ic_file" title="Asset" strip_linefeeds="1" escape="js">'
     </mt:if>
+         +     '<mt:var name="asset_label" escape="html" escape="js">'
+         +   '</div>'
+         +   '<div class="col-auto mr-3">'
+         +     '<a href="javascript:void(0)" class="remove">'
+         +       '<__trans phrase="Remove">'
+         +     '</a>'
+         +   '</div>'
+         +   '<div class="col-auto mr-3">'
          +     '<a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
-         +       '<mt:var name="asset_label" escape="html" escape="js">'
+         +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1" escape="js">'
          +     '</a>'
          +   '</div>'
          +   '<div class="mt-flexBreak"></div>'

@@ -343,8 +343,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        'js_recent_entries_for_tag' => "${pkg}Tag::js_recent_entries_for_tag",
-
         ## Debug
         'vcs_revision' => {
             code      => "${pkg}Debug::vcs_revision",
@@ -719,7 +717,11 @@ sub core_content_actions {
                 class         => 'icon-create',
                 label         => 'Grant Permission',
                 icon          => 'ic_add',
-                mode          => 'dialog_select_assoc_type',
+                mode          => 'dialog_grant_role',
+                args          => {
+                    _type         => 'user',
+                    type          => 'site',
+                },
                 return_args   => 1,
                 permit_action => 'create_any_association',
                 order         => 100,

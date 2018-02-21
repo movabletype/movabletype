@@ -168,7 +168,10 @@ sub filter_conditional_list {
                 my $terms = {
                     author_id   => $app->user->id,
                     permissions => \'is not null',
-                    ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    (   $blog_ids
+                        ? ( blog_id => $blog_ids )
+                        : ( blog_id => { not => 0 } )
+                    ),
                 };
 
                 my $count = MT->model('permission')->count($terms);
@@ -666,6 +669,134 @@ sub listing {
         else {
             return $app->load_tmpl( $tmpl, $param );
         }
+    }
+}
+
+sub multi_listing {
+    my $app = shift;
+    my ($opt) = @_;
+
+    my $types = $opt->{type} || $opt->{Type};
+    if ( ref($types) ne 'ARRAY' ) {
+        return $app->listing(@_);
+    }
+    my $tmpl
+        = $opt->{template}
+        || $opt->{Template}
+        || 'list_' . $types->[0] . '.tmpl';
+
+    my $app_json        = $app->param('json');
+    my $app_search_type = $app->param('search_type');
+
+    my $no_html = $opt->{no_html} || $opt->{NoHTML};
+    my $search = $app->param('search');
+    my $no_limit
+        = exists( $opt->{no_limit} )
+        ? $opt->{no_limit}
+        : ( $search ? 1 : 0 );
+    my $json   = $opt->{json}          || $app->param('json');
+    my $param  = $opt->{params}        || $opt->{Params} || {};
+    my $offset = $app->param('offset') || 0;
+    $offset =~ s/\D//g;
+    my $sort = exists $opt->{args}->{sort} ? $opt->{args}->{sort} : 'id';
+
+    if ( ref($types) ne 'ARRAY' ) {
+        return $app->listing(@_);
+    }
+    my $all_object_loop = [];
+    my $page_limit = $app->param('limit') || 0;
+    foreach my $type (@$types) {
+        my $options = $opt;
+        $options->{type} = $type;
+        $options->{json} = 0;
+        $app->param( 'json', 0 );
+        $options->{no_html} = 1;
+        $app->param( 'search_type', $type );
+        $app->param( 'offset', 0 );
+
+        $options->{code}
+            = $opt->{"${type}_code"}
+            || $opt->{"${type}_Code"}
+            || $opt->{code}
+            || $opt->{Code};
+        $options->{terms}
+            = $opt->{"${type}_terms"}
+            || $opt->{"${type}_Terms"}
+            || $opt->{terms}
+            || $opt->{Terms};
+        $options->{args}
+            = $opt->{"${type}_args"}
+            || $opt->{"${type}_Args"}
+            || $opt->{args}
+            || $opt->{Args};
+        $options->{iterator}
+            = $opt->{"${type}_iterator"}
+            || $opt->{"${type}_Iterator"}
+            || 'load_iter';
+
+        my $list_pref;
+        $list_pref = $app->list_pref($type) if $app->can('list_pref');
+        my $type_limit = $opt->{args}->{limit} || $list_pref->{rows};
+        $type_limit =~ s/\D//g;
+
+        $options->{args}->{limit} = 9999;
+        $app->param( 'limit', 9999 );
+        $options->{args}->{no_limit} = 1;
+
+        $app->listing($options);
+        foreach my $object ( @{ $options->{params}->{object_loop} } ) {
+            $object->{object_type} = $type;
+            push( @$all_object_loop, $object );
+        }
+
+        $page_limit = $page_limit < $type_limit ? $type_limit : $page_limit;
+        $options->{params}->{object_loop} = undef;
+        $options->{args}->{limit}         = $page_limit;
+    }
+    @$all_object_loop
+        = sort { $b->{$sort} cmp $a->{$sort} } @$all_object_loop;
+    my @object_loop = @$all_object_loop;
+    if ( !$no_limit ) {
+        @object_loop = splice( @object_loop, $offset, $page_limit );
+    }
+    $param->{object_loop} = \@object_loop;
+
+    $app->param( 'limit', $page_limit );
+
+    # handle pagination
+    my $args = $opt->{args}     || $opt->{Args};
+    my $d    = $app->param('d') || 0;
+    $d =~ s/\D//g;
+
+    my $pager = {
+        offset        => $offset,
+        limit         => $page_limit,
+        rows          => scalar @object_loop,
+        d             => $d,
+        listTotal     => scalar @$all_object_loop + $d || 0,
+        chronological => $param->{list_noncron} ? 0 : 1,
+        return_args   => encode_html( $app->make_return_args ),
+        method        => $app->request_method,
+    };
+    $param->{pager_json} = $json ? $pager : MT::Util::to_json($pager);
+
+    if ($json) {
+        $app->param( 'json', $app_json );
+        $param->{json}    = $json;
+        $param->{no_html} = $no_html;
+        $app->param( 'search_type', $app_search_type );
+        $app->param( 'offset',      $offset );
+
+        my $html = $app->build_page( $tmpl, $param );
+
+        my $data = {
+            html  => $html,
+            pager => $pager,
+        };
+
+        $app->send_http_header("text/javascript+json");
+        $app->print_encode( MT::Util::to_json($data) );
+        $app->{no_print_body} = 1;
     }
 }
 
@@ -3295,7 +3426,9 @@ sub run {
                     if ( $app->{trace} ) {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
-                            $trace .= '<li style="padding: 0.2em 0.5em; margin: 0">' . $msg . '</li>' . "\n";
+                            $trace
+                                .= '<li style="padding: 0.2em 0.5em; margin: 0">'
+                                . $msg . '</li>' . "\n";
                         }
                     }
                     $trace = '<li style="padding: 0.2em 0.5em; margin: 0">'

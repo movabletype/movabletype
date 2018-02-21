@@ -98,7 +98,7 @@
             <svg title="<mt:var name="asset_type" escape="html">" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
               <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_<mt:if name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>">
             </svg>
-            <div class="mt-user__badge--danger">
+            <div class="mt-user__badge--warning">
               <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
                 <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_error">
               </svg>
@@ -318,15 +318,17 @@ jQuery(window).load( init );
 
         <mtapp:setting
            id="tags"
-           label_class="text-top position-relative"
+           label_class="text-top"
            label="<__trans phrase="Tags">"
            label_for="tags"
            label_class="top-label">
-          <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
-          <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-          <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
-            <div id="tags_completion" class="mt_suggest__list">
-              <ul></ul>
+          <div class="form-group position-relative">
+            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
+            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+            <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
+              <div id="tags_completion" class="mt_suggest__list">
+               <ul></ul>
+              </div>
             </div>
           </div>
         </mtapp:setting>

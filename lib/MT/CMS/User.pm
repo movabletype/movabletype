@@ -587,7 +587,9 @@ sub upload_userpic {
         or return $app->errtrans("Invalid request.");
 
     my $appuser = $app->user;
-    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
+    if (   ( !$appuser->can_manage_users_groups )
+        && ( $user->id != $appuser->id ) )
+    {
         return $app->permission_denied();
     }
 
@@ -1044,8 +1046,43 @@ sub grant_role {
         $app->config->save_config;
     }
 
+    _grant_role_for_group( $app, \@blogs, \@roles )
+        if ( $app->model("group") && $app->param('group') );
+
     $app->add_return_arg( saved => 1 );
     $app->call_return;
+}
+
+sub _grant_role_for_group {
+    my $app = shift;
+    my ( $blogs, $roles ) = @_;
+
+    my $groups = $app->param('group') || '';
+    my $group_id = $app->param('group_id');
+
+    my @groups = split /,/, $groups;
+    my $grp_class = $app->model("group");
+
+    push @groups, $group_id if $group_id;
+    foreach my $group (@groups) {
+        return unless $grp_class;
+        my $id = $group;
+        $id =~ s/\D//g;
+        $group = $grp_class->load($id);
+    }
+    @groups = grep { ref $_ } @groups;
+    $app->error(undef);
+
+    require MT::Association;
+
+    foreach my $blog (@$blogs) {
+        foreach my $role (@$roles) {
+            foreach my $ug (@groups) {
+                MT::Association->link( $ug => $role => $blog );
+            }
+        }
+    }
+
 }
 
 sub dialog_select_author {
@@ -1236,8 +1273,11 @@ PERMCHECK: {
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         my $type = $app->param('type') || '';
-        if ( $type eq 'site' ) {
-            if ( $row->{class} eq 'website' && $obj->has_blog() ) {
+        if ( $type && $type eq 'site' ) {
+            if (   $row->{class}
+                && $row->{class} eq 'website'
+                && $obj->has_blog() )
+            {
                 $row->{has_child} = 1;
                 my $child_blogs = $obj->blogs();
                 my $child_sites = [];
@@ -1247,8 +1287,8 @@ PERMCHECK: {
                     label       => $_->name,
                     description => $_->description
                     } foreach @{$child_blogs};
-                $row->{child_sites}      = $child_sites;
-                $row->{child_site_count} = scalar @{$child_blogs};
+                $row->{child_obj}       = $child_sites;
+                $row->{child_obj_count} = scalar @{$child_blogs};
             }
         }
         $row->{disabled} = 1
@@ -1257,18 +1297,33 @@ PERMCHECK: {
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
-        if (   $type eq 'blog'
+        if (   $type
+            && $type eq 'blog'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
-        if (   $type eq 'website'
+        if (   $type
+            && $type eq 'website'
             && UNIVERSAL::isa( $obj, 'MT::Role' )
             && $obj->has('administer_site') )
         {
             $row->{disabled} = 1;
         }
+        if ( UNIVERSAL::isa( $obj, 'MT::Author' ) ) {
+            if($obj->userpic_url){
+              $row->{icon} = $obj->userpic_url();
+            } else {
+              $row->{icon}
+                  = MT->static_path . 'images/icons/ic_user-auth.svg';
+            }
+        }
+        if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
+            $row->{icon}
+                = MT->static_path . 'images/icons/ic_group.svg';
+        }
+
     };
 
     # Only show active users who are not commenters.
@@ -1281,22 +1336,51 @@ PERMCHECK: {
         $terms->{class} = 'website';
     }
 
+    my $group = MT->registry( 'object_types', 'group' );
+    my $has_group = $group ? 1 : 0;
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
             panel_multi  => 1,
+            has_group    => $has_group ? 1 : 0,
         };
-        $app->listing(
-            {   terms    => $terms,
-                args     => { sort => 'name' },
-                type     => $type,
-                code     => $hasher,
-                params   => $params,
-                template => 'include/listing_panel.tmpl',
-                $app->param('search') ? ( no_limit => 1 ) : (),
-            }
-        );
+        if ( $has_group && $type eq 'author' && !$app->param('link_filter') )
+        {
+            my $author_terms = {
+                status => MT::Author::ACTIVE(),
+                type   => MT::Author::AUTHOR()
+            };
+            require MT::Group;
+            my $group_terms = { status => MT::Group::ACTIVE() };
+            my $no_limit
+                = $app->param('no_limit')
+                ? 1
+                : ( $app->param('search') ? 1 : 0 );
+            $app->multi_listing(
+                {   args => { sort => 'name' },
+                    type         => [ 'group', 'author' ],
+                    code         => $hasher,
+                    params       => $params,
+                    author_terms => $author_terms,
+                    group_terms  => $group_terms,
+                    template     => 'include/listing_panel.tmpl',
+                    $no_limit ? ( no_limit => 1 ) : (),
+                }
+            );
+        }
+        else {
+            $app->listing(
+                {   terms    => $terms,
+                    args     => { sort => 'name' },
+                    type     => $type,
+                    code     => $hasher,
+                    params   => $params,
+                    template => 'include/listing_panel.tmpl',
+                    $app->param('search') ? ( no_limit => 1 ) : (),
+                }
+            );
+        }
     }
     else {
 
@@ -1381,6 +1465,7 @@ PERMCHECK: {
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
+        $params->{has_group}    = $has_group ? 1 : 0;
 
         for ( my $i = 0; $i <= $#panels; $i++ ) {
             my $source       = $panels[$i];
@@ -1412,15 +1497,45 @@ PERMCHECK: {
                 $terms->{class} = 'website';
             }
 
-            $app->listing(
-                {   no_html => 1,
-                    code    => $hasher,
-                    type    => $source,
-                    params  => $panel_params,
-                    terms   => $terms,
-                    args    => $args,
-                }
-            );
+            if ( $has_group && $source eq 'author' ) {
+                $panel_params->{panel_title}
+                    = $app->translate("Select Groups And Users");
+                $panel_params->{items_prompt}
+                    = $app->translate("Groups/Users Selected");
+                $panel_params->{panel_label}
+                    = $app->translate("User/Group Name");
+                $panel_params->{panel_description}
+                    = $app->translate("Description");
+
+                my $author_terms = {
+                    status => MT::Author::ACTIVE(),
+                    type   => MT::Author::AUTHOR()
+                };
+                require MT::Group;
+                my $group_terms = { status => MT::Group::ACTIVE() };
+                $app->multi_listing(
+                    {   no_html      => 1,
+                        code         => $hasher,
+                        type         => [ 'group', 'author' ],
+                        params       => $panel_params,
+                        author_terms => $author_terms,
+                        group_terms  => $group_terms,
+                        args         => $args,
+                    }
+                );
+            }
+            else {
+
+                $app->listing(
+                    {   no_html => 1,
+                        code    => $hasher,
+                        type    => $source,
+                        params  => $panel_params,
+                        terms   => $terms,
+                        args    => $args,
+                    }
+                );
+            }
             if (!$panel_params->{object_loop}
                 || ( $panel_params->{object_loop}
                     && @{ $panel_params->{object_loop} } < 1 )
@@ -1479,7 +1594,9 @@ sub remove_userpic {
         or return;
 
     my $appuser = $app->user;
-    if ( ( !$appuser->can_manage_users_groups ) && ( $user->id != $appuser->id ) ) {
+    if (   ( !$appuser->can_manage_users_groups )
+        && ( $user->id != $appuser->id ) )
+    {
         return $app->permission_denied();
     }
     if ( $user->userpic_asset_id ) {
@@ -1552,7 +1669,7 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $author = $app->user;
     return 1 if $author->can_manage_users_groups;
-    if ( $id ) {
+    if ($id) {
         return $author->id == $id;
     }
 }
