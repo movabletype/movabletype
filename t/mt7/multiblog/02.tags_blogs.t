@@ -142,14 +142,14 @@ SKIP:
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
 
         my $allowed
             = defined( $block->default_access_allowed )
             ? $block->default_access_allowed
             : $default_access_allowed;
         chomp($allowed);
-        $app->config->DefaultAccessAllowed( $allowed, 1 );
+        $app->config( 'DefaultAccessAllowed', $allowed, 1 );
 
         $app->config->save_config;
 
@@ -200,7 +200,7 @@ $ctx =& $mt->context();
 
 $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog(2);
+$blog = $db->fetch_blog($blog_id);
 $ctx->stash('blog', $blog);
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
@@ -231,14 +231,15 @@ SKIP:
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
+                1 );
 
             my $allowed
                 = defined( $block->default_access_allowed )
                 ? $block->default_access_allowed
                 : $default_access_allowed;
             chomp($allowed);
-            $app->config->DefaultAccessAllowed( $allowed, 1 );
+            $app->config( 'DefaultAccessAllowed', $allowed, 1 );
 
             $app->config->save_config;
 

@@ -6,6 +6,9 @@
 # $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
+    require_once('multiblog.php');
+    multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
     $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content', 'blog', 'blog_id'), common_loop_vars());
     $counter = 0;
 

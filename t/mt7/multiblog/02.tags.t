@@ -44,7 +44,8 @@ $app->model('page')->remove( { id => 24 } );
 
 my $blog_id = 2;
 
-$app->config->DefaultAccessAllowed(0);
+$app->config( 'DefaultAccessAllowed', 0, 1 );
+$app->config->save_config;
 
 my $default_access_overrides = {
 
@@ -79,7 +80,7 @@ SKIP:
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
         $app->config->save_config;
 
         my $tmpl = $app->model('template')->new;
@@ -228,7 +229,8 @@ SKIP:
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $app->config->AccessOverrides( MT::Util::to_json($overrides), 1 );
+            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
+                1 );
             $app->config->save_config;
 
             open2( my $php_in, my $php_out, 'php -q' );
@@ -395,13 +397,6 @@ template-module:2
 === mt:BlogEntryCount
 --- template
 <mt:BlogEntryCount include_blogs="1,2,3" />
---- expected
-0
-
-
-=== mt:BlogPingCount
---- template
-<mt:BlogPingCount include_blogs="1,2,3" />
 --- expected
 0
 

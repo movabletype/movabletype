@@ -9,10 +9,12 @@ global $restricted_include_filenames;
 $restricted_include_filenames = array('mt-config.cgi' => 1, 'passwd' => 1);
 
 function smarty_function_mtinclude($args, &$ctx) {
+    require_once('multiblog.php');
+    multiblog_MTInclude($args, $ctx);
+
     // status: partial
     // parameters: module, file
     // notes: file case needs work -- search through blog site archive path, etc...
-
     // push to ctx->vars
     $ext_args = array();
     while(list ($key, $val) = each($args)) {
