@@ -1055,6 +1055,8 @@ sub do_search_replace {
             }
         }
 
+        my $content_field_types = $app->registry('content_field_types');
+
         my $re;
         if ( ( $search || '' ) ne '' ) {
             $re = eval {qr/$search/};
@@ -1087,15 +1089,50 @@ sub do_search_replace {
                     $text = '' unless defined $text;
                     if ($do_replace) {
                         if ( $text =~ s!$re!$replace!g ) {
-                            $match++;
-                            if ($content_field_id) {
-                                my $data = $obj->data;
-                                $data->{$content_field_id} = $text;
-                                $obj->data($data);
+                            if ( $content_field_id && !$app->param('error') )
+                            {
+                                my $field = $content_type->get_field(
+                                    $content_field_id);
+                                my $ss_validator
+                                    = $content_field_types->{ $field->{type} }
+                                    {ss_validator};
+                                if ($ss_validator) {
+                                    $ss_validator
+                                        = $app->handler_to_coderef(
+                                        $ss_validator);
+                                    unless ($ss_validator) {
+                                        my $error = $app->translate(
+                                            'ss_validator of [_1] field is invalid',
+                                            $field->{type}
+                                        );
+                                        $app->param( 'error', $error );
+                                    }
+                                }
+                                if ($ss_validator) {
+                                    my $error = $ss_validator->( $app, $field,
+                                        $text );
+                                    if ($error) {
+                                        $error = $app->translate(
+                                            '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
+                                            $text,
+                                            $field->{options}{label},
+                                            $content_type->name,
+                                            $obj->id,
+                                            $error,
+                                        );
+                                        $app->param( 'error', $error );
+                                    }
+                                }
+                                unless ( $app->param('error') ) {
+                                    my $data = $obj->data;
+                                    $data->{$content_field_id} = $text;
+                                    $obj->data($data);
+                                }
                             }
-                            else {
+                            elsif ( !$content_field_id ) {
                                 $obj->$col($text);
                             }
+                            $match++;
                         }
                     }
                     else {
@@ -1105,7 +1142,7 @@ sub do_search_replace {
                 }
             }
             if ( $match || $show_all ) {
-                if ( $do_replace && !$show_all ) {
+                if ( $do_replace && !$show_all && !$app->param('error') ) {
                     push @to_save,      $obj;
                     push @to_save_orig, $orig_obj;
                 }
@@ -1122,6 +1159,11 @@ sub do_search_replace {
                 pop @data;
             }
             $matches = @data;
+
+            if ( $do_replace && !$show_all && $app->param('error') ) {
+                @to_save      = ();
+                @to_save_orig = ();
+            }
         }
         else {
             $matches = 0;

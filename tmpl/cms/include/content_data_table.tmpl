@@ -181,5 +181,11 @@
     });
 
     jQuery('#content_data-listing-form').prepend('<input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">">');
+
+  <mt:if name="error">
+    <mt:if name="replace">
+    $('#search-replace-toggle-replace').click();
+    </mt:if>
+  </mt:if>
 </mt:setvarblock>
 

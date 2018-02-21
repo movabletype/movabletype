@@ -321,6 +321,15 @@ function blurDateFields(s) {
   </form>
 </div>
 
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error" escape="html">
+  </mtapp:statusmsg>
+</mt:if>
+
 <mt:if name="replace_count">
     <mt:if name="object_type" like="website|blog">
       <mt:setvar name="rebuild_type" value="$object_type">
@@ -359,15 +368,6 @@ function blurDateFields(s) {
 
 <mt:if name="searched" id="search_results">
 <mt:ignore>Search results will be placed here from app code.</mt:ignore>
-</mt:if>
-
-<mt:if name="error">
-  <mtapp:statusmsg
-     id="generic-error"
-     class="error"
-     can_close="0">
-    <mt:var name="error" escape="html">
-  </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
 
