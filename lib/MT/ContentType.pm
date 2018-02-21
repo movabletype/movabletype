@@ -203,6 +203,7 @@ sub fields {
 my %replaceable_fields = (
     single_line_text => 1,
     multi_line_text  => 1,
+    number           => 1,
     url              => 1,
     embedded_text    => 1,
 );
