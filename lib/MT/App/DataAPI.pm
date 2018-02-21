@@ -1963,7 +1963,7 @@ sub core_endpoints {
 
         # category_set
         {   id          => 'list_category_sets',
-            route       => '/sites/:site_id/category_sets',
+            route       => '/sites/:site_id/categorySets',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::list",
             error_codes => {
@@ -1973,7 +1973,7 @@ sub core_endpoints {
             requires_login => 0,
         },
         {   id          => 'create_category_set',
-            route       => '/sites/:site_id/category_sets',
+            route       => '/sites/:site_id/categorySets',
             resources   => ['category_set'],
             verb        => 'POST',
             version     => 4,
@@ -1983,7 +1983,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'get_category_set',
-            route       => '/sites/:site_id/category_sets/:category_set_id',
+            route       => '/sites/:site_id/categorySets/:category_set_id',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::get",
             error_codes => {
@@ -1993,7 +1993,7 @@ sub core_endpoints {
             requires_login => 0,
         },
         {   id          => 'update_category_set',
-            route       => '/sites/:site_id/category_sets/:category_set_id',
+            route       => '/sites/:site_id/categorySets/:category_set_id',
             resources   => ['category_set'],
             verb        => 'PUT',
             version     => 4,
@@ -2003,7 +2003,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'delete_category_set',
-            route       => '/sites/:site_id/category_sets/:category_set_id',
+            route       => '/sites/:site_id/categorySets/:category_set_id',
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::delete",
@@ -2015,7 +2015,7 @@ sub core_endpoints {
         # category for category_set
         {   id => 'list_categories_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories',
+                '/sites/:site_id/categorySets/:category_set_id/categories',
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::Category::list_for_category_set",
@@ -2034,7 +2034,7 @@ sub core_endpoints {
         },
         {   id => 'list_parent_categories_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/parents',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/parents',
             verb    => 'GET',
             version => 4,
             handler => "${pkg}v4::Category::list_parents_for_category_set",
@@ -2046,7 +2046,7 @@ sub core_endpoints {
         },
         {   id => 'list_sibling_categories_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/siblings',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/siblings',
             verb    => 'GET',
             version => 4,
             handler => "${pkg}v4::Category::list_siblings_for_category_set",
@@ -2065,7 +2065,7 @@ sub core_endpoints {
         },
         {   id => 'list_child_categories_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id/children',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/children',
             verb    => 'GET',
             version => 4,
             handler => "${pkg}v4::Category::list_children_for_category_set",
@@ -2077,7 +2077,7 @@ sub core_endpoints {
         },
         {   id => 'create_category_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories',
+                '/sites/:site_id/categorySets/:category_set_id/categories',
             resources   => ['category'],
             verb        => 'POST',
             version     => 4,
@@ -2089,7 +2089,7 @@ sub core_endpoints {
         },
         {   id => 'get_category_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::Category::get_for_category_set",
@@ -2101,7 +2101,7 @@ sub core_endpoints {
         },
         {   id => 'update_category_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
             resources   => ['category'],
             verb        => 'PUT',
             version     => 4,
@@ -2113,7 +2113,7 @@ sub core_endpoints {
         },
         {   id => 'delete_category_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::Category::delete_for_category_set",
@@ -2124,7 +2124,7 @@ sub core_endpoints {
         },
         {   id => 'permutate_categories_for_category_set',
             route =>
-                '/sites/:site_id/category_sets/:category_set_id/categories/permutate',
+                '/sites/:site_id/categorySets/:category_set_id/categories/permutate',
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Category::permutate_for_category_set",
@@ -2136,7 +2136,7 @@ sub core_endpoints {
 
         # content_type
         {   id             => 'list_content_types',
-            route          => '/sites/:site_id/content_types',
+            route          => '/sites/:site_id/contentTypes',
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentType::list",
@@ -2153,7 +2153,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'create_content_type',
-            route       => '/sites/:site_id/content_types',
+            route       => '/sites/:site_id/contentTypes',
             resources   => ['content_type'],
             verb        => 'POST',
             version     => 4,
@@ -2163,7 +2163,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'get_content_type',
-            route       => '/sites/:site_id/content_types/:content_type_id',
+            route       => '/sites/:site_id/contentTypes/:content_type_id',
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentType::get",
@@ -2173,7 +2173,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'update_content_type',
-            route       => '/sites/:site_id/content_types/:content_type_id',
+            route       => '/sites/:site_id/contentTypes/:content_type_id',
             resources   => ['content_type'],
             verb        => 'PUT',
             version     => 4,
@@ -2183,7 +2183,7 @@ sub core_endpoints {
             },
         },
         {   id          => 'delete_content_type',
-            route       => '/sites/:site_id/content_types/:content_type_id',
+            route       => '/sites/:site_id/contentTypes/:content_type_id',
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentType::delete",
@@ -2195,7 +2195,7 @@ sub core_endpoints {
         # content_field
         {   id => 'list_content_fields',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields',
+                '/sites/:site_id/contentTypes/:content_type_id/fields',
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentField::list",
@@ -2213,7 +2213,7 @@ sub core_endpoints {
         },
         {   id => 'create_content_field',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields',
+                '/sites/:site_id/contentTypes/:content_type_id/fields',
             resources   => ['content_field'],
             verb        => 'POST',
             version     => 4,
@@ -2224,7 +2224,7 @@ sub core_endpoints {
         },
         {   id => 'get_content_field',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentField::get",
@@ -2235,7 +2235,7 @@ sub core_endpoints {
         },
         {   id => 'update_content_field',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
             resources   => ['content_field'],
             verb        => 'PUT',
             version     => 4,
@@ -2246,7 +2246,7 @@ sub core_endpoints {
         },
         {   id => 'delete_content_field',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields/:content_field_id',
+                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentField::delete",
@@ -2256,7 +2256,7 @@ sub core_endpoints {
         },
         {   id => 'permutate_content_fields',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_fields/permutate',
+                '/sites/:site_id/contentTypes/:content_type_id/fields/permutate',
             verb        => 'POST',
             handler     => "${pkg}v4::ContentField::permutate",
             error_codes => {
@@ -2267,7 +2267,7 @@ sub core_endpoints {
         # content_data
         {   id => 'list_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data',
+                '/sites/:site_id/contentTypes/:content_type_id/data',
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentData::list",
@@ -2287,7 +2287,7 @@ sub core_endpoints {
         },
         {   id => 'create_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data',
+                '/sites/:site_id/contentTypes/:content_type_id/data',
             resources   => ['content_data'],
             verb        => 'POST',
             version     => 4,
@@ -2298,7 +2298,7 @@ sub core_endpoints {
         },
         {   id => 'get_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentData::get",
@@ -2310,7 +2310,7 @@ sub core_endpoints {
         },
         {   id => 'update_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
             resources   => ['content_data'],
             verb        => 'PUT',
             version     => 4,
@@ -2321,7 +2321,7 @@ sub core_endpoints {
         },
         {   id => 'delete_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id',
+                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentData::delete",
@@ -2331,7 +2331,7 @@ sub core_endpoints {
         },
         {   id => 'preview_content_data_by_id',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data/:content_data_id/preview',
+                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id/preview',
             resources => ['content_data'],
             verb      => 'POST',
             version   => 4,
@@ -2341,7 +2341,7 @@ sub core_endpoints {
         },
         {   id => 'preview_content_data',
             route =>
-                '/sites/:site_id/content_types/:content_type_id/content_data/preview',
+                '/sites/:site_id/contentTypes/:content_type_id/data/preview',
             resources => ['content_data'],
             verb      => 'POST',
             version   => 4,
@@ -2350,7 +2350,7 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to preview content data.', },
         },
         {   id      => 'publish_content_data',
-            route   => '/publish/content_data',
+            route   => '/publish/contentData',
             verb    => 'GET',
             version => 4,
             handler => "${pkg}v4::Publish::content_data",
