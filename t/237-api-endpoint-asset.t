@@ -320,7 +320,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    4, 'The number of asset (blog_id=1) is 4.' );
+                    7, 'The number of asset (blog_id=1) is 7.' );
             },
         },
         {    # Website.
@@ -370,7 +370,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    3, 'The number of image asset is 3.' );
+                    6, 'The number of image asset is 6.' );
             },
         },
         {    # In order of created_by.
@@ -601,13 +601,15 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(1);
+                my $asset1 = $app->model('asset')->load(7);
+                my $asset2 = $app->model('asset')->load(6);
+                my $asset3 = $app->model('asset')->load(5);
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 3,
+                    items => MT::DataAPI::Resource->from_object( [$asset1, $asset2, $asset3] )
                 };
             },
         },
@@ -699,13 +701,15 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(2);
+                my $asset1 = $app->model('asset')->load(7);
+                my $asset2 = $app->model('asset')->load(6);
+                my $asset3 = $app->model('asset')->load(5);
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 3,
+                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
                 };
                 return $res;
             },
@@ -800,13 +804,16 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(1);
+                my $asset1 = $app->model('asset')->load(1);
+                my $asset2 = $app->model('asset')->load(7);
+                my $asset3 = $app->model('asset')->load(6);
+                my $asset4 = $app->model('asset')->load(5);
                 no warnings 'redefine';
                 local *boolean::true  = sub {'true'};
                 local *boolean::false = sub {'false'};
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 4,
+                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
                 };
                 return $res;
             },
@@ -1220,7 +1227,7 @@ sub suite {
             code   => 404,
         },
         {    # Non-existent asset.
-            path   => '/v2/sites/0/assets/10',
+            path   => '/v2/sites/0/assets/15',
             method => 'DELETE',
             code   => 404,
         },

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,9 +26,6 @@ sub fields {
             from_object => sub { },          # Display nothing.
             to_object   => sub {
                 my ( $hash, $obj ) = @_;
-                use CGI::Carp;
-                use Data::Dumper;
-                print STDERR Dumper($hash);
                 my $pass = $hash->{apiPassword};
                 if ( length $pass ) {
                     $obj->api_password($pass);

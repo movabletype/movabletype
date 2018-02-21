@@ -18,36 +18,33 @@ use Test::More;
 my $website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro Ogawa',
 );
 
@@ -55,35 +52,35 @@ my $admin = MT::Author->load(1);
 
 # Role
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
 
 my $edit_tags = MT::Test::Permission->make_role(
-   name  => 'Edit Tags',
-   permissions => "'edit_tags'",
+    name        => 'Edit Tags',
+    permissions => "'edit_tags'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+my $designer = MT::Role->load( { name => MT->translate('Designer') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $create_post => $blog );
-MT::Association->link( $ichikawa => $edit_tags => $blog );
-MT::Association->link( $ukawa => $create_post => $second_blog );
-MT::Association->link( $egawa => $edit_tags => $second_blog );
-MT::Association->link( $ogawa => $designer => $blog );
+MT::Association->link( $aikawa   => $create_post => $blog );
+MT::Association->link( $ichikawa => $edit_tags   => $blog );
+MT::Association->link( $ukawa    => $create_post => $second_blog );
+MT::Association->link( $egawa    => $edit_tags   => $second_blog );
+MT::Association->link( $ogawa    => $designer    => $blog );
 
 # Entry
 my $entry = MT::Test::Permission->make_entry(
-    blog_id        => $blog->id,
-    author_id      => $ichikawa->id,
+    blog_id   => $blog->id,
+    author_id => $ichikawa->id,
 );
 $entry->tags( 'alpha', 'beta' );
 $entry->save;
 
 # Tag
 require MT::Tag;
-my $tag = MT::Tag->load({ name => 'alpha' });
+my $tag = MT::Tag->load( { name => 'alpha' } );
 
 # Run
 my ( $app, $out );
@@ -99,7 +96,7 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
+    ok( $out,                          "Request: js_recent_entries_for_tag" );
     ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by admin" );
 
     $app = _run_app(
@@ -113,7 +110,8 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out !~ m!permission denied!i, "js_recent_entries_for_tag by permitted user" );
+    ok( $out !~ m!permission denied!i,
+        "js_recent_entries_for_tag by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -125,8 +123,8 @@ subtest 'mode = js_recent_entries_for_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_recent_entries_for_tag" );
-    ok( $out =~ m!permission denied!i, "js_recent_entries_for_tag by other blog" );
+    ok( $out,                     "Request: js_recent_entries_for_tag" );
+    ok( $out =~ m!permission=1!i, "js_recent_entries_for_tag by other blog" );
 
     done_testing();
 };
@@ -142,7 +140,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out !~ m!permission denied!i, "js_tag_check by admin" );
 
     $app = _run_app(
@@ -155,7 +153,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out !~ m!permission denied!i, "js_tag_check by permitted user" );
 
     $app = _run_app(
@@ -168,8 +166,8 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
-    ok( $out =~ m!permission denied!i, "js_tag_check by other blog" );
+    ok( $out,                     "Request: js_tag_check" );
+    ok( $out =~ m!permission=1!i, "js_tag_check by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -181,7 +179,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out =~ m!permission denied!i, "js_tag_check by other permission" );
 
     done_testing();
@@ -197,7 +195,7 @@ subtest 'mode = js_tag_list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
+    ok( $out,                          "Request: js_tag_list" );
     ok( $out !~ m!permission denied!i, "js_tag_list by admin" );
 
     $app = _run_app(
@@ -209,7 +207,7 @@ subtest 'mode = js_tag_list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
+    ok( $out,                          "Request: js_tag_list" );
     ok( $out !~ m!permission denied!i, "js_tag_list by permitted user" );
 
     $app = _run_app(
@@ -221,8 +219,8 @@ subtest 'mode = js_tag_list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
-    ok( $out =~ m!permission denied!i, "js_tag_list by other blog" );
+    ok( $out,                    "Request: js_tag_list" );
+    ok( $out =~ m!permission=!i, "js_tag_list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -233,7 +231,7 @@ subtest 'mode = js_tag_list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
+    ok( $out,                          "Request: js_tag_list" );
     ok( $out =~ m!permission denied!i, "js_tag_list by other permission" );
 
     done_testing();
@@ -250,7 +248,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
@@ -263,7 +261,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -276,7 +274,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
@@ -289,7 +287,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
@@ -307,7 +305,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out !~ m!permission=1!i, "rename_tag by admin" );
 
     $app = _run_app(
@@ -321,7 +319,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out !~ m!permission=1!i, "rename_tag by permitted user" );
 
     $app = _run_app(
@@ -335,7 +333,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out =~ m!permission=1!i, "rename_tag by other blog" );
 
     $app = _run_app(
@@ -349,7 +347,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out =~ m!permission=1!i, "rename_tag by other permission" );
 
     done_testing();
@@ -366,7 +364,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
@@ -379,7 +377,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 
     done_testing();
@@ -397,7 +395,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -411,7 +409,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 
     done_testing();
@@ -430,7 +428,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -445,7 +443,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -460,7 +458,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -475,7 +473,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     done_testing();

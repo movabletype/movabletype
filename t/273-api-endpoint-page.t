@@ -208,7 +208,7 @@ sub suite {
         },
 
         # list_pages_for_asset - normal tests.
-        {   path      => '/v2/sites/1/assets/2/pages',
+        {   path      => '/v2/sites/1/assets/7/pages',
             method    => 'GET',
             callbacks => [
                 {   name =>

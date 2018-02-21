@@ -31,6 +31,7 @@ my $mel   = MT::Author->load( { name => 'Melody' } );
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok( $mt, 'MT' );
+$mt->request('__restore_in_progress', 1);
 
 my $backup_data = '';
 my $printer = sub { $backup_data .= $_[0] };

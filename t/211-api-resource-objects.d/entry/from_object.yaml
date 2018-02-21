@@ -376,16 +376,38 @@
         updatable: 1
     assets:
       -
-        id: 1
+        id: 5
         description: This is a test photo.
         label: Image photo
-        filename: test.jpg
+        filename: test_1.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test.jpg
+        url: http://narnia.na/nana/images/test_1.jpg
+      -
+        id: 6
+        description: This is a test photo.
+        label: Image photo
+        filename: test_2.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_2.jpg
+      -
+        id: 7
+        description: This is a test photo.
+        label: Image photo
+        filename: test_3.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_3.jpg
     tags:
       - grandpa
       - rain
@@ -428,16 +450,38 @@
     trackbacks: []
     assets:
       -
-        id: 1
+        id: 5
         description: This is a test photo.
         label: Image photo
-        filename: test.jpg
+        filename: test_1.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test.jpg
+        url: http://narnia.na/nana/images/test_1.jpg
+      -
+        id: 6
+        description: This is a test photo.
+        label: Image photo
+        filename: test_2.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_2.jpg
+      -
+        id: 7
+        description: This is a test photo.
+        label: Image photo
+        filename: test_3.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_3.jpg
     tags:
       - grandpa
       - rain

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -147,7 +147,7 @@ sub list_props {
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
         },
-        blog_id         => {
+        blog_id => {
             auto            => 1,
             col             => 'blog_id',
             display         => 'none',

@@ -212,7 +212,7 @@ subtest 'mode = approve_item' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out =~ m!permission to approve this comment!i,
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
         "approve_item by other blog" );
 
     $comment->visible(0);
@@ -229,7 +229,7 @@ subtest 'mode = approve_item' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: approve_item" );
-    ok( $out =~ m!permission to approve this comment!i,
+    ok( $out =~ m!You do not have permission to approve this comment.!i,
         "approve_item by other permission" );
 
     done_testing();
@@ -274,8 +274,10 @@ subtest 'mode = ban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other blog (SC0)" );
+    ok( $out, "Request: ban_commenter" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "ban_commenter by other blog (SC0)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -288,7 +290,7 @@ subtest 'mode = ban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!Permission denied.!i,
         "ban_commenter by other permission (SC0)" );
 
     MT->config( 'SingleCommunity', 1, 1 );
@@ -340,8 +342,10 @@ subtest 'mode = ban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i, "ban_commenter by other blog (SC1)" );
+    ok( $out, "Request: ban_commenter" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "ban_commenter by other blog (SC1)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -354,7 +358,7 @@ subtest 'mode = ban_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: ban_commenter" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!Permission denied.!i,
         "ban_commenter by other permission (SC1)" );
 
     if ($perm) {
@@ -423,8 +427,9 @@ subtest 'mode = dialog_post_comment' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_post_comment" );
-    ok( $out =~ m!permission=1!i, "dialog_post_comment by other permission" );
+    ok( $out, "Request: dialog_post_comment" );
+    ok( $out =~ m!An error occurred!i,
+        "dialog_post_comment by other permission" );
 
     done_testing();
 };
@@ -618,8 +623,8 @@ subtest 'mode = empty_junk' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: empty_junk" );
-    ok( $out =~ m!permission=1!i, "empty_junk by other permission" );
+    ok( $out,                      "Request: empty_junk" );
+    ok( $out =~ m!permission=1!i,, "empty_junk by other permission" );
 
     done_testing();
 };
@@ -937,8 +942,8 @@ subtest 'mode = reply' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: reply" );
-    ok( $out =~ m!permission=1!i, "reply by other permission" );
+    ok( $out,                           "Request: reply" );
+    ok( $out =~ m!Permission denied.!i, "reply by other permission" );
 
     done_testing();
 };
@@ -1010,7 +1015,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!permission=1!i,
+    ok( $out =~ m!permission=1!i,
         "reply_preview by other blog (manage_feedback)" );
 
     $app = _run_app(
@@ -1024,7 +1029,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!permission=1!i,
+    ok( $out =~ m!permission=1!i,
         "reply_preview by other blog (manage_pages)" );
 
     $app = _run_app(
@@ -1038,7 +1043,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: reply_preview" );
-    ok( $out !~ m!permission=1!i,
+    ok( $out =~ m!permission=1!i,
         "reply_preview by other blog (publish_post)" );
 
     $app = _run_app(
@@ -1052,7 +1057,7 @@ subtest 'mode = reply_preview' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: reply_preview" );
-    ok( $out !~ m!permission=1!i, "reply_preview by other permission" );
+    ok( $out =~ m!permission=1!i, "reply_preview by other permission" );
 
     done_testing();
 };
@@ -1100,8 +1105,10 @@ subtest 'mode = save_commenter_perm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: save_commenter_perm" );
-    ok( $out =~ m!Permission denied!i, "save_commenter_perm by other blog" );
+    ok( $out, "Request: save_commenter_perm" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "save_commenter_perm by other blog"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1115,7 +1122,7 @@ subtest 'mode = save_commenter_perm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_commenter_perm" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!Permission denied.!i,
         "save_commenter_perm by other permission" );
 
     MT->config( 'SingleCommunity', 1, 1 );
@@ -1170,8 +1177,10 @@ subtest 'mode = save_commenter_perm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: save_commenter_perm" );
-    ok( $out =~ m!Permission denied!i, "save_commenter_perm by other blog" );
+    ok( $out, "Request: save_commenter_perm" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "save_commenter_perm by other blog"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1185,7 +1194,7 @@ subtest 'mode = save_commenter_perm' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: save_commenter_perm" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!Permission denied.!i,
         "save_commenter_perm by other permission" );
 
     if ($perm) {
@@ -1237,8 +1246,9 @@ subtest 'mode = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i,
-        "trust_commenter by other blog (SC0)" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "trust_commenter by other blog (SC0)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1304,8 +1314,9 @@ subtest 'mode = trust_commenter' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: trust_commenter" );
-    ok( $out =~ m!Permission denied!i,
-        "trust_commenter by other blog (SC1)" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "trust_commenter by other blog (SC1)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1378,7 +1389,7 @@ subtest 'mode = unapprove_item' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out =~ m!permission to approve this comment!i,
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
         "unapprove_item by other blog" );
 
     $comment->visible(1);
@@ -1395,9 +1406,8 @@ subtest 'mode = unapprove_item' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: unapprove_item" );
-    ok( $out =~ m!permission to approve this comment!i,
-        "unapprove_item by other permission"
-    );
+    ok( $out =~ m!You do not have permission to approve this comment.!i,
+        "unapprove_item by other permission" );
 
     done_testing();
 };
@@ -1821,8 +1831,10 @@ subtest 'action = unapprove_comment' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: unapprove_comment" );
-    ok( $out =~ m!not implemented!i, "unapprove_comment by other blog" );
+    ok( $out, "Request: unapprove_comment" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "unapprove_comment by other blog"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1909,8 +1921,10 @@ subtest 'action = ban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: ban_commenter" );
-    ok( $out =~ m!not implemented!i, "ban_commenter by other blog (SC0)" );
+    ok( $out, "Request: ban_commenter" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "ban_commenter by other blog (SC0)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2000,8 +2014,10 @@ subtest 'action = ban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: ban_commenter" );
-    ok( $out !~ m!not implemented!i, "ban_commenter by other blog (SC1)" );
+    ok( $out, "Request: ban_commenter" );
+    ok( $out !~ m!__mode=dashboard&permission=1!i,
+        "ban_commenter by other blog (SC1)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2102,8 +2118,10 @@ subtest 'action = unban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: unban_commenter" );
-    ok( $out =~ m!not implemented!i, "unban_commenter by other blog (SC0)" );
+    ok( $out, "Request: unban_commenter" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "unban_commenter by other blog (SC0)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2192,8 +2210,8 @@ subtest 'action = unban_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: unban_commenter" );
-    ok( $out !~ m!not implemented!i, "unban_commenter by other blog (SC1)" );
+    ok( $out,                     "Request: unban_commenter" );
+    ok( $out !~ m!permission=1!i, "unban_commenter by other blog (SC1)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2289,8 +2307,10 @@ subtest 'action = trust_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: trust_commenter" );
-    ok( $out =~ m!not implemented!i, "trust_commenter by other blog (SC0)" );
+    ok( $out, "Request: trust_commenter" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "trust_commenter by other blog (SC0)"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2476,9 +2496,8 @@ subtest 'action = untrust_commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: untrust_commenter" );
-    ok( $out =~ m!not implemented!i,
-        "untrust_commenter by other blog (SC0)" );
+    ok( $out,                     "Request: untrust_commenter" );
+    ok( $out =~ m!permission=1!i, "untrust_commenter by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2664,8 +2683,9 @@ subtest 'action = untrust' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: untrust" );
-    ok( $out =~ m!not implemented!i, "untrust by other blog (SC0)" );
+    ok( $out, "Request: untrust" );
+    ok( $out =~ m!__mode=dashboard&permission=1!i,
+        "untrust by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2852,8 +2872,8 @@ subtest 'action = unban' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: unban" );
-    ok( $out =~ m!not implemented!i, "unban by other blog (SC0)" );
+    ok( $out,                     "Request: unban" );
+    ok( $out =~ m!permission=1!i, "unban by other blog (SC0)" );
 
     $app = _run_app(
         'MT::App::CMS',

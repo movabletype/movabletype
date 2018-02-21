@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -945,7 +945,15 @@ sub save {
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
     if ($privs_found) {
-        my $perm = $auth->permissions(0);
+        my $perm = MT->model('permission')->load({
+            blog_id => 0,
+            author_id => $auth->id,
+        });
+        if ( !$perm ) {
+            $perm = MT->model('permission')->new unless $perm;
+            $perm->author_id( $auth->id );
+            $perm->blog_id( 0 );
+        }
         $perm->permissions($privs);
         $perm->save
             or return $auth->error(
@@ -1153,7 +1161,7 @@ sub permissions {
             }
         }
     }
-    unless ($perm) {
+    if ( !$perm or ( $perm and !$perm->permissions ) ) {
         $perm = new MT::Permission;
         $perm->author_id( $author->id );
         $perm->clear_full_permissions;
@@ -1596,6 +1604,43 @@ sub set_status_by_text {
     }
     else {
         $self->status( INACTIVE() );
+    }
+}
+
+sub rebuild_favorite_sites {
+    my $user = shift;
+
+    # In restoring, nothing to do.
+    my $app = MT->instance;
+    return if $app->request('__restore_in_progress');
+
+    return
+        if $user->is_superuser
+        || $user->permissions(0)->can_do('edit_templates');
+
+    # Favorite blogs
+    my @parents;
+    my @current_blog = @{ $user->favorite_blogs || [] };
+    if (@current_blog) {
+        @current_blog = grep { $user->has_perm($_) } @current_blog;
+        foreach my $blog_id (@current_blog) {
+            if ( my $blog = MT->model('blog')->load($blog_id) ) {
+                push @parents, $blog->website->id;
+            }
+        }
+        $user->favorite_blogs( \@current_blog );
+        $user->save;
+    }
+
+    # Favorite websites
+    my @current_website = @{ $user->favorite_websites || [] };
+    if (@current_website) {
+        @current_website = grep { $user->has_perm($_) } @current_website;
+    }
+    push @current_website, @parents if @parents;
+    if (@current_website) {
+        $user->favorite_websites( \@current_website );
+        $user->save;
     }
 }
 

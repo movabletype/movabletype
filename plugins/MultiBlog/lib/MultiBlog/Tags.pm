@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -195,6 +195,9 @@ sub context {
             'multiblog_exclude_blog_ids',
             join( ',', $args->{exclude_blogs} )
         ) if $args->{exclude_blogs};
+        $ctx->stash( 'multiblog_include_with_website',
+            $args->{include_with_website} )
+            if $args->{include_with_website};
     }
 
     # Evaluate container contents and return output

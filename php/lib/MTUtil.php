@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1395,9 +1395,9 @@ function asset_path($path, $blog) {
     $site_path = preg_replace('/\/$/', '', $site_path);
     $path = preg_replace('/^%r/', $site_path, $path);
 
-    $static_file_path = support_directory_path();
-    $static_file_path = preg_replace('/\/$/', '', $static_file_path);
-    $path = preg_replace('/^%s/', $static_file_path, $path);
+    $support_directory_path = support_directory_path();
+    $support_directory_path = preg_replace('/\/$/', '', $support_directory_path);
+    $path = preg_replace('/^%s/', $support_directory_path, $path);
 
     $archive_path = $blog->archive_path();
     if ($archive_path) {

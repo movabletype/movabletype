@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.3.6';
+    $version = '6.3.7';
 }
 
 my ( $mt, $LH );
@@ -803,7 +803,8 @@ my $cwd = '';
     eval { $cwd = Cwd::getcwd() };
     if ( $bad || $@ ) {
         eval { $cwd = Cwd::cwd() };
-        if ( $@ && $@ !~ /Insecure \$ENV{PATH}/ ) {
+        my $permitted_error = 'Insecure ' . $ENV{PATH};
+        if ( $@ && $@ !~ /$permitted_error/ ) {
             die $@;
         }
     }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,7 +19,6 @@ sub can_view {
 
     return 1 if $entry->status == MT::Entry::RELEASE() && $obj->is_published;
 
-    my $perms = $app->permissions;
     if ( $entry->author_id == $app->user->id ) {
         return $app->can_do('open_own_entry_comment_edit_screen');
     }

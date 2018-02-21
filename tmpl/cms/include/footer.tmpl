@@ -21,7 +21,8 @@
     </div>
   </mt:if>
 
-  <mt:if name="author_name">
+  <$mt:var name="author_name" count_characters="1" setvar="author_name_length" $>
+  <mt:if name="author_name_length">
     <ul id="footer-nav" class="inline-nav">
       <li><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
       <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
