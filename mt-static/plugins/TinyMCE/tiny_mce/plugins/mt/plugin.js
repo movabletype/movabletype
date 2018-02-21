@@ -269,7 +269,12 @@
                     else {
                         $(this).hide();
                     }
+                    // common_buttons
+                    if( i == 0 ){
+                        $(this).addClass('float-right');
+                    }
                 });
+                
             }
 
             function openDialog(mode, param) {
