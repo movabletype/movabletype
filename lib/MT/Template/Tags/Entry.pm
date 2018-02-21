@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -515,7 +515,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @cat_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
@@ -588,7 +589,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @tag_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on(
                         'object_id',
                         {   tag_id            => \@tag_ids,

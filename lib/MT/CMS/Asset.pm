@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,8 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
     my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
     if ($id) {
         my $asset_class = $app->model('asset');
         $param->{asset}        = $obj;
@@ -204,8 +205,8 @@ sub dialog_list_asset {
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT->model('tag')->load( { name => '@userpic' },
-            { binary => { name => 1 } } );
+        my $tag = MT->model('tag')
+            ->load( { name => '@userpic' }, { binary => { name => 1 } } );
         if ($tag) {
             require MT::ObjectTag;
             $args{'join'} = MT::ObjectTag->join_on(
@@ -335,15 +336,10 @@ sub insert {
     my $file_ext_changes = $app->param('changed_file_ext');
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
-    my $extension_message;
-    if ( $ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to );
-    } elsif ( !$ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension '[_1]' added",
-        $ext_to );
-    }
-
+    my $extension_message
+        = $app->translate( "Extension changed from [_1] to [_2]",
+        $ext_from, $ext_to )
+        if ( $ext_from && $ext_to );
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
@@ -584,14 +580,10 @@ sub js_upload_file {
     my $file_ext_changes = $app->param('changed_file_ext');
     my ( $ext_from, $ext_to ) = split( ",", $file_ext_changes )
         if $file_ext_changes;
-    my $extension_message;
-    if ( $ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension changed from [_1] to [_2]",
-        $ext_from, $ext_to );
-    } elsif ( !$ext_from && $ext_to ){
-        $extension_message = $app->translate( "Extension '[_1]' added",
-        $ext_to );
-    }
+    my $extension_message
+        = $app->translate( "Extension changed from [_1] to [_2]",
+        $ext_from, $ext_to )
+        if ( $ext_from && $ext_to );
 
     my $metadata = {
         id        => $asset->id,
@@ -837,7 +829,6 @@ sub complete_upload {
 
     $asset->on_upload( \%param );
 
-    my $perms = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('access_to_asset_list');
 
@@ -1086,7 +1077,6 @@ sub build_asset_table {
     my (%args) = @_;
 
     my $asset_class = $app->model('asset') or return;
-    my $perms       = $app->permissions;
     my $list_pref   = $app->list_pref('asset');
     my $limit       = $args{limit};
     my $param       = $args{param} || {};
@@ -1178,7 +1168,7 @@ sub _set_start_upload_params_compat {
             unless $perms->can_do('upload');
 
         my $blog_id = $app->param('blog_id');
-        my $blog = MT->model('blog')->load($blog_id)
+        my $blog    = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1412,6 +1402,7 @@ sub _make_upload_destinations {
 }
 
 sub _set_start_upload_params {
+
     my $app = shift;
     my ($param) = @_;
 
@@ -1421,36 +1412,38 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        my $blog = MT->model('blog')->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        if ( $blog_id ) {
+            my $blog    = MT->model('blog')->load($blog_id)
+                or return $app->error(
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
-        # Make a list of upload destination
-        my @dest_root = _make_upload_destinations( $app, $blog, 1 );
-        $param->{destination_loop} = \@dest_root;
+            # Make a list of upload destination
+            my @dest_root = _make_upload_destinations( $app, $blog, 1 );
+            $param->{destination_loop} = \@dest_root;
 
-        # Set default upload options
-        $param->{allow_to_change_at_upload}
-            = defined $blog->allow_to_change_at_upload
-            ? $blog->allow_to_change_at_upload
-            : 1;
-        if ( !$param->{allow_to_change_at_upload} ) {
-            foreach my $opt ( grep { $_->{selected} } @dest_root ) {
-                $param->{upload_destination_label} = $opt->{label};
-                $param->{upload_destination_value} = $opt->{path};
+            # Set default upload options
+            $param->{allow_to_change_at_upload}
+                = defined $blog->allow_to_change_at_upload
+                ? $blog->allow_to_change_at_upload
+                : 1;
+            if ( !$param->{allow_to_change_at_upload} ) {
+                foreach my $opt ( grep { $_->{selected} } @dest_root ) {
+                    $param->{upload_destination_label} = $opt->{label};
+                    $param->{upload_destination_value} = $opt->{path};
+                }
             }
+            $param->{destination}         = $blog->upload_destination;
+            $param->{extra_path}          = $blog->extra_path;
+            $param->{operation_if_exists} = $blog->operation_if_exists;
+            $param->{normalize_orientation}
+                = defined $blog->normalize_orientation
+                ? $blog->normalize_orientation
+                : 1;
+            $param->{auto_rename_non_ascii}
+                = defined $blog->auto_rename_non_ascii
+                ? $blog->auto_rename_non_ascii
+                : 1;
         }
-        $param->{destination}         = $blog->upload_destination;
-        $param->{extra_path}          = $blog->extra_path;
-        $param->{operation_if_exists} = $blog->operation_if_exists;
-        $param->{normalize_orientation}
-            = defined $blog->normalize_orientation
-            ? $blog->normalize_orientation
-            : 1;
-        $param->{auto_rename_non_ascii}
-            = defined $blog->auto_rename_non_ascii
-            ? $blog->auto_rename_non_ascii
-            : 1;
     }
     else {
         $param->{normalize_orientation} = 1;
@@ -1563,14 +1556,15 @@ sub _upload_file_compat {
                     = (
                     File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
                     )[2];
-                if( $basename eq $ext_old ) {
-                    $basename .= '.'  . $ext_new;
-                    $app->param( "changed_file_ext", ",$ext_new" );
-                } elsif (   $ext_new ne lc($ext_old)
+                if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
-                    $basename =~ s/$ext_old$/$ext_new/;
+                    if( $basename eq $ext_old ) {
+                        $basename .= '.'  . $ext_new;
+                    } else {
+                        $basename =~ s/$ext_old$/$ext_new/;
+                    }
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
             }
@@ -2099,14 +2093,15 @@ sub _upload_file {
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
 
-        if ( $basename eq $ext_old ) {
-            $basename .= '.' . $ext_new;
-            $app->param( "changed_file_ext", ",$ext_new" );
-        } elsif (   $ext_new ne lc($ext_old)
+        if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
-            $basename =~ s/$ext_old$/$ext_new/;
+            if( $basename eq $ext_old ){
+                $basename .= '.' . $ext_new;
+            } else {
+                $basename =~ s/$ext_old$/$ext_new/;
+            }
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
     }

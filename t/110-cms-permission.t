@@ -46,8 +46,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new asset" );
-ok( $out =~ m!__mode=dashboard&permission=1!i, "Create a new Asset: result" );
+ok( $out,                     "Create a new asset" );
+ok( $out =~ m!permission=1!i, "Create a new Asset: result" );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
@@ -62,8 +62,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete asset" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete asset: result" );
+ok( $out,                     "Delete asset" );
+ok( $out =~ m/permission=1/i, "Delete asset: result" );
 
 # Update an asset
 # __mode=save&_type=asset&blog_id=1&id=1
@@ -78,8 +78,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an asset" );
-ok( $out =~ m!__mode=dashboard&permission=1!i, "Update an asset: result" );
+ok( $out,                     "Update an asset" );
+ok( $out =~ m!permission=1!i, "Update an asset: result" );
 
 # Create a new Author
 # __mode=save&_type=author&name=new_author&type=1
@@ -94,9 +94,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new author" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Author: result" );
+ok( $out,                     "Create a new author" );
+ok( $out =~ m/permission=1/i, "Create a new Author: result" );
 
 # Delete Author
 # __mode=delete&_type=author&id=1
@@ -110,8 +109,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete author" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete author: result" );
+ok( $out,                     "Delete author" );
+ok( $out =~ m/permission=1/i, "Delete author: result" );
 
 # Create a new Association
 # __mode=save&_type=association&type=1
@@ -140,8 +139,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete association" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete association: result" );
+ok( $out,                     "Delete association" );
+ok( $out =~ m/permission=1/i, "Delete association: result" );
 
 # Create a new Blog
 # __mode=save&_type=blog&name=BlogName
@@ -155,8 +154,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new blog" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Blog: result" );
+ok( $out,                     "Create a new blog" );
+ok( $out =~ m/permission=1/i, "Create a new Blog: result" );
 
 # Delete Blog
 # __mode=delete&_type=blog&id=1
@@ -170,8 +169,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete blog" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete blog: result" );
+ok( $out,                     "Delete blog" );
+ok( $out =~ m/permission=1/i, "Delete blog: result" );
 
 # Create a new Website
 # __mode=save&_type=website&name=WebsiteName
@@ -185,9 +184,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new website" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Website: result" );
+ok( $out,                     "Create a new website" );
+ok( $out =~ m/permission=1/i, "Create a new Website: result" );
 
 # Delete Website
 # __mode=delete&_type=website&id=1
@@ -201,8 +199,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete website" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete website: result" );
+ok( $out,                     "Delete website" );
+ok( $out =~ m/permission=1/i, "Delete website: result" );
 
 # Create a new Category
 # __mode=save&_type=category&label=CategoryName&blog_id=1
@@ -233,8 +231,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete category" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete category: result" );
+ok( $out,                     "Delete category" );
+ok( $out =~ m/permission=1/i, "Delete category: result" );
 
 # Create a new Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -265,8 +263,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete folder" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete folder: result" );
+ok( $out,                     "Delete folder" );
+ok( $out =~ m/permission=1/i, "Delete folder: result" );
 
 # Update Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -282,8 +280,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update a  folder" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update a Folder: result" );
+ok( $out,                     "Update a  folder" );
+ok( $out =~ m/permission=1/i, "Update a Folder: result" );
 
 # Create a new Comment
 # __mode=save&_type=comment&&blog_id=1&entry_id=1
@@ -314,8 +312,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete comment" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete comment: result" );
+ok( $out,                     "Delete comment" );
+ok( $out =~ m/permission=1/i, "Delete comment: result" );
 
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
@@ -331,8 +329,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Entry: result" );
+ok( $out,                     "Create a new entry" );
+ok( $out =~ m/permission=1/i, "Create a new Entry: result" );
 
 # Delete Entry
 # __mode=delete&_type=entry&id=1&blog_id=1
@@ -347,8 +345,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete entry: result" );
+ok( $out,                     "Delete entry" );
+ok( $out =~ m/permission=1/i, "Delete entry: result" );
 
 # Update an Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1&id=1
@@ -365,8 +363,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an entry" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update anEntry: result" );
+ok( $out,                     "Update an entry" );
+ok( $out =~ m/permission=1/i, "Update anEntry: result" );
 
 # Create a new Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1
@@ -382,8 +380,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Page: result" );
+ok( $out,                     "Create a new page" );
+ok( $out =~ m/permission=1/i, "Create a new Page: result" );
 
 # Delete Page
 # __mode=delete&_type=page&id=20&blog_id=1
@@ -398,8 +396,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete page: result" );
+ok( $out,                     "Delete page" );
+ok( $out =~ m/permission=1/i, "Delete page: result" );
 
 # Update a Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1&id=20
@@ -416,8 +414,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Update an page" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Update an Page: result" );
+ok( $out,                     "Update an page" );
+ok( $out =~ m/permission=1/i, "Update an Page: result" );
 
 # Create a new Banlist
 # __mode=save&_type=banlist&&blog_id=1&ip=1.1.1.1
@@ -432,9 +430,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new banlist" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Banlist: result" );
+ok( $out,                     "Create a new banlist" );
+ok( $out =~ m/permission=1/i, "Create a new Banlist: result" );
 
 # Delete Banlist
 # __mode=delete&_type=banlist&id=1&blog_id=1
@@ -449,8 +446,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete banlist" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete banlist: result" );
+ok( $out,                     "Delete banlist" );
+ok( $out =~ m/permission=1/i, "Delete banlist: result" );
 
 # Create a new Notification
 # __mode=save&_type=notification&&blog_id=1
@@ -464,10 +461,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new notification" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Notification: result"
-);
+ok( $out,                     "Create a new notification" );
+ok( $out =~ m/permission=1/i, "Create a new Notification: result" );
 
 # Delete Notification
 # __mode=delete&_type=notification&id=1&blog_id=1
@@ -482,9 +477,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete notification" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete notification: result" );
+ok( $out,                     "Delete notification" );
+ok( $out =~ m/permission=1/i, "Delete notification: result" );
 
 # Create a new Role
 # __mode=save&_type=role&&blog_id=1&name=NewRole
@@ -498,8 +492,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new role" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Role: result" );
+ok( $out,                     "Create a new role" );
+ok( $out =~ m/permission=1/i, "Create a new Role: result" );
 
 # Delete Role
 # __mode=delete&_type=role&id=1
@@ -513,8 +507,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete role" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete role: result" );
+ok( $out,                     "Delete role" );
+ok( $out =~ m/permission=1/i, "Delete role: result" );
 
 # Create a new Config
 # __mode=save&_type=config
@@ -822,8 +816,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete tag" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete tag: result" );
+ok( $out,                     "Delete tag" );
+ok( $out =~ m/permission=1/i, "Delete tag: result" );
 
 # Create a new Ping
 # __mode=save&_type=ping&blog_id=1&ip=1.1.1.1&tb_id=1
@@ -839,8 +833,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Create a new ping" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Create a new Ping: result" );
+ok( $out,                     "Create a new ping" );
+ok( $out =~ m/permission=1/i, "Create a new Ping: result" );
 
 # Delete Ping
 # __mode=delete&_type=ping&id=1
@@ -854,8 +848,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete ping" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete ping: result" );
+ok( $out,                     "Delete ping" );
+ok( $out =~ m/permission=1/i, "Delete ping: result" );
 
 # Create a new Touch
 # __mode=save&_type=touch
@@ -931,9 +925,8 @@ $app  = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new template" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Create a new Template: result" );
+ok( $out,                     "Create a new template" );
+ok( $out =~ m/permission=1/i, "Create a new Template: result" );
 
 # Delete Template
 # __mode=delete&_type=template&id=1
@@ -947,8 +940,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                                      "Delete template" );
-ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete template: result" );
+ok( $out,                     "Delete template" );
+ok( $out =~ m/permission=1/i, "Delete template: result" );
 
 # Create a new Templatemap
 # __mode=save&_type=templatemap&blog_id=1&archive_type=Author&template_id=1
@@ -1001,9 +994,8 @@ if ( $mt->component('commercial') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Create a new field" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i,
-        "Create a new Field: result" );
+    ok( $out,                     "Create a new field" );
+    ok( $out =~ m/permission=1/i, "Create a new Field: result" );
 
     # Delete Field
     # __mode=delete&_type=field&id=1&blog_id=1
@@ -1018,8 +1010,8 @@ if ( $mt->component('commercial') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                                      "Delete field" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete field: result" );
+    ok( $out,                     "Delete field" );
+    ok( $out =~ m/permission=1/i, "Delete field: result" );
 }
 
 if ( $mt->component('enterprise') ) {
@@ -1036,9 +1028,8 @@ if ( $mt->component('enterprise') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Create a new group" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i,
-        "Create a new Group: result" );
+    ok( $out,                     "Create a new group" );
+    ok( $out =~ m/permission=1/i, "Create a new Group: result" );
 
     # Delete Group
     # __mode=delete&_type=group&id=1
@@ -1052,8 +1043,8 @@ if ( $mt->component('enterprise') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                                      "Delete group" );
-    ok( $out =~ m/__mode=dashboard&permission=1/i, "Delete group: result" );
+    ok( $out,                     "Delete group" );
+    ok( $out =~ m/permission=1/i, "Delete group: result" );
 }
 
 ### Other user
@@ -1090,10 +1081,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete website (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete website (different): result"
-);
+ok( $out,                     "Delete website (different)" );
+ok( $out =~ m/permission=1/i, "Delete website (different): result" );
 
 $user = MT::Author->load(996);    #egawa
 
@@ -1109,10 +1098,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete blog (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete blog (different): result"
-);
+ok( $out,                     "Delete blog (different)" );
+ok( $out =~ m/permission=1/i, "Delete blog (different): result" );
 
 $user = MT::Author->load(994);    #kagawa
 
@@ -1130,10 +1117,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Update a category (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    " Update a category (different): result"
-);
+ok( $out,                     "Update a category (different)" );
+ok( $out =~ m/permission=1/i, " Update a category (different): result" );
 
 # Delete Category
 # __mode=delete&_type=category&id=20&blog_id=1
@@ -1148,10 +1133,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete category (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete category (different): result"
-);
+ok( $out,                     "Delete category (different)" );
+ok( $out =~ m/permission=1/i, "Delete category (different): result" );
 
 $user = MT::Author->load(995);    #ogawa
 
@@ -1169,10 +1152,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Update a folder (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    " Update a folder (different): result"
-);
+ok( $out,                     "Update a folder (different)" );
+ok( $out =~ m/permission=1/i, " Update a folder (different): result" );
 
 # Delete Folder
 # __mode=delete&_type=folder&id=1&blog_id=1
@@ -1187,10 +1168,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete folfer (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete folder (different): result"
-);
+ok( $out,                     "Delete folfer (different)" );
+ok( $out =~ m/permission=1/i, "Delete folder (different): result" );
 
 $user = MT::Author->load(995);    #ogawa
 
@@ -1209,10 +1188,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Update an page (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Update an Page(different): result"
-);
+ok( $out,                     "Update an page (different)" );
+ok( $out =~ m/permission=1/i, "Update an Page(different): result" );
 
 # Delete Page
 # __mode=delete&_type=page&id=1&blog_id=1
@@ -1227,10 +1204,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete page (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete page (different): result"
-);
+ok( $out,                     "Delete page (different)" );
+ok( $out =~ m/permission=1/i, "Delete page (different): result" );
 
 $user = MT::Author->load(994);    #kagawa
 
@@ -1249,10 +1224,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Update an entry (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Update an Entry(different): result"
-);
+ok( $out,                     "Update an entry (different)" );
+ok( $out =~ m/permission=1/i, "Update an Entry(different): result" );
 
 # Delete Entry
 # __mode=delete&_type=entry&id=20&blog_id=1
@@ -1267,10 +1240,8 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Delete entry (different)" );
-ok( $out =~ m/__mode=dashboard&permission=1/i,
-    "Delete entry (different): result"
-);
+ok( $out,                     "Delete entry (different)" );
+ok( $out =~ m/permission=1/i, "Delete entry (different): result" );
 
 sub make_data {
 

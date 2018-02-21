@@ -61,7 +61,7 @@ function doSubmitFormConfirm( f, mode, message ) {
     if (confirm(message)) {
         if (f.elements["__mode"] && mode)
             f.elements["__mode"].value = mode;
-        f.submit();
+        return true;
     }
     return false;
 }

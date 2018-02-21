@@ -207,8 +207,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: add_map" );
-        ok( $out =~ m!No permissions!i, "add_map by other blog" );
+        ok( $out,                     "Request: add_map" );
+        ok( $out =~ m!permission=1!i, "add_map by other blog" );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -286,8 +286,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: delete_map" );
-        ok( $out =~ m!No permissions!i, "delete_map by other blog" );
+        ok( $out,                     "Request: delete_map" );
+        ok( $out =~ m!permission=1!i, "delete_map by other blog" );
 
         $map
             = MT::Test::Permission->make_templatemap( blog_id => $blog->id, );
@@ -390,8 +390,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete_widget" );
-        ok( $out =~ m!permission denied!i, "delete_widget by other blog" );
+        ok( $out,                     "Request: delete_widget" );
+        ok( $out =~ m!permission=1!i, "delete_widget by other blog" );
 
         $widget = MT::Test::Permission->make_template(
             blog_id => $blog->id,
@@ -638,8 +638,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit_widget" );
-        ok( $out =~ m!permission denied!i, "edit_widget by other blog" );
+        ok( $out,                     "Request: edit_widget" );
+        ok( $out =~ m!permission=1!i, "edit_widget by other blog" );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -1094,8 +1094,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                  "Request: refresh_all_templates" );
-        ok( $out =~ m!error_id=!i, "refresh_all_templates by other blog" );
+        ok( $out,                     "Request: refresh_all_templates" );
+        ok( $out =~ m!permission=1!i, "refresh_all_templates by other blog" );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -1236,8 +1236,8 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save_widget" );
-        ok( $out =~ m!permission denied!i, "save_widget by other blog" );
+        ok( $out,                     "Request: save_widget" );
+        ok( $out =~ m!permission=1!i, "save_widget by other blog" );
 
         $app = _run_app(
             'MT::App::CMS',
@@ -1874,8 +1874,8 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete" );
-        ok( $out =~ m!permission denied!i, "delete by other blog" );
+        ok( $out,                     "Request: delete" );
+        ok( $out =~ m!permission=1!i, "delete by other blog" );
 
         $widget = MT::Test::Permission->make_template(
             blog_id => $blog->id,
@@ -1995,7 +1995,7 @@ SKIP: {
         );
         $out = delete $app->{__test_output};
         ok( $out, "Request: refresh_tmpl_templates" );
-        ok( $out =~ m!not implemented!i,
+        ok( $out =~ m!permission=1!i,
             "refresh_tmpl_templates by other blog" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -2120,8 +2120,8 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: copy_templates" );
-        ok( $out =~ m!not implemented!i, "copy_templates by other blog" );
+        ok( $out,                     "Request: copy_templates" );
+        ok( $out =~ m!permission=1!i, "copy_templates by other blog" );
 
         $tmpl = MT::Test::Permission->make_template(
             blog_id => $blog->id,
@@ -2448,6 +2448,74 @@ subtest 'website scope' => sub {
     }
 
     done_testing();
+};
+
+subtest 'mode = save_template_prefs' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user (sys)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save_template_prefs by other blog" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save_template_prefs',
+            blog_id          => $blog->id,
+            syntax_highlight => 'sync',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save_template_prefs by other permission" );
+
 };
 
 done_testing();

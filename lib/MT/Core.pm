@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2114,12 +2114,16 @@ BEGIN {
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
+            'XXSSProtection'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
             'LoggerLevel'  => { default => 'none' },
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
+
+            'RequiredUserEmail'       => { default => 1 },
+            'DefaultClassParamFilter' => { default => 'all' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2744,6 +2748,7 @@ sub load_core_permissions {
                 'remove_tags_from_entry_via_list'         => 1,
                 'edit_entry_authored_on'                  => 1,
                 'edit_entry_unpublished_on'               => 1,
+                'save_edit_prefs'                         => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2777,6 +2782,7 @@ sub load_core_permissions {
                 'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
+                'save_edit_prefs'                  => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2872,7 +2878,8 @@ sub load_core_permissions {
                 'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
-                'refresh_templates'         => 1.
+                'refresh_templates'         => 1,
+                'save_template_prefs'       => 1,
             }
         },
         'blog.manage_feedback' => {
@@ -2967,6 +2974,7 @@ sub load_core_permissions {
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
+                'save_edit_prefs'                 => 1,
             }
         },
         'blog.manage_users' => {
@@ -2977,6 +2985,7 @@ sub load_core_permissions {
                 'access_to_blog_member_list' => 1,
                 'grant_role_for_blog'        => 1,
                 'manage_users'               => 1,
+                'search_members'             => 1,
                 'search_authors'             => 1,
                 'remove_user_assoc'          => 1,
                 'revoke_role'                => 1,

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -942,7 +942,7 @@ sub post_remove_widget {
     );
     my @resave;
     while ( my $ws = $iter->() ) {
-        my @mods = split( ',', $ws->modulesets );
+        my @mods = split( ',', $ws->modulesets || '' );
         if ( grep { $_ == $tmpl->id } @mods ) {
             push @resave, $ws;
         }

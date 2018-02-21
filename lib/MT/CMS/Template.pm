@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -202,8 +202,11 @@ sub edit {
                 foreach my $tag (@$includes) {
                     my $include = {};
                     my $attr    = $tag->attributes;
-                    my $mod     = $include->{include_module} = $attr->{module}
-                        || $attr->{widget} || $attr->{identifier};
+                    my $mod
+                        = $include->{include_module}
+                        = $attr->{module}
+                        || $attr->{widget}
+                        || $attr->{identifier};
                     next unless $mod;
                     next if $mod =~ /^\$.*/;
                     my $type = $attr->{widget} ? 'widget' : 'custom';
@@ -239,9 +242,9 @@ sub edit {
                             = $attr->{identifier}
                             ? ( identifier => $mod )
                             : (
-                                blog_id => $inc_blog_id,
-                                name    => $mod,
-                                type    => $type,
+                            blog_id => $inc_blog_id,
+                            name    => $mod,
+                            type    => $type,
                             );
 
                         my $other = MT::Template->load(
@@ -1734,7 +1737,7 @@ sub can_view {
     else {
         my $perms = $app->permissions;
         return 0
-            unless $perms->can_do('edit_templates');
+            unless $perms && $perms->can_do('edit_templates');
     }
     return 1;
 }
@@ -2002,7 +2005,6 @@ sub build_template_table {
     my $app = shift;
     my (%args) = @_;
 
-    my $perms     = $app->permissions;
     my $list_pref = $app->list_pref('template');
     my $limit     = $args{limit};
     my $param     = $args{param} || {};
@@ -2082,9 +2084,7 @@ sub dialog_publishing_profile {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $app->user->is_superuser
-        || $perms->can_administer_blog
-        || $perms->can_edit_templates;
+        unless $perms && $perms->can_edit_templates;
 
     my $param = {};
     $param->{dynamicity}  = $blog->custom_dynamic_templates || 'none';
@@ -2101,14 +2101,8 @@ sub dialog_refresh_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || $app->user->can_edit_templates()
-        || (
-        $perms
-        && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog()
-            || $perms->can_do('refresh_templates') )
-        );
+        unless $perms
+        && $perms->can_do('refresh_templates');
 
     my $param = {};
     if ( my $blog = $app->blog ) {
@@ -2506,15 +2500,8 @@ sub refresh_individual_templates {
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-
-        #TODO: system level-designer permission
-        unless $user->is_superuser()
-        || $user->can_edit_templates()
-        || (
-        $perms
-        && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
-        );
+        unless $perms
+        && $perms->can_edit_templates;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -2672,15 +2659,8 @@ sub clone_templates {
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-
-        #TODO: system level-designer permission
-        unless $user->is_superuser()
-        || $user->can_edit_templates()
-        || (
-        $perms
-        && (   $perms->can_edit_templates()
-            || $perms->can_administer_blog )
-        );
+        unless $perms
+        && $perms->can_edit_templates();
 
     my @id = $app->param('id');
     require MT::Template;
@@ -2757,9 +2737,8 @@ sub publish_index_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $app->user->is_superuser
-        || $perms->can_administer_blog
-        || $perms->can_rebuild;
+        unless $perms
+        && $perms->can_rebuild;
 
     my $blog = $app->blog;
 
@@ -2793,9 +2772,8 @@ sub publish_archive_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $app->user->is_superuser
-        || $perms->can_administer_blog
-        || $perms->can_rebuild;
+        unless $perms
+        && $perms->can_rebuild;
 
     my @ids = $app->param('id');
     if ( scalar @ids == 1 ) {
@@ -3085,11 +3063,10 @@ sub list_widget {
     my $q     = $app->param;
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->return_to_dashboard( redirect => 1 )
-        unless $perms || $app->user->is_superuser;
-    if ( $perms && !$perms->can_edit_templates ) {
-        return $app->permission_denied();
-    }
+    return $app->permission_denied()
+        unless $perms
+        && $perms->can_edit_templates;
+
     my $blog_id = $q->param('blog_id') || 0;
 
     my $widget_loop = &build_template_table(
@@ -3239,11 +3216,31 @@ sub delete_widget {
 }
 
 sub save_template_prefs {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    my $perms   = $app->user->permissions($blog_id)
-        or return $app->error( $app->translate("No permissions") );
+    my $app = shift;
+
+    # Magic token check
     $app->validate_magic() or return;
+
+    # Loading permission record
+    my $user = $app->user
+        or return $app->error( $app->translate('Invalid request.') );
+    my $blog_id = scalar $app->param('blog_id')
+        or return $app->error( $app->translate('Invalid request.') );
+    my $perms = MT->model('permission')->load(
+        {   author_id => $user->id,
+            blog_id   => $blog_id,
+        }
+    );
+
+    # Sometimes super user or system level template edit permitted user
+    # does not have any permission for each site.
+    return $app->json_result( { success => 1 } )
+        if !$perms && ( $user->is_superuser || $user->can_edit_templates() );
+
+    # Permission check
+    return $app->permission_denied()
+        unless $perms
+        && $perms->can_do('save_template_prefs');
 
     my $prefs = $perms->template_prefs || '';
     my $highlight = $app->param('syntax_highlight');

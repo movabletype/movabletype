@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -85,7 +85,8 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ( length($app->param('username')) && length( scalar $app->param('password') ) )
+    if (   length( $app->param('username') )
+        && length( scalar $app->param('password') ) )
     {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');

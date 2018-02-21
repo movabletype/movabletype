@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -455,8 +455,6 @@ sub cfg_prefs {
     my $blog_id = $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
-    my $blog_prefs = $app->user_blog_prefs;
-    my $perms      = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('access_to_blog_config_screen');
 
@@ -1576,7 +1574,6 @@ sub pre_save {
 
     # two possibilities: user unchecked the option, or user was not allowed to
     # set the value (and therefore there was no field to submit).
-                my $perms = $app->permissions;
                 if ( $app->can_do('edit_blog_config') ) {
                     $obj->$cb(0);
                 }
@@ -1626,7 +1623,6 @@ sub pre_save {
             if ( my $expiry = $app->param('junk_folder_expiry') ) {
                 $obj->junk_folder_expiry($expiry);
             }
-            my $perms = $app->permissions;
             unless ( defined $app->param('auto_delete_junk') ) {
                 if ( $app->can_do('edit_junk_auto_delete') ) {
                     $obj->junk_folder_expiry(0);
@@ -2109,7 +2105,6 @@ sub save_filter {
         $name =~ s/(^\s+|\s+$)//g;
         $app->param( 'name', $name );
     }
-    my $perms = $app->permissions;
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
         if ( !( $screen && $app->can_do('edit_blog_config') )

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -4015,7 +4015,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         # defer the evaluation of the child tokens until used inside
         # the block (so any variables/context changes made in that template
         # affect the contained template code)
-        my $tokens = $ctx->stash('tokens');
+        my $tokens   = $ctx->stash('tokens');
         my $contents = $ctx->{__stash}{vars}{ lc $name };
         local $ctx->{__stash}{vars}{ lc $name } = sub {
             local $ctx->{__stash}{vars}{ lc $name } = $contents;

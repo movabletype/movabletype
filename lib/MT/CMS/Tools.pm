@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -935,7 +935,8 @@ sub save_cfg_system_web_services {
 sub upgrade {
     my $app = shift;
 
-    if ( $ENV{FAST_CGI} ||  MT->config->PIDFilePath ) {
+    if ( $ENV{FAST_CGI} || MT->config->PIDFilePath ) {
+
         # don't enter the upgrade loop.
         $app->reboot;
     }
@@ -982,8 +983,7 @@ sub recover_profile_password {
     return $app->error( $app->translate("Invalid author_id") )
         if !$author || $author->type != MT::Author::AUTHOR() || !$author_id;
 
-    my ( $rc, $res )
-        = reset_password( $app, $author, $author->hint, $author->name );
+    my ( $rc, $res ) = reset_password( $app, $author );
 
     if ($rc) {
         my $url = $app->uri(
@@ -1038,7 +1038,6 @@ sub start_backup {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 
     return $app->permission_denied()
         unless $app->can_do('start_backup');
@@ -1079,7 +1078,6 @@ sub start_restore {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 
     return $app->permission_denied()
         unless $app->can_do('start_restore');
@@ -1114,11 +1112,12 @@ sub start_restore {
 }
 
 sub backup {
-    my $app      = shift;
-    my $user     = $app->user;
-    my $q        = $app->param;
-    my $blog_id  = $q->param('blog_id');
-    my $perms    = $app->permissions;
+    my $app     = shift;
+    my $user    = $app->user;
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $perms   = $app->permissions
+        or return $app->permission_denied();
     my $blog_ids = $q->param('backup_what');
     my @blog_ids = split ',', $blog_ids;
 
@@ -1442,7 +1441,9 @@ sub backup_download {
     unless ( $user->is_superuser ) {
         my $perms = $app->permissions;
         return $app->permission_denied()
-            unless defined($blog_id) && $perms->can_do('backup_download');
+            unless defined($perms)
+            && defined($blog_id)
+            && $perms->can_do('backup_download');
     }
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
@@ -1579,6 +1580,9 @@ sub restore {
         return 1;
     };
 
+    # Set flag
+    $app->request( '__restore_in_progress', 1 );
+
     require File::Path;
 
     my $error = '';
@@ -1591,7 +1595,9 @@ sub restore {
             ( $blog_ids, $asset_ids )
                 = restore_directory( $app, $dir, \$error );
         };
+        $app->request( '__restore_in_progress', undef );
         return $return_error->($@) if $@;
+
         if ( defined $blog_ids ) {
             $param->{open_dialog} = 1;
             $param->{blog_ids}    = join( ',', @$blog_ids );
@@ -1675,6 +1681,7 @@ sub restore {
                 $app->print_encode(
                     $app->build_page( "restore_end.tmpl", $param ) );
                 close $fh if $fh;
+                $app->request( '__restore_in_progress', undef );
                 return 1;
             }
             my $temp_dir = $app->config('TempDir');
@@ -1695,6 +1702,7 @@ sub restore {
                 ( $blog_ids, $asset_ids )
                     = restore_directory( $app, $tmp, \$error );
             };
+            $app->request( '__restore_in_progress', undef );
             return $return_error->($@) if $@;
 
             if ( defined $blog_ids ) {
@@ -2681,7 +2689,7 @@ sub recover_passwords {
     foreach (@id) {
         my $author = $class->load($_)
             or next;
-        my ( $rc, $res ) = reset_password( $app, $author, $author->hint );
+        my ( $rc, $res ) = reset_password( $app, $author );
         push @msg_loop, { message => $res };
     }
 
@@ -2690,10 +2698,8 @@ sub recover_passwords {
 }
 
 sub reset_password {
-    my $app      = shift;
-    my ($author) = $_[0];
-    my $hint     = $_[1];
-    my $name     = $_[2];
+    my $app = shift;
+    my ($author) = @_;
 
     require MT::Auth;
     require MT::Log;
@@ -2712,38 +2718,8 @@ sub reset_password {
         );
     }
 
-    $app->log(
-        {   message => $app->translate(
-                "Invalid user name '[_1]' in password recovery attempt",
-                $name
-            ),
-            level    => MT::Log::SECURITY(),
-            class    => 'system',
-            category => 'recover_password',
-        }
-        ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
+    return ( 0, $app->translate("Invalid request.") )
         unless $author;
-    return (
-        0,
-        $app->translate(
-            "User has not set pasword hint; Cannot recover password")
-    ) if ( $hint && !$author->hint );
-
-    $app->log(
-        {   message => $app->translate(
-                "Invalid attempt to recover password (used hint '[_1]')",
-                $hint
-            ),
-            level    => MT::Log::SECURITY(),
-            class    => 'system',
-            category => 'recover_password'
-        }
-        ),
-        return ( 0,
-        $app->translate("User name or password hint is incorrect.") )
-        unless $author->hint eq $hint;
 
     return (
         0,
