@@ -707,7 +707,7 @@ sub do_search_replace {
         if ($content_type) {
             %search_api_cols = (
                 %search_api_cols,
-                map { '__field_' . $_->{id} => 1 }
+                map { '__field:' . $_->{id} => 1 }
                     @{ $content_type->replaceable_fields },
             );
         }
@@ -722,7 +722,7 @@ sub do_search_replace {
             keys %{ $search_api->{search_cols} };
         if ($content_type) {
             push @cols,
-                map { '__field_' . $_->{id} }
+                map { '__field:' . $_->{id} }
                 @{ $content_type->replaceable_fields };
         }
     }
@@ -928,7 +928,7 @@ sub do_search_replace {
                         # Direct ID search
                         push( @col_terms, { $col => $plain_search }, '-or' );
                     }
-                    elsif ( $col !~ /^__field_\d+$/ ) {
+                    elsif ( $col !~ /^__field:\d+$/ ) {
                         push( @col_terms,
                             { $col => { like => $query_string } }, '-or' );
                     }
@@ -1049,7 +1049,7 @@ sub do_search_replace {
             if ($content_type) {
                 %replace_cols = (
                     %replace_cols,
-                    map { '__field_' . $_->{id} => 1 }
+                    map { '__field:' . $_->{id} => 1 }
                         @{ $content_type->replaceable_fields }
                 );
             }
@@ -1077,7 +1077,7 @@ sub do_search_replace {
                     next if $do_replace && !$replace_cols{$col};
                     my $text;
                     my $content_field_id;
-                    if ( $col =~ /^__field_(\d+)$/ ) {
+                    if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $text             = $obj->data->{$content_field_id};
                     }
@@ -1376,9 +1376,9 @@ sub do_search_replace {
     }
     if ( $res{object_type} eq 'content_data' && $content_type ) {
         push @search_cols, map {
-            +{  field    => '__field_' . $_->{id},
+            +{  field    => '__field:' . $_->{id},
                 label    => $_->{options}{label},
-                selected => exists( $cols{ '__field_' . $_->{id} } ),
+                selected => exists( $cols{ '__field:' . $_->{id} } ),
                 }
         } @{ $content_type->replaceable_fields };
     }
