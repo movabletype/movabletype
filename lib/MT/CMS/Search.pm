@@ -615,7 +615,7 @@ sub search_replace {
             $param->{can_republish}
                 = $blog_perms->can_do(
                 "publish_content_data_via_list_$unique_id")
-                && $blog_perms->can_do("publish_all_content_data_$unique_id")
+                || $blog_perms->can_do("publish_all_content_data_$unique_id")
                 ? 1
                 : 0;
         }
