@@ -15,6 +15,52 @@ sub core_search_apis {
     my $author  = $app->user;
 
     my $types = {
+        content_data => {
+            order     => 50,
+            condition => sub {
+                $app->model('content_type')
+                    ->exist( { blog_id => $blog_id || \'> 0' } );
+            },
+            handler =>
+                '$Core::MT::CMS::ContentData::build_content_data_table',
+            label      => 'Content Data',
+            perm_check => sub {
+                my ($content_data) = @_;
+                my $author = $app->user;
+                my $blog_perms
+                    = $author->permissions( $content_data->blog_id );
+                $blog_perms
+                    && $blog_perms->can_edit_content_data( $content_data,
+                    $author );
+            },
+            search_cols =>
+                { identifier => sub { MT->translate('Basename') }, },
+            replace_cols       => [],
+            can_replace        => 1,
+            can_search_by_date => 1,
+            date_column        => 'authored_on',
+            setup_terms_args   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                if ( $app->param('filter') && $app->param('filter_val') ) {
+                    $terms->{ $app->param('filter') }
+                        = $app->param('filter_val');
+                }
+                my $content_type_id = $app->param('content_type_id') || 0;
+                my $content_type
+                    = $app->model('content_type')
+                    ->load( { id => $content_type_id } )
+                    || $app->model('content_type')->load(
+                    { blog_id => $blog_id || \'> 0' },
+                    { sort => 'name', limit => 0 }
+                    );
+                if ($content_type) {
+                    $terms->{content_type_id} = $content_type->id;
+                    $app->param( 'content_type_id', $content_type->id );
+                }
+                $args->{sort}      = 'authored_on';
+                $args->{direction} = 'descend';
+            },
+        },
         'entry' => {
             'order'     => 100,
             'condition' => sub {
@@ -516,6 +562,47 @@ sub search_replace {
             $param->{publish_from_search} = 1;
         }
     }
+    elsif ( $param->{object_type} eq 'content_data' ) {
+        my $selected_content_type_id = $app->param('content_type_id');
+        my $selected_content_type;
+        my @content_types;
+        my $iter
+            = MT->model('content_type')
+            ->load_iter( { blog_id => $blog_id || \'> 0' },
+            { sort => 'name' } );
+        while ( my $content_type = $iter->() ) {
+            push @content_types,
+                +{
+                content_type_id   => $content_type->id,
+                content_type_name => $content_type->name,
+                (         !$selected_content_type_id
+                        || $content_type->id == $selected_content_type_id
+                    )
+                ? ( selected => 1 )
+                : (),
+                };
+            $selected_content_type_id ||= $content_type->id;
+            if ( $content_type->id == $selected_content_type_id ) {
+                $selected_content_type = $content_type;
+            }
+        }
+        $param->{content_types} = \@content_types;
+
+        my $user       = $app->user;
+        my $blog_perms = $user->permissions($blog_id);
+        if ( $user->is_superuser ) {
+            $param->{can_republish} = 1;
+        }
+        elsif ( $selected_content_type && $blog_perms ) {
+            my $unique_id = $selected_content_type->unique_id;
+            $param->{can_republish}
+                = $blog_perms->can_do(
+                "publish_content_data_via_list_$unique_id")
+                && $blog_perms->can_do("publish_all_content_data_$unique_id")
+                ? 1
+                : 0;
+        }
+    }
 
     my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
     my $placeholder = $tmpl->getElementById('search_results');
@@ -586,10 +673,27 @@ sub do_search_replace {
     if ($ids) {
         @ids = split /,/, $ids;
     }
+    my $content_type;
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') || 0;
+        $content_type
+            = $app->model('content_type')->load( { id => $content_type_id } )
+            || $app->model('content_type')->load(
+            { blog_id => $blog_id || \'> 0' },
+            { sort => 'name', limit => 1 },
+            );
+    }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
+        if ($content_type) {
+            %search_api_cols = (
+                %search_api_cols,
+                map { '__field_' . $_->{id} => 1 }
+                    @{ $content_type->replaceable_fields },
+            );
+        }
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
             @cols = split /,/, $cols[0];
         }
@@ -599,6 +703,11 @@ sub do_search_replace {
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
+        if ($content_type) {
+            push @cols,
+                map { '__field_' . $_->{id} }
+                @{ $content_type->replaceable_fields };
+        }
     }
     my $quicksearch_id;
     if ( $quicksearch && ( $search || '' ) ne '' && $search !~ m{ \D }xms ) {
@@ -784,7 +893,7 @@ sub do_search_replace {
         }
 
         my @terms;
-        if ( !$is_regex ) {
+        if ( !$is_regex && $type ne 'content_data' ) {
 
             # MT::Object doesn't like multi-term hashes within arrays
             if (%terms) {
@@ -802,7 +911,7 @@ sub do_search_replace {
                         # Direct ID search
                         push( @col_terms, { $col => $plain_search }, '-or' );
                     }
-                    else {
+                    elsif ( $col !~ /^__field_\d+$/ ) {
                         push( @col_terms,
                             { $col => { like => $query_string } }, '-or' );
                     }
@@ -920,6 +1029,13 @@ sub do_search_replace {
         my %replace_cols;
         if ($do_replace) {
             %replace_cols = map { $_ => 1 } @{ $api->{replace_cols} };
+            if ($content_type) {
+                %replace_cols = (
+                    %replace_cols,
+                    map { '__field_' . $_->{id} => 1 }
+                        @{ $content_type->replaceable_fields }
+                );
+            }
         }
 
         my $re;
@@ -942,12 +1058,27 @@ sub do_search_replace {
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
-                    my $text = $obj->column($col);
+                    my $text;
+                    my $content_field_id;
+                    if ( $col =~ /^__field_(\d+)$/ ) {
+                        $content_field_id = $1;
+                        $text             = $obj->data->{$content_field_id};
+                    }
+                    else {
+                        $text = $obj->column($col);
+                    }
                     $text = '' unless defined $text;
                     if ($do_replace) {
                         if ( $text =~ s!$re!$replace!g ) {
                             $match++;
-                            $obj->$col($text);
+                            if ($content_field_id) {
+                                my $data = $obj->data;
+                                $data->{$content_field_id} = $text;
+                                $obj->data($data);
+                            }
+                            else {
+                                $obj->$col($text);
+                            }
                         }
                     }
                     else {
@@ -1225,6 +1356,14 @@ sub do_search_replace {
             ? $search_api->{plugin}->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
         push @search_cols, \%search_field;
+    }
+    if ( $res{object_type} eq 'content_data' && $content_type ) {
+        push @search_cols, map {
+            +{  field    => '__field_' . $_->{id},
+                label    => $_->{options}{label},
+                selected => exists( $cols{ '__field_' . $_->{id} } ),
+                }
+        } @{ $content_type->replaceable_fields };
     }
     $res{'search_cols'} = \@search_cols;
 
