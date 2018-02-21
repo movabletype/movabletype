@@ -545,7 +545,7 @@ sub save {
 
     $app->config( 'DefaultAccessAllowed',
         $app->multi_param('default_access_allowed'), 1 )
-        if $app->multi_param('default_access_allowed');
+        if defined $app->multi_param('default_access_allowed');
     $app->config->save_config;
 
     if ( my $blog = $app->blog ) {
