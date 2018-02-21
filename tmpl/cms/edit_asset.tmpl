@@ -90,10 +90,7 @@
     <div class="row asset asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
       <div class="col-auto asset-thumb thumbnail picture small<mt:if name="file_is_missing"> asset-type-icon missing</mt:if><mt:unless name="has_thumbnail"> asset-type-icon</mt:unless>">
         <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<$mt:var name="file_name" escape="html"$>">
-        <mt:if name="has_thumbnail">
-          <mt:unless name="file_is_missing">
-          <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
-          <mt:else>
+    <mt:if name="file_is_missing">
           <div class="mt-user">
             <svg title="<mt:var name="asset_type" escape="html">" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
               <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_<mt:if name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>">
@@ -104,12 +101,13 @@
               </svg>
             </div>
           </div>
-          </mt:unless>
-        <mt:else>
+    <mt:elseif name="has_thumbnail">
+          <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+    <mt:else>
           <svg title="<mt:var name="asset_type" escape="html">" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_<mt:if name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>">
           </svg>
-        </mt:if>
+    </mt:if>
         </a>
       </div>
       <div class="col asset-metadata">

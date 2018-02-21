@@ -721,13 +721,13 @@ sub core_content_actions {
         },
         'association' => {
             'grant_role' => {
-                class         => 'icon-create',
-                label         => 'Grant Permission',
-                icon          => 'ic_add',
-                mode          => 'dialog_grant_role',
-                args          => {
-                    _type         => 'user',
-                    type          => 'site',
+                class => 'icon-create',
+                label => 'Grant Permission',
+                icon  => 'ic_add',
+                mode  => 'dialog_grant_role',
+                args  => {
+                    _type => 'user',
+                    type  => 'site',
                 },
                 return_args   => 1,
                 permit_action => 'create_any_association',
@@ -2939,7 +2939,8 @@ sub build_menus {
                     }
                 }
                 elsif (( $app_param_type || '' ) eq 'content_data'
-                    && ( $sub->{args}{_type} || '' ) eq 'content_data' )
+                    && ( $sub->{args}{_type} || '' ) eq 'content_data'
+                    && $mode ne 'search_replace' )
                 {
                     $param->{screen_group} = $id;
 
