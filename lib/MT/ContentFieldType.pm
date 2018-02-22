@@ -1145,7 +1145,8 @@ sub _list_registry {
             '$Core::MT::ContentFieldType::List::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::List::preview_handler',
-        list_props => {
+        search_handler => '$Core::MT::ContentFieldType::List::search_handler',
+        list_props     => {
             list => {
                 base            => '__virtual.string',
                 col             => 'value_varchar',

@@ -127,5 +127,12 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub search_handler {
+    my ( $search_regex, $values, $field_data, $content_data ) = @_;
+    return 0 unless defined $values;
+    $values = [$values] unless ref $values eq 'ARRAY';
+    ( grep { defined $_ ? $_ =~ /$search_regex/ : 0 } @$values ) ? 1 : 0;
+}
+
 1;
 

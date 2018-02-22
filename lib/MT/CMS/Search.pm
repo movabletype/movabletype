@@ -1138,7 +1138,8 @@ sub do_search_replace {
                         }
                     }
                     else {
-                        if (   $field_registry
+                        if (   $search ne ''
+                            && $field_registry
                             && $field_registry->{search_handler} )
                         {
                             my $search_handler = $app->handler_to_coderef(
