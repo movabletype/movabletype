@@ -1097,9 +1097,10 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
-        ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
-        tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
-        list_props   => {
+        search_handler => '$Core::MT::ContentFieldType::Tags::search_handler',
+        ss_validator   => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        tag_handler    => '$Core::MT::ContentFieldType::Tags::tag_handler',
+        list_props     => {
             tags => {
                 base      => '__virtual.string',
                 col       => 'name',

@@ -330,5 +330,16 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub search_handler {
+    my ( $search_regex, $tag_ids, $field_data, $content_data ) = @_;
+    return 0 unless defined $tag_ids;
+    $tag_ids = [$tag_ids] unless ref $tag_ids eq 'ARRAY';
+    my $iter = MT->model('tag')->load_iter( { id => $tag_ids } );
+    while ( my $tag = $iter->() ) {
+        return 1 if $tag->name =~ /$search_regex/;
+    }
+    0;
+}
+
 1;
 
