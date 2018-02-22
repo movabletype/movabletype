@@ -26,7 +26,7 @@
             skin: 'lightgray',
             menubar: false,
             branding: false,
-            forced_root_block: '',
+            forced_root_block: 'p',
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
