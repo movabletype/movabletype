@@ -53,6 +53,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::ContentType::search_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         theme_export_handler =>

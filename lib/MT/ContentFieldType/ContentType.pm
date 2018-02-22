@@ -289,4 +289,17 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub search_handler {
+    my ( $search_regex, $content_data_ids, $field_data, $content_data ) = @_;
+    return 0 unless defined $content_data_ids;
+    $content_data_ids = [$content_data_ids]
+        unless ref $content_data_ids eq 'ARRAY';
+    my $iter
+        = MT->model('content_data')->load_iter( { id => $content_data_ids } );
+    while ( my $content_data = $iter->() ) {
+        return 1 if $content_data->id =~ /$search_regex/;
+    }
+    0;
+}
+
 1;
