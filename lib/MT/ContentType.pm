@@ -205,10 +205,30 @@ sub replaceable_fields {
     my $fields = $obj->fields;
     my @replaceable_fields;
     for my $f (@$fields) {
-        my $reg = MT->registry( 'cotnent_field_types', $f->{type} );
-        push @replaceable_fields, $f if $reg && $reg->{replaceable};
+        my $field_registry = MT->registry( 'content_field_types', $f->{type} )
+            or next;
+        if ( $field_registry->{replaceable} ) {
+            push @replaceable_fields, $f;
+        }
     }
     \@replaceable_fields;
+}
+
+sub searchable_fields {
+    my $obj    = shift;
+    my $fields = $obj->fields;
+    my @searchable_fields;
+    for my $f (@$fields) {
+        my $field_registry = MT->registry( 'content_field_types', $f->{type} )
+            or next;
+        if (   $field_registry->{replaceable}
+            || $field_registry->{searchable}
+            || $field_registry->{search_handler} )
+        {
+            push @searchable_fields, $f;
+        }
+    }
+    \@searchable_fields;
 }
 
 sub _sort_fields {

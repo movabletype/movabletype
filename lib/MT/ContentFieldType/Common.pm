@@ -485,5 +485,20 @@ sub preview_handler_multiple {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub search_handler_multiple {
+    my ( $search_regex, $values, $field_data, $content_data ) = @_;
+    $values = ''        unless defined $values;
+    $values = [$values] unless ref $values eq 'ARRAY';
+    my %value_label_hash = map { $_->{value} => $_->{label} }
+        @{ $field_data->{options}{values} || [] };
+    for my $value (@$values) {
+        $value = '' unless defined $value;
+        my $label = $value_label_hash{$value};
+        $label = '' unless defined $label;
+        return 1 if $value =~ /$search_regex/ || $label =~ /$search_regex/;
+    }
+    0;
+}
+
 1;
 

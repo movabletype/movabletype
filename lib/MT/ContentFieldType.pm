@@ -388,6 +388,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             select_box => {
                 filter_tmpl =>
@@ -434,6 +436,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             radio_button => {
                 filter_tmpl =>
@@ -479,6 +483,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             checkboxes => {
                 filter_tmpl =>

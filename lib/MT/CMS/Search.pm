@@ -708,7 +708,7 @@ sub do_search_replace {
             %search_api_cols = (
                 %search_api_cols,
                 map { '__field:' . $_->{id} => 1 }
-                    @{ $content_type->replaceable_fields },
+                    @{ $content_type->searchable_fields },
             );
         }
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
@@ -723,7 +723,7 @@ sub do_search_replace {
         if ($content_type) {
             push @cols,
                 map { '__field:' . $_->{id} }
-                @{ $content_type->replaceable_fields };
+                @{ $content_type->searchable_fields };
         }
     }
     my $quicksearch_id;
@@ -1078,10 +1078,14 @@ sub do_search_replace {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
                     my $text;
-                    my $content_field_id;
+                    my ( $content_field_id, $field_data, $field_registry );
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
-                        $text             = $obj->data->{$content_field_id};
+                        $field_data
+                            = $content_type->get_field($content_field_id);
+                        $field_registry
+                            = $content_field_types->{ $field_data->{type} };
+                        $text = $obj->data->{$content_field_id};
                     }
                     else {
                         $text = $obj->column($col);
@@ -1091,11 +1095,8 @@ sub do_search_replace {
                         if ( $text =~ s!$re!$replace!g ) {
                             if ( $content_field_id && !$app->param('error') )
                             {
-                                my $field = $content_type->get_field(
-                                    $content_field_id);
                                 my $ss_validator
-                                    = $content_field_types->{ $field->{type} }
-                                    {ss_validator};
+                                    = $field_registry->{ss_validator};
                                 if ($ss_validator) {
                                     $ss_validator
                                         = $app->handler_to_coderef(
@@ -1103,19 +1104,20 @@ sub do_search_replace {
                                     unless ($ss_validator) {
                                         my $error = $app->translate(
                                             'ss_validator of [_1] field is invalid',
-                                            $field->{type}
+                                            $field_data->{type}
                                         );
                                         $app->param( 'error', $error );
                                     }
                                 }
                                 if ($ss_validator) {
-                                    my $error = $ss_validator->( $app, $field,
-                                        $text );
+                                    my $error = $ss_validator->(
+                                        $app, $field_data, $text
+                                    );
                                     if ($error) {
                                         $error = $app->translate(
                                             '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
                                             $text,
-                                            $field->{options}{label},
+                                            $field_data->{options}{label},
                                             $content_type->name,
                                             $obj->id,
                                             $error,
@@ -1136,7 +1138,18 @@ sub do_search_replace {
                         }
                     }
                     else {
-                        $match = $search ne '' ? $text =~ m!$re! : 1;
+                        if (   $field_registry
+                            && $field_registry->{search_handler} )
+                        {
+                            my $search_handler = $app->handler_to_coderef(
+                                $field_registry->{search_handler} );
+                            $match = $search_handler && $search_handler->(
+                                $re, $text, $field_data, $obj
+                            );
+                        }
+                        else {
+                            $match = $search ne '' ? $text =~ m!$re! : 1;
+                        }
                         last if $match;
                     }
                 }
@@ -1422,7 +1435,7 @@ sub do_search_replace {
                 label    => $_->{options}{label},
                 selected => exists( $cols{ '__field:' . $_->{id} } ),
                 }
-        } @{ $content_type->replaceable_fields };
+        } @{ $content_type->searchable_fields };
     }
     $res{'search_cols'} = \@search_cols;
 
