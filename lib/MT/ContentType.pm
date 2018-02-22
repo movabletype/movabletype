@@ -200,18 +200,15 @@ sub fields {
     }
 }
 
-my %replaceable_fields = (
-    single_line_text => 1,
-    multi_line_text  => 1,
-    number           => 1,
-    url              => 1,
-    embedded_text    => 1,
-);
-
 sub replaceable_fields {
     my $obj    = shift;
     my $fields = $obj->fields;
-    [ grep { $replaceable_fields{ $_->{type} } } @$fields ];
+    my @replaceable_fields;
+    for my $f (@$fields) {
+        my $reg = MT->registry( 'cotnent_field_types', $f->{type} );
+        push @replaceable_fields, $f if $reg && $reg->{replaceable};
+    }
+    \@replaceable_fields;
 }
 
 sub _sort_fields {

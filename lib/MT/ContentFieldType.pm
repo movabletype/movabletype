@@ -99,6 +99,7 @@ sub _single_line_text_registry {
             '$Core::MT::ContentFieldType::SingleLineText::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::SingleLineText::field_value_handler',
+        replaceable => 1,
         ss_validator =>
             '$core::MT::ContentFieldType::SingleLineText::ss_validator',
         list_props => {
@@ -135,7 +136,8 @@ sub _multi_line_text_registry {
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
         field_value_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::field_value_handler',
-        list_props => {
+        replaceable => 1,
+        list_props  => {
             multi_line_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
@@ -169,6 +171,7 @@ sub _number_registry {
         field_html => 'field_html/field_html_number.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Number::field_html_params',
+        replaceable  => 1,
         ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
             number => {
@@ -201,6 +204,7 @@ sub _url_registry {
         data_type    => 'blob',
         order        => 50,
         field_html   => 'field_html/field_html_url.tmpl',
+        replaceable  => 1,
         ss_validator => '$Core::MT::ContentFieldType::URL::ss_validator',
         list_props   => {
             url => {
@@ -980,10 +984,11 @@ sub _image_registry {
 }
 
 sub _embedded_text_registry {
-    {   label      => 'Embedded Text',
-        data_type  => 'blob',
-        order      => 160,
-        list_props => {
+    {   label       => 'Embedded Text',
+        data_type   => 'blob',
+        order       => 160,
+        replaceable => 1,
+        list_props  => {
             embedded_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
