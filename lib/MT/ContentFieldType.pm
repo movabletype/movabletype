@@ -1045,6 +1045,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Categories::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Categories::search_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
         theme_export_handler =>
