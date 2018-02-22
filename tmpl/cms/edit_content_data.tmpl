@@ -606,7 +606,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 
           app.editor.setMode('textarea');
-          app.editor.insertContent(jQuery('#'+editor_id).blockeditor('get_html'));
+          app.editor.setContent(jQuery('#'+editor_id).blockeditor('get_html'));
           jQuery('#'+editor_id).blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
           app.editor.focus();
