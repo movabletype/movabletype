@@ -6,12 +6,13 @@
 # $Id$
 
 function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
-    require_once('multiblog.php');
-    multiblog_block_wrapper($args, $content, $ctx, $repeat);
-
     $localvars = array(array('authors', 'author', 'authors_counter', 'blog_id'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
         $args['blog_id'] = $ctx->stash('blog_id');
 
         if ( isset( $args['id'] ) ) {

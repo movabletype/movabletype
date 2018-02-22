@@ -98,13 +98,14 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
 # Multiblog's "loop" mode:
 # The container's contents are evaluated once per specified blog
 function multiblog_loop($args, $content, &$ctx, &$repeat) {
-    require_once('multiblog.php');
-    multiblog_block_wrapper($args, $content, $ctx, $repeat);
-
     $prefix = _context_prefix($ctx->this_tag());
     $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', '_blogs', '_blogs_counter', 'blog', 'blog_id', $prefix . 'context', $prefix . 'blog_ids', 'local_blog_id');
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
         if ($args['ignore_archive_context']) {
             $ctx->stash('contents', null);
             $ctx->stash('entries', null);

@@ -91,10 +91,8 @@ function multiblog_function_wrapper($tag, &$args, &$_smarty_tpl) {
 function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
     $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
-    $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
 
     if (!isset($content)) {
-        $ctx->localize($localvars);
         $ctx->set_override_context( true );
 
         if (
@@ -140,12 +138,6 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
         # true with MTTags block because tags are cross-blog
         if ($ctx->this_tag() == 'mttags')
             $ctx->stash('local_blog_id', 0);
-    }
-
-    # Restore localized variables if last loop
-    if (!$repeat) {
-        $ctx->restore($localvars);
-        $ctx->set_override_context( false );
     }
 }
 
