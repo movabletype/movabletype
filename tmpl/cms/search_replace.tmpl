@@ -108,6 +108,22 @@ function blurDateFields(s) {
         }
     }
 }
+
+function toggleContentTypeLimitedFields() {
+  var contentTypeId = jQuery('select[name=content_type_id]').val();
+  var selector = '#limited-fields li[data-mt-content-type]';
+  jQuery(selector).each(function () {
+    var $li = jQuery(this);
+    var $checkbox = $li.find('input[type=checkbox]');
+    if ($li.data('mtContentType') == contentTypeId) {
+      $li.show();
+      $checkbox.removeAttr('disabled');
+    } else {
+      $li.hide();
+      $checkbox.attr('disabled', 'disabled');
+    }
+  });
+}
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -235,7 +251,7 @@ function blurDateFields(s) {
           <div id="<mt:var name="object_type">-fields" class="card card-block">
             <ul class="list-inline mb-0 multiple-selection">
             <mt:loop name="search_cols">
-              <li class="list-inline-item m-2">
+              <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if>>
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="custom-control-input cb" />
                   <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"></label>
@@ -379,6 +395,9 @@ jQuery(function() {
 <mt:unless name="have_results">
     jQuery('#search').focus();
 </mt:unless>
+
+    toggleContentTypeLimitedFields();
+    jQuery('select[name=content_type_id]').on('change', toggleContentTypeLimitedFields);
 });
 /* ]]> */
 </script>

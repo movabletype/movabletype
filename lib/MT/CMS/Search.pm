@@ -690,7 +690,7 @@ sub do_search_replace {
     if ($ids) {
         @ids = split /,/, $ids;
     }
-    my $content_type;
+    my ( $content_type, @content_types );
     if ( $type eq 'content_data' ) {
         my $content_type_id = $app->param('content_type_id') || 0;
         $content_type
@@ -699,16 +699,22 @@ sub do_search_replace {
             { blog_id => $blog_id || \'> 0' },
             { sort => 'name', limit => 1 },
             );
+
+        my $iter = $app->model('content_type')
+            ->load_iter( { blog_id => $blog_id || \'> 0' } );
+        while ( my $ct = $iter->() ) {
+            push @content_types, $ct;
+        }
     }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
-        if ($content_type) {
+        if ( $type eq 'content_data' ) {
             %search_api_cols = (
                 %search_api_cols,
                 map { '__field:' . $_->{id} => 1 }
-                    @{ $content_type->searchable_fields },
+                    map { @{ $_->searchable_fields } } @content_types,
             );
         }
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
@@ -720,10 +726,9 @@ sub do_search_replace {
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
-        if ($content_type) {
-            push @cols,
-                map { '__field:' . $_->{id} }
-                @{ $content_type->searchable_fields };
+        if ( $type eq 'content_data' ) {
+            push @cols, map { '__field:' . $_->{id} }
+                map { @{ $_->searchable_fields } } @content_types;
         }
     }
     my $quicksearch_id;
@@ -1453,13 +1458,16 @@ sub do_search_replace {
             : $app->translate( $search_cols->{$field} );
         push @search_cols, \%search_field;
     }
-    if ( $res{object_type} eq 'content_data' && $content_type ) {
-        push @search_cols, map {
-            +{  field    => '__field:' . $_->{id},
-                label    => $_->{options}{label},
-                selected => exists( $cols{ '__field:' . $_->{id} } ),
-                }
-        } @{ $content_type->searchable_fields };
+    if ( $res{object_type} eq 'content_data' ) {
+        for my $ct (@content_types) {
+            push @search_cols, map {
+                +{  field       => '__field:' . $_->{id},
+                    label       => $_->{options}{label},
+                    selected    => exists( $cols{ '__field:' . $_->{id} } ),
+                    field_ct_id => $ct->id,
+                    }
+            } @{ $ct->searchable_fields };
+        }
     }
     $res{'search_cols'} = \@search_cols;
 
