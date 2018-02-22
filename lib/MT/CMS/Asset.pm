@@ -3229,8 +3229,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 120,
-            PreviewHeight => 120
+            PreviewWidth  => 80,
+            PreviewHeight => 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;

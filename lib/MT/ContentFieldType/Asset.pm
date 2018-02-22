@@ -34,8 +34,8 @@ sub field_html_params {
     require MT::CMS::Asset;
     my $hasher = MT::CMS::Asset::build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120,
+        PreviewWidth  => 80,
+        PreviewHeight => 80,
     );
 
     my @asset_loop;
