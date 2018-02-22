@@ -82,6 +82,11 @@ sub upgrade_functions {
             version_limit => 7.0024,
             priority      => 3.2,
         },
+        'v7_migrate_rebuild_trigger' => {
+            code          => \&v7_migrate_rebuild_trigger,
+            version_limit => 7.0025,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -663,6 +668,76 @@ sub _v7_remove_create_child_sites {
         }
     }
 
+}
+
+sub v7_migrate_rebuild_trigger {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Migrating MultiBlog settings...') );
+
+    require MT::PluginData;
+    my @config = MT::PluginData->load( { plugin => 'MultiBlog' } );
+    foreach my $cfg (@config) {
+        if ( $cfg->key =~ m/^configuration$/ ) {
+
+            # Config
+            my $default_access_allowed
+                = ( $cfg->data || {} )->{default_access_allowed};
+            $app->config( 'DefaultAccessAllowed', $default_access_allowed, 1 )
+                if defined $default_access_allowed;
+        }
+        elsif ( $cfg->key =~ m/^configuration:blog:(\d+)/ ) {
+            my $blog_id = $1;
+
+            # meta
+            my $default_mtmulitblog_blogs
+                = ( $cfg->data || {} )->{default_mtmulitblog_blogs};
+            my $default_mtmultiblog_action
+                = ( $cfg->data || {} )->{default_mtmultiblog_action};
+            my $blog = MT->model('blog')->load($blog_id) or next;
+            $blog->default_mt_sites_sites($default_mtmulitblog_blogs)
+                if defined $default_mtmulitblog_blogs;
+            $blog->default_mt_sites_action($default_mtmultiblog_action)
+                if defined $default_mtmultiblog_action;
+
+            # Trigger
+            my $rebuild_triggers = ( $cfg->data || {} )->{rebuild_triggers};
+            foreach ( split( /\|/, $rebuild_triggers ) ) {
+                my ( $action, $id, $trigger ) = split( /:/, $_ );
+                $action
+                    = $action eq 'ri'
+                    ? MT::RebuildTrigger::ACTION_RI()
+                    : MT::RebuildTrigger::ACTION_RIP();
+                my $object_type
+                    = $event =~ /^entry_.*/
+                    ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+                    : $event =~ /^comment_.*/
+                    ? MT::RebuildTrigger::TYPE_COMMENT();
+                    : MT::RebuildTrigger::TYPE_PING();
+                $event
+                    = $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
+                    : $event =~ /.*_pub$/
+                    ? MT::RebuildTrigger::EVENT_PUBLISH()
+                    : MT::RebuildTrigger::EVENT_UNPUBLISH();
+                my $target
+                    = $id eq '_all' ? MT::RebuildTrigger::TARGET_ALL()
+                    : $id eq '_blogs_in_website'
+                    ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+                    : MT::RebuildTrigger::TARGET_BLOG();
+                my $target_blog_id = $id =~ /\d+/ ? $id : 0;
+                my $rt = MT->model('rebuild_trigger')->new;
+                $rt->blog_id($blog_id);
+                $rt->object_type($object_type);
+                $rt->action($action);
+                $rt->event($event);
+                $rt->target($target);
+                $rt->target_blog_id($target_blog_id);
+                $rt->ct_id(0);
+                $rt->save or return $self->error( $rt->errstr );
+            }
+        }
+    }
 }
 
 1;
