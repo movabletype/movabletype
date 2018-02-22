@@ -536,6 +536,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset => {
                 filter_tmpl =>
@@ -652,6 +654,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_audio => {
                 filter_tmpl =>
@@ -766,6 +770,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_video => {
                 filter_tmpl =>
@@ -881,6 +887,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_image => {
                 filter_tmpl =>
