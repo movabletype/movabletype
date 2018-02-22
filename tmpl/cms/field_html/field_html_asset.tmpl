@@ -1,42 +1,45 @@
 <div id="asset-field-<mt:var name="content_field_id" escape="html">" class="asset-field-container content-field" style="margin-top: 5px; margin-bottom: 5px" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="asset_loop">
-  <div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">
+  <div class="mt-draggable" draggable="true" aria-grabbed="false">
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="asset_id" escape="html">">
     <div class="col-auto">
       <mtapp:svgicon id="ic_move" title="Draggable">
     </div>
     <div class="col">
   <mt:if name="asset_type" eq="audio">
-      <mtapp:svgicon id="ic_audio" title="Audio">
+      <mtapp:svgicon id="ic_audio" title="Audio" color="secondary">
   <mt:elseif name="asset_type" eq="image">
-      <mtapp:svgicon id="ic_image" title="Image">
+    <mt:if name="asset_preview_url">
+      <span class="asset-preview-image picture small mr-3 mb-3">
+        <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">">
+      </span>
+    <mt:else>
+      <mtapp:svgicon id="ic_image" title="Image" color="secondary">
+    </mt:if>
   <mt:elseif name="asset_type" eq="video">
-      <mtapp:svgicon id="ic_movie" title="Video">
+      <mtapp:svgicon id="ic_movie" title="Video" color="secondary">
   <mt:else>
-      <mtapp:svgicon id="ic_file" title="Asset">
+      <mtapp:svgicon id="ic_file" title="Asset" color="secondary">
   </mt:if>
-      <mt:var name="asset_label" escape="html">
+      <span class="align-top">
+        <mt:var name="asset_label" escape="html">
+      </span>
     </div>
     <div class="col-auto mr-3">
       <a href="javscript:void(0)" class="remove">
         <__trans phrase="Remove">
       </a>
     </div>
-    <div class="col-auto mr-3">
+    <div class="col-auto">
       <a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
+    <div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
       <div class="row">
         <div class="col">
-  <mt:if name="asset_type" eq="image">
-          <div class="asset-preview-image picture small mb-3">
-            <img src="<mt:var name="asset_preview_url" escape="html">" width="<mt:var name="asset_preview_width" escape="html">" height="<mt:var name="asset_preview_height" escape="html">">
-          </div>
-  </mt:if>
           <ul class="list-unstyled">
             <li class="asset-preview-title">
               <strong><__trans phrase="File Name"></strong>: <mt:var name="asset_file_name" escape="html">
