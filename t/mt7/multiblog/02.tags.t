@@ -391,7 +391,7 @@ template-module:2
 --- template
 <mt:BlogCategoryCount include_blogs="1,2,3" />
 --- expected
-0
+6
 
 
 === mt:BlogEntryCount
