@@ -684,7 +684,7 @@ sub v7_migrate_rebuild_trigger {
             # Config
             my $default_access_allowed
                 = ( $cfg->data || {} )->{default_access_allowed};
-            $app->config( 'DefaultAccessAllowed', $default_access_allowed, 1 )
+            MT->config( 'DefaultAccessAllowed', $default_access_allowed, 1 )
                 if defined $default_access_allowed;
         }
         elsif ( $cfg->key =~ m/^configuration:blog:(\d+)/ ) {
@@ -700,11 +700,12 @@ sub v7_migrate_rebuild_trigger {
                 if defined $default_mtmulitblog_blogs;
             $blog->default_mt_sites_action($default_mtmultiblog_action)
                 if defined $default_mtmultiblog_action;
+            $blog->save;
 
             # Trigger
             my $rebuild_triggers = ( $cfg->data || {} )->{rebuild_triggers};
             foreach ( split( /\|/, $rebuild_triggers ) ) {
-                my ( $action, $id, $trigger ) = split( /:/, $_ );
+                my ( $action, $id, $event ) = split( /:/, $_ );
                 $action
                     = $action eq 'ri'
                     ? MT::RebuildTrigger::ACTION_RI()
@@ -713,7 +714,7 @@ sub v7_migrate_rebuild_trigger {
                     = $event =~ /^entry_.*/
                     ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
                     : $event =~ /^comment_.*/
-                    ? MT::RebuildTrigger::TYPE_COMMENT();
+                    ? MT::RebuildTrigger::TYPE_COMMENT()
                     : MT::RebuildTrigger::TYPE_PING();
                 $event
                     = $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
@@ -734,7 +735,7 @@ sub v7_migrate_rebuild_trigger {
                 $rt->target($target);
                 $rt->target_blog_id($target_blog_id);
                 $rt->ct_id(0);
-                $rt->save or return $self->error( $rt->errstr );
+                $rt->save or return $rt->error( $rt->errstr );
             }
         }
     }
