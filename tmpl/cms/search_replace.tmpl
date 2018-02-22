@@ -84,31 +84,6 @@ function doReplace() {
     return false;
 }
 
-function focusDateFields(s) {
-    if (jQuery('#dates-disabled').val() == 1) {
-        jQuery('#datefrom_year, #datefrom_month, #datefrom_day, #dateto_year, #dateto_month, #dateto_day').val('').css('color', '#000');
-        jQuery('#dates-disabled').val(0)
-    }
-}
-
-function blurDateFields(s) {
-    var datefields = ['datefrom_year', 'datefrom_month', 'datefrom_day', 'dateto_year', 'dateto_month', 'dateto_day'];
-    var allEmpty = 1;
-    if (jQuery('#dates-disabled').val() == 0) {
-        jQuery.each(datefields, function() {
-            if (jQuery('#'+this).val() != '') {
-                allEmpty = 0;
-            }
-        });
-        if (allEmpty) {
-            jQuery('#datefrom_year, #dateto_year').val('YYYY').css('color', '#999');
-            jQuery('#datefrom_month, #dateto_month').val('MM').css('color', '#999');
-            jQuery('#datefrom_day, #dateto_day').val('DD').css('color', '#999');
-            jQuery('#dates-disabled').val(1);
-        }
-    }
-}
-
 function toggleContentTypeLimitedFields() {
   var contentTypeId = jQuery('select[name=content_type_id]').val();
   var selector = '#limited-fields li[data-mt-content-type]';
