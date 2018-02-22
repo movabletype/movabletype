@@ -712,10 +712,10 @@
                 if (s.mode == 'source' &&
                     s.format != 'none.tinymce_temp'
                 ) {
-                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', 'none');
+                    $(ed.container).find('.mce-toolbar:eq(0)').css('display', 'none');
                 }
                 else {
-                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', '');
+                    $(ed.container).find('.mce-toolbar:eq(0)').css('display', '');
                 }
 
                 var active =
