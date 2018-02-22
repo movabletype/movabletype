@@ -1,7 +1,7 @@
 <div id="asset-field-<mt:var name="content_field_id" escape="html">" class="asset-field-container content-field" style="margin-top: 5px; margin-bottom: 5px" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="asset_loop">
-  <div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">
+  <div class="mt-draggable" draggable="true" aria-grabbed="false">
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="asset_id" escape="html">">
     <div class="col-auto">
       <mtapp:svgicon id="ic_move" title="Draggable">
@@ -23,13 +23,13 @@
         <__trans phrase="Remove">
       </a>
     </div>
-    <div class="col-auto mr-3">
+    <div class="col-auto">
       <a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
+    <div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="asset_id" escape="html">">
       <div class="row">
         <div class="col">
   <mt:if name="asset_type" eq="image">
