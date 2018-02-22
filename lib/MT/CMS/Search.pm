@@ -1092,7 +1092,30 @@ sub do_search_replace {
                     }
                     $text = '' unless defined $text;
                     if ($do_replace) {
-                        if ( $text =~ s!$re!$replace!g ) {
+                        my $replaced;
+                        my $replace_handler;
+                        if ( my $replace_handler
+                            = $field_registry->{replace_handler} )
+                        {
+                            $replace_handler
+                                = $app->handler_to_coderef($replace_handler);
+                            unless ($replace_handler) {
+                                my $error = $app->translate(
+                                    'replace_handler of [_1] field is invalid',
+                                    $field_data->{type}
+                                );
+                                $app->param( 'error', $error );
+                            }
+                            if ($replace_handler) {
+                                $replaced = $replace_handler->(
+                                    $re, $replace, $text, $field_data, $obj
+                                );
+                            }
+                        }
+                        else {
+                            $replaced = $text =~ s!$re!$replace!g;
+                        }
+                        if ($replaced) {
                             if ( $content_field_id && !$app->param('error') )
                             {
                                 my $ss_validator

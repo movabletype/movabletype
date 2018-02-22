@@ -1147,6 +1147,8 @@ sub _list_registry {
             '$Core::MT::ContentFieldType::List::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::List::preview_handler',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::List::replace_handler',
         search_handler => '$Core::MT::ContentFieldType::List::search_handler',
         list_props     => {
             list => {

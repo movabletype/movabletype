@@ -207,7 +207,9 @@ sub replaceable_fields {
     for my $f (@$fields) {
         my $field_registry = MT->registry( 'content_field_types', $f->{type} )
             or next;
-        if ( $field_registry->{replaceable} ) {
+        if (   $field_registry->{replaceable}
+            || $field_registry->{replace_handler} )
+        {
             push @replaceable_fields, $f;
         }
     }
@@ -222,6 +224,7 @@ sub searchable_fields {
         my $field_registry = MT->registry( 'content_field_types', $f->{type} )
             or next;
         if (   $field_registry->{replaceable}
+            || $field_registry->{replace_handler}
             || $field_registry->{searchable}
             || $field_registry->{search_handler} )
         {

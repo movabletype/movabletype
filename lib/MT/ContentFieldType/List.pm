@@ -127,6 +127,19 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub replace_handler {
+    my ($search_regex, $replace_string, $values,
+        $field_data,   $content_data
+    ) = @_;
+    return 0 unless defined $values;
+    $values = [$values] unless ref $values eq 'ARRAY';
+    my $replaced = 0;
+    for (@$values) {
+        $replaced += $_ =~ s!$search_regex!$replace_string!g;
+    }
+    $replaced > 0;
+}
+
 sub search_handler {
     my ( $search_regex, $values, $field_data, $content_data ) = @_;
     return 0 unless defined $values;
