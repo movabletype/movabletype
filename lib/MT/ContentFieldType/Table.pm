@@ -96,5 +96,16 @@ sub preview_handler {
     return qq{<table border="1" cellpadding="3">$value</table>};
 }
 
+sub search_handler {
+    my ( $search_regex, $table_body, $field_data, $content_data ) = @_;
+    return 0 unless defined $table_body;
+    $table_body =~ s/>\s+</></g;
+    $table_body =~ s/\A\s*//g;
+    $table_body =~ s/\s*\z//g;
+    my @cell = split /<tr>|<\/tr>|<th[^>]*>|<\/th>|<td[^>]*>|<\/td>/,
+        $table_body;
+    ( grep {/$search_regex/} @cell ) ? 1 : 0;
+}
+
 1;
 
