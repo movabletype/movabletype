@@ -88,6 +88,7 @@
         block_field.siblings('.add_field-group').remove();
         block_field.remove();
         window.block_editor_data[editor_id] = null;
+        managers[editor_id] = null;
         return this;
     };
     var _get_data = function(){
