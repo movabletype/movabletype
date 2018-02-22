@@ -486,7 +486,7 @@ sub save {
                     = $event =~ /^entry_.*/
                     ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
                     : $event =~ /^comment_.*/
-                    ? MT::RebuildTrigger::TYPE_COMMENT();
+                    ? MT::RebuildTrigger::TYPE_COMMENT()
                     : $event =~ /^tb_.*/ ? MT::RebuildTrigger::TYPE_PING()
                     :   MT::RebuildTrigger::TYPE_CONTENT_TYPE();
                 $event
