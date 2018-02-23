@@ -2672,13 +2672,6 @@ sub convert_to_html {
     return $app->json_result($result);
 }
 
-sub update_list_prefs {
-    my $app   = shift;
-    my $type  = $app->param('_type');
-    my $prefs = $app->list_pref($type);
-    $app->call_return;
-}
-
 sub recover_passwords {
     my $app = shift;
     my @id  = $app->multi_param('id');
