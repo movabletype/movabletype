@@ -414,10 +414,9 @@ subtest 'Edit Folder screen check' => sub {
     );
     my $out = delete $app->{__test_output};
     ok( $out, 'Request: edit(folder)' );
-
     my $link
         = quotemeta
-        '<li id="user"><a href="/cgi-bin/mt.cgi?__mode=view&amp;_type=author&amp;id='
+        '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id='
         . $admin->id . '">';
     ok( $out =~ m/$link/, 'Link to Edit Profile in website scope is ok' );
 
@@ -435,7 +434,7 @@ subtest 'Edit Folder screen check' => sub {
 
     $link
         = quotemeta
-        '<li id="user"><a href="/cgi-bin/mt.cgi?__mode=view&amp;_type=author&amp;id='
+        '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id='
         . $admin->id . '">';
     ok( $out =~ m/$link/, 'Link to Edit Profile in blog scope is ok' );
 };

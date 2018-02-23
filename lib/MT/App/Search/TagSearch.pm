@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -168,10 +168,17 @@ sub search_terms {
 
     my $params
         = $app->registry( 'default', 'types', $app->{searchparam}{Type} );
-    my %terms
-        = exists( $params->{terms} )
-        ? %{ $params->{terms} }
-        : ();
+    my %terms = ();
+    if ( exists( $params->{terms} ) ) {
+        if ( 'HASH' ne ref $params->{terms} ) {
+            my $code = $params->{terms};
+            $code = MT->handler_to_coderef($code);
+            eval { %terms = %{ $code->($app) }; };
+        }
+        else {
+            %terms = %{ $params->{terms} };
+        }
+    }
     delete $terms{'plugin'};    #FIXME: why is this in here?
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {

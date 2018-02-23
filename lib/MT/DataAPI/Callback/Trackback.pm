@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,9 @@ sub can_view {
     my $obj = $objp->force() or return 0;
     require MT::Trackback;
     my $tb    = MT::Trackback->load( $obj->tb_id );
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
+
     if ($tb) {
         my ( $entry, $cat );
         if ( $tb->entry_id ) {

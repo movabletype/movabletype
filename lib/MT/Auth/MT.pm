@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -29,8 +29,8 @@ sub sanity_check {
             return $app->translate('Failed to verify the current password.');
         }
     }
-    if ( length( scalar $q->param( 'pass' ) ) ) {
-        my $pass = scalar $q->param( 'pass' );
+    if ( length( scalar $q->param('pass') ) ) {
+        my $pass = scalar $q->param('pass');
         if ( $pass =~ /[^\x20-\x7E]/ ) {
             return $app->translate('Password contains invalid character.');
         }
@@ -55,7 +55,8 @@ sub is_valid_password {
     if ( $real_pass =~ m/^\$6\$(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
         if ( eval { require Digest::SHA } ) {
-            return $value eq Digest::SHA::sha512_base64( $salt .Encode::encode_utf8( $pass ) );
+            return $value eq Digest::SHA::sha512_base64(
+                $salt . Encode::encode_utf8($pass) );
         }
         else {
             die MT->translate('Missing required module') . ' Digest::SHA';
@@ -84,7 +85,8 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if ( $app->param('username') && length( scalar $app->param('password') ) )
+    if (   length( $app->param('username') )
+        && length( scalar $app->param('password') ) )
     {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
@@ -148,15 +150,20 @@ sub validate_credentials {
 
         # load author from db
         my $user_class = $app->user_class;
-        my ($author)
-            = $user_class->search(
-            { name => $username, type => AUTHOR, auth_type => 'MT' } );
+        my ($author) = $user_class->load(
+            {   name      => $username,
+                type      => AUTHOR,
+                auth_type => 'MT'
+            },
+            { binary => { name => 1 } }
+        );
 
         if ($author) {
 
             # password validation
             if ( $ctx->{session_id} ) {
                 my $sess = $app->model('session')->load( $ctx->{session_id} );
+
                 my $sess_author_id = $sess->get('author_id')
                     if $sess;
                 if (   $sess

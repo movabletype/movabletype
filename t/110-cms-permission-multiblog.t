@@ -15,40 +15,37 @@ use Test::More;
 ### Make test data
 
 # Website
-my $website = MT::Test::Permission->make_website();
+my $website        = MT::Test::Permission->make_website();
 my $second_website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $second_blog
+    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
+    name     => 'aikawa',
     nickname => 'Ichiro Aikawa',
 );
 
 my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
+    name     => 'ichikawa',
     nickname => 'Jiro Ichikawa',
 );
 
 my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
+    name     => 'ukawa',
     nickname => 'Saburo Ukawa',
 );
 
 my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
+    name     => 'egawa',
     nickname => 'Shiro Egawa',
 );
 
 my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
+    name     => 'ogawa',
     nickname => 'Goro Ogawa',
 );
 
@@ -56,18 +53,20 @@ my $admin = MT::Author->load(1);
 
 # Role
 my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
+    name        => 'Create Post',
+    permissions => "'create_post'",
 );
-my $blog_admin = MT::Role->load({ name => MT->translate('Blog Administrator') });
-my $website_admin = MT::Role->load({ name => MT->translate('Website Administrator') });
+my $blog_admin
+    = MT::Role->load( { name => MT->translate('Blog Administrator') } );
+my $website_admin
+    = MT::Role->load( { name => MT->translate('Website Administrator') } );
 
 require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+MT::Association->link( $aikawa   => $blog_admin    => $blog );
 MT::Association->link( $ichikawa => $website_admin => $website );
-MT::Association->link( $ukawa => $blog_admin => $second_blog );
-MT::Association->link( $egawa => $website_admin => $second_website );
-MT::Association->link( $ogawa => $create_post => $blog );
+MT::Association->link( $ukawa    => $blog_admin    => $second_blog );
+MT::Association->link( $egawa    => $website_admin => $second_website );
+MT::Association->link( $ogawa    => $create_post   => $blog );
 
 # Run
 my ( $app, $out );
@@ -82,7 +81,7 @@ subtest 'mode = multiblog_add_trigger' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: multiblog_add_trigger" );
+    ok( $out,                          "Request: multiblog_add_trigger" );
     ok( $out !~ m!Permission denied!i, "multiblog_add_trigger by admin" );
 
     $app = _run_app(
@@ -95,7 +94,8 @@ subtest 'mode = multiblog_add_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: multiblog_add_trigger" );
-    ok( $out !~ m!Permission denied!i, "multiblog_add_trigger by permitted user (blog)" );
+    ok( $out !~ m!Permission denied!i,
+        "multiblog_add_trigger by permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -107,7 +107,8 @@ subtest 'mode = multiblog_add_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: multiblog_add_trigger" );
-    ok( $out !~ m!Permission denied!i, "multiblog_add_trigger by permitted user (website)" );
+    ok( $out !~ m!Permission denied!i,
+        "multiblog_add_trigger by permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -119,7 +120,8 @@ subtest 'mode = multiblog_add_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: multiblog_add_trigger" );
-    ok( $out =~ m!Permission denied!i, "multiblog_add_trigger by non permitted user (blog)" );
+    ok( $out =~ m!permission=1!i,
+        "multiblog_add_trigger by non permitted user (blog)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -131,7 +133,8 @@ subtest 'mode = multiblog_add_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: multiblog_add_trigger" );
-    ok( $out =~ m!Permission denied!i, "multiblog_add_trigger by non permitted user (website)" );
+    ok( $out =~ m!permission=1!i,
+        "multiblog_add_trigger by non permitted user (website)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -143,7 +146,8 @@ subtest 'mode = multiblog_add_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: multiblog_add_trigger" );
-    ok( $out =~ m!Permission denied!i, "multiblog_add_trigger by other permission" );
+    ok( $out =~ m!Permission denied!i,
+        "multiblog_add_trigger by other permission" );
 };
 
 done_testing();

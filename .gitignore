@@ -3,6 +3,7 @@ lib/MT/L10N/de-iso-8859-1.pm
 lib/MT/L10N/es-iso-8859-1.pm
 lib/MT/L10N/fr-iso-8859-1.pm
 lib/MT/L10N/nl-iso-8859-1.pm
+mt-static/assets_c
 mt-static/css/main.css
 mt-static/css/simple.css
 mt-static/js/mt_core_compact.js

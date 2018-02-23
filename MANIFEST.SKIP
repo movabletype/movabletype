@@ -56,6 +56,8 @@ themes/broken_blog_theme
 #?package=MT ^addons/Sync.pack
 #?package=MT ^mt-static/addons/Sync.pack
 #?package=MT ^addons/AWS.pack
+#?package=MT ^plugins/P-M-SizeLimit
+
 
 #?package=MTAWS ^COPYING
 #?package=MTAWS ^COPYRIGHT
@@ -70,6 +72,7 @@ themes/broken_blog_theme
 #?package=MTAWS ^lib/MT/FileMgr/FTPS.pm
 #?package=MTAWS ^addons/Sync.pack
 #?package=MTAWS ^mt-static/addons/Sync.pack
+#?package=MTAWS ^plugins/P-M-SizeLimit
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -102,6 +105,7 @@ themes/broken_blog_theme
 #?package=MTOS ^addons/Sync.pack
 #?package=MTOS ^mt-static/addons/Sync.pack
 #?package=MTOS ^addons/AWS.pack
+#?package=MTOS ^plugins/P-M-SizeLimit
 
 #?package=MTCOM ^COPYING
 #?package=MTCOM ^COPYRIGHT
@@ -132,6 +136,7 @@ themes/broken_blog_theme
 #?package=MTCOM ^addons/Sync.pack
 #?package=MTCOM ^mt-static/addons/Sync.pack
 #?package=MTCOM ^addons/AWS.pack
+#?package=MTCOM ^plugins/P-M-SizeLimit
 
 #?package=MTA ^COPYING
 #?package=MTA ^COPYRIGHT
@@ -141,6 +146,7 @@ themes/broken_blog_theme
 #?package=MTA ^VERSIONS
 #?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTA ^addons/AWS.pack
+#?package=MTA ^plugins/P-M-SizeLimit
 
 #?package=MTAAWS ^COPYING
 #?package=MTAAWS ^COPYRIGHT
@@ -149,6 +155,7 @@ themes/broken_blog_theme
 #?package=MTAAWS ^mt-hb.cgi
 #?package=MTAAWS ^VERSIONS
 #?package=MTAAWS ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
+#?package=MTAAWS ^plugins/P-M-SizeLimit
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
@@ -304,3 +311,7 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
+.circleci
+
+# Test
+.proverc

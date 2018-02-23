@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -73,7 +73,7 @@ sub save_filter {
         {
             my $l_path = $app->config->BaseSitePath;
             unless (
-                MT::CMS::Common::is_with_base_sitepath( $app, $site_path ) )
+                MT::CMS::Common::is_within_base_sitepath( $app, $site_path ) )
             {
                 return $app->errtrans(
                     "The blog root directory must be within [_1].", $l_path );

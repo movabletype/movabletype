@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,7 @@ sub start_import {
 
     my $perms = $app->permissions;
     return $app->permission_denied()
-        unless $app->can_do('open_start_import_screen');
+        unless $perms && $app->can_do('open_start_import_screen');
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )

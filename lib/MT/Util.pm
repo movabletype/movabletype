@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1492,7 +1492,7 @@ sub is_valid_url {
 sub is_url {
     my ($url) = @_;
 
-    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/;
+    return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
 }
 
 sub discover_tb {
@@ -2565,7 +2565,7 @@ sub get_newsbox_html {
     require MT::Sanitize;
 
     # allowed html
-    my $spec = 'a href,* style class id,ul,li,div,span,br';
+    my $spec = 'a href,* target style class id,ul,li,div,span,br';
     $result = MT::Sanitize->sanitize( $result, $spec );
     $news_object = MT::Session->new();
     $news_object->set_values(
@@ -2662,7 +2662,7 @@ sub make_string_csv {
 sub convert_word_chars {
     my ( $s, $smart_replace ) = @_;
 
-    return '' unless $s;
+    return '' if !defined($s) || ( $s eq '' );
     return $s if $smart_replace == 2;
 
     if ($smart_replace) {

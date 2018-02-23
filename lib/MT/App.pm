@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -285,10 +285,22 @@ sub list_actions {
         $actions->{$a}{key}  = $a;
         $actions->{$a}{core} = 1
             unless UNIVERSAL::isa( $actions->{$a}{plugin}, 'MT::Plugin' );
-        $actions->{$a}{js_message} = $actions->{$a}{label}
-            unless $actions->{$a}{js_message};
+
+        if ( !$actions->{$a}{js_message} ) {
+            if ( exists $actions->{$a}{js_message_handler} ) {
+                my $code = $app->handler_to_coderef(
+                    $actions->{$a}{js_message_handler} );
+                $actions->{$a}{js_message} = $code->()
+                    if 'CODE' eq ref($code);
+            }
+            else {
+                $actions->{$a}{js_message} = $actions->{$a}{label};
+            }
+        }
+
         $actions->{$a}{action_mode} = $actions->{$a}{mode}
             if $actions->{$a}{mode};
+
         if ( exists $actions->{$a}{continue_prompt_handler} ) {
             my $code = $app->handler_to_coderef(
                 $actions->{$a}{continue_prompt_handler} );
@@ -699,6 +711,9 @@ sub set_x_frame_options_header {
     my $app             = shift;
     my $x_frame_options = $app->config->XFrameOptions;
 
+    # If set as NONE MT should not output X-Frame-Options header.
+    return if lc $x_frame_options eq 'none';
+
     # Use default value when invalid value is set.
     unless ( lc $x_frame_options eq 'deny'
         || lc $x_frame_options eq 'sameorigin'
@@ -708,6 +723,15 @@ sub set_x_frame_options_header {
     }
 
     $app->set_header( 'X-Frame-Options', $x_frame_options );
+}
+
+sub set_x_xss_protection_header {
+    my $app = shift;
+
+    my $xss_protection = $app->config->XXSSProtection;
+    return unless $xss_protection;
+
+    $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
 sub send_http_header {
@@ -1311,7 +1335,36 @@ sub user {
 
 sub permissions {
     my $app = shift;
-    $app->{perms} = shift if @_;
+
+    if (@_) {
+        $app->{perms} = shift;
+    }
+    else {
+        if ( !$app->{perms} ) {
+            my $user = $app->user
+                or return;
+
+            # Exists?
+            my $blog_id = $app->param('blog_id');
+            if ($blog_id) {
+                my $blog = MT->model('blog')->load($blog_id)
+                    or return $app->errtrans( 'Cannot load blog (ID:[_1])',
+                    $blog_id );
+            }
+
+            my $perm = $user->permissions($blog_id);
+            if (   $user->is_superuser
+                || $user->can_edit_templates
+                || $perm->permissions )
+            {
+                $app->{perms} = $perm;
+            }
+            else {
+                $app->{perms} = undef;
+            }
+        }
+    }
+
     return $app->{perms};
 }
 
@@ -2357,10 +2410,10 @@ sub create_user_pending {
     }
 
     my $nickname = $q->param('nickname');
-    if ( !$nickname && !( $q->param('external_auth') ) ) {
+    if ( !length($nickname) && !( $q->param('external_auth') ) ) {
         return $app->error( $app->translate("User requires display name.") );
     }
-    if ( $nickname && $nickname =~ m/([<>])/ ) {
+    if ( length($nickname) && $nickname =~ m/([<>])/ ) {
         return $app->error(
             $app->translate(
                 "[_1] contains an invalid character: [_2]",
@@ -2387,11 +2440,16 @@ sub create_user_pending {
             );
         }
     }
-    elsif ( !( $q->param('external_auth') ) ) {
-        delete $param->{email};
-        return $app->error(
-            $app->translate("Email Address is required for password reset.")
-        );
+    else {
+        if ( $app->config('RequiredUserEmail')
+            and !( $q->param('external_auth') ) )
+        {
+            delete $param->{email};
+            return $app->error(
+                $app->translate(
+                    "Email Address is required for password reset.")
+            );
+        }
     }
 
     my $name = $q->param('username');
@@ -2399,7 +2457,7 @@ sub create_user_pending {
         $name =~ s/(^\s+|\s+$)//g;
         $param->{name} = $name;
     }
-    unless ( defined($name) && $name ) {
+    unless ( defined($name) && length($name) ) {
         return $app->error( $app->translate("User requires username.") );
     }
     elsif ( $name =~ m/([<>])/ ) {
@@ -2841,7 +2899,7 @@ sub show_error {
         $param = { error => $param };
     }
 
-    my $error = $param->{error};
+    my $error = $param->{error} || $app->translate('Unknown error');
 
     if ($MT::DebugMode) {
         if ($@) {
@@ -3042,6 +3100,7 @@ sub run {
     }
 
     $app->set_x_frame_options_header;
+    $app->set_x_xss_protection_header;
 
     my ($body);
 
@@ -3246,7 +3305,7 @@ sub run {
         if ( $app->{redirect_use_meta} ) {
             $app->send_http_header();
             $app->print( '<meta http-equiv="refresh" content="0;url='
-                    . $app->{redirect}
+                    . encode_html( $app->{redirect} )
                     . '">' );
         }
         else {

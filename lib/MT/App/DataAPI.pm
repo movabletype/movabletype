@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,7 +22,7 @@ our %endpoints = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {3}
-sub API_VERSION ()     {3.1}
+sub API_VERSION ()     {3.2}
 
 sub init {
     my $app = shift;
@@ -2152,6 +2152,26 @@ sub core_endpoints {
             },
             error_codes => { 403 => 'Do not have permission to upload.', },
         },
+        {   id        => 'create_entry',
+            route     => '/sites/:site_id/entries',
+            resources => ['entry'],
+            verb      => 'POST',
+            version   => 3,
+            handler   => "${pkg}v3::Entry::create",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to create an entry.', },
+        },
+        {   id        => 'update_entry',
+            route     => '/sites/:site_id/entries/:entry_id',
+            resources => ['entry'],
+            verb      => 'PUT',
+            version   => 3,
+            handler   => "${pkg}v3::Entry::update",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to update an entry.', },
+        },
     ];
 }
 
@@ -2738,8 +2758,8 @@ sub send_cors_http_header {
 sub send_http_header {
     my $app = shift;
 
-    $app->set_header( 'X-Content-Type' => 'nosniff' );
-    $app->set_header( 'Cache-Control'  => 'no-cache' );
+    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
+    $app->set_header( 'Cache-Control'          => 'no-cache' );
 
     $app->send_cors_http_header(@_);
 

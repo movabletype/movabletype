@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -146,19 +146,16 @@ sub fields {
 
                 return if !_can_save_blog_pathinfo($obj);
 
+                my $subdomain = $hash->{siteSubdomain};
                 if ( defined( $hash->{siteSubdomain} )
                     && $hash->{siteSubdomain} ne '' )
                 {
-                    my $subdomain = $hash->{siteSubdomain};
+                    $subdomain = $hash->{siteSubdomain};
                     $subdomain .= '.' if $subdomain !~ /\.$/;
                     $subdomain =~ s/\.{2,}/\./g;
-
-                    my $path = $hash->{url};
-                    return "$subdomain/::/$path";
                 }
-                else {
-                    return $hash->{url};
-                }
+                my $path = $hash->{url};
+                return "$subdomain/::/$path";
             },
         },
         {   name      => 'archiveUrl',

@@ -1108,6 +1108,226 @@ subtest 'mode = save' => sub {
     ok( $out =~ m!permission=1!i, "save by others" );
 };
 
+subtest 'mode = save (type is commenter)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
+subtest 'mode = save (type is user)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
+subtest 'mode = view' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!permission=1!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by others" );
+};
+
+subtest 'mode = view (type is commenter)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
+subtest 'mode = view (type is user)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
 subtest 'mode = delete' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -1150,6 +1370,94 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: cfg_system_users" );
     ok( $out =~ m!permission=1!i, "delete by others" );
+};
+
+subtest 'mode = delete (type is commenter' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $komiya->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "delete by others" );
+};
+
+subtest 'mode = delete (type is user' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $komiya->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "delete by others" );
 };
 
 subtest 'action = recover_passwords' => sub {

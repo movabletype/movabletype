@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,6 +21,43 @@ sub save {
 
     return $app->errtrans("Invalid request.")
         unless $type;
+
+    if ( exists $class->properties->{class_type} and $app->param('class') ) {
+        my $classParamFilter
+            = lc $app->config('DefaultClassParamFilter') || 'all';
+        if ( $classParamFilter ne 'none' ) {
+
+            # Respect result of callbacks
+            my $res;
+            $res
+                = $app->run_callbacks( 'cms_class_param_filter.' . $type,
+                $app )
+                if $app->is_callback_registered(
+                'cms_class_param_filter.' . $type );
+
+            if ( !$res ) {
+
+                # all callbacks not returns true, or no callbacks found
+                if ( $classParamFilter eq 'moderate' ) {
+
+                    # MT core object only
+                    $res = 1;
+                    my @list
+                        = qw ( MT::Asset MT::Entry MT::Page MT::Category MT::Folder MT::Blog MT::Website );
+                    foreach my $o (@list) {
+                        if ( $class->isa($o) ) {
+                            $res = 0;
+                            last;
+                        }
+                    }
+                }
+            }
+
+            # Raise error when state is still active
+            return $app->errtrans('Invalid request.')
+                if !$res;
+        }
+    }
 
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
@@ -237,6 +274,9 @@ sub save {
 
     if ( $type eq 'author' ) {
 
+        # Load system permission record
+        my $prev_sys_perms = $obj->permissions(0)->permissions;
+
         #FIXME: Legacy columns - remove them
         my @cols
             = qw(is_superuser can_create_blog can_view_log can_edit_templates);
@@ -273,6 +313,27 @@ sub save {
             }
         }
         delete $values{'password'};
+
+        # Load current system permnission, then rebuild permissions if needed.
+        my $curr_sys_perms = $obj->permissions(0)->permissions;
+        if (( $prev_sys_perms and !$curr_sys_perms )
+            or (    $prev_sys_perms
+                and $curr_sys_perms
+                and $prev_sys_perms ne $curr_sys_perms )
+            )
+        {
+            my $perm_iter = MT->model('permission')->load_iter(
+                {   author_id => $obj->id,
+                    blog_id   => { not => 0 },
+                }
+            );
+            while ( my $perm = $perm_iter->() ) {
+
+                # Clear all permissions then rebuild it.
+                $perm->permissions('');
+                $perm->rebuild;
+            }
+        }
     }
 
     if ( $type eq 'blog' || $type eq 'website' ) {
@@ -666,7 +727,7 @@ sub edit {
     my $cfg    = $app->config;
     $param{styles} = '';
     if ( $type eq 'author' ) {
-        if ( $perms || $blog_id ) {
+        if ($blog_id) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
@@ -1780,7 +1841,6 @@ sub delete {
     my $parent  = $q->param('parent');
     my $blog_id = $q->param('blog_id');
     my $class   = $app->model($type) or return;
-    my $perms   = $app->permissions;
     my $author  = $app->user;
 
     $app->validate_magic() or return;

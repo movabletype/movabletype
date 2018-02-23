@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -953,7 +953,8 @@ abstract class MTDatabase {
             $include_private = 0;
             $tag_array = tag_split($tag_arg);
             foreach ($tag_array as $tag) {
-                if ($tag && (substr($tag,0,1) == '@')) {
+                $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                if ($tag_body && (substr($tag_body,0,1) == '@')) {
                     $include_private = 1;
                 }
             }
@@ -1900,6 +1901,16 @@ abstract class MTDatabase {
                 return $top_cats;
             }
         }
+
+        if ( isset($args['sort_by']) && 'user_custom' != $sort_by ) {
+            usort($categories, function($a,$b) use ($sort_by) {
+                return strcmp($a->$sort_by,$b->$sort_by);
+            });
+            if($sort_order == 'desc') {
+                $categories = array_reverse($categories);
+            }
+        }
+
         return $categories;
     }
 
@@ -3435,8 +3446,10 @@ abstract class MTDatabase {
                 $sort_by = 'asset_' . $args['sort_by'];
             }
         }
-        if (isset($args['lastn']))
+        if (isset($args['lastn'])) {
             $order = 'desc';
+            $sort_by = 'asset_created_on';
+        }
 
         $join_score = "";
         $distinct = "";

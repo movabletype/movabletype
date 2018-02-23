@@ -17,6 +17,13 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="system_msg" id="system_msg">
+<mt:if name="email_is_blank">
+  <mtapp:statusmsg
+     id="saved"
+     class="warning">
+    <__trans phrase="Email Address is required for password reset.">
+  </mtapp:statusmsg>
+</mt:if>
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"
@@ -243,7 +250,7 @@ TC.attachLoadEvent(init);
 
     <mtapp:setting
        id="email"
-       required="$auth_mode_mt"
+       required="$email_is_required"
        label="<__trans phrase="Email Address">"
        hint="<__trans phrase="The email address associated with this user.">">
        <input type="text" name="email" id="email" class="text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> /><mt:if name="email_readonly"><input name="email" type="hidden" value="<mt:var name="email" escape="html">" /></mt:if>
@@ -387,12 +394,12 @@ TC.attachLoadEvent(init);
     </mtapp:setting>
   </mt:unless>
 
-  <mt:if name="is_me">
+  <mt:if name="can_modify_api_password">
     <mtapp:setting
        id="api_password"
        label="<__trans phrase="Web Services Password">"
        hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
-      <input type="password" name="api_password" id="api_password" class="text password" value="<mt:var name="api_password" escape="html">" />
+      <input type="password" name="api_password" id="api_password" class="text password" autocomplete="new-password" value="<mt:var name="api_password" escape="html">" />
       <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
   </mt:if>

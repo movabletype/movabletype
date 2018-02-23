@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0010' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0020' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.4',              '__PRODUCT_VERSION_ID__',
+        '6.3.7',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 4;
+        $RELEASE_NUMBER = 7;
     }
 
     $DebugMode = 0;
@@ -631,6 +631,16 @@ sub remove_callback {
     my $cbarr = $list->{$method};
     return unless $cbarr;
     @$cbarr = grep { $_ != $cb } @$cbarr;
+}
+
+sub is_callback_registered {
+    my $class    = shift;
+    my ( $meth ) = @_;
+
+    foreach my $list ( @Callbacks ) {
+        return 1 if exists $list->{$meth};
+    }
+    return 0;
 }
 
 # For use by MT internal code
@@ -3814,6 +3824,9 @@ Registers several callbacks simultaneously. Each element in the array
 parameter given should be a hashref containing these elements: C<name>, 
 C<priority>, C<plugin> and C<code>.
 
+=head2 MT->is_callback_registered( $method )
+Return tru if a callback registered.
+
 =head2 MT->run_callbacks($meth[, $arg1, $arg2, ...])
 
 Invokes a particular callback, running any associated callback handlers.
@@ -4367,7 +4380,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2017 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2018 Six Apart.
 All rights reserved.
 
 =cut

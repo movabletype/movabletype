@@ -20,7 +20,7 @@ function mtUpdateSignInWidget(u) {
     } else {
         u = mtGetUser();
     }
-    if (u && u.name) {
+    if (u && u.name && !u.is_anonymous) {
         var url;
         if (u.is_authenticated) {
             if (u.is_author) {

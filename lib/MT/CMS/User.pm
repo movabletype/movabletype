@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -69,6 +69,8 @@ sub edit {
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
+        $param->{can_modify_api_password}
+            = ( $param->{editing_other_profile} || $param->{is_me} );
         $param->{can_recover_password} = MT::Auth->can_recover_password;
         $param->{languages}
             = MT::I18N::languages_list( $app, $obj->preferred_language )
@@ -93,8 +95,9 @@ sub edit {
         $param->{create_personal_weblog}
             = $app->config->NewUserAutoProvisioning ? 1 : 0
             unless exists $param->{create_personal_weblog};
-        $param->{can_modify_password}  = MT::Auth->password_exists;
-        $param->{can_recover_password} = MT::Auth->can_recover_password;
+        $param->{can_modify_password}     = MT::Auth->password_exists;
+        $param->{can_modify_api_password} = 0;
+        $param->{can_recover_password}    = MT::Auth->can_recover_password;
     }
 
     # Make permission list
@@ -172,6 +175,12 @@ sub edit {
     }
     $param->{'nav_authors'} = 1;
     $param->{active_user_menu} = 'profile';
+
+    $param->{'email_is_blank'} = 1
+        if $obj && !$obj->email;
+    $param->{'email_is_required'} = $app->config('RequiredUserEmail');
+
+    return 1;
 }
 
 sub edit_role {
@@ -792,7 +801,9 @@ sub save_cfg_system_users {
         1
     );
 
-    if ( 'MT' eq uc $app->config('AuthenticationModule') ) {
+    if ( 'MT' eq uc $app->config('AuthenticationModule')
+        && !$app->config->is_readonly('UserPasswordMinLength') )
+    {
         my $pass_min_len = $app->param('minimum_length');
         if ( ( $pass_min_len =~ m/\D/ ) or ( $pass_min_len < 1 ) ) {
             return $app->errtrans(
@@ -830,8 +841,7 @@ sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $user = $app->user;
     return $app->permission_denied()
         unless $app->can_do('remove_user_assoc');
     my $can_remove_administrator
@@ -858,9 +868,8 @@ sub remove_user_assoc {
 
         MT::Association->remove( { blog_id => $blog_id, author_id => $id } );
 
-        # these too, just in case there are no real associations
-        # (ie, commenters)
-        $perm->remove if $perm;
+        # Rebuild permissions because the user may belong to several groups
+        $perm->rebuild if $perm;
     }
 
     $app->add_return_arg( saved => 1 );
@@ -871,8 +880,7 @@ sub revoke_role {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $user = $app->user;
     return $app->permission_denied()
         unless $app->can_do('revoke_role');
 
@@ -1571,7 +1579,7 @@ sub save_filter {
             $accessor->( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
-            if ( !$name );
+            if ( !length($name) );
 
         if ( $name =~ m/([<>])/ ) {
             return $eh->error(
@@ -1630,22 +1638,34 @@ sub save_filter {
             )
             );
     }
-    my $email = $accessor->('email');
-    return $eh->error(
-        MT->translate("Email Address is required for password reset.") )
-        unless $email;
-    if ( !is_valid_email($email) ) {
-        return $eh->error( $app->translate("Email Address is invalid.") );
+
+    # Password strength check
+    # Why the name of password field is different in each forms...
+    if ( scalar $app->param('pass') || scalar $app->param('password') ) {
+        my $msg = $app->verify_password_strength( $accessor->('name'),
+            scalar $app->param('pass') );
+        return $eh->error($msg) if $msg;
     }
 
-    if ( $email =~ m/([<>])/ ) {
+    my $email = $accessor->('email');
+    if ($email) {
+        return $eh->error( $app->translate("Email Address is invalid.") )
+            unless is_valid_email($email);
+
+        if ( $email =~ m/([<>])/ ) {
+            return $eh->error(
+                $app->translate(
+                    "[_1] contains an invalid character: [_2]",
+                    $app->translate("Email Address"),
+                    $encode_html->($1)
+                )
+            );
+        }
+    }
+    elsif ( $app->config('RequiredUserEmail') ) {
         return $eh->error(
-            $app->translate(
-                "[_1] contains an invalid character: [_2]",
-                $app->translate("Email Address"),
-                $encode_html->($1)
-            )
-        );
+            MT->translate("Email Address is required for password reset.") )
+            unless is_valid_email($email);
     }
 
     if ( $accessor->('url') ) {
@@ -1653,6 +1673,7 @@ sub save_filter {
         return $eh->error( MT->translate("URL is invalid.") )
             if !is_url($url) || ( $url =~ m/[<>]/ );
     }
+
     1;
 }
 

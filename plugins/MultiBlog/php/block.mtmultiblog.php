@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -64,7 +64,7 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 # Multiblog's "context" mode:
 # The container's contents are evaluated once with a multi-blog context
 function multiblog_context($args, $content, &$ctx, &$repeat) {
-    $localvars = array('multiblog_context', 'multiblog_blog_ids', 'local_blog_id');
+    $localvars = array('multiblog_context', 'multiblog_blog_ids', 'multiblog_include_with_website', 'local_blog_id');
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -75,6 +75,9 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
             ),
             'multiblog_exclude_blog_ids' => array(
                 'exclude_blogs',
+            ),
+            'multiblog_include_with_website' => array(
+                'include_with_website',
             ),
         );
         foreach ($stash_to_args as $stash_key => $args_keys) {

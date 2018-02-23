@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2003-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2003-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,7 +20,7 @@ TC.TableSelect = function( element ) {
     // make closures
     var self = this;
     this.clickClosure = function( evt ) { return self.click( evt ); };
-    this.keyPressClosure = function( evt ) { return self.eventKeyPress( evt ); };
+//    this.keyPressClosure = function( evt ) { return self.eventKeyPress( evt ); };
     this.focusRow = null;
     this.lastClicked = null;
     this.thisClicked = null;
@@ -49,7 +49,7 @@ TC.TableSelect.prototype.init = function( container ) {
 
     // event handlers
     TC.attachEvent( container, "click", this.clickClosure );
-    TC.attachEvent( window, "keypress", this.keyPressClosure );
+//    TC.attachEvent( window, "keypress", this.keyPressClosure );
 
     // select rows
     this.selectAll();

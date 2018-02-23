@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -408,17 +408,26 @@ sub _hdlr_assets {
     else {
         my $blog = $ctx->stash('blog');
         my $so
-            = lc( $args->{sort_order} )
+            = lc( $args->{sort_order} || '' )
             || ( $blog ? $blog->sort_order_posts : undef )
             || '';
-        my $col = lc( $args->{sort_by} || 'created_on' );
+        my $col
+            = $args->{lastn}
+            ? 'created_on'
+            : lc( $args->{sort_by} || 'created_on' );
 
         # TBD: check column being sorted; if it is numeric, use numeric sort
-        @$assets
-            = $so eq 'ascend'
-            ? sort { $a->$col() cmp $b->$col() } @$assets
-            : sort { $b->$col() cmp $a->$col() } @$assets;
-        $no_resort = 1;
+        if ( $args->{lastn} ) {
+            @$assets = sort { $b->$col() cmp $a->$col() } @$assets;
+            $no_resort = 0;
+        }
+        else {
+            @$assets
+                = $so eq 'ascend'
+                ? sort { $a->$col() cmp $b->$col() } @$assets
+                : sort { $b->$col() cmp $a->$col() } @$assets;
+            $no_resort = 1;
+        }
         if (@filters) {
             my $i   = 0;
             my $j   = 0;
@@ -1175,8 +1184,8 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} > $a->image_height;
+        delete $arg{Width}  if ( $arg{Width} && $arg{Width} > $a->image_width );
+        delete $arg{Height} if ( $arg{Height} && $arg{Height} > $a->image_height );
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,6 @@ sub edit {
 
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
     my $blog    = $app->blog;
     my $type    = $q->param('_type');
 
@@ -146,7 +145,6 @@ sub edit_commenter {
 
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-    my $perms   = $app->permissions;
     my $type    = $q->param('_type');
 
     $param->{is_email_hidden} = $obj->is_email_hidden;
@@ -361,22 +359,19 @@ sub untrust_commenter {
 }
 
 sub approve_item {
-    my $app   = shift;
-    my $perms = $app->permissions;
+    my $app = shift;
     $app->param( 'approve', 1 );
     set_item_visible($app);
 }
 
 sub unapprove_item {
-    my $app   = shift;
-    my $perms = $app->permissions;
+    my $app = shift;
     $app->param( 'unapprove', 1 );
     set_item_visible($app);
 }
 
 sub empty_junk {
     my $app      = shift;
-    my $perms    = $app->permissions;
     my $user     = $app->user;
     my $blog     = $app->blog;
     my $blog_ids = [];
@@ -717,6 +712,9 @@ sub reply_preview {
         $app->translate( 'Cannot load blog #[_1].', $q->param('blog_id') ) )
         unless $blog;
 
+    can_do_reply( $app, $entry )
+        or return;
+
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
         || $app->config->GlobalSanitizeSpec;
@@ -767,7 +765,7 @@ sub dialog_post_comment {
     return $app->errtrans("You cannot reply to unapproved comment.")
         unless $parent->is_published;
 
-    my $perms = $app->{perms};
+    my $perms = $app->permissions;
     return unless $perms;
 
     my $entry_class = $app->_load_driver_for('entry');
@@ -827,7 +825,6 @@ sub can_view {
     require MT::Entry;
     my $entry = MT::Entry->load( $obj->entry_id )
         or return 0;
-    my $perms = $app->permissions;
     if ( $entry->author_id == $app->user->id ) {
         return $app->can_do('open_own_entry_comment_edit_screen');
     }
@@ -933,7 +930,6 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
-    my $perms = $app->permissions;
 
     if ( !$app->can_do('edit_all_comments') ) {
         $app->can_do('edit_own_entry_comment')

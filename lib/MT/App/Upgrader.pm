@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -354,7 +354,7 @@ sub init_user {
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
-    if ( $mode eq 'MT' ) {
+    if ( $mode eq 'MT' and $initial_email ) {
         if ( !MT::Util::is_valid_email($initial_email) ) {
             $param{error} = $app->translate( "Invalid email address '[_1]'",
                 $initial_email );
@@ -463,6 +463,10 @@ sub init_website {
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;
 
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
+    }
+
+    if ( $param{'support_unwritable'} == 1 ) {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 

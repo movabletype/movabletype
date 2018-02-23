@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -75,6 +75,10 @@ sub core_resources {
             {   version          => 2,
                 fields           => "${pkg}v2::User::fields",
                 updatable_fields => "${pkg}v2::User::updatable_fields",
+            },
+            {   version          => 3,
+                fields           => "${pkg}v3::User::fields",
+                updatable_fields => "${pkg}v3::User::updatable_fields",
             }
         ],
         'author' => 'user',

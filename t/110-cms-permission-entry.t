@@ -1555,7 +1555,6 @@ subtest 'mode = save_entry' => sub {
     ok( $out, "Request: save_entry" );
     ok( $out !~ m!permission=1!i,
         "save_entry by permitted user (create_post)" );
-
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
@@ -2494,8 +2493,8 @@ subtest 'mode = edit (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by child blog" );
+    ok( $out,                   "Request: edit" );
+    ok( $out =~ m!redirect=1!i, "edit by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2656,8 +2655,8 @@ subtest 'action = set_draft' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: set_draft" );
-    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
+    ok( $out,                     "Request: set_draft" );
+    ok( $out =~ m!permission=1!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2812,8 +2811,8 @@ subtest 'action = set_draft (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: set_draft" );
-    ok( $out =~ m!not implemented!i, "set_draft by other website" );
+    ok( $out,                     "Request: set_draft" );
+    ok( $out =~ m!permission=1!i, "set_draft by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2854,8 +2853,8 @@ subtest 'action = set_draft (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: set_draft" );
-    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
+    ok( $out,                     "Request: set_draft" );
+    ok( $out =~ m!permission=1!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3010,8 +3009,8 @@ subtest 'action = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
+    ok( $out,                     "Request: add_tags" );
+    ok( $out =~ m!permission=1!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3166,8 +3165,8 @@ subtest 'action = add_tags (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other website" );
+    ok( $out,                     "Request: add_tags" );
+    ok( $out =~ m!permission=1!i, "add_tags by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3208,8 +3207,8 @@ subtest 'action = add_tags (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
+    ok( $out,                     "Request: add_tags" );
+    ok( $out =~ m!permission=1!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3364,8 +3363,8 @@ subtest 'action = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
+    ok( $out,                     "Request: remove_tags" );
+    ok( $out =~ m!permission=1!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3520,8 +3519,8 @@ subtest 'action = remove_tags (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other website" );
+    ok( $out,                     "Request: remove_tags" );
+    ok( $out =~ m!permission=1!i, "remove_tags by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3562,8 +3561,8 @@ subtest 'action = remove_tags (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
+    ok( $out,                     "Request: remove_tags" );
+    ok( $out =~ m!permission=1!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3676,8 +3675,8 @@ subtest 'action = open_batch_editor' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
+    ok( $out,                     "Request: open_batch_editor" );
+    ok( $out =~ m!permission=1!i, "open_batch_editor by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3790,8 +3789,8 @@ subtest 'action = open_batch_editor (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by other website" );
+    ok( $out,                     "Request: open_batch_editor" );
+    ok( $out =~ m!permission=1!i, "open_batch_editor by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3832,8 +3831,8 @@ subtest 'action = open_batch_editor (website)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
+    ok( $out,                     "Request: open_batch_editor" );
+    ok( $out =~ m!permission=1!i, "open_batch_editor by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3856,6 +3855,98 @@ subtest 'action = open_batch_editor (website)' => sub {
     ok( $out,                        "Request: open_batch_editor" );
     ok( $out =~ m!not implemented!i, "open_batch_editor by type mismatch" );
 
+};
+
+subtest 'mode = save_entry_prefs (entry)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by permitted user (create_post)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by permitted user (edit_all_posts)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kumekawa,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'entry',
+            blog_id          => $blog->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other blog" );
 };
 
 done_testing();

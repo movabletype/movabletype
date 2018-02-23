@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,7 +20,8 @@ sub save_pages {
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
     if (   !$id
         && !$perms->can_do('create_new_page') )
     {
@@ -49,6 +50,7 @@ sub can_save {
     }
 
     my $author = $app->user;
+    return 1 if $author->is_superuser;
     my $blog_id = $id ? $id->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('save_page');
 
@@ -56,23 +58,17 @@ sub can_save {
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    my $author = $app->user;
-    return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
         $obj = MT->model('page')->load($obj)
             or return;
     }
-    if ($obj) {
-        return unless $obj->isa('MT::Page');
-    }
+    return if !$obj || !$obj->isa('MT::Page');
 
-    my $perms = $app->permissions;
-    my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    if ( !$perms || $perms->blog_id != $blog_id ) {
-        $perms = $author->permissions($blog_id);
-    }
-    return $perms && $perms->can_do('delete_page');
+    my $author = $app->user;
+    return 1 if $author->is_superuser;
+    my $blog_id = $obj->blog_id;
+    return $author->permissions($blog_id)->can_do('delete_page');
 }
 
 sub pre_save {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1049,6 +1049,7 @@ use vars qw( @ISA %Lexicon );
 	'Association' => '関連付け',
 	'Associations' => '関連付け',
 	'Permissions with role: [_1]' => '[_1]の権限',
+	'User is [_1]' => 'ユーザーが[_1]である',
 	'Permissions for [_1]' => '[_1]の権限',
 	'association' => '関連付け',
 	'associations' => '関連付け',
@@ -2851,8 +2852,6 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/addons/Sync.pack/js/cms.js
 
-## mt-static/chart-api/deps/raphael-min.js
-
 ## mt-static/chart-api/mtchart.js
 
 ## mt-static/chart-api/mtchart.min.js
@@ -2875,13 +2874,6 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
-
-## mt-static/js/tc/mixer/display.js
-	'Title:' => 'タイトル:',
-	'Description:' => '説明:',
-	'Author:' => '作者:',
-	'Tags:' => 'タグ: ',
-	'URL:' => 'URL:',
 
 ## mt-static/js/upload_settings.js
 	'You must set a valid path.' => '有効なパス名を指定してください。',
@@ -3252,7 +3244,6 @@ use vars qw( @ISA %Lexicon );
 	'Pico' => 'Pico',
 	'Pico Styles' => 'Picoスタイル',
 	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
-
 
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
@@ -4740,6 +4731,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'アーカイブテンプレートの作成:',
+	'Entry Listing' => '記事一覧',
 	'Create template module' => 'テンプレートモジュールの作成',
 	'Create index template' => 'インデックステンプレートの作成',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
@@ -7223,6 +7215,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 418
+## New words: 307
 
 1;

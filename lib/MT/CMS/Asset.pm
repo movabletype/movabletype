@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,8 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
     my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return $app->permission_denied();
     if ($id) {
         my $asset_class = $app->model('asset');
         $param->{asset}        = $obj;
@@ -42,7 +43,7 @@ sub edit {
         }
         require MT::ObjectTag;
         my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
+            [   map { $_->name } MT->model('tag')->load(
                     undef,
                     {   join => [
                             'MT::ObjectTag', 'tag_id',
@@ -133,25 +134,25 @@ sub edit {
         $param->{previous_entry_id} = $prev_asset->id if $prev_asset;
         $param->{next_entry_id}     = $next_asset->id if $next_asset;
 
-        my $user = MT::Author->load(
+        my $user = MT->model('author')->load(
             {   id   => $obj->created_by(),
                 type => MT::Author::AUTHOR()
             }
         );
         if ($user) {
-            $param->{created_by} = $user->name;
+            $param->{created_by} = $user->nickname;
         }
         else {
             $param->{created_by} = $app->translate('(user deleted)');
         }
         if ( $obj->modified_by() ) {
-            $user = MT::Author->load(
+            $user = MT->model('author')->load(
                 {   id   => $obj->modified_by(),
                     type => MT::Author::AUTHOR()
                 }
             );
             if ($user) {
-                $param->{modified_by} = $user->name;
+                $param->{modified_by} = $user->nickname;
             }
             else {
                 $param->{modified_by} = $app->translate('(user deleted)');
@@ -204,8 +205,8 @@ sub dialog_list_asset {
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT::Tag->load( { name => '@userpic' },
-            { binary => { name => 1 } } );
+        my $tag = MT->model('tag')
+            ->load( { name => '@userpic' }, { binary => { name => 1 } } );
         if ($tag) {
             require MT::ObjectTag;
             $args{'join'} = MT::ObjectTag->join_on(
@@ -342,7 +343,7 @@ sub insert {
     my $tmpl;
 
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
-    my $asset = MT::Asset->load($id);
+    my $asset = MT->model('asset')->load($id);
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
@@ -631,7 +632,7 @@ sub complete_insert {
 
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
-        $asset = MT::Asset->load( $app->param('id') )
+        $asset = MT->model('asset')->load( $app->param('id') )
             || return $app->errtrans( "Cannot load file #[_1].",
             $app->param('id') );
     }
@@ -722,7 +723,7 @@ sub complete_insert {
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
         my $tags_js = MT::Util::to_json(
-            [   map { $_->name } MT::Tag->load(
+            [   map { $_->name } MT->model('tag')->load(
                     undef,
                     {   join => [
                             'MT::ObjectTag', 'tag_id',
@@ -741,7 +742,7 @@ sub complete_insert {
         $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
     }
     else {
-        if ( $app->user->can_do('access_to_asset_list') ) {
+        if ( $app->can_do('access_to_asset_list') ) {
             my $redirect_args = {
                 blog_id => $app->param('blog_id'),
                 (     ( $ext_from && $ext_to )
@@ -781,8 +782,7 @@ sub cancel_upload {
     $app->validate_magic() or return;
 
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
    # User has permission to delete asset and asset file, or user created asset
@@ -812,8 +812,7 @@ sub complete_upload {
     my $app   = shift;
     my %param = $app->param_hash;
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
     if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
@@ -830,7 +829,6 @@ sub complete_upload {
 
     $asset->on_upload( \%param );
 
-    my $perms = $app->permissions;
     return $app->permission_denied()
         unless $app->can_do('access_to_asset_list');
 
@@ -1052,7 +1050,7 @@ sub build_asset_hasher {
 
         my $ts = $obj->created_on;
         if ( my $by = $obj->created_by ) {
-            my $user = MT::Author->load($by);
+            my $user = MT->model('author')->load($by);
             $row->{created_by}
                 = $user ? $user->name : $app->translate('(user deleted)');
         }
@@ -1079,7 +1077,6 @@ sub build_asset_table {
     my (%args) = @_;
 
     my $asset_class = $app->model('asset') or return;
-    my $perms       = $app->permissions;
     my $list_pref   = $app->list_pref('asset');
     my $limit       = $args{limit};
     my $param       = $args{param} || {};
@@ -1124,8 +1121,7 @@ sub asset_insert_text {
     my $q       = $app->param;
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
-    require MT::Asset;
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->errtrans( "Cannot load file #[_1].", $id );
     $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
@@ -1135,8 +1131,7 @@ sub _process_post_upload {
     my $app   = shift;
     my %param = $app->param_hash;
     my $asset;
-    require MT::Asset;
-    $param{id} && ( $asset = MT::Asset->load( $param{id} ) )
+    $param{id} && ( $asset = MT->model('asset')->load( $param{id} ) )
         or return $app->errtrans("Invalid request.");
 
     if ( $app->can('edit_assets') || $asset->created_by == $app->user->id ) {
@@ -1173,8 +1168,7 @@ sub _set_start_upload_params_compat {
             unless $perms->can_do('upload');
 
         my $blog_id = $app->param('blog_id');
-        require MT::Blog;
-        my $blog = MT::Blog->load($blog_id)
+        my $blog    = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1408,6 +1402,7 @@ sub _make_upload_destinations {
 }
 
 sub _set_start_upload_params {
+
     my $app = shift;
     my ($param) = @_;
 
@@ -1417,37 +1412,38 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        require MT::Blog;
-        my $blog = MT::Blog->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        if ( $blog_id ) {
+            my $blog    = MT->model('blog')->load($blog_id)
+                or return $app->error(
+                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
-        # Make a list of upload destination
-        my @dest_root = _make_upload_destinations( $app, $blog, 1 );
-        $param->{destination_loop} = \@dest_root;
+            # Make a list of upload destination
+            my @dest_root = _make_upload_destinations( $app, $blog, 1 );
+            $param->{destination_loop} = \@dest_root;
 
-        # Set default upload options
-        $param->{allow_to_change_at_upload}
-            = defined $blog->allow_to_change_at_upload
-            ? $blog->allow_to_change_at_upload
-            : 1;
-        if ( !$param->{allow_to_change_at_upload} ) {
-            foreach my $opt ( grep { $_->{selected} } @dest_root ) {
-                $param->{upload_destination_label} = $opt->{label};
-                $param->{upload_destination_value} = $opt->{path};
+            # Set default upload options
+            $param->{allow_to_change_at_upload}
+                = defined $blog->allow_to_change_at_upload
+                ? $blog->allow_to_change_at_upload
+                : 1;
+            if ( !$param->{allow_to_change_at_upload} ) {
+                foreach my $opt ( grep { $_->{selected} } @dest_root ) {
+                    $param->{upload_destination_label} = $opt->{label};
+                    $param->{upload_destination_value} = $opt->{path};
+                }
             }
+            $param->{destination}         = $blog->upload_destination;
+            $param->{extra_path}          = $blog->extra_path;
+            $param->{operation_if_exists} = $blog->operation_if_exists;
+            $param->{normalize_orientation}
+                = defined $blog->normalize_orientation
+                ? $blog->normalize_orientation
+                : 1;
+            $param->{auto_rename_non_ascii}
+                = defined $blog->auto_rename_non_ascii
+                ? $blog->auto_rename_non_ascii
+                : 1;
         }
-        $param->{destination}         = $blog->upload_destination;
-        $param->{extra_path}          = $blog->extra_path;
-        $param->{operation_if_exists} = $blog->operation_if_exists;
-        $param->{normalize_orientation}
-            = defined $blog->normalize_orientation
-            ? $blog->normalize_orientation
-            : 1;
-        $param->{auto_rename_non_ascii}
-            = defined $blog->auto_rename_non_ascii
-            ? $blog->auto_rename_non_ascii
-            : 1;
     }
     else {
         $param->{normalize_orientation} = 1;
@@ -1564,15 +1560,18 @@ sub _upload_file_compat {
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
-                    $basename =~ s/$ext_old$/$ext_new/;
+                    if( $basename eq $ext_old ) {
+                        $basename .= '.'  . $ext_new;
+                    } else {
+                        $basename =~ s/$ext_old$/$ext_new/;
+                    }
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
             }
         }
 
         $param{blog_id} = $blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
@@ -2093,11 +2092,16 @@ sub _upload_file {
         my $ext_old
             = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
             [2];
+
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
-            $basename =~ s/$ext_old$/$ext_new/;
+            if( $basename eq $ext_old ){
+                $basename .= '.' . $ext_new;
+            } else {
+                $basename =~ s/$ext_old$/$ext_new/;
+            }
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
     }
@@ -2149,8 +2153,7 @@ sub _upload_file {
     if ( $blog_id = $q->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->model('blog')->load($blog_id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
@@ -2651,8 +2654,7 @@ sub cms_pre_load_filtered_list {
 
     my $load_blog_ids = $load_options->{blog_ids} || undef;
 
-    require MT::Permission;
-    my $iter = MT::Permission->load_iter(
+    my $iter = MT->model('permission')->load_iter(
         {   author_id => $user->id,
             (   $load_blog_ids
                 ? ( blog_id => $load_blog_ids )
@@ -2736,7 +2738,7 @@ sub dialog_edit_asset {
     return $app->permission_denied()
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->errtrans( "Cannot load asset #[_1].", $id );
 
     my $param = {
@@ -2818,7 +2820,7 @@ sub dialog_edit_asset {
 
     require MT::ObjectTag;
     my $tags_js = MT::Util::to_json(
-        [   map { $_->name } MT::Tag->load(
+        [   map { $_->name } MT->model('tag')->load(
                 undef,
                 {   join => [
                         'MT::ObjectTag', 'tag_id',
@@ -2860,7 +2862,7 @@ sub js_save_asset {
         $app->json_error( $app->translate("Permission denied.") ) )
         if $blog_id && !$app->can_do('upload');
 
-    my $asset = MT::Asset->load($id)
+    my $asset = MT->model('asset')->load($id)
         or return $app->error(
         $app->json_error(
             $app->translate( "Cannot load asset #[_1].", $id )
@@ -3264,7 +3266,7 @@ sub insert_asset {
             my $id = $item->{id};
             return $app->errtrans('Invalid request.')
                 unless $id;
-            my $asset = MT::Asset->load($id)
+            my $asset = MT->model('asset')->load($id)
                 or return $app->errtrans( 'Cannot load asset #[_1]', $id );
             my %param;
             foreach my $k ( keys %$item ) {

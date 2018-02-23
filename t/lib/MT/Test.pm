@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -829,6 +829,75 @@ It\'s a hard rain\'s a-gonna fall',
         $cat->save or die "Couldn't save category record 3: " . $cat->errstr;
     }
 
+    # Categories and sub categories
+    $cat = MT::Category->load( { label => 'US', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('US');
+        $cat->description('The United States of America');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(4);
+        $cat->save or die "Couldn't save category record 4: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'California', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('California');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(4);
+        $cat->id(5);
+        $cat->save or die "Couldn't save category record 5: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'San Fransico', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('San Fransisco');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(5);
+        $cat->id(6);
+        $cat->save or die "Couldn't save category record 6: " . $cat->errstr;
+    }
+
+    $cat = MT::Category->load( { label => 'Japan', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Japan');
+        $cat->description('Japan');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(0);
+        $cat->id(7);
+        $cat->save or die "Couldn't save category record 7: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Tokyo', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Tokyo');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(7);
+        $cat->id(8);
+        $cat->save or die "Couldn't save category record 8: " . $cat->errstr;
+    }
+    $cat = MT::Category->load( { label => 'Chiyoda', blog_id => 2 } );
+    if ( !$cat ) {
+        $cat = new MT::Category;
+        $cat->blog_id(2);
+        $cat->label('Chiyoda');
+        $cat->description('');
+        $cat->author_id( $chuckd->id );
+        $cat->parent(8);
+        $cat->id(9);
+        $cat->save or die "Couldn't save category record 9: " . $cat->errstr;
+    }
+
     require MT::Placement;
     foreach my $i ( 1 .. @verses ) {
         $entry = MT::Entry->load( $i + 3 );
@@ -1191,6 +1260,62 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->tags('not_exists');
     $asset->save or die "Couldn't save asset record 4: " . $asset->errstr;
 
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_1.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_1.jpg' ) );
+    $asset->file_name('test_1.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074500');
+    $asset->save or die "Couldn't save asset record 5: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 8, 5 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_2.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_2.jpg' ) );
+    $asset->file_name('test_2.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074600');
+    $asset->save or die "Couldn't save asset record 6: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 9, 6 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_3.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_3.jpg' ) );
+    $asset->file_name('test_3.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074700');
+    $asset->save or die "Couldn't save asset record 7: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 7, 7 );
     ## ObjectScore
     my $e5 = MT::Entry->load(5);
     $e5->set_score( 'unit test', $bobd,               5, 1 );
@@ -1252,6 +1377,34 @@ It\'s a hard rain\'s a-gonna fall',
     $folder->author_id( $chuckd->id );
     $folder->parent(21);
     $folder->id(22);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
+    # Folder with sub folders
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Product');
+    $folder->description('News');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(0);
+    $folder->id(23);
+    $folder->save or die "Could'n sae folder record 21:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Consumer');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(23);
+    $folder->id(24);
+    $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
+
+    $folder = MT::Folder->new();
+    $folder->blog_id(2);
+    $folder->label('Game');
+    $folder->description('');
+    $folder->author_id( $chuckd->id );
+    $folder->parent(24);
+    $folder->id(25);
     $folder->save or die "Could'n sae folder record 22:" . $folder->errstr;
 
     $page = MT::Page->new();
@@ -1409,16 +1562,44 @@ It\'s a hard rain\'s a-gonna fall',
     if ($entry) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $entry->blog_id );
-        $map->asset_id(1);
+        $map->asset_id(5);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $entry->datasource );
         $map->object_id( $entry->id );
         $map->save;
     }
     $page = MT::Page->load(20);
-    if ($entry) {
+    if ($page) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $page->blog_id );
-        $map->asset_id(2);
+        $map->asset_id(5);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $page->datasource );
         $map->object_id( $page->id );
         $map->save;

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -17,6 +17,11 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     # Get the depth info
     $max_depth = $args['max_depth'];
     $depth = $ctx->stash('subCatsDepth') or 0;
+
+    # If we're too deep, return an emtry string because we're done
+    if ( $max_depth && $depth >= $max_depth ) {
+        return '';
+    }
 
     # Get the sorting info
     $sort_method = $ctx->stash('subCatsSortMethod');

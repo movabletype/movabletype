@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -379,7 +379,7 @@ sub _send_mt_sendmail {
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
-        exec $sm_loc, "-oi", "-t"
+        exec $sm_loc, "-oi", "-t", "-f", $hdrs->{From}
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,8 +13,9 @@ function smarty_function_mtarchivecount($args, &$ctx) {
         $archiver = ArchiverFactory::get_archiver($at);
     }
     $count = 0;
-    if ((!isset($archiver) && $ctx->stash('inside_mt_categories')) ||
-        ($ctx->stash('inside_mt_categories') && !$archiver->is_date_based())) {
+    if ( ( ( 'Category' == $at ) ) ||
+         ( !isset($archiver) && $ctx->stash('inside_mt_categories') ) ||
+         ( $ctx->stash('inside_mt_categories') && !$archiver->is_date_based() ) ) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
         # $count is set

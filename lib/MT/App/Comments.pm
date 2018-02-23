@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -966,7 +966,7 @@ sub post {
     if (   $blog->require_comment_emails()
         && !$commenter
         && !(
-               $comment->author
+               length( $comment->author )
             && $comment->email
             && is_valid_email( $comment->email )
         )
@@ -2007,20 +2007,32 @@ sub save_commenter_profile {
             );
             return $app->build_page( 'profile.tmpl', \%param );
         }
-        if ( $param{password} ne $param{pass_verify} ) {
-            $param{error} = $app->translate('Passwords do not match.');
-            return $app->build_page( 'profile.tmpl', \%param );
-        }
-        require MT::Auth;
-        if ($param{password}
-            && not MT::Auth->is_valid_password(
-                $cmntr, scalar( $q->param('old_pass') )
-            )
-            )
-        {
-            $param{error}
-                = $app->translate('Failed to verify the current password.');
-            return $app->build_page( 'profile.tmpl', \%param );
+        if ( $param{password} ) {
+            if ( $param{password} ne $param{pass_verify} ) {
+                $param{error} = $app->translate('Passwords do not match.');
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
+
+            require MT::Auth;
+            if (not MT::Auth->is_valid_password(
+                    $cmntr, scalar( $q->param('old_pass') )
+                )
+                )
+            {
+                $param{error}
+                    = $app->translate(
+                    'Failed to verify the current password.');
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
+            elsif (
+                my $msg = $app->verify_password_strength(
+                    $cmntr->name, $param{password}
+                )
+                )
+            {
+                $param{error} = $msg;
+                return $app->build_page( 'profile.tmpl', \%param );
+            }
         }
     }
     my $email = $param{email};

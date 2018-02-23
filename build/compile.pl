@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -48,7 +48,7 @@ my $response = $ua->post(
 my $year     = ( localtime(time) )[5] + 1900;
 my $compiled = << "HEAD";
 /*
- * Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
