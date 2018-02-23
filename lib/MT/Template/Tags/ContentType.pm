@@ -303,54 +303,6 @@ sub _hdlr_contents {
                 $args{range_incl}{authored_on} = 1;
             }
         }
-        else {
-
-            # Check attributes
-            my $found_valid_args = 0;
-            foreach my $valid_key (
-                'category', 'categories', 'tag',       'tags',
-                'author',   'days',       'min_score', 'max_score',
-                'min_rate', 'max_rate',   'min_count', 'max_count'
-                )
-            {
-                if ( exists( $args->{$valid_key} ) ) {
-                    $found_valid_args = 1;
-                    last;
-                }
-            }
-
-            if ( !$found_valid_args ) {
-
-                # Uses weblog settings
-                if ( my $days = $blog ? $blog->days_on_index : 10 ) {
-                    my @ago = offset_time_list( time - 3600 * 24 * $days,
-                        $blog_id );
-                    my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                        $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-                    my $map = $ctx->stash('template_map');
-                    if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
-                        push @{ $args{joins} },
-                            MT::ContentFieldIndex->join_on(
-                            'content_data_id',
-                            [   { content_field_id => $dt_field_id },
-                                '-and',
-                                {   value_datetime =>
-                                        { op => '>=', value => $ago }
-                                },
-                            ],
-                            { alias => 'dt_cf_idx' }
-                            );
-                    }
-                    else {
-                        $terms{authored_on} = [$ago];
-                        $args{range_incl}{authored_on} = 1;
-                    }
-                }
-                elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
-                    $args->{limit} = $limit;
-                }
-            }
-        }
 
         # Adds class_type
         $terms{class} = $class_type;
@@ -408,8 +360,7 @@ sub _hdlr_contents {
                 $args{direction} = $args->{sort_order} || 'descend';
             }
             $no_resort = 1 unless $args->{sort_by};
-            if (   ( my $last = $args->{lastn} )
-                && ( exists $args->{limit} ) )
+            if ( ( exists $args->{limit} ) && ( my $last = $args->{limit} ) )
             {
                 $args{limit} = $last;
             }
