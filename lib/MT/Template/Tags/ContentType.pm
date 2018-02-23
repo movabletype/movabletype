@@ -307,29 +307,63 @@ sub _hdlr_contents {
         # Adds class_type
         $terms{class} = $class_type;
 
-        my $map = $ctx->stash('template_map');
-        $args{'sort'} = 'authored_on'
-            unless ( $map && $map->dt_field_id );
-        if ( $args->{sort_by} ) {
-            $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
-            $args->{sort_by} = 'ping_count'
-                if $args->{sort_by} eq 'trackback_count';
-            if ( $class->is_meta_column( $args->{sort_by} ) ) {
-                $no_resort = 0;
+        my $map        = $ctx->stash('template_map');
+        my $sort_by_cf = 0;
+        if ( my $sort_by = $args->{sort_by} ) {
+            if ( $sort_by =~ m/^field:.*$/ ) {
+                my ( $prefix, $value ) = split ':', $sort_by;
+                my ($cf) = MT->model('cf')->load( { name => $value } );
+                unless ($cf) {
+                    $cf = MT->model('cf')->load( { unique_id => $value } );
+                }
+                if ($cf) {
+                    my $data_type = MT->registry('content_field_types')
+                        ->{ $cf->type }{data_type};
+                    my $join = MT->model('cf_idx')->join_on(
+                        'content_data_id',
+                        { content_field_id => $cf->id },
+                        {   sort      => 'value_' . $data_type,
+                            direction => $args->{sort_order} || 'descend',
+                            alias     => 'cf_idx_' . $cf->unique_id
+                        }
+                    );
+                    if ( $args{join} ) {
+                        push @{ $args{joins} }, $args{join};
+                        push @{ $args{joins} }, $join;
+                        delete $args{join};
+                    }
+                    elsif ( $args{joins} ) {
+                        push @{ $args{joins} }, $join;
+                    }
+                    else {
+                        push @{ $args{joins} }, $join;
+                    }
+                    $sort_by_cf = 1;
+                }
             }
-            elsif ( $class->has_column( $args->{sort_by} ) ) {
-                $args{sort} = $args->{sort_by};
-                $no_resort = 1;
-            }
-            elsif (
-                $args->{limit}
-                && (   'score' eq $args->{sort_by}
-                    || 'rate' eq $args->{sort_by} )
-                )
-            {
-                $no_resort = 0;
+            unless ($sort_by_cf) {
+                $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
+                $args->{sort_by} = 'ping_count'
+                    if $args->{sort_by} eq 'trackback_count';
+                if ( $class->is_meta_column( $args->{sort_by} ) ) {
+                    $no_resort = 0;
+                }
+                elsif ( $class->has_column( $args->{sort_by} ) ) {
+                    $args{sort} = $args->{sort_by};
+                    $no_resort = 1;
+                }
+                elsif (
+                    $args->{limit}
+                    && (   'score' eq $args->{sort_by}
+                        || 'rate' eq $args->{sort_by} )
+                    )
+                {
+                    $no_resort = 0;
+                }
             }
         }
+        $args{'sort'} = 'authored_on'
+            if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
 
         if (%fields) {
 
@@ -348,16 +382,18 @@ sub _hdlr_contents {
         }
 
         if ( !@filters ) {
-            if ( $args{sort} eq 'authored_on' ) {
-                my $dir = $args->{sort_order} || 'descend';
-                $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
-                $args{sort} = [
-                    { column => 'authored_on', desc => $dir },
-                    { column => 'id',          desc => $dir },
-                ];
-            }
-            else {
-                $args{direction} = $args->{sort_order} || 'descend';
+            unless ($sort_by_cf) {
+                if ( $args{sort} eq 'authored_on' ) {
+                    my $dir = $args->{sort_order} || 'descend';
+                    $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
+                    $args{sort} = [
+                        { column => 'authored_on', desc => $dir },
+                        { column => 'id',          desc => $dir },
+                    ];
+                }
+                else {
+                    $args{direction} = $args->{sort_order} || 'descend';
+                }
             }
             $no_resort = 1 unless $args->{sort_by};
             if ( ( exists $args->{limit} ) && ( my $last = $args->{limit} ) )

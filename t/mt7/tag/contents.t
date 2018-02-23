@@ -51,14 +51,36 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
+        # Content Type
         my $ct1 = MT::Test::Permission->make_content_type(
             name    => 'test content type 1',
             blog_id => $blog_id,
         );
+        my $cf_single_line_text = MT::Test::Permission->make_content_field(
+            blog_id         => $ct1->blog_id,
+            content_type_id => $ct1->id,
+            name            => 'single line text',
+            type            => 'single_line_text',
+        );
+        my $fields = [
+            {   id        => $cf_single_line_text->id,
+                order     => 1,
+                type      => $cf_single_line_text->type,
+                options   => { label => $cf_single_line_text->name },
+                unique_id => $cf_single_line_text->unique_id,
+            },
+        ];
+        $ct1->fields($fields);
+        $ct1->save or die $ct1->errstr;
+
+        # Content Data
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct1->id,
             status          => MT::ContentStatus::RELEASE(),
+            data            => {
+                $cf_single_line_text->id => 'test single line text ' . $_,
+            },
         ) for ( 1 .. 5 );
     }
 );
@@ -116,4 +138,20 @@ No Content Type could be found.
 <mt:Contents blog_id="1" name="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
+
+=== MT::ContentsCount with sort_by content field
+--- template
+<mt:Contents blog_id="1" name="test content type 1" sort_by="field:single line text">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+</mt:Contents>
+--- expected
+test single line text 5
+
+test single line text 4
+
+test single line text 3
+
+test single line text 2
+
+test single line text 1
 
