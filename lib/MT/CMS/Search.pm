@@ -582,7 +582,7 @@ sub search_replace {
     elsif ( $param->{object_type} eq 'content_data' ) {
         my $selected_content_type_id = $app->param('content_type_id');
         my $selected_content_type;
-        my @content_types;
+        my ( @content_types, @date_time_fields, @date_fields, @time_fields );
         my $iter
             = MT->model('content_type')
             ->load_iter( { blog_id => $blog_id || \'> 0' },
@@ -602,8 +602,43 @@ sub search_replace {
             if ( $content_type->id == $selected_content_type_id ) {
                 $selected_content_type = $content_type;
             }
+
+            my $mapper = sub {
+                +{  date_time_field_id       => $_->{id},
+                    date_time_field_label    => $_->{options}{label},
+                    date_time_field_ct_id    => $content_type->id,
+                    date_time_field_selected => (
+                               $param->{date_time_field_id}
+                            && $_->{id} == $param->{date_time_field_id}
+                    ),
+                };
+            };
+            push @date_time_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'date_and_time' }
+                @{ $content_type->fields };
+            push @date_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'date_only' } @{ $content_type->fields };
+            push @time_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'time_only' } @{ $content_type->fields };
         }
-        $param->{content_types} = \@content_types;
+        $param->{content_types}    = \@content_types;
+        $param->{date_time_fields} = \@date_time_fields;
+        $param->{date_fields}      = \@date_fields;
+        $param->{time_fields}      = \@time_fields;
+
+        if ( $selected_content_type && $param->{date_time_field_id} ) {
+            my $field_data = $selected_content_type->get_field(
+                $param->{date_time_field_id} );
+            if ( $field_data->{type} eq 'time_only' ) {
+                $param->{show_datetime_fields_type} = 'time';
+            }
+            else {
+                $param->{show_datetime_fields_type} = 'date';
+            }
+        }
+        else {
+            $param->{show_datetime_fields_type} = 'date';
+        }
 
         my $user       = $app->user;
         my $blog_perms = $user->permissions($blog_id);
@@ -633,16 +668,19 @@ sub do_search_replace {
     my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
-    my ($search,        $replace,     $do_replace,     $case,
-        $is_regex,      $is_limited,  $type,           $is_junk,
-        $is_dateranged, $ids,         $datefrom_year,  $datefrom_month,
-        $datefrom_day,  $dateto_year, $dateto_month,   $dateto_day,
-        $from,          $to,          $show_all,       $do_search,
-        $orig_search,   $quicksearch, $publish_status, $my_posts,
-        $search_type,   $filter,      $filter_val
+    my ($search,       $replace,            $do_replace,
+        $case,         $is_regex,           $is_limited,
+        $type,         $is_junk,            $is_dateranged,
+        $ids,          $datefrom_year,      $datefrom_month,
+        $datefrom_day, $dateto_year,        $dateto_month,
+        $dateto_day,   $date_time_field_id, $from,
+        $to,           $timefrom,           $timeto,
+        $show_all,     $do_search,          $orig_search,
+        $quicksearch,  $publish_status,     $my_posts,
+        $search_type,  $filter,             $filter_val
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -762,11 +800,19 @@ sub do_search_replace {
             }
         }
     }
-    elsif ( $is_dateranged && $from && $to ) {
-        $is_dateranged = 1;
-        s!\D!!g foreach ( $from, $to );
-        $datefrom = substr( $from, 0, 8 );
-        $dateto   = substr( $to,   0, 8 );
+    elsif ($is_dateranged) {
+        if ( $from && $to ) {
+            s!\D!!g foreach ( $from, $to );
+            $datefrom = substr( $from, 0, 8 );
+            $dateto   = substr( $to,   0, 8 );
+        }
+        if ( $timefrom && $timeto ) {
+            s!\D!!g foreach ( $timefrom, $timeto );
+            $timefrom = substr $timefrom, 0, 6;
+            $timeto   = substr $timeto,   0, 6;
+            $timefrom = "0$timefrom" if length $timefrom == 5;
+            $timeto   = "0$timeto"   if length $timeto == 5;
+        }
     }
     my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
@@ -885,14 +931,43 @@ sub do_search_replace {
             $terms{class}  = $type;
         }
         if ($is_dateranged) {
-            $args{range_incl}{$date_col} = 1;
-            if ( $datefrom gt $dateto ) {
-                $terms{$date_col}
-                    = [ $dateto . '000000', $datefrom . '235959' ];
+            if ($date_time_field_id) {
+                my $field_data
+                    = $content_type->get_field($date_time_field_id);
+                my $datetime_term;
+                if ( $field_data->{type} eq 'time_only' ) {
+                    $datetime_term
+                        = ( $timefrom gt $timeto )
+                        ? [ "19700101${timeto}", "19700101${timefrom}" ]
+                        : [ "19700101${timefrom}", "19700101${timeto}" ];
+                }
+                else {
+                    $datetime_term
+                        = ( $datefrom gt $dateto )
+                        ? [ "${dateto}000000", "${datefrom}235959" ]
+                        : [ "${datefrom}000000", "${dateto}235959" ];
+                }
+                my $join = $app->model('content_field_index')->join_on(
+                    undef,
+                    {   content_data_id  => \'= cd_id',
+                        content_field_id => $date_time_field_id,
+                        value_datetime   => $datetime_term,
+                    },
+                    { range_incl => { value_datetime => 1 } },
+                );
+                $args{joins} ||= [];
+                push @{ $args{joins} }, $join;
             }
             else {
-                $terms{$date_col}
-                    = [ $datefrom . '000000', $dateto . '235959' ];
+                $args{range_incl}{$date_col} = 1;
+                if ( $datefrom gt $dateto ) {
+                    $terms{$date_col}
+                        = [ $dateto . '000000', $datefrom . '235959' ];
+                }
+                else {
+                    $terms{$date_col}
+                        = [ $datefrom . '000000', $dateto . '235959' ];
+                }
             }
         }
         if ( defined $publish_status ) {
@@ -1380,13 +1455,20 @@ sub do_search_replace {
         }
     }
     if ($is_dateranged) {
-        ( $datefrom_year, $datefrom_month, $datefrom_day )
-            = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-        ( $dateto_year, $dateto_month, $dateto_day )
-            = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-        $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
-            $datefrom_day;
-        $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
+        if ( $from && $to ) {
+            ( $datefrom_year, $datefrom_month, $datefrom_day )
+                = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
+            ( $dateto_year, $dateto_month, $dateto_day )
+                = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
+            $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
+                $datefrom_day;
+            $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month,
+                $dateto_day;
+        }
+        if ( $timefrom && $timeto ) {
+            $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
+            $timeto =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
+        }
     }
 
     my $error = $app->param('error') || '';
@@ -1424,6 +1506,9 @@ sub do_search_replace {
         datefrom_month     => $datefrom_month,
         datefrom_day       => $datefrom_day,
         to                 => $to,
+        date_time_field_id => $date_time_field_id,
+        timefrom           => $timefrom,
+        timeto             => $timeto,
         dateto_year        => $dateto_year,
         dateto_month       => $dateto_month,
         dateto_day         => $dateto_day,

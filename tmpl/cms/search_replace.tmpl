@@ -99,6 +99,65 @@ function toggleContentTypeLimitedFields() {
     }
   });
 }
+
+function toggleContentTypeDateTimeField() {
+  var contentTypeId = jQuery('select[name=content_type_id]').val();
+  var $select = jQuery('select#date_time_field_id');
+  $select.find('option[data-mt-content-type]').each(function () {
+    var $option = jQuery(this);
+    if ($option.data('mtContentType') == contentTypeId) {
+      $option.show()
+             .removeAttr('disabled');
+    } else {
+      $option.hide()
+             .attr('disabled', 'disabled');
+    }
+    if ($option.attr('selected') && $option.attr('disabled')) {
+      $option.removeAttr('selected');
+      $select.find(':not([data-mt-content-type])')
+             .attr('selected', 'selected');
+      toggleContentTypeDateTimeInputs();
+    }
+  });
+
+  var $optgroupDateTime = jQuery('optgroup[label="Date and Time"]');
+  var $optgroupDate = jQuery('optgroup[label=Date]');
+  var $optgroupTime = jQuery('optgroup[label=Time]');
+  if ($optgroupDateTime.find('option:enabled').length > 0) {
+    $optgroupDateTime.show();
+  } else {
+    $optgroupDateTime.hide();
+  }
+  if ($optgroupDate.find('option:enabled').length > 0) {
+    $optgroupDate.show();
+  } else {
+    $optgroupDate.hide();
+  }
+  if ($optgroupTime.find('option:enabled').length > 0) {
+    $optgroupTime.show();
+  } else {
+    $optgroupTime.hide();
+  }
+}
+
+function toggleContentTypeDateTimeInputs() {
+  var $selectedOptgroup = jQuery('select#date_time_field_id option:selected').parents('optgroup');
+  var $dateFrom = jQuery('#datefrom').parents('.form-group');
+  var $dateTo = jQuery('#dateto').parents('.form-group');
+  var $timeFrom = jQuery('#timefrom').parents('.form-group');
+  var $timeTo = jQuery('#timeto').parents('.form-group');
+  if ($selectedOptgroup.attr('label') == 'Time') {
+    $dateFrom.hide();
+    $dateTo.hide();
+    $timeFrom.show();
+    $timeTo.show();
+  } else {
+    $dateFrom.show();
+    $dateTo.show();
+    $timeFrom.hide();
+    $timeTo.hide();
+  }
+}
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -208,7 +267,13 @@ function toggleContentTypeLimitedFields() {
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
-              <label class="custom-control-label" for="is_dateranged"><__trans phrase="Date Range"></label>
+              <label class="custom-control-label" for="is_dateranged">
+    <mt:if name="object_type" eq="content_data">
+                <__trans phrase="Date/Time Range">
+    <mt:else>
+                <__trans phrase="Date Range">
+    </mt:if>
+              </label>
             </div>
           </li>
         </mt:if>
@@ -240,14 +305,62 @@ function toggleContentTypeLimitedFields() {
         <div id="date-range" class="card card-block mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
           <div class="form-inline p-2">
             <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
-            <div class="form-group">
-              <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
-              <input placeholder="YYYY-MM-DD" type="text" name="from" id="from" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
-            </div>
+    <mt:if name="object_type" eq="content_data">
             <div class="form-group mx-3">
-              <label for="dateto"><__trans phrase="_DATE_TO">:</label>
-              <input placeholder="YYYY-MM-DD" type="text" name="to" id="to" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+              <label for="date_time_field_id">
+                <__trans phrase="Field">:
+              </label>
+              <select id="date_time_field_id" name="date_time_field_id" class="custom-select form-control">
+                <option value="0">
+                  <__trans phrase="Publish Date">
+                </option>
+      <mt:setvartemplate name="date_time_field_options">
+                  <option value="<mt:var name="date_time_field_id" escape="html">" data-mt-content-type="<mt:var name="date_time_field_ct_id" escape="html">"<mt:if name="date_time_field_selected"> selected="selected"</mt:if>>
+                    <mt:var name="date_time_field_label" escape="html">
+                  </option>
+      </mt:setvartemplate>
+      <mt:if name="date_time_fields">
+                <optgroup label="Date and Time">
+        <mt:loop name="date_time_fields">
+                  <mt:var name="date_time_field_options">
+        </mt:loop>
+                </optgroup>
+      </mt:if>
+      <mt:if name="date_fields">
+                <optgroup label="Date">
+        <mt:loop name="date_fields">
+                  <mt:var name="date_time_field_options">
+        </mt:loop>
+                </optgroup>
+      </mt:if>
+      <mt:if name="time_fields">
+                <optgroup label="Time">
+         <mt:loop name="time_fields">
+                  <mt:var name="date_time_field_options">
+         </mt:loop>
+                </optgroup>
+      </mt:if>
+              </select>
             </div>
+    </mt:if>
+            <div class="form-group"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="from" id="datefrom" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+            </div>
+            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="dateto"><__trans phrase="_DATE_TO">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="to" id="dateto" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+            </div>
+    <mt:if name="object_type" eq="content_data">
+            <div class="form-group"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timefrom"><__trans phrase="_TIME_FROM">:</label>
+              <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
+            </div>
+            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timeto"><__trans phrase="_TIME_TO">:</label>
+              <input placeholder="HH:mm:ss" type="text" name="timeto" id="timeto" class="form-control text-time text time" value="<mt:if name="timeto"><mt:var name="timeto" escape="html"></mt:if>">
+            </div>
+    </mt:if>
           </div>
         </div>
         <div class="actions-bar mt-3">
@@ -367,12 +480,19 @@ function toggleContentTypeLimitedFields() {
 /* <![CDATA[ */
 jQuery(function() {
     jQuery.mtCheckbox();
+
 <mt:unless name="have_results">
     jQuery('#search').focus();
 </mt:unless>
 
+    jQuery('select[name=content_type_id]').on('change', function () {
+      toggleContentTypeLimitedFields();
+      toggleContentTypeDateTimeField();
+    });
+    jQuery('select#date_time_field_id').on('change', toggleContentTypeDateTimeInputs);
+
     toggleContentTypeLimitedFields();
-    jQuery('select[name=content_type_id]').on('change', toggleContentTypeLimitedFields);
+    toggleContentTypeDateTimeField();
 });
 /* ]]> */
 </script>
