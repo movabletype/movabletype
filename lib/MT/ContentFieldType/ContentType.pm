@@ -296,10 +296,39 @@ sub search_handler {
         unless ref $content_data_ids eq 'ARRAY';
     my $iter
         = MT->model('content_data')->load_iter( { id => $content_data_ids } );
-    while ( my $content_data = $iter->() ) {
-        return 1 if $content_data->id =~ /$search_regex/;
+    while ( my $cd = $iter->() ) {
+        my $content_type = $cd->content_type or next;
+        my $data = $cd->data;
+        for my $f_id ( keys %$data ) {
+            my $f_data = $content_type->get_field($f_id);
+            next if $f_data->{type} eq 'content_type';
+
+            my $field_registry
+                = MT->registry( 'content_field_types', $f_data->{type} );
+            next unless _is_searchable($field_registry);
+
+            my $value = $data->{$f_id};
+            if ( my $search_handler = $field_registry->{search_handler} ) {
+                $search_handler = MT->handler_to_coderef($search_handler);
+                return 0 unless $search_handler;
+                return 1
+                    if $search_handler->( $search_regex, $value, $f_data,
+                    $cd );
+            }
+            else {
+                return 1 if $value =~ /$search_regex/;
+            }
+        }
     }
     0;
+}
+
+sub _is_searchable {
+    my $field_registry = shift;
+    ( grep { $field_registry->{$_} }
+            qw( replaceable replace_handler searchable search_handler ) )
+        ? 1
+        : 0;
 }
 
 1;
