@@ -278,7 +278,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -290,7 +290,7 @@ sub preview_handler {
 }
 
 sub search_handler {
-    my ( $search_regex, $content_data_ids, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $content_data_ids, $content_data ) = @_;
     return 0 unless defined $content_data_ids;
     $content_data_ids = [$content_data_ids]
         unless ref $content_data_ids eq 'ARRAY';

@@ -1283,7 +1283,7 @@ sub preview_data {
 
         my $field_data
             = $preview_handler
-            ? $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
+            ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
 
