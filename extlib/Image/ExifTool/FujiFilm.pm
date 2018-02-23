@@ -17,6 +17,7 @@
 #               8) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5223.0.html
 #               9) Zilvinas Brobliauskas private communication
 #               10) Albert Shan private communication
+#               11) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,8377.0.html
 #               IB) Iliah Borg private communication (LibRaw)
 #               JD) Jens Duttke private communication
 #------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.58';
+$VERSION = '1.60';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
@@ -43,6 +44,8 @@ my %testedRAF = (
     '0106' => 'S5Pro Ver1.06',
     '0111' => 'S5Pro Ver1.11',
     '0114' => 'S9600 Ver1.00',
+    '0132' => 'X-T2 Ver1.32',
+    '0144' => 'X100T Ver1.44',
     '0159' => 'S2Pro Ver1.00',
     '0200' => 'X10 Ver2.00',
     '0212' => 'S3Pro Ver2.12',
@@ -55,6 +58,7 @@ my %testedRAF = (
     '0300' => 'X-E2',
     '0712' => 'S5000 Ver3.00',
     '0716' => 'S5000 Ver3.00', # (yes, 2 RAF versions with the same Software version)
+    '0Dgi' => 'X-A10 Ver1.01 and X-A3 Ver1.02', # (yes, non-digits in the firmware number)
 );
 
 my %faceCategories = (
@@ -296,7 +300,7 @@ my %faceCategories = (
         Flags => 'PrintHex',
         Writable => 'int16u',
         PrintConv => {
-            0x0 => 'Auto',
+            0x0 => 'Auto', # (or 'SR+' if SceneRecognition present, ref 11)
             0x1 => 'Portrait',
             0x2 => 'Landscape',
             0x3 => 'Macro', #JD
@@ -546,7 +550,7 @@ my %faceCategories = (
     },
     # 0x1408 - values: '0100', 'S100', 'VQ10'
     # 0x1409 - values: same as 0x1408
-    # 0x140a - values: 0, 1, 3, 5, 7
+    # 0x140a - values: 0, 1, 3, 5, 7 (bit 2=red-eye detection, ref 11)
     0x140b => { #6
         Name => 'AutoDynamicRange',
         Writable => 'int16u',
@@ -567,6 +571,18 @@ my %faceCategories = (
             1 => 'On (mode 1, continuous)',
             2 => 'On (mode 2, shooting only)',
         }],
+    },
+    0x1425 => { # if present and 0x1031 PictureMode is zero, then PictureMode is SR+, not Auto (ref 11)
+        Name => 'SceneRecognition',
+        Writable => 'int16u',
+        PrintHex => 1,
+        PrintConv => {
+            0 => 'Unrecognized',
+            0x100 => 'Portrait Image',
+            0x200 => 'Landscape Image',
+            0x300 => 'Night Scene',
+            0x400 => 'Macro',
+        },
     },
     0x1431 => { #forum6109
         Name => 'Rating',
@@ -615,6 +631,30 @@ my %faceCategories = (
         Notes => q{
             left, top, right and bottom coordinates in full-sized image for each face
             detected
+        },
+    },
+    0x4200 => { #11
+        Name => 'NumFaceElements',
+        Writable => 'int16u',
+    },
+    0x4201 => { #11
+        Name => 'FaceElementTypes',
+        Writable => 'int8u',
+        Count => -1,
+        PrintConv => [{
+            1 => 'Face',
+            2 => 'Left Eye',
+            3 => 'Right Eye',
+        },'REPEAT'],
+    },
+    # 0x4202 int8u[-1] - number of cooredinates in each rectangle? (ref 11)
+    0x4203 => { #11
+        Name => 'FaceElementPositions',
+        Writable => 'int16u',
+        Count => -1,
+        Notes => q{
+            left, top, right and bottom coordinates in full-sized image for each face
+            element
         },
     },
     # 0x4101-0x4105 - exist only if face detection active
@@ -1076,7 +1116,7 @@ sub WriteRAF($$)
     $raf->Read($hdr,0x94) == 0x94  or return 0;
     $hdr =~ /^FUJIFILM/            or return 0;
     my $ver = substr($hdr, 0x3c, 4);
-    $ver =~ /^\d{4}$/              or return 0;
+    $ver =~ /^\d{4}$/ or $testedRAF{$ver} or return 0;
 
     # get the position and size of embedded JPEG
     my ($jpos, $jlen) = unpack('x84NN', $hdr);
@@ -1251,7 +1291,7 @@ FujiFilm maker notes in EXIF information, and to read/write FujiFilm RAW
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.46';
+$VERSION = '1.48';
 
 my %coordConv = (
     ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val)',
@@ -40,8 +40,8 @@ my %coordConv = (
         Writable => 'string',
         Notes => q{
             tags 0x0001-0x0006 used for camera location according to MWG 2.0. ExifTool
-            will also accept a number when writing GPSLatitude -- positive for north
-            latitudes, or negative for south
+            will also accept a number when writing GPSLatitudeRef, positive for north
+            latitudes or negative for south, or a string ending in N or S
         },
         Count => 2,
         PrintConv => {
@@ -69,8 +69,8 @@ my %coordConv = (
         Writable => 'string',
         Count => 2,
         Notes => q{
-            ExifTool will also accept a number when writing this tag -- positive for
-            east longitudes or negative for west
+            ExifTool will also accept a number when writing this tag, positive for east
+            longitudes or negative for west, or a string ending in E or W
         },
         PrintConv => {
             # extract E/W if written from Composite:GPSLongitude
@@ -133,7 +133,8 @@ my %coordConv = (
         # pull time out of any format date/time string
         # (converting to UTC if a timezone is given)
         PrintConvInv => sub {
-            my $v = shift;
+            my ($v, $et) = @_;
+            $v = $et->TimeNow() if lc($v) eq 'now';
             my @tz;
             if ($v =~ s/([-+])(.*)//s) {    # remove timezone
                 my $s = $1 eq '-' ? 1 : -1; # opposite sign to convert back to UTC
@@ -314,6 +315,7 @@ my %coordConv = (
         # (and adjust to UTC if this is a full date/time/timezone value)
         PrintConvInv => q{
             my $secs;
+            $val = $self->TimeNow() if lc($val) eq 'now';
             if ($val =~ /[-+]/ and ($secs = Image::ExifTool::GetUnixTime($val, 1))) {
                 $val = Image::ExifTool::ConvertUnixTime($secs);
             }
@@ -386,7 +388,7 @@ my %coordConv = (
         ValueConv => q{
             my $alt = $val[0];
             $alt = $val[2] unless defined $alt;
-            return undef unless defined $alt;
+            return undef unless defined $alt and IsFloat($alt);
             return ($val[1] || $val[3]) ? -$alt : $alt;
         },
         PrintConv => q{
@@ -537,7 +539,7 @@ GPS (Global Positioning System) meta information in EXIF data.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

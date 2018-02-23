@@ -922,21 +922,22 @@ my %formatMinMax = (
     # stuff written with "Shot & More" feature
     '0x0001' => { Name => 'EmbeddedImage', Groups => { 2 => 'Preview' }, Binary => 1 },
     '0x0001-name' => 'EmbeddedImageName',
-    # 0x0830 - unknown (164004 bytes, name like "1165724808.pre")
-
     # stuff written with "Sound & Shot" feature
     '0x0100' => { Name => 'EmbeddedAudioFile', Binary => 1 },
     '0x0100-name' => 'EmbeddedAudioFileName',
-    # 0x0800 - SoundShot_Meta_Info (contains only already-extracted sound shot name)
+   # 0x0800 - SoundShot_Meta_Info (contains only already-extracted sound shot name)
+   # 0x0830 - unknown (164004 bytes, name like "1165724808.pre")
     '0x0a01' => { #forum7161
         Name => 'TimeStamp',
         Groups => { 2 => 'Time' },
         ValueConv => 'ConvertUnixTime($val / 1e3, 1)',
         PrintConv => '$self->ConvertDateTime($val)',
     },
-    #'0x0a01-name' = "Image_UTC_Data"
+   # 0x0a01-name = "Image_UTC_Data"
     '0x0a30' => { Name => 'EmbeddedVideoFile', Binary => 1 }, #forum7161
     '0x0a30-name' => 'EmbeddedVideoType', # ("MotionPhoto_Data")
+   # 0xa050 seen 'Jpeg3602D' (Samsung Gear 360)
+   # 0xa050-name seen 'Jpeg360_2D_Info' (Samsung Gear 360)
 );
 
 # Samsung composite tags
@@ -1244,7 +1245,7 @@ Samsung maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

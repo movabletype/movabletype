@@ -3,7 +3,7 @@
 #
 # Description:  Additional metadata validation
 #
-# Revisions:    2017/01/18 - P. Harvey Created
+# Created:      2017/01/18 - P. Harvey
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::Validate;
@@ -11,7 +11,7 @@ package Image::ExifTool::Validate;
 use strict;
 use vars qw($VERSION %exifSpec);
 
-$VERSION = '1.02';
+$VERSION = '1.07';
 
 use Image::ExifTool qw(:Utils);
 use Image::ExifTool::Exif;
@@ -19,6 +19,7 @@ use Image::ExifTool::Exif;
 # EXIF table tag ID's which are part of the EXIF 2.31 specification
 # (also used by BuildTagLookup to add underlines in HTML version of EXIF Tag Table)
 %exifSpec = (
+    0x1 => 1,
     0x100 => 1,  0x8298 => 1,  0x9207 => 1,  0xa217 => 1,
     0x101 => 1,  0x829a => 1,  0x9208 => 1,  0xa300 => 1,
     0x102 => 1,  0x829d => 1,  0x9209 => 1,  0xa301 => 1,
@@ -50,6 +51,19 @@ use Image::ExifTool::Exif;
     0x214 => 1,  0x9206 => 1,  0xa215 => 1,
 );
 
+# tags standard in various RAW file formats
+my %otherSpec = (
+    CR2 => { 0xc5d8 => 1, 0xc5d9 => 1, 0xc5e0 => 1, 0xc640 => 1, 0xc6dc => 1, 0xc6dd => 1 },
+    NEF => { 0x9216 => 1, 0x9217 => 1 },
+    DNG => { 0x882a => 1, 0x9211 => 1, 0x9216 => 1 },
+    ARW => { 0x7000 => 1, 0x7001 => 1, 0x7010 => 1, 0x7011 => 1, 0x7020 => 1, 
+             0x7031 => 1, 0x7032 => 1, 0x7034 => 1, 0x7035 => 1, 0x7036 => 1, 0x7037 => 1,
+             0x7310 => 1, 0x7313 => 1, 0x7316 => 1, 0x74c7 => 1, 0x74c8 => 1, 0xa500 => 1 },
+    RW2 => { All => 1 },    # ignore all unknown tags in RW2
+    RAF => { All => 1} ,    # (temporary)
+    SRW => { 0xa010 => 1, 0xa011 => 1, 0xa101 => 1, 0xa102 => 1 },
+);
+
 # standard format for tags (not necessary for exifSpec tags where Writable is defined)
 my %stdFormat = (
     ExifIFD => {
@@ -62,9 +76,6 @@ my %stdFormat = (
         0x1000 => 'string',
         0x1001 => 'int(16|32)u',
         0x1002 => 'int(16|32)u',
-    },
-    GPS => {
-        All  => '', # all defined GPS tags are standard
     },
     IFD => {
         # TIFF, EXIF, XMP, IPTC, ICC_Profile and PrintIM standard tags:
@@ -81,9 +92,9 @@ my %stdFormat = (
         0x116 => 'int(16|32)u', 0x140 => 'int16u',      0x156 => 'int16u',      0x828d => 'int16u',
         0x117 => 'int(16|32)u', 0x141 => 'int16u',      0x15b => 'undef',       0x828e => 'int8u',
         0x118 => 'int16u',      0x142 => 'int(16|32)u', 0x200 => 'int16u',      0x83bb => 'int32u',
-        0x119 => 'int16u',      0x143 => 'int(16|32)u', 0x201 => 'int32u',      0x8773 => 'undef',
-        0x11d => 'string',      0x144 => 'int32u',      0x202 => 'int32u',      0xc4a5 => 'undef',
-        0x11e => 'rational64u', 0x145 => 'int(16|32)u', 0x203 => 'int16u',
+        0x119 => 'int16u',      0x143 => 'int(16|32)u', 0x201 => 'int32u',      0x8649 => 'int8u',
+        0x11d => 'string',      0x144 => 'int32u',      0x202 => 'int32u',      0x8773 => 'undef',
+        0x11e => 'rational64u', 0x145 => 'int(16|32)u', 0x203 => 'int16u',      0xc4a5 => 'undef',
         # Windows Explorer tags:
         0x9c9b => 'int8u',      0x9c9d => 'int8u',      0x9c9f => 'int8u',
         0x9c9c => 'int8u',      0x9c9e => 'int8u',
@@ -120,7 +131,10 @@ my %validateInfo = (
             my @rtn;
             push @rtn, sprintf('%d Error%s', $val[0], $val[0] == 1 ? '' : 's') if $val[0];
             push @rtn, sprintf('%d Warning%s', $val[1], $val[1] == 1 ? '' : 's') if $val[1];
-            $rtn[-1] .= sprintf(' (%s minor)', $val[1] == $val[2] ? 'all' : $val[2]) if $val[2];
+            if ($val[2]) {
+                my $str = ($val[1] == $val[2] ? ($val[1] == 1 ? '' : 'all ') : "$val[2] ");
+                $rtn[-1] .= " (${str}minor)";
+            }
             return join(' and ', @rtn);
         },
     },
@@ -129,8 +143,103 @@ my %validateInfo = (
 # generate lookup for any IFD
 my %stdFormatAnyIFD = map { %{$stdFormat{$_}} } keys %stdFormat;
 
+# validity ranges for constrained date/time fields
+my @validDateField = (
+    [ 'Month',   1, 12 ],
+    [ 'Day',     1, 31 ],
+    [ 'Hour',    0, 23 ],
+    [ 'Minutes', 0, 59 ],
+    [ 'Seconds', 0, 59 ],
+    [ 'TZhr',    0, 14 ],
+    [ 'TZmin',   0, 59 ],
+);
+
 # add "Validate" tag to Extra table
 AddTagToTable(\%Image::ExifTool::Extra, Validate => \%validateInfo, 1);
+
+#------------------------------------------------------------------------------
+# Validate the raw value of a tag
+# Inputs: 0) ExifTool ref, 1) tag key, 2) raw tag value
+# Returns: nothing, but issues a minor Warning if a problem was detected
+sub ValidateRaw($$$)
+{
+    my ($self, $tag, $val) = @_;
+    my $tagInfo = $$self{TAG_INFO}{$tag};
+
+    # evaluate Validate code if specified
+    if ($$tagInfo{Validate}) {
+        local $SIG{'__WARN__'} = \&Image::ExifTool::SetWarning;
+        undef $Image::ExifTool::evalWarning;
+        #### eval Validate ($self, $val, $tagInfo)
+        my $wrn = eval $$tagInfo{Validate};
+        my $err = $Image::ExifTool::evalWarning || $@;
+        if ($wrn or $err) {
+            my $name = $$tagInfo{Table}{GROUPS}{0} . ':' . Image::ExifTool::GetTagName($tag);
+            $self->Warn("Validate $name: $err", 1) if $err;
+            $self->Warn("$wrn for $name", 1) if $wrn;
+        }
+    }
+    # check for unknown values in PrintConv lookup for all standard EXIF tags
+    if (ref $$tagInfo{PrintConv} eq 'HASH' and $$tagInfo{Table} eq \%Image::ExifTool::Exif::Main and
+        $exifSpec{$$tagInfo{TagID}})
+    {
+        my $prt = $self->GetValue($tag, 'PrintConv');
+        if ($prt and $prt =~ /^Unknown \(/) {
+            my $name = $$self{DIR_NAME} . ':' . Image::ExifTool::GetTagName($tag);
+            $self->Warn("Unknown value for $name", 1);
+        }
+    }
+}
+
+#------------------------------------------------------------------------------
+# Validate raw EXIF date/time value
+# Inputs: 0) date/time value
+# Returns: error string
+sub ValidateExifDate($)
+{
+    my $val = shift;
+    if ($val =~ /^\d{4}:(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})$/) {
+        my @a = ($1,$2,$3,$4,$5);
+        my ($i, @bad);
+        for ($i=0; $i<@a; ++$i) {
+            next if $a[$i] eq '  ' or ($a[$i] >= $validDateField[$i][1] and $a[$i] <= $validDateField[$i][2]);
+            push @bad, $validDateField[$i][0];
+        }
+        return join('+', @bad) . ' out of range' if @bad;
+    # the EXIF specification allows blank fields or an entire blank value
+    } elsif ($val ne '    :  :     :  :  ' and $val ne '                   ') {
+        return 'Invalid date/time format';
+    }
+    return undef;   # OK!
+}
+
+#------------------------------------------------------------------------------
+# Validate EXIF-reformatted XMP date/time value
+# Inputs: 0) date/time value
+# Returns: error string
+sub ValidateXMPDate($)
+{
+    my $val = shift;
+    if ($val =~ /^\d{4}$/ or
+        $val =~ /^\d{4}:(\d{2})$/ or
+        $val =~ /^\d{4}:(\d{2}):(\d{2})$/ or
+        $val =~ /^\d{4}:(\d{2}):(\d{2}) (\d{2}):(\d{2})()(Z|[-+](\d{2}):(\d{2}))?$/ or
+        $val =~ /^\d{4}:(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})(Z|[-+](\d{2}):(\d{2}))?$/ or
+        $val =~ /^\d{4}:(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})\.?\d*(Z|[-+](\d{2}):(\d{2}))?$/)
+    {
+        my @a = ($1,$2,$3,$4,$5,$7,$8);
+        my ($i, @bad);
+        for ($i=0; $i<@a; ++$i) {
+            last unless defined $a[$i];
+            next if $a[$i] eq '' or ($a[$i] >= $validDateField[$i][1] and $a[$i] <= $validDateField[$i][2]);
+            push @bad, $validDateField[$i][0];
+        }
+        return join('+', @bad) . ' out of range' if @bad;
+    } else {
+        return 'Invalid date/time format';
+    }
+    return undef;   # OK!
+}
 
 #------------------------------------------------------------------------------
 # Validate EXIF tag
@@ -143,6 +252,10 @@ sub ValidateExif($$$$$$$$)
 
     $et->WarnOnce("Entries in $ifd are out of order") if $tag <= $lastTag;
 
+    # (get tagInfo for unknown tags if Unknown option not used)
+    if (not defined $tagInfo and $$tagTablePtr{$tag} and ref $$tagTablePtr{$tag} eq 'HASH') {
+        $tagInfo = $$tagTablePtr{$tag}; 
+    }
     if (defined $tagInfo) {
         my $ti = $tagInfo || $$tagTablePtr{$tag};
         $ti = $$ti[-1] if ref $ti eq 'ARRAY';
@@ -153,7 +266,8 @@ sub ValidateExif($$$$$$$$)
         {
             my $wgp = $$ti{WriteGroup} || $$tagTablePtr{WRITE_GROUP};
             if ($wgp and $wgp ne $ifd and $wgp ne 'All' and not $$ti{OffsetPair} and
-                ($ifd =~ /^(Sub|Profile)?IFD\d*$/ xor $wgp =~ /^(Sub)?IFD\d*$/))
+                ($ifd =~ /^(Sub|Profile)?IFD\d*$/ xor $wgp =~ /^(Sub)?IFD\d*$/) and
+                ($$ti{Writable} or $$ti{WriteGroup}) and $ifd !~ /^SRF\d+$/)
             {
                 $et->Warn(sprintf('Wrong IFD for 0x%.4x %s (should be %s not %s)', $tag, $$ti{Name}, $wgp, $ifd));
             }
@@ -162,19 +276,25 @@ sub ValidateExif($$$$$$$$)
                 $et->Warn(sprintf('Non-standard format (%s) for %s 0x%.4x %s', $formatStr, $ifd, $tag, $$ti{Name}))
             }
         } elsif ($stdFormatAnyIFD{$tag}) {
-            my $wgp = $$ti{WriteGroup} || $$tagTablePtr{WRITE_GROUP};
-            if ($wgp) {
-                $et->Warn(sprintf('Wrong IFD for 0x%.4x %s (should be %s not %s)', $tag, $$ti{Name}, $wgp, $ifd));
-            } else {
-                $et->Warn(sprintf('Wrong IFD for 0x%.4x %s (found in %s)', $tag, $$ti{Name}, $ifd));
+            if ($$ti{Writable} || $$ti{WriteGroup}) {
+                my $wgp = $$ti{WriteGroup} || $$tagTablePtr{WRITE_GROUP};
+                if ($wgp and $wgp ne $ifd) {
+                    $et->Warn(sprintf('Wrong IFD for 0x%.4x %s (should be %s not %s)', $tag, $$ti{Name}, $wgp, $ifd));
+                }
             }
-        } else {
-            $et->Warn(sprintf('Non-standard %s tag 0x%.4x %s', $ifd, $tag, $$ti{Name}), 1);
+        } elsif (not $otherSpec{$$et{VALUE}{FileType}} or
+            (not $otherSpec{$$et{VALUE}{FileType}}{$tag} and not $otherSpec{$$et{VALUE}{FileType}}{All}))
+        {
+            if ($tagTablePtr eq \%Image::ExifTool::Exif::Main or $$tagInfo{Unknown}) {
+                $et->Warn(sprintf('Non-standard %s tag 0x%.4x %s', $ifd, $tag, $$ti{Name}), 1);
+            }
         }
         if ($$ti{Count} and $$ti{Count} > 0 and $count != $$ti{Count}) {
             $et->Warn(sprintf('Non-standard count (%d) for %s tag 0x%.4x %s', $count, $ifd, $tag, $$ti{Name}));
         }
-    } else {
+    } elsif (not $otherSpec{$$et{VALUE}{FileType}} or
+        (not $otherSpec{$$et{VALUE}{FileType}}{$tag} and not $otherSpec{$$et{VALUE}{FileType}}{All}))
+    {
         $et->Warn(sprintf('Unknown %s tag 0x%.4x', $ifd, $tag), 1);
     }
 }
@@ -203,7 +323,7 @@ my %validate = (
     TIFF => {
         IFD0 => {
             0x103 => q{
-                not defined $val or $val =~ /^(1|6|32773)$/ or
+                not defined $val or $val =~ /^(1|5|6|32773)$/ or
                     ($val == 2 and (not defined $val{0x102} or $val{0x102} == 1));
             },  # Compression
             0x106 => '$val =~ /^[0123]$/',  # PhotometricInterpretation
@@ -285,6 +405,20 @@ sub FinishValidate($$)
             }
         }
     }
+    # validate file extension
+    if ($$et{FILENAME} ne '') {
+        my $fileExt = ($$et{FILENAME} =~ /^.*\.([^.]+)$/s) ? uc($1) : '';
+        my $extFileType = Image::ExifTool::GetFileType($fileExt);
+        if ($extFileType and $extFileType ne $fileType) {
+            my $normExt = $$et{VALUE}{FileTypeExtension};
+            if ($normExt and $normExt ne $fileExt) {
+                my $lkup = $Image::ExifTool::fileTypeLookup{$fileExt};
+                if (ref $lkup or $lkup ne $normExt) {
+                    $et->Warn("File has wrong extension (should be $normExt, not $fileExt)");
+                }
+            }
+        }
+    }
     MakeValidateTag($et) if $mkTag;
 }
 
@@ -307,7 +441,7 @@ ExifTool Validate option is enabled.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

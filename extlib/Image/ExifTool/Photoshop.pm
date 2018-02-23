@@ -28,7 +28,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD $iptcDigestInfo);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.55';
+$VERSION = '1.57';
 
 sub ProcessPhotoshop($$$);
 sub WritePhotoshop($$$);
@@ -543,11 +543,32 @@ my %unicodeString = (
         Name => 'LayerUnicodeNames',
         List => 1,
         RawConv => q{
-            return "" if length($val) < 4;
+            return '' if length($val) < 4;
             my $len = Get32u(\$val, 0);
             return $self->Decode(substr($val, 4, $len * 2), 'UCS2');
         },
     },
+    lyid => {
+        Name => 'LayerIDs',
+        Description => 'Layer IDs',
+        Format => 'int32u',
+        List => 1,
+        Unknown => 1,
+    },
+    shmd => { # layer metadata (undocumented structure)
+        # (for now, only extract layerTime.  May also contain "layerXMP" --
+        #  it would be nice to decode this but I need a sample)
+        Name => 'LayerModifyDates',
+        Groups => { 2 => 'Time' },
+        List => 1,
+        RawConv => q{
+            return '' unless $val =~ /layerTimedoub(.{8})/s;
+            my $tmp = $1;
+            return GetDouble(\$tmp, 0);
+        },
+        ValueConv => 'length $val ? ConvertUnixTime($val,1) : ""',
+        PrintConv => 'length $val ? $self->ConvertDateTime($val) : ""',
+    }
 );
 
 # image data
@@ -698,7 +719,7 @@ sub ProcessLayers($$$)
                 $et->HandleTag($tagTablePtr, $tag, '');
                 ++$count{$tag};
             }
-            $et->HandleTag($tagTablePtr, $tag, $data, %dinfo);
+            $et->HandleTag($tagTablePtr, $tag, undef, %dinfo);
             ++$count{$tag};
             $pos += $n; # step to start of next structure
         }
@@ -724,6 +745,20 @@ sub ProcessPhotoshop($$$)
     my $verbose = $et->Options('Verbose');
     my $success = 0;
 
+    # ignore non-standard XMP while in strict MWG compatibility mode
+    if (($Image::ExifTool::MWG::strict or $et->Options('Validate')) and
+        $$et{FILE_TYPE} =~ /^(JPEG|TIFF|PSD)$/)
+    {
+        my $path = $et->MetadataPath();
+        unless ($path =~ /^(JPEG-APP13-Photoshop|TIFF-IFD0-Photoshop|PSD)$/) {
+            if ($Image::ExifTool::MWG::strict) {
+                $et->Warn("Ignored non-standard Photoshop at $path");
+                return 1;
+            } else {
+                $et->Warn("Non-standard Photoshop at $path", 1);
+            }
+        }
+    }
     SetByteOrder('MM');     # Photoshop is always big-endian
     $verbose and $et->VerboseDir('Photoshop', 0, $$dirInfo{DirLen});
 
@@ -936,7 +971,7 @@ be preserved when copying Photoshop information via user-defined tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

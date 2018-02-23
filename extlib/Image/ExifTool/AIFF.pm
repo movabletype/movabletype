@@ -214,7 +214,7 @@ sub ProcessAIFF($$)
         $pos += 8;
         my ($tag, $len) = unpack('a4N', $buff);
         my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
-        $et->VPrint(0, "AIFF '$tag' chunk ($len bytes of data):\n");
+        $et->VPrint(0, "AIFF '${tag}' chunk ($len bytes of data):\n");
         # AIFF chunks are padded to an even number of bytes
         my $len2 = $len + ($len & 0x01);
         if ($tagInfo) {
@@ -264,7 +264,7 @@ information from AIFF (Audio Interchange File Format) audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
