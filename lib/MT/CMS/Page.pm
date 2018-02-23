@@ -91,11 +91,6 @@ sub post_delete {
     MT::CMS::Entry::post_delete(@_);
 }
 
-sub CMSPostSave_page {
-    require MT::CMS::Entry;
-    MT::CMS::Entry::post_save(@_);
-}
-
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
 

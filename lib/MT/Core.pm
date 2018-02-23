@@ -2865,7 +2865,6 @@ sub load_core_permissions {
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
                 'save_blog_config'             => 1,
-                'update_welcome_message'       => 1,
             }
         },
         'blog.edit_notifications' => {
@@ -2900,7 +2899,6 @@ sub load_core_permissions {
                 'copy_template_via_list'    => 1,
                 'edit_templates'            => 1,
                 'refresh_template_via_list' => 1,
-                'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
                 'refresh_templates'         => 1.

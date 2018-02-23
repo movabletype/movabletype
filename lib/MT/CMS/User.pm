@@ -895,40 +895,6 @@ sub remove_user_assoc {
     $app->call_return;
 }
 
-sub revoke_role {
-    my $app = shift;
-    $app->validate_magic or return;
-
-    my $user  = $app->user;
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $app->can_do('revoke_role');
-
-    my $blog_id = $app->param('blog_id');
-    my $role_id = $app->param('role_id');
-    my $user_id = $app->param('author_id');
-    return $app->errtrans("Invalid request.")
-        unless $blog_id && $role_id && $user_id;
-
-    require MT::Association;
-    require MT::Role;
-    require MT::Blog;
-
-    my $author = MT::Author->load($user_id);
-    my $role   = MT::Role->load($role_id);
-    my $blog   = MT::Blog->load($blog_id);
-    return $app->errtrans("Invalid request.")
-        unless $blog && $role && $author;
-    return $app->permission_denied()
-        if !$app->can_do('revoke_administer_role')
-        && $role->has('administer_site');
-
-    MT::Association->unlink( $blog => $role => $author );
-
-    $app->add_return_arg( saved => 1 );
-    $app->call_return;
-}
-
 sub grant_role {
     my $app = shift;
 
