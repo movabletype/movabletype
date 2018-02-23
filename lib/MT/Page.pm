@@ -40,6 +40,24 @@ MT->add_callback( 'api_post_save.' . 'page',
 MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 
+# Register page post-save callback for rebuild triggers
+my $rt = MT->model('rebuild_trigger');
+MT->add_callback(
+    'cms_post_save.page', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'api_post_save.page', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'cms_post_bulk_save.pages', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entries_bulk_save', @_ ); }
+);
+
 __PACKAGE__->add_callback(
     'post_remove', 0,
     MT->component('core'),
@@ -100,9 +118,9 @@ sub list_props {
             display => 'default',
         },
         unpublished_on => { base => 'entry.unpublished_on', },
-        text      => { base => 'entry.text' },
-        text_more => { base => 'entry.text_more' },
-        excerpt   => {
+        text           => { base => 'entry.text' },
+        text_more      => { base => 'entry.text_more' },
+        excerpt        => {
             base    => 'entry.excerpt',
             display => 'none',
             label   => 'Excerpt',
@@ -132,8 +150,8 @@ sub list_props {
                 },
             ],
         },
-        basename     => { base => 'entry.basename' },
-        tag          => {
+        basename => { base => 'entry.basename' },
+        tag      => {
             base   => 'entry.tag',
             tag_ds => 'entry',
         },
