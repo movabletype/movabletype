@@ -291,9 +291,9 @@ function toggleContentTypeDateTimeInputs() {
           <div id="<mt:var name="object_type">-fields" class="card card-block">
             <ul class="list-inline mb-0 multiple-selection">
             <mt:loop name="search_cols">
-              <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if>>
+              <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if><mt:if name="hidden"> style="display: none;"</mt:if>>
                 <div class="custom-control custom-checkbox">
-                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="custom-control-input cb" />
+                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="custom-control-input cb" />
                   <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"></label>
                 </div>
               </li>
@@ -491,7 +491,6 @@ jQuery(function() {
     });
     jQuery('select#date_time_field_id').on('change', toggleContentTypeDateTimeInputs);
 
-    toggleContentTypeLimitedFields();
     toggleContentTypeDateTimeField();
 });
 /* ]]> */

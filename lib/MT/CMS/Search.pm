@@ -1549,6 +1549,7 @@ sub do_search_replace {
                 +{  field       => '__field:' . $_->{id},
                     label       => $_->{options}{label},
                     selected    => exists( $cols{ '__field:' . $_->{id} } ),
+                    hidden      => ( $ct->id != $content_type->id ) ? 1 : 0,
                     field_ct_id => $ct->id,
                     }
             } @{ $ct->searchable_fields };
