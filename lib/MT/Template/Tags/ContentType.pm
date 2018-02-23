@@ -162,9 +162,7 @@ sub _hdlr_contents {
     # app.
     if ( ( $args->{offset} || '' ) eq 'auto' ) {
         $args->{offset} = 0;
-        if (   ( $args->{lastn} || $args->{limit} )
-            && ( my $app = MT->instance ) )
-        {
+        if ( ( $args->{limit} ) && ( my $app = MT->instance ) ) {
             if ( $app->isa('MT::App') ) {
                 if ( my $offset = $app->param('offset') ) {
                     $args->{offset} = $offset;
@@ -184,14 +182,11 @@ sub _hdlr_contents {
             $args{range_incl}{authored_on} = 1;
         }
         elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{lastn} = $limit;
+            $args->{limit} = $limit;
         }
         else {
             delete $args->{limit};
         }
-    }
-    elsif ( $args->{limit} && ( $args->{limit} > 0 ) ) {
-        $args->{lastn} = $args->{limit};
     }
 
     $terms{status} = MT::ContentStatus::RELEASE();
@@ -201,7 +196,9 @@ sub _hdlr_contents {
             if ( my $cat = $ctx->stash('category') ) {
                 if ( $cat->class eq $cat_class_type ) {
                     my $map = $ctx->stash('template_map');
-                    if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
+                    if ( $map
+                        && ( my $cat_field_id = $map->cat_field_id ) )
+                    {
                         push @{ $args{joins} },
                             MT::ContentFieldIndex->join_on(
                             'content_data_id',
@@ -311,10 +308,9 @@ sub _hdlr_contents {
             # Check attributes
             my $found_valid_args = 0;
             foreach my $valid_key (
-                'lastn',     'category', 'categories', 'tag',
-                'tags',      'author',   'days',       'min_score',
-                'max_score', 'min_rate', 'max_rate',   'min_count',
-                'max_count'
+                'category', 'categories', 'tag',       'tags',
+                'author',   'days',       'min_score', 'max_score',
+                'min_rate', 'max_rate',   'min_count', 'max_count'
                 )
             {
                 if ( exists( $args->{$valid_key} ) ) {
@@ -351,7 +347,7 @@ sub _hdlr_contents {
                     }
                 }
                 elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
-                    $args->{lastn} = $limit;
+                    $args->{limit} = $limit;
                 }
             }
         }
@@ -367,11 +363,6 @@ sub _hdlr_contents {
             $args->{sort_by} = 'ping_count'
                 if $args->{sort_by} eq 'trackback_count';
             if ( $class->is_meta_column( $args->{sort_by} ) ) {
-                $post_sort_limit  = delete( $args->{limit} )  || 0;
-                $post_sort_offset = delete( $args->{offset} ) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
-                    delete $args->{lastn};
-                }
                 $no_resort = 0;
             }
             elsif ( $class->has_column( $args->{sort_by} ) ) {
@@ -384,11 +375,6 @@ sub _hdlr_contents {
                     || 'rate' eq $args->{sort_by} )
                 )
             {
-                $post_sort_limit  = delete( $args->{limit} )  || 0;
-                $post_sort_offset = delete( $args->{offset} ) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
-                    delete $args->{lastn};
-                }
                 $no_resort = 0;
             }
         }
@@ -410,78 +396,38 @@ sub _hdlr_contents {
         }
 
         if ( !@filters ) {
-            if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
-            {
+            if ( $args{sort} eq 'authored_on' ) {
+                my $dir = $args->{sort_order} || 'descend';
+                $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
                 $args{sort} = [
-                    { column => 'authored_on', desc => 'DESC' },
-                    { column => 'id',          desc => 'DESC' },
+                    { column => 'authored_on', desc => $dir },
+                    { column => 'id',          desc => $dir },
                 ];
-                $args{limit} = $last;
-                $no_resort = 0 if $args->{sort_by};
-            }
-            else {
-                if ( $args{sort} eq 'authored_on' ) {
-                    my $dir = $args->{sort_order} || 'descend';
-                    $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
-                    $args{sort} = [
-                        { column => 'authored_on', desc => $dir },
-                        { column => 'id',          desc => $dir },
-                    ];
-                }
-                else {
-                    $args{direction} = $args->{sort_order} || 'descend';
-                }
-                $no_resort = 1 unless $args->{sort_by};
-                if (   ( my $last = $args->{lastn} )
-                    && ( exists $args->{limit} ) )
-                {
-                    $args{limit} = $last;
-                }
-            }
-            $args{offset} = $args->{offset} if $args->{offset};
-
-            #if ( $args->{recently_commented_on} ) {
-            #    my $contents_iter
-            #        = _rco_contents_iter( \%terms, \%args, \%blog_terms,
-            #        \%blog_args );
-            #    my $limit = $args->{recently_commented_on};
-            #    while ( my $e = $entries_iter->() ) {
-            #        push @entries, $e;
-            #        last unless --$limit;
-            #    }
-            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            #}
-            #else {
-            @contents = $class->load( \%terms, \%args );
-
-            #}
-        }
-        else {
-            if ( ( $args->{lastn} ) && ( !exists $args->{limit} ) ) {
-                $args{direction} = 'descend';
-                $args{sort}      = 'authored_on';
-                $no_resort = 0 if $args->{sort_by};
             }
             else {
                 $args{direction} = $args->{sort_order} || 'descend';
-                $no_resort = 1 unless $args->{sort_by};
             }
+            $no_resort = 1 unless $args->{sort_by};
+            if (   ( my $last = $args->{lastn} )
+                && ( exists $args->{limit} ) )
+            {
+                $args{limit} = $last;
+            }
+            $args{offset} = $args->{offset} if $args->{offset};
+
+            @contents = $class->load( \%terms, \%args );
+        }
+        else {
+            $args{direction} = $args->{sort_order} || 'descend';
+            $no_resort = 1 unless $args->{sort_by};
             my $iter;
 
-            #if ( $args->{recently_commented_on} ) {
-            #    $args->{lastn} = $args->{recently_commented_on};
-            #    $iter = _rco_entries_iter( \%terms, \%args, \%blog_terms,
-            #        \%blog_args );
-            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            #}
-            #else {
             $iter = $class->load_iter( \%terms, \%args );
 
-            #}
             my $i   = 0;
             my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n   = $args->{lastn};
+            my $n   = $args->{limit};
         ENTRY: while ( my $c = $iter->() ) {
                 for (@filters) {
                     next ENTRY unless $_->($c);
@@ -497,7 +443,9 @@ sub _hdlr_contents {
 
         # Don't resort a predefined list that's not in a published archive
         # page when we didn't request sorting.
-        if ( $args->{sort_by} || $args->{sort_order} || $ctx->{archive_type} )
+        if (   $args->{sort_by}
+            || $args->{sort_order}
+            || $ctx->{archive_type} )
         {
             my $so
                 = $args->{sort_order}
@@ -558,7 +506,7 @@ sub _hdlr_contents {
             my $i   = 0;
             my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n   = $args->{lastn};
+            my $n   = $args->{limit};
         ENTRY2: foreach my $c (@$archive_contents) {
                 for (@filters) {
                     next ENTRY2 unless $_->($c);
@@ -574,8 +522,8 @@ sub _hdlr_contents {
             if ( $offset = $args->{offset} ) {
                 if ( $offset < scalar @$archive_contents ) {
                     @contents
-                        = @$archive_contents[ $offset .. $#$archive_contents
-                        ];
+                        = @$archive_contents[ $offset ..
+                        $#$archive_contents ];
                 }
                 else {
                     @contents = ();
@@ -584,18 +532,8 @@ sub _hdlr_contents {
             else {
                 @contents = @$archive_contents;
             }
-            if ( my $last = $args->{lastn} ) {
-                if ( scalar @contents > $last ) {
-                    @contents = @contents[ 0 .. $last - 1 ];
-                }
-            }
         }
     }
-
-    #my @contents
-    #    = $archive_contents
-    #    ? @{$archive_contents}
-    #    : MT::ContentData->load( \%terms, \%args );
 
     my $i       = 0;
     my $res     = '';
@@ -1135,7 +1073,8 @@ sub _hdlr_content_permalink {
     my $link = $c->permalink( $args ? $at : undef,
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $c->errstr );
-    $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
+    $link = MT::Util::strip_index( $link, $blog )
+        unless $args->{with_index};
     $link;
 }
 
@@ -1158,7 +1097,8 @@ sub _hdlr_author_has_content {
     $terms{author_id} = $author->id;
     $terms{status}    = MT::ContentStatus::RELEASE();
 
-    $ctx->set_content_type_load_context( $args, $cond, \%terms ) or return;
+    $ctx->set_content_type_load_context( $args, $cond, \%terms )
+        or return;
 
     MT::ContentData->exist( \%terms );
 }
