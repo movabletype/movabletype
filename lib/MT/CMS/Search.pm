@@ -51,7 +51,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
+                    { sort    => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -735,7 +735,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
+            { sort    => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -1188,7 +1188,7 @@ sub do_search_replace {
                             }
                             if ($replace_handler) {
                                 $replaced = $replace_handler->(
-                                    $re, $replace, $text, $field_data, $obj
+                                    $re, $replace, $field_data, $text, $obj
                                 );
                             }
                         }
@@ -1248,7 +1248,7 @@ sub do_search_replace {
                             my $search_handler = $app->handler_to_coderef(
                                 $field_registry->{search_handler} );
                             $match = $search_handler && $search_handler->(
-                                $re, $text, $field_data, $obj
+                                $re, $field_data, $text, $obj
                             );
                         }
                         else {

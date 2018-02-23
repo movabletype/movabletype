@@ -91,13 +91,13 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $value, $field_id, $content_data ) = @_;
+    my ( $field_data, $value, $content_data ) = @_;
     return '' unless $value;
     return qq{<table border="1" cellpadding="3">$value</table>};
 }
 
 sub search_handler {
-    my ( $search_regex, $table_body, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $table_body, $content_data ) = @_;
     return 0 unless defined $table_body;
     $table_body =~ s/>\s+</></g;
     $table_body =~ s/\A\s*//g;

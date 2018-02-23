@@ -108,7 +108,7 @@ sub ss_validator {
 
     my $iter
         = MT::Category->load_iter(
-        { id => $data, category_set_id => $options->{category_set} },
+        { id        => $data, category_set_id => $options->{category_set} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -179,7 +179,7 @@ sub terms {
 
         my @cat_ids;
         my $iter = MT::Category->load_iter(
-            {   label => { like => "%${string}%" },
+            {   label           => { like => "%${string}%" },
                 category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },
@@ -440,7 +440,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -476,7 +476,7 @@ sub preview_handler {
 }
 
 sub search_handler {
-    my ( $search_regex, $category_ids, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $category_ids, $content_data ) = @_;
     return 0 unless defined $category_ids;
     $category_ids = [$category_ids] unless ref $category_ids eq 'ARRAY';
     my $iter = MT->model('category')->load_iter( { id => $category_ids } );

@@ -115,7 +115,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -128,8 +128,8 @@ sub preview_handler {
 }
 
 sub replace_handler {
-    my ($search_regex, $replace_string, $values,
-        $field_data,   $content_data
+    my ($search_regex, $replace_string, $field_data,
+        $values,       $content_data
     ) = @_;
     return 0 unless defined $values;
     $values = [$values] unless ref $values eq 'ARRAY';
@@ -141,7 +141,7 @@ sub replace_handler {
 }
 
 sub search_handler {
-    my ( $search_regex, $values, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $values, $content_data ) = @_;
     return 0 unless defined $values;
     $values = [$values] unless ref $values eq 'ARRAY';
     ( grep { defined $_ ? $_ =~ /$search_regex/ : 0 } @$values ) ? 1 : 0;

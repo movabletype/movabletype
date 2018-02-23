@@ -308,7 +308,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -331,7 +331,7 @@ sub preview_handler {
 }
 
 sub search_handler {
-    my ( $search_regex, $tag_ids, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $tag_ids, $content_data ) = @_;
     return 0 unless defined $tag_ids;
     $tag_ids = [$tag_ids] unless ref $tag_ids eq 'ARRAY';
     my $iter = MT->model('tag')->load_iter( { id => $tag_ids } );

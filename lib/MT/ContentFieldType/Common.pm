@@ -465,14 +465,13 @@ sub feed_value_handler_multiple {
 }
 
 sub preview_handler_multiple {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
     }
     return '' unless @$values;
 
-    my $field_data = $content_data->content_type->get_field($field_id);
     my %value_label_hash = map { $_->{value} => $_->{label} }
         @{ $field_data->{options}{values} || [] };
 
@@ -486,7 +485,7 @@ sub preview_handler_multiple {
 }
 
 sub search_handler_multiple {
-    my ( $search_regex, $values, $field_data, $content_data ) = @_;
+    my ( $search_regex, $field_data, $values, $content_data ) = @_;
     $values = ''        unless defined $values;
     $values = [$values] unless ref $values eq 'ARRAY';
     my %value_label_hash = map { $_->{value} => $_->{label} }
