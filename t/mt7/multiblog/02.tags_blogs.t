@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use Test::Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -29,7 +31,6 @@ $test_env->prepare_fixture('db_data');
 
 my $blog_id = 2;
 
-my $plugin = $app->component('MultiBlog');
 my $default_access_allowed = 0;
 
 # Settings:
@@ -141,15 +142,16 @@ SKIP:
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
+        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
 
         my $allowed
             = defined( $block->default_access_allowed )
             ? $block->default_access_allowed
             : $default_access_allowed;
         chomp($allowed);
-        $plugin->set_config_value( 'default_access_allowed', $allowed,
-            'system' );
+        $app->config( 'DefaultAccessAllowed', $allowed, 1 );
+
+        $app->config->save_config;
 
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
@@ -198,7 +200,7 @@ $ctx =& $mt->context();
 
 $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog(2);
+$blog = $db->fetch_blog($blog_id);
 $ctx->stash('blog', $blog);
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
@@ -224,20 +226,22 @@ SKIP:
     SKIP:
         {
             skip $block->skip, 1 if $block->skip;
+
             my $overrides
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $plugin->set_config_value( 'access_overrides', $overrides,
-                'system' );
+            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
+                1 );
 
             my $allowed
                 = defined( $block->default_access_allowed )
                 ? $block->default_access_allowed
                 : $default_access_allowed;
             chomp($allowed);
-            $plugin->set_config_value( 'default_access_allowed', $allowed,
-                'system' );
+            $app->config( 'DefaultAccessAllowed', $allowed, 1 );
+
+            $app->config->save_config;
 
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script( $block->template,

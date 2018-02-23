@@ -8,77 +8,14 @@
 $mt = MT::get_instance();
 $ctx = &$mt->context();
 
-# Check to see if MultiBlog is disabled...
-$switch = $mt->config('PluginSwitch');
-if (isset($switch) && isset($switch['MultiBlog/multiblog.pl'])) {
-    if (!$switch['MultiBlog/multiblog.pl']) {
-        define('MULTIBLOG_ENABLED', 0);
-        return;
-    }
-}
-
 define('MULTIBLOG_ENABLED', 1);
 define('MULTIBLOG_ACCESS_DENIED', 1);
 define('MULTIBLOG_ACCESS_ALLOWED', 2);
 
-# override handler for the following tags.  the overridden version
-# will, in turn call the MT native handlers...
-global $multiblog_orig_handlers;
-$multiblog_orig_handlers = array();
-$multiblog_orig_handlers['mtblogpingcount']
-    = $ctx->add_override_tag('function', 'blogpingcount', 'multiblog_MTBlogPingCount');
-$multiblog_orig_handlers['mtblogcommentcount']
-    = $ctx->add_override_tag('function', 'blogcommentcount', 'multiblog_MTBlogCommentCount');
-$multiblog_orig_handlers['mtblogcategorycount']
-    = $ctx->add_override_tag('function', 'blogcategorycount', 'multiblog_MTBlogCategoryCount');
-$multiblog_orig_handlers['mtblogentrycount']
-    = $ctx->add_override_tag('function', 'blogentrycount', 'multiblog_MTBlogEntryCount');
-$multiblog_orig_handlers['mtassets']
-    = $ctx->add_override_tag('block', 'assets', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtauthors']
-    = $ctx->add_override_tag('block', 'authors', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtentries']
-    = $ctx->add_override_tag('block', 'entries', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtcomments']
-    = $ctx->add_override_tag('block', 'comments', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtcategories']
-    = $ctx->add_override_tag('block', 'categories', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtpages']
-    = $ctx->add_override_tag('block', 'pages', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtfolders']
-    = $ctx->add_override_tag('block', 'folders', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtpings']
-    = $ctx->add_override_tag('block', 'pings', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtblogs']
-    = $ctx->add_override_tag('block', 'blogs', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtwebsites']
-    = $ctx->add_override_tag('block', 'websites', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mttags']
-    = $ctx->add_override_tag('block', 'tags', 'multiblog_block_wrapper');
-$multiblog_orig_handlers['mtinclude']
-    = $ctx->add_override_tag('function', 'include', 'multiblog_MTInclude');
-$multiblog_orig_handlers['mttagsearchlink']
-    = $ctx->add_override_tag('function', 'tagsearchlink', 'multiblog_MTTagSearchLink');
+#$ctx->add_conditional_tag('mtmultiblogiflocalblog');
 
-$ctx->add_conditional_tag('mtmultiblogiflocalblog');
-
-function multiblog_MTBlogCategoryCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogcategorycount', $args, $ctx);
-}
-function multiblog_MTBlogCommentCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogcommentcount', $args, $ctx);
-}
-function multiblog_MTBlogPingCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogpingcount', $args, $ctx);
-}
-function multiblog_MTBlogEntryCount($args, &$ctx) {
-    return multiblog_function_wrapper('mtblogentrycount', $args, $ctx);
-}
-function multiblog_MTTagSearchLink($args, &$ctx) {
-    return multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
-}
 # Special handler for MTInclude
-function multiblog_MTInclude($args, &$_smarty_tpl) {
+function multiblog_MTInclude(&$args, &$_smarty_tpl) {
     $ctx = $_smarty_tpl->smarty;
 
     if (isset($args['blog_id'])) {
@@ -109,14 +46,10 @@ function multiblog_MTInclude($args, &$_smarty_tpl) {
             $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
         }
     }
-    global $multiblog_orig_handlers;
-    $fn = $multiblog_orig_handlers['mtinclude'];
-    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
-    return $result;
 }
 
 # MultiBlog plugin wrapper for function tags (i.e. variable tags)
-function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
+function multiblog_function_wrapper($tag, &$args, &$_smarty_tpl) {
     $ctx = $_smarty_tpl->smarty;
 
     $localvars = array('local_blog_id');
@@ -150,24 +83,16 @@ function multiblog_function_wrapper($tag, $args, &$_smarty_tpl) {
             $args['exclude_blogs'] = $exclude_blogs;
     }
 
-    # Call original tag handler with new multiblog args
-    global $multiblog_orig_handlers;
-    $fn = $multiblog_orig_handlers[$tag];
-    $result = call_user_func_array($fn, array($args, &$_smarty_tpl));
-
     # Restore localized variables
     $ctx->restore($localvars);
-    return $result;
 }
 
 # MultiBlog plugin wrapper for block tags (i.e. container/conditional)
-function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
+function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
     $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
-    $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', 'local_blog_id');
 
     if (!isset($content)) {
-        $ctx->localize($localvars);
         $ctx->set_override_context( true );
 
         if (
@@ -214,31 +139,6 @@ function multiblog_block_wrapper($args, $content, &$_smarty_tpl, &$repeat) {
         if ($ctx->this_tag() == 'mttags')
             $ctx->stash('local_blog_id', 0);
     }
-
-    # Call original tag handler with new multiblog args
-    global $multiblog_orig_handlers;
-    $fn = $multiblog_orig_handlers[$tag];
-    $result = call_user_func_array($fn, array($args, $content, &$_smarty_tpl, &$repeat));
-
-    # Restore localized variables if last loop
-    if (!$repeat) {
-        $ctx->restore($localvars);
-        $ctx->set_override_context( false );
-    }
-    return $result;
-}
-
-function multiblog_fetch_system_config() {
-    static $multiblog_system_config;
-    if (! isset($multiblog_system_config)) {
-        $mt = MT::get_instance();
-        $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
-        if (empty($multiblog_system_config)) {
-            $multiblog_system_config = array();
-        }
-    }
-
-    return $multiblog_system_config;
 }
 
 function multiblog_load_acl($ctx) {
@@ -246,15 +146,11 @@ function multiblog_load_acl($ctx) {
     $this_blog = $ctx->stash('blog_id');
 
     # Get the MultiBlog system config for default access and overrides
-    $multiblog_system_config = multiblog_fetch_system_config();
-
-    $default_access_allowed = 1;
-    if (isset($multiblog_system_config['default_access_allowed']))
-        $default_access_allowed = $multiblog_system_config['default_access_allowed'];
-
-    $access_overrides = $multiblog_system_config['access_overrides'];
-    if (empty($access_overrides))
-        $access_overrides = array();
+    $default_access_allowed = $ctx->mt->config('DefaultAccessAllowed');
+    if (!isset($default_access_allowed))
+        $default_access_allowed = 1;
+    $cfg_access_overrides = $ctx->mt->config('AccessOverrides');
+    $access_overrides = isset($cfg_access_overrides) ? json_decode( $cfg_access_overrides, true ) : array();
 
     $allow = array();
     $deny = array();
@@ -287,16 +183,12 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
     # Set local blog
     $this_blog = $ctx->stash('blog_id');
 
-    $multiblog_system_config = multiblog_fetch_system_config();
-
     # Get the MultiBlog system config for default access and overrides
-    if (isset($multiblog_system_config['default_access_allowed']))
-        $default_access_allowed = $multiblog_system_config['default_access_allowed'];
-    else
+    $default_access_allowed = $ctx->mt->config('DefaultAccessAllowed');
+    if (!isset($default_access_allowed))
         $default_access_allowed = 1;
-    $access_overrides = 
-        $multiblog_system_config['access_overrides'];
-    if (!$access_overrides) $access_overrides = array();
+    $cfg_access_overrides = $ctx->mt->config('AccessOverrides');
+    $access_overrides = isset($cfg_access_overrides) ? json_decode( $cfg_access_overrides, true ) : array();
 
     # System setting allows access by default
     if ($default_access_allowed) {

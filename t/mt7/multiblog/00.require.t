@@ -11,13 +11,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 3;
+plan tests => 2;
 
-use lib qw( plugins/MultiBlog plugins/MultiBlog/lib );
 use MT;
 
-$MT::plugin_envelope = 'plugins/MultiBlog';    # Supress warning.
-require_ok('multiblog.pl');
-
-require_ok('MultiBlog');
-require_ok('MultiBlog::Tags');
+require_ok('MT::RebuildTrigger');
+require_ok('MT::CMS::RebuildTrigger');

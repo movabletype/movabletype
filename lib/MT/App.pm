@@ -980,6 +980,28 @@ sub init {
         MT->add_callback( 'take_down', 1, $app,
             sub { $app->post_run_debug } );
     }
+
+    my $rt = MT->model('rebuild_trigger');
+    # TODO: move to Comment/Trackback plugins.
+    # Register Comment/TB post-save callbacks for rebuild triggers
+    #MT->add_callback(
+    #    'MT::Comment::post_save',
+    #    10, $app,
+    #    sub {
+    #        $rt->runner( 'post_feedback_save', 'comment_pub', @_ );
+    #    }
+    #);
+    #MT->add_callback(
+    #    'MT::TBPing::post_save',
+    #    10, $app,
+    #    sub {
+    #        $rt->runner( 'post_feedback_save', 'tb_pub', @_ );
+    #    }
+    #);
+    #
+    # Register restore callback to restore blog assciation of triggers
+    MT->add_callback( 'restore', 10, $app, sub { $rt->runner( 'post_restore', @_ ) } ); 
+
     $app->{vtbl} = $app->registry("methods");
     return $app;
 }
@@ -1255,7 +1277,6 @@ sub _cb_mark_blog {
         undef $type;
     }
 
-
     if ( $obj_type eq 'MT::Blog' ) {
         delete $blogs_touched->{ $obj->id };
     }
@@ -1263,7 +1284,7 @@ sub _cb_mark_blog {
         if ( $obj->blog_id ) {
             my $th = $blogs_touched->{ $obj->blog_id } ||= {};
             if ( my $ct = $obj->content_type ) {
-                $th->{'content_data_'.$ct->unique_id} = 1;
+                $th->{ 'content_data_' . $ct->unique_id } = 1;
             }
         }
     }

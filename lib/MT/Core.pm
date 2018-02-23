@@ -179,6 +179,7 @@ BEGIN {
             'content_field_index' => 'MT::ContentFieldIndex',
             'content_type'        => 'MT::ContentType',
             'objectcategory'      => 'MT::ObjectCategory',
+            'rebuild_trigger'     => 'MT::RebuildTrigger',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -2148,6 +2149,10 @@ BEGIN {
             'NumberFieldDecimalPlaces' => { default => 5 },
             'NumberFieldMaxValue'      => { default => 2147483647 },
             'NumberFieldMinValue'      => { default => -2147483648 },
+
+            # RebuildTrigger - MT7
+            'DefaultAccessAllowed' => { default => 1 },
+            'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
         },

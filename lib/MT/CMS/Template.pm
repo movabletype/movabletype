@@ -907,17 +907,16 @@ sub edit {
 
             if ($blog) {
                 my @ct_list;
-                my $ct_iter = $app->model('content_type')->load_iter({
-                    blog_id => $blog->id,
-                });
+                my $ct_iter = $app->model('content_type')
+                    ->load_iter( { blog_id => $blog->id, } );
                 while ( my $ct = $ct_iter->() ) {
-                    my $key = 'content_data_' . $ct->unique_id;
+                    my $key  = 'content_data_' . $ct->unique_id;
                     my $item = {
                         label => $ct->name,
-                        type => $key,
+                        type  => $key,
                     };
                     $item->{enabled} = 1
-                        if $param->{'cache_expire_event_' . $key};
+                        if $param->{ 'cache_expire_event_' . $key };
                     push @ct_list, $item;
                 }
                 $param->{cache_expire_event_ct_loop} = \@ct_list;
@@ -975,7 +974,11 @@ sub edit {
             {
             id       => $ct->id,
             label    => $ct->name,
-            selected => ( $obj && $obj->content_type_id && $obj->content_type_id == $ct->id ? 1 : 0 )
+            selected => (
+                       $obj
+                    && $obj->content_type_id
+                    && $obj->content_type_id == $ct->id ? 1 : 0
+            )
             };
         $ct_data->{ $ct->id } = {
             id        => $ct->id,

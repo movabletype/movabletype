@@ -393,6 +393,13 @@ sub core_methods {
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
 
+        ## MT7 Rebuild Trigger
+        'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
+        'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
+        'save_rebuild_trigger'      => {
+            code      => "${pkg}RebuildTrigger::save",
+            no_direct => 1,
+        },
     };
 }
 
@@ -1972,6 +1979,13 @@ sub core_menus {
             system_permission => "manage_plugins",
             view              => [ "blog", "website" ],
         },
+        'settings:rebuild_trigger' => {
+            label      => "Rebuild Trigger",
+            order      => 800,
+            mode       => "cfg_rebuild_trigger",
+            permission => "administer_site",
+            view       => [ "system", "blog", 'website' ],
+        },
 
         'settings:system' => {
             label      => "General",
@@ -2004,7 +2018,7 @@ sub core_menus {
         },
         'settings:system_information' => {
             label         => "System Information",
-            order         => 800,
+            order         => 900,
             mode          => "tools",
             view          => "system",
             permit_action => 'use_tools:system_info_menu',

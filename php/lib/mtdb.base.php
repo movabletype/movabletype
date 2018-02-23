@@ -36,6 +36,7 @@ abstract class MTDatabase {
     protected $_blog_asset_tag_cache = array();
     protected $_author_id_cache = array();
     protected $_category_set_id_cache = array();
+    protected $_rebuild_trigger_cache = array();
 
 
     // Construction
@@ -3881,6 +3882,17 @@ abstract class MTDatabase {
         } else {
             return '';
         }
+    }
+
+    public function fetch_rebuild_trigger($blog_id) {
+        if (!empty($this->_rebuild_trigger_cache) && isset($this->_rebuild_trigger_cache[$blog_id])) {
+            return $this->_rebuild_trigger_cache[$blog_id];
+        }
+        require_once('class.mt_rebuild_trigger.php');
+        $rebuild_trigger = new RebuildTrigger;
+        $rebuild_trigger->Load("rebuild_trigger_blog_id = $blog_id");
+        $this->_rebuild_trigger_cache[$blog_id] = $rebuild_trigger;
+        return $rebuild_trigger;
     }
 }
 ?>

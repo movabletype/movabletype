@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
+
 BEGIN {
     eval { require PHP::Serialization }
         or plan skip_all => 'PHP::Serialization is not installed';
@@ -12,6 +13,7 @@ BEGIN {
 
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -42,8 +44,8 @@ $app->model('page')->remove( { id => 24 } );
 
 my $blog_id = 2;
 
-my $plugin = $app->component('MultiBlog');
-$plugin->set_config_value( 'default_access_allowed', '0', 'system' );
+$app->config( 'DefaultAccessAllowed', 0, 1 );
+$app->config->save_config;
 
 my $default_access_overrides = {
 
@@ -73,11 +75,13 @@ SKIP:
         skip $block->skip, 'skip_static', 1
             if $block->skip || $block->skip_static;
 
+        # Access overrides
         my $overrides
             = $block->access_overrides
             ? eval $block->access_overrides
             : $default_access_overrides;
-        $plugin->set_config_value( 'access_overrides', $overrides, 'system' );
+        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
+        $app->config->save_config;
 
         my $tmpl = $app->model('template')->new;
         $tmpl->text( $block->template );
@@ -220,12 +224,14 @@ SKIP:
             skip $block->skip, 'skip_dynamic', 1
                 if $block->skip || $block->skip_dynamic;
 
+            # Access overrides
             my $overrides
                 = $block->access_overrides
                 ? eval $block->access_overrides
                 : $default_access_overrides;
-            $plugin->set_config_value( 'access_overrides', $overrides,
-                'system' );
+            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
+                1 );
+            $app->config->save_config;
 
             open2( my $php_in, my $php_out, 'php -q' );
             print $php_out &php_test_script(
@@ -385,19 +391,12 @@ template-module:2
 --- template
 <mt:BlogCategoryCount include_blogs="1,2,3" />
 --- expected
-0
+6
 
 
 === mt:BlogEntryCount
 --- template
 <mt:BlogEntryCount include_blogs="1,2,3" />
---- expected
-0
-
-
-=== mt:BlogPingCount
---- template
-<mt:BlogPingCount include_blogs="1,2,3" />
 --- expected
 0
 

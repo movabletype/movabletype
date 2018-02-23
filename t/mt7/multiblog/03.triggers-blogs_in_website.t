@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
+
 BEGIN {
     eval { require Test::MockObject }
-      or plan skip_all => 'Test::MockObject is not installed';
+        or plan skip_all => 'Test::MockObject is not installed';
 }
 
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -24,22 +26,20 @@ use MT::Test;
 
 $test_env->prepare_fixture('db_data');
 
-require MultiBlog;
+require MT::RebuildTrigger;
 
 my $app     = MT->instance;
 my $request = MT::Request->instance;
 
 ### register triggers
-my $plugin = $app->component('MultiBlog');
-$plugin->save_config(
-    {
-        blog_content_accessible => 1,
-        old_rebuild_triggers    => '',
-        rebuild_triggers =>
-          'ri:_blogs_in_website:entry_pub',
-    },
-    'blog:2'
-);
+my $rt = MT::RebuildTrigger->new;
+$rt->blog_id(2);
+$rt->object_type( MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() );
+$rt->action( MT::RebuildTrigger::ACTION_RI() );
+$rt->event( MT::RebuildTrigger::EVENT_PUBLISH() );
+$rt->target( MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE() );
+$rt->target_blog_id(0);
+$rt->save;
 
 ### initialize mock
 my $rebuild_count = 0;
@@ -67,7 +67,7 @@ sub run_test(&) {
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MultiBlog::post_entry_save( $plugin, undef, $app, $entry );
+    MT::RebuildTrigger->post_entry_save( $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_save.' );
 };
 
