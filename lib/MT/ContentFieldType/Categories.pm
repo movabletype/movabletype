@@ -475,4 +475,18 @@ sub preview_handler {
 
 }
 
+sub search_handler {
+    my ( $search_regex, $category_ids, $field_data, $content_data ) = @_;
+    return 0 unless defined $category_ids;
+    $category_ids = [$category_ids] unless ref $category_ids eq 'ARRAY';
+    my $iter = MT->model('category')->load_iter( { id => $category_ids } );
+    while ( my $category = $iter->() ) {
+        for my $col (qw/ label description basename /) {
+            my $text = defined $category->$col ? $category->$col : '';
+            return 1 if $text =~ /$search_regex/;
+        }
+    }
+    0;
+}
+
 1;

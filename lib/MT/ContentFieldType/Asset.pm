@@ -615,5 +615,19 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub search_handler {
+    my ( $search_regex, $asset_ids, $field_data, $content_data ) = @_;
+    return 0 unless defined $asset_ids;
+    $asset_ids = [$asset_ids] unless ref $asset_ids eq 'ARRAY';
+    my $iter = MT->model('asset')->load_iter( { id => $asset_ids } );
+    while ( my $asset = $iter->() ) {
+        for my $col (qw/ file_name description label /) {
+            my $text = defined $asset->$col ? $asset->$col : '';
+            return 1 if $text =~ /$search_regex/;
+        }
+    }
+    0;
+}
+
 1;
 
