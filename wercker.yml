@@ -3,10 +3,6 @@ box: masiuchi/docker-mt-test:trusty-full
 build:
   steps:
     - script:
-        name: Remove skip test
-        code: |
-          rm -f plugins/MultiBlog/t/02.tags.t
-    - script:
         name: Install CPAN modules
         code: |
           cpm install -g --test --cpanfile=t/cpanfile
