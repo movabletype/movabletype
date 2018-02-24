@@ -86,9 +86,11 @@ $test_env->prepare_fixture(
 );
 
 my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
+my $cf = MT::ContentField->load( { name => 'single line text' } );
 
 $vars->{ct1_id}  = $ct1->id;
 $vars->{ct1_uid} = $ct1->unique_id;
+$vars->{cf_uid} = $cf->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -154,4 +156,13 @@ test single line text 3
 test single line text 2
 
 test single line text 1
+
+
+=== MT::ContentsCount with sort_by content field
+--- template
+<mt:Contents blog_id="1" field:[% cf_uid %]="test single line text 3" sort_by="field:single line text">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+</mt:Contents>
+--- expected
+test single line text 3
 

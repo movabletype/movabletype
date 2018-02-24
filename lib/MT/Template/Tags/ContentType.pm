@@ -314,7 +314,7 @@ sub _hdlr_contents {
                 my ( $prefix, $value ) = split ':', $sort_by;
                 my ($cf) = MT->model('cf')->load( { name => $value } );
                 unless ($cf) {
-                    $cf = MT->model('cf')->load( { unique_id => $value } );
+                    ($cf) = MT->model('cf')->load( { unique_id => $value } );
                 }
                 if ($cf) {
                     my $data_type = MT->registry('content_field_types')
@@ -366,19 +366,34 @@ sub _hdlr_contents {
             if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
 
         if (%fields) {
-
-            # specifies we need a join with entry_meta;
-            # for now, we support one join
-            my ( $col, $val ) = %fields;
-            my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
-            $args{join} = [
-                $class->meta_pkg,
-                undef,
-                {   type          => 'field.' . $col,
-                    $type->{type} => $val,
-                    'entry_id'    => \'= entry_id'
+            foreach my $key ( keys %fields ) {
+                my $value = $fields{$key};
+                my ($cf) = MT->model('cf')->load( { name => $key } );
+                unless ($cf) {
+                    ($cf) = MT->model('cf')->load( { unique_id => $key } );
                 }
-            ];
+                my $type      = $cf->type;
+                my $data_type = MT->registry('content_field_types')
+                    ->{ $cf->type }{data_type};
+                my $join = MT->model('cf_idx')->join_on(
+                    'content_data_id',
+                    {   content_field_id      => $cf->id,
+                        'value_' . $data_type => $value,
+                    },
+                    { alias => 'cf_idx_' . $cf->unique_id }
+                );
+                if ( $args{join} ) {
+                    push @{ $args{joins} }, $args{join};
+                    push @{ $args{joins} }, $join;
+                    delete $args{join};
+                }
+                elsif ( $args{joins} ) {
+                    push @{ $args{joins} }, $join;
+                }
+                else {
+                    push @{ $args{joins} }, $join;
+                }
+            }
         }
 
         if ( !@filters ) {
