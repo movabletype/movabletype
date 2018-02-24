@@ -2505,6 +2505,9 @@ sub ProcessCanonCustom2($$$)
         $pos = $recEnd;
     }
     if ($pos != $end) {
+        # Note: a firmware bug in the EOS M5 and M6 stores an incorrect
+        # size for the 2nd CanonCustom2 record, so this message is expected
+        # for these models...
         $et->Warn('Possibly corrupted CanonCustom2 data');
         return 0;
     }
@@ -2640,7 +2643,7 @@ Image::ExifTool to read this information.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

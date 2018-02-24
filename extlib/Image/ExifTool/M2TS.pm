@@ -31,7 +31,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 # program map table "stream_type" lookup (ref 6/1)
 my %streamType = (
@@ -293,7 +293,11 @@ sub ParsePID($$$$$)
         require Image::ExifTool::H264;
         $more = Image::ExifTool::H264::ParseH264Video($et, $dataPt);
         # force parsing additional H264 frames with ExtractEmbedded option
-        $more = 1 if $et->Options('ExtractEmbedded');
+        if ($$et{OPTIONS}{ExtractEmbedded}) {
+            $more = 1;
+        } elsif (not $$et{OPTIONS}{Validate}) {
+            $et->WarnOnce('The ExtractEmbedded option may find more tags in the video data',1);
+        }
     } elsif ($type == 0x81 or $type == 0x87 or $type == 0x91) {
         # AC-3 audio
         ParseAC3Audio($et, $dataPt);
@@ -693,7 +697,7 @@ video.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -11,7 +11,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.01';
+$VERSION = '1.03';
 
 sub MDItemLocalTime($);
 
@@ -71,12 +71,16 @@ my %mdDateInfo = (
     MDItemAperture                => { Groups => { 2 => 'Camera' } },
     MDItemAuthors                 => { Groups => { 2 => 'Author' } },
     MDItemBitsPerSample           => { Groups => { 2 => 'Image' } },
+    MDItemCity                    => { Groups => { 2 => 'Location' } },
     MDItemColorSpace              => { Groups => { 2 => 'Image' } },
     MDItemComment                 => { },
     MDItemContentCreationDate     => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemContentModificationDate => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemContentType             => { },
     MDItemContentTypeTree         => { },
+    MDItemContributors            => { },
+    MDItemCopyright               => { Groups => { 2 => 'Author' } },
+    MDItemCountry                 => { Groups => { 2 => 'Location' } },
     MDItemCreator                 => { Groups => { 2 => 'Document' } },
     MDItemDateAdded               => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemDescription             => { },
@@ -135,10 +139,12 @@ my %mdDateInfo = (
     MDItemResolutionWidthDPI      => { Groups => { 2 => 'Image' } },
     MDItemSecurityMethod          => { },
     MDItemSpeed                   => { Groups => { 2 => 'Location' } },
+    MDItemStateOrProvince         => { Groups => { 2 => 'Location' } },
     MDItemTimestamp               => { Groups => { 2 => 'Time' } }, # (time only)
     MDItemTitle                   => { },
     MDItemUseCount                => { },
     MDItemUsedDates               => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemUserTags                => { },
     MDItemVersion                 => { },
     MDItemWhereFroms              => { },
     MDItemWhiteBalance            => { Groups => { 2 => 'Image' } },
@@ -160,7 +166,7 @@ my %mdDateInfo = (
         # ref https://opensource.apple.com/source/CarbonHeaders/CarbonHeaders-9A581/Finder.h
         ValueConv => q{
             my @a = unpack('a4a4n3x10nx2N', $$val);
-            tr/\0//d, $_="'$_'" foreach @a[0,1];
+            tr/\0//d, $_="'${_}'" foreach @a[0,1];
             return "@a";
         },
         PrintConv => q{
@@ -200,10 +206,11 @@ my %mdDateInfo = (
             quarantine information for files downloaded from the internet.  May only be
             deleted when writing
         },
+        # ($a[1] is the time when the quarantine tag was set)
         PrintConv => q{
             my @a = split /;/, $val;
             $a[0] = 'Flags=' . $a[0];
-            $a[1] = 'downloaded at ' . ConvertUnixTime(hex $a[1]);
+            $a[1] = 'set at ' . ConvertUnixTime(hex $a[1]);
             $a[2] = 'by ' . $a[2];
             return join ' ', @a;
         },
@@ -259,10 +266,10 @@ sub SetMacOSTags($$$)
         }
         if ($tag eq 'MDItemFSCreationDate') {
             ($f = $file) =~ s/'/'\\''/g;
-            $cmd = "setfile -d '$val' '$f'";
+            $cmd = "setfile -d '${val}' '${f}'";
         } elsif ($tag eq 'XAttrQuarantine') {
             ($f = $file) =~ s/'/'\\''/g;
-            $cmd = "xattr -d com.apple.quarantine '$f'";
+            $cmd = "xattr -d com.apple.quarantine '${f}'";
             $silentErr = 256;   # (will get this error if attribute doesn't exist)
         } else {
             ($f = $file) =~ s/(["\\])/\\$1/g;   # escape necessary characters
@@ -455,7 +462,7 @@ for writing.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

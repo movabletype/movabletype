@@ -927,7 +927,7 @@ sub ExtractObject($$;$$)
         }
         if ($$dict{$tag}) {
             # duplicate dictionary entries are not allowed
-            $et->Warn("Duplicate '$tag' entry in dictionary (ignored)");
+            $et->Warn("Duplicate '${tag}' entry in dictionary (ignored)");
         } else {
             # save the entry
             push @tags, $tag;
@@ -2347,7 +2347,7 @@ including AESV2 (AES-128) and AESV3 (AES-256).
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
