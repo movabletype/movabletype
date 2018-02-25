@@ -23,7 +23,7 @@ __PACKAGE__->install_properties(
             'description'             => 'text',
             'version'                 => 'integer',
             'unique_id'               => 'string(40) not null',
-            'content_type_data_label' => 'string(40)',
+            'data_label'              => 'string(40)',
             'fields'                  => 'blob',
             'user_disp_option'        => 'boolean',
         },

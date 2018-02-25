@@ -109,6 +109,10 @@ sub edit {
             }
         }
 
+        # Can be used as a data label?
+        my $can_data_label
+            = $content_field_types->{$f->{type}}->{can_data_label_field} ? 1 : 0;
+
         my $field = {
             type      => $type,
             typeLabel => $typeLabel,
@@ -117,6 +121,7 @@ sub edit {
             order     => $f->{order},
             options   => $options,
             ( $f->{unique_id} ? ( unique_id => $f->{unique_id} ) : () ),
+            canDataLabel => $can_data_label,
         };
 
         push @fields, $field;
@@ -150,24 +155,32 @@ sub edit {
         # field type icon
         my $icon;
         if ( my $handler = $content_field_types->{$key}{icon_handler} ) {
-            $handler = MT->handler_to_coderef( $content_field_types->{$key}{icon_handler} );
+            $handler = MT->handler_to_coderef(
+                $content_field_types->{$key}{icon_handler} );
             if ( 'CODE' eq ref $handler ) {
                 $icon = $handler->($app);
             }
         }
         else {
-            my $icon_class = $content_field_types->{$key}{icon_class} || undef;
-            my $icon_title = $content_field_types->{$key}{icon_title} || undef;
+            my $icon_class
+                = $content_field_types->{$key}{icon_class} || undef;
+            my $icon_title
+                = $content_field_types->{$key}{icon_title} || undef;
             $icon = field_type_icon( $icon_class, $icon_title );
         }
 
+        # Can be used as a data label?
+        my $can_data_label
+            = $content_field_types->{$key}->{can_data_label_field} ? 1 : 0;
+
         push @type_array,
             {
-            type    => $type,
-            label   => $label,
-            order   => $content_field_types->{$key}{order},
-            warning => $warning,
-            icon    => $icon,
+            type       => $type,
+            label      => $label,
+            order      => $content_field_types->{$key}{order},
+            warning    => $warning,
+            icon       => $icon,
+            data_label => $can_data_label,
             };
     }
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
@@ -377,8 +390,10 @@ sub save {
     my @field_objects       = ();
     my $cf_class            = MT->model('content_field');
     my $content_field_types = $app->registry('content_field_types');
+    my $data_label_field    = $app->param('label_field') || '';
     foreach my $field (@$field_list) {
         my $type = $field->{type};
+        my $field_id = $field->{id};
 
         if ( !exists $content_field_types->{$type} ) {
             $type =~ s/-/_/g;
@@ -397,16 +412,20 @@ sub save {
 
         # Create or load content field
         my $content_field;
-        if ( $content_type_id && $field->{id} ) {
-            $content_field = $cf_class->load( $field->{id} )
+        if ( $content_type_id && $field_id ) {
+            $content_field = $cf_class->load( $field_id )
                 or return $app->errtrans(
                 "Cannot load content field data (ID: [_1])",
-                $field->{id} );
+                $field_id );
+            $field->{label_field} = 1
+                if $data_label_field && $data_label_field eq $content_field->unique_id;
         }
         else {
             $content_field = $cf_class->new;
             $content_field->blog_id($blog_id);
             $content_field->type($type);
+            $field->{label_field} = 1
+                if $data_label_field && $data_label_field eq $field->{options}->{id};
         }
 
         $content_field->name( $field->{options}->{label} );
@@ -447,6 +466,7 @@ sub save {
 
     # Save content fields
     my @field_data = ();
+    my $set_data_label;
     foreach my $field_data (@field_objects) {
         my $content_field = $field_data->{object};
         my $field         = $field_data->{data};
@@ -471,7 +491,15 @@ sub save {
             options    => $field->{options},
         };
         push @field_data, $store_data;
+
+        if ( $field->{label_field} ) {
+            $obj->data_label( $content_field->unique_id );
+            $set_data_label = 1:
+        }
     }
+
+    # Delete data_label if content field is not found in this type
+    $obj->data_label(undef) unless $set_data_label;
 
     # Remove fields
     if ($content_type_id) {

@@ -35,6 +35,15 @@
                     </div>
                   </div>
                   <div class="col">
+                    <div id="label-field" class="form-group">
+                      <label for="label_field" class="form-control-label">{ trans('Data Label Field') }</label>
+                      <select id="label_field" name="label_field" class="form-control html5-form">
+                        <option value="" selected="{ parent.labelField == '' }">{ trans('Show input field to enter data label') }
+                        <option each={ labelFields } value="{ value }" selected="{ value == parent.labelField }">{ label }</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
                     <div id="unique_id-field" class="form-group">
                       <label for="unique_id" class="form-control-label">{ trans('Unique ID') }</label>
                         <input type="text" class="form-control-plaintext w-50" id="unieuq_id" value={ opts.unique_id } readonly>
@@ -100,6 +109,8 @@
     self.placeholder = document.createElement("div")
     self.placeholder.className = 'placeholder'
     self.dragoverState = false
+    self.labelFields = null
+    self.labelField = opts.labelField
 
     // Drag start from content field list
     self.observer.on('mtDragStart', function() {
@@ -110,6 +121,12 @@
     self.observer.on('mtDragEnd', function() {
       self.droppable = false
       self.onDragEnd()
+    })
+
+    // Show dettail modal
+    jQuery(document).on('show.bs.modal', '#editDetail', function(e){
+      self.rebuildLabelFields()
+      self.update()
     })
 
     // Hide detail modal
@@ -212,6 +229,7 @@
         var fieldType = e.dataTransfer.getData('text')
         var field = jQuery("[data-field-type='" + fieldType + "']")
         var fieldTypeLabel = field.data('field-label')
+        var canDataLabel = field.data('can-data-label')
 
         newId = Math.random().toString(36).slice(-8)
         field = {
@@ -219,7 +237,8 @@
           'typeLabel' : fieldTypeLabel,
           'id' : newId,
           'isNew': true,
-          'isShow': 'show'
+          'isShow': 'show',
+          'canDataLabel' : canDataLabel
         }
         self.fields.push(field)
         setDirty(true)
@@ -230,6 +249,7 @@
           self.recalcHeight(e.target)
         else
           self.recalcHeight(e.target.parentNode)
+        self.rebuildLabelFields()
       }
 
       e.target.classList.remove('mt-draggable__area--dragover')
@@ -351,7 +371,31 @@
       }
     }
 
-    _moveField(item, pos){
+    rebuildLabelFields() {
+      console.log(self.fields)
+      var fields = [];
+      for(var i = 0; i < self.fields.length; i++) {
+        if ( self.fields[i].canDataLabel == 1 ) {
+          var label = self.fields[i].label
+          var id = self.fields[i].unique_id
+          if ( !label ) {
+            label = jQuery('#content-field-block-' + self.fields[i].id).find('[name="label"]').val()
+            if (label == '') {
+              label = trans('No Name')
+            }
+            id =  'id:' + self.fields[i].id
+          }
+          fields.push({
+            'value' : id,
+            'label' : label
+          })
+        }
+      }
+      self.labelFields = fields
+      self.update()
+    }
+
+    _moveField(item, pos) {
       for (var i = 0; i < self.fields.length; i++) {
         var field = self.fields[i];
         if (field.id == item.id) {
