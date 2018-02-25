@@ -56,6 +56,7 @@ sub edit {
         $param->{description}      = $obj->description;
         $param->{unique_id}        = $obj->unique_id;
         $param->{user_disp_option} = $obj->user_disp_option;
+        $param->{label_field}      = $obj->data_label;
 
         $field_data = $obj->fields;
     }
@@ -494,7 +495,7 @@ sub save {
 
         if ( $field->{label_field} ) {
             $obj->data_label( $content_field->unique_id );
-            $set_data_label = 1:
+            $set_data_label = 1;
         }
     }
 
