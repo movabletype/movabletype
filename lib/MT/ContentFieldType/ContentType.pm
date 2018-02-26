@@ -278,7 +278,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -287,6 +287,48 @@ sub preview_handler {
 
     my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_handler {
+    my ( $search_regex, $field_data, $content_data_ids, $content_data ) = @_;
+    return 0 unless defined $content_data_ids;
+    $content_data_ids = [$content_data_ids]
+        unless ref $content_data_ids eq 'ARRAY';
+    my $iter
+        = MT->model('content_data')->load_iter( { id => $content_data_ids } );
+    while ( my $cd = $iter->() ) {
+        my $content_type = $cd->content_type or next;
+        my $data = $cd->data;
+        for my $f_id ( keys %$data ) {
+            my $f_data = $content_type->get_field($f_id);
+            next if $f_data->{type} eq 'content_type';
+
+            my $field_registry
+                = MT->registry( 'content_field_types', $f_data->{type} );
+            next unless _is_searchable($field_registry);
+
+            my $value = $data->{$f_id};
+            if ( my $search_handler = $field_registry->{search_handler} ) {
+                $search_handler = MT->handler_to_coderef($search_handler);
+                return 0 unless $search_handler;
+                return 1
+                    if $search_handler->( $search_regex, $value, $f_data,
+                    $cd );
+            }
+            else {
+                return 1 if $value =~ /$search_regex/;
+            }
+        }
+    }
+    0;
+}
+
+sub _is_searchable {
+    my $field_registry = shift;
+    ( grep { $field_registry->{$_} }
+            qw( replaceable replace_handler searchable search_handler ) )
+        ? 1
+        : 0;
 }
 
 1;

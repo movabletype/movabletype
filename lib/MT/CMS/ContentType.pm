@@ -139,7 +139,10 @@ sub edit {
             $validation = MT->handler_to_coderef($validation);
             if (   $validation
                 && ref $validation eq 'CODE'
-                && ( $warning = $validation->($app) ) )
+                && ( $warning
+                    = $validation->( $app, $key,
+                        $content_field_types->{$key} ) )
+                )
             {
                 $warning
                     = $app->translate( '[_1] field cannot be saved: [_2]',
@@ -150,14 +153,18 @@ sub edit {
         # field type icon
         my $icon;
         if ( my $handler = $content_field_types->{$key}{icon_handler} ) {
-            $handler = MT->handler_to_coderef( $content_field_types->{$key}{icon_handler} );
+            $handler = MT->handler_to_coderef(
+                $content_field_types->{$key}{icon_handler} );
             if ( 'CODE' eq ref $handler ) {
-                $icon = $handler->($app);
+                $icon
+                    = $handler->( $app, $key, $content_field_types->{$key} );
             }
         }
         else {
-            my $icon_class = $content_field_types->{$key}{icon_class} || undef;
-            my $icon_title = $content_field_types->{$key}{icon_title} || undef;
+            my $icon_class
+                = $content_field_types->{$key}{icon_class} || undef;
+            my $icon_title
+                = $content_field_types->{$key}{icon_title} || undef;
             $icon = field_type_icon( $icon_class, $icon_title );
         }
 
@@ -210,7 +217,7 @@ sub edit {
                 }
             }
             if ( 'CODE' eq ref $options_html ) {
-                $options_html = $options_html->($plugin);
+                $options_html = $options_html->( $app, $param );
 
                 require MT::Template;
                 $tmpl = MT::Template->new(
@@ -737,7 +744,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,

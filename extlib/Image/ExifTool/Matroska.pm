@@ -14,7 +14,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.08';
+$VERSION = '1.09';
 
 my %noYes = ( 0 => 'No', 1 => 'Yes' );
 
@@ -659,6 +659,7 @@ my %noYes = ( 0 => 'No', 1 => 'Yes' );
             0 => 'Rectangular',
             1 => 'Equirectangular',
             2 => 'Cubemap',
+            3 => 'Mesh',
         },
     },
     0x7672 => [{
@@ -911,7 +912,7 @@ information from Matroska multimedia files (MKA, MKV, MKS and WEBM).
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

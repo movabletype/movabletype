@@ -288,13 +288,14 @@ sub AddChunks($$;@)
         );
         if ($dir eq 'IFD0') {
             my $chunk = $stdCase{exif};
-            if ($et->Options('Compress')) {
-                if (eval { require Compress::Zlib }) {
-                    $chunk = $stdCase{zxif};
-                } else {
-                    $et->Warn("Creating uncompressed $stdCase{exif} chunk (Compress::Zlib not available)");
-                }
-            }
+            # (zxIf was not adopted)
+            #if ($et->Options('Compress')) {
+            #    if (eval { require Compress::Zlib }) {
+            #        $chunk = $stdCase{zxif};
+            #    } else {
+            #        $et->Warn("Creating uncompressed $stdCase{exif} chunk (Compress::Zlib not available)");
+            #    }
+            #}
             $et->VPrint(0, "Creating $chunk chunk:\n");
             $$et{TIFF_TYPE} = 'APP1';
             $tagTablePtr = Image::ExifTool::GetTagTable('Image::ExifTool::Exif::Main');
@@ -394,7 +395,7 @@ strings).
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

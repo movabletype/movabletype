@@ -85,7 +85,7 @@ sub GetCFAPattern($)
         foreach (@cols) {
             tr/ \]\[//d;    # remove remaining brackets and any spaces
             my $c = $cfaLookup{lc($_)};
-            defined $c or warn("Unknown color '$_'\n"), return undef;
+            defined $c or warn("Unknown color '${_}'\n"), return undef;
             push @a, $c;
         }
     }
@@ -563,6 +563,8 @@ sub WriteExif($$$)
             # update local variables from fixed values
             $base = $$dirInfo{Base};
             $dataPos = $$dirInfo{DataPos};
+            # changed if ForceWrite tag was was set to "FixBase"
+            ++$$et{CHANGED} if $$et{FORCE_WRITE}{FixBase};
         }
 
         # initialize variables to handle mandatory tags
@@ -1322,6 +1324,7 @@ NoOverwrite:            next if $isNew > 0;
                             $subdirInfo{EntryBased} = $$sub{EntryBased};
                             $subdirInfo{NoFixBase} = 1 if defined $$sub{Base};
                             $subdirInfo{AutoFix} = $$sub{AutoFix};
+                            SetByteOrder($$sub{ByteOrder}) if $$sub{ByteOrder};
                         }
                         # get the proper tag table for these maker notes
                         if ($oldInfo and $$oldInfo{SubDirectory}) {
@@ -2451,6 +2454,9 @@ NoOverwrite:            next if $isNew > 0;
     # (could be up to 10 bytes and still be empty)
     $newData = '' if defined $newData and length($newData) < 12;
 
+    # set changed if ForceWrite tag was set to "EXIF"
+    ++$$et{CHANGED} if defined $newData and length $newData and $$et{FORCE_WRITE}{EXIF};
+
     return $newData;    # return our directory data
 }
 
@@ -2472,7 +2478,7 @@ This file contains routines to write EXIF metadata.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

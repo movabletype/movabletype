@@ -23,6 +23,7 @@ my %mp4Map = (
 my %dirMap = (
     MOV => \%movMap,
     MP4 => \%mp4Map,
+    HEIC => { },    # can't currently write XMP to HEIC files
 );
 
 #------------------------------------------------------------------------------
@@ -135,7 +136,7 @@ sub WriteQuickTime($$$)
                 undef $tagInfo;
             }
         }
-        if ($tagInfo) {
+        if ($tagInfo and (not defined $$tagInfo{Writable} or $$tagInfo{Writable})) {
             # read the atom data
             $raf->Read($buff, $size) == $size or $et->Error("Error reading $tag data"), last;
             my $subdir = $$tagInfo{SubDirectory};
@@ -214,9 +215,9 @@ sub WriteQuickTime($$$)
                     # so hold this atom and write it out later
                     if ($len) {
                         push @hold, Set32u($len+8), $tag, $newData;
-                        $et->VPrint(0,"  Moving '$tag' atom to after 'mdat'");
+                        $et->VPrint(0,"  Moving '${tag}' atom to after 'mdat'");
                     } else {
-                        $et->VPrint(0,"  Freeing '$tag' atom (and zeroing data)");
+                        $et->VPrint(0,"  Freeing '${tag}' atom (and zeroing data)");
                     }
                     # write a 'free' atom here to keep 'mdat' at the same offset
                     substr($hdr, 4, 4) = 'free';
@@ -310,7 +311,12 @@ sub WriteMOV($$)
         $buff !~ /^(....)+(qt  )/s)
     {
         # file is MP4 format if 'ftyp' exists without 'qt  ' as a compatible brand
-        $ftype = 'MP4';
+        if ($buff =~ /^(heic|mif1|msf1|heix|hevc|hevx)/) {
+            $ftype = 'HEIC';
+            $et->Error("Can't currently write HEIC/HEIF files");
+        } else {
+            $ftype = 'MP4';
+        }
     } else {
         $ftype = 'MOV';
     }
@@ -345,7 +351,7 @@ QuickTime-based file formats like MOV and MP4.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

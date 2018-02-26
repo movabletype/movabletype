@@ -8,6 +8,11 @@
 #content_data-listing-table td.data [aria-expanded=true] span:first-child {
   display: none;
 }
+
+#content_data-listing-table td.data table td,
+#content_data-listing-table td.data table th {
+  border: 1px solid #000000;
+}
 </style>
 </mt:setvarblock>
 
@@ -181,5 +186,11 @@
     });
 
     jQuery('#content_data-listing-form').prepend('<input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">">');
+
+  <mt:if name="error">
+    <mt:if name="replace">
+    $('#search-replace-toggle-replace').click();
+    </mt:if>
+  </mt:if>
 </mt:setvarblock>
 

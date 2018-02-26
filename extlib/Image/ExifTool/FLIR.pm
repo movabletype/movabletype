@@ -24,7 +24,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.15';
+$VERSION = '1.16';
 
 sub ProcessFLIR($$;$);
 sub ProcessFLIRText($$$);
@@ -97,7 +97,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     PROCESS_PROC => \&ProcessFLIR,
     VARS => { ALPHA_FIRST => 1 },
     NOTES => q{
-        Information extracted from FLIR FFF images and the FLIR APP1 segment of JPEG
+        Information extracted from FLIR FFF images and the APP1 FLIR segment of JPEG
         images.  These tags may also be extracted from the first frame of an FLIR
         SEQ file.
     },
@@ -461,6 +461,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     0x390 => { Name => 'FocusStepCount', Format => 'int16u' },
     0x45c => { Name => 'FocusDistance',  Format => 'float', PrintConv => 'sprintf("%.1f m",$val)' },
     # 0x43c - string: either "Live" or the file name
+    0x464 => { Name => 'FrameRate',  Format => 'int16u' }, #SebastianHani
 );
 
 # FLIR measurement tools record (ref 6)
@@ -1222,8 +1223,7 @@ sub GetImageType($$$)
     } elsif (length $val != $w * $h * 2) {
         $et->Warn("Unrecognized FLIR $tag data format");
     } elsif (GetByteOrder() eq 'II') {
-        require Image::ExifTool::Sony;
-        $val = Image::ExifTool::Sony::MakeTiffHeader($w,$h,1,16) . $val;
+        $val = Image::ExifTool::MakeTiffHeader($w,$h,1,16) . $val;
         $type = 'TIFF';
     } else {
         $et->Warn("Don't yet support big-endian TIFF $tag");
@@ -1499,7 +1499,7 @@ Systems Inc. thermal image files (FFF, FPF and JPEG format).
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

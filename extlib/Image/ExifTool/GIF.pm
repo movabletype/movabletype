@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 # road map of directory locations in GIF images
 my %gifMap = (
@@ -461,7 +461,7 @@ Block:
                     Write($outfile, "\0") or $err = 1;  # write null terminator
                 }
             } elsif (not $outfile) {
-                $et->HandleTag($tagTablePtr, $tag, $dat);
+                $et->HandleTag($extTable, $tag, $dat);
             }
             next;
 
@@ -534,7 +534,7 @@ write GIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

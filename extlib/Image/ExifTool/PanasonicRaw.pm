@@ -9,6 +9,7 @@
 # References:   1) CPAN forum post by 'hardloaf' (http://www.cpanforum.com/threads/2183)
 #               2) http://www.cybercom.net/~dcoffin/dcraw/
 #               3) http://syscall.eu/#pana
+#               4) Klaus Homeister private communication
 #              IB) Iliah Borg private communication (LibRaw)
 #              JD) Jens Duttke private communication (TZ3,FZ30,FZ50)
 #------------------------------------------------------------------------------
@@ -20,7 +21,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.10';
+$VERSION = '1.14';
 
 sub ProcessJpgFromRaw($$$);
 sub WriteJpgFromRaw($$$);
@@ -68,17 +69,31 @@ my %wbTypeInfo = (
     # 0x08: 1
     # 0x09: 1,3,4
     # 0x0a: 12
-    0x08 => { #IB
-        Name => 'BlackLevel1',
+    # (IB gave 0x08-0x0a as BlackLevel tags, but Klaus' decoding makes more sense)
+    0x08 => { Name => 'SamplesPerPixel', Writable => 'int16u', Protected => 1 }, #4
+    0x09 => { #4
+        Name => 'CFAPattern',
         Writable => 'int16u',
-        Notes => q{
-            summing BlackLevel1+2+3 values gives the common bias that must be added to
-            the BlackLevelRed/Green/Blue tags below
+        Protected => 1,
+        PrintConv => {
+            0 => 'n/a',
+            1 => '[Red,Green][Green,Blue]', # (CM-1, FZ70)
+            2 => '[Green,Red][Blue,Green]', # (LX-7)
+            3 => '[Green,Blue][Red,Green]', # (ZS100, FZ2500, FZ1000, ...)
+            4 => '[Blue,Green][Green,Red]', # (LC-100, G-7, V-LUX1, ...)
         },
     },
-    0x09 => { Name => 'BlackLevel2', Writable => 'int16u' }, #IB
-    0x0a => { Name => 'BlackLevel3', Writable => 'int16u' }, #IB
-    # 0x0b: 0x860c,0x880a,0x880c
+    0x0a => { Name => 'BitsPerSample', Writable => 'int16u', Protected => 1 }, #4
+    0x0b => { #4
+        Name => 'Compression',
+        Writable => 'int16u',
+        Protected => 1,
+        PrintConv => {
+            34316 => 'Panasonic RAW 1', # (most models - RAW/RW2/RWL)
+            34826 => 'Panasonic RAW 2', # (DIGILUX 2 - RAW)
+            34828 => 'Panasonic RAW 3', # (D-LUX2,D-LUX3,FZ30,LX1 - RAW)
+        },
+    },
     # 0x0c: 2 (only Leica Digilux 2)
     # 0x0d: 0,1
     # 0x0e,0x0f,0x10: 4095
@@ -147,7 +162,17 @@ my %wbTypeInfo = (
         SubDirectory => { TagTable => 'Image::ExifTool::PanasonicRaw::WBInfo2' },
     },
     # 0x27,0x29,0x2a,0x2b,0x2c: [binary data]
-    # 0x2d: 2,3
+    0x2d => { #IB
+        Name => 'RawFormat',
+        Writable => 'int16u',
+        Protected => 1,
+        # 2 - RAW DMC-FZ8/FZ18
+        # 3 - RAW DMC-L10
+        # 4 - RW2 for most other models, including G9 normal resolution and YUNEEC CGO4
+        #     (must add 15 to black levels for RawFormat == 4)
+        # 5 - RW2 DC-GH5s and G9 HiRes
+        # missing - DMC-LX1/FZ30/FZ50/L1/LX1/LX2
+    },
     0x2e => { #JD
         Name => 'JpgFromRaw', # (writable directory!)
         Groups => { 2 => 'Preview' },
@@ -223,6 +248,14 @@ my %wbTypeInfo = (
         SubDirectory => { TagTable => 'Image::ExifTool::PanasonicRaw::DistortionInfo' },
     },
     # 0x11b - chromatic aberration correction (ref 3)
+    0x120 => {
+        Name => 'CameraIFD',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::PanasonicRaw::CameraIFD',
+            Base => '$start',
+            ProcessProc => \&Image::ExifTool::ProcessTIFF,
+        },
+    },
     0x2bc => { # PH Extension!!
         Name => 'ApplicationNotes', # (writable directory!)
         Writable => 'int8u',
@@ -379,6 +412,21 @@ my %wbTypeInfo = (
     # 14,15 - checksums
 );
 
+# Panasonic RW2 camera IFD written by GH5 (ref PH)
+# (doesn't seem to be valid for the GF7 or GM5 -- encrypted?)
+%Image::ExifTool::PanasonicRaw::CameraIFD = (
+    GROUPS => { 0 => 'PanasonicRaw', 1 => 'CameraIFD', 2 => 'Camera'},
+    # (don't know what format codes 0x101 and 0x102 are for, so just
+    #  map them into 4 = int32u for now)
+    VARS => { MAP_FORMAT => { 0x101 => 4, 0x102 => 4 } },
+    0x1101 => { #forum8484 (Metabones EF-M43-BT2 adapter with Canon lenses)
+        Name => 'FocusDistance',
+        Writable => 'int16u',
+        ValueConv => '$val / 200',
+        PrintConv => '$val > 65534.5/200 ? "inf" : "$val m"',
+    },
+);
+
 # PanasonicRaw composite tags
 %Image::ExifTool::PanasonicRaw::Composite = (
     ImageWidth => {
@@ -523,7 +571,7 @@ sub WriteJpgFromRaw($$$)
     my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $byteOrder = GetByteOrder();
-    my $fileType = $$et{FILE_TYPE};   # RAW, RW2 or RWL
+    my $fileType = $$et{TIFF_TYPE};   # RAW, RW2 or RWL
     my $dirStart = $$dirInfo{DirStart};
     if ($dirStart) { # DirStart is non-zero in DNG-converted RW2/RWL
         my $dirLen = $$dirInfo{DirLen} | length($$dataPt) - $dirStart;
@@ -564,7 +612,7 @@ sub ProcessJpgFromRaw($$$)
     my ($et, $dirInfo, $tagTablePtr) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $byteOrder = GetByteOrder();
-    my $fileType = $$et{FILE_TYPE};   # RAW, RW2 or RWL
+    my $fileType = $$et{TIFF_TYPE};   # RAW, RW2 or RWL
     my $tagInfo = $$dirInfo{TagInfo};
     my $verbose = $et->Options('Verbose');
     my ($indent, $out);
@@ -622,7 +670,7 @@ write meta information in Panasonic/Leica RAW, RW2 and RWL images.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

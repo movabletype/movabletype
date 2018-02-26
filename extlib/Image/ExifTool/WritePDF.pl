@@ -60,7 +60,7 @@ sub CheckPDF($$$)
     } elsif ($format eq 'name') {
         return 'Invalid PDF name' if $$valPtr =~ /\0/;
     } else {
-        return "Invalid PDF format '$format'";
+        return "Invalid PDF format '${format}'";
     }
     return undef;   # value is OK
 }
@@ -81,7 +81,7 @@ sub WritePDFValue($$$)
         EncodeString(\$val);
     } elsif ($format eq 'date') {
         # convert date to "D:YYYYmmddHHMMSS+-HH'MM'" format
-        $val =~ s/([-+]\d{2}):(\d{2})/$1'$2'/;  # change timezone delimiters if necessary
+        $val =~ s/([-+]\d{2}):(\d{2})/${1}'${2}'/;  # change timezone delimiters if necessary
         $val =~ tr/ ://d;                       # remove spaces and colons
         $val =  "D:$val";                       # add leading "D:"
         EncodeString(\$val);
@@ -750,7 +750,7 @@ C<PDF-update> pseudo group).
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

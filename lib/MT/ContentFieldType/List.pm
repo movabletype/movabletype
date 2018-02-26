@@ -115,7 +115,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -125,6 +125,26 @@ sub preview_handler {
     my $contents = join '',
         map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub replace_handler {
+    my ($search_regex, $replace_string, $field_data,
+        $values,       $content_data
+    ) = @_;
+    return 0 unless defined $values;
+    $values = [$values] unless ref $values eq 'ARRAY';
+    my $replaced = 0;
+    for (@$values) {
+        $replaced += $_ =~ s!$search_regex!$replace_string!g;
+    }
+    $replaced > 0;
+}
+
+sub search_handler {
+    my ( $search_regex, $field_data, $values, $content_data ) = @_;
+    return 0 unless defined $values;
+    $values = [$values] unless ref $values eq 'ARRAY';
+    ( grep { defined $_ ? $_ =~ /$search_regex/ : 0 } @$values ) ? 1 : 0;
 }
 
 1;

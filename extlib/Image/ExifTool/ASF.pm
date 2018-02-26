@@ -17,7 +17,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::RIFF;
 
-$VERSION = '1.23';
+$VERSION = '1.24';
 
 sub ProcessASF($$;$);
 sub ProcessContentDescription($$$);
@@ -380,8 +380,10 @@ my %advancedContentEncryption = (
     },
     32 => { Name => 'DataPackets',  Format => 'int64u' },
     40 => {
-        Name => 'PlayDuration',
+        Name => 'Duration',
         Format => 'int64u',
+        Notes => 'called PlayDuration by the ASF spec',
+        Priority => 0,
         ValueConv => '$val / 1e7',
         PrintConv => 'ConvertDuration($val)',
     },
@@ -863,7 +865,7 @@ Windows Media Audio (WMA) and Windows Media Video (WMV) files.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

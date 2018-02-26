@@ -163,58 +163,6 @@ subtest 'mode = js_tag_check' => sub {
     done_testing();
 };
 
-subtest 'mode = js_tag_list' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'js_tag_list',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
-    ok( $out !~ m!permission denied!i, "js_tag_list by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'js_tag_list',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
-    ok( $out !~ m!permission denied!i, "js_tag_list by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'js_tag_list',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
-    ok( $out =~ m!permission denied!i, "js_tag_list by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'js_tag_list',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_list" );
-    ok( $out =~ m!permission denied!i, "js_tag_list by other permission" );
-
-    done_testing();
-};
-
 subtest 'mode = list' => sub {
     $app = _run_app(
         'MT::App::CMS',
