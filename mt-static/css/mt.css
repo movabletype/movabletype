@@ -9262,8 +9262,7 @@ li {
 /* Primary Navigation */
 .mt-primaryNavigation, .mt-primaryNavigation__sites {
   padding: 0;
-  max-width: 280px;
-  min-width: 240px;
+  max-width: 240px;
   background: #F4F4F4;
 }
 
