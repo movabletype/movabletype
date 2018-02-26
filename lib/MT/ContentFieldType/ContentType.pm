@@ -77,6 +77,7 @@ sub html {
                 id              => 1,
                 blog_id         => 1,
                 content_type_id => 1,
+                data            => 1,
             }
         },
     );
@@ -89,7 +90,8 @@ sub html {
     for my $cd (@child_cd) {
         my $id        = $cd->id;
         my $edit_link = $cd->edit_link($app);
-        push @cd_links, qq{<a href="${edit_link}">(ID:${id})</a>};
+        my $label     = $cd->label || MT->translate('No Label');
+        push @cd_links, qq{<a href="${edit_link}">$label</a>};
     }
 
     join ', ', @cd_links;

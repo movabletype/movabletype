@@ -877,22 +877,21 @@ sub make_list_props {
 
         $props->{$key} = {
             id => {
-                base       => '__virtual.id',
-                display    => 'optional',
-                order      => 100,
+                base    => '__virtual.id',
+                display => 'optional',
+                order   => 100,
             },
             label => {
-                base       => '__virtual.string',
-                display    => 'force',
-                order      => 110,
-                html       => \&_make_label_html,
-                label      => 'Data Label',
-                bulk_sort  => sub {
+                base      => '__virtual.string',
+                display   => 'force',
+                order     => 110,
+                html      => \&_make_label_html,
+                label     => 'Data Label',
+                bulk_sort => sub {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
-                    return sort {
-                        $a->label || '' cmp $b->label || '';
-                    } @$objs;
+                    return
+                        sort { $a->label || '' cmp $b->label || ''; } @$objs;
                 },
                 sub_fields => [
                     {   class   => 'status',
@@ -1011,7 +1010,7 @@ sub _make_label_html {
         };
     }
 
-    my $label     = $obj->label || MT->translate('No Label');
+    my $label = $obj->label || MT->translate('No Label');
     my $edit_link = $app->uri(
         mode => 'view',
         args => {
