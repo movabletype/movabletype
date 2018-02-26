@@ -486,7 +486,7 @@ function createUploadBlock () {
     if (url) {
       data = '<img class="img-thumbnail" width="60" height="60" src="' + url + '">';
     } else {
-      data = '<svg title="'+type+'" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_'+type+'"></svg>';
+      data = '<img src="<mt:var name="static_uri">images/file-'+type+'.svg" width="60" height="60">';
     }
 
     data += '&nbsp;<span class="filename">' + fname;
