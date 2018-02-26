@@ -269,7 +269,12 @@
                     else {
                         $(this).hide();
                     }
+                    // common_buttons
+                    if( i == 0 ){
+                        $(this).addClass('float-right');
+                    }
                 });
+
             }
 
             function openDialog(mode, param) {
@@ -288,6 +293,7 @@
                             'window': this
                         };
                         callback(context, function() {
+                            tinymce.activeEditor.windowManager.
                             tinymce.activeEditor.windowManager.close()
 
                             //Move focus if webkit so that navigation back will read the item.
@@ -296,47 +302,27 @@
                             }
                             proxies.source.focus();
                         });
-                    })
-/*
-                    var iframe  = w.iframeElement;
-                    $('#' + iframe.id).load(function() {
-                        var win = this.contentWindow;
-                        var context = {
-                            '$contents': $(this).contents(),
-                            'window': win
-                        };
-                        callback(context, function() {
-                            win.tinyMCEPopup.close();
-
-                            //Move focus if webkit so that navigation back will read the item.
-                            if (tinymce.isWebKit) {
-                                $('#convert_breaks').focus();
-                            }
-                            proxies.source.focus();
-                        });
                     });
-*/
                 });
             }
 
             function mtSourceLinkDialog(c, close) {
-                function onSubmit() {
-                    var $form = $(this);
+
+                function onSubmit(e) {
                     proxies
                         .source
                         .execCommand(
                             'createLink',
                             null,
-                            $form.find('#href').val(),
+                            e.data.href,
                             {
-                                'target': $form.find('#target_list').val(),
-                                'title': $form.find('#linktitle').val()
+                                'target': e.data.target,
+                                'title': e.data.title
                             }
                         );
                     close();
                 };
-
-                c["$contents"].find('.mce-btn.mce-primary').on('click', onSubmit);
+                c["window"].on('submit', onSubmit);
 
                 if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
                     c['$contents']
@@ -580,24 +566,16 @@
 
                     win = ed.windowManager.open({
                         title: trans('Insert HTML'),
-                        layout: 'flex',
-                        direction: 'column',
-                        align: 'stretch',
-                        padding: 15,
-                        spacing: 10,
-
-                        items: [
-                            {type: 'form', flex: 0, padding: 0, items: [
-                                {
-                                    type: 'textbox',
-                                    label: trans('Insert HTML'), 
-                                    name: 'insert_html',
-                                    classes: 'insert_html',
-                                    text: '',
-                                    multiline: true,
-                                }
-                            ]},
-                        ],
+                        body: {
+                            type: 'textbox',
+                            label: trans('HTML'),
+                            name: 'insert_html',
+                            classes: 'insert_html',
+                            text: '',
+                            multiline: true,
+                            minHeight: 290,
+                            autofocus: true
+                        },
                         onsubmit: function() {
                             ed.execCommand('mceInsertContent', false, $('.mce-insert_html').val());
                         },
@@ -734,10 +712,10 @@
                 if (s.mode == 'source' &&
                     s.format != 'none.tinymce_temp'
                 ) {
-                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', 'none');
+                    $(ed.container).find('.mce-toolbar:eq(0)').css('display', 'none');
                 }
                 else {
-                    $(ed.container).find('.mce-i-mt_source_mode').parents('.mce-toolbar').css('display', '');
+                    $(ed.container).find('.mce-toolbar:eq(0)').css('display', '');
                 }
 
                 var active =

@@ -1113,59 +1113,6 @@ subtest 'mode = start_rebuild' => sub {
     done_testing();
 };
 
-subtest 'mode = update_welcome_message' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'update_welcome_message',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: update_welcome_message" );
-    ok( $out !~ m!permission=1!i, "update_welcome_message by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'update_welcome_message',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: update_welcome_message" );
-    ok( $out !~ m!permission=1!i,
-        "update_welcome_message by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $suda,
-            __request_method => 'POST',
-            __mode           => 'update_welcome_message',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: update_welcome_message" );
-    ok( $out =~ m!permission=1!i, "update_welcome_message by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'update_welcome_message',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: update_welcome_message" );
-    ok( $out =~ m!permission=1!i,
-        "update_welcome_message by other permission" );
-    done_testing();
-};
-
 subtest 'mode = save (new)' => sub {
     $app = _run_app(
         'MT::App::CMS',

@@ -48,33 +48,36 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $terms;
     my $type    = $args->{type};
     my $name    = $args->{name};
     my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
     my $blog    = $ctx->stash('blog');
-    if ($type) {
-        $terms = { unique_id => $type };
-    }
-    elsif ( $name && $blog_id ) {
-        $terms = {
-            blog_id => $blog_id,
-            name    => $name,
-        };
-    }
-    else {
-        my $tmpl = $ctx->stash('template');
-        $terms = $tmpl->content_type_id;
-    }
-    my $content_type = MT::ContentType->load($terms)
-        or return $ctx->error( MT->translate('Content Type was not found.') );
 
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
     %terms = %blog_terms;
     %args  = %blog_args;
+
+    my %ct_terms = %terms;
+    if ($type) {
+        $ct_terms{unique_id} = $type;
+    }
+    elsif ($name) {
+        $ct_terms{name} = $name;
+    }
+    else {
+        my $tmpl = $ctx->stash('template');
+        %ct_terms = $tmpl
+            && $tmpl->content_type_id ? ( id => $tmpl->content_type_id ) : ();
+    }
+    my @content_type = MT::ContentType->load( \%ct_terms )
+        or return $ctx->error( MT->translate('Content Type was not found.') );
+    my $content_type_id
+        = $#content_type == 0
+        ? $content_type[0]->id
+        : [ map { $_->id } @content_type ];
 
     my $class_type     = $args->{class_type} || 'content_data';
     my $class          = MT->model($class_type);
@@ -132,7 +135,7 @@ sub _hdlr_contents {
             if ( $archiver && $archiver->group_based ) {
                 $archive_contents
                     = $archiver->archive_group_contents( $ctx, %$args,
-                    $content_type->id );
+                    $content_type_id );
             }
         }
     }
@@ -247,7 +250,7 @@ sub _hdlr_contents {
         push @filters, sub { !exists $published->{ $_[0]->id } }
     }
 
-    $terms{content_type_id} = $content_type->id;
+    $terms{content_type_id} = $content_type_id;
 
     my $namespace        = $args->{namespace};
     my $no_resort        = 0;

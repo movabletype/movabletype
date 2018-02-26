@@ -67,6 +67,12 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+            'SitesLocalSite' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
+            'SitesIfLocalSite?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
 
             ## Blog
@@ -355,6 +361,14 @@ sub core_tags {
             ## Category Set
             CategorySets =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_sets',
+
+            ## MultiBlog(alias)
+            MultiBlog => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            OtherBlog => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            MultiBlogLocalBlog =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
+            'MultiBlogIfLocalBlog?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
         },
         function => {
 
@@ -3952,7 +3966,7 @@ sub _hdlr_app_action_bar {
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline mb-2 actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
   <div class="col">
     $pager
     $buttons_html
@@ -4568,6 +4582,9 @@ B<Example:> Passing Parameters to a Template Module
 
     sub _hdlr_include {
         my ( $ctx, $arg, $cond ) = @_;
+
+        # Preprocess from MultiBlog
+        MT::Template::Context::_preprocess_multiblog(@_);
 
         # Pass through include arguments as variables to included template
         my $vars = $ctx->{__stash}{vars} ||= {};

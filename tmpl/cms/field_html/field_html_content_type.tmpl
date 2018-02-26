@@ -3,7 +3,7 @@
 <div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="content_data_loop">
-  <div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">
+  <div class="mt-draggable" draggable="true" aria-grabbed="false">
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
     <div class="col-auto">
       <mtapp:svgicon id="ic_move" title="Draggable">
@@ -16,13 +16,13 @@
         <__trans phrase="Remove">
       </a>
     </div>
-    <div class="col-auto mr-3">
+    <div class="col-auto">
       <a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
+    <div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
       <div class="row preview-data">
         <div class="col">
           <mt:var name="cd_data">
@@ -58,7 +58,7 @@ jQuery.mtValidateAddRules({
       var max = Number($e.data('mt-max-select')) || 0;
       var min = Number($e.data('mt-min-select')) || 0;
       var required = $e.data('mt-required') ? true : false;
-      var selectedCount = $e.children('.mt-collapse').length;
+      var selectedCount = $e.children('.mt-draggable').length;
       if ( multiple && max && max < selectedCount ) {
           this.error = true;
           this.errstr = trans('[_1] less than or equal to [_2] must be selected', contentTypeName, max);
@@ -86,7 +86,7 @@ jQuery.mtValidateAddRules({
 jQuery('.content-type-field-container').on('click', 'a.remove', function () {
   var $container = jQuery(this).parents('.content-type-field-container');
 
-  jQuery(this).parents('.mt-collapse').remove();
+  jQuery(this).parents('.mt-draggable').remove();
 
   if ($container.data('mtValidator')) {
     $container.mtValid({ focus: false });

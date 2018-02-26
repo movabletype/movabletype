@@ -552,6 +552,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       jQuery('#'+field_id).html(response.result[field_id]);
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext');
+      jQuery('#'+field_id).blockeditor('destroy');
+      jQuery('#' + field_id).parents('.editor-content').show();
       app.editor.reload();
   }
   function changedTextFormat() {
@@ -590,6 +592,18 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           }
       }
 
+      if ((cur_text_format != 'blockeditor') && (option == 'blockeditor')) {
+          // warn user that changing to plaintext is not reversible (easily)
+          if (!confirm("<__trans phrase="Changing to block editor is not possible to result return to your current document." escape="js">")) {
+              // revert selection
+              for (var i = 0; i < this.options.length; i++) {
+                  if (this.options[i].value == cur_text_format)
+                      this.selectedIndex = i;
+              }
+              app.editor.focus();
+              return;
+          }
+      }
       if (cur_text_format == 'richtext' && option != 'blockeditor') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
@@ -599,14 +613,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.focus();
-      } else if(cur_text_format == 'blockeditor') {
+      } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 
           app.editor.setMode('textarea');
-          app.editor.insertContent(jQuery('#'+editor_id).blockeditor('get_html'));
+          app.editor.setContent(jQuery('#'+editor_id).blockeditor('get_html'));
           jQuery('#'+editor_id).blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
           app.editor.focus();
@@ -621,7 +635,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
           };
 
           param['field'] = editor_id;
-          param[editor_id] = jQuery('#'+editor_id).val();
+          if( cur_text_format == 'blockeditor' ){
+              param[editor_id] = jQuery('#'+editor_id).blockeditor('get_html');
+          } else {
+              param[editor_id] = jQuery('#'+editor_id).val();
+          }
 
           var params = {
               uri: '<mt:var name="script_url">', method: 'POST',

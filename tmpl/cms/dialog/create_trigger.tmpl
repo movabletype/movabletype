@@ -1,0 +1,519 @@
+<$mt:setvar name="screen_type" value="dialog-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Create Rebuild Trigger"></mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+
+<script type="text/javascript">
+
+var dialog;
+
+var win = window.parent;
+function returnTrigger(ok) {
+    if (!ok) // user cancelled
+        return jQuery.fn.mtModal.close();
+
+    // populate form and submit
+    if (jQuery("#rebuild-trigger-sel-site")) {
+
+        /* gather blog id and name from table */
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) {
+            alert("Please select a weblog.")
+            return;
+        }
+        var inp = inputs[0];
+        var blog_id = inp.value;
+        var row = TC.getParentByTagName( inp, "tr" );
+        if (!row) return;
+        var labels = row.getElementsByClassName('panel-label');
+        if (labels.length == 0) return;
+        var blog_name = labels[0].innerHTML;
+
+        jQuery("#select_blog_name").val(blog_name);
+        jQuery("#select_blog_id").val(blog_id);
+
+        var trigger_hash = {
+        <mt:loop name="trigger_loop">
+            "<mt:var name="trigger_key">": "<mt:var name="trigger_name">"<mt:unless name="__last__">,</mt:unless>
+        </mt:loop>
+        };
+        // Action
+        var action_elm = jQuery('input[name="action-cb"]:checked');
+        var action_id = action_elm.attr('id');
+        var action_text = action_elm.parent().parent().parent().find('.panel-label').text();
+        var action_value = action_elm.val();
+        // Trigger
+        var object = jQuery('input[name="object-cb"]:checked').val();
+        var event = jQuery('input[name="event-cb"]:checked').val();
+        var trigger_text = trigger_hash[ object + "_" + event ];
+        var trigger_value = object + "_" + event;
+        // Content Type
+        var ct_elm = jQuery('input[name="content_type-cb"]:checked');
+        var ct_id = ct_elm.attr('id');
+        var content_type_text = ct_elm.parent().parent().parent().find('.panel-label').text();
+        var content_type_id = ct_elm.val();
+
+        win.addMultiBlogTrigger( action_text, action_value, blog_name, blog_id, trigger_text, trigger_value, content_type_text, content_type_id );
+        jQuery.fn.mtModal.close();
+    }
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("rebuild-trigger");
+
+    panels = [];
+    var panel;
+
+    // Site
+    <mt:loop name="panel_loop">
+    <mt:if name="panel_type" eq="site">
+    panel = new ListingPanel("<mt:var name="panel_type">");
+    panel.pager.setState(<mt:var name="pager_json">);
+    panels[panels.length] = panel;
+    </mt:if>
+    </mt:loop>
+    // Object
+    panel = new ListingPanel("object");
+    panels[panels.length] = panel;
+    // Content Type
+    <mt:loop name="panel_loop">
+    <mt:if name="panel_type" eq="content_type">
+    panel = new ListingPanel("<mt:var name="panel_type">");
+    panel.pager.setState(<mt:var name="pager_json">);
+    panels[panels.length] = panel;
+    </mt:if>
+    </mt:loop>
+    // Event
+    panel = new ListingPanel("event");
+    panels[panels.length] = panel;
+    // Trigger
+    panel = new ListingPanel("action");
+    panels[panels.length] = panel;
+
+    dialog.setPanels(panels);
+
+    var next_event = dialog.nextPanel;
+    var prev_event = dialog.previousPanel;
+    dialog.nextPanel = function(){
+        if ( dialog.currentPanel === 0 ) {
+            var site_id = jQuery('input[name="site-cb"]:checked').val();
+            if ( site_id === '_all' || site_id === '_blogs_in_website' ) {
+                jQuery('#object_content').hide();
+            }
+            else {
+                jQuery('#object_content').show();
+                jQuery('#content_type-panel').find('.search-submit').click();
+                jQuery('#content_type-panel').find('.search-reset').hide();
+            }
+        }
+        if ( dialog.currentPanel === 1 ) {
+            var select_object = jQuery('input[name="object-cb"]:checked').val();
+            if ( select_object !== 'content' ) {
+                dialog.currentPanel = 2;
+                jQuery('#object-panel').hide();
+            }
+            if ( select_object === 'comment' || select_object === 'tb' ) {
+                jQuery('#event_save').hide();
+                jQuery('#event_unpub').hide();
+            }
+            else {
+                jQuery('#event_save').show();
+                jQuery('#event_unpub').show();
+            }
+        }
+        next_event.apply(this,arguments);
+    };
+    dialog.previousPanel = function(){
+        if ( dialog.currentPanel === 3 ) {
+            var select_object = jQuery('input[name="object-cb"]:checked').val();
+            if ( select_object !== 'content_type' ) {
+                dialog.currentPanel = 2;
+                jQuery('#event-panel').hide();
+            }
+        }
+        prev_event.apply(this,arguments);
+    };
+
+
+    jQuery(document).ready(function() {
+        // Overwrite search & navigate function
+        var panel = panels[2];
+        var datasource = panel.datasource;
+        datasource.search = function(){
+            if (datasource.searching) return;
+
+            var str = jQuery('#content_type-panel').find('.search-input').val();
+            var doc = TC.getOwnerDocument(datasource.element);
+            var args = doc.location.search;
+            args = args.replace(/^\?/, '');
+            args = args.replace(/&?offset=\d+/, '');
+            args = 'search=' + escape(str) + (args ? '&' + args : '') + '&json=1';
+            var select_blog_id = jQuery('input[name="site-cb"]:checked').val();
+            args += '&select_blog_id=' + select_blog_id;
+            if (datasource.type) {
+                args = args.replace(/&_type=\w+/, '');
+                args += '&_type=' + datasource.type;
+            }
+            if (datasource.searchtype) {
+                args += '&search_type=' + datasource.searchtype;
+            }
+    
+            datasource.searching = true;
+            if (datasource.pager)
+                datasource.pager.render();
+            if (datasource.pager2)
+                datasource.pager2.render();
+            TC.Client.call({
+                'load': function(c,r) { datasource.searched(r); },
+                'error': function() { alert("Error during search."); self.datasource(null); },
+                'method': 'POST',
+                'uri': ScriptURI,
+                'arguments': args
+            });
+        };
+        datasource.navigate = function(offset){
+            if (offset == null) return;
+            if (datasource.navigating) return;
+
+            var doc = TC.getOwnerDocument(datasource.element);
+            var args = doc.location.search;
+            args = args.replace(/^\?/, '');
+            args = args.replace(/&?offset=\d+/, '');
+            args = 'offset=' + offset + (args ? '&' + args : '') + '&json=1';
+            var select_blog_id = jQuery('input[name="site-cb"]:checked').val();
+            args += '&select_blog_id=' + select_blog_id;
+            if (datasource.type) {
+                args = args.replace(/&_type=\w+/, '');
+                args = args + '&_type=' + datasource.type;
+            }
+            if (datasource.pager.state.d) {
+                args = args.replace(/&d=\d+/, '');
+                args = args + '&d=' + datasource.pager.state.d;
+            }
+
+            datasource.navigating = true;
+            if (datasource.pager)
+                datasource.pager.render();
+            if (datasource.pager2)
+                datasource.pager2.render();
+            var self = this;
+            TC.Client.call({
+                'load': function(c,r) { self.navigated(r); },
+                'error': function() { alert("Error in request."); self.navigated(null); },
+                'method': 'POST',
+                'uri': ScriptURI,
+                'arguments': args
+            });
+            return false;
+        };
+    });
+
+    function searchContentType(datasource, str) {
+    }
+
+    dialog.open({}, <mt:var name="confirm_js" default="returnTrigger">);
+}
+
+TC.attachLoadEvent( init );
+
+</script>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+
+<div class="modal-header">
+    <h4 class="mt-0 modal-title"><mt:var name="page_title"></h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<mt:if name="missing_data">
+<div class="modal-body">
+    <mt:if name="missing_role">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_group">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_author">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_blog">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+</div>
+<div class="modal-footer actions-bar">
+    <form onsubmit="return false" onclick="window.focus();">
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action primary button btn btn-primary"
+           title="<__trans phrase="Close (x)">"
+           ><__trans phrase="Close"></button>
+    </form>
+</div>
+<mt:else>
+<div class="modal-body">
+  <mt:loop name="panel_loop">
+    <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+  </mt:loop>
+
+<!-- Select Object Panel -->
+<div id="object-panel" style="display: none;">
+  <div class="panel-body">
+  <div class="panel-header">
+    <h4 class="title"><__trans phrase="Select Trigger Object"></h4>
+    <div class="text-right">2 / 5</div>
+  </div>
+  <div id="selector" class="selector listing list-data">
+    <form action="" method="get" onsubmit="return false">
+      <table class="table mt-table">
+        <thead>
+          <tr>
+            <th class="head cb mt-table__control">
+          
+              &nbsp;
+          
+            </th>
+            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <mt:loop name="object_type_loop">
+          <tr id="object_<mt:var name="id">" class="odd">
+            <td class="cb" scope="row">
+              <div class="custom-control custom-radio">
+                <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
+                <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
+              </div>
+            </td>
+            <td class="panel-label">
+              <mt:var name="label">
+            </td>
+          </tr>
+          </mt:loop>
+        </tbody>
+      </table>
+    </form>
+    <div class="text-right pagination" style="display: block;"></div>
+  </div>
+  </div>
+  <div class="modal-footer">
+  <div class="actions-bar actions-bar-bottom">
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+      <a
+         accesskey="x"
+         data-dismiss="modal"
+         data-mt-modal-close
+         class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+         title="<__trans phrase="Cancel (x)">">
+        <__trans phrase="Cancel"></a>
+      <button
+         type="submit"
+         accesskey="b"
+         title="<__trans phrase="Back (b)">"
+         class="action previous button btn btn-default">
+        <__trans phrase="Back"></button>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Continue (s)">"
+         class="continue action primary button next btn btn-primary"
+         disabled="true">
+        <__trans phrase="Continue"></button>
+    </form>
+  </div>
+  </div>
+</div>
+
+<!-- Select Event Panel -->
+<div id="event-panel" style="display: none;">
+  <div class="panel-body">
+  <div class="panel-header">
+    <h4 class="title"><__trans phrase="Select Trigger Event"></h4>
+    <div class="text-right">4 / 5</div>
+  </div>
+  <div id="selector" class="selector listing list-data">
+    <form action="" method="get" onsubmit="return false">
+      <table class="table mt-table">
+        <thead>
+          <tr>
+            <th class="head cb mt-table__control">
+          
+              &nbsp;
+          
+            </th>
+            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="event_save" class="odd">
+            <td class="cb" scope="row">
+              <div class="custom-control custom-radio">
+                <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
+                <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
+              </div>
+            </td>
+            <td class="panel-label">
+              <__trans phrase="Save">
+            </td>
+          </tr>
+          <tr id="event_pup" class="even">
+            <td class="cb" scope="row">
+              <div class="custom-control custom-radio">
+                <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
+                <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
+              </div>
+            </td>
+            <td class="panel-label">
+              <__trans phrase="Publish">
+            </td>
+          </tr>
+          <tr id="event_unpub" class="odd">
+            <td class="cb" scope="row">
+              <div class="custom-control custom-radio">
+                <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
+                <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
+              </div>
+            </td>
+            <td class="panel-label">
+              <__trans phrase="Unpublish">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <div class="text-right pagination" style="display: block;"></div>
+  </div>
+  </div>
+  <div class="modal-footer">
+  <div class="actions-bar actions-bar-bottom">
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+      <a
+         accesskey="x"
+         data-dismiss="modal"
+         data-mt-modal-close
+         class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+         title="<__trans phrase="Cancel (x)">">
+        <__trans phrase="Cancel"></a>
+      <button
+         type="submit"
+         accesskey="b"
+         title="<__trans phrase="Back (b)">"
+         class="action previous button btn btn-default">
+        <__trans phrase="Back"></button>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Continue (s)">"
+         class="continue action primary button next btn btn-primary"
+         disabled="true">
+        <__trans phrase="Continue"></button>
+    </form>
+  </div>
+  </div>
+</div>
+
+<!-- Select Action Panel -->
+<div id="action-panel" style="display: none;">
+  <div class="panel-body">
+  <div class="panel-header">
+    <h4 class="title"><__trans phrase="Select Trigger Action"></h4>
+    <div class="text-right">5 / 5</div>
+  </div>
+  <div id="selector" class="selector listing list-data">
+    <form action="" method="get" onsubmit="return false">
+      <table class="table mt-table">
+        <thead>
+          <tr>
+            <th class="head cb mt-table__control">
+          
+              &nbsp;
+          
+            </th>
+            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <mt:loop name="action_loop">
+          <tr id="action_<mt:var name="action_id">" class="odd">
+            <td class="cb" scope="row">
+              <div class="custom-control custom-radio">
+                <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
+                <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
+              </div>
+            </td>
+            <td class="panel-label">
+              <mt:var name="action_name">
+            </td>
+          </tr>
+          </mt:loop>
+        </tbody>
+      </table>
+    </form>
+    <div class="text-right pagination" style="display: block;"></div>
+  </div>
+  </div>
+  <div class="modal-footer">
+  <div class="actions-bar actions-bar-bottom">
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+      <a
+         accesskey="x"
+         data-dismiss="modal"
+         data-mt-modal-close
+         class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+         title="<__trans phrase="Cancel (x)">">
+        <__trans phrase="Cancel"></a>
+      <button
+         type="submit"
+         accesskey="b"
+         title="<__trans phrase="Back (b)">"
+         class="action previous button btn btn-default">
+        <__trans phrase="Back"></button>
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="OK (s)">"
+         class="close-button action primary button disabled btn btn-primary"
+         disabled="true">
+        <__trans phrase="OK"></button>
+    </form>
+  </div>
+  </div>
+</div>
+
+</div>
+</mt:if>
+
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -997,6 +997,8 @@ sub build_asset_hasher {
         my $file_path = $obj->file_path;    # has to be called to calculate
         my $meta      = $obj->metadata;
 
+        $row->{file_is_missing} = 0;
+
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
         ## TBD: Make sure $file_path is file, not directory.
@@ -3227,8 +3229,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 120,
-            PreviewHeight => 120
+            PreviewWidth  => 80,
+            PreviewHeight => 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;

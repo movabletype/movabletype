@@ -54,6 +54,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::ContentType::search_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         theme_export_handler =>
@@ -101,6 +103,7 @@ sub _single_line_text_registry {
             '$Core::MT::ContentFieldType::SingleLineText::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::SingleLineText::field_value_handler',
+        replaceable => 1,
         ss_validator =>
             '$core::MT::ContentFieldType::SingleLineText::ss_validator',
         list_props => {
@@ -138,7 +141,8 @@ sub _multi_line_text_registry {
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
         field_value_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::field_value_handler',
-        list_props => {
+        replaceable => 1,
+        list_props  => {
             multi_line_text => {
                 base  => '__virtual.string',
                 col   => 'value_blob',
@@ -173,6 +177,7 @@ sub _number_registry {
         field_html           => 'field_html/field_html_number.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Number::field_html_params',
+        replaceable  => 1,
         ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
             number => {
@@ -205,6 +210,7 @@ sub _url_registry {
         data_type            => 'blob',
         order                => 50,
         can_data_label_field => 1,
+        replaceable          => 1,
         field_html           => 'field_html/field_html_url.tmpl',
         ss_validator => '$Core::MT::ContentFieldType::URL::ss_validator',
         list_props   => {
@@ -393,6 +399,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             select_box => {
                 filter_tmpl =>
@@ -440,6 +448,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             radio_button => {
                 filter_tmpl =>
@@ -486,6 +496,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
             checkboxes => {
                 filter_tmpl =>
@@ -538,6 +550,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset => {
                 filter_tmpl =>
@@ -655,6 +669,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_audio => {
                 filter_tmpl =>
@@ -770,6 +786,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_video => {
                 filter_tmpl =>
@@ -886,6 +904,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_handler',
         list_props => {
             asset_image => {
                 filter_tmpl =>
@@ -999,6 +1019,7 @@ sub _embedded_text_registry {
         data_type            => 'blob',
         order                => 160,
         can_data_label_field => 0,
+        replaceable          => 1,
         list_props           => {
             embedded_text => {
                 base  => '__virtual.string',
@@ -1043,6 +1064,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Categories::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Categories::search_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
         theme_export_handler =>
@@ -1096,9 +1119,10 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
-        ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
-        tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
-        list_props   => {
+        search_handler => '$Core::MT::ContentFieldType::Tags::search_handler',
+        ss_validator   => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        tag_handler    => '$Core::MT::ContentFieldType::Tags::tag_handler',
+        list_props     => {
             tags => {
                 base      => '__virtual.string',
                 col       => 'name',
@@ -1142,7 +1166,10 @@ sub _list_registry {
             '$Core::MT::ContentFieldType::List::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::List::preview_handler',
-        list_props => {
+        replace_handler =>
+            '$Core::MT::ContentFieldType::List::replace_handler',
+        search_handler => '$Core::MT::ContentFieldType::List::search_handler',
+        list_props     => {
             list => {
                 base            => '__virtual.string',
                 col             => 'value_varchar',
@@ -1179,6 +1206,8 @@ sub _table_registry {
             '$Core::MT::ContentFieldType::Table::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Table::preview_handler',
+        search_handler =>
+            '$Core::MT::ContentFieldType::Table::search_handler',
         list_props => {
             tables => {
                 base            => '__virtual.string',

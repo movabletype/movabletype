@@ -907,17 +907,16 @@ sub edit {
 
             if ($blog) {
                 my @ct_list;
-                my $ct_iter = $app->model('content_type')->load_iter({
-                    blog_id => $blog->id,
-                });
+                my $ct_iter = $app->model('content_type')
+                    ->load_iter( { blog_id => $blog->id, } );
                 while ( my $ct = $ct_iter->() ) {
-                    my $key = 'content_data_' . $ct->unique_id;
+                    my $key  = 'content_data_' . $ct->unique_id;
                     my $item = {
                         label => $ct->name,
-                        type => $key,
+                        type  => $key,
                     };
                     $item->{enabled} = 1
-                        if $param->{'cache_expire_event_' . $key};
+                        if $param->{ 'cache_expire_event_' . $key };
                     push @ct_list, $item;
                 }
                 $param->{cache_expire_event_ct_loop} = \@ct_list;
@@ -975,7 +974,11 @@ sub edit {
             {
             id       => $ct->id,
             label    => $ct->name,
-            selected => ( $obj && $obj->content_type_id && $obj->content_type_id == $ct->id ? 1 : 0 )
+            selected => (
+                       $obj
+                    && $obj->content_type_id
+                    && $obj->content_type_id == $ct->id ? 1 : 0
+            )
             };
         $ct_data->{ $ct->id } = {
             id        => $ct->id,
@@ -1679,96 +1682,6 @@ sub create_preview_content {
         @obj = ($obj);
     }
     return @obj;
-}
-
-## Unused?
-sub reset_blog_templates {
-    my $app   = shift;
-    my $perms = $app->permissions
-        or return $app->error( $app->translate("No permissions") );
-    return $app->permission_denied()
-        unless $perms->can_do('reset_blog_templates');
-    $app->validate_magic() or return;
-    my $blog = MT::Blog->load( $perms->blog_id )
-        or return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $perms->blog_id ) );
-    require MT::Template;
-    my @tmpl = MT::Template->load( { blog_id => $blog->id } );
-
-    for my $tmpl (@tmpl) {
-        $tmpl->remove or return $app->error( $tmpl->errstr );
-    }
-    my $set = $blog ? $blog->template_set : undef;
-    require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates($set) || [];
-    my @arch_tmpl;
-    for my $val (@$tmpl_list) {
-        $val->{text} = $app->translate_templatized( $val->{text} );
-        my $tmpl = MT::Template->new;
-        if (   ( 'widgetset' eq $val->{type} )
-            && ( exists $val->{modulesets} ) )
-        {
-            my $modulesets = delete $val->{modulesets};
-            $tmpl->modulesets( join ',', @$modulesets );
-        }
-        $tmpl->set_values($val);
-        $tmpl->build_dynamic(0);
-        $tmpl->blog_id( $blog->id );
-        $tmpl->save
-            or return $app->error(
-            $app->translate(
-                "Populating blog with default templates failed: [_1]",
-                $tmpl->errstr
-            )
-            );
-
-        # FIXME: enumeration of types
-        if (   $val->{type} eq 'archive'
-            || $val->{type} eq 'category'
-            || $val->{type} eq 'page'
-            || $val->{type} eq 'individual' )
-        {
-            push @arch_tmpl, $tmpl;
-        }
-    }
-
-    ## Set up mappings from new templates to archive types.
-    for my $tmpl (@arch_tmpl) {
-        my (@at);
-
-        # FIXME: enumeration of types
-        if ( $tmpl->type eq 'archive' ) {
-            @at = qw( Daily Weekly Monthly Category );
-        }
-        elsif ( $tmpl->type eq 'page' ) {
-            @at = qw( Page );
-        }
-        elsif ( $tmpl->type eq 'individual' ) {
-            @at = qw( Individual );
-        }
-        require MT::TemplateMap;
-        for my $at (@at) {
-            my $map = MT::TemplateMap->new;
-            $map->archive_type($at);
-            $map->is_preferred(1);
-            $map->template_id( $tmpl->id );
-            $map->blog_id( $tmpl->blog_id );
-            $map->save
-                or return $app->error(
-                $app->translate(
-                    "Setting up mappings failed: [_1]",
-                    $map->errstr
-                )
-                );
-        }
-    }
-    $app->redirect(
-        $app->uri(
-            'mode' => 'list',
-            args =>
-                { '_type' => 'template', blog_id => $blog->id, 'reset' => 1 }
-        )
-    );
 }
 
 sub _generate_map_table {

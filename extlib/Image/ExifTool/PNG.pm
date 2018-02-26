@@ -26,7 +26,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD %stdCase);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.41';
+$VERSION = '1.45';
 
 sub ProcessPNG_tEXt($$$);
 sub ProcessPNG_iTXt($$$);
@@ -39,9 +39,11 @@ sub Add_iCCP($$);
 sub DoneDir($$$;$);
 sub GetLangInfo($$);
 sub BuildTextChunk($$$$$);
+sub ConvertPNGDate($$);
+sub InversePNGDate($$);
 
 # translate lower-case to actual case used for eXIf/zXIf chunks
-%stdCase = ( 'zxif' => 'zxIf', exif => 'exIf' );
+%stdCase = ( 'zxif' => 'zxIf', exif => 'eXIf' );
 
 my $noCompressLib;
 
@@ -258,10 +260,7 @@ $Image::ExifTool::PNG::colorType = -1;
     # eXIf
     $stdCase{exif} => {
         Name => $stdCase{exif},
-        Notes => q{
-            proposed but not yet registered.  This is where ExifTool will create new
-            EXIF without the Compress option
-        },
+        Notes => 'this is where ExifTool will create new EXIF',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Exif::Main',
             DirName => 'EXIF', # (to write as a block)
@@ -271,10 +270,7 @@ $Image::ExifTool::PNG::colorType = -1;
     # zXIf
     $stdCase{zxif} => {
         Name => $stdCase{zxif},
-        Notes => q{
-            proposed but not yet registered.  This is where ExifTool will create new
-            EXIF with the Compress option
-        },
+        Notes => 'a once-proposed chunk for compressed EXIF',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Exif::Main',
             DirName => 'EXIF', # (to write as a block)
@@ -453,6 +449,11 @@ my %unreg = ( Notes => 'unregistered' );
         Name => 'CreationTime',
         Groups => { 2 => 'Time' },
         Shift => 'Time',
+        Notes => 'stored in RFC-1123 format and converted to/from EXIF format by ExifTool',
+        ValueConv => \&ConvertPNGDate,
+        ValueConvInv => \&InversePNGDate,
+        PrintConv => '$self->ConvertDateTime($val)',
+        PrintConvInv => '$self->InverseDateTime($val,undef,1)',
     },
     Software    => { },
     Disclaimer  => { },
@@ -460,6 +461,7 @@ my %unreg = ( Notes => 'unregistered' );
     Warning     => { Name => 'PNGWarning', },
     Source      => { },
     Comment     => { },
+    Collection  => { }, # (PNG extensions, 2004)
 #
 # The following tags are not part of the original PNG specification,
 # but are written by ImageMagick and other software
@@ -526,6 +528,7 @@ my %unreg = ( Notes => 'unregistered' );
    'Raw profile type exif' => {
         Name => 'EXIF_Profile',
         %unreg,
+        NonStandard => 1,
         SubDirectory => {
             TagTable => 'Image::ExifTool::Exif::Main',
             ProcessProc => \&ProcessProfile,
@@ -614,6 +617,80 @@ sub StandardLangCase($)
     # make 2nd subtag uppercase only if it is 2 letters
     return lc($1) . uc($2) . lc($3) if $lang =~ /^([a-z]{2,3}|[xi])(-[a-z]{2})\b(.*)/i;
     return lc($lang);
+}
+
+#------------------------------------------------------------------------------
+# Convert date from PNG to EXIF format
+# Inputs: 0) Date/time in PNG format, 1) ExifTool ref
+# Returns: EXIF formatted date/time string
+my %monthNum = (
+    Jan=>1, Feb=>2, Mar=>3, Apr=>4, May=>5, Jun=>6,
+    Jul=>7, Aug=>8, Sep=>9, Oct=>10,Nov=>11,Dec=>12
+);
+my %tzConv = (
+    UT  => '+00:00',  GMT => '+00:00',  UTC => '+00:00', # (UTC not in spec -- PH addition)
+    EST => '-05:00',  EDT => '-04:00',
+    CST => '-06:00',  CDT => '-05:00',
+    MST => '-07:00',  MDT => '-06:00',
+    PST => '-08:00',  PDT => '-07:00',
+    A => '-01:00',    N => '+01:00',
+    B => '-02:00',    O => '+02:00',
+    C => '-03:00',    P => '+03:00',
+    D => '-04:00',    Q => '+04:00',
+    E => '-05:00',    R => '+05:00',
+    F => '-06:00',    S => '+06:00',
+    G => '-07:00',    T => '+07:00',
+    H => '-08:00',    U => '+08:00',
+    I => '-09:00',    V => '+09:00',
+    K => '-10:00',    W => '+10:00',
+    L => '-11:00',    X => '+11:00',
+    M => '-12:00',    Y => '+12:00',
+    Z => '+00:00',
+);
+sub ConvertPNGDate($$)
+{
+    my $val = shift;
+    # standard format is like "Mon, 1 Jan 2018 12:10:22 EST"
+    if ($val =~ /(\d+)\s*(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s*(\d+)\s+(\d+):(\d{2})(:\d{2})?\s*(\S*)/i) {
+        my ($day,$mon,$yr,$hr,$min,$sec,$tz) = ($1,$2,$3,$4,$5,$6,$7);
+        $yr += $yr > 70 ? 1900 : 2000 if $yr < 100;     # boost year to 4 digits if necessary
+        $mon = $monthNum{ucfirst lc $mon} or return $val;
+        if (not $tz) {
+            $tz = '';
+        } elsif ($tzConv{$tz}) {
+            $tz = $tzConv{$tz};
+        } elsif ($tz =~ /^([-+]\d+):?(\d{2})/) {
+            $tz = $1 . ':' . $2;
+        } else {
+            return $val;    # (non-standard date)
+        }
+        $val = sprintf("%.4d:%.2d:%.2d %.2d:%.2d%s%s",$yr,$mon,$day,$hr,$min,$sec||':00',$tz);
+    }
+    return $val;
+}
+
+#------------------------------------------------------------------------------
+# Convert EXIF date/time to PNG format
+# Inputs: 0) Date/time in EXIF format, 1) ExifTool ref
+# Returns: PNG formatted date/time string
+sub InversePNGDate($$)
+{
+    my ($val, $et) = @_;
+    my $err;
+    if ($val =~ /^(\d{4}):(\d{2}):(\d{2}) (\d{2})(:\d{2})(:\d{2})?(?:\.\d*)?\s*(\S*)/) {
+        my ($yr,$mon,$day,$hr,$min,$sec,$tz) = ($1,$2,$3,$4,$5,$6,$7);
+        $sec or $sec = '';
+        my %monName = map { $monthNum{$_} => $_ } keys %monthNum;
+        $mon = $monName{$mon + 0} or $err = 1;
+        $tz =~ /^(Z|[-+]\d{2}:?\d{2})/ or $err = 1 if length $tz;
+        $tz =~ tr/://d;
+        $val = "$day $mon $yr $hr$min$sec $tz" unless $err;
+    }
+    if ($err and $et->Options('StrictDate')) {
+        warn "Invalid date/time (use YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM|Z])\n";
+        undef $val;
+    }
+    return $val;
 }
 
 #------------------------------------------------------------------------------
@@ -985,7 +1062,7 @@ sub ProcessProfile($$$)
         }
     } elsif ($buff =~ /^(MM\0\x2a|II\x2a\0)/) {
         # TIFF information
-        return 1 if $outBuff and not $$editDirs{IFD0};  
+        return 1 if $outBuff and not $$editDirs{IFD0};
         if ($outBuff) {
             # delete non-standard EXIF if recreating from scratch
             if ($$et{DEL_GROUP}{EXIF} or $$et{DEL_GROUP}{IFD0}) {
@@ -1002,7 +1079,7 @@ sub ProcessProfile($$$)
     } else {
         my $profName = $profileType;
         $profName =~ tr/\x00-\x1f\x7f-\xff/./;
-        $et->Warn("Unknown raw profile '$profName'");
+        $et->Warn("Unknown raw profile '${profName}'");
     }
     if ($outBuff and defined $$outBuff and length $$outBuff) {
         if ($$et{CHANGED} != $oldChanged) {
@@ -1118,7 +1195,9 @@ sub ProcessPNG_eXIf($$$)
         return FoundPNG($et, $tagTablePtr, $$tagInfo{TagID}, \$buf, 2, $outBuff);
     } elsif (not $outBuff) {
         return $et->ProcessTIFF($dirInfo);
-    } elsif ($del and ($et->Options('Compress') xor lc($tag) eq 'zxif')) {
+    # (zxIf was not adopted)
+    #} elsif ($del and ($et->Options('Compress') xor lc($tag) eq 'zxif')) {
+    } elsif ($del and lc($tag) eq 'zxif') {
         $et->VPrint(0, "  Deleting $tag chunk");
         $$outBuff = '';
         ++$$et{CHANGED};
@@ -1348,7 +1427,7 @@ and JNG (JPEG Network Graphics) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

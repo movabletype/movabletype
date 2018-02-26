@@ -52,6 +52,7 @@ use_ok('MT::CMS::User');
 use_ok('MT::CMS::Website');
 use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
+use_ok('MT::CMS::RebuildTrigger');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
@@ -107,6 +108,7 @@ use_ok('MT::Website');
 use_ok('MT::Filter');
 use_ok('MT::Page');
 use_ok('MT::Folder');
+use_ok('MT::RebuildTrigger');
 
 # Utility modules
 use_ok('MT::Builder');

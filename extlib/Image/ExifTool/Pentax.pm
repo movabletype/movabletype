@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.16';
+$VERSION = '3.20';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -178,7 +178,8 @@ sub DecodeAFPoints($$$$;$);
     '4 2' => 'smc PENTAX-FA 80-320mm F4.5-5.6',
     '4 3' => 'smc PENTAX-FA 43mm F1.9 Limited',
     '4 6' => 'smc PENTAX-FA 35-80mm F4-5.6',
-    '4 10' => 'Irix 15mm F2.4', #forum3833
+    '4 9' => 'Irix 11mm F4 Firefly', #27
+    '4 10' => 'Irix 15mm F2.4', #27
     '4 12' => 'smc PENTAX-FA 50mm F1.4', #17
     '4 15' => 'smc PENTAX-FA 28-105mm F4-5.6 [IF]',
     '4 16' => 'Tamron AF 80-210mm F4-5.6 (178D)', #13
@@ -325,6 +326,7 @@ sub DecodeAFPoints($$$$;$);
     '8 30' => 'Sigma 17-70mm F2.8-4 DC Macro HSM | C', #27
     '8 31' => 'Sigma 18-35mm F1.8 DC HSM', #27
     '8 32' => 'Sigma 30mm F1.4 DC HSM | A', #27
+    '8 33' => 'Sigma 18-200mm F3.5-6.3 DC Macro HSM', #DieterPearcey (C014)
     '8 34' => 'Sigma 18-300mm F3.5-6.3 DC Macro HSM', #NJ
     '8 59' => 'HD PENTAX-D FA 150-450mm F4.5-5.6 ED DC AW', #29
     '8 60' => 'HD PENTAX-D FA* 70-200mm F2.8 ED DC AW', #29
@@ -1503,14 +1505,28 @@ my %binaryDataAttrs = (
             approximate Light Value.  May not be valid for some models, eg. Optio S
         },
     },
-    0x0016 => { #PH
+    0x0016 => [{ #PH
         Name => 'ExposureCompensation',
+        Condition => '$count == 1',
+        Notes => q{
+            some models write two values here.  The second value is meaning of the
+            second value is not yet known
+        },
         Writable => 'int16u',
         ValueConv => '($val - 50) / 10',
         ValueConvInv => 'int($val * 10 + 50.5)',
         PrintConv => '$val ? sprintf("%+.1f", $val) : 0',
         PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
-    },
+    },{
+        Name => 'ExposureCompensation',
+        Writable => 'int16u',
+        # (2 values for K-70, etc -- have only seen "0" for the 2nd value - PH)
+        Count => 2,
+        ValueConv => '$val =~ s/ .*//; ($val - 50) / 10',
+        ValueConvInv => 'int($val * 10 + 50.5) . " 0"',
+        PrintConv => '$val ? sprintf("%+.1f", $val) : 0',
+        PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
+    }],
     0x0017 => { #3
         Name => 'MeteringMode',
         Writable => 'int16u',
@@ -1910,13 +1926,16 @@ my %binaryDataAttrs = (
             1 => 'Remote Control (3 s delay)', #19
             2 => 'Remote Control', #19
             4 => 'Remote Continuous Shooting', # (K-5)
-            10 => 'Composite Average', #31
-            11 => 'Composite Additive', #31
-            12 => 'Composite Bright', #31
         },{
             0x00 => 'Single Exposure',
             0x01 => 'Multiple Exposure',
+            0x02 => 'Composite Average', #31
+            0x03 => 'Composite Additive', #31
+            0x04 => 'Composite Bright', #31
             0x08 => 'Interval Shooting', #31
+            0x0a => 'Interval Composite Average', #31
+            0x0b => 'Interval Composite Additive', #31
+            0x0c => 'Interval Composite Bright', #31
             0x0f => 'Interval Movie', #PH (K-01)
             0x10 => 'HDR', #PH (645D)
             0x20 => 'HDR Strong 1', #PH (NC) (K-5)
@@ -3021,8 +3040,10 @@ my %binaryDataAttrs = (
             5 => 'On but Disabled', # (NC for K-3)
             6 => 'On (Video)', # (NC for K-3)
             7 => 'On (AA simulation off)',
+            8 => 'Off (AA simulation type 1) (8)', #forum8362 (K-70)
             12 => 'Off (AA simulation type 1)', # (AA linear motion)
             15 => 'On (AA simulation type 1)', # (AA linear motion)
+            16 => 'Off (AA simulation type 2) (16)', #forum8362 (K-70)
             20 => 'Off (AA simulation type 2)', # (AA circular motion)
             23 => 'On (AA simulation type 2)', # (AA circular motion)
         },
@@ -5734,7 +5755,16 @@ my %binaryDataAttrs = (
             TagTable => 'Image::ExifTool::Pentax::Main',
             Start => 10,
             Base => '$start',
-            ByteOrder => 'BigEndian',
+            ByteOrder => 'Unknown', # K-70 is little-endian, K-x is big-endian
+        },
+    },
+    mknt => { # (Q-S1)
+        Name => 'MakerNotes',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Pentax::Main',
+            Start => 10,
+            Base => '$start',
+            ByteOrder => 'Unknown',
         },
     },
 );
@@ -6218,7 +6248,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

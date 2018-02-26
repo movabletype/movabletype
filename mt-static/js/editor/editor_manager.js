@@ -73,8 +73,7 @@ $.extend(MT.EditorManager, {
     },
 
     insertContent: function(html, field) {
-        $('#' + field).data('mt-editor')
-            .insertContent(html);
+        $('#' + field).data('mt-editor').currentEditor.insertContent(html)
     }
 });
 

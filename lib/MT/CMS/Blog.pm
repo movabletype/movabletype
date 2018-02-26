@@ -50,7 +50,6 @@ sub edit {
             && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
-        $param->{handshake_return}    = $app->base . $app->mt_uri;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
         $param->{ "moderate_comments_"
                 . ( $obj->moderate_unreg_comments || 0 ) } = 1;
@@ -1456,35 +1455,6 @@ sub cc_return {
     $app->load_tmpl( 'cc_return.tmpl', \%param );
 }
 
-sub handshake {
-    my $app               = shift;
-    my $blog_id           = $app->param('blog_id');
-    my $remote_auth_token = $app->param('remote_auth_token');
-
-    my %param = ();
-    $param{remote_auth_token} = $remote_auth_token;
-    $app->load_tmpl( 'handshake_return.tmpl', \%param );
-}
-
-sub update_welcome_message {
-    my $app = shift;
-    $app->validate_magic or return;
-
-    my $perms = $app->permissions;
-    return $app->permission_denied()
-        unless $perms && $perms->can_do('update_welcome_message');
-
-    my $blog_id    = $app->param('blog_id');
-    my $message    = $app->param('welcome-message-text');
-    my $blog_class = $app->model('blog');
-    my $blog       = $blog_class->load($blog_id)
-        or return $app->error( $app->translate("Invalid blog") );
-    $blog->welcome_msg($message);
-    $blog->save;
-    $app->redirect(
-        $app->uri( mode => 'menu', args => { blog_id => $blog_id } ) );
-}
-
 sub dialog_select_weblog {
     my $app = shift;
 
@@ -2216,82 +2186,6 @@ sub post_delete {
     MT::CMS::User::_delete_pseudo_association( $app, undef, $obj->id );
 }
 
-sub make_blog_list {
-    my $app = shift;
-    my ($blogs) = @_;
-
-    my $author = $app->user;
-    my ( $data, $can_edit_authors );
-    $can_edit_authors = 1 if $app->can_do('edit_authors');
-    my @blog_ids = map { $_->id } @$blogs;
-    my %counts;
-    my $e_iter
-        = $app->model('entry')->count_group_by( { blog_id => \@blog_ids },
-        { group => ['blog_id'] } );
-    while ( my ( $e_count, $e_blog_id ) = $e_iter->() ) {
-        $counts{$e_blog_id}{'entry'} = $e_count;
-    }
-    my $pg_iter
-        = $app->model('page')->count_group_by( { blog_id => \@blog_ids },
-        { group => ['blog_id'] } );
-    while ( my ( $p_count, $p_blog_id ) = $pg_iter->() ) {
-        $counts{$p_blog_id}{'page'} = $p_count;
-    }
-    my $c_iter
-        = $app->model('comment')->count_group_by( { blog_id => \@blog_ids },
-        { group => ['blog_id'] } );
-    while ( my ( $c_count, $c_blog_id ) = $c_iter->() ) {
-        $counts{$c_blog_id}{'comment'} = $c_count;
-    }
-    my $p_iter
-        = $app->model('tbping')->count_group_by( { blog_id => \@blog_ids },
-        { group => ['blog_id'] } );
-    while ( my ( $p_count, $p_blog_id ) = $p_iter->() ) {
-        $counts{$p_blog_id}{'ping'} = $p_count;
-    }
-
-    my $type = $app->param('type');
-    if ( $type && $type eq 'website' ) {
-        my $b_iter = $app->model('blog')->count_group_by(
-            { parent_id => \@blog_ids },
-            { group     => ['parent_id'] },
-        );
-        while ( my ( $b_count, $b_website_id ) = $b_iter->() ) {
-            $counts{$b_website_id}{'blog'} = $b_count;
-        }
-    }
-
-    my @ids = split ',', $app->param('error_id');
-    for my $blog (@$blogs) {
-        my $blog_id = $blog->id;
-        my $perms   = $author->permissions($blog_id);
-        my $row     = {
-            id          => $blog->id,
-            name        => $blog->name,
-            description => $blog->description,
-            site_url    => $blog->site_url
-        };
-        $row->{num_blogs} = $counts{$blog_id}{'blog'} unless $blog->is_blog();
-        $row->{num_entries}           = $counts{$blog_id}{'entry'};
-        $row->{num_pages}             = $counts{$blog_id}{'page'};
-        $row->{num_comments}          = $counts{$blog_id}{'comment'};
-        $row->{num_pings}             = $counts{$blog_id}{'ping'};
-        $row->{can_create_post}       = $perms->can_do('create_new_entry');
-        $row->{can_edit_entries}      = $perms->can_do('create_new_entry');
-        $row->{can_edit_pages}        = $perms->can_do('manage_pages');
-        $row->{can_edit_templates}    = $perms->can_do('edit_templates');
-        $row->{can_edit_config}       = $perms->can_do('edit_config');
-        $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
-        $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
-        $row->{can_edit_assets}       = $perms->can_do('edit_assets');
-        $row->{can_administer_site}   = $perms->can_do('administer_site');
-        $row->{can_list_blogs} = $perms->can_do('open_blog_listing_screen');
-        $row->{checked} = grep { $_ == $blog->id } @ids;
-        push @$data, $row;
-    }
-    $data;
-}
-
 sub build_blog_table {
     my $app = shift;
     my (%args) = @_;
@@ -2542,21 +2436,6 @@ sub cfg_publish_profile_save {
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
 
     1;
-}
-
-# Unused function. To be removed.
-# FIXME: Faulty, since it doesn't take into account module includes
-sub RegistrationAffectsArchives {
-    my ( $blog_id, $archive_type ) = @_;
-    require MT::TemplateMap;
-    require MT::Template;
-    my @tms = MT::TemplateMap->load(
-        {   archive_type => $archive_type,
-            blog_id      => $blog_id
-        }
-    );
-    grep { !$_->build_dynamic && ( $_->text =~ /<MT:?IfRegistration/i ) }
-        map { MT::Template->load( $_->template_id ) } @tms;
 }
 
 sub update_publishing_profile {

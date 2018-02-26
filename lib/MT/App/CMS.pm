@@ -252,12 +252,7 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'folder_add'           => "${pkg}Category::category_add",
-        'category_add'         => "${pkg}Category::category_add",
-        'category_do_add'      => "${pkg}Category::category_do_add",
         'cc_return'            => "${pkg}Blog::cc_return",
-        'reset_blog_templates' => "${pkg}Template::reset_blog_templates",
-        'handshake'            => "${pkg}Blog::handshake",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
@@ -272,7 +267,6 @@ sub core_methods {
         'save_cfg_system_web_services' =>
             "${pkg}Tools::save_cfg_system_web_services",
         'save_cfg_system_users'  => "${pkg}User::save_cfg_system_users",
-        'update_welcome_message' => "${pkg}Blog::update_welcome_message",
         'upgrade'                => {
             code           => "${pkg}Tools::upgrade",
             requires_login => 0,
@@ -280,7 +274,6 @@ sub core_methods {
         'plugin_control'           => "${pkg}Plugin::plugin_control",
         'rename_tag'               => "${pkg}Tag::rename_tag",
         'remove_user_assoc'        => "${pkg}User::remove_user_assoc",
-        'revoke_role'              => "${pkg}User::revoke_role",
         'grant_role'               => "${pkg}User::grant_role",
         'start_backup'             => "${pkg}Tools::start_backup",
         'start_restore'            => "${pkg}Tools::start_restore",
@@ -324,10 +317,8 @@ sub core_methods {
         'delete_map'        => "${pkg}Template::delete_map",
         'add_map'           => "${pkg}Template::add_map",
         'js_tag_check'      => "${pkg}Tag::js_tag_check",
-        'js_tag_list'       => "${pkg}Tag::js_tag_list",
         'js_add_tag'        => "${pkg}Tag::js_add_tag",
         'convert_to_html'   => "${pkg}Tools::convert_to_html",
-        'update_list_prefs' => "${pkg}Tools::update_list_prefs",
         'js_add_category'   => "${pkg}Category::js_add_category",
         'remove_userpic'    => "${pkg}User::remove_userpic",
         'login_json'        => {
@@ -393,6 +384,13 @@ sub core_methods {
         'start_import_content' => "${pkg}ContentData::start_import",
         'start_export_content' => "${pkg}ContentData::start_export",
 
+        ## MT7 Rebuild Trigger
+        'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
+        'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
+        'save_rebuild_trigger'      => {
+            code      => "${pkg}RebuildTrigger::save",
+            no_direct => 1,
+        },
     };
 }
 
@@ -714,13 +712,13 @@ sub core_content_actions {
         },
         'association' => {
             'grant_role' => {
-                class         => 'icon-create',
-                label         => 'Grant Permission',
-                icon          => 'ic_add',
-                mode          => 'dialog_grant_role',
-                args          => {
-                    _type         => 'user',
-                    type          => 'site',
+                class => 'icon-create',
+                label => 'Grant Permission',
+                icon  => 'ic_add',
+                mode  => 'dialog_grant_role',
+                args  => {
+                    _type => 'user',
+                    type  => 'site',
                 },
                 return_args   => 1,
                 permit_action => 'create_any_association',
@@ -1972,6 +1970,13 @@ sub core_menus {
             system_permission => "manage_plugins",
             view              => [ "blog", "website" ],
         },
+        'settings:rebuild_trigger' => {
+            label      => "Rebuild Trigger",
+            order      => 800,
+            mode       => "cfg_rebuild_trigger",
+            permission => "administer_site",
+            view       => [ "system", "blog", 'website' ],
+        },
 
         'settings:system' => {
             label      => "General",
@@ -2004,7 +2009,7 @@ sub core_menus {
         },
         'settings:system_information' => {
             label         => "System Information",
-            order         => 800,
+            order         => 900,
             mode          => "tools",
             view          => "system",
             permit_action => 'use_tools:system_info_menu',
@@ -2925,7 +2930,8 @@ sub build_menus {
                     }
                 }
                 elsif (( $app_param_type || '' ) eq 'content_data'
-                    && ( $sub->{args}{_type} || '' ) eq 'content_data' )
+                    && ( $sub->{args}{_type} || '' ) eq 'content_data'
+                    && $mode ne 'search_replace' )
                 {
                     $param->{screen_group} = $id;
 

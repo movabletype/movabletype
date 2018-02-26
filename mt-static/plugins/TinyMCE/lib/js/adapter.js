@@ -26,10 +26,10 @@
             skin: 'lightgray',
             menubar: false,
             branding: false,
-            forced_root_block: '',
+            forced_root_block: 'p',
 
             // Buttons using both in source and wysiwyg modes.
-            // plugin_mt_common_buttons1: 'mt_source_mode',
+            plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
             plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image',
@@ -382,32 +382,6 @@
             };
 
             ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
-
-            // Stop adding root blocks on key up for IE.
-            // Because if used with IME, this function will not work well.
-            if (tinyMCE.isIE) {
-                $.each(ed.onKeyUp.listeners, function(i, listener) {
-                    if (! listener) {
-                        return;
-                    }
-                    var f = listener.cb;
-                    if (f.toString().match(/^function addRootBlocks\(\)|^function\s+\w+\(\).*forced_root_block/)) {
-                        ed.onKeyUp.remove(f);
-                        return false;
-                    }
-                });
-            }
-
-            // if (ed.getContent() == '') {
-            // Browser compatibility
-            // Set the "formatselect" to default value for empty content.
-            // var formatselect;
-            // if (formatselect = ed.controlManager.get('formatselect')) {
-            // setTimeout(function() {
-            // formatselect.select('');
-            // }, 0);
-            // }
-            // }
 
             var resizeTo = ed.theme.resizeTo;
             ed.theme.resizeTo = function(width, height, store, isFullscreen) {

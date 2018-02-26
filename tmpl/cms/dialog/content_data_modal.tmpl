@@ -88,7 +88,7 @@ jQuery('.actions-bar button.primary').click(function() {
 
   function getCollapseHtml(id, previewData) {
     return ''
-      + '<div class="mt-collapse mt-draggable" draggable="true" aria-grabbed="false">'
+      + '<div class="mt-draggable" draggable="true" aria-grabbed="false">'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
       +   '<div class="col-auto">'
       +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
@@ -101,13 +101,13 @@ jQuery('.actions-bar button.primary').click(function() {
       +       '<__trans phrase="Remove">'
       +     '</a>'
       +   '</div>'
-      +   '<div class="col-auto mr-3">'
+      +   '<div class="col-auto">'
       +     '<a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-'+id+'" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
       +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1">'
       +     '</a>'
       +   '</div>'
       +   '<div class="mt-flexBreak"></div>'
-      +   '<div class="collapse mt-collapse__content mt-draggable__content" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
+      +   '<div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
       +     '<div class="row preview-data">'
       +       '<div class="col">'
       +         previewData
@@ -119,7 +119,7 @@ jQuery('.actions-bar button.primary').click(function() {
 
   var $contentDataContainer = parent.jQuery('#content-type-field-' + contentFieldId);
   if (!canMulti) {
-    $contentDataContainer.children('.mt-collapse').remove();
+    $contentDataContainer.children('.mt-draggable').remove();
   }
 
   jQuery('input[name=id]:checked').each(function (index, input) {

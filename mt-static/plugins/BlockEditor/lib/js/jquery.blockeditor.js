@@ -24,21 +24,24 @@
             var $this = $(this);
             var editor_id = $this.attr('id');
             var block_field = $('<div class="' + block_field_class + ' sortable"></div>');
-            var add_field = $('<div class="form-group add_field-group"><button type="button" class="btn btn-default add_field icon-mini-left addblock">' + trans('add block') + '</button></div>');
+            var add_field = $('<div class="add_field-group"><div class="add_block"><svg title="追加" role="img" class="mt-icon mt-icon--lg"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_add"/></svg></div></div>');
 
             var manager = new MT.BlockEditorFieldManager(editor_id);
             managers[editor_id] = manager;
 
-            add_field.on('click', 'button', function(){
+            add_field.on('click', function(){
                 var self = this;
-                block_field.siblings('.add_field-group').find('.' + add_menu_class).remove();
+                block_field.siblings('.add_field-group').find('.' + add_menu_class).remove()
                 var manager = managers[editor_id];
                 var buttons = manager.create_button.call(manager, _create_field);
                 buttons.forEach(function(button){
-                    add_field.find('button').before($('<div class="row no-gutters py-2 ' + add_menu_class + '"></div>').append(button));
+                    add_field.prepend($('<div class="no-gutters py-2 ' + add_menu_class + '"></div>').append(button));
                 });
-                add_field.find('.add_menu').on('click', function(){
+                add_field.find('.'+add_menu_class).on('click', function(event){
                   $(this).find('.add').click();
+                  $('.add_field-group .add_menu').remove();
+                  event.preventDefault();
+                  event.stopPropagation();
                 });
             });
 
@@ -85,6 +88,7 @@
         block_field.siblings('.add_field-group').remove();
         block_field.remove();
         window.block_editor_data[editor_id] = null;
+        managers[editor_id] = null;
         return this;
     };
     var _get_data = function(){
@@ -97,7 +101,6 @@
             var id = id_wrap_str.replace('-wrapper','');
             data[id]["order"] = index + 1;
         });
-        console.log(data);
         return data;
     };
     var _get_html = function(){

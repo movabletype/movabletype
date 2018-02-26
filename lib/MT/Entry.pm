@@ -1983,6 +1983,34 @@ sub set_values {
     }
 }
 
+# Register entry post-save callback for rebuild triggers
+my $rt = MT->model('rebuild_trigger');
+MT->add_callback(
+    'cms_post_save.entry', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'api_post_save.entry', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'cms_post_bulk_save.entries', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entries_bulk_save', @_ ); }
+);
+MT->add_callback(
+    'scheduled_post_published', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_pub', @_ ); }
+);
+MT->add_callback(
+    'unpublish_past_entries', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_entry_unpub', @_ ); }
+);
+
 #trans('Draft')
 #trans('Review')
 #trans('Future')

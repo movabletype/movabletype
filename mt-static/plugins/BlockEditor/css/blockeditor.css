@@ -1,0 +1,27 @@
+.add_block {
+    display: flex;
+    align-items: center;
+    text-align: center; /* for no-flexbox browsers */
+}
+.alignbutton button.active {
+  background: #0176BF;
+}
+.add_menu {
+  display: flex;
+  
+}
+.add_block:before,
+.add_block:after {
+    border-top: 1px solid;
+    content: "";
+    display: inline; /* for IE */
+    flex-grow: 1;
+}
+
+.add_block:before {
+    margin-right: 0.5em;
+}
+
+.add_block:after {
+    margin-left: 0.5em;
+}

@@ -105,6 +105,35 @@ __PACKAGE__->install_properties(
     }
 );
 
+# Register entry post-save callback for rebuild triggers
+my $rt = MT->model('rebuild_trigger');
+MT->add_callback(
+    'cms_post_save.content_data', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_content_save', @_ ); }
+);
+MT->add_callback(
+    'api_post_save.content_data', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_content_save', @_ ); }
+);
+MT->add_callback(
+    'cms_post_bulk_save.content_data',
+    10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_contents_bulk_save', @_ ); }
+);
+MT->add_callback(
+    'scheduled_content_published', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_content_pub', @_ ); }
+);
+MT->add_callback(
+    'unpublish_past_contents', 10,
+    MT->component('core'),
+    sub { $rt->runner( 'post_content_unpub', @_ ); }
+);
+
 sub class_label {
     MT->translate("Content Data");
 }
@@ -1292,7 +1321,7 @@ sub preview_data {
 
         my $field_data
             = $preview_handler
-            ? $preview_handler->( $self->data->{ $f->{id} }, $f->{id}, $self )
+            ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
 

@@ -43,6 +43,7 @@ sub data_load_handler {
             @blockdata = sort { $a->{order} <=> $b->{order} } @blockdata;
             foreach my $val (@blockdata) {
                 $html .= $val->{html};
+                $html .= "\n";
             }
         }
         return $html;

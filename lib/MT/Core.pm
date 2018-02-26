@@ -179,6 +179,7 @@ BEGIN {
             'content_field_index' => 'MT::ContentFieldIndex',
             'content_type'        => 'MT::ContentType',
             'objectcategory'      => 'MT::ObjectCategory',
+            'rebuild_trigger'     => 'MT::RebuildTrigger',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -2149,6 +2150,10 @@ BEGIN {
             'NumberFieldMaxValue'      => { default => 2147483647 },
             'NumberFieldMinValue'      => { default => -2147483648 },
 
+            # RebuildTrigger - MT7
+            'DefaultAccessAllowed' => { default => 1 },
+            'AccessOverrides'      => undef,
+
             'JSONCanonicalization' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2860,7 +2865,6 @@ sub load_core_permissions {
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
                 'save_blog_config'             => 1,
-                'update_welcome_message'       => 1,
             }
         },
         'blog.edit_notifications' => {
@@ -2895,7 +2899,6 @@ sub load_core_permissions {
                 'copy_template_via_list'    => 1,
                 'edit_templates'            => 1,
                 'refresh_template_via_list' => 1,
-                'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
                 'refresh_templates'         => 1.

@@ -204,6 +204,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_REBUILD_PUBLISH'      => 'Publish',
     '_DATE_FROM'            => 'From',
     '_DATE_TO'              => 'To',
+    '_TIME_FROM'            => 'From',
+    '_TIME_TO'              => 'To',
     '_SHORT_MAY'            => 'May',
     '_MTCOM_URL'            => 'http://www.movabletype.com/',
     '_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',

@@ -32,7 +32,7 @@ use vars qw($VERSION %leicaLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.92';
+$VERSION = '1.93';
 
 sub ProcessLeicaLEIC($$$);
 sub WhiteBalanceConv($;$$);
@@ -629,7 +629,7 @@ my %shootingMode = (
             2 => '10 s',
             3 => '2 s',
             4 => '10 s / 3 pictures', #17
-            # 258 - seen for FZ2500 (PH)
+            # 258 - seen for FZ2500,TZ90 (PH)
         },
     },
     # 0x2f - values: 1 (LZ6,FX10K)
@@ -1631,6 +1631,16 @@ my %shootingMode = (
     # 0x0411 - int8u[4]: first number is FilmMode (1=Standard,2=Vivid,3=Natural,4=BW Natural,5=BW High Contrast)
     0x0412 => { Name => 'FilmMode',         Writable => 'string' },
     0x0413 => { Name => 'WB_RGBLevels',     Writable => 'rational64u', Count => 3 },
+    0x0500 => {
+        Name => 'InternalSerialNumber',
+        Writable => 'undef',
+        PrintConv => q{
+            return $val unless $val=~/^(.{3})(\d{2})(\d{2})(\d{2})(\d{4})/;
+            my $yr = $2 + ($2 < 70 ? 2000 : 1900);
+            return "($1) $yr:$3:$4 no. $5";
+        },
+        PrintConvInv => '$_=$val; tr/A-Z0-9//dc; s/(.{3})(19|20)/$1/; $_',
+    },
 );
 
 # Leica type5 ShotInfo (ref PH) (X2)
@@ -2350,7 +2360,7 @@ Panasonic and Leica maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2017, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

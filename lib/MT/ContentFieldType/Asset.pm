@@ -34,8 +34,8 @@ sub field_html_params {
     require MT::CMS::Asset;
     my $hasher = MT::CMS::Asset::build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120,
+        PreviewWidth  => 80,
+        PreviewHeight => 80,
     );
 
     my @asset_loop;
@@ -82,7 +82,7 @@ sub field_html_params {
 
     my $asset_class = $app->model($type);
 
-    {   asset_loop => @asset_loop ? \@asset_loop : undef,
+    {   asset_loop           => @asset_loop ? \@asset_loop : undef,
         asset_type_for_field => $asset_class->class_type,
         multiple             => $multiple,
         required             => $required,
@@ -537,7 +537,7 @@ sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
     my @assets = MT->model('asset')->load(
-        { id => $values, class => '*' },
+        { id        => $values, class => '*' },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @assets;
@@ -554,7 +554,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $values, $field_id, $content_data ) = @_;
+    my ( $field_data, $values, $content_data ) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -613,6 +613,20 @@ sub preview_handler {
     }
 
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_handler {
+    my ( $search_regex, $field_data, $asset_ids, $content_data ) = @_;
+    return 0 unless defined $asset_ids;
+    $asset_ids = [$asset_ids] unless ref $asset_ids eq 'ARRAY';
+    my $iter = MT->model('asset')->load_iter( { id => $asset_ids } );
+    while ( my $asset = $iter->() ) {
+        for my $col (qw/ file_name description label /) {
+            my $text = defined $asset->$col ? $asset->$col : '';
+            return 1 if $text =~ /$search_regex/;
+        }
+    }
+    0;
 }
 
 1;

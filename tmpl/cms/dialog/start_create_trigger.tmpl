@@ -1,0 +1,168 @@
+<$mt:setvar name="screen_type" value="dialog-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Create Rebuild Trigger"></mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+
+<script type="text/javascript">
+
+  function setEvent() {
+    var value = jQuery('#object_type').val();
+    jQuery('#event').empty();
+    if  ( value === '1' || value === '2' ) {
+      jQuery('#event').append(
+        jQuery('<option />').attr('value', '1').text('<__trans phrase="Save">')
+      );
+    }
+    jQuery('#event').append(
+      jQuery('<option />').attr('value', '2').text('<__trans phrase="Publish">')
+    );
+    if  ( value === '1' || value === '2' ) {
+      jQuery('#event').append(
+        jQuery('<option />').attr('value', '3').text('<__trans phrase="Unpublish">')
+      );
+    }
+  }
+
+  jQuery(document).ready(function() {
+
+    jQuery.mtValidateAddRules({
+      "#object_type": function($e) {
+        if ( $e.val() === '0' ) {
+          return false;
+        }
+        return true;
+      },
+      "#content_type": function($e) {
+        if ( $e.val() === '0' ) {
+          if ( jQuery('#object_type').val() === '2' )
+          return false;
+        }
+        return true;
+      },
+      "#event": function($e) {
+        if ( $e.val() === '0' ) {
+          return false;
+        }
+        return true;
+      }
+    });
+
+    jQuery.mtValidateAddMessages({
+      "#object_type": '<__trans phrase="You must select Object Type.">',
+      "#content_type": '<__trans phrase="You must select Content Type.">',
+      "#event": '<__trans phrase="You must select Event.">'
+    });
+
+    jQuery('#object_type').change(function() {
+      var value = jQuery('#object_type').val();
+      if( value === '2' ) {
+        jQuery('#content_type-field').removeClass('invisible');
+      }
+      else {
+        jQuery('#content_type-field').addClass('invisible');
+      }
+      setEvent();
+    });
+
+    jQuery('#next_button').click(function(){
+      if ( !jQuery('#object_type').mtValidate('simple') ) return false;
+      if ( !jQuery('#content_type').hasClass('invisible') ) {
+        if ( !jQuery('#content_type').mtValidate('simple') ) return false;
+      }
+      if ( !jQuery('#event').hasClass('invisible') ) {
+        if ( !jQuery('#event').mtValidate('simple') ) return false;
+      }
+     jQuery('#start-create-trigger').submit();
+    });
+    
+    jQuery('#cancel_button').click(function(){
+      return jQuery.fn.mtModal.close();
+    });
+
+    setEvent();
+  });
+
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<div class="modal_width" id="select-weblog-dialog">
+
+<mtapp:form id="start-create-trigger" name="cfg_form" mode="add_rebuild_trigger" object_type="$o">
+
+  <mtapp:setting
+     id="object_type"
+     label="<__trans phrase="Object Type">"
+     label_for="object_type"
+     label_class="top-label"
+     style="visibility:hidden">
+    <select id="object_type" name="object_type" class="custom-select form-control object-type">
+    <mt:loop name="object_types">
+      <option value="<mt:var name="id">"<mt:if name="object_type" eq="$id"> selected</mt:if>> <mt:var name="label" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="event"
+     label="<__trans phrase="Event">"
+     label_for="event"
+     label_class="top-label">
+    <select id="event" name="event" class="custom-select form-control event">
+    </select>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="action"
+     label="<__trans phrase="Action">"
+     label_for="action"
+     label_class="top-label">
+    <select id="action" name="action" class="custom-select form-control action">
+    <mt:loop name="actions">
+      <option value="<mt:var name="action_id">"<mt:if name="action" eq="$action_id"> selected</mt:if>> <mt:var name="action_name" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="content_type"
+     label="<__trans phrase="Content Type">"
+     label_for="content_type"
+     label_class="top-label invisible">
+    <select id="content_type" name="content_type" class="custom-select form-control content-type">
+    <mt:loop name="content_types">
+      <option value="<mt:var name="id">"<mt:if name="content_type" eq="$id"> selected</mt:if>> <mt:var name="label" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+
+</mtapp:form>
+
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <button
+     id="next_button"
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Next (s)">"
+     class="action primary button btn btn-primary">
+    <__trans phrase="Next"></button>
+  <button
+     id="cancel_button"
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Cancel (x)">"
+     class="action button btn btn-default"
+     onclick="clickCancel(this)">
+    <__trans phrase="Cancel"></button>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

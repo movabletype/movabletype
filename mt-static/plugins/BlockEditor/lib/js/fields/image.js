@@ -57,9 +57,35 @@
         },
         get_field_options: function (field_options) {
             var self = this;
-            var option_alt = $('<div class="form-group"><label for="' + self.id + '_option_lat" class="form-control-label">alt</label><input type="text" name="field_option_alt" id="' + self.id + '_option_alt" class="form-control"></div>');
             self.options_field = $('<div class="options"></div>');
+
+            var option_alt = $('<div class="form-group"><label for="' + self.id + '_option_alt" class="form-control-label">' + trans('alt') + '</label><input type="text" name="field_option_alt" id="' + self.id + '_option_alt" class="form-control"></div>');
             self.options_field.append(option_alt);
+
+            var option_title = $('<div class="form-group"><label for="' + self.id + '_option_title" class="form-control-label">' + trans('title') + '</label><input type="text" name="field_option_title" id="' + self.id + '_option_title" class="form-control"></div>');
+            self.options_field.append(option_title);
+
+            var option_width = $('<div class="form-group"><label for="' + self.id + '_option_width" class="form-control-label">' + trans('width') + '</label><div class="input-group"><input type="number" name="field_option_width"  id="' + self.id + '_option_width" class="form-control"><div class="input-group-append"><span class="input-group-text">px</span></div></div></div>');
+            self.options_field.append(option_width);
+
+            var option_align = $('<div class="form-group"><label for="' + self.id + '_option_arrangement" class="form-control-label mr-3">' + trans('Arrangement') + '</label><div class="btn-group btn-group-space alignbutton" role="group"></div></div>');
+
+            var align_none = $('<button type="button" class="btn btn-default p-1 alignnone" data-arign="none" title="' + trans('none') + '" data-toggle="button" aria-pressed="false" ><svg title="AlignNone" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_alignnone"/></svg></button>');
+            var align_laft = $('<button type="button" class="btn btn-default p-1 alignleft" data-arign="left" title="' + trans('Left Align Text') + '" data-toggle="button" aria-pressed="false" ><svg title="AlignLeft" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_alignleft"/></svg></button>');
+            var align_center = $('<button type="button" class="btn btn-default p-1 aligncenter" data-arign="center" title="' + trans('Center Align Text') + '" data-toggle="button" aria-pressed="false" ><svg title="AlignCenter" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_aligncenter"/></svg></button>');
+            var align_right = $('<button type="button" class="btn btn-default p-1 alignright" data-arign="right" title="' + trans('Right Align Text') + '" data-toggle="button" aria-pressed="false" ><svg title="AlignRight" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_alignright"/></svg></button>');
+
+            option_align.find('.btn-group').append(align_none);
+            option_align.find('.btn-group').append(align_laft);
+            option_align.find('.btn-group').append(align_center);
+            option_align.find('.btn-group').append(align_right);
+
+            self.options_field.append(option_align);
+
+            var option_caption = $('<div class="form-group"><label for="' + self.id + '_option_caption" class="form-control-label">' + trans('caption') + '</label><input type="text" name="field_option_caption" id="' + self.id + '_option_caption" class="form-control"></div>');
+            self.options_field.append(option_caption);
+
+
             var callback = function () {
                 return function () {
                     var name = $(this).attr('name');
@@ -68,8 +94,26 @@
                 };
             }();
             self.options_field.on('change', 'input', callback);
-            if(self.options.alt){
-                option_alt.find('input').val(self.options.alt);
+
+            option_align.find('.alignbutton button').on('click',function(){
+              $('.alignbutton button').each(function(){
+                $(this).removeClass('active');
+                $(this).attr('aria-pressed', 'false');
+              });
+              var name = 'field_option_align';
+              var val = $(this).attr('data-arign');
+              self.set_option.call(self, name, val);
+            });
+
+
+            Object.keys(self.options).forEach(function (key) {
+                self.options_field.find('input#' + self.id + '_option_' + key).val(self.options[key]);
+            });
+
+            if(self.options.align){
+              var target = option_align.find('.alignbutton button[data-arign=' + self.options.align + ']');
+              target.addClass('active');
+              target.attr('aria-pressed', 'true');
             }
 
             return field_options.append(self.options_field);
@@ -97,9 +141,24 @@
             var html = '<img';
             html += ' src="' + $('#' + self.id + '-url').val() + '"';
             Object.keys(self.options).forEach(function(key){
-                html += ' ' + key + '="' + self.options[key] + '"';
-            })
+                if( key == 'caption' ) return;
+                if( key == 'align') {
+                    html += ' class="mt-image-' + self.options[key] + '"';
+                    if(self.options[key] == 'left'){
+                        html += ' style="float: left; margin: 0 20px 20px 0;"';
+                    } else if( self.options[key] == 'right' ) {
+                        html += ' style="float: right; margin: 0 0 20px 20px;"';
+                    } else if( self.options[key] == 'center' ) {
+                        html += ' style="text-align: center; display: block; margin: 0 auto 20px;"';
+                    }
+                } else {
+                  html += ' ' + key + '="' + self.options[key] + '"';
+                }
+            });
             html += '>';
+            if( self.options.caption ){
+                html = '<figure>' + html + '<figcaption>' + self.options.caption + '<figcaption></figure>';
+            }
             return html;
         },
         get_src: function() {
