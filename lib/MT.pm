@@ -63,7 +63,7 @@ BEGIN {
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.2401';
+        $RELEASE_VERSION_ID = 'r.2602';
     }
 
     $DebugMode = 0;
