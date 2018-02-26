@@ -4138,6 +4138,7 @@ sub _hdlr_app_contentfield_option_group {
 <$type>
 
   <input if={ !this.isNew } type="hidden" ref="id" name="id" id="$type-id" class="form-control" value={ fieldId } >
+  <input if={ this.isNew } type="hidden" ref="id" name="id" id="$type-id" class="form-control" value={ 'id:' + fieldId } >
 
   <mtapp:ContentFieldOption
      id="$type-label"

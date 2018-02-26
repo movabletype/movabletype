@@ -314,6 +314,31 @@ sub edit {
     $param->{object_label}        = $content_type->name;
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
 
+    if ( $content_type->data_label ) {
+        $param->{can_edit_data_label} = 0;
+        if ($content_data_id) {
+            $param->{data_label} = $content_data->label;
+        }
+        else {
+            my $field = MT->model('content_field')->load(
+                {   content_type_id => $content_type->id,
+                    unique_id       => $content_type->data_label,
+                }
+                )
+                or die MT->translate(
+                'Cannot load content field (UniqueID:[_1]).',
+                $content_type->data_label );
+            $param->{data_label}
+                = $app->translate(
+                'The value of [_1] is automatically used as a data label.',
+                $field->name );
+        }
+    }
+    else {
+        $param->{can_edit_data_label} = 1;
+        $param->{data_label} = $content_data_id ? $content_data->label : '';
+    }
+
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
     $param->{text_filters} = [];
@@ -552,6 +577,11 @@ sub save {
     my $block_editor_data = $app->param('blockeditor-data');
     $content_data->block_editor_data($block_editor_data);
 
+    if ( !$content_type->data_label ) {
+        my $data_label = $app->param('data_label');
+        $content_data->label($data_label);
+    }
+
     $app->run_callbacks( 'cms_pre_save.content_data',
         $app, $content_data, $orig );
 
@@ -767,27 +797,33 @@ sub post_save {
 
     my $ct = $obj->content_type or return;
     my $author = $app->user;
+    my $label
+        = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
     my $message;
     if ( !$orig_obj->id ) {
-        $message = $app->translate( "New [_1] (ID:[_2]) added by user '[_3]'",
-            $ct->name, $obj->id, $author->name );
+        $message
+            = $app->translate(
+            "New [_1] '[_4]' (ID:[_2]) added by user '[_3]'",
+            $ct->name, $obj->id, $author->name, $label );
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+            "[_1] '[_5]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
             $app->translate(
                 MT::ContentStatus::status_text( $orig_obj->status )
             ),
             $app->translate( MT::ContentStatus::status_text( $obj->status ) ),
-            $author->name
+            $author->name,
+            $label
         );
 
     }
     else {
-        $message = $app->translate( "[_1] (ID:[_2]) edited by user '[_3]'",
-            $ct->name, $obj->id, $author->name );
+        $message
+            = $app->translate( "[_1] '[_4]' (ID:[_2]) edited by user '[_3]'",
+            $ct->name, $obj->id, $author->name, $label );
     }
     require MT::Log;
     $app->log(
@@ -812,11 +848,13 @@ sub post_delete {
 
     my $ct = $obj->content_type or return;
     my $author = $app->user;
+    my $label
+        = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
 
     $app->log(
         {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'",
-                $ct->name, $obj->id, $author->name
+                "[_1] '[_4]' (ID:[_2]) deleted by '[_3]'",
+                $ct->name, $obj->id, $author->name, $label
             ),
             level    => MT::Log::INFO(),
             class    => 'content_data_' . $ct->id,

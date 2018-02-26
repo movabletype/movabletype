@@ -35,7 +35,7 @@
     <h4 class="mt-widget__latest"><__trans phrase="Recent Posts"></h4>
     <ul class="list-unstyled">
         <mt:Loop name="recent_post">
-      <li class="row"><span class="col-2"><mt:var name="created_on_formatted"></span><span class="col"><a href="<mt:var name="mt_url">?__mode=edit&_type=<mt:var name="object_type">&blog_id=<mt:var name="blog_id">&id=<mt:var name="id"><mt:if name="subtype">&type=<mt:var name="subtype"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id"></mt:if>">(ID:<mt:var name="id" escape="html">)</a></span></li>
+      <li class="row"><span class="col-2"><mt:var name="created_on_formatted"></span><span class="col"><a href="<mt:var name="mt_url">?__mode=edit&_type=<mt:var name="object_type">&blog_id=<mt:var name="blog_id">&id=<mt:var name="id"><mt:if name="subtype">&type=<mt:var name="subtype"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id"></mt:if>">[<mt:var name="object_name" escape="html">] <mt:var name="title" escape="html"></a></span></li>
         </mt:Loop>
     </ul>
       </mt:If>

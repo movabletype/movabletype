@@ -12,7 +12,7 @@ use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
-    [ 'name', 'description', 'userDisplayOption' ];
+    [ 'name', 'description', 'userDisplayOption', 'dataLabel' ];
 }
 
 sub fields {
@@ -31,6 +31,9 @@ sub fields {
                 MT::DataAPI::Resource->from_object( $obj->field_objs,
                     [ 'id', 'label', 'type', 'uniqueID' ] );
             },
+        },
+        {   name  => 'dataLabel',
+            alias => 'data_label',
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',

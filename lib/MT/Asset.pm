@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
+use MT::Util qw( encode_js );
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -488,11 +489,16 @@ __FILTER_TMPL__
                 my $app   = MT->instance;
                 my $stash = $app->request('content_field_filter')
                     or return '';
-                MT->translate(
-                    'Assets in [_1] field of [_2] (ID:[_3])',
-                    $stash->{content_field}->name,
-                    $stash->{content_type}->name,
-                    $stash->{content_data}->id,
+                MT::Util::encode_js(
+                    MT->translate(
+                        "Assets in [_1] field of [_2] '[_4]' (ID:[_3])",
+                        $stash->{content_field}->name,
+                        $stash->{content_type}->name,
+                        $stash->{content_data}->id,
+                        (   $stash->{content_data}->label
+                                || MT->translate('No Label')
+                        )
+                    )
                 );
             },
             label           => 'Content Field',
@@ -537,9 +543,12 @@ __FILTER_TMPL__
                 );
 
                 return $app->translate(
-                    'Assets in [_1] field of [_2] (ID:[_3])',
-                    $content_field->name, $content_type->name,
-                    $content_data->id, );
+                    "Assets in [_1] field of [_2] '[_4]' (ID:[_3])",
+                    $content_field->name,
+                    $content_type->name,
+                    $content_data->id,
+                    ( $content_data->label || MT->translate('No Label') )
+                );
             },
             terms => sub {
                 my $prop = shift;
