@@ -166,6 +166,37 @@ sub _generate_content_html {
     return $html;
 }
 
+sub label {
+    my $self = shift;
+    if (@_) {
+        $self->column( 'label', @_ );
+    }
+    else {
+        if ( $self->id ) {
+            my $ct = $self->content_type;
+            if ( $ct->data_label ) {
+
+                # Data label is linked to any field
+                my $field = MT->model('content_field')->load(
+                    {   content_type_id => $ct->id,
+                        unique_id       => $ct->data_label,
+                    }
+                    )
+                    or die MT->translate(
+                    'Cannot load content field (UniqueID:[_1]).',
+                    $ct->data_label );
+                return $self->data->{ $field->id };
+            }
+            else {
+                return $self->column('label');
+            }
+        }
+        else {
+            return '';
+        }
+    }
+}
+
 sub unique_id {
     my $self = shift;
     $self->column('unique_id');

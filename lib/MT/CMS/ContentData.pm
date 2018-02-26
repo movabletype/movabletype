@@ -42,10 +42,14 @@ sub edit {
         or return $app->errtrans('Invalid request.');
 
     my $perm = $app->permissions;
-    $param->{can_publish_post} = 1 if (
-      $perm->can_do('publish_all_content_data')
-      || $perm->can_do('edit_all_content_data')
-      || $perm->can_do('publish_content_data_via_list_'.$content_type->unique_id));
+    $param->{can_publish_post} = 1
+        if (
+           $perm->can_do('publish_all_content_data')
+        || $perm->can_do('edit_all_content_data')
+        || $perm->can_do(
+            'publish_content_data_via_list_' . $content_type->unique_id
+        )
+        );
 
     if ( $content_type->blog_id != $blog->id ) {
         return $app->return_to_dashboard( redirect => 1 );
@@ -310,6 +314,31 @@ sub edit {
     $param->{object_label}        = $content_type->name;
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
 
+    if ( $content_type->data_label ) {
+        $param->{can_edit_data_label} = 0;
+        if ($content_data_id) {
+            $param->{data_label} = $content_data->label;
+        }
+        else {
+            my $field = MT->model('content_field')->load(
+                {   content_type_id => $content_type->id,
+                    unique_id       => $content_type->data_label,
+                }
+                )
+                or die MT->translate(
+                'Cannot load content field (UniqueID:[_1]).',
+                $content_type->data_label );
+            $param->{data_label}
+                = $app->translate(
+                'The value of [_1] is automatically used as a data label.',
+                $field->name );
+        }
+    }
+    else {
+        $param->{can_edit_data_label} = 1;
+        $param->{data_label}          = $content_data->label;
+    }
+
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
     $param->{text_filters} = [];
@@ -547,6 +576,11 @@ sub save {
 
     my $block_editor_data = $app->param('blockeditor-data');
     $content_data->block_editor_data($block_editor_data);
+
+    if ( !$content_type->data_label ) {
+        my $data_label = $app->param('data_label');
+        $content_data->label($data_label);
+    }
 
     $app->run_callbacks( 'cms_pre_save.content_data',
         $app, $content_data, $orig );
@@ -1124,7 +1158,7 @@ sub cms_pre_load_filtered_list {
         $content_type_id = $1;
     }
     $terms->{content_type_id} = $content_type_id;
-    my $content_type = MT::ContentType->load({ id => $content_type_id });
+    my $content_type = MT::ContentType->load( { id => $content_type_id } );
 
     my $user = $app->user;
     return if $user->is_superuser;
@@ -1159,7 +1193,7 @@ sub cms_pre_load_filtered_list {
         my $user_filter;
         $user_filter->{blog_id} = $perm->blog_id;
         if (   !$perm->can_do('publish_all_content_data')
-            && !$perm->can_do('edit_all_content_data'))
+            && !$perm->can_do('edit_all_content_data') )
         {
             $user_filter->{author_id} = $user->id;
         }
@@ -1171,7 +1205,6 @@ sub cms_pre_load_filtered_list {
         if ( keys %$terms );
     push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
-
 
 }
 

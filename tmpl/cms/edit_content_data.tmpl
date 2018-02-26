@@ -672,6 +672,30 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     </mtapp:setting>
   </mt:unless>
 
+  <mt:if name="can_edit_data_label">
+    <mtapp:setting
+      id="data_label"
+      label="Data Label"
+      show_label="1"
+        label_class="no-header"
+      help_page="content-data"
+      help_section="data-label"
+      required="1">
+        <input type="text" class="form-control required" id="data_label" name="data_label" value="<mt:var name="data_label" escape="html">" required>
+        <small id="data_label-help" class="form-text text-muted"><__trans phrase="Enter a label to identify this data"></small>
+    </mtapp:setting>
+  <mt:else>
+    <mtapp:setting
+      id="data_label"
+      label="Data Label"
+      show_label="1"
+        label_class="no-header"
+      help_page="content-data"
+      help_section="data-label">
+        <span class="form-text"><mt:var name="data_label" escape="html"></span>
+    </mtapp:setting>
+  </mt:if>
+
   <mt:loop name="fields">
   <mt:if name="can_edit">
   <div class="form-group">
@@ -913,6 +937,12 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   function validateInClientSide() {
     var validateSingle = jQuery('.content-field:not(.group)').mtValidate('simple');
     var validateGroup = jQuery('.content-field.group').mtValidate('simple-group');
+    var validateBasic;
+<mt:if name="can_edit_data_label">
+    validateBasic = jQuery('#data_label').mtValidate('simple');
+<mt:else>
+    validateBasic = true;
+</mt:if>
 
     if ( !newCategoryClickEventAdded ) {
       jQuery('div.category-selector-list').on('click', 'div.list-item', function () {
@@ -946,7 +976,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       newCategoryClickEventAdded = true;
     }
 
-    if ( !validateSingle || !validateGroup || window.ssValidateError ) {
+    if ( !validateBasic || !validateSingle || !validateGroup || window.ssValidateError ) {
         app.formValidated = true;
         return false;
     }
