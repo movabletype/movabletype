@@ -785,6 +785,7 @@ sub _build_content_data_hasher {
         my ( $obj, $row, %param ) = @_;
 
         $row->{id}            = $obj->id;
+        $row->{label}         = $obj->label || MT->translate('No Label (ID:[_1]', $obj->id);
         $row->{modified_date} = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
             $obj->modified_on, $obj->blog,
             $app->user ? $app->user->preferred_language : undef );

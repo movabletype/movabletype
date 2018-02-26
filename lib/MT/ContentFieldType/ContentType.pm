@@ -28,6 +28,7 @@ sub field_html_params {
             cd_blog_id         => $_->blog_id,
             cd_content_type_id => $_->content_type_id,
             cd_data            => $_->preview_data,
+            cd_label           => $_->label || MT->translate('No Label (ID:[_1]'),
         }
     } @content_data;
 
@@ -254,7 +255,7 @@ sub options_pre_save_handler {
 sub field_value_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $content = $ctx->stash('content');
-    return $content ? $content->id : '';
+    return $content ? $content->label || MT->translate('No Label (ID:[_1])', $content->id) : '';
 }
 
 sub feed_value_handler {
