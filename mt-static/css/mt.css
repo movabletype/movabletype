@@ -9116,6 +9116,7 @@ Modal
 Alert
 Badges
 Icons
+Thumbnails
 User Badge
 Pagination
 Suggestion
@@ -10426,6 +10427,20 @@ a:hover .mt-icon--secondary {
   background: #FFFFFF;
   text-align: center;
   vertical-align: middle;
+}
+
+/* Thumbnails */
+.mt-thumbnail, .mt-thumbnail--border {
+  display: table-cell;
+  height: 60px;
+  width: 60px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.mt-thumbnail--border {
+  border: 1px solid #CACACA;
+  border-radius: 0.125rem;
 }
 
 /* User Badge */
