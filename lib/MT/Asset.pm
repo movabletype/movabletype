@@ -98,7 +98,9 @@ sub list_props {
                     );
                     my $class_type = $obj->class_type;
                     my $svg_type
-                        = $class_type eq 'video' ? 'movie' : $class_type;
+                        = $class_type eq 'file'  ? 'default'
+                        : $class_type eq 'video' ? 'movie'
+                        :                          $class_type;
 
                     require MT::FileMgr;
                     my $fmgr      = MT::FileMgr->new('Local');
@@ -173,12 +175,12 @@ sub list_props {
                         }
                         elsif ( $class_type eq 'image' ) {
                             my $svg = qq{
-                              <svg title="image" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
-                                <use xlink:href="${static_uri}images/sprite.svg#ic_image">
-                              </svg>
-                            };
+                                    <div class="mt-thumbnail">
+                                        <img src="${static_uri}images/file-image.svg" width="60" height="60">
+                                    </div>
+                                };
                             push @rows, qq{
-                                <div class="pull-left">
+                                <div class="pull-left d-inline">
                                     <div class="mt-user">
                                         $svg
                                         <div class="mt-user__badge--warning">
@@ -193,12 +195,12 @@ sub list_props {
                         }
                         else {
                             my $svg = qq{
-                              <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
-                                <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type">
-                              </svg>
-                            };
+                                    <div class="mt-thumbnail">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                    </div>
+                                };
                             push @rows, qq{
-                                <div class="pull-left">
+                                <div class="pull-left d-inline">
                                     $svg
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
@@ -207,12 +209,12 @@ sub list_props {
                     }
                     else {
                         my $svg = qq{
-                          <svg title="$class_type" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
-                            <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_type"
-                          </svg>
-                        };
+                                <div class="mt-thumbnail">
+                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                </div>
+                            };
                         push @rows, qq{
-                            <div class="pull-left">
+                            <div class="pull-left d-inline">
                                 <div class="mt-user">
                                     $svg
                                     <div class="mt-user__badge--warning">
