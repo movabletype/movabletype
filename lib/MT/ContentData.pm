@@ -878,9 +878,22 @@ sub make_list_props {
         $props->{$key} = {
             id => {
                 base       => '__virtual.id',
-                display    => 'force',
+                display    => 'optional',
                 order      => 100,
-                html       => \&_make_id_html,
+            },
+            label => {
+                base       => '__virtual.string',
+                display    => 'force',
+                order      => 110,
+                html       => \&_make_label_html,
+                label      => 'Data Label',
+                bulk_sort  => sub {
+                    my $prop = shift;
+                    my ( $objs, $app, $opts ) = @_;
+                    return sort {
+                        $a->label || '' cmp $b->label || '';
+                    } @$objs;
+                },
                 sub_fields => [
                     {   class   => 'status',
                         label   => 'Status',
@@ -956,37 +969,37 @@ sub make_list_props {
     return $props;
 }
 
-sub _make_id_html {
+sub _make_label_html {
     my ( $prop, $obj ) = @_;
     my $app = MT->instance;
 
     my $status = $obj->status;
     my $status_class
-        = $status == MT::Entry::HOLD()      ? 'Draft'
-        : $status == MT::Entry::RELEASE()   ? 'Published'
-        : $status == MT::Entry::REVIEW()    ? 'Review'
-        : $status == MT::Entry::FUTURE()    ? 'Future'
-        : $status == MT::Entry::JUNK()      ? 'Junk'
-        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? 'Draft'
+        : $status == MT::ContentStatus::RELEASE()   ? 'Published'
+        : $status == MT::ContentStatus::REVIEW()    ? 'Review'
+        : $status == MT::ContentStatus::FUTURE()    ? 'Future'
+        : $status == MT::ContentStatus::JUNK()      ? 'Junk'
+        : $status == MT::ContentStatus::UNPUBLISH() ? 'Unpublish'
+        :                                             '';
     my $lc_status_class = lc $status_class;
 
     my $status_icon_id
-        = $status == MT::Entry::HOLD()      ? 'ic_draft'
-        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
-        : $status == MT::Entry::REVIEW()    ? 'ic_error'
-        : $status == MT::Entry::FUTURE()    ? 'ic_clock'
-        : $status == MT::Entry::JUNK()      ? 'ic_error'
-        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? 'ic_draft'
+        : $status == MT::ContentStatus::RELEASE()   ? 'ic_checkbox'
+        : $status == MT::ContentStatus::REVIEW()    ? 'ic_error'
+        : $status == MT::ContentStatus::FUTURE()    ? 'ic_clock'
+        : $status == MT::ContentStatus::JUNK()      ? 'ic_error'
+        : $status == MT::ContentStatus::UNPUBLISH() ? 'ic_stop'
+        :                                             '';
     my $status_icon_color_class
-        = $status == MT::Entry::HOLD()      ? ''
-        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
-        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
-        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
-        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
-        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? ''
+        : $status == MT::ContentStatus::RELEASE()   ? ' mt-icon--success'
+        : $status == MT::ContentStatus::REVIEW()    ? ' mt-icon--warning'
+        : $status == MT::ContentStatus::FUTURE()    ? ' mt-icon--info'
+        : $status == MT::ContentStatus::JUNK()      ? ' mt-icon--warning'
+        : $status == MT::ContentStatus::UNPUBLISH() ? ' mt-icon--danger'
+        :                                             '';
 
     my $status_img = '';
     if ($status_icon_id) {
@@ -998,7 +1011,7 @@ sub _make_id_html {
         };
     }
 
-    my $id        = $obj->id;
+    my $label     = $obj->label || MT->translate('No Label');
     my $edit_link = $app->uri(
         mode => 'view',
         args => {
@@ -1027,7 +1040,7 @@ sub _make_id_html {
         <span class="icon status $lc_status_class">
           <a href="$edit_link" class="d-inline-block">$status_img</a>
         </span>
-        <a href="$edit_link">$id</a>
+        <a href="$edit_link">$label</a>
         $view_link
     };
 }

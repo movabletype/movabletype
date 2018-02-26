@@ -336,7 +336,7 @@ sub edit {
     }
     else {
         $param->{can_edit_data_label} = 1;
-        $param->{data_label}          = $content_data->label;
+        $param->{data_label}          = $content_data_id ? $content_data->label : '';
     }
 
     ## Load text filters if user displays them
