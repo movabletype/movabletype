@@ -336,7 +336,7 @@ sub edit {
     }
     else {
         $param->{can_edit_data_label} = 1;
-        $param->{data_label}          = $content_data_id ? $content_data->label : '';
+        $param->{data_label} = $content_data_id ? $content_data->label : '';
     }
 
     ## Load text filters if user displays them
@@ -797,27 +797,33 @@ sub post_save {
 
     my $ct = $obj->content_type or return;
     my $author = $app->user;
+    my $label
+        = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
     my $message;
     if ( !$orig_obj->id ) {
-        $message = $app->translate( "New [_1] (ID:[_2]) added by user '[_3]'",
-            $ct->name, $obj->id, $author->name );
+        $message
+            = $app->translate(
+            "New [_1] '[_4]' (ID:[_2]) added by user '[_3]'",
+            $ct->name, $obj->id, $author->name, $label );
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+            "[_1] '[_5]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
             $app->translate(
                 MT::ContentStatus::status_text( $orig_obj->status )
             ),
             $app->translate( MT::ContentStatus::status_text( $obj->status ) ),
-            $author->name
+            $author->name,
+            $label
         );
 
     }
     else {
-        $message = $app->translate( "[_1] (ID:[_2]) edited by user '[_3]'",
-            $ct->name, $obj->id, $author->name );
+        $message
+            = $app->translate( "[_1] '[_4]' (ID:[_2]) edited by user '[_3]'",
+            $ct->name, $obj->id, $author->name, $label );
     }
     require MT::Log;
     $app->log(
@@ -842,11 +848,13 @@ sub post_delete {
 
     my $ct = $obj->content_type or return;
     my $author = $app->user;
+    my $label
+        = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
 
     $app->log(
         {   message => $app->translate(
-                "[_1] (ID:[_2]) deleted by '[_3]'",
-                $ct->name, $obj->id, $author->name
+                "[_1] '[_4]' (ID:[_2]) deleted by '[_3]'",
+                $ct->name, $obj->id, $author->name, $label
             ),
             level    => MT::Log::INFO(),
             class    => 'content_data_' . $ct->id,
