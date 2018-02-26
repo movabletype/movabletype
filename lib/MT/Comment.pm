@@ -66,6 +66,17 @@ __PACKAGE__->install_properties(
     }
 );
 
+# Register Comment post-save callbacks for rebuild triggers
+my $rt = MT->model('rebuild_trigger');
+MT->add_callback(
+    'MT::Comment::post_save',
+    10,
+    MT->component('core'),
+    sub {
+        $rt->runner( 'post_feedback_save', 'comment_pub', @_ );
+    }
+);
+
 my %blocklists = ();
 
 sub class_label {

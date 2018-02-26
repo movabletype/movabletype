@@ -58,6 +58,17 @@ __PACKAGE__->install_properties(
     }
 );
 
+# Register Trackback post-save callbacks for rebuild triggers
+my $rt = MT->model('rebuild_trigger');
+MT->add_callback(
+    'MT::TBPing::post_save',
+    10,
+    MT->component('core'),
+    sub {
+        $rt->runner( 'post_feedback_save', 'tb_pub', @_ );
+    }
+);
+
 sub class_label {
     return MT->translate('TrackBack');
 }

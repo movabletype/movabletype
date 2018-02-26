@@ -712,7 +712,7 @@ sub multi_listing {
         $app->param( 'json', 0 );
         $options->{no_html} = 1;
         $app->param( 'search_type', $type );
-        $app->param( 'offset', 0 );
+        $app->param( 'offset',      0 );
 
         $options->{code}
             = $opt->{"${type}_code"}
@@ -981,26 +981,10 @@ sub init {
             sub { $app->post_run_debug } );
     }
 
-    my $rt = MT->model('rebuild_trigger');
-    # TODO: move to Comment/Trackback plugins.
-    # Register Comment/TB post-save callbacks for rebuild triggers
-    #MT->add_callback(
-    #    'MT::Comment::post_save',
-    #    10, $app,
-    #    sub {
-    #        $rt->runner( 'post_feedback_save', 'comment_pub', @_ );
-    #    }
-    #);
-    #MT->add_callback(
-    #    'MT::TBPing::post_save',
-    #    10, $app,
-    #    sub {
-    #        $rt->runner( 'post_feedback_save', 'tb_pub', @_ );
-    #    }
-    #);
-    #
     # Register restore callback to restore blog assciation of triggers
-    MT->add_callback( 'restore', 10, $app, sub { $rt->runner( 'post_restore', @_ ) } ); 
+    my $rt = MT->model('rebuild_trigger');
+    MT->add_callback( 'restore', 10, $app,
+        sub { $rt->runner( 'post_restore', @_ ) } );
 
     $app->{vtbl} = $app->registry("methods");
     return $app;
