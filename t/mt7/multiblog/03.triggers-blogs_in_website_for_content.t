@@ -112,11 +112,15 @@ sub run_test(&) {
     $_[0]->();
 }
 
+### Callback
+
+my $cb = MT::Callback->new;
+
 ### Do test
 
 run_test {
     my $cd = $app->model('content_data')->load( { blog_id => $ct->blog_id } );
-    MT::RebuildTrigger->post_content_save( $app, $cd );
+    MT::RebuildTrigger->post_content_save( $cb, $app, $cd );
     is( $rebuild_count, 1, 'called once in post_content_save.' );
 };
 

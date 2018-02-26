@@ -96,31 +96,35 @@ sub run_test(&) {
     $_[0]->();
 }
 
+### Callback
+
+my $cb = MT::Callback->new;
+
 ### Do test
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MT::RebuildTrigger->post_entry_save( $app, $entry );
+    MT::RebuildTrigger->post_entry_save( $cb, $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_save.' );
 };
 
 run_test {
     my $page = $app->model('page')->load( { blog_id => 1 } );
-    MT::RebuildTrigger->post_entry_save( $app, $page );
+    MT::RebuildTrigger->post_entry_save( $cb, $app, $page );
     is( $rebuild_count, 1, 'called once in post_entry_save for page.' );
 };
 
 run_test {
     my $page = $app->model('page')->new;
     $page->blog_id(2);
-    MT::RebuildTrigger->post_entry_save( $app, $page );
+    MT::RebuildTrigger->post_entry_save( $cb, $app, $page );
     is( $rebuild_count, 0,
         'is not called in post_entry_save for blog not have trigger.' );
 };
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
-    MT::RebuildTrigger->post_entries_bulk_save( $app,
+    MT::RebuildTrigger->post_entries_bulk_save( $cb, $app,
         [ ( { current => $entry, original => $entry } ) x 3 ] );
     is( $rebuild_count, 1, 'called once in post_entries_bulk_save.' );
 };
@@ -128,7 +132,7 @@ run_test {
 run_test {
     my $entry = $app->model('entry')->new;
     $entry->blog_id(2);
-    MT::RebuildTrigger->post_entries_bulk_save( $app,
+    MT::RebuildTrigger->post_entries_bulk_save( $cb, $app,
         [ ( { current => $entry, original => $entry } ) x 3 ] );
     is( $rebuild_count, 0,
         'not called once in post_entries_bulk_save for blog not have trigger.'
@@ -138,16 +142,16 @@ run_test {
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     $entry->status(MT::Entry::RELEASE);
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_pub.' );
 };
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     $entry->status(MT::Entry::RELEASE);
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
     is( $rebuild_count, 1,
         'called once in post_entry_pub even if trigger is called multiple times.'
     );
@@ -156,7 +160,7 @@ run_test {
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     $entry->status(MT::Entry::FUTURE);
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
     is( $rebuild_count, 0,
         'not called once in post_entry_pub for status FUTURE.' );
 };
@@ -165,7 +169,7 @@ run_test {
     my $entry = $app->model('entry')->new;
     $entry->blog_id(2);
     $entry->status(MT::Entry::RELEASE);
-    MT::RebuildTrigger->post_entry_pub( $app, $entry );
+    MT::RebuildTrigger->post_entry_pub( $cb, $app, $entry );
     is( $rebuild_count, 0,
         'called once in post_entry_pub for blog not have trigger.' );
 };
@@ -173,23 +177,23 @@ run_test {
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     $entry->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $entry );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
     is( $rebuild_count, 1, 'called once in post_entry_unpub.' );
 };
 
 run_test {
     my $page = $app->model('page')->load( { blog_id => 1 } );
     $page->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $page );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
     is( $rebuild_count, 1, 'called once in post_entry_unpub for page.' );
 };
 
 run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     $entry->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $entry );
-    MT::RebuildTrigger->post_entry_unpub( $app, $entry );
-    MT::RebuildTrigger->post_entry_unpub( $app, $entry );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
     is( $rebuild_count, 1,
         'called once in post_entry_unpub even if trigger is called multiple times.'
     );
@@ -198,9 +202,9 @@ run_test {
 run_test {
     my $page = $app->model('page')->load( { blog_id => 1 } );
     $page->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $page );
-    MT::RebuildTrigger->post_entry_unpub( $app, $page );
-    MT::RebuildTrigger->post_entry_unpub( $app, $page );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
     is( $rebuild_count, 1,
         'called once in post_entry_unpub for page if trigger is called multiple times.'
     );
@@ -210,7 +214,7 @@ run_test {
     my $entry = $app->model('entry')->load( { blog_id => 1 } );
     for my $s ( MT::Entry::HOLD, MT::Entry::RELEASE, MT::Entry::FUTURE ) {
         $entry->status($s);
-        MT::RebuildTrigger->post_entry_unpub( $app, $entry );
+        MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
     }
     is( $rebuild_count, 0,
         'not called in post_entry_unpub not for status UNPUBLISH.' );
@@ -220,7 +224,7 @@ run_test {
     my $page = $app->model('page')->load( { blog_id => 1 } );
     for my $s ( MT::Entry::HOLD, MT::Entry::RELEASE, MT::Entry::FUTURE ) {
         $page->status($s);
-        MT::RebuildTrigger->post_entry_unpub( $app, $page );
+        MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
     }
     is( $rebuild_count, 0,
         'not called in post_entry_unpub for page whose status is not UNPUBLISH.'
@@ -231,7 +235,7 @@ run_test {
     my $entry = $app->model('entry')->new;
     $entry->blog_id(2);
     $entry->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $entry );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $entry );
     is( $rebuild_count, 0,
         'not called in post_entry_unpub for blog not have trigger.' );
 };
@@ -240,7 +244,7 @@ run_test {
     my $page = $app->model('page')->new;
     $page->blog_id(2);
     $page->status(MT::Entry::UNPUBLISH);
-    MT::RebuildTrigger->post_entry_unpub( $app, $page );
+    MT::RebuildTrigger->post_entry_unpub( $cb, $app, $page );
     is( $rebuild_count, 0,
         'not called in post_entry_unpub for page in blog not have trigger.' );
 };

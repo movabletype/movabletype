@@ -131,19 +131,23 @@ sub run_test(&) {
     $_[0]->();
 }
 
+### Callback
+
+my $cb = MT::Callback->new;
+
 ### Do test
 
 run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
-    MT::RebuildTrigger->post_content_save( $app, $content );
+    MT::RebuildTrigger->post_content_save( $cb, $app, $content );
     is( $rebuild_count, 1, 'called once in post_content_save.' );
 };
 
 run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
-    MT::RebuildTrigger->post_contents_bulk_save( $app,
+    MT::RebuildTrigger->post_contents_bulk_save( $cb, $app,
         [ ( { current => $content, original => $content } ) x 3 ] );
     is( $rebuild_count, 1, 'called once in post_contents_bulk_save.' );
 };
@@ -151,7 +155,7 @@ run_test {
 run_test {
     my $content = $app->model('content_data')->new;
     $content->blog_id( $site->id );
-    MT::RebuildTrigger->post_contents_bulk_save( $app,
+    MT::RebuildTrigger->post_contents_bulk_save( $cb, $app,
         [ ( { current => $content, original => $content } ) x 3 ] );
     is( $rebuild_count, 0,
         'not called once in post_contents_bulk_save for blog not have trigger.'
@@ -162,7 +166,7 @@ run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
     $content->status(MT::ContentStatus::RELEASE);
-    MT::RebuildTrigger->post_content_pub( $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
     is( $rebuild_count, 1, 'called once in post_content_pub.' );
 };
 
@@ -170,9 +174,9 @@ run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
     $content->status(MT::ContentStatus::RELEASE);
-    MT::RebuildTrigger->post_content_pub( $app, $content );
-    MT::RebuildTrigger->post_content_pub( $app, $content );
-    MT::RebuildTrigger->post_content_pub( $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
     is( $rebuild_count, 1,
         'called once in post_content_pub even if trigger is called multiple times.'
     );
@@ -182,7 +186,7 @@ run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
     $content->status(MT::ContentStatus::FUTURE);
-    MT::RebuildTrigger->post_content_pub( $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
     is( $rebuild_count, 0,
         'not called once in post_content_pub for status FUTURE.' );
 };
@@ -191,7 +195,7 @@ run_test {
     my $content = $app->model('content_data')->new;
     $content->blog_id( $site->id );
     $content->status(MT::ContentStatus::RELEASE);
-    MT::RebuildTrigger->post_content_pub( $app, $content );
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $content );
     is( $rebuild_count, 0,
         'called once in post_content_pub for blog not have trigger.' );
 };
@@ -200,7 +204,7 @@ run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
     $content->status(MT::ContentStatus::UNPUBLISH);
-    MT::RebuildTrigger->post_content_unpub( $app, $content );
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
     is( $rebuild_count, 1, 'called once in post_content_unpub.' );
 };
 
@@ -208,9 +212,9 @@ run_test {
     my $content
         = $app->model('content_data')->load( { blog_id => $blog->id } );
     $content->status(MT::ContentStatus::UNPUBLISH);
-    MT::RebuildTrigger->post_content_unpub( $app, $content );
-    MT::RebuildTrigger->post_content_unpub( $app, $content );
-    MT::RebuildTrigger->post_content_unpub( $app, $content );
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
     is( $rebuild_count, 1,
         'called once in post_content_unpub even if trigger is called multiple times.'
     );
@@ -223,7 +227,7 @@ run_test {
         MT::ContentStatus::FUTURE )
     {
         $content->status($s);
-        MT::RebuildTrigger->post_content_unpub( $app, $content );
+        MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
     }
     is( $rebuild_count, 0,
         'not called in post_content_unpub not for status UNPUBLISH.' );
@@ -233,7 +237,7 @@ run_test {
     my $content = $app->model('content_data')->new;
     $content->blog_id( $site->id );
     $content->status(MT::ContentStatus::UNPUBLISH);
-    MT::RebuildTrigger->post_content_unpub( $app, $content );
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $content );
     is( $rebuild_count, 0,
         'not called in post_content_unpub for blog not have trigger.' );
 };
