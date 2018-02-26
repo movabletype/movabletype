@@ -576,7 +576,10 @@ sub preview_handler {
         $label = '' unless defined $label && $label ne '';
         my $encoded_label = MT::Util::encode_html($label);
 
-        my $svg_class = $asset->class eq 'video' ? 'movie' : $asset->class;
+        my $svg_class
+            = $asset->class eq 'file'  ? 'default'
+            : $asset->class eq 'video' ? 'movie'
+            :                            $asset->class;
 
         if ( $fmgr->exists( $asset->file_path ) ) {
             my ( $url, $w, $h ) = $asset->thumbnail_url(
@@ -586,21 +589,28 @@ sub preview_handler {
             );
 
             if ($url) {
-                $contents
-                    .= qq{<li><img class="img-thumbnail p-0" width="60" height="60" src="$url">&nbsp;$encoded_label (ID:$id)</li>};
+                $contents .= qq{
+                        <li>
+                            <img class="img-thumbnail p-0" width="60" height="60" src="$url">
+                            <span>$encoded_label (ID:$id)</span>
+                        </li>
+                    };
             }
             else {
                 my $svg
-                    = qq{<svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;"><use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class"></svg>};
-                $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+                    = qq{<img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">};
+                $contents .= qq{
+                    <li>
+                        $svg
+                        <span>$encoded_label (ID:$id)</span>
+                    </li>
+                };
             }
         }
         else {
             my $svg = qq{
               <div class="mt-user">
-                <svg title="$svg_class" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
-                  <use xlink:href="${static_uri}images/sprite.svg#ic_$svg_class">
-                </svg>
+                <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">
                 <div class="mt-user__badge--warning">
                   <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
                     <use xlink:href="${static_uri}images/sprite.svg#ic_error">
@@ -608,7 +618,12 @@ sub preview_handler {
                 </div>
               </div>
             };
-            $contents .= qq{<li>$svg&nbsp;$encoded_label (ID:$id)</li>};
+            $contents .= qq{
+                <li>
+                    $svg
+                    <span>$encoded_label (ID:$id)</span>
+                </li>
+            };
         }
     }
 

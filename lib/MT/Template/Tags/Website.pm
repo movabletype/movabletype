@@ -112,10 +112,10 @@ sub _hdlr_websites {
     {
         my $blog = $ctx->stash('blog');
         my $is_include
-            = defined $blog->default_mt_sites_action
+            = $blog && defined $blog->default_mt_sites_action
             ? $blog->default_mt_sites_action
             : 1;
-        my $blogs = $blog->default_mt_sites_sites || '';
+        my $blogs = $blog && $blog->default_mt_sites_sites || '';
 
         my $tag_name = $ctx->stash('tag');
 
