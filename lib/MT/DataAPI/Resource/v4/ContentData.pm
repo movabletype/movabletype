@@ -13,7 +13,7 @@ use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
-    [ 'basename', 'data', 'date', 'status', 'unpublishedDate' ];
+    [ 'basename', 'data', 'date', 'status', 'unpublishedDate', 'label' ];
 }
 
 sub fields {
@@ -24,6 +24,18 @@ sub fields {
         },
         {   name  => 'basename',
             alias => 'identifier',
+        },
+        {   name        => 'label',
+            alias       => 'label',
+            from_object => sub {
+                my ($obj) = @_;
+                $obj->label || MT->translate('No Label');
+            },
+            to_object => sub {
+                my ( $hash, $obj ) = @_;
+                my $ct = $obj->content_type;
+                $ct->data_label ? undef : $hash->{label};
+            },
         },
         {   name        => 'data',
             from_object => sub {
