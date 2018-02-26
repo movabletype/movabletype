@@ -374,7 +374,8 @@
     rebuildLabelFields() {
       var fields = [];
       for(var i = 0; i < self.fields.length; i++) {
-        if ( self.fields[i].canDataLabel == 1 ) {
+        var required = jQuery('#content-field-block-' + self.fields[i].id).find('[name="required"]').prop('checked')
+        if ( required && self.fields[i].canDataLabel == 1 ) {
           var label = self.fields[i].label
           var id = self.fields[i].unique_id
           if ( !label ) {

@@ -112,7 +112,7 @@ sub edit {
 
         # Can be used as a data label?
         my $can_data_label
-            = $content_field_types->{$f->{type}}->{can_data_label_field} ? 1 : 0;
+            = $content_field_types->{$f->{type}}->{can_data_label_field} && $options->{required} ? 1 : 0;
 
         my $field = {
             type      => $type,
