@@ -61,7 +61,7 @@ __PACKAGE__->install_properties(
 # Register Trackback post-save callbacks for rebuild triggers
 my $rt = MT->model('rebuild_trigger');
 MT->add_callback(
-    'MT::TBPing::post_save',
+    'post_save.tbping',
     10,
     MT->component('core'),
     sub {

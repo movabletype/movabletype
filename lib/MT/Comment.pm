@@ -69,7 +69,7 @@ __PACKAGE__->install_properties(
 # Register Comment post-save callbacks for rebuild triggers
 my $rt = MT->model('rebuild_trigger');
 MT->add_callback(
-    'MT::Comment::post_save',
+    'post_save.comment',
     10,
     MT->component('core'),
     sub {
