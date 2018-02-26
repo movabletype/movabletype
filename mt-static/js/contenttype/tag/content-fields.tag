@@ -372,7 +372,6 @@
     }
 
     rebuildLabelFields() {
-      console.log(self.fields)
       var fields = [];
       for(var i = 0; i < self.fields.length; i++) {
         if ( self.fields[i].canDataLabel == 1 ) {
