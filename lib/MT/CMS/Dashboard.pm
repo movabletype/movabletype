@@ -875,7 +875,7 @@ sub site_list_widget {
             $item->{content_type_id} = $p->content_type_id;
             $item->{object_name}     = $obj_name;
             $item->{title}
-                = $p->label || MT->translate( 'No Label (ID:[_1]', $p->id );
+                = $p->label || MT->translate( 'No Label (ID:[_1])', $p->id );
 
             if ( my $ts = $p->created_on ) {
                 $item->{epochtime} = ts2epoch( undef, $ts );
