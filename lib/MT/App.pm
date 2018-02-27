@@ -3095,6 +3095,10 @@ sub show_login {
             login_fields         => MT::Auth->login_form($app),
             can_recover_password => MT::Auth->can_recover_password,
             delegate_auth        => MT::Auth->delegate_auth,
+            build_blog_selector  => 0,
+            build_menus          => 0,
+            build_compose_menus  => 0,
+            build_user_menus     => 0,
             %$param,
         }
     );
