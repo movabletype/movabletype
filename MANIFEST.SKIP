@@ -314,7 +314,11 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
+\.circleci
 
 # Etc
 \.perltidyrc
 \.proverc
+\.gitattributes
+shippable.yml
+yarn.lock
