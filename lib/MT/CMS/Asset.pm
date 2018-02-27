@@ -73,7 +73,7 @@ sub edit {
         my $appears_in_uneditables = 0;
         my $place_class            = $app->model('objectasset');
         my $place_iter             = $place_class->load_iter(
-            {   blog_id => $obj->blog_id || 0,
+            {   blog_id  => $obj->blog_id || 0,
                 asset_id => $obj->parent ? $obj->parent : $obj->id
             }
         );
@@ -344,8 +344,8 @@ sub insert {
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text || '',
-                edit_field => $edit_field,
+            {   upload_html       => $text || '',
+                edit_field        => $edit_field,
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
             },
@@ -582,7 +582,9 @@ sub js_upload_file {
     }
     else {
         $thumb_type
-            = $asset->class_type eq 'video' ? 'movie' : $asset->class_type;
+            = $asset->class_type eq 'file'  ? 'default'
+            : $asset->class_type eq 'video' ? 'movie'
+            :                                 $asset->class_type;
     }
 
     # Check extension auto-change

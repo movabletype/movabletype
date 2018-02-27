@@ -859,12 +859,23 @@ sub site_list_widget {
         my $is_relative
             = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
         while ( my $p = $cd_iter->() ) {
+            my $obj_name;
+            if ( my $ct = $p->content_type ) {
+                $obj_name = $ct->name;
+            }
+            else {
+                $obj_name = MT->translate('Unknown Content Type');
+            }
+
             my $item;
             $item->{site_id}         = $site->id;
             $item->{id}              = $p->id;
             $item->{object_type}     = 'content_data';
             $item->{subtype}         = 'content_data_' . $p->content_type_id;
             $item->{content_type_id} = $p->content_type_id;
+            $item->{object_name}     = $obj_name;
+            $item->{title}
+                = $p->label || MT->translate( 'No Label (ID:[_1]', $p->id );
 
             if ( my $ts = $p->created_on ) {
                 $item->{epochtime} = ts2epoch( undef, $ts );
@@ -892,6 +903,7 @@ sub site_list_widget {
                 $item->{site_id}     = $site->id;
                 $item->{id}          = $p->id;
                 $item->{title}       = $p->title;
+                $item->{object_name} = $p->class_label;
                 $item->{object_type} = 'entry';
 
                 if ( my $ts = $p->created_on ) {
@@ -921,6 +933,7 @@ sub site_list_widget {
                 $item->{site_id}     = $site->id;
                 $item->{id}          = $p->id;
                 $item->{title}       = $p->title;
+                $item->{object_name} = $p->class_label;
                 $item->{object_type} = 'page';
 
                 if ( my $ts = $p->created_on ) {
@@ -956,19 +969,23 @@ sub site_list_widget {
             }
         );
         while ( my $ct = $ct_iter->() ) {
-            my $perm = $user->permissions($site->id);
+            my $perm = $user->permissions( $site->id );
             my $item;
             $item->{name} = $ct->name;
             $item->{can_create}
-                = $perm->can_do( "create_new_content_data_" . $ct->unique_id ) ? 1 
-                : $app->can_do( "edit_all_content_data" ) ? 1
-                : 0;
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
+                ? 1
+                : $app->can_do("edit_all_content_data") ? 1
+                :                                         0;
             $item->{can_list}
-                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )   ? 1
-                : $perm->can_do( "publish_content_data_via_list_" . $ct->unique_id )  ? 1
-                : $perm->can_do( "edit_all_content_data_" . $ct->unique_id ) ? 1
-                : $app->can_do( "edit_all_content_data" ) ? 1
-                :                                                       0;
+                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
+                ? 1
+                : $perm->can_do(
+                "publish_content_data_via_list_" . $ct->unique_id ) ? 1
+                : $perm->can_do( "edit_all_content_data_" . $ct->unique_id )
+                ? 1
+                : $app->can_do("edit_all_content_data") ? 1
+                :                                         0;
             $item->{type_id}         = 'content_data_' . $ct->id;
             $item->{content_type_id} = $ct->id;
 

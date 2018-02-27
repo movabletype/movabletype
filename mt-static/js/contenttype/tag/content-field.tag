@@ -19,7 +19,6 @@
       })
       var target = document.getElementsByClassName('mt-draggable__area')[0]
       this.parent.recalcHeight(target)
-
     }
   </script>
 </content-field>

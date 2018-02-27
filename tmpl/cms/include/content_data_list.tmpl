@@ -26,7 +26,7 @@
         <thead>
           <th class="head cb mt-table__control">&nbsp;</th>
           <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="ID"></span>
+            <span class="col-label"><__trans phrase="Label"></span>
           </th>
           <th class="head string" scope="col">
             <span class="col-label"><__trans phrase="Data"></span>
@@ -45,12 +45,12 @@
             <td scope="row" class="cb">
               <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
-                <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" data-label="<mt:var name="label" escape="html">" />
                 <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
               </div>
             </td>
-            <td class="content-data-id primary">
-              <mt:var name="id" escape="html">
+            <td class="content-data-label primary">
+              <mt:var name="label" escape="html">
             </td>
             <td class="content-data-data">
               <p>

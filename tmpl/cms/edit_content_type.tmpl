@@ -195,7 +195,8 @@
     fields: fields,
     types: content_field_types,
     invalid_types: invalid_types,
-    observer: observer
+    observer: observer,
+    labelField: "<mt:var name="label_field" escaoe="js">"
   });
 </mt:setvarblock>
 
@@ -209,7 +210,7 @@
   <h3><__trans phrase="Available Content Fields"></h3>
 
   <mt:loop name="content_field_types">
-    <div class="mt-draggable" draggable="true" aria-grabbed="false" data-field-type="<mt:var name="type" escape="html">" data-field-label="<mt:var name="label" escape="html">">
+    <div class="mt-draggable" draggable="true" aria-grabbed="false" data-field-type="<mt:var name="type" escape="html">" data-field-label="<mt:var name="label" escape="html">" data-can-data-label="<mt:var name="data_label" escape="html">">
       <div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Content Type">"></div>
         <div class="col"><mt:if name="icon"><mt:var name="icon"></mt:if><mt:var name="label" escape="html"></div>
     </div>

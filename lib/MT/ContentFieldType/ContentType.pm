@@ -28,6 +28,7 @@ sub field_html_params {
             cd_blog_id         => $_->blog_id,
             cd_content_type_id => $_->content_type_id,
             cd_data            => $_->preview_data,
+            cd_label           => $_->label || MT->translate('No Label (ID:[_1]'),
         }
     } @content_data;
 
@@ -77,6 +78,7 @@ sub html {
                 id              => 1,
                 blog_id         => 1,
                 content_type_id => 1,
+                data            => 1,
             }
         },
     );
@@ -89,7 +91,8 @@ sub html {
     for my $cd (@child_cd) {
         my $id        = $cd->id;
         my $edit_link = $cd->edit_link($app);
-        push @cd_links, qq{<a href="${edit_link}">(ID:${id})</a>};
+        my $label     = $cd->label || MT->translate('No Label');
+        push @cd_links, qq{<a href="${edit_link}">$label</a>};
     }
 
     join ', ', @cd_links;
@@ -252,7 +255,7 @@ sub options_pre_save_handler {
 sub field_value_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $content = $ctx->stash('content');
-    return $content ? $content->id : '';
+    return $content ? $content->label || MT->translate('No Label (ID:[_1])', $content->id) : '';
 }
 
 sub feed_value_handler {

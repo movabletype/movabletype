@@ -86,7 +86,7 @@ jQuery('.actions-bar button.primary').click(function() {
     return '<mt:var name="script_url">?' + jQuery.param(query);
   }
 
-  function getCollapseHtml(id, previewData) {
+  function getCollapseHtml(id, label, previewData) {
     return ''
       + '<div class="mt-draggable" draggable="true" aria-grabbed="false">'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
@@ -94,7 +94,7 @@ jQuery('.actions-bar button.primary').click(function() {
       +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
       +   '</div>'
       +   '<div class="col">'
-      +     '(ID:'+id+')'
+      +     label
       +   '</div>'
       +   '<div class="col-auto mr-3">'
       +     '<a href="javascript:void(0)" class="remove">'
@@ -124,12 +124,13 @@ jQuery('.actions-bar button.primary').click(function() {
 
   jQuery('input[name=id]:checked').each(function (index, input) {
     var id = input.value;
+    var label = jQuery(input).data('label');
     if ($contentDataContainer.find('input[value=' + id + ']').length) {
       return;
     }
 
     var previewData = jQuery(input).parents('tr').find('.content-data-data .card-body').html();
-    var html = getCollapseHtml(id, previewData);
+    var html = getCollapseHtml(id, label, previewData);
     $contentDataContainer.children('.alert').before(html);
   });
 

@@ -38,13 +38,11 @@
   <div id="asset_details">
 <mt:loop name="options_loop" >
     <div id="entry-prefs-<mt:var name="id">" class="asset-detail-panel p-2" data-asset-id="<mt:var name="id">">
-      <div class="mod" style="border-bottom: solid 1px #f3f3f3">
+      <div class="mod mb-5" style="border-bottom: solid 1px #f3f3f3">
 <mt:if name="thumbnail">
         <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
 <mt:else>
-        <svg title="<mt:var name="class_label" escape="html">" role="img" class="mt-icon img-thumbnail" style="width: 60px; height: 60px;">
-          <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_<mt:var name="thumbnail_type" escape="html">">
-        </svg>
+        <img src="<mt:var name="static_uri">images/file-<mt:var name="thumbnail_type" escape="html">.svg" width="60" height="60">
 </mtif>
         <span><mt:var name="label" escape="html"></span>
       </div>

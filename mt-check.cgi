@@ -112,7 +112,7 @@ $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
     $version = '7.0';
 }
-my $release_version = 'r.2401';
+my $release_version = 'r.2602';
 
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");

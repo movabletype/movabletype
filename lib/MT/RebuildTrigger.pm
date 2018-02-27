@@ -149,15 +149,15 @@ sub get_config_value {
 
 sub post_contents_bulk_save {
     my $self = shift;
-    my ( $app, $contents ) = @_;
+    my ( $cb, $app, $contents ) = @_;
     foreach my $content (@$contents) {
-        &post_content_save( $self, $app, $content->{current} );
+        &post_content_save( $self, $cb, $app, $content->{current} );
     }
 }
 
 sub post_content_save {
     my $self = shift;
-    my ( $app, $content ) = @_;
+    my ( $cb, $app, $content ) = @_;
     my $blog_id = $content->blog_id || 0;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -188,7 +188,7 @@ sub post_content_save {
 
 sub post_content_pub {
     my $self = shift;
-    my ( $app, $content ) = @_;
+    my ( $cb, $app, $content ) = @_;
     my $blog_id = $content->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -212,7 +212,7 @@ sub post_content_pub {
 
 sub post_content_unpub {
     my $self = shift;
-    my ( $app, $content ) = @_;
+    my ( $cb, $app, $content ) = @_;
     my $blog_id = $content->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -403,15 +403,15 @@ sub post_feedback_save {
 
 sub post_entries_bulk_save {
     my $self = shift;
-    my ( $app, $entries ) = @_;
+    my ( $cb, $app, $entries ) = @_;
     foreach my $entry (@$entries) {
-        &post_entry_save( $self, $app, $entry->{current} );
+        &post_entry_save( $self, $cb, $app, $entry->{current} );
     }
 }
 
 sub post_entry_save {
     my $self = shift;
-    my ( $app, $entry ) = @_;
+    my ( $cb, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -436,7 +436,7 @@ sub post_entry_save {
 
 sub post_entry_pub {
     my $self = shift;
-    my ( $app, $entry ) = @_;
+    my ( $cb, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
@@ -457,7 +457,7 @@ sub post_entry_pub {
 
 sub post_entry_unpub {
     my $self = shift;
-    my ( $app, $entry ) = @_;
+    my ( $cb, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 

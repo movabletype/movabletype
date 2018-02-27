@@ -51,7 +51,13 @@ __PACKAGE__->install_properties(
             'content_type_id' => 'integer not null',
             'unique_id'       => 'string(40) not null',
             'ct_unique_id'    => 'string(40) not null',
-            'data'            => {
+            'label'           => {
+                type       => 'string',
+                size       => 255,
+                label      => 'Data Label',
+                revisioned => 1,
+            },
+            'data' => {
                 type       => 'blob',
                 label      => 'Data',
                 revisioned => 1,
@@ -82,6 +88,7 @@ __PACKAGE__->install_properties(
             ct_unique_id    => 1,
             status          => 1,
             unique_id       => { unique => 1 },
+            label           => 1,
             site_author     => {
                 columns =>
                     [ 'author_id', 'authored_on', 'blog_id', 'ct_unique_id' ],
@@ -186,6 +193,37 @@ sub _generate_content_html {
     }
 
     return $html;
+}
+
+sub label {
+    my $self = shift;
+    if (@_) {
+        $self->column( 'label', @_ );
+    }
+    else {
+        if ( $self->id ) {
+            my $ct = $self->content_type;
+            if ( $ct->data_label ) {
+
+                # Data label is linked to any field
+                my $field = MT->model('content_field')->load(
+                    {   content_type_id => $ct->id,
+                        unique_id       => $ct->data_label,
+                    }
+                    )
+                    or die MT->translate(
+                    'Cannot load content field (UniqueID:[_1]).',
+                    $ct->data_label );
+                return $self->data->{ $field->id };
+            }
+            else {
+                return $self->column('label');
+            }
+        }
+        else {
+            return '';
+        }
+    }
 }
 
 sub unique_id {
@@ -839,10 +877,22 @@ sub make_list_props {
 
         $props->{$key} = {
             id => {
-                base       => '__virtual.id',
-                display    => 'force',
-                order      => 100,
-                html       => \&_make_id_html,
+                base    => '__virtual.id',
+                display => 'optional',
+                order   => 100,
+            },
+            label => {
+                base      => '__virtual.string',
+                display   => 'force',
+                order     => 110,
+                html      => \&_make_label_html,
+                label     => 'Data Label',
+                bulk_sort => sub {
+                    my $prop = shift;
+                    my ( $objs, $app, $opts ) = @_;
+                    return
+                        sort { $a->label || '' cmp $b->label || ''; } @$objs;
+                },
                 sub_fields => [
                     {   class   => 'status',
                         label   => 'Status',
@@ -918,37 +968,37 @@ sub make_list_props {
     return $props;
 }
 
-sub _make_id_html {
+sub _make_label_html {
     my ( $prop, $obj ) = @_;
     my $app = MT->instance;
 
     my $status = $obj->status;
     my $status_class
-        = $status == MT::Entry::HOLD()      ? 'Draft'
-        : $status == MT::Entry::RELEASE()   ? 'Published'
-        : $status == MT::Entry::REVIEW()    ? 'Review'
-        : $status == MT::Entry::FUTURE()    ? 'Future'
-        : $status == MT::Entry::JUNK()      ? 'Junk'
-        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? 'Draft'
+        : $status == MT::ContentStatus::RELEASE()   ? 'Published'
+        : $status == MT::ContentStatus::REVIEW()    ? 'Review'
+        : $status == MT::ContentStatus::FUTURE()    ? 'Future'
+        : $status == MT::ContentStatus::JUNK()      ? 'Junk'
+        : $status == MT::ContentStatus::UNPUBLISH() ? 'Unpublish'
+        :                                             '';
     my $lc_status_class = lc $status_class;
 
     my $status_icon_id
-        = $status == MT::Entry::HOLD()      ? 'ic_draft'
-        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
-        : $status == MT::Entry::REVIEW()    ? 'ic_error'
-        : $status == MT::Entry::FUTURE()    ? 'ic_clock'
-        : $status == MT::Entry::JUNK()      ? 'ic_error'
-        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? 'ic_draft'
+        : $status == MT::ContentStatus::RELEASE()   ? 'ic_checkbox'
+        : $status == MT::ContentStatus::REVIEW()    ? 'ic_error'
+        : $status == MT::ContentStatus::FUTURE()    ? 'ic_clock'
+        : $status == MT::ContentStatus::JUNK()      ? 'ic_error'
+        : $status == MT::ContentStatus::UNPUBLISH() ? 'ic_stop'
+        :                                             '';
     my $status_icon_color_class
-        = $status == MT::Entry::HOLD()      ? ''
-        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
-        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
-        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
-        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
-        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
-        :                                     '';
+        = $status == MT::ContentStatus::HOLD()      ? ''
+        : $status == MT::ContentStatus::RELEASE()   ? ' mt-icon--success'
+        : $status == MT::ContentStatus::REVIEW()    ? ' mt-icon--warning'
+        : $status == MT::ContentStatus::FUTURE()    ? ' mt-icon--info'
+        : $status == MT::ContentStatus::JUNK()      ? ' mt-icon--warning'
+        : $status == MT::ContentStatus::UNPUBLISH() ? ' mt-icon--danger'
+        :                                             '';
 
     my $status_img = '';
     if ($status_icon_id) {
@@ -960,7 +1010,7 @@ sub _make_id_html {
         };
     }
 
-    my $id        = $obj->id;
+    my $label = $obj->label || MT->translate('No Label');
     my $edit_link = $app->uri(
         mode => 'view',
         args => {
@@ -989,7 +1039,7 @@ sub _make_id_html {
         <span class="icon status $lc_status_class">
           <a href="$edit_link" class="d-inline-block">$status_img</a>
         </span>
-        <a href="$edit_link">$id</a>
+        <a href="$edit_link">$label</a>
         $view_link
     };
 }

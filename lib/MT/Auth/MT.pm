@@ -138,7 +138,14 @@ sub fetch_credentials {
 sub login_form {
     my $auth = shift;
     my ($app) = @_;
-    return $app->build_page('include/login_mt.tmpl');
+    return $app->build_page(
+        'include/login_mt.tmpl',
+        {   build_blog_selector => 0,
+            build_menus         => 0,
+            build_compose_menus => 0,
+            build_user_menus    => 0,
+        }
+    );
 }
 
 sub validate_credentials {
