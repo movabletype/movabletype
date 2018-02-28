@@ -53,7 +53,6 @@ sub core_backup_instructions {
         'association'  => { 'order' => 510 },
         'placement'    => { 'order' => 510 },
         'trackback'    => { 'order' => 510 },
-        'objecttag'    => { 'order' => 510 },
         'filter'       => { 'order' => 510 },
         'content_type' => { 'order' => 510 },
 
@@ -74,6 +73,7 @@ sub core_backup_instructions {
         # ObjetScore should be backed up after Comment.
         'objectscore' => { 'order' => 540 },
         'objectasset' => { 'order' => 540 },
+        'objecttag'   => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => { 'skip' => 1 },
@@ -1641,17 +1641,49 @@ sub parents {
 
 package MT::ObjectTag;
 
-sub parents {
+sub restore_parent_ids {
     my $obj = shift;
-    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
-        tag_id    => MT->model('tag'),
-        object_id => {
-            relations => {
-                key      => 'object_datasource',
-                entry_id => [ MT->model('entry'), MT->model('page') ],
-            }
+    my ( $data, $objects ) = @_;
+
+    my $blog_class = MT->model('blog');
+    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( !$new_blog ) {
+        $blog_class = MT->model('website');
+        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    }
+    return 0 if !$new_blog;
+    $data->{blog_id} = $new_blog->id;
+
+    my $tag_class = MT->model('tag');
+    my $new_tag   = $objects->{ $tag_class . '#' . $data->{tag_id} }
+        or return 0;
+    $data->{tag_id} = $new_tag->id;
+
+    my $object_id_class = MT->model( $data->{object_datasource} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_datasource} eq 'entry' ) {
+            $object_id_class = MT->model('page');
         }
-    };
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
 }
 
 package MT::Permission;

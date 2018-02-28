@@ -1132,9 +1132,11 @@ sub _tags_registry {
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
         search_handler => '$Core::MT::ContentFieldType::Tags::search_handler',
-        ss_validator   => '$Core::MT::ContentFieldType::Tags::ss_validator',
-        tag_handler    => '$Core::MT::ContentFieldType::Tags::tag_handler',
-        list_props     => {
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Tags::site_data_import_handler',
+        ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
+        list_props   => {
             tags => {
                 base      => '__virtual.string',
                 col       => 'name',
