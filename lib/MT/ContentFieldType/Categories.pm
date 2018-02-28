@@ -489,4 +489,13 @@ sub search_handler {
     0;
 }
 
+sub site_import_handler {
+    my ( $field_data, $content_field, $all_objects ) = @_;
+    my $old_category_set_id = $field_data->{options}{category_set} or return;
+    my $new_category_set
+        = $all_objects->{"MT::CategorySet#$old_category_set_id"}
+        or return;
+    $field_data->{options}{category_set} = $new_category_set->id;
+}
+
 1;

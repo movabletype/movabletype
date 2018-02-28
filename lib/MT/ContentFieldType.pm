@@ -56,6 +56,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::ContentType::search_handler',
+        site_import_handler =>
+            '$Core::MT::ContentFieldType::ContentType::site_import_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::theme_import_handler',
         theme_export_handler =>
@@ -1066,6 +1068,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Categories::search_handler',
+        site_import_handler =>
+            '$Core::MT::ContentFieldType::Categories::site_import_handler',
         theme_import_handler =>
             '$Core::MT::ContentFieldType::Categories::theme_import_handler',
         theme_export_handler =>
