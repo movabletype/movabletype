@@ -77,15 +77,17 @@ sub core_backup_instructions {
         'objectcategory' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
-        'session'       => { 'skip' => 1 },
-        'config'        => { 'skip' => 1 },
-        'ts_job'        => { 'skip' => 1 },
-        'ts_error'      => { 'skip' => 1 },
-        'ts_exitstatus' => { 'skip' => 1 },
-        'ts_funcmap'    => { 'skip' => 1 },
-        'touch'         => { 'skip' => 1 },
-        'failedlogin'   => { 'skip' => 1 },
-        'accesstoken'   => { 'skip' => 1 },
+        'session'             => { 'skip' => 1 },
+        'config'              => { 'skip' => 1 },
+        'ts_job'              => { 'skip' => 1 },
+        'ts_error'            => { 'skip' => 1 },
+        'ts_exitstatus'       => { 'skip' => 1 },
+        'ts_funcmap'          => { 'skip' => 1 },
+        'touch'               => { 'skip' => 1 },
+        'failedlogin'         => { 'skip' => 1 },
+        'accesstoken'         => { 'skip' => 1 },
+        'cf_idx'              => { 'skip' => 1 },
+        'content_field_index' => { 'skip' => 1 },
     };
 }
 
