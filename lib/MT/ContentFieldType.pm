@@ -1076,6 +1076,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Categories::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Categories::site_data_import_handler',
         site_import_handler =>
             '$Core::MT::ContentFieldType::Categories::site_import_handler',
         theme_import_handler =>

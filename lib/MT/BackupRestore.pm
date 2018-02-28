@@ -71,9 +71,10 @@ sub core_backup_instructions {
         'content_data' => { 'order' => 530 },
 
         # ObjetScore should be backed up after Comment.
-        'objectscore' => { 'order' => 540 },
-        'objectasset' => { 'order' => 540 },
-        'objecttag'   => { 'order' => 540 },
+        'objectscore'    => { 'order' => 540 },
+        'objectasset'    => { 'order' => 540 },
+        'objecttag'      => { 'order' => 540 },
+        'objectcategory' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => { 'skip' => 1 },
@@ -1830,6 +1831,59 @@ sub restore_parent_ids {
         }
         elsif ( $data->{object_ds} eq 'category' ) {
             $object_id_class = MT->model('folder');
+        }
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
+}
+
+package MT::ObjectCategory;
+
+sub restore_parent_ids {
+    my $obj = shift;
+    my ( $data, $objects ) = @_;
+
+    my $blog_class = MT->model('blog');
+    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( !$new_blog ) {
+        $blog_class = MT->model('website');
+        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    }
+    return 0 if !$new_blog;
+    $data->{blog_id} = $new_blog->id;
+
+    my $category_class = MT->model('category');
+    my $new_category
+        = $objects->{ $category_class . '#' . $data->{category_id} };
+    if ( !$new_category ) {
+        $category_class = MT->model('folder');
+        $new_category
+            = $objects->{ $category_class . '#' . $data->{category_id} };
+    }
+    return 0 unless $new_category;
+    $data->{category_id} = $new_category->id;
+
+    my $object_id_class = MT->model( $data->{object_ds} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_ds} eq 'entry' ) {
+            $object_id_class = MT->model('page');
         }
         else {
             return 0;
