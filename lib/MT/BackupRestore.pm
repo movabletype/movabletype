@@ -780,6 +780,8 @@ sub cb_restore_objects {
 
     my %entries;
     my %assets;
+    my %content_types;
+    my @content_data;
     for my $key ( keys %$all_objects ) {
         my $obj = $all_objects->{$key};
         if ( $obj->properties->{audit} ) {
@@ -920,33 +922,10 @@ sub cb_restore_objects {
             }
             $content_type->fields( \@new_fields );
             $content_type->save or die $content_type->errstr;
+            $content_types{ $content_type->id } = $content_type;
         }
         elsif ( $key =~ /^MT::ContentData#\d+$/ ) {
-            my $content_data = $all_objects->{$key};
-            my $old_data     = $content_data->data;
-            my %new_data;
-            for my $old_field_id ( keys %{ $old_data || {} } ) {
-                my $new_field
-                    = $all_objects->{"MT::ContentField#$old_field_id"}
-                    or next;
-                $new_data{ $new_field->id } = $old_data->{$old_field_id};
-                my $field_data = $content_data->content_type->get_field(
-                    $new_field->id );
-                my $field_type_registry = MT->registry( 'content_field_types',
-                    $field_data->{type} );
-                if ( my $handler
-                    = $field_type_registry->{site_data_import_handler} )
-                {
-                    if ( $handler = MT->handler_to_coderef($handler) ) {
-                        $new_data{ $new_field->id } = $handler->(
-                            $field_data, $new_data{ $new_field->id },
-                            $content_data, $all_objects
-                        );
-                    }
-                }
-            }
-            $content_data->data( \%new_data );
-            $content_data->save or die $content_data->errstr;
+            push @content_data, $all_objects->{$key};
         }
     }
 
@@ -1001,6 +980,43 @@ sub cb_restore_objects {
             ;    # directly call update to bypass processing in save()
     }
     $callback->( MT->translate("Done.") . "\n" );
+
+    $i = 0;
+    $callback->(
+        MT->translate( "Importing content data ... ( [_1] )", $i++ ),
+        'cb-restore-content-data-data'
+    );
+    for my $content_data (@content_data) {
+        my $old_data     = $content_data->data;
+        my $content_type = $content_types{ $content_data->content_type_id };
+        my %new_data;
+        for my $old_field_id ( keys %{ $old_data || {} } ) {
+            my $new_field = $all_objects->{"MT::ContentField#$old_field_id"}
+                or next;
+            $new_data{ $new_field->id } = $old_data->{$old_field_id};
+            my $field_data = $content_type->get_field( $new_field->id );
+            my $field_type_registry
+                = MT->registry( 'content_field_types', $field_data->{type} );
+            if ( my $handler
+                = $field_type_registry->{site_data_import_handler} )
+            {
+                if ( $handler = MT->handler_to_coderef($handler) ) {
+                    $new_data{ $new_field->id } = $handler->(
+                        $field_data, $new_data{ $new_field->id },
+                        $content_data, $all_objects
+                    );
+                }
+            }
+        }
+        $callback->(
+            MT->translate( "Importing content data ... ( [_1] )", $i++ ),
+            'cb-restore-content-data-data'
+        );
+        $content_data->data( \%new_data );
+        $content_data->save or die $content_data->errstr;
+    }
+    $callback->( MT->translate("Done.") . "\n" );
+
     1;
 }
 
