@@ -343,7 +343,7 @@ sub site_import_handler {
     my $new_content_type
         = $all_objects->{"MT::ContentType#$old_content_type_id"}
         or return;
-    my $field_data->{options}{source} = $new_content_type->id;
+    $field_data->{options}{source} = $new_content_type->id;
 }
 
 1;
