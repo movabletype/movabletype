@@ -179,15 +179,6 @@ sub save {
     $self->SUPER::save(@_);
 }
 
-sub parents {
-    my $obj = shift;
-    {   blog_id => {
-            class    => [ MT->model('blog'), MT->model('website') ],
-            optional => 1
-        },
-    };
-}
-
 sub fields {
     my $obj = shift;
     if (@_) {

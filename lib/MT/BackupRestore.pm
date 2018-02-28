@@ -57,6 +57,10 @@ sub core_backup_instructions {
         'objectasset' => { 'order' => 510 },
         'filter'      => { 'order' => 510 },
 
+        'content_type'  => { 'order' => 510 },
+        'cf'            => { 'order' => 520 },
+        'content_field' => { 'order' => 520 },
+
         # Ping should be backed up after Trackback.
         'tbping'   => { 'order' => 520 },
         'ping'     => { 'order' => 520 },
@@ -881,6 +885,21 @@ sub cb_restore_objects {
             $category_set->order($new_order);
             $category_set->save;
         }
+        elsif ( $key =~ /^MT::ContentType#\d+$/ ) {
+            my $content_type = $all_objects->{$key};
+            my $old_fields   = $content_type->fields;
+            my @new_fields;
+            for my $f (@$old_fields) {
+                my $old_id = $f->{id} or next;
+                my $new_field = $all_objects->{"MT::ContentField#$old_id"}
+                    or next;
+                $f->{id}        = $new_field->id;
+                $f->{unique_id} = $new_field->unique_id;
+                push @new_fields, $f;
+            }
+            $content_type->fields( \@new_fields );
+            $content_type->save or die $content_type->errstr;
+        }
     }
 
     my $i = 0;
@@ -1492,6 +1511,26 @@ sub parents {
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
+package MT::ContentType;
+
+sub parents {
+    my $obj = shift;
+    { blog_id => [ MT->model('blog'), MT->model('website') ] };
+}
+
+package MT::ContentField;
+
+sub parents {
+    my $obj = shift;
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
+        content_type_id => [ MT->model('content_type') ],
+        related_content_type_id =>
+            { class => MT->model('content_type'), optional => 1 },
+        related_cat_set_id =>
+            { class => MT->model('category_set'), optional => 1 },
+    };
+}
+
 package MT::Comment;
 
 sub parents {
@@ -1561,7 +1600,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
