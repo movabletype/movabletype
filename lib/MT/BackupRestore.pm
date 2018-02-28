@@ -887,7 +887,17 @@ sub cb_restore_objects {
         }
         elsif ( $key =~ /^MT::ContentType#\d+$/ ) {
             my $content_type = $all_objects->{$key};
-            my $old_fields   = $content_type->fields;
+            if ( $content_type->data_label ) {
+                my $new_data_label_field
+                    = $all_objects->{ 'MT::ContentField#uid:'
+                        . $content_type->data_label };
+                $content_type->data_label(
+                      $new_data_label_field
+                    ? $new_data_label_field->unique_id
+                    : undef
+                );
+            }
+            my $old_fields = $content_type->fields;
             my @new_fields;
             for my $f (@$old_fields) {
                 my $old_id = $f->{id} or next;
