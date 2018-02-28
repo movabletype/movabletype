@@ -895,6 +895,15 @@ sub cb_restore_objects {
                     or next;
                 $f->{id}        = $new_field->id;
                 $f->{unique_id} = $new_field->unique_id;
+                my $field_type_registry
+                    = MT->registry( 'content_field_types', $f->{type} );
+                if ( my $handler
+                    = $field_type_registry->{site_import_handler} )
+                {
+                    if ( $handler = MT->handler_to_coderef($handler) ) {
+                        $handler->( $f, $new_field, $all_objects );
+                    }
+                }
                 push @new_fields, $f;
             }
             $content_type->fields( \@new_fields );
