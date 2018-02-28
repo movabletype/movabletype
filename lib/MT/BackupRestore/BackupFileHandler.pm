@@ -685,6 +685,8 @@ sub end_element {
                 );
             }
             elsif ( 'cf' eq $name || 'content_field' eq $name ) {
+                $self->{objects}{ 'MT::ContentField#uid:' . $obj->unique_id }
+                    = $obj;
                 require MT::ContentType::UniqueID;
                 $obj->column(
                     'unique_id',
