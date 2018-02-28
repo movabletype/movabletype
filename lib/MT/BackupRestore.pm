@@ -50,29 +50,30 @@ sub core_backup_instructions {
 
         # These 'association' classes should be backed up
         # after the object classes.
-        'association' => { 'order' => 510 },
-        'placement'   => { 'order' => 510 },
-        'trackback'   => { 'order' => 510 },
-        'objecttag'   => { 'order' => 510 },
-        'objectasset' => { 'order' => 510 },
-        'filter'      => { 'order' => 510 },
-
-        'content_type'  => { 'order' => 510 },
-        'cf'            => { 'order' => 520 },
-        'content_field' => { 'order' => 520 },
+        'association'  => { 'order' => 510 },
+        'placement'    => { 'order' => 510 },
+        'trackback'    => { 'order' => 510 },
+        'objecttag'    => { 'order' => 510 },
+        'filter'       => { 'order' => 510 },
+        'content_type' => { 'order' => 510 },
 
         # Ping should be backed up after Trackback.
-        'tbping'   => { 'order' => 520 },
-        'ping'     => { 'order' => 520 },
-        'ping_cat' => { 'order' => 520 },
+        'tbping'        => { 'order' => 520 },
+        'ping'          => { 'order' => 520 },
+        'ping_cat'      => { 'order' => 520 },
+        'cf'            => { 'order' => 520 },
+        'content_field' => { 'order' => 520 },
 
         # Comment should be backed up after TBPing
         # because saving a comment ultimately triggers
         # MT::TBPing::save.
-        'comment' => { 'order' => 530 },
+        'comment'      => { 'order' => 530 },
+        'cd'           => { 'order' => 530 },
+        'content_data' => { 'order' => 530 },
 
         # ObjetScore should be backed up after Comment.
         'objectscore' => { 'order' => 540 },
+        'objectasset' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => { 'skip' => 1 },
@@ -919,6 +920,33 @@ sub cb_restore_objects {
             $content_type->fields( \@new_fields );
             $content_type->save or die $content_type->errstr;
         }
+        elsif ( $key =~ /^MT::ContentData#\d+$/ ) {
+            my $content_data = $all_objects->{$key};
+            my $old_data     = $content_data->data;
+            my %new_data;
+            for my $old_field_id ( keys %{ $old_data || {} } ) {
+                my $new_field
+                    = $all_objects->{"MT::ContentField#$old_field_id"}
+                    or next;
+                $new_data{ $new_field->id } = $old_data->{$old_field_id};
+                my $field_data = $content_data->content_type->get_field(
+                    $new_field->id );
+                my $field_type_registry = MT->registry( 'content_field_types',
+                    $field_data->{type} );
+                if ( my $handler
+                    = $field_type_registry->{site_data_import_handler} )
+                {
+                    if ( $handler = MT->handler_to_coderef($handler) ) {
+                        $new_data{ $new_field->id } = $handler->(
+                            $field_data, $new_data{ $new_field->id },
+                            $content_data, $all_objects
+                        );
+                    }
+                }
+            }
+            $content_data->data( \%new_data );
+            $content_data->save or die $content_data->errstr;
+        }
     }
 
     my $i = 0;
@@ -1018,8 +1046,9 @@ sub cb_restore_asset {
     my ( $asset, $callback ) = @_;
 
     my @placements = MT->model('objectasset')->load(
-        {   asset_id => $asset->id,
-            blog_id  => $asset->blog_id
+        {   asset_id  => $asset->id,
+            object_ds => 'entry',
+            blog_id   => $asset->blog_id
         }
     );
 
@@ -1029,11 +1058,10 @@ sub cb_restore_asset {
         'cb-restore-asset-url'
     );
     for my $placement (@placements) {
-        next unless 'entry' eq $placement->object_ds;
         my $entry = MT->model('entry')->load( $placement->object_id );
         next unless $entry;
 
-        if ( $entry->class == 'entry' ) {
+        if ( $entry->class eq 'entry' ) {
             $callback->(
                 MT->translate(
                     'Importing url of the assets in entry ( [_1] )...', $i++
@@ -1550,6 +1578,17 @@ sub parents {
     };
 }
 
+package MT::ContentData;
+
+sub parents {
+    my $obj = shift;
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        author_id =>
+            { class => MT->model('author'), optional => 1, orphanize => 1 },
+        content_type_id => [ MT->model('content_type') ],
+    };
+}
+
 package MT::Comment;
 
 sub parents {
@@ -1729,55 +1768,55 @@ sub parents {
 
 package MT::ObjectAsset;
 
-sub parents {
+sub restore_parent_ids {
     my $obj = shift;
-    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
-        asset_id  => MT->model('asset'),
-        object_id => {
-            relations => {
-                key         => 'object_ds',
-                entry_id    => [ MT->model('entry'), MT->model('page') ],
-                category_id => [ MT->model('category'), MT->model('folder') ],
-                blog_id     => [ MT->model('blog'), MT->model('website') ],
-            }
-        }
-    };
-}
+    my ( $data, $objects ) = @_;
 
-package MT::ObjectScore;
-
-sub backup_terms_args {
-    my $class = shift;
-    my ($blog_ids) = @_;
-
-    # authors are processed in _populate_obj_to_backup method
-    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return {
-            terms => { object_ds => [ 'entry', 'page' ], },
-            args  => {
-                'join' => MT->model('entry')->join_on(
-                    undef,
-                    {   id      => \'=objectscore_object_id',
-                        blog_id => $blog_ids,
-                    },
-                    { unique => 1, }
-                )
-            }
-        };
+    my $blog_class = MT->model('blog');
+    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( !$new_blog ) {
+        $blog_class = MT->model('website');
+        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
     }
-    return { terms => undef, args => undef };
-}
+    return 0 if !$new_blog;
+    $data->{blog_id} = $new_blog->id;
 
-sub parents {
-    my $obj = shift;
-    {   author_id => MT->model('author'),
-        object_id => {
-            relations => {
-                key      => 'object_ds',
-                entry_id => [ MT->model('entry'), MT->model('page') ],
-            }
+    my $asset_class = MT->model('asset');
+    my $new_asset   = $objects->{ $asset_class . '#' . $data->{asset_id} };
+    return 0 if !$new_asset;
+    $data->{asset_id} = $new_asset->id;
+
+    my $object_id_class = MT->model( $data->{object_ds} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_ds} eq 'blog' ) {
+            $object_id_class = MT->model('website');
         }
-    };
+        elsif ( $data->{object_ds} eq 'entry' ) {
+            $object_id_class = MT->model('page');
+        }
+        elsif ( $data->{object_ds} eq 'category' ) {
+            $object_id_class = MT->model('folder');
+        }
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
 }
 
 package MT::IPBanList;
