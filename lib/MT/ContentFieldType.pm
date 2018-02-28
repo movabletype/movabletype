@@ -56,6 +56,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::ContentType::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::ContentType::site_data_import_handler',
         site_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::site_import_handler',
         theme_import_handler =>
