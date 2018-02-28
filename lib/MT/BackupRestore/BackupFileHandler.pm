@@ -347,6 +347,10 @@ sub start_element {
 
                     MT::Util::Log->info( '   End import   ' . $class );
                 }
+                elsif ( 'cf' eq $name || 'content_field' eq $name ) {
+                    $objects->{ "$class#uid:" . $column_data{unique_id} }
+                        = $obj = $class->new;
+                }
 
                 unless ($obj) {
                     $obj = $class->new;
@@ -685,8 +689,6 @@ sub end_element {
                 );
             }
             elsif ( 'cf' eq $name || 'content_field' eq $name ) {
-                $self->{objects}{ 'MT::ContentField#uid:' . $obj->unique_id }
-                    = $obj;
                 require MT::ContentType::UniqueID;
                 $obj->column(
                     'unique_id',
