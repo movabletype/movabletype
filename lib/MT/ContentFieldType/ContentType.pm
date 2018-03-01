@@ -346,4 +346,15 @@ sub site_import_handler {
     $field_data->{options}{source} = $new_content_type->id;
 }
 
+sub site_data_import_handler {
+    my ( $field_data, $field_value, $content_data, $all_objects ) = @_;
+    return unless $field_value;
+    my @old_content_data_ids
+        = ref $field_value eq 'ARRAY' ? @$field_value : ($field_value);
+    my @new_content_data_ids = map { $_->id }
+        grep {$_}
+        map  { $all_objects->{"MT::ContentData#$_"} } @old_content_data_ids;
+    @new_content_data_ids ? \@new_content_data_ids : undef;
+}
+
 1;

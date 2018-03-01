@@ -56,6 +56,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::ContentType::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::ContentType::site_data_import_handler',
         site_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::site_import_handler',
         theme_import_handler =>
@@ -554,6 +556,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Asset::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
             asset => {
                 filter_tmpl =>
@@ -673,6 +677,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Asset::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
             asset_audio => {
                 filter_tmpl =>
@@ -790,6 +796,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Asset::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
             asset_video => {
                 filter_tmpl =>
@@ -908,6 +916,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Asset::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
             asset_image => {
                 filter_tmpl =>
@@ -1068,6 +1078,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::preview_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::Categories::search_handler',
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Categories::site_data_import_handler',
         site_import_handler =>
             '$Core::MT::ContentFieldType::Categories::site_import_handler',
         theme_import_handler =>
@@ -1124,9 +1136,11 @@ sub _tags_registry {
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
         search_handler => '$Core::MT::ContentFieldType::Tags::search_handler',
-        ss_validator   => '$Core::MT::ContentFieldType::Tags::ss_validator',
-        tag_handler    => '$Core::MT::ContentFieldType::Tags::tag_handler',
-        list_props     => {
+        site_data_import_handler =>
+            '$Core::MT::ContentFieldType::Tags::site_data_import_handler',
+        ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',
+        tag_handler  => '$Core::MT::ContentFieldType::Tags::tag_handler',
+        list_props   => {
             tags => {
                 base      => '__virtual.string',
                 col       => 'name',
