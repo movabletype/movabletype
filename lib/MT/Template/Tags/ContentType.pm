@@ -458,8 +458,6 @@ sub _hdlr_contents {
                         }
                         push @filters,
                             sub { $cexpr->( $preloader->( $_[0] ) ) };
-
-                        #sub { $cexpr->( $preloader->( $_[0]->id ) ) };
                     }
                     else {
                         return $ctx->error(
@@ -472,6 +470,85 @@ sub _hdlr_contents {
                     }
                 }
                 elsif ( $type eq 'tags' ) {
+                    require MT::Tag;
+                    require MT::ObjectTag;
+
+                    my $tag_arg = $value;
+                    my $terms;
+                    if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
+                        my @tags = MT::Tag->split( ',', $tag_arg );
+                        $terms = { name => \@tags };
+                        $tag_arg = join " or ", @tags;
+                    }
+                    my $tags = [
+                        MT::Tag->load(
+                            $terms,
+                            {   ( $terms ? ( binary => { name => 1 } ) : () ),
+                                join => MT::ObjectTag->join_on(
+                                    'tag_id',
+                                    {   object_datasource => 'content_data',
+                                        %blog_terms,
+                                    },
+                                    { %blog_args, unique => 1 }
+                                ),
+                            }
+                        )
+                    ];
+                    my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
+                    if ($cexpr) {
+                        my @tag_ids = map {
+                            $_->id,
+                                ( $_->n8d_id ? ( $_->n8d_id ) : () )
+                        } @$tags;
+                        my $preloader = sub {
+                            my ($cd_id) = @_;
+                            my %map;
+                            return \%map unless @tag_ids;
+                            my $terms = {
+                                tag_id            => \@tag_ids,
+                                object_id         => $cd_id,
+                                object_datasource => 'content_data',
+                                %blog_terms,
+                            };
+                            my $args = {
+                                %blog_args,
+                                fetchonly   => ['tag_id'],
+                                no_triggers => 1
+                            };
+                            my @ot_ids;
+                            @ot_ids = MT::ObjectTag->load( $terms, $args )
+                                if @tag_ids;
+                            $map{ $_->tag_id } = 1 for @ot_ids;
+                            \%map;
+                        };
+                        if ( !$archive_contents ) {
+                            if ( $tag_arg !~ m/\bNOT\b/i ) {
+                                return
+                                    MT::Template::Context::_hdlr_pass_tokens_else(
+                                    @_)
+                                    unless @tag_ids;
+                                $args{join} = MT::ObjectTag->join_on(
+                                    'object_id',
+                                    {   tag_id            => \@tag_ids,
+                                        object_datasource => 'content_data',
+                                        %blog_terms
+                                    },
+                                    { %blog_args, unique => 1 }
+                                );
+                            }
+                        }
+                        push @filters,
+                            sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate(
+                                "You have an error in your '[_2]' attribute: [_1]",
+                                $tag_arg,
+                                'tag'
+                            )
+                        );
+                    }
                 }
                 else {
                     my $join = MT->model('cf_idx')->join_on(
