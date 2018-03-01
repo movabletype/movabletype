@@ -565,10 +565,25 @@ sub _remove_objects {
             $obj->column( 'data', $data );
         }
         else {
-            my $data = $obj->column('data');
-            return {} unless defined $data;
-            my $thawed = $ser->unserialize($data);
-            $thawed ? $$thawed : {};
+            my $raw_data = $obj->column('data');
+            return {} unless defined $raw_data;
+            if ( $raw_data =~ /^SERG/ ) {
+                my $data = $ser->unserialize($raw_data);
+                $data ? $$data : {};
+            }
+            else {
+                require Encode;
+                require JSON;
+                my $data;
+                if ( Encode::is_utf8($raw_data) ) {
+                    $data = eval { JSON::from_json($raw_data) } || {};
+                }
+                else {
+                    $data = eval { JSON::decode_json($raw_data) } || {};
+                }
+                warn $@ if $@ && $MT::DebugMode;
+                $data;
+            }
         }
     }
 }

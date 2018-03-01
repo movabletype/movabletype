@@ -192,9 +192,18 @@ sub save {
             $obj->column( 'fields', $data );
         }
         else {
-            return [] unless defined $obj->column('fields');
-            my $fields = $ser->unserialize( $obj->column('fields') );
-            _sort_fields( $fields ? $$fields : [] );
+            my $raw_data = $obj->column('fields');
+            return [] unless defined $raw_data;
+            if ( $raw_data =~ /^SERG/ ) {
+                my $fields = $ser->unserialize( $obj->column('fields') );
+                _sort_fields( $fields ? $$fields : [] );
+            }
+            else {
+                require JSON;
+                my $fields = eval { JSON::decode_json($raw_data) } || [];
+                warn $@ if $@ && $MT::DebugMode;
+                _sort_fields($fields);
+            }
         }
     }
 }
