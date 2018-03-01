@@ -17,7 +17,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-plan tests => 37;
+plan tests => 41;
 
 use MT;
 use MT::ConfigMgr;
@@ -31,6 +31,8 @@ Database $db_dir/mt.db
 ObjectDriver DBI::SQLite 
 AltTemplate foo bar
 AltTemplate baz quux
+AltTemplatePath alt-foo
+AltTemplatePath alt-bar
 CFG
 close $fh;
 
@@ -114,5 +116,13 @@ foreach my $key (
     $cfg->set( $key, 'Avocado' );
     is( $cfg->get($key), 'Avocado', "Config $key is set-able" );
 }
+
+## Test init_config path conversion
+$mt->init_config;
+my @altpaths = $mt->{cfg}->AltTemplatePath;
+is( $mt->{cfg}->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY' );
+is( @altpaths,                    2,       'paths=2' );
+ok( File::Spec->file_name_is_absolute($altpaths[0]),  'alt-foo becomes absolute' );
+ok( File::Spec->file_name_is_absolute($altpaths[1]),  'alt-bar becomes absolute' );
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";

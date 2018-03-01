@@ -743,13 +743,12 @@ sub init_config {
         if ( defined $path ) {
             if ( $type eq 'ARRAY' ) {
                 my @paths = $cfg->get($meth);
-                local $_;
-                foreach (@paths) {
+                foreach my $path (@paths) {
                     next if File::Spec->file_name_is_absolute($path);
                     my $abs_path = File::Spec->catfile( $config_dir, $path );
                     $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
                         unless -d $abs_path;
-                    $_ = $abs_path;
+                    $path = $abs_path;
                 }
                 $cfg->$meth( \@paths );
             }

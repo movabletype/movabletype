@@ -341,5 +341,15 @@ sub search_handler {
     0;
 }
 
+sub site_data_import_handler {
+    my ( $field_data, $field_value, $content_data, $all_objects ) = @_;
+    return unless $field_value;
+    my @old_tag_ids
+        = ref $field_value eq 'ARRAY' ? @$field_value : ($field_value);
+    my @new_tag_ids = map { $_->id }
+        grep {$_} map { $all_objects->{"MT::Tag#$_"} } @old_tag_ids;
+    @new_tag_ids ? \@new_tag_ids : undef;
+}
+
 1;
 

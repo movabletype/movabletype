@@ -347,6 +347,10 @@ sub start_element {
 
                     MT::Util::Log->info( '   End import   ' . $class );
                 }
+                elsif ( 'cf' eq $name || 'content_field' eq $name ) {
+                    $objects->{ "$class#uid:" . $column_data{unique_id} }
+                        = $obj = $class->new;
+                }
 
                 unless ($obj) {
                     $obj = $class->new;
@@ -674,6 +678,24 @@ sub end_element {
                         );
                     }
                 }
+            }
+            elsif ( 'content_type' eq $name ) {
+                require MT::ContentType::UniqueID;
+                $obj->column(
+                    'unique_id',
+                    MT::ContentType::UniqueID::generate_unique_id(
+                        $obj->name
+                    )
+                );
+            }
+            elsif ( 'cf' eq $name || 'content_field' eq $name ) {
+                require MT::ContentType::UniqueID;
+                $obj->column(
+                    'unique_id',
+                    MT::ContentType::UniqueID::generate_unique_id(
+                        $obj->name
+                    )
+                );
             }
             unless ($exists) {
                 my $result;

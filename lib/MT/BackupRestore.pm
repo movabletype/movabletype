@@ -50,36 +50,44 @@ sub core_backup_instructions {
 
         # These 'association' classes should be backed up
         # after the object classes.
-        'association' => { 'order' => 510 },
-        'placement'   => { 'order' => 510 },
-        'trackback'   => { 'order' => 510 },
-        'objecttag'   => { 'order' => 510 },
-        'objectasset' => { 'order' => 510 },
-        'filter'      => { 'order' => 510 },
+        'association'  => { 'order' => 510 },
+        'placement'    => { 'order' => 510 },
+        'trackback'    => { 'order' => 510 },
+        'filter'       => { 'order' => 510 },
+        'content_type' => { 'order' => 510 },
 
         # Ping should be backed up after Trackback.
-        'tbping'   => { 'order' => 520 },
-        'ping'     => { 'order' => 520 },
-        'ping_cat' => { 'order' => 520 },
+        'tbping'        => { 'order' => 520 },
+        'ping'          => { 'order' => 520 },
+        'ping_cat'      => { 'order' => 520 },
+        'cf'            => { 'order' => 520 },
+        'content_field' => { 'order' => 520 },
 
         # Comment should be backed up after TBPing
         # because saving a comment ultimately triggers
         # MT::TBPing::save.
-        'comment' => { 'order' => 530 },
+        'comment'      => { 'order' => 530 },
+        'cd'           => { 'order' => 530 },
+        'content_data' => { 'order' => 530 },
 
         # ObjetScore should be backed up after Comment.
-        'objectscore' => { 'order' => 540 },
+        'objectscore'    => { 'order' => 540 },
+        'objectasset'    => { 'order' => 540 },
+        'objecttag'      => { 'order' => 540 },
+        'objectcategory' => { 'order' => 540 },
 
         # Session, config and TheSchwartz packages are never backed up.
-        'session'       => { 'skip' => 1 },
-        'config'        => { 'skip' => 1 },
-        'ts_job'        => { 'skip' => 1 },
-        'ts_error'      => { 'skip' => 1 },
-        'ts_exitstatus' => { 'skip' => 1 },
-        'ts_funcmap'    => { 'skip' => 1 },
-        'touch'         => { 'skip' => 1 },
-        'failedlogin'   => { 'skip' => 1 },
-        'accesstoken'   => { 'skip' => 1 },
+        'session'             => { 'skip' => 1 },
+        'config'              => { 'skip' => 1 },
+        'ts_job'              => { 'skip' => 1 },
+        'ts_error'            => { 'skip' => 1 },
+        'ts_exitstatus'       => { 'skip' => 1 },
+        'ts_funcmap'          => { 'skip' => 1 },
+        'touch'               => { 'skip' => 1 },
+        'failedlogin'         => { 'skip' => 1 },
+        'accesstoken'         => { 'skip' => 1 },
+        'cf_idx'              => { 'skip' => 1 },
+        'content_field_index' => { 'skip' => 1 },
     };
 }
 
@@ -774,6 +782,8 @@ sub cb_restore_objects {
 
     my %entries;
     my %assets;
+    my %content_types;
+    my @content_data;
     for my $key ( keys %$all_objects ) {
         my $obj = $all_objects->{$key};
         if ( $obj->properties->{audit} ) {
@@ -881,6 +891,44 @@ sub cb_restore_objects {
             $category_set->order($new_order);
             $category_set->save;
         }
+        elsif ( $key =~ /^MT::ContentType#\d+$/ ) {
+            my $content_type = $all_objects->{$key};
+            if ( $content_type->data_label ) {
+                my $new_data_label_field
+                    = $all_objects->{ 'MT::ContentField#uid:'
+                        . $content_type->data_label };
+                $content_type->data_label(
+                      $new_data_label_field
+                    ? $new_data_label_field->unique_id
+                    : undef
+                );
+            }
+            my $old_fields = $content_type->fields;
+            my @new_fields;
+            for my $f (@$old_fields) {
+                my $old_id = $f->{id} or next;
+                my $new_field = $all_objects->{"MT::ContentField#$old_id"}
+                    or next;
+                $f->{id}        = $new_field->id;
+                $f->{unique_id} = $new_field->unique_id;
+                my $field_type_registry
+                    = MT->registry( 'content_field_types', $f->{type} );
+                if ( my $handler
+                    = $field_type_registry->{site_import_handler} )
+                {
+                    if ( $handler = MT->handler_to_coderef($handler) ) {
+                        $handler->( $f, $new_field, $all_objects );
+                    }
+                }
+                push @new_fields, $f;
+            }
+            $content_type->fields( \@new_fields );
+            $content_type->save or die $content_type->errstr;
+            $content_types{ $content_type->id } = $content_type;
+        }
+        elsif ( $key =~ /^MT::ContentData#\d+$/ ) {
+            push @content_data, $all_objects->{$key};
+        }
     }
 
     my $i = 0;
@@ -934,6 +982,43 @@ sub cb_restore_objects {
             ;    # directly call update to bypass processing in save()
     }
     $callback->( MT->translate("Done.") . "\n" );
+
+    $i = 0;
+    $callback->(
+        MT->translate( "Importing content data ... ( [_1] )", $i++ ),
+        'cb-restore-content-data-data'
+    );
+    for my $content_data (@content_data) {
+        my $old_data     = $content_data->data;
+        my $content_type = $content_types{ $content_data->content_type_id };
+        my %new_data;
+        for my $old_field_id ( keys %{ $old_data || {} } ) {
+            my $new_field = $all_objects->{"MT::ContentField#$old_field_id"}
+                or next;
+            $new_data{ $new_field->id } = $old_data->{$old_field_id};
+            my $field_data = $content_type->get_field( $new_field->id );
+            my $field_type_registry
+                = MT->registry( 'content_field_types', $field_data->{type} );
+            if ( my $handler
+                = $field_type_registry->{site_data_import_handler} )
+            {
+                if ( $handler = MT->handler_to_coderef($handler) ) {
+                    $new_data{ $new_field->id } = $handler->(
+                        $field_data, $new_data{ $new_field->id },
+                        $content_data, $all_objects
+                    );
+                }
+            }
+        }
+        $callback->(
+            MT->translate( "Importing content data ... ( [_1] )", $i++ ),
+            'cb-restore-content-data-data'
+        );
+        $content_data->data( \%new_data );
+        $content_data->save or die $content_data->errstr;
+    }
+    $callback->( MT->translate("Done.") . "\n" );
+
     1;
 }
 
@@ -980,8 +1065,9 @@ sub cb_restore_asset {
     my ( $asset, $callback ) = @_;
 
     my @placements = MT->model('objectasset')->load(
-        {   asset_id => $asset->id,
-            blog_id  => $asset->blog_id
+        {   asset_id  => $asset->id,
+            object_ds => 'entry',
+            blog_id   => $asset->blog_id
         }
     );
 
@@ -991,11 +1077,10 @@ sub cb_restore_asset {
         'cb-restore-asset-url'
     );
     for my $placement (@placements) {
-        next unless 'entry' eq $placement->object_ds;
         my $entry = MT->model('entry')->load( $placement->object_id );
         next unless $entry;
 
-        if ( $entry->class == 'entry' ) {
+        if ( $entry->class eq 'entry' ) {
             $callback->(
                 MT->translate(
                     'Importing url of the assets in entry ( [_1] )...', $i++
@@ -1492,6 +1577,37 @@ sub parents {
     { blog_id => [ MT->model('blog'), MT->model('website') ], };
 }
 
+package MT::ContentType;
+
+sub parents {
+    my $obj = shift;
+    { blog_id => [ MT->model('blog'), MT->model('website') ] };
+}
+
+package MT::ContentField;
+
+sub parents {
+    my $obj = shift;
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
+        content_type_id => [ MT->model('content_type') ],
+        related_content_type_id =>
+            { class => MT->model('content_type'), optional => 1 },
+        related_cat_set_id =>
+            { class => MT->model('category_set'), optional => 1 },
+    };
+}
+
+package MT::ContentData;
+
+sub parents {
+    my $obj = shift;
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        author_id =>
+            { class => MT->model('author'), optional => 1, orphanize => 1 },
+        content_type_id => [ MT->model('content_type') ],
+    };
+}
+
 package MT::Comment;
 
 sub parents {
@@ -1544,14 +1660,63 @@ sub parents {
 
 package MT::ObjectTag;
 
+sub restore_parent_ids {
+    my $obj = shift;
+    my ( $data, $objects ) = @_;
+
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
+    }
+
+    my $tag_class = MT->model('tag');
+    my $new_tag   = $objects->{ $tag_class . '#' . $data->{tag_id} }
+        or return 0;
+    $data->{tag_id} = $new_tag->id;
+
+    my $object_id_class = MT->model( $data->{object_datasource} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_datasource} eq 'entry' ) {
+            $object_id_class = MT->model('page');
+        }
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
+}
+
 sub parents {
     my $obj = shift;
     {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         tag_id    => MT->model('tag'),
+        cf_id     => MT->model('content_field'),
         object_id => {
             relations => {
-                key      => 'object_datasource',
-                entry_id => [ MT->model('entry'), MT->model('page') ],
+                key             => 'object_datasource',
+                entry_id        => [ MT->model('entry'), MT->model('page') ],
+                content_data_id => MT->model('content_data'),
             }
         }
     };
@@ -1561,7 +1726,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1671,18 +1836,143 @@ sub parents {
 
 package MT::ObjectAsset;
 
+sub restore_parent_ids {
+    my $obj = shift;
+    my ( $data, $objects ) = @_;
+
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
+    }
+
+    my $asset_class = MT->model('asset');
+    my $new_asset   = $objects->{ $asset_class . '#' . $data->{asset_id} };
+    return 0 if !$new_asset;
+    $data->{asset_id} = $new_asset->id;
+
+    my $object_id_class = MT->model( $data->{object_ds} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_ds} eq 'blog' ) {
+            $object_id_class = MT->model('website');
+        }
+        elsif ( $data->{object_ds} eq 'entry' ) {
+            $object_id_class = MT->model('page');
+        }
+        elsif ( $data->{object_ds} eq 'category' ) {
+            $object_id_class = MT->model('folder');
+        }
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
+}
+
 sub parents {
     my $obj = shift;
     {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         asset_id  => MT->model('asset'),
+        cf_id     => MT->model('content_field'),
         object_id => {
             relations => {
                 key         => 'object_ds',
                 entry_id    => [ MT->model('entry'), MT->model('page') ],
                 category_id => [ MT->model('category'), MT->model('folder') ],
                 blog_id     => [ MT->model('blog'), MT->model('website') ],
+                content_data_id => [ MT->model('content_data') ],
             }
         }
+    };
+}
+
+package MT::ObjectCategory;
+
+sub restore_parent_ids {
+    my $obj = shift;
+    my ( $data, $objects ) = @_;
+
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
+    }
+
+    my $category_class = MT->model('category');
+    my $new_category
+        = $objects->{ $category_class . '#' . $data->{category_id} };
+    if ( !$new_category ) {
+        $category_class = MT->model('folder');
+        $new_category
+            = $objects->{ $category_class . '#' . $data->{category_id} };
+    }
+    return 0 unless $new_category;
+    $data->{category_id} = $new_category->id;
+
+    my $object_id_class = MT->model( $data->{object_ds} ) or return 0;
+    my $new_object_id_object
+        = $objects->{ $object_id_class . '#' . $data->{object_id} };
+    if ( !$new_object_id_object ) {
+        if ( $data->{object_ds} eq 'entry' ) {
+            $object_id_class = MT->model('page');
+        }
+        else {
+            return 0;
+        }
+        $new_object_id_object
+            = $objects->{ $object_id_class . '#' . $data->{object_id} }
+            or return 0;
+    }
+    $data->{object_id} = $new_object_id_object->id;
+
+    if ( $data->{cf_id} ||= 0 ) {
+        my $content_field_class = MT->model('content_field');
+        my $new_content_field
+            = $objects->{ $content_field_class . '#' . $data->{cf_id} }
+            or return 0;
+        $data->{cf_id} = $new_content_field->id;
+    }
+
+    1;
+}
+
+sub parents {
+    my $obj = shift;
+    {   blog_id     => [ MT->model('blog'),     MT->model('website') ],
+        category_id => [ MT->model('category'), MT->model('folder') ],
+        cf_id       => MT->model('content_field'),
+        object_id   => {
+            relations => {
+                key             => 'object_ds',
+                entry_id        => [ MT->model('entry'), MT->model('page') ],
+                content_data_id => MT->model('content_data'),
+            },
+        },
     };
 }
 
