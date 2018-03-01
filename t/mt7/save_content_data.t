@@ -92,10 +92,10 @@ subtest 'mode=save_content_data (create)' => sub {
         }
     );
     ok( $content_data, 'got content data' );
-    is( $content_data->column('data'),
-        '{"' . $content_field->id . '":"test input"}',
-        'content data has content field data'
-    );
+    is( keys %{ $content_data->data },
+        1, 'content data has 1 content field data' );
+    is( $content_data->data->{ $content_field->id },
+        'test input', 'content field data' );
 
     is( $content_data->author_id,   $admin->id, 'author_id is admin ID' );
     is( $content_data->created_by,  $admin->id, 'created_by is admin ID' );
@@ -138,9 +138,11 @@ subtest 'mode=save_content_data (update)' => sub {
         $content_data->id, 'content data ID is not changed' );
 
     $content_data = MT::ContentData->load( $content_data->id );
-    is( $content_data->column('data'),
-        '{"' . $content_field->id . '":"test input update"}',
-        'content field data has been updated'
+    is( keys %{ $content_data->data },
+        1, 'content data has 1 content field data' );
+    is( $content_data->data->{ $content_field->id },
+        'test input update',
+        'content field data has bee updated'
     );
 
     is( $content_data->author_id,   $admin->id, 'author_id is admin ID' );
