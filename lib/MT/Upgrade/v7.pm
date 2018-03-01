@@ -87,6 +87,16 @@ sub upgrade_functions {
             version_limit => 7.0025,
             priority      => 3.2,
         },
+        'v7_migrate_content_type_fields_column' => {
+            code          => \&_v7_migrate_content_type_fields_column,
+            version_limit => 7.0027,
+            priority      => 3.2,
+        },
+        'v7_migrate_content_data_data_column' => {
+            code          => \&_v7_migrate_content_data_data_column,
+            version_limit => 7.0027,
+            priority      => 3.3,
+        },
     };
 }
 
@@ -325,8 +335,7 @@ sub _v7_migrate_privileges {
 
     $self->progress(
         $self->translate_escape(
-            'add administer_site permission for Blog Administrator...'
-        )
+            'add administer_site permission for Blog Administrator...')
     );
     my @blog_admin_roles = $role_class->load_by_permission("administer_blog");
     foreach my $blog_admin_role (@blog_admin_roles) {
@@ -738,6 +747,44 @@ sub v7_migrate_rebuild_trigger {
                 $rt->save or return $rt->error( $rt->errstr );
             }
         }
+    }
+}
+
+sub _v7_migrate_content_type_fields_column {
+    my $self = shift;
+    $self->progress(
+        $self->translate_escape(
+            'Migrating fields column of MT::ContentType...')
+    );
+    my $iter = MT->model('content_type')->load_iter;
+    while ( my $content_type = $iter->() ) {
+        $content_type->fields( $content_type->fields );
+        $content_type->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $content_type->errstr
+            )
+            );
+    }
+}
+
+sub _v7_migrate_content_data_data_column {
+    my $self = shift;
+    $self->progress(
+        $self->translate_escape(
+            'Migrating data column of MT::ContentData...')
+    );
+    my $iter = MT->model('content_data')->load_iter;
+    while ( my $content_data = $iter->() ) {
+        $content_data->data( $content_data->data );
+        $content_data->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $content_data->errstr
+            )
+            );
     }
 }
 
