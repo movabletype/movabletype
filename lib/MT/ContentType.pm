@@ -13,6 +13,7 @@ use MT;
 use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentType::UniqueID;
+use MT::Serialize;
 use MT::Util;
 
 __PACKAGE__->install_properties(
@@ -179,23 +180,22 @@ sub save {
     $self->SUPER::save(@_);
 }
 
-sub fields {
-    my $obj = shift;
-    if (@_) {
-        my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $sorted_fields = _sort_fields( \@fields );
-        my $json = eval { MT::Util::to_json( $sorted_fields, { utf8 => 1 } ) }
-            || '[]';
-        warn $@ if $@ && $MT::DebugMode;
-        $obj->column( 'fields', $json );
-    }
-    else {
-        return [] unless defined $obj->column('fields');
-        require JSON;
-        my $fields
-            = eval { JSON::decode_json( $obj->column('fields') ) } || [];
-        warn $@ if $@ && $MT::DebugMode;
-        _sort_fields($fields);
+{
+    my $ser = MT::Serialize->new('MT');
+
+    sub fields {
+        my $obj = shift;
+        if (@_) {
+            my @fields        = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
+            my $sorted_fields = _sort_fields( \@fields );
+            my $data          = $ser->serialize( \$sorted_fields );
+            $obj->column( 'fields', $data );
+        }
+        else {
+            return [] unless defined $obj->column('fields');
+            my $fields = $ser->unserialize( $obj->column('fields') );
+            _sort_fields( $fields ? $$fields : [] );
+        }
     }
 }
 
