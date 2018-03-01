@@ -52,32 +52,45 @@ $test_env->prepare_fixture(
         MT::Test->init_db;
 
         # Content Type
-        my $ct1 = MT::Test::Permission->make_content_type(
+        my $ct = MT::Test::Permission->make_content_type(
             name    => 'test content type 1',
             blog_id => $blog_id,
+        );
+        my $cf_single_line_text = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'single line text',
+            type            => 'single_line_text',
         );
         my $category_set = MT::Test::Permission->make_category_set(
             blog_id => $blog_id,
             name    => 'test category set',
         );
-        my $cf_category_01 = MT::Test::Permission->make_content_field(
+        my $cf_category = MT::Test::Permission->make_content_field(
             blog_id            => $blog_id,
-            content_type_id    => $ct1->id,
-            name               => 'categories 01',
+            content_type_id    => $ct->id,
+            name               => 'categories',
             type               => 'categories',
             related_cat_set_id => $category_set->id,
         );
-        my $category_01 = MT::Test::Permission->make_category(
+        my $category1 = MT::Test::Permission->make_category(
             blog_id         => $blog_id,
             category_set_id => $category_set->id,
-            label           => 'category 01',
+            label           => 'category1',
         );
-        my $cf_single_line_text = MT::Test::Permission->make_content_field(
-            blog_id         => $ct1->blog_id,
-            content_type_id => $ct1->id,
-            name            => 'single line text',
-            type            => 'single_line_text',
+        my $category2 = MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $category_set->id,
+            label           => 'category2',
         );
+        my $cf_tag = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'tags',
+            type            => 'tags',
+        );
+        my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
+        my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
         my $fields = [
             {   id        => $cf_single_line_text->id,
                 order     => 1,
@@ -85,40 +98,55 @@ $test_env->prepare_fixture(
                 options   => { label => $cf_single_line_text->name },
                 unique_id => $cf_single_line_text->unique_id,
             },
-            {   id      => $cf_category_01->id,
-                order   => 1,
-                type    => $cf_category_01->type,
+            {   id      => $cf_category->id,
+                order   => 2,
+                type    => $cf_category->type,
                 options => {
-                    label        => $cf_category_01->name,
+                    label        => $cf_category->name,
                     category_set => $category_set->id,
                     multiple     => 1,
                     max          => 5,
                     min          => 1,
                 },
             },
+            {   id      => $cf_tag->id,
+                order   => 3,
+                type    => $cf_tag->type,
+                options => {
+                    label    => $cf_tag->name,
+                    multiple => 1,
+                    max      => 5,
+                    min      => 1,
+                },
+            },
         ];
-        $ct1->fields($fields);
-        $ct1->save or die $ct1->errstr;
+        $ct->fields($fields);
+        $ct->save or die $ct->errstr;
 
         # Content Data
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
-            content_type_id => $ct1->id,
+            content_type_id => $ct->id,
             status          => MT::ContentStatus::RELEASE(),
             data            => {
                 $cf_single_line_text->id => 'test single line text ' . $_,
-                $cf_category_01->id      => [ $category_01->id ],
+                (   $_ == 2
+                    ? ( $cf_category->id =>
+                            [ $category2->id, $category1->id ] )
+                    : ()
+                ),
+                $cf_tag->id => [ $tag2->id, $tag1->id ],
             },
         ) for ( 1 .. 5 );
     }
 );
 
-my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
+my $ct = MT::ContentType->load( { name => 'test content type 1' } );
 my $cf1 = MT::ContentField->load( { name => 'single line text' } );
-my $cf2 = MT::ContentField->load( { name => 'categories 01' } );
+my $cf2 = MT::ContentField->load( { name => 'categories' } );
 
-$vars->{ct1_id}  = $ct1->id;
-$vars->{ct1_uid} = $ct1->unique_id;
+$vars->{ct_id}   = $ct->id;
+$vars->{ct_uid}  = $ct->unique_id;
 $vars->{cf1_uid} = $cf1->unique_id;
 $vars->{cf2_uid} = $cf2->unique_id;
 
@@ -142,14 +170,14 @@ aaaaa
 
 === MT::Contents with content_type_id modifier
 --- template
-<mt:Contents content_type_id="[% ct1_id %]">a</mt:Contents>
+<mt:Contents content_type_id="[% ct_id %]">a</mt:Contents>
 --- expected
 aaaaa
 
 === MT::Contents with ct_unique_id modifier
 --- SKIP
 --- template
-<mt:Contents ct_unique_id="[% ct1_uid %]">a</mt:Contents>
+<mt:Contents ct_unique_id="[% ct_uid %]">a</mt:Contents>
 --- expected
 aaaaa
 
@@ -199,16 +227,8 @@ test single line text 3
 
 === MT::ContentsCount with category
 --- template
-<mt:Contents blog_id="1" field:[% cf2_uid %]="category 01" sort_by="field:[% cf1_uid %]">
+<mt:Contents blog_id="1" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
-test single line text 5
-
-test single line text 4
-
-test single line text 3
-
 test single line text 2
-
-test single line text 1
