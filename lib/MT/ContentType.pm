@@ -17,15 +17,15 @@ use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                      => 'integer not null auto_increment',
-            'blog_id'                 => 'integer not null',
-            'name'                    => 'string(255)',
-            'description'             => 'text',
-            'version'                 => 'integer',
-            'unique_id'               => 'string(40) not null',
-            'data_label'              => 'string(40)',
-            'fields'                  => 'blob',
-            'user_disp_option'        => 'boolean',
+            'id'               => 'integer not null auto_increment',
+            'blog_id'          => 'integer not null',
+            'name'             => 'string(255)',
+            'description'      => 'text',
+            'version'          => 'integer',
+            'unique_id'        => 'string(40) not null',
+            'data_label'       => 'string(40)',
+            'fields'           => 'blob',
+            'user_disp_option' => 'boolean',
         },
         indexes => {
             blog_id   => 1,
@@ -186,11 +186,15 @@ sub fields {
         my $sorted_fields = _sort_fields( \@fields );
         my $json = eval { MT::Util::to_json( $sorted_fields, { utf8 => 1 } ) }
             || '[]';
+        warn $@ if $@ && $MT::DebugMode;
         $obj->column( 'fields', $json );
     }
     else {
+        return [] unless defined $obj->column('fields');
+        require JSON;
         my $fields
             = eval { JSON::decode_json( $obj->column('fields') ) } || [];
+        warn $@ if $@ && $MT::DebugMode;
         _sort_fields($fields);
     }
 }

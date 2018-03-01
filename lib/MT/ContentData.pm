@@ -555,6 +555,7 @@ sub data {
         if ( ref $_[0] ) {
             $json
                 = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
+            warn $@ if $@ && $MT::DebugMode;
         }
         else {
             $json = $_[0];
@@ -562,13 +563,19 @@ sub data {
         $obj->column( 'data', $json );
     }
     else {
+        require Encode;
+        require JSON;
+        my $data;
         my $json = $obj->column('data');
+        return {} unless defined $json;
         if ( Encode::is_utf8($json) ) {
-            eval { JSON::from_json($json) } || {};
+            $data = eval { JSON::from_json($json) } || {};
         }
         else {
-            eval { JSON::decode_json($json) } || {};
+            $data = eval { JSON::decode_json($json) } || {};
         }
+        warn $@ if $@ && $MT::DebugMode;
+        $data;
     }
 }
 
