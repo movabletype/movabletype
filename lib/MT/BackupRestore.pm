@@ -1664,14 +1664,16 @@ sub restore_parent_ids {
     my $obj = shift;
     my ( $data, $objects ) = @_;
 
-    my $blog_class = MT->model('blog');
-    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
-    if ( !$new_blog ) {
-        $blog_class = MT->model('website');
-        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
     }
-    return 0 if !$new_blog;
-    $data->{blog_id} = $new_blog->id;
 
     my $tag_class = MT->model('tag');
     my $new_tag   = $objects->{ $tag_class . '#' . $data->{tag_id} }
@@ -1703,6 +1705,21 @@ sub restore_parent_ids {
     }
 
     1;
+}
+
+sub parents {
+    my $obj = shift;
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
+        tag_id    => MT->model('tag'),
+        cf_id     => MT->model('content_field'),
+        object_id => {
+            relations => {
+                key             => 'object_datasource',
+                entry_id        => [ MT->model('entry'), MT->model('page') ],
+                content_data_id => MT->model('content_data'),
+            }
+        }
+    };
 }
 
 package MT::Permission;
@@ -1823,14 +1840,16 @@ sub restore_parent_ids {
     my $obj = shift;
     my ( $data, $objects ) = @_;
 
-    my $blog_class = MT->model('blog');
-    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
-    if ( !$new_blog ) {
-        $blog_class = MT->model('website');
-        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
     }
-    return 0 if !$new_blog;
-    $data->{blog_id} = $new_blog->id;
 
     my $asset_class = MT->model('asset');
     my $new_asset   = $objects->{ $asset_class . '#' . $data->{asset_id} };
@@ -1870,20 +1889,39 @@ sub restore_parent_ids {
     1;
 }
 
+sub parents {
+    my $obj = shift;
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
+        asset_id  => MT->model('asset'),
+        cf_id     => MT->model('content_field'),
+        object_id => {
+            relations => {
+                key         => 'object_ds',
+                entry_id    => [ MT->model('entry'), MT->model('page') ],
+                category_id => [ MT->model('category'), MT->model('folder') ],
+                blog_id     => [ MT->model('blog'), MT->model('website') ],
+                content_data_id => [ MT->model('content_data') ],
+            }
+        }
+    };
+}
+
 package MT::ObjectCategory;
 
 sub restore_parent_ids {
     my $obj = shift;
     my ( $data, $objects ) = @_;
 
-    my $blog_class = MT->model('blog');
-    my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
-    if ( !$new_blog ) {
-        $blog_class = MT->model('website');
-        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+    if ( $data->{blog_id} ||= 0 ) {
+        my $blog_class = MT->model('blog');
+        my $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        if ( !$new_blog ) {
+            $blog_class = MT->model('website');
+            $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
+        }
+        return 0 if !$new_blog;
+        $data->{blog_id} = $new_blog->id;
     }
-    return 0 if !$new_blog;
-    $data->{blog_id} = $new_blog->id;
 
     my $category_class = MT->model('category');
     my $new_category
@@ -1921,6 +1959,57 @@ sub restore_parent_ids {
     }
 
     1;
+}
+
+sub parents {
+    my $obj = shift;
+    {   blog_id     => [ MT->model('blog'),     MT->model('website') ],
+        category_id => [ MT->model('category'), MT->model('folder') ],
+        cf_id       => MT->model('content_field'),
+        object_id   => {
+            relations => {
+                key             => 'object_ds',
+                entry_id        => [ MT->model('entry'), MT->model('page') ],
+                content_data_id => MT->model('content_data'),
+            },
+        },
+    };
+}
+
+package MT::ObjectScore;
+
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    # authors are processed in _populate_obj_to_backup method
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => { object_ds => [ 'entry', 'page' ], },
+            args  => {
+                'join' => MT->model('entry')->join_on(
+                    undef,
+                    {   id      => \'=objectscore_object_id',
+                        blog_id => $blog_ids,
+                    },
+                    { unique => 1, }
+                )
+            }
+        };
+    }
+    return { terms => undef, args => undef };
+}
+
+sub parents {
+    my $obj = shift;
+    {   author_id => MT->model('author'),
+        object_id => {
+            relations => {
+                key      => 'object_ds',
+                entry_id => [ MT->model('entry'), MT->model('page') ],
+            }
+        }
+    };
 }
 
 package MT::IPBanList;
