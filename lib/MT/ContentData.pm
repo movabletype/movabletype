@@ -26,6 +26,7 @@ use MT::ObjectAsset;
 use MT::ObjectCategory;
 use MT::ObjectTag;
 use MT::Tag;
+use MT::Serialize;
 use MT::Util;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
@@ -548,26 +549,41 @@ sub _remove_objects {
     1;
 }
 
-sub data {
-    my $obj = shift;
-    if (@_) {
-        my $json;
-        if ( ref $_[0] ) {
-            $json
-                = eval { MT::Util::to_json( $_[0], { utf8 => 1 } ) } || '{}';
+{
+    my $ser = MT::Serialize->new('MT');
+
+    sub data {
+        my $obj = shift;
+        if (@_) {
+            my $data;
+            if ( ref $_[0] ) {
+                $data = $ser->serialize( \$_[0] );
+            }
+            else {
+                $data = $_[0];
+            }
+            $obj->column( 'data', $data );
         }
         else {
-            $json = $_[0];
-        }
-        $obj->column( 'data', $json );
-    }
-    else {
-        my $json = $obj->column('data');
-        if ( Encode::is_utf8($json) ) {
-            eval { JSON::from_json($json) } || {};
-        }
-        else {
-            eval { JSON::decode_json($json) } || {};
+            my $raw_data = $obj->column('data');
+            return {} unless defined $raw_data;
+            if ( $raw_data =~ /^SERG/ ) {
+                my $data = $ser->unserialize($raw_data);
+                $data ? $$data : {};
+            }
+            else {
+                require Encode;
+                require JSON;
+                my $data;
+                if ( Encode::is_utf8($raw_data) ) {
+                    $data = eval { JSON::from_json($raw_data) } || {};
+                }
+                else {
+                    $data = eval { JSON::decode_json($raw_data) } || {};
+                }
+                warn $@ if $@ && $MT::DebugMode;
+                $data;
+            }
         }
     }
 }
