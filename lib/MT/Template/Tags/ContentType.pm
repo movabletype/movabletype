@@ -375,23 +375,123 @@ sub _hdlr_contents {
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
                     ->{ $cf->type }{data_type};
-                my $join = MT->model('cf_idx')->join_on(
-                    'content_data_id',
-                    {   content_field_id      => $cf->id,
-                        'value_' . $data_type => $value,
-                    },
-                    { alias => 'cf_idx_' . $cf->unique_id }
-                );
-                if ( $args{join} ) {
-                    push @{ $args{joins} }, $args{join};
-                    push @{ $args{joins} }, $join;
-                    delete $args{join};
+                if ( $type eq 'categories' ) {
+                    my $category_arg = $value;
+                    my ( $cexpr, $cats );
+                    if ( ref $category_arg ) {
+                        my $is_and = ( shift @{$category_arg} ) eq 'AND';
+                        $cats  = [ @{ $category_arg->[0] } ];
+                        $cexpr = $ctx->compile_category_filter(
+                            undef, $cats,
+                            {   'and'    => $is_and,
+                                children => $cat_class_type eq 'category'
+                                ? ( $args->{include_subcategories} ? 1 : 0 )
+                                : ( $args->{include_subfolders} ? 1 : 0 )
+                            }
+                        );
+                    }
+                    else {
+                        if (( $category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i )
+                            && ((   $cat_class_type eq 'category'
+                                    && !$args->{include_subcategories}
+                                )
+                                || ( $cat_class_type ne 'category'
+                                    && !$args->{include_subfolders} )
+                            )
+                            )
+                        {
+                            my @cats
+                                = $ctx->cat_path_to_category( $category_arg,
+                                [ \%blog_terms, \%blog_args ],
+                                $cat_class_type );
+                            if (@cats) {
+                                $cats = \@cats;
+                            }
+                            $cexpr
+                                = $ctx->compile_category_filter(
+                                $category_arg, $cats );
+                        }
+                        else {
+                            my @cats = $cat_class->load( \%blog_terms,
+                                \%blog_args );
+                            if (@cats) {
+                                $cats = \@cats;
+                            }
+                            $cexpr = $ctx->compile_category_filter(
+                                $category_arg,
+                                $cats,
+                                {   children => $cat_class_type eq 'category'
+                                    ? ( $args->{include_subcategories}
+                                        ? 1
+                                        : 0
+                                        )
+                                    : ( $args->{include_subfolders} ? 1 : 0 )
+                                }
+                            );
+                        }
+                    }
+                    if ($cexpr) {
+                        my @cat_ids = map { $_->id } @$cats;
+                        my $preloader = sub {
+                            my ($cd) = @_;
+                            my @c_ids
+                                = grep { $cd->is_in_category($_) } @$cats;
+                            my %map;
+                            $map{ $_->id } = 1 for @c_ids;
+                            \%map;
+                        };
+                        if ( !$archive_contents ) {
+                            if ( $category_arg !~ m/\bNOT\b/i ) {
+                                return
+                                    MT::Template::Context::_hdlr_pass_tokens_else(
+                                    @_)
+                                    unless @cat_ids;
+                                my $join = MT->model('cf_idx')->join_on(
+                                    'content_data_id',
+                                    {   content_field_id => $cf->id,
+                                        value_integer    => @cat_ids
+                                    },
+                                    { alias => 'cat_cf_idx' }
+                                );
+                                push @{ $args{joins} }, $join;
+                            }
+                        }
+                        push @filters,
+                            sub { $cexpr->( $preloader->( $_[0] ) ) };
+
+                        #sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate(
+                                "You have an error in your '[_2]' attribute: [_1]",
+                                $category_arg,
+                                $key
+                            )
+                        );
+                    }
                 }
-                elsif ( $args{joins} ) {
-                    push @{ $args{joins} }, $join;
+                elsif ( $type eq 'tags' ) {
                 }
                 else {
-                    push @{ $args{joins} }, $join;
+                    my $join = MT->model('cf_idx')->join_on(
+                        'content_data_id',
+                        {   content_field_id      => $cf->id,
+                            'value_' . $data_type => $value,
+                        },
+                        { alias => 'cf_idx_' . $cf->unique_id }
+                    );
+                    if ( $args{join} ) {
+                        push @{ $args{joins} }, $args{join};
+                        push @{ $args{joins} }, $join;
+                        delete $args{join};
+                    }
+                    elsif ( $args{joins} ) {
+                        push @{ $args{joins} }, $join;
+                    }
+                    else {
+                        push @{ $args{joins} }, $join;
+                    }
                 }
             }
         }
@@ -430,9 +530,9 @@ sub _hdlr_contents {
             my $j   = 0;
             my $off = $args->{offset} || 0;
             my $n   = $args->{limit};
-        ENTRY: while ( my $c = $iter->() ) {
+        CONTENT_DATA: while ( my $c = $iter->() ) {
                 for (@filters) {
-                    next ENTRY unless $_->($c);
+                    next CONTENT_DATA unless $_->($c);
                 }
                 next if $off && $j++ < $off;
                 push @contents, $c;
@@ -509,9 +609,9 @@ sub _hdlr_contents {
             my $j   = 0;
             my $off = $args->{offset} || 0;
             my $n   = $args->{limit};
-        ENTRY2: foreach my $c (@$archive_contents) {
+        CONTENT_DATA2: foreach my $c (@$archive_contents) {
                 for (@filters) {
-                    next ENTRY2 unless $_->($c);
+                    next CONTENT_DATA2 unless $_->($c);
                 }
                 next if $off && $j++ < $off;
                 push @contents, $c;

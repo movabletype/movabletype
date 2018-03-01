@@ -56,6 +56,22 @@ $test_env->prepare_fixture(
             name    => 'test content type 1',
             blog_id => $blog_id,
         );
+        my $category_set = MT::Test::Permission->make_category_set(
+            blog_id => $blog_id,
+            name    => 'test category set',
+        );
+        my $cf_category_01 = MT::Test::Permission->make_content_field(
+            blog_id            => $blog_id,
+            content_type_id    => $ct1->id,
+            name               => 'categories 01',
+            type               => 'categories',
+            related_cat_set_id => $category_set->id,
+        );
+        my $category_01 = MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $category_set->id,
+            label           => 'category 01',
+        );
         my $cf_single_line_text = MT::Test::Permission->make_content_field(
             blog_id         => $ct1->blog_id,
             content_type_id => $ct1->id,
@@ -69,6 +85,17 @@ $test_env->prepare_fixture(
                 options   => { label => $cf_single_line_text->name },
                 unique_id => $cf_single_line_text->unique_id,
             },
+            {   id      => $cf_category_01->id,
+                order   => 1,
+                type    => $cf_category_01->type,
+                options => {
+                    label        => $cf_category_01->name,
+                    category_set => $category_set->id,
+                    multiple     => 1,
+                    max          => 5,
+                    min          => 1,
+                },
+            },
         ];
         $ct1->fields($fields);
         $ct1->save or die $ct1->errstr;
@@ -80,17 +107,20 @@ $test_env->prepare_fixture(
             status          => MT::ContentStatus::RELEASE(),
             data            => {
                 $cf_single_line_text->id => 'test single line text ' . $_,
+                $cf_category_01->id      => [ $category_01->id ],
             },
         ) for ( 1 .. 5 );
     }
 );
 
 my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
-my $cf = MT::ContentField->load( { name => 'single line text' } );
+my $cf1 = MT::ContentField->load( { name => 'single line text' } );
+my $cf2 = MT::ContentField->load( { name => 'categories 01' } );
 
 $vars->{ct1_id}  = $ct1->id;
 $vars->{ct1_uid} = $ct1->unique_id;
-$vars->{cf_uid} = $cf->unique_id;
+$vars->{cf1_uid} = $cf1->unique_id;
+$vars->{cf2_uid} = $cf2->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -144,7 +174,7 @@ aaa
 === MT::ContentsCount with sort_by content field
 --- template
 <mt:Contents blog_id="1" name="test content type 1" sort_by="field:single line text">
-<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+<mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
 test single line text 5
@@ -160,9 +190,25 @@ test single line text 1
 
 === MT::ContentsCount with sort_by content field
 --- template
-<mt:Contents blog_id="1" field:[% cf_uid %]="test single line text 3" sort_by="field:single line text">
-<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+<mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
+<mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
 test single line text 3
 
+
+=== MT::ContentsCount with category
+--- template
+<mt:Contents blog_id="1" field:[% cf2_uid %]="category 01" sort_by="field:[% cf1_uid %]">
+<mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
+</mt:Contents>
+--- expected
+test single line text 5
+
+test single line text 4
+
+test single line text 3
+
+test single line text 2
+
+test single line text 1
