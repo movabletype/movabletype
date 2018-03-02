@@ -482,6 +482,11 @@ sub init_config {
     return 1;
 }
 
+sub init_permissions {
+    return 1;
+}
+
+
 sub pre_start {
     my $app = shift;
     my %param;
