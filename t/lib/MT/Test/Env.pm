@@ -393,6 +393,8 @@ sub load_schema_and_fixture {
     require MT::Test;
     MT::Test->_load_classes;
 
+    MT->instance->init_config_from_db;
+
     return 1;
 }
 

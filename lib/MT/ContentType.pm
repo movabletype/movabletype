@@ -13,19 +13,20 @@ use MT;
 use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentType::UniqueID;
+use MT::Serialize;
 use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'                      => 'integer not null auto_increment',
-            'blog_id'                 => 'integer not null',
-            'name'                    => 'string(255)',
-            'description'             => 'text',
-            'version'                 => 'integer',
-            'unique_id'               => 'string(40) not null',
-            'data_label'              => 'string(40)',
-            'fields'                  => 'blob',
-            'user_disp_option'        => 'boolean',
+            'id'               => 'integer not null auto_increment',
+            'blog_id'          => 'integer not null',
+            'name'             => 'string(255)',
+            'description'      => 'text',
+            'version'          => 'integer',
+            'unique_id'        => 'string(40) not null',
+            'data_label'       => 'string(40)',
+            'fields'           => 'blob',
+            'user_disp_option' => 'boolean',
         },
         indexes => {
             blog_id   => 1,
@@ -179,19 +180,31 @@ sub save {
     $self->SUPER::save(@_);
 }
 
-sub fields {
-    my $obj = shift;
-    if (@_) {
-        my @fields = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
-        my $sorted_fields = _sort_fields( \@fields );
-        my $json = eval { MT::Util::to_json( $sorted_fields, { utf8 => 1 } ) }
-            || '[]';
-        $obj->column( 'fields', $json );
-    }
-    else {
-        my $fields
-            = eval { JSON::decode_json( $obj->column('fields') ) } || [];
-        _sort_fields($fields);
+{
+    my $ser = MT::Serialize->new('MT');
+
+    sub fields {
+        my $obj = shift;
+        if (@_) {
+            my @fields        = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
+            my $sorted_fields = _sort_fields( \@fields );
+            my $data          = $ser->serialize( \$sorted_fields );
+            $obj->column( 'fields', $data );
+        }
+        else {
+            my $raw_data = $obj->column('fields');
+            return [] unless defined $raw_data;
+            if ( $raw_data =~ /^SERG/ ) {
+                my $fields = $ser->unserialize( $obj->column('fields') );
+                _sort_fields( $fields ? $$fields : [] );
+            }
+            else {
+                require JSON;
+                my $fields = eval { JSON::decode_json($raw_data) } || [];
+                warn $@ if $@ && $MT::DebugMode;
+                _sort_fields($fields);
+            }
+        }
     }
 }
 

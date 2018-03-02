@@ -34,7 +34,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0026' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0027' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
@@ -2512,7 +2512,7 @@ sub core_commenter_authenticators {
             label      => 'TypePad',
             logo       => 'images/comment/signin_typepad.png',
             logo_small => 'images/comment/typepad_logo.png',
-            order => 17,
+            order      => 17,
         },
         'YahooJP' => {
             label      => 'Yahoo! JAPAN',
