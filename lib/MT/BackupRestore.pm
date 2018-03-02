@@ -8,6 +8,7 @@ package MT::BackupRestore;
 use strict;
 use warnings;
 
+use MT::BackupRestore::ContentTypePermission;
 use MT::Util qw( encode_url );
 use Symbol;
 use base qw( MT::ErrorHandler );
@@ -861,6 +862,15 @@ sub cb_restore_objects {
             # call trigger to save meta
             $new_author->call_trigger( 'post_save', $new_author );
         }
+        elsif ( $key =~ /^MT::Role#(\d+)$/ ) {
+            my $role                = $all_objects->{$key};
+            my $updated_permissions = MT::BackupRestore::ContentTypePermission
+                ->update_permissions( $role->permissions, $all_objects );
+            if ($updated_permissions) {
+                $role->permissions($updated_permissions);
+                $role->save;
+            }
+        }
         elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
             my $blog   = $all_objects->{$key};
             my $orders = {
@@ -1431,20 +1441,61 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
-    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
-        return {
-            terms => undef,
-            args  => {
-                'join' => [
-                    'MT::Association', 'role_id',
-                    { blog_id => $blog_ids }, { unique => 1 }
-                ]
-            }
-        };
-    }
-    else {
+    unless ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return { terms => undef, args => undef };
     }
+
+    my %role_id;
+    my $iter = MT->model('role')->load_iter(
+        undef,
+        {   'join' => MT->model('association')->join_on(
+                'role_id',
+                { blog_id => $blog_ids },
+                { unique  => 1 }
+            )
+        }
+    );
+    while ( my $role = $iter->() ) {
+        $role_id{ $role->id } = 1;
+    }
+
+    my ( %content_type_uid_role, %content_field_uid_role );
+    $iter = MT->model('role')->load_iter;
+    while ( my $role = $iter->() ) {
+        my $content_type_uids = MT::BackupRestore::ContentTypePermission
+            ->get_content_type_uids( $role->permissions );
+        $content_type_uid_role{$_} = $role->id for @$content_type_uids;
+        my $content_field_uids = MT::BackupRestore::ContentTypePermission
+            ->get_content_field_uids( $role->permissions );
+        $content_field_uid_role{$_} = $role->id for @$content_field_uids;
+    }
+
+    if (%content_type_uid_role) {
+        my $ct_iter = MT->model('content_type')->load_iter(
+            {   blog_id   => $blog_ids,
+                unique_id => [ keys %content_type_uid_role ],
+            }
+        );
+        while ( my $content_type = $ct_iter->() ) {
+            $role_id{ $content_type_uid_role{ $content_type->unique_id } }
+                = 1;
+        }
+    }
+
+    if (%content_field_uid_role) {
+        my $cf_iter = MT->model('content_field')->load_iter(
+            {   blog_id   => $blog_ids,
+                unique_id => [ keys %content_field_uid_role ]
+            }
+        );
+        while ( my $content_field = $cf_iter->() ) {
+            $role_id{ $content_field_uid_role{ $content_field->unique_id } }
+                = 1;
+        }
+    }
+
+    my $role_ids = %role_id ? [ keys %role_id ] : 0;
+    { terms => { id => $role_ids }, args => undef };
 }
 
 package MT::Asset;
