@@ -1029,6 +1029,22 @@ sub cb_restore_objects {
     }
     $callback->( MT->translate("Done.") . "\n" );
 
+    $i = 0;
+    $callback->(
+        MT->translate( "Rebuilding permissions ... ( [_1] )", $i++ ),
+        'cb-restore-permission'
+    );
+    my $iter = MT->model('permission')->load_iter;
+    while ( my $permission = $iter->() ) {
+        $permission->permissions('');
+        $permission->rebuild;
+        $callback->(
+            MT->translate( "Rebuilding permissions ... ( [_1] )", $i++ ),
+            'cb-restore-permission'
+        );
+    }
+    $callback->( MT->translate("Done.") . "\n" );
+
     1;
 }
 
