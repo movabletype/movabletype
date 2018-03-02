@@ -59,13 +59,13 @@
             var self = this;
             self.options_field = $('<div class="options"></div>');
 
-            var option_alt = $('<div class="form-group"><label for="' + self.id + '_option_alt" class="form-control-label">' + trans('alt') + '</label><input type="text" name="field_option_alt" id="' + self.id + '_option_alt" class="form-control"></div>');
+            var option_alt = $('<div class="form-group"><label for="' + self.id + '_option_alt" class="form-control-label">' + trans('alt') + '</label><input type="text" name="field_option_alt" id="' + self.id + '_option_alt" class="form-control" mt:watch-change="1"></div>');
             self.options_field.append(option_alt);
 
-            var option_title = $('<div class="form-group"><label for="' + self.id + '_option_title" class="form-control-label">' + trans('title') + '</label><input type="text" name="field_option_title" id="' + self.id + '_option_title" class="form-control"></div>');
+            var option_title = $('<div class="form-group"><label for="' + self.id + '_option_title" class="form-control-label">' + trans('title') + '</label><input type="text" name="field_option_title" id="' + self.id + '_option_title" class="form-control" mt:watch-change="1"></div>');
             self.options_field.append(option_title);
 
-            var option_width = $('<div class="form-group"><label for="' + self.id + '_option_width" class="form-control-label">' + trans('width') + '</label><div class="input-group"><input type="number" name="field_option_width"  id="' + self.id + '_option_width" class="form-control"><div class="input-group-append"><span class="input-group-text">px</span></div></div></div>');
+            var option_width = $('<div class="form-group"><label for="' + self.id + '_option_width" class="form-control-label">' + trans('width') + '</label><div class="input-group"><input type="number" name="field_option_width"  id="' + self.id + '_option_width" class="form-control" mt:watch-change="1"><div class="input-group-append"><span class="input-group-text">px</span></div></div></div>');
             self.options_field.append(option_width);
 
             var option_align = $('<div class="form-group"><label for="' + self.id + '_option_arrangement" class="form-control-label mr-3">' + trans('Arrangement') + '</label><div class="btn-group btn-group-space alignbutton" role="group"></div></div>');
@@ -82,7 +82,7 @@
 
             self.options_field.append(option_align);
 
-            var option_caption = $('<div class="form-group"><label for="' + self.id + '_option_caption" class="form-control-label">' + trans('caption') + '</label><input type="text" name="field_option_caption" id="' + self.id + '_option_caption" class="form-control"></div>');
+            var option_caption = $('<div class="form-group"><label for="' + self.id + '_option_caption" class="form-control-label">' + trans('caption') + '</label><input type="text" name="field_option_caption" id="' + self.id + '_option_caption" class="form-control" mt:watch-change="1"></div>');
             self.options_field.append(option_caption);
 
 

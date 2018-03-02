@@ -201,10 +201,17 @@ sub edit {
         = $content_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
-    my $blockeditor_data
-        = $content_data
-        ? $content_data->block_editor_data()
-        : undef;
+    my $blockeditor_data;
+    if ( $app->param( 'block_editor_data' ) ) {
+      $blockeditor_data = $app->param( 'block_editor_data' );
+    } 
+    elsif($content_data_id || $data) {
+      if($data->{block_editor_data}){
+        $blockeditor_data = $data->{block_editor_data};
+      } else {
+        $blockeditor_data = $content_data->block_editor_data();
+      }
+    }
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -291,6 +298,10 @@ sub edit {
             {
                 $_->{convert_breaks}
                     = $$convert_breaks->{ $_->{content_field_id} };
+            }
+            elsif ( $content_data_id || $data ) {
+                my $key = 'content-field-' . $_->{content_field_id} . '_convert_breaks';
+                $_->{convert_breaks} = $app->param($key);
             }
             else {
                 $_->{convert_breaks} = $_->{options}{input_format};
@@ -413,6 +424,10 @@ sub save {
             if ( $f->{type} eq 'multi_line_text' ) {
                 $convert_breaks->{ $f->{id} } = $app->param(
                     'content-field-' . $f->{id} . '_convert_breaks' );
+                my $key = $f->{id} . '_convert_breaks';
+                $data->{ $key }
+                    = $app->param(
+                        'content-field-' . $f->{id} . '_convert_breaks' );
             }
         }
     }
@@ -574,7 +589,7 @@ sub save {
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
 
-    my $block_editor_data = $app->param('blockeditor-data');
+    my $block_editor_data = $app->param('block_editor_data');
     $content_data->block_editor_data($block_editor_data);
 
     if ( !$content_type->data_label ) {
