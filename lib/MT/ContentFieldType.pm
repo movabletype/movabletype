@@ -141,6 +141,9 @@ sub _multi_line_text_registry {
         order                => 30,
         icon_class           => 'ic_multiline',
         can_data_label_field => 0,
+        field_html           => 'field_html/field_html_multi_line_text.tmpl',
+        field_html_params =>
+            '$Core::MT::ContentFieldType::MultiLineText::field_html_params',
         data_load_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::data_load_handler',
         field_value_handler =>

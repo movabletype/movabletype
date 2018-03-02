@@ -10,6 +10,20 @@ use warnings;
 use JSON ();
 use MT::I18N qw( first_n_text const );
 
+
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
+
+    my $options        = $field_data->{options};
+    my $input_format = $options->{input_format};
+    my $required = $options->{required} ? 'required' : '';
+
+    {   convert_breaks => $input_format,
+        required       => $required,
+    };
+
+}
+
 sub theme_data_import_handler {
     my ( $theme, $blog, $ct, $cf_type, $field, $field_data, $data,
         $convert_breaks )
@@ -28,7 +42,7 @@ sub data_load_handler {
     $convert_breaks = '' unless defined $convert_breaks;
 
     if ( $convert_breaks eq 'blockeditor' ) {
-        my $data_json = $app->param('blockeditor-data');
+        my $data_json = $app->param('block_editor_data');
         my $data_obj;
         my $html = "";
         my @blockdata;
