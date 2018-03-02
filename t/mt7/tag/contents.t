@@ -135,7 +135,9 @@ $test_env->prepare_fixture(
                             [ $category2->id, $category1->id ] )
                     : ()
                 ),
-                $cf_tag->id => [ $tag2->id, $tag1->id ],
+                (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
+                    : ()
+                ),
             },
         ) for ( 1 .. 5 );
     }
@@ -144,11 +146,13 @@ $test_env->prepare_fixture(
 my $ct = MT::ContentType->load( { name => 'test content type 1' } );
 my $cf1 = MT::ContentField->load( { name => 'single line text' } );
 my $cf2 = MT::ContentField->load( { name => 'categories' } );
+my $cf3 = MT::ContentField->load( { name => 'tags' } );
 
 $vars->{ct_id}   = $ct->id;
 $vars->{ct_uid}  = $ct->unique_id;
 $vars->{cf1_uid} = $cf1->unique_id;
 $vars->{cf2_uid} = $cf2->unique_id;
+$vars->{cf3_uid} = $cf3->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -232,3 +236,12 @@ test single line text 3
 </mt:Contents>
 --- expected
 test single line text 2
+
+
+=== MT::ContentsCount with tag
+--- template
+<mt:Contents blog_id="1" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
+<mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
+</mt:Contents>
+--- expected
+test single line text 4
