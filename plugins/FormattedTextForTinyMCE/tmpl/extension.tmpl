@@ -4,11 +4,11 @@
 (function($) {
 
 $.extend(MT.Editor.TinyMCE.config, {
-    template_templates: [
+    templates: [
     <mt:loop name="formatted_texts" glue=",">
         {
             title: "<mt:var name="label" encode_js="1" />",
-            src: "<mt:var name="script_url">?__mode=tiny_mce_view_formatted_text_text&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" />",
+            url: "<mt:var name="script_url">?__mode=tiny_mce_view_formatted_text_text&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" />",
             description: "<mt:var name="description" encode_html="1" nl2br="1" encode_js="1" />"
         }
     </mt:loop>
