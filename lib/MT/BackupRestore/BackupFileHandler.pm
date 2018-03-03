@@ -13,6 +13,8 @@ use MIME::Base64;
 use File::Basename;
 use File::Spec;
 
+use MT::BackupRestore::ContentTypePermission;
+
 @MT::BackupRestore::BackupFileHandler::ISA = qw(XML::SAX::Base);
 
 my $is_mswin32 = $^O eq 'MSWin32' ? 1 : 0;
@@ -347,7 +349,10 @@ sub start_element {
 
                     MT::Util::Log->info( '   End import   ' . $class );
                 }
-                elsif ( 'cf' eq $name || 'content_field' eq $name ) {
+                elsif ('content_type' eq $name
+                    || 'cf' eq $name
+                    || 'content_field' eq $name )
+                {
                     $objects->{ "$class#uid:" . $column_data{unique_id} }
                         = $obj = $class->new;
                 }
@@ -623,7 +628,12 @@ sub end_element {
                         sort { $a cmp $b } split( ',', $obj->permissions );
                     my $cur_perms = join '',
                         sort { $a cmp $b } split( ',', $role->permissions );
-                    if ( $old_perms eq $cur_perms ) {
+                    if ($old_perms eq $cur_perms
+                        && !MT::BackupRestore::ContentTypePermission
+                        ->has_permission(
+                            $old_perms)
+                        )
+                    {
                         $self->{objects}->{"$class#$old_id"} = $role;
                         $exists = 1;
                     }
