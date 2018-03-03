@@ -15,7 +15,7 @@
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
   <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" alia-haspopup="true" aria-expanded="false">
+    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
       <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
