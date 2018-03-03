@@ -576,7 +576,7 @@ sub export {
         my ($arctype) = $output =~ /\.(.*)$/;
         my $arc_info = MT->registry( archivers => $arctype )
             or return $app->error(
-            $app->translate("Unknown archiver type : $arctype"), 400 );
+            $app->translate("Unknown archiver type: [_1]", $arctype), 400 );
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
