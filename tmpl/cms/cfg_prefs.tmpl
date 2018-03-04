@@ -685,33 +685,33 @@
   <mtapp:settinggroup id="upload-settings">
     <legend class="h3"><__trans phrase="Upload"></legend>
 
-    <div class="row">
-      <div class="form-group col">
-        <label><__trans phrase="Upload Destination"></label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="form-inline col">
-        <select name="upload_destination" id="upload_destination" class="custom-select form-control" onchange="uploadDestinationSelect(this)">
-        <mt:loop name="destination_loop">
-          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
-        </mt:loop>
-        </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
-        <span class="upload-extra-path">
-          /
-          <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
-        </span>
-      </div>
-    </div>
-    <div class="row">
-      <div class="form-group col"> 
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
+    <mtapp:setting
+      id="upload_destination"
+      label="<__trans phrase="Upload Destination">"
+    >
+      <div class="row">
+        <div class="form-inline col">
+          <select name="upload_destination" id="upload_destination" class="custom-select form-control" onchange="uploadDestinationSelect(this)">
+          <mt:loop name="destination_loop">
+            <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+          </mt:loop>
+          </select>
+          <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
+          <span class="upload-extra-path">
+            /
+            <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
+          </span>
         </div>
       </div>
-    </div>
+      <div class="row">
+        <div class="form-group col"> 
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <label class="custom-control-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
+          </div>
+        </div>
+      </div>
+    </mtapp:setting>
 
     <mtapp:setting
       id="auto_rename_non_ascii"
