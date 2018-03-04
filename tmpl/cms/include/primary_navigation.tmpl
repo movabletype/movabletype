@@ -73,7 +73,7 @@ function stopPropagation(e) {
 <mt:else>
   <div class="mt-primaryNavigation__header">
 </mt:if>
-    <div class="col-10">
+    <div class="col-10<mt:if name="scope_type" eq="system"> pr-0</mt:if>">
       <h1 class="mt-productHeader__logo">
         <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 <mt:if name="scope_type" eq="system">
@@ -173,8 +173,7 @@ function stopPropagation(e) {
 </mt:if>
   </div>
 
-
-  <div class="mt-primaryNavigation__control">
+  <div class="mt-primaryNavigation__content">
     <ul class="mt-primaryNavigation__sites">
 <mt:loop name="fav_website_loop">
       <li>
@@ -217,9 +216,7 @@ function stopPropagation(e) {
       </li>
 </mt:unless>
     </ul>
-  </div>
 
-  <div class="mt-primaryNavigation__content">
 <mt:if name="scope_type" ne="system">
   <mt:if name="can_access_to_system_dashboard">
     <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
