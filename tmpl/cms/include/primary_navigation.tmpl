@@ -69,11 +69,11 @@ function stopPropagation(e) {
 
 <div class="mt-primaryNavigation__container">
 <mt:if name="scope_type" eq="system">
-  <div class="mt-primaryNavigation__header--invert mr-0" style="background-color: #595959;">
+  <div class="mt-primaryNavigation__header--invert<mt:if name="scope_type" eq="system"> mr-0</mt:if>" style="background-color: #595959;">
 <mt:else>
   <div class="mt-primaryNavigation__header">
 </mt:if>
-    <div class="col-10<mt:if name="scope_type" eq="system"> pr-0</mt:if>">
+    <div class="col-10">
       <h1 class="mt-productHeader__logo">
         <a href="<mt:var name="mt_url">?__mode=dashboard" title="<__trans phrase="Dashboard">">
 <mt:if name="scope_type" eq="system">
@@ -147,7 +147,7 @@ function stopPropagation(e) {
 <mt:if name="scope_type" eq="user">
 <div class="mt-primaryNavigation__container" style="background-color: #595959; height: 100%;">
 <mt:else>
-<div class="mt-primaryNavigation__container position-absolute" style="background-color: #595959; display: none; top: 0; height: 100%; width: 100%;" onclick="stopPropagation(event);">
+<div class="mt-primaryNavigation__container position-absolute" style="background-color: #595959; display: none; top: 0; height: 100%;" onclick="stopPropagation(event);">
 </mt:if>
   <div class="mt-primaryNavigation__header--invert">
     <div class="col-10">
@@ -174,7 +174,7 @@ function stopPropagation(e) {
   </div>
 
 
-  <div class="mt-primaryNavigation__control p-0">
+  <div class="mt-primaryNavigation__control">
     <ul class="mt-primaryNavigation__sites">
 <mt:loop name="fav_website_loop">
       <li>
