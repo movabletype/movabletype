@@ -13,37 +13,33 @@
 </mt:setvarblock>
 
 <mt:setvartemplate name="primary_navigation_info">
-<mt:if name="user_actions">
-  <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
+  <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
-      <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
+    <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
-      <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
+    <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
   </mt:if>
-      <mt:var name="user_screen_name">
-      <svg title="<__trans phrase="Open Panel">" role="img" class="mt-icon mt-user-control">
-        <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open" />
-      </svg>
-    </button>
-    <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
+    <mt:var name="user_screen_name">
+    <svg title="<__trans phrase="Open Panel">" role="img" class="mt-icon mt-user-control">
+      <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open" />
+    </svg>
+  </button>
+  <div class="dropdown-menu dropdown-menu-right mt-primaryNavigation__user" aria-labelledby="userDropdownMenu">
   <mt:if name="user_actions">
-      <ul>
+    <ul>
   </mt:if>
   <mt:loop name="user_actions">
-        <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
-        <li>
-          <a href="<mt:var name="user_action_href">" class="dropdown-item">
-            <__trans phrase="<mt:var name="label">" escape="html">
-          </a>
-        </li>
+      <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+      <li>
+        <a href="<mt:var name="user_action_href">" class="dropdown-item">
+          <__trans phrase="<mt:var name="label">" escape="html">
+        </a>
+      </li>
   </mt:loop>
   <mt:if name="user_actions">
-      </ul>
+    </ul>
   </mt:if>
-    </div>
   </div>
-</mt:if>
 </mt:setvartemplate>
 
 <mt:if name="scope_type" ne="user">
@@ -140,7 +136,11 @@ function stopPropagation(e) {
     </ul>
   </div>
 
-  <mt:var name="primary_navigation_info">
+  <mt:if name="user_actions">
+  <div class="mt-primaryNavigation__info">
+    <mt:var name="primary_navigation_info">
+  </div>
+  </mt:if>
 </div>
 </mt:if>
 
@@ -216,24 +216,26 @@ function stopPropagation(e) {
       </li>
 </mt:unless>
     </ul>
-
-<mt:if name="scope_type" ne="system">
-  <mt:if name="can_access_to_system_dashboard">
+  </div>
+<mt:if name="user_actions">
+  <div class="mt-primaryNavigation__info">
+  <mt:if name="scope_type" ne="system">
+    <mt:if name="can_access_to_system_dashboard">
     <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
       <__trans phrase="System">
     </a>
+    </mt:if>
   </mt:if>
-</mt:if>
-<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
-<mt:if name="show_dashboard_link">
+  <mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
+  <mt:if name="show_dashboard_link">
     <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
       <__trans phrase="Dashboard">
     </a>
-</mt:if>
+  </mt:if>
+  <mt:if name="scope_type" eq="user">
+    <mt:var name="primary_navigation_info">
+  </mt:if>
   </div>
-
-<mt:if name="scope_type" eq="user">
-  <mt:var name="primary_navigation_info">
 </mt:if>
 </div>
 
