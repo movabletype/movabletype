@@ -202,15 +202,16 @@ sub edit {
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
     my $blockeditor_data;
-    if ( $app->param( 'block_editor_data' ) ) {
-      $blockeditor_data = $app->param( 'block_editor_data' );
-    } 
-    elsif($content_data_id || $data) {
-      if($data->{block_editor_data}){
+    if ( $app->param('block_editor_data') ) {
+        $blockeditor_data = $app->param('block_editor_data');
+    }
+    elsif ( $content_data_id || $data ) {
         $blockeditor_data = $data->{block_editor_data};
-      } else {
-        $blockeditor_data = $content_data->block_editor_data();
-      }
+    }
+    else {
+        if ($content_data) {
+            $blockeditor_data = $content_data->block_editor_data();
+        }
     }
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
@@ -300,7 +301,10 @@ sub edit {
                     = $$convert_breaks->{ $_->{content_field_id} };
             }
             elsif ( $content_data_id || $data ) {
-                my $key = 'content-field-' . $_->{content_field_id} . '_convert_breaks';
+                my $key
+                    = 'content-field-'
+                    . $_->{content_field_id}
+                    . '_convert_breaks';
                 $_->{convert_breaks} = $app->param($key);
             }
             else {
@@ -425,9 +429,9 @@ sub save {
                 $convert_breaks->{ $f->{id} } = $app->param(
                     'content-field-' . $f->{id} . '_convert_breaks' );
                 my $key = $f->{id} . '_convert_breaks';
-                $data->{ $key }
+                $data->{$key}
                     = $app->param(
-                        'content-field-' . $f->{id} . '_convert_breaks' );
+                    'content-field-' . $f->{id} . '_convert_breaks' );
             }
         }
     }
@@ -1812,4 +1816,3 @@ sub build_content_data_table {
 }
 
 1;
-
