@@ -82,7 +82,7 @@ sub delete {
 
     $category_set->remove()
         or return $app->error(
-        $app->tranlsate(
+        $app->translate(
             'Removing [_1] failed: [_2]', $category_set->class_label,
             $category_set->errstr
         ),

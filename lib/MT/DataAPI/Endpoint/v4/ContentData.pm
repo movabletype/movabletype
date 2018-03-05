@@ -18,11 +18,10 @@ sub list {
 
     my ( $site, $content_type ) = context_objects(@_) or return;
 
-    my $terms = {
-        ct_unique_id => $content_type->unique_id,
-    };
+    my $terms = { ct_unique_id => $content_type->unique_id, };
 
-    my $res = filtered_list( $app, $endpoint, 'content_data', $terms ) or return;
+    my $res = filtered_list( $app, $endpoint, 'content_data', $terms )
+        or return;
 
     +{  totalResults => $res->{count} || 0,
         items =>
@@ -134,7 +133,7 @@ sub delete {
 
     $content_data->remove()
         or return $app->error(
-        $app->tranlsate(
+        $app->translate(
             'Removing [_1] failed: [_2]', $content_data->class_label,
             $content_data->errstr
         ),
