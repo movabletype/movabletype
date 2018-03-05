@@ -1751,6 +1751,20 @@ sub core_menus {
             permission => 'edit_categories',
             view       => [ "blog", "website" ],
         },
+        'entry:import' => {
+            label      => "Import",
+            order      => 400,
+            mode       => "start_import",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
+        },
+        'entry:export' => {
+            label      => "Export",
+            order      => 500,
+            mode       => "start_export",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
+        },
 
         'page:manage' => {
             label     => "Manage",
@@ -2084,20 +2098,6 @@ sub core_menus {
             mode       => "start_backup",
             permission => "administer_site",
             view       => ['system'],
-        },
-        'tools:import' => {
-            label      => "Import Entries",
-            order      => 200,
-            mode       => "start_import",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
-        },
-        'tools:export' => {
-            label      => "Export Entries",
-            order      => 300,
-            mode       => "start_export",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
         },
         'tools:site_export' => {
             label      => "Export Site",
