@@ -1240,20 +1240,6 @@ sub cms_pre_load_filtered_list {
 
 }
 
-sub start_import {
-    my $app = shift;
-    $app->add_breadcrumb( $app->translate('Import Site Content') );
-    my $param = { page_title => $app->translate('Import Site Content'), };
-    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
-}
-
-sub start_export {
-    my $app = shift;
-    $app->add_breadcrumb( $app->translate('Export Site Content') );
-    my $param = { page_title => $app->translate('Export Site Content'), };
-    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
-}
-
 sub preview {
     my $app = shift;
     if ( $app->config('PreviewInNewWindow') ) {
