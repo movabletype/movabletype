@@ -1162,7 +1162,7 @@ sub do_search_replace {
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
-                            = $content_type->get_field($content_field_id);
+                            = $content_type->get_field($content_field_id) or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
