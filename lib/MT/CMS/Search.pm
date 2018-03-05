@@ -1214,35 +1214,36 @@ sub do_search_replace {
                                         );
                                     }
                                 }
-
-                                my $ss_validator
-                                    = $field_registry->{ss_validator};
-                                if ($ss_validator) {
-                                    $ss_validator
-                                        = $app->handler_to_coderef(
-                                        $ss_validator);
-                                    unless ($ss_validator) {
-                                        my $error = $app->translate(
-                                            'ss_validator of [_1] field is invalid',
-                                            $field_data->{type}
-                                        );
-                                        $app->param( 'error', $error );
+                                unless ( $app->param('error') ) {
+                                    my $ss_validator
+                                        = $field_registry->{ss_validator};
+                                    if ($ss_validator) {
+                                        $ss_validator
+                                            = $app->handler_to_coderef(
+                                            $ss_validator);
+                                        unless ($ss_validator) {
+                                            my $error = $app->translate(
+                                                'ss_validator of [_1] field is invalid',
+                                                $field_data->{type}
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
                                     }
-                                }
-                                if ($ss_validator) {
-                                    my $error = $ss_validator->(
-                                        $app, $field_data, $text
-                                    );
-                                    if ($error) {
-                                        $error = $app->translate(
-                                            '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
-                                            $text,
-                                            $field_data->{options}{label},
-                                            $content_type->name,
-                                            $obj->id,
-                                            $error,
+                                    if ($ss_validator) {
+                                        my $error = $ss_validator->(
+                                            $app, $field_data, $text
                                         );
-                                        $app->param( 'error', $error );
+                                        if ($error) {
+                                            $error = $app->translate(
+                                                '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
+                                                $text,
+                                                $field_data->{options}{label},
+                                                $content_type->name,
+                                                $obj->id,
+                                                $error,
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
                                     }
                                 }
                                 unless ( $app->param('error') ) {
