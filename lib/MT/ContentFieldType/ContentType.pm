@@ -318,7 +318,7 @@ sub search_handler {
                 $search_handler = MT->handler_to_coderef($search_handler);
                 return 0 unless $search_handler;
                 return 1
-                    if $search_handler->( $search_regex, $value, $f_data,
+                    if $search_handler->( $search_regex, $f_data, $value,
                     $cd );
             }
             else {
