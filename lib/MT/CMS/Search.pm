@@ -33,8 +33,10 @@ sub core_search_apis {
                     && $blog_perms->can_edit_content_data( $content_data,
                     $author );
             },
-            search_cols =>
-                { identifier => sub { MT->translate('Basename') }, },
+            search_cols => {
+                identifier => sub { MT->translate('Basename') },
+                label      => sub { MT->translate('Data Label') },
+            },
             replace_cols       => [],
             can_replace        => 1,
             can_search_by_date => 1,

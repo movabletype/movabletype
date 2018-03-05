@@ -291,7 +291,27 @@ sub preview_handler {
     }
     return '' unless @$values;
 
-    my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
+    my %content_data;
+    my $iter = MT->model('content_data')->load_iter( { id => $values } );
+    while ( my $cd = $iter->() ) {
+        $content_data{ $cd->id } = $cd;
+    }
+
+    require MT::Util;
+
+    my $contents = '';
+    for my $v (@$values) {
+        my $cd    = $content_data{$v};
+        my $id    = $cd->id;
+        my $label = $cd->label;
+        if ( defined $label && $label ne '' ) {
+            my $escaped_label = MT::Util::encode_html($label);
+            $contents .= "<li>$escaped_label (ID:$id)</li>";
+        }
+        else {
+            $contents .= "<li>(ID:$id)</li>";
+        }
+    }
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
