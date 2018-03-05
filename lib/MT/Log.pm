@@ -431,7 +431,7 @@ sub to_hash {
     $hash->{ "log.level_" . $log->level }       = 1 if $log->level;
     $hash->{ "log.class_" . $log->class }       = 1 if $log->class;
     $hash->{ "log.category_" . $log->category } = 1 if $log->category;
-    $hash->{'log.description'} = $log->description;
+    $hash->{'log.description'}                  = $log->description;
     if ( my $obj = $log->metadata_object ) {
         my $obj_hash = $obj->to_hash;
         $hash->{"log.$_"} = $obj_hash->{$_} foreach keys %$obj_hash;
@@ -538,7 +538,7 @@ sub description {
     $msg;
 }
 
-# Hint for tranlsate
+# Hint for translate
 # trans('blog');
 # trans('website');
 # trans('search');

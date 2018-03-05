@@ -82,7 +82,7 @@ sub delete {
 
     $content_type->remove()
         or return $app->error(
-        $app->tranlsate(
+        $app->translate(
             'Removing [_1] failed: [_2]', $content_type->class_label,
             $content_type->errstr
         ),

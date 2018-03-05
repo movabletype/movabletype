@@ -89,7 +89,7 @@ sub rename {
             $ot->tag_id( $same_name_tag->id );
             $ot->save
                 or return $app->error(
-                $app->tranlsate( 'Saving object failed: [_1]', $ot->errstr ),
+                $app->translate( 'Saving object failed: [_1]', $ot->errstr ),
                 500
                 );
         }
@@ -130,7 +130,7 @@ sub rename_for_site {
             $ot->tag_id( $same_name_tag->id );
             $ot->save
                 or return $app->error(
-                $app->tranlsate( 'Saving object failed: [_1]', $ot->errstr ),
+                $app->translate( 'Saving object failed: [_1]', $ot->errstr ),
                 500
                 );
         }
