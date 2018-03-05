@@ -66,7 +66,7 @@ sub import_contents {
     my $allow_comments = $blog->allow_comments_default;
     my $allow_pings    = $blog->allow_pings_default ? 1 : 0;
     my $convert_breaks = $param{ConvertBreaks} || 0;
-    $convert_breaks = $blog->convert_paras if $convert_breaks == -1;
+    $convert_breaks = $blog->convert_paras if $convert_breaks eq '-1';
     my $def_status = $param{default_status} || $blog->status_default;
     my ( %authors, %categories );
 
@@ -175,8 +175,9 @@ sub import_contents {
                                 my $cat;
                                 unless ( $cat = $categories{$val} ) {
                                     $cat = MT::Category->load(
-                                        {   label   => $val,
-                                            blog_id => $blog_id
+                                        {   label           => $val,
+                                            blog_id         => $blog_id,
+                                            category_set_id => 0,
                                         }
                                     );
                                 }

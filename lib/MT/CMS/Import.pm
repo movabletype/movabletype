@@ -26,7 +26,8 @@ sub start_import {
 
     # FIXME: This should build a category hierarchy!
     my $cat_class = $app->model('category');
-    my $iter = $cat_class->load_iter( { blog_id => $blog_id } );
+    my $iter      = $cat_class->load_iter(
+        { blog_id => $blog_id, category_set_id => 0 } );
     my @data;
     while ( my $cat = $iter->() ) {
         push @data,
@@ -86,12 +87,12 @@ sub start_import {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load site #[_1].', $blog_id ) );
         $param{text_filters}
             = $app->load_text_filters( $blog->convert_paras, 'entry' );
     }
 
-    $app->add_breadcrumb( $app->translate('Import/Export') );
+    $app->add_breadcrumb( $app->translate('Import Site Entries') );
     $app->load_tmpl( 'import.tmpl', \%param );
 }
 
@@ -105,7 +106,7 @@ sub do_import {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Loading blog '[_1]' failed: [_2]", $blog_id,
+            "Loading site '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         )
         );
@@ -144,12 +145,21 @@ sub do_import {
     if ( !$import_as_me and !$password and MT::Auth->password_exists ) {
         return $app->error(
             $app->translate(
-                'You need to provide a password if you are going to create new users for each user listed in your blog.'
+                'You need to provide a password if you are going to create new users for each user listed in your site.'
             )
         );
     }
 
     $app->validate_magic() or return;
+
+    $app->add_breadcrumb(
+        $app->translate('Import Site Entries'),
+        $app->uri(
+            mode => 'start_import',
+            args => { blog_id => $blog_id },
+        ),
+    );
+    $app->add_breadcrumb( $app->translate('Import') );
 
     my ($fh) = $app->upload_info('file');
     my $encoding = $app->param('encoding');
@@ -184,8 +194,7 @@ sub do_import {
         unless $importer;
 
     my %options;
-    %options
-        = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
+    %options = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
         if $importer->{options};
     my $import_result = $imp->import_contents(
         Key      => $import_type,
