@@ -1164,7 +1164,8 @@ sub do_search_replace {
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
-                            = $content_type->get_field($content_field_id) or next;
+                            = $content_type->get_field($content_field_id)
+                            or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
@@ -1200,6 +1201,20 @@ sub do_search_replace {
                         if ($replaced) {
                             if ( $content_field_id && !$app->param('error') )
                             {
+                                if ( $field_data->{options}{required} ) {
+                                    my $is_empty = !ref $text
+                                        && ( !defined $text || $text eq '' );
+                                    if ($is_empty) {
+                                        $app->param(
+                                            'error',
+                                            $app->translate(
+                                                '"[_1]" field is required.',
+                                                $field_data->{options}{label}
+                                            )
+                                        );
+                                    }
+                                }
+
                                 my $ss_validator
                                     = $field_registry->{ss_validator};
                                 if ($ss_validator) {
