@@ -381,8 +381,6 @@ sub core_methods {
         'view_category_set' => "${pkg}CategorySet::view",
 
         'list_ct_boilerplates' => "${pkg}ContentType::list_boilerplates",
-        'start_import_content' => "${pkg}ContentData::start_import",
-        'start_export_content' => "${pkg}ContentData::start_export",
 
         ## MT7 Rebuild Trigger
         'cfg_rebuild_trigger'  => "${pkg}RebuildTrigger::config",
