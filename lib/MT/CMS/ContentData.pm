@@ -1756,7 +1756,7 @@ sub build_content_data_table {
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
         $row->{label}
-            = defined $content_data->label
+            = defined $content_data->label && $content_data->label ne ''
             ? $content_data->label
             : $app->translate('(No Label)');
         $row->{object}       = $content_data;
