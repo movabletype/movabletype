@@ -197,13 +197,13 @@ aaaaa
 --- error
 No Content Type could be found.
 
-=== MT::ContentsCount with limit
+=== MT::ContentsW with limit
 --- template
 <mt:Contents blog_id="1" name="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
 
-=== MT::ContentsCount with sort_by content field
+=== MT::Contents with sort_by content field
 --- template
 <mt:Contents blog_id="1" name="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -220,7 +220,7 @@ test single line text 2
 test single line text 1
 
 
-=== MT::ContentsCount with sort_by content field
+=== MT::Contents with sort_by content field
 --- template
 <mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -229,7 +229,7 @@ test single line text 1
 test single line text 3
 
 
-=== MT::ContentsCount with category
+=== MT::Contents with category
 --- template
 <mt:Contents blog_id="1" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -238,10 +238,11 @@ test single line text 3
 test single line text 2
 
 
-=== MT::ContentsCount with tag
+=== MT::Contents with tag
 --- template
 <mt:Contents blog_id="1" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
 test single line text 4
+
