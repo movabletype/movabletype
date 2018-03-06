@@ -91,6 +91,18 @@ $test_env->prepare_fixture(
         );
         my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
         my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
+        my $cf_datetime = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'date and time',
+            type            => 'date_and_time',
+        );
+        my $cf_date = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'date_only',
+            type            => 'date_only',
+        );
         my $fields = [
             {   id        => $cf_single_line_text->id,
                 order     => 1,
@@ -119,11 +131,26 @@ $test_env->prepare_fixture(
                     min      => 1,
                 },
             },
+            {   id        => $cf_datetime->id,
+                order     => 4,
+                type      => $cf_datetime->type,
+                options   => { label => $cf_datetime->name },
+                unique_id => $cf_datetime->unique_id,
+            },
+            {   id        => $cf_date->id,
+                order     => 5,
+                type      => $cf_date->type,
+                options   => { label => $cf_date->name },
+                unique_id => $cf_date->unique_id,
+            },
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
 
         # Content Data
+        my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
+            = localtime(time);
+        $mday++;
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct->id,
@@ -138,21 +165,33 @@ $test_env->prepare_fixture(
                 (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
                     : ()
                 ),
+                $cf_datetime->id => sprintf( "%04d%02d%02d",
+                    $year + 1900,
+                    $mon + 1,
+                    $mday - $_ ),
+                $cf_date->id => sprintf( "%04d%02d%02d",
+                    $year + 1900,
+                    $mon + 1,
+                    $mday - $_ ),
             },
+            authored_on =>
+                sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
         ) for ( 1 .. 5 );
     }
 );
 
 my $ct = MT::ContentType->load( { name => 'test content type 1' } );
-my $cf1 = MT::ContentField->load( { name => 'single line text' } );
-my $cf2 = MT::ContentField->load( { name => 'categories' } );
-my $cf3 = MT::ContentField->load( { name => 'tags' } );
+my $cf1     = MT::ContentField->load( { name => 'single line text' } );
+my $cf2     = MT::ContentField->load( { name => 'categories' } );
+my $cf3     = MT::ContentField->load( { name => 'tags' } );
+my $date_cf = MT::ContentField->load( { name => 'date and time' } );
 
-$vars->{ct_id}   = $ct->id;
-$vars->{ct_uid}  = $ct->unique_id;
-$vars->{cf1_uid} = $cf1->unique_id;
-$vars->{cf2_uid} = $cf2->unique_id;
-$vars->{cf3_uid} = $cf3->unique_id;
+$vars->{ct_id}       = $ct->id;
+$vars->{ct_uid}      = $ct->unique_id;
+$vars->{cf1_uid}     = $cf1->unique_id;
+$vars->{cf2_uid}     = $cf2->unique_id;
+$vars->{cf3_uid}     = $cf3->unique_id;
+$vars->{date_cf_uid} = $date_cf->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -245,4 +284,22 @@ test single line text 2
 </mt:Contents>
 --- expected
 test single line text 4
+
+=== MT::Contents with days
+--- template
+<mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
+--- expected
+123
+
+=== MT::Contents with date_field
+--- template
+<mt:Contents blog_id="1" days="2" date_field="[% date_cf_uid %]"><mt:ContentID></mt:Contents>
+--- expected
+12
+
+=== MT::Contents with glue
+--- template
+<mt:Contents blog_id="1" glue=","><mt:ContentID></mt:Contents>
+--- expected
+1,2,3,4,5
 

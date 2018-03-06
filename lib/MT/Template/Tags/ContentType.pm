@@ -241,7 +241,6 @@ sub _hdlr_contents {
             $terms{author_id} = $author->id;
         }
     }
-
     my $published = $ctx->{__stash}{content_ids_published} ||= {};
     if ( $args->{unique} ) {
         push @filters, sub { !exists $published->{ $_[0]->id } }
@@ -283,11 +282,43 @@ sub _hdlr_contents {
             }
         }
         if ( my $days = $args->{days} ) {
-            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
+            my $dt_field_id = 0;
+            my $dt_field    = '';
+
+            if ( my $arg = $args->{date_field} ) {
+                if (   $arg eq 'authored_on'
+                    || $arg eq 'modified_on'
+                    || $arg eq 'created_on' )
+                {
+                    $dt_field = $arg;
+                }
+                else {
+                    my $date_cf = '';
+                    $date_cf = MT->model('cf')->load($arg)
+                        if ( $arg =~ /^\d+$/ );
+                    ($date_cf)
+                        = MT->model('cf')->load( { unique_id => $arg } )
+                        unless ($date_cf);
+                    if ($date_cf) {
+                        $dt_field_id = $date_cf->id;
+                    }
+                }
+            }
+
+            unless ( $dt_field && $dt_field_id ) {
+                if ( my $map = $ctx->stash('template_map') ) {
+                    $dt_field_id = $map->dt_field_id;
+                }
+                else {
+                    $dt_field = 'authored_on';
+                }
+            }
+
+            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
+                $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            my $map = $ctx->stash('template_map');
-            if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
+            if ($dt_field_id) {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
                     'content_data_id',
@@ -299,8 +330,8 @@ sub _hdlr_contents {
                     );
             }
             else {
-                $terms{authored_on} = [$ago];
-                $args{range_incl}{authored_on} = 1;
+                $terms{$dt_field} = [$ago];
+                $args{range_incl}{$dt_field} = 1;
             }
         }
 
