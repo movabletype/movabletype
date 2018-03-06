@@ -266,8 +266,8 @@ sub core_methods {
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
         'save_cfg_system_web_services' =>
             "${pkg}Tools::save_cfg_system_web_services",
-        'save_cfg_system_users'  => "${pkg}User::save_cfg_system_users",
-        'upgrade'                => {
+        'save_cfg_system_users' => "${pkg}User::save_cfg_system_users",
+        'upgrade'               => {
             code           => "${pkg}Tools::upgrade",
             requires_login => 0,
         },
@@ -314,14 +314,14 @@ sub core_methods {
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
 
         ## AJAX handlers
-        'delete_map'        => "${pkg}Template::delete_map",
-        'add_map'           => "${pkg}Template::add_map",
-        'js_tag_check'      => "${pkg}Tag::js_tag_check",
-        'js_add_tag'        => "${pkg}Tag::js_add_tag",
-        'convert_to_html'   => "${pkg}Tools::convert_to_html",
-        'js_add_category'   => "${pkg}Category::js_add_category",
-        'remove_userpic'    => "${pkg}User::remove_userpic",
-        'login_json'        => {
+        'delete_map'      => "${pkg}Template::delete_map",
+        'add_map'         => "${pkg}Template::add_map",
+        'js_tag_check'    => "${pkg}Tag::js_tag_check",
+        'js_add_tag'      => "${pkg}Tag::js_add_tag",
+        'convert_to_html' => "${pkg}Tools::convert_to_html",
+        'js_add_category' => "${pkg}Category::js_add_category",
+        'remove_userpic'  => "${pkg}User::remove_userpic",
+        'login_json'      => {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
@@ -381,13 +381,11 @@ sub core_methods {
         'view_category_set' => "${pkg}CategorySet::view",
 
         'list_ct_boilerplates' => "${pkg}ContentType::list_boilerplates",
-        'start_import_content' => "${pkg}ContentData::start_import",
-        'start_export_content' => "${pkg}ContentData::start_export",
 
         ## MT7 Rebuild Trigger
-        'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
-        'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
-        'save_rebuild_trigger'      => {
+        'cfg_rebuild_trigger'  => "${pkg}RebuildTrigger::config",
+        'add_rebuild_trigger'  => "${pkg}RebuildTrigger::add",
+        'save_rebuild_trigger' => {
             code      => "${pkg}RebuildTrigger::save",
             no_direct => 1,
         },
@@ -1753,6 +1751,20 @@ sub core_menus {
             permission => 'edit_categories',
             view       => [ "blog", "website" ],
         },
+        'entry:import' => {
+            label      => "Import",
+            order      => 400,
+            mode       => "start_import",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
+        },
+        'entry:export' => {
+            label      => "Export",
+            order      => 500,
+            mode       => "start_export",
+            permission => "administer_site",
+            view       => [ "blog", "website" ],
+        },
 
         'page:manage' => {
             label     => "Manage",
@@ -2087,20 +2099,6 @@ sub core_menus {
             permission => "administer_site",
             view       => ['system'],
         },
-        'tools:import' => {
-            label      => "Import Content",
-            order      => 200,
-            mode       => "start_import_content",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
-        },
-        'tools:export' => {
-            label      => "Export Content",
-            order      => 300,
-            mode       => "start_export_content",
-            permission => "administer_site",
-            view       => [ "blog", "website" ],
-        },
         'tools:site_export' => {
             label      => "Export Site",
             order      => 400,
@@ -2147,7 +2145,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2156,7 +2154,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -4434,7 +4432,7 @@ sub _build_category_list {
         my $tb_count_iter
             = MT::TBPing->count_group_by(
             { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() },
-            { group => ['tb_id'] } );
+            { group   => ['tb_id'] } );
         while ( my ( $count, $tb_id ) = $tb_count_iter->() ) {
             $tb_counts->{$tb_id} = $count;
         }

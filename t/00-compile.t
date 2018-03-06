@@ -141,6 +141,7 @@ use_ok('MT::ArchiveType::ContentTypeDate');
 use_ok('MT::ArchiveType::ContentTypeMonthly');
 use_ok('MT::ArchiveType::ContentTypeWeekly');
 use_ok('MT::ArchiveType::ContentTypeYearly');
+use_ok('MT::BackupRestore::ContentTypePermission');
 use_ok('MT::CMS::CategorySet');
 use_ok('MT::CMS::ContentData');
 use_ok('MT::CMS::ContentType');

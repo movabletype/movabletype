@@ -20,7 +20,7 @@ function toggleDisplay(selection) {
 }
 function validate(f) {
     if (!f['blog_id'].value) {
-        alert("<__trans phrase="You must select a blog to import." escape="js">");
+        alert("<__trans phrase="You must select a site to import." escape="js">");
         return false;
     }
 <mt:if name="password_needed">
@@ -43,7 +43,7 @@ function selectBlog() {
 
 <mt:setvarblock name="page_content">
 <p class="page-desc">
-  <__trans phrase="Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.">
+  <__trans phrase="Transfer site entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.">
 </p>
 
 <form method="post" id="import_form" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
@@ -55,18 +55,20 @@ function selectBlog() {
     <mtapp:setting
        id="import_to"
        label="<__trans phrase="Import data into">">
+      <div>
     <mt:if name="blog_id">
-      <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id" escape="html">)
+        <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id" escape="html">)
     <mt:else>
-      <a href="javascript:void(0)" onclick="return selectBlog()"><__trans phrase="Select blog"></a>
+        <a href="javascript:void(0)" onclick="return selectBlog()"><__trans phrase="Select site"></a>
     </mt:if>
+      </div>
     </mtapp:setting>
 
   <mt:if name="importer_loop">
     <mtapp:setting
        id="import_type"
        label="<__trans phrase="Importing from">">
-      <select name="import_type" class="form-control" onchange="return toggleDisplay(this)">
+      <select name="import_type" class="custom-select form-control" onchange="return toggleDisplay(this)">
       <mt:loop name="importer_loop">
         <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -86,29 +88,37 @@ function selectBlog() {
        label="<__trans phrase="Ownership of imported entries">">
       <ul class="list-unstyled">
         <li>
-          <label>
-            <input type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
-            <__trans phrase="Import as me">
-          </label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
+            <label class="custom-control-label" for="import_as_me-on">
+              <__trans phrase="Import as me">
+            </label>
+          </div>
         </li>
         <li>
-          <label>
-            <input type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
-            <__trans phrase="Preserve original user">
-          </label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
+            <label class="custom-control-label" for="import_as_me-off">
+              <__trans phrase="Preserve original user">
+            </label>
+          </div>
         </li>
       </ul>
     <mt:if name="password_needed">
-      <div id="setpassworddiv" class="form-inline" style="display:none;">
+      <div id="setpassworddiv" style="display:none;">
         <p>
           <__trans phrase="If you choose to preserve the ownership of the imported entries and any of those users must be created in this installation, you must define a default password for those new accounts.">
         </p>
-        <label for="password">
-          <__trans phrase="Default password for new users:">
-        </label>
-        <input type="password" name="password" id="password" class="form-control text password" />
-        <div class="text-muted hint">
-          <__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)
+        <div class="form-inline">
+          <label class="mr-sm-3" for="password">
+            <__trans phrase="Default password for new users:">
+          </label>
+          <input type="password" name="password" id="password" class="form-control text password" />
+        </div>
+        <div class="form-inline">
+          <small class="text-muted hint">
+            <__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)
+          </small>
         </div>
       </div>
       <script type="text/javascript">
@@ -139,7 +149,7 @@ function selectBlog() {
        show_hint="1"
        hint_id="textFormatted"
        hint="<__trans phrase="Apply this formatting if text format is not set on each entry.">">
-      <select name="convert_breaks" id="convert_breaks" class="form-control" aria-describedby="textFormatted">
+      <select name="convert_breaks" id="convert_breaks" class="custom-select form-control" aria-describedby="textFormatted">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -151,7 +161,7 @@ function selectBlog() {
        label="<__trans phrase="Import File Encoding">"
        help_page="entry_import"
        help_section="source_file_encoding">
-      <select name="encoding" id="encoding" class="form-control">
+      <select name="encoding" id="encoding" class="custom-select form-control">
       <mt:loop name="encoding_names">
         <option value="<mt:var name="name" escape="html">"><__trans phrase="<mt:var name="display_name" escape="html">"></option>
       </mt:loop>
@@ -163,7 +173,7 @@ function selectBlog() {
        label="<__trans phrase="Default category for entries (optional)">"
        help_page="entry_import"
        help_section="default_category_for_entries">
-      <select name="default_cat_id" id="default_cat_id" class="form-control">
+      <select name="default_cat_id" id="default_cat_id" class="custom-select form-control">
         <option value=""><__trans phrase="Select a category"></option>
       <mt:loop name="category_loop">
         <option value="<mt:var name="category_id" escape="html">"><mt:var name="category_label" escape="html"></option>

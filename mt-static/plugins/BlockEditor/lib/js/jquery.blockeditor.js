@@ -18,6 +18,18 @@
         block_field.siblings('.add_field-group').find('.' + add_menu_class).remove();
 
         block_field.sortable('refresh');
+        setDirty(true);
+        log('found dirty form: #' + editor_id);
+        if( typeof(app) !== 'undefined' ) {
+          (app.getIndirectMethod('setDirty'))();
+        }
+        input_field.find('[mt\\\:watch-change="1"]').each(function(){
+          var target_dom = $(this).get(0);
+          log('adding watcher to '+target_dom.name);
+          $(this).on('change', function(){
+            (app.getIndirectEventListener( "setDirty" ))();
+          });
+        });
     };
     var _init = function(data){
         return this.each(function(){
@@ -77,9 +89,15 @@
               $(this).parents('.mt-collapse__block').removeClass('mt-collapse__block--selected');
             });
 
+            jQuery(window).on('pre_autosave', function() {
+              $.updateblock();
+              log('pre_autosave updateblock');
+              log(jQuery('#block_editor_data').val());
+            });
 
-
-
+            jQuery('form#edit-content-type-data-form').submit(function() {
+              $.updateblock();
+            });
         });
     };
     var _destroy = function(){
@@ -129,5 +147,19 @@
             $.error( 'Method ' +  method + ' does not exist on jQuery.blockeditor' );
         }
 
-    }
+    };
+    $.updateblock = function(){
+      var block_editor_data = {};
+      jQuery('.editorfield').each(function(i) {
+        var format = jQuery('.convert_breaks[data-target='+this.id+']').val();
+        if(format=="blockeditor"){
+          block_editor_data[this.id] = jQuery('#'+this.id).blockeditor('get_data');
+        }
+      });
+      if(Object.keys(block_editor_data).length > 0) {
+        jQuery('#block_editor_data').val(JSON.stringify(block_editor_data))
+      } else {
+        jQuery('#block_editor_data').val('')
+      }
+    };
 })(jQuery);

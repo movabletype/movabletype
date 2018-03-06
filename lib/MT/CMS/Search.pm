@@ -33,8 +33,10 @@ sub core_search_apis {
                     && $blog_perms->can_edit_content_data( $content_data,
                     $author );
             },
-            search_cols =>
-                { identifier => sub { MT->translate('Basename') }, },
+            search_cols => {
+                identifier => sub { MT->translate('Basename') },
+                label      => sub { MT->translate('Data Label') },
+            },
             replace_cols       => [],
             can_replace        => 1,
             can_search_by_date => 1,
@@ -1162,7 +1164,8 @@ sub do_search_replace {
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
-                            = $content_type->get_field($content_field_id);
+                            = $content_type->get_field($content_field_id)
+                            or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
@@ -1198,34 +1201,49 @@ sub do_search_replace {
                         if ($replaced) {
                             if ( $content_field_id && !$app->param('error') )
                             {
-                                my $ss_validator
-                                    = $field_registry->{ss_validator};
-                                if ($ss_validator) {
-                                    $ss_validator
-                                        = $app->handler_to_coderef(
-                                        $ss_validator);
-                                    unless ($ss_validator) {
-                                        my $error = $app->translate(
-                                            'ss_validator of [_1] field is invalid',
-                                            $field_data->{type}
+                                if ( $field_data->{options}{required} ) {
+                                    my $is_empty = !ref $text
+                                        && ( !defined $text || $text eq '' );
+                                    if ($is_empty) {
+                                        $app->param(
+                                            'error',
+                                            $app->translate(
+                                                '"[_1]" field is required.',
+                                                $field_data->{options}{label}
+                                            )
                                         );
-                                        $app->param( 'error', $error );
                                     }
                                 }
-                                if ($ss_validator) {
-                                    my $error = $ss_validator->(
-                                        $app, $field_data, $text
-                                    );
-                                    if ($error) {
-                                        $error = $app->translate(
-                                            '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
-                                            $text,
-                                            $field_data->{options}{label},
-                                            $content_type->name,
-                                            $obj->id,
-                                            $error,
+                                unless ( $app->param('error') ) {
+                                    my $ss_validator
+                                        = $field_registry->{ss_validator};
+                                    if ($ss_validator) {
+                                        $ss_validator
+                                            = $app->handler_to_coderef(
+                                            $ss_validator);
+                                        unless ($ss_validator) {
+                                            my $error = $app->translate(
+                                                'ss_validator of [_1] field is invalid',
+                                                $field_data->{type}
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
+                                    }
+                                    if ($ss_validator) {
+                                        my $error = $ss_validator->(
+                                            $app, $field_data, $text
                                         );
-                                        $app->param( 'error', $error );
+                                        if ($error) {
+                                            $error = $app->translate(
+                                                '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
+                                                $text,
+                                                $field_data->{options}{label},
+                                                $content_type->name,
+                                                $obj->id,
+                                                $error,
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
                                     }
                                 }
                                 unless ( $app->param('error') ) {

@@ -1,0 +1,50 @@
+<div class="mt-collapse--contentblock">
+  <div class="mt-collapse__container">
+    <div class="col">
+      <div class="field-convert_breaks">
+        <__trans phrase="Format:">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+        <mt:loop name="text_filters">
+          <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:loop>
+        </select>
+        <$mt:setvar name="show_formatting_help" value="1"$>
+      <mt:if name="convert_breaks" eq="richtext">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="0">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="__default__">
+        <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      </div>
+    </div>
+    <div class="col-auto"><a data-toggle="collapse" href="#<mt:var name="content_field_id">-collapseEditor" aria-expanded="true" aria-controls="<mt:var name="content_field_id">-collapseEditor"><svg title="Collapse" role="img" class="mt-icon--secondary"><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_collapse" /></svg></a></div>
+  </div>
+  <div class="collapse show mt-collapse__blockset" id="<mt:var name="content_field_id">-collapseEditor">
+    <div class="row no-gutters">
+       <div class="col">
+          <div class="form-group">
+            <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+                <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<mt:Unless name="blockeditor_data_field">
+<mt:setvar name="blockeditor_data_field" value="1">
+<input type="hidden" id="block_editor_data" name="block_editor_data" mt:raw-name="1">
+<mt:setvarblock name="jq_js_include" append="1">
+;(function(){
+  jQuery(window).on('pre_autosave', function() {
+    var $form = jQuery('#edit-content-type-data-form');
+    resetMultiLineTextData($form);
+    setMultiLineTextData($form);
+  });
+})();
+</mt:setvarblock>
+</mt:Unless>
