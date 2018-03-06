@@ -113,8 +113,21 @@ $test_env->prepare_fixture(sub {
         image_width  => 640,
         image_height => 480,
         mime_type    => 'image/jpeg',
-        label        => 'Sample Image',
-        description  => 'Sample photo',
+        label        => 'Sample File',
+        description  => 'Sample File',
+    );
+
+    my $file1 = MT::Test::Permission->make_asset(
+        class   => 'file',
+        blog_id => $blog->id,
+        url     => 'http://narnia.na/nana/files/test.pdf',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'files', 'test.pdf' ),
+        file_name    => 'test.pdf',
+        file_ext     => 'pdf',
+        mime_type    => 'application/pdf',
+        label        => 'Sample File',
+        description  => 'Sample PDF File',
     );
 
     # Role
@@ -166,6 +179,7 @@ my $admin = MT::Author->load(1);
 
 my $pic  = MT::Asset::Image->load( { label => 'Userpic A' } );
 my $pic2 = MT::Asset::Image->load( { label => 'Sample Image' } );
+my $file1 = MT::Asset->load({ label => 'Sample File' } );
 
 # Run
 my ( $app, $out );
@@ -363,6 +377,138 @@ subtest 'mode = complete_upload' => sub {
     ok( $out, "Request: complete_upload" );
     ok( $out =~ m!__mode=dashboard! && $out =~ m!permission=1!i,
         "complete_upload by other permission" );
+};
+
+subtest 'mode = dialog_asset_modal' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_asset_modal by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_asset_modal by permitted user"
+    );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_asset_modal by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_asset_modal',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_asset_modal" );
+    ok( $out =~ m!name="select_asset" id="select_asset"!i,
+        "dialog_asset_modal by other permission"
+    );
+};
+
+subtest 'mode = dialog_list_asset' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_list_asset by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!<div id="content-body-left">!i,
+        "dialog_list_asset by permitted user"
+    );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_list_asset by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'dialog_list_asset',
+            edit_field       => 'customfield_test',
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: dialog_list_asset" );
+    ok( $out =~ m!name="select_asset" id="select_asset"!i,
+        "dialog_list_asset by other permission"
+    );
 };
 
 subtest 'mode = asset_insert' => sub {
@@ -695,8 +841,8 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: upload_file" );
-    ok( $out =~ m!Permission denied!i, "upload_file by other blog" );
+    ok( $out,                      "Request: upload_file" );
+    ok( $out =~ m!&permission=1!i, "upload_file by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -711,6 +857,326 @@ subtest 'mode = upload_file' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                          "Request: upload_file" );
     ok( $out =~ m!Permission denied!i, "upload_file by other permission" );
+};
+
+subtest 'mode = view' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'asset',
+            blog_id          => $blog->id,
+            id               => $pic2->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!Permission=1!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'asset',
+            blog_id          => $blog->id,
+            id               => $pic2->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out !~ m!Permission=1!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'asset',
+            blog_id          => $blog->id,
+            id               => $pic2->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'asset',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $pic2->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Permission=1!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is file)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'file',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is image)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'image',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is audio)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'audio',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is video)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'GET',
+            __mode           => 'view',
+            _type            => 'video',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
 subtest 'mode = save' => sub {
@@ -775,6 +1241,262 @@ subtest 'mode = save' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
     ok( $out =~ m!Permission=1!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is file)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'file',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is image)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'image',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is audio)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'audio',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+};
+
+subtest 'mode = save (type is video)' => sub {
+
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'video',
+            label            => 'New Label',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
 subtest 'mode = delete' => sub {
@@ -900,6 +1622,254 @@ subtest 'mode = delete' => sub {
     ok( $out =~ m!Permission=1!i, "delete by other permission" );
 };
 
+subtest 'mode = delete (file)' => sub {
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Permission=1!i, "delete by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'file',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+};
+
+subtest 'mode = delete (image)' => sub {
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Permission=1!i, "delete by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'image',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+};
+
+subtest 'mode = delete (audio)' => sub {
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Permission=1!i, "delete by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'audio',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+};
+
+subtest 'mode = delete (video)' => sub {
+    # By admim
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+
+    # By Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kagawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
+
+    # By non Permitted user
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kikkawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Permission=1!i, "delete by other blog" );
+
+    # By other permission
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'video',
+            blog_id          => $blog->id,
+            id               => $file1->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
+};
+
 subtest 'mode = add_tags' => sub {
     my $asset = MT::Test::Permission->make_asset(
         class   => 'image',
@@ -973,8 +1943,8 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
+    ok( $out,                      "Request: add_tags" );
+    ok( $out =~ m!&permission=1!i, "add_tags by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1070,8 +2040,8 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
+    ok( $out,                      "Request: remove_tags" );
+    ok( $out =~ m!&permission=1!i, "remove_tags by other blog" );
 
     # By other permission
     $app = _run_app(

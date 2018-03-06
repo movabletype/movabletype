@@ -151,7 +151,7 @@ function loadAssetList(offset) {
 
 <mt:if name="filter" eq="userpic">
     opts.filter = 'userpic';
-    opts.filter_val = 1;
+    opts.filter_val = <mt:var name="filter_val" escape="html">;
 <mt:else>
   if(jQuery('#search').val().length > 0) {
     opts.search = jQuery('#search').val();

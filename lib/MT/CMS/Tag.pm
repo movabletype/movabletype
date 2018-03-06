@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,6 @@ sub rename_tag {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $perms = $app->permissions;
     my $blog_id;
     $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')

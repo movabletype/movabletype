@@ -62,9 +62,10 @@ ok ($out =~ /Clone template\(s\)/i, "Clone templates dropdown is present");
 # __mode=search_replace&_type=entry&do_search=1&search=hello
 $app = _run_app( 
 	'MT::App::CMS', 
-	{ __test_user => $user, __mode => 'search_replace', do_search => 1, search => 'rain', _type => 'entry' } 
+	{ __test_user => $user, __mode => 'search_replace', blog_id => 0, do_search => 1, search => 'rain', _type => 'entry' } 
 );
 $out = delete $app->{__test_output};
+print STDERR $out;
 ok ($out, "Global entry search results are present");
 ok ($out =~ /Republish selected entries/i, "Publish entries button is present");
 ok ($out =~ /Delete selected entries/i, "Delete entries button is present");
@@ -90,7 +91,7 @@ ok ($out =~ /Batch edit entries/i, "Batch edit entries dropdown is present");
 # __mode=search_replace&_type=comment&do_search=1&search=hello
 $app = _run_app( 
 	'MT::App::CMS', 
-	{ __test_user => $user, __mode => 'search_replace', do_search => 1, search => 'comment', _type => 'comment' } 
+	{ __test_user => $user, __mode => 'search_replace', blog_id => 0, do_search => 1, search => 'comment', _type => 'comment' } 
 );
 $out = delete $app->{__test_output};
 ok ($out, "Global comment search results are present");

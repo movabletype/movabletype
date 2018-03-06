@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,8 @@ sub edit {
     my ( $app, $id, $obj, $param ) = @_;
 
     my $type       = $app->param('_type');
-    my $perms      = $app->permissions;
+    my $perms      = $app->permissions
+        or return $app->permission_denied();
     my $blog_class = $app->model('blog');
     my $blog       = $app->blog;
     my $blog_id    = $blog->id;
@@ -685,8 +686,9 @@ sub _create_temp_entry {
         $entry->blog_id($blog_id);
     }
 
+    my $perm = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-        unless $app->permissions->can_edit_entry( $entry, $app->user );
+        unless $perm && $perm->can_edit_entry( $entry, $app->user );
 
     my $names = $entry->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
@@ -793,8 +795,9 @@ sub _build_entry_preview {
     my $orig_file;
     my $file_ext;
     if ($tmpl_map) {
-        $tmpl         = MT::Template->load( $tmpl_map->template_id );
-        $file_ext     = $blog->file_extension || '';
+        $tmpl = MT::Template->load( $tmpl_map->template_id );
+        MT::Request->instance->cache( 'build_template', $tmpl );
+        $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
 
         my $blog_path
@@ -1065,6 +1068,9 @@ sub save {
 
     my $perms = $app->permissions
         or return $app->permission_denied();
+
+    return $app->errtrans('Invalid request.')
+        if $app->param('class');
 
     my $id = $app->param('id');
     if ( !$id ) {
@@ -1579,8 +1585,9 @@ sub save_entries {
 
     MT::Util::Log->info('--- Start save_entries.');
 
-    my $perms   = $app->permissions;
-    my $type    = $app->param('_type') || '';
+    my $perms = $app->permissions
+        or $app->permission_denied();
+    my $type    = $app->param('_type');
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
@@ -1926,13 +1933,39 @@ sub save_entry_prefs {
 
     MT::Util::Log->info('--- Start save_entry_prefs.');
 
-    my $perms = $app->permissions
-        or return $app->error( $app->translate("No permissions") );
+    # Magic token check
     $app->validate_magic() or return;
-    my $prefs      = $app->_entry_prefs_from_params('');
-    my $disp       = $app->param('entry_prefs');
-    my $sort_only  = $app->param('sort_only');
-    my $prefs_type = $app->param('_type') . '_prefs';
+
+    # Param check
+    my $type = lc scalar $app->param('_type') || '';
+    if ( 'entry' ne $type and 'page' ne $type ) {
+        return $app->error( $app->translate('Invalid request.') );
+    }
+
+    # Loading permission record
+    my $user = $app->user
+        or return $app->error( $app->translate('Invalid request.') );
+    my $blog_id = scalar $app->param('blog_id')
+        or return $app->error( $app->translate('Invalid request.') );
+    my $perms = MT->model('permission')->load(
+        {   author_id => $user->id,
+            blog_id   => $blog_id,
+        }
+    );
+
+    # Sometimes super user does not have any permission for each site.
+    return $app->json_result( { success => 1 } )
+        if $user->is_superuser && !$perms;
+
+    # Permission check
+    return $app->permission_denied()
+        unless $perms
+        && $perms->can_do('save_edit_prefs');
+
+    my $prefs      = $app->_entry_prefs_from_params;
+    my $disp       = scalar $app->param('entry_prefs');
+    my $sort_only  = scalar $app->param('sort_only');
+    my $prefs_type = $type . '_prefs';
 
     if ( $disp && lc $disp eq 'custom' && lc $sort_only eq 'true' ) {
         my $current = $perms->$prefs_type;
@@ -2103,9 +2136,10 @@ sub build_entry_table {
     my (%args) = @_;
 
     my $app_author = $app->user;
-    my $perms      = $app->permissions;
-    my $type       = $args{type};
-    my $class      = $app->model($type);
+    my $perms      = $app->permissions
+        or return $app->permission_denied();
+    my $type  = $args{type};
+    my $class = $app->model($type);
 
     my $list_pref = $app->list_pref($type);
     if ( $args{is_power_edit} ) {
@@ -2369,7 +2403,8 @@ sub can_save {
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 0;
     if (   !$id
         && !$perms->can_do('access_to_new_entry_editor') )
     {
@@ -2531,7 +2566,6 @@ sub update_entry_status {
     require MT::Entry;
 
     my $app_author = $app->user;
-    my $perms      = $app->permissions;
 
     my @objects;
 

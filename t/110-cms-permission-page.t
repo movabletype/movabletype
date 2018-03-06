@@ -106,7 +106,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
@@ -119,7 +119,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -132,7 +132,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
@@ -145,14 +145,14 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
 };
 
 subtest 'mode = save_pages' => sub {
-    my $author_id  = "author_id_" . $page->id;
+    my $author_id = "author_id_" . $page->id;
     my $col_name  = "title_" . $page->id;
 
     $app = _run_app(
@@ -167,7 +167,7 @@ subtest 'mode = save_pages' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_pages" );
+    ok( $out,                     "Request: save_pages" );
     ok( $out !~ m!permission=1!i, "save_pages by admin" );
 
     $app = _run_app(
@@ -182,7 +182,7 @@ subtest 'mode = save_pages' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_pages" );
+    ok( $out,                     "Request: save_pages" );
     ok( $out !~ m!permission=1!i, "save_pages by permitted user" );
 
     $app = _run_app(
@@ -197,7 +197,7 @@ subtest 'mode = save_pages' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_pages" );
+    ok( $out,                     "Request: save_pages" );
     ok( $out =~ m!permission=1!i, "save_pages by other permission" );
 
     $app = _run_app(
@@ -212,12 +212,12 @@ subtest 'mode = save_pages' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_pages" );
+    ok( $out,                     "Request: save_pages" );
     ok( $out =~ m!permission=1!i, "save_pages by other blog" );
 
-    $author_id  = "author_id_" . $entry->id;
+    $author_id = "author_id_" . $entry->id;
     $col_name  = "title_" . $entry->id;
-    $app = _run_app(
+    $app       = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
@@ -229,7 +229,7 @@ subtest 'mode = save_pages' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save_pages" );
+    ok( $out,                     "Request: save_pages" );
     ok( $out =~ m!permission=1!i, "save_pages by type mismatch" );
 
     done_testing();
@@ -247,7 +247,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save by admin" );
 
     $app = _run_app(
@@ -261,7 +261,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out !~ m!permission=1!i, "save by permitted user" );
 
     $app = _run_app(
@@ -275,7 +275,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other blog" );
 
     $app = _run_app(
@@ -289,7 +289,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other permission" );
 
     $app = _run_app(
@@ -303,7 +303,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                     "Request: save" );
     ok( $out =~ m!permission=1!i, "save by type mismatch" );
 
     done_testing();
@@ -321,7 +321,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit by admin" );
 
     $app = _run_app(
@@ -335,7 +335,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit by permitted user" );
 
     $app = _run_app(
@@ -349,7 +349,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit by other blog" );
 
     $app = _run_app(
@@ -363,7 +363,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit by other permission" );
 
     $app = _run_app(
@@ -377,7 +377,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                     "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit by type mismatch" );
 
     done_testing();
@@ -385,8 +385,8 @@ subtest 'mode = edit' => sub {
 
 subtest 'mode = delete' => sub {
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $ukawa->id,
+        blog_id   => $blog->id,
+        author_id => $ukawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -399,12 +399,12 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $ukawa->id,
+        blog_id   => $blog->id,
+        author_id => $ukawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -417,12 +417,12 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $ukawa->id,
+        blog_id   => $blog->id,
+        author_id => $ukawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -435,12 +435,12 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $ukawa->id,
+        blog_id   => $blog->id,
+        author_id => $ukawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
@@ -453,7 +453,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     $app = _run_app(
@@ -467,7 +467,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by type mismatch" );
 
     done_testing();
@@ -475,102 +475,112 @@ subtest 'mode = delete' => sub {
 
 subtest 'action = set_draft' => sub {
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'set_draft',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'set_draft',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'set_draft',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: set_draft" );
+    ok( $out,                        "Request: set_draft" );
     ok( $out !~ m!not implemented!i, "set_draft by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'set_draft',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'set_draft',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'set_draft',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: set_draft" );
+    ok( $out,                        "Request: set_draft" );
     ok( $out !~ m!not implemented!i, "set_draft by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'set_draft',
+        {   __test_user          => $ukawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'set_draft',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'set_draft',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: set_draft" );
+    ok( $out,                        "Request: set_draft" );
     ok( $out =~ m!not implemented!i, "set_draft by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'set_draft',
+        {   __test_user          => $ichikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'set_draft',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'set_draft',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: set_draft" );
-    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
+    ok( $out,                     "Request: set_draft" );
+    ok( $out =~ m!permission=1!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'set_draft',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'set_draft',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'set_draft',
-            id               => $entry->id,
+            id                     => $entry->id,
             plugin_action_selector => 'set_draft',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: set_draft" );
+    ok( $out,                     "Request: set_draft" );
     ok( $out =~ m!permission=1!i, "set_draft by type mismatch" );
 
     done_testing();
@@ -578,102 +588,112 @@ subtest 'action = set_draft' => sub {
 
 subtest 'action = add_tags' => sub {
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'add_tags',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'add_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'add_tags',
+        {   __test_user          => $ukawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                        "Request: add_tags" );
     ok( $out =~ m!not implemented!i, "add_tags by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'add_tags',
+        {   __test_user          => $ichikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
-    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
+    ok( $out,                     "Request: add_tags" );
+    ok( $out =~ m!permission=1!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'add_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'add_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'add_tags',
-            id               => $entry->id,
+            id                     => $entry->id,
             plugin_action_selector => 'add_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: add_tags" );
+    ok( $out,                     "Request: add_tags" );
     ok( $out =~ m!permission=1!i, "add_tags by type mismatch" );
 
     done_testing();
@@ -681,102 +701,112 @@ subtest 'action = add_tags' => sub {
 
 subtest 'action = remove_tags' => sub {
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'remove_tags',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'remove_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'remove_tags',
+        {   __test_user          => $ukawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                        "Request: remove_tags" );
     ok( $out =~ m!not implemented!i, "remove_tags by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'remove_tags',
+        {   __test_user          => $ichikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $page->id,
+            id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
-    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
+    ok( $out,                     "Request: remove_tags" );
+    ok( $out =~ m!permission=1!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'remove_tags',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'remove_tags',
             itemset_action_input => 'New Tag',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'remove_tags',
-            id               => $entry->id,
+            id                     => $entry->id,
             plugin_action_selector => 'remove_tags',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: remove_tags" );
+    ok( $out,                     "Request: remove_tags" );
     ok( $out =~ m!permission=1!i, "remove_tags by type mismatch" );
 
     done_testing();
@@ -784,105 +814,190 @@ subtest 'action = remove_tags' => sub {
 
 subtest 'action = open_batch_editor' => sub {
     $page = MT::Test::Permission->make_page(
-        blog_id        => $blog->id,
-        author_id      => $aikawa->id,
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
     );
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'open_batch_editor',
+        {   __test_user          => $admin,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'open_batch_editor',
             itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
             plugin_action_selector => 'open_batch_editor',
-            id               => $page->id,
+            id                     => $page->id,
+            plugin_action_selector => 'open_batch_editor',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: open_batch_editor" );
+    ok( $out !~ m!not implemented!i, "open_batch_editor by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'open_batch_editor',
+            itemset_action_input => '',
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
+            plugin_action_selector => 'open_batch_editor',
+            id                     => $page->id,
+            plugin_action_selector => 'open_batch_editor',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: open_batch_editor" );
+    ok( $out !~ m!not implemented!i, "open_batch_editor by permitted user" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user          => $ukawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'open_batch_editor',
+            itemset_action_input => '',
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
+            plugin_action_selector => 'open_batch_editor',
+            id                     => $page->id,
             plugin_action_selector => 'open_batch_editor',
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: open_batch_editor" );
-    ok( $out !~ m!not implemented!i, "open_batch_editor by admin" );
+    ok( $out =~ m!not implemented!i,
+        "open_batch_editor by other permission" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user          => $ichikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'open_batch_editor',
+            itemset_action_input => '',
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
+            plugin_action_selector => 'open_batch_editor',
+            id                     => $page->id,
+            plugin_action_selector => 'open_batch_editor',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: open_batch_editor" );
+    ok( $out =~ m!permission=1!i, "open_batch_editor by other blog" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user          => $aikawa,
+            __request_method     => 'POST',
+            __mode               => 'itemset_action',
+            _type                => 'page',
+            action_name          => 'open_batch_editor',
+            itemset_action_input => '',
+            return_args          => '__mode%3Dlist_page%26blog_id%3D'
+                . $blog->id
+                . '%26filter_key%3Dmy_posts_on_this_context',
+            blog_id                => $blog->id,
+            plugin_action_selector => 'open_batch_editor',
+            id                     => $entry->id,
+            plugin_action_selector => 'open_batch_editor',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: open_batch_editor" );
+    ok( $out =~ m!permission=1!i, "open_batch_editor by type mismatch" );
+
+    done_testing();
+};
+
+subtest 'mode = save_entry_prefs (page)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'page',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $aikawa,
             __request_method => 'POST',
-            __mode           => 'itemset_action',
+            __mode           => 'save_entry_prefs',
             _type            => 'page',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
             blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $page->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out !~ m!not implemented!i, "open_batch_editor by permitted user" );
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out !~ m!permission=1!i,
+        "save_entry_prefs by permitted user" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ukawa,
             __request_method => 'POST',
-            __mode           => 'itemset_action',
+            __mode           => 'save_entry_prefs',
             _type            => 'page',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
             blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $page->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by other permission" );
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other permission" );
 
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
-            __mode           => 'itemset_action',
+            __mode           => 'save_entry_prefs',
             _type            => 'page',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
             blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $page->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'itemset_action',
-            _type            => 'page',
-            action_name      => 'open_batch_editor',
-            itemset_action_input => '',
-            return_args      => '__mode%3Dlist_page%26blog_id%3D'.$blog->id.'%26filter_key%3Dmy_posts_on_this_context',
-            blog_id          => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
-            id               => $entry->id,
-            plugin_action_selector => 'open_batch_editor',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: open_batch_editor" );
-    ok( $out =~ m!permission=1!i, "open_batch_editor by type mismatch" );
-
-    done_testing();
+    ok( $out, "Request: save_entry_prefs" );
+    ok( $out =~ m!permission=1!i,
+        "save_entry_prefs by other blog" );
 };
 
 done_testing();

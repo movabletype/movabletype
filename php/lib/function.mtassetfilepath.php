@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,8 +18,8 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
     $asset_file = preg_replace('/^%a/', $blog_site_path, $asset_file);
 
     require_once('MTUtil.php');
-    $static_path = static_file_path();
-    $asset_file = preg_replace('/^%s/', $static_path, $asset_file);    
+    $support_directory_path = support_directory_path();
+    $asset_file = preg_replace('/^%s/', $support_directory_path, $asset_file);
 
     $blog_archive_path = $blog->archive_path();
     if (!$blog_archive_path) $blog_archive_path = $blog_site_path;

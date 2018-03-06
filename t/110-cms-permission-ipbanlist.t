@@ -249,6 +249,95 @@ subtest 'mode = save' => sub {
     done_testing();
 };
 
+subtest 'mode = save (type is ipbanlist)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            ip               => '1.1.1.1'
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            ip               => '1.1.1.1'
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save by non permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            ip               => '1.1.1.1'
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save by permitted user (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            ip               => '1.1.1.1'
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            ip               => '1.1.1.1'
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!permission=1!i, "save by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by other permission" );
+
+    done_testing();
+};
+
 subtest 'mode = edit' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -304,8 +393,8 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other blog (edit config)" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -318,8 +407,8 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other blog (manage feedback)" );
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -328,6 +417,95 @@ subtest 'mode = edit' => sub {
             __mode           => 'edit',
             blog_id          => $blog->id,
             _type            => 'banlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by other permission" );
+
+    done_testing();
+};
+
+subtest 'mode = edit (type is ipbanlist)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit by permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit by permitted user (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'banlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!permission=1!i, "edit by other blog (manage feedback)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
             id               => $banlist->id,
         }
     );
@@ -430,6 +608,102 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
+
+    done_testing();
+};
+
+subtest 'mode = delete (type is ipbanlist)' => sub {
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by non permitted user (edit config)" );
+
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by permitted user (manage feedback)" );
+
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $egawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (edit config)" );
+
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!permission=1!i, "delete by other blog (manage feedback)" );
+
+    $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ukawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            blog_id          => $blog->id,
+            _type            => 'ipbanlist',
+            id               => $banlist->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
 
     done_testing();
 };

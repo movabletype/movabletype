@@ -118,7 +118,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out !~ m!permission denied!i, "js_tag_check by admin" );
 
     $app = _run_app(
@@ -131,7 +131,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out !~ m!permission denied!i, "js_tag_check by permitted user" );
 
     $app = _run_app(
@@ -144,8 +144,8 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
-    ok( $out =~ m!permission denied!i, "js_tag_check by other blog" );
+    ok( $out,                     "Request: js_tag_check" );
+    ok( $out =~ m!permission=1!i, "js_tag_check by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -157,7 +157,7 @@ subtest 'mode = js_tag_check' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: js_tag_check" );
+    ok( $out,                          "Request: js_tag_check" );
     ok( $out =~ m!permission denied!i, "js_tag_check by other permission" );
 
     done_testing();
@@ -174,7 +174,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
@@ -187,7 +187,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -200,7 +200,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
@@ -213,7 +213,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                     "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other permission" );
 
     done_testing();
@@ -231,7 +231,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out !~ m!permission=1!i, "rename_tag by admin" );
 
     $app = _run_app(
@@ -245,7 +245,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out !~ m!permission=1!i, "rename_tag by permitted user" );
 
     $app = _run_app(
@@ -259,7 +259,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out =~ m!permission=1!i, "rename_tag by other blog" );
 
     $app = _run_app(
@@ -273,7 +273,7 @@ subtest 'mode = rename_tag' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: rename_tag" );
+    ok( $out,                     "Request: rename_tag" );
     ok( $out =~ m!permission=1!i, "rename_tag by other permission" );
 
     done_testing();
@@ -290,7 +290,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
@@ -303,7 +303,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 
     done_testing();
@@ -321,7 +321,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -335,7 +335,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 
     done_testing();
@@ -354,7 +354,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -369,7 +369,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -384,7 +384,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other blog" );
 
     $tag = MT::Test::Permission->make_tag();
@@ -399,7 +399,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
 
     done_testing();

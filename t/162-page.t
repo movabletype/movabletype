@@ -81,33 +81,43 @@ subtest 'permission_filter methods check' => sub {
         author_id => $admin->id,
     );
 
+    my $second_page = MT::Test::Permission->make_page(
+        blog_id   => $second_website->id,
+        author_id => $admin->id,
+    );
+
     subtest 'admin' => sub {
         $app->user($admin);
         $app->blog($website);
 
         ok( MT::CMS::Page::can_save( undef, $app, $page ),
             "can_save with page by admin" );
-        ok( MT::CMS::Page::can_save( undef, $app, $page ),
+        ok( MT::CMS::Page::can_delete( undef, $app, $page ),
             "can_delete with page by admin" );
 
         ok( MT::CMS::Page::can_save( undef, $app, undef ),
             "can_save without page by admin" );
-        ok( MT::CMS::Page::can_save( undef, $app, undef ),
+        ok( !MT::CMS::Page::can_delete( undef, $app, undef ),
             "can_delete without page by admin" );
 
         $app->blog($second_website);
 
+        ok( MT::CMS::Page::can_save( undef, $app, $second_page ),
+            "can_save with page by admin on second website" );
+        ok( MT::CMS::Page::can_delete( undef, $app, $second_page ),
+            "can_delete with page by admin on second website" );
+
         ok( MT::CMS::Page::can_save( undef, $app, undef ),
-            "can_save without page by admin" );
-        ok( MT::CMS::Page::can_save( undef, $app, undef ),
-            "can_delete without page by admin" );
+            "can_save without page by admin on second website" );
+        ok( !MT::CMS::Page::can_delete( undef, $app, undef ),
+            "can_delete without page by admin on second website" );
 
         done_testing();
     };
 
     subtest 'permitted user' => sub {
         $app->user($aikawa);
-        $app->blog($second_website);
+        $app->blog($website);
 
         ok( MT::CMS::Page::can_save( undef, $app, $page ),
             "can_save with page by permitted user"
@@ -116,12 +126,10 @@ subtest 'permission_filter methods check' => sub {
             "can_delete with page by permitted user"
         );
 
-        $app->blog($website);
-
         ok( MT::CMS::Page::can_save( undef, $app, undef ),
             "can_save without page by permitted user"
         );
-        ok( MT::CMS::Page::can_delete( undef, $app, undef ),
+        ok( !MT::CMS::Page::can_delete( undef, $app, undef ),
             "can_delete without page by permitted user"
         );
 

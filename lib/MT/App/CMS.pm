@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -266,8 +266,8 @@ sub core_methods {
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
         'save_cfg_system_web_services' =>
             "${pkg}Tools::save_cfg_system_web_services",
-        'save_cfg_system_users'  => "${pkg}User::save_cfg_system_users",
-        'upgrade'                => {
+        'save_cfg_system_users' => "${pkg}User::save_cfg_system_users",
+        'upgrade'               => {
             code           => "${pkg}Tools::upgrade",
             requires_login => 0,
         },
@@ -314,14 +314,14 @@ sub core_methods {
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
 
         ## AJAX handlers
-        'delete_map'        => "${pkg}Template::delete_map",
-        'add_map'           => "${pkg}Template::add_map",
-        'js_tag_check'      => "${pkg}Tag::js_tag_check",
-        'js_add_tag'        => "${pkg}Tag::js_add_tag",
-        'convert_to_html'   => "${pkg}Tools::convert_to_html",
-        'js_add_category'   => "${pkg}Category::js_add_category",
-        'remove_userpic'    => "${pkg}User::remove_userpic",
-        'login_json'        => {
+        'delete_map'      => "${pkg}Template::delete_map",
+        'add_map'         => "${pkg}Template::add_map",
+        'js_tag_check'    => "${pkg}Tag::js_tag_check",
+        'js_add_tag'      => "${pkg}Tag::js_add_tag",
+        'convert_to_html' => "${pkg}Tools::convert_to_html",
+        'js_add_category' => "${pkg}Category::js_add_category",
+        'remove_userpic'  => "${pkg}User::remove_userpic",
+        'login_json'      => {
             code     => "${pkg}Tools::login_json",
             app_mode => 'JSON',
         },
@@ -385,9 +385,9 @@ sub core_methods {
         'start_export_content' => "${pkg}ContentData::start_export",
 
         ## MT7 Rebuild Trigger
-        'cfg_rebuild_trigger'       => "${pkg}RebuildTrigger::config",
-        'add_rebuild_trigger'       => "${pkg}RebuildTrigger::add",
-        'save_rebuild_trigger'      => {
+        'cfg_rebuild_trigger'  => "${pkg}RebuildTrigger::config",
+        'add_rebuild_trigger'  => "${pkg}RebuildTrigger::add",
+        'save_rebuild_trigger' => {
             code      => "${pkg}RebuildTrigger::save",
             no_direct => 1,
         },
@@ -2309,6 +2309,16 @@ sub core_enable_object_methods {
             edit   => 1,
             save   => 1,
         },
+        user => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
+        video => {
+            save   => 1,
+            delete => 1,
+            edit   => 1,
+        },
     };
 }
 
@@ -2342,29 +2352,71 @@ sub validate_magic {
 }
 
 sub is_authorized {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
+    my $app = shift;
+
+    # Clear current permissions.
     $app->permissions(undef);
-    return unless my $user = $app->user;
+
+    # Not authroized.
+    my $user = $app->user;
+    return unless $user;
+
+    # System administrator is alweays true.
+    return 1 if $user->is_superuser;
+
+    # User should have sign in system permission
     if ( !$user->can_sign_in_cms() ) {
         $app->log(
             {   message => $app->translate(
-                    "Failed login attempt by not permitted user '[_1]'",
-                    $user->name
+                    "Failed login attempt by user who does not have sign in permission.'[_1]' (ID:[_2]",
+                    $user->name,
+                    $user->id,
                 ),
                 level    => MT::Log::SECURITY(),
                 category => 'login_user',
                 class    => 'author',
             }
         );
-        return $app->error( $app->translate("Invalid login.") );
+        return $app->permission_denied();
     }
+
+    # User has Edit Templates permission on system, always true.
+    # Permission will be verified on each mode.
+    return 1 if $user->can_edit_templates;
+
+    # Always true if blog_id is undef or 0 because scope is
+    # User or System.
+    my $blog_id = $app->param('blog_id');
     return 1 unless $blog_id;
-    my $perms = $app->permissions( $user->permissions($blog_id) );
-    $perms
-        ? 1
-        : $app->error(
-        $app->translate("You are not authorized to log in to this blog.") );
+
+    my $blog = MT->model('blog')->load($blog_id)
+        or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
+
+    # Return true if user has any permissions for a specified
+    # blog or parent website.
+    my @blog_ids = [ 0, $blog_id ];
+    if ( !$blog->is_blog ) {
+        push @blog_ids, +( map { $_->id } @{ $blog->blogs } );
+    }
+
+    my $terms = [
+        { author_id => $user->id },
+        '-and',
+        { blog_id => \@blog_ids },
+        '-and',
+        [   { permissions => \'IS NOT NULL' },
+            '-or',
+            { permissions => { not => '' } },
+        ]
+    ];
+    my $perm = MT->model('permission')->count($terms);
+    if ( $perm > 0 ) {
+        return 1;
+    }
+    else {
+        return $app->permission_denied();
+    }
+
 }
 
 sub set_default_tmpl_params {
@@ -3292,15 +3344,26 @@ sub build_user_actions {
 sub return_to_dashboard {
     my $app = shift;
     my (%param) = @_;
+
     $param{redirect} = 1 unless %param;
+
     my $blog_id = $app->param('blog_id');
-    $param{blog_id} = $blog_id if defined($blog_id) && $blog_id ne '';
+    if ( defined($blog_id) && $blog_id ne '' ) {
+        my $perm = MT->model('permission')->load(
+            {   author_id => $app->user->id,
+                blog_id   => $blog_id,
+            }
+        );
+        $param{blog_id} = $blog_id if $perm;
+    }
+
     return $app->redirect(
         $app->uri( mode => 'dashboard', args => \%param ) );
 }
 
 sub return_to_user_dashboard {
     my $app = shift;
+
     my (%param) = @_;
     $param{redirect} = 1 unless %param;
     delete $param{blog_id} if exists $param{blog_id};
@@ -3863,41 +3926,6 @@ sub listify {
         push @ret, { name => $_ };
     }
     \@ret;
-}
-
-sub user_blog_prefs {
-    my $app   = shift;
-    my $prefs = $app->request('user_blog_prefs');
-    return $prefs if $prefs && !$app->param('config_view');
-
-    my $perms = $app->permissions;
-    return {} unless $perms;
-    my @prefs = split /,/, $perms->blog_prefs || '';
-    my %prefs;
-    foreach (@prefs) {
-        my ( $name, $value ) = split /=/, $_, 2;
-        $prefs{$name} = $value;
-    }
-    my $updated = 0;
-    if ( my $view = $app->param('config_view') ) {
-        $prefs{'config_view'} = $view;
-        $updated = 1;
-    }
-    if ($updated) {
-        my $pref = '';
-        foreach ( keys %prefs ) {
-            $pref .= ',' if $pref ne '';
-            $pref .= $_ . '=' . $prefs{$_};
-        }
-        $perms->blog_prefs($pref);
-        if ( !$perms->blog_id ) {
-            my $blog = $app->blog;
-            $perms->blog_id( $blog->id ) if $blog;
-        }
-        $perms->save if $perms->blog_id;
-    }
-    $app->request( 'user_blog_prefs', \%prefs );
-    \%prefs;
 }
 
 sub archive_type_sorter {

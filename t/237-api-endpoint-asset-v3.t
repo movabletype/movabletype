@@ -96,7 +96,7 @@ sub suite {
             params => {  },
             setup  => sub {
                 my $iter = $app->model('asset')->load_iter(
-                    { id => \'> 4', blog_id => [ 0, 1] }, { no_class => 1 }
+                    { id => \'> 8', blog_id => [ 0, 1] }, { no_class => 1 }
                 );
                 while ( my $a = $iter->() ) {
                     $a->remove;
@@ -390,7 +390,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    6, 'The number of asset (blog_id=1) is 6.' );
+                    9, 'The number of asset (blog_id=1) is 9.' );
             },
         },
         {    # Website.
@@ -440,7 +440,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
                 is( $result->{totalResults},
-                    5, 'The number of image asset is 5.' );
+                    8, 'The number of image asset is 8.' );
             },
         },
         {    # In order of created_by.
@@ -585,10 +585,12 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(1);
+                my $asset1 = $app->model('asset')->load(7);
+                my $asset2 = $app->model('asset')->load(6);
+                my $asset3 = $app->model('asset')->load(5);
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 3,
+                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
                 };
             },
         },
@@ -680,10 +682,12 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(2);
+                my $asset1 = $app->model('asset')->load(7);
+                my $asset2 = $app->model('asset')->load(6);
+                my $asset3 = $app->model('asset')->load(5);
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 3,
+                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
                 };
                 return $res;
             },
@@ -729,7 +733,7 @@ sub suite {
             code   => 404,
         },
         {    # System.
-            path   => '/v3/sites/0/tags/6/assets',
+            path   => '/v3/sites/0/tags/8/assets',
             method => 'GET',
             code   => 404,
         },
@@ -778,10 +782,13 @@ sub suite {
             ],
             result => sub {
                 $app->user($author);
-                my $asset = $app->model('asset')->load(1);
+                my $asset1 = $app->model('asset')->load(1);
+                my $asset2 = $app->model('asset')->load(7);
+                my $asset3 = $app->model('asset')->load(6);
+                my $asset4 = $app->model('asset')->load(5);
                 my $res = +{
-                    totalResults => 1,
-                    items => MT::DataAPI::Resource->from_object( [$asset] ),
+                    totalResults => 4,
+                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
                 };
                 return $res;
             },
@@ -821,7 +828,7 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
-        {   path   => '/v3/sites/1/assets/10',
+        {   path   => '/v3/sites/1/assets/15',
             method => 'GET',
             code   => 404,
         },
@@ -895,7 +902,7 @@ sub suite {
             },
             code => 404,
         },
-        {   path   => '/v3/sites/1/assets/10',
+        {   path   => '/v3/sites/1/assets/15',
             method => 'PUT',
             params => {
                 asset => { label => 'update_asset in non-existent asset', },
@@ -1028,7 +1035,7 @@ sub suite {
         },
         {
             # Invalid width.
-            path   => '/v3/sites/1/assets/5/thumbnail',
+            path   => '/v3/sites/1/assets/8/thumbnail',
             method => 'GET',
             params => { width => 'width', },
             code   => 400,
@@ -1043,7 +1050,7 @@ sub suite {
         },
         {
             # Invalid height.
-            path   => '/v3/sites/1/assets/5/thumbnail',
+            path   => '/v3/sites/1/assets/8/thumbnail',
             method => 'GET',
             params => { height => 'height', },
             code   => 400,
@@ -1058,7 +1065,7 @@ sub suite {
         },
         {
             # Invalid scale.
-            path   => '/v3/sites/1/assets/5/thumbnail',
+            path   => '/v3/sites/1/assets/8/thumbnail',
             method => 'GET',
             params => { scale => 'scale', },
             code   => 400,
@@ -1073,11 +1080,11 @@ sub suite {
         },
 
         # get_thumbnail - normal tests
-        {   path      => '/v3/sites/1/assets/5/thumbnail',
+        {   path      => '/v3/sites/1/assets/8/thumbnail',
             method    => 'GET',
             author_id => 0,
             result    => sub {
-                my $image = $app->model('asset')->load(5);
+                my $image = $app->model('asset')->load(8);
                 my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
                 return +{
                     url    => $thumbnail,
@@ -1124,7 +1131,7 @@ sub suite {
             code   => 404,
         },
         {    # Non-existent asset.
-            path   => '/v3/sites/1/assets/10',
+            path   => '/v3/sites/1/assets/15',
             method => 'DELETE',
             code   => 404,
         },

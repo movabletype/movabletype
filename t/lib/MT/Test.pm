@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1270,6 +1270,62 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->tags('not_exists');
     $asset->save or die "Couldn't save asset record 4: " . $asset->errstr;
 
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_1.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_1.jpg' ) );
+    $asset->file_name('test_1.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074500');
+    $asset->save or die "Couldn't save asset record 5: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 8, 5 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_2.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_2.jpg' ) );
+    $asset->file_name('test_2.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074600');
+    $asset->save or die "Couldn't save asset record 6: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 9, 6 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_3.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_3.jpg' ) );
+    $asset->file_name('test_3.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074700');
+    $asset->save or die "Couldn't save asset record 7: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 7, 7 );
     ## ObjectScore
     my $e5 = MT::Entry->load(5);
     $e5->set_score( 'unit test', $bobd,               5, 1 );
@@ -1516,16 +1572,44 @@ It\'s a hard rain\'s a-gonna fall',
     if ($entry) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $entry->blog_id );
-        $map->asset_id(1);
+        $map->asset_id(5);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $entry->datasource );
         $map->object_id( $entry->id );
         $map->save;
     }
     $page = MT::Page->load(20);
-    if ($entry) {
+    if ($page) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $page->blog_id );
-        $map->asset_id(2);
+        $map->asset_id(5);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $page->datasource );
         $map->object_id( $page->id );
         $map->save;

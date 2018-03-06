@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -137,6 +137,8 @@ class MT {
             if ($blog) {
                 $ctx =& $this->context();
                 $ctx->stash('blog', $blog);
+                $ctx->stash('blog_id',$this->blog_id);
+                $ctx->stash('local_blog_id',$this->blog_id);
             }
 
             $lang = substr(strtolower(
@@ -793,6 +795,7 @@ class MT {
 
     function display($tpl, $cid = null) {
         $ctx =& $this->context();
+        $this->init_plugins();
         $blog =& $ctx->stash('blog');
         if (!$blog) {
             $db =& $this->db();

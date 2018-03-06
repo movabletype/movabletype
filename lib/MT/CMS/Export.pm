@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,6 @@ sub start_export {
     my %param;
     my $blog_id = $app->param('blog_id');
 
-    my $perms = $app->permissions;
     return $app->permission_denied()
         if !$app->can_do('open_blog_export_screen');
 

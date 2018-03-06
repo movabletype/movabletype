@@ -239,15 +239,35 @@
     categories: []
     assets:
       -
-        id: 1
+        id: 5
         label: Image photo
-        filename: test.jpg
+        filename: test_1.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test.jpg
+        url: http://narnia.na/nana/images/test_1.jpg
+      -
+        id: 6
+        label: Image photo
+        filename: test_2.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_2.jpg
+      -
+        id: 7
+        label: Image photo
+        filename: test_3.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_3.jpg
     tags:
       - grandpa
       - rain

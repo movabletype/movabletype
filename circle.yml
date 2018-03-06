@@ -26,4 +26,3 @@ test:
     - mv *.zip $CIRCLE_ARTIFACTS/
     - mv *.tar.gz $CIRCLE_ARTIFACTS/
     - make docker_clean
-

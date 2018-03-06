@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -185,6 +185,12 @@ sub edit {
     }
     $param->{'nav_authors'} = 1;
     $param->{active_user_menu} = 'profile';
+
+    $param->{'email_is_blank'} = 1
+        if $obj && !$obj->email;
+    $param->{'email_is_required'} = $app->config('RequiredUserEmail');
+
+    return 1;
 }
 
 sub edit_role {
@@ -859,8 +865,7 @@ sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $user  = $app->user;
-    my $perms = $app->permissions;
+    my $user = $app->user;
     return $app->permission_denied()
         unless $app->can_do('remove_user_assoc');
     my $can_remove_administrator
@@ -1278,16 +1283,16 @@ PERMCHECK: {
             $row->{disabled} = 1;
         }
         if ( UNIVERSAL::isa( $obj, 'MT::Author' ) ) {
-            if($obj->userpic_url){
-              $row->{icon} = $obj->userpic_url();
-            } else {
-              $row->{icon}
-                  = MT->static_path . 'images/icons/ic_user-auth.svg';
+            if ( $obj->userpic_url ) {
+                $row->{icon} = $obj->userpic_url();
+            }
+            else {
+                $row->{icon}
+                    = MT->static_path . 'images/icons/ic_user-auth.svg';
             }
         }
         if ( UNIVERSAL::isa( $obj, 'MT::Group' ) ) {
-            $row->{icon}
-                = MT->static_path . 'images/icons/ic_group.svg';
+            $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
 
     };
@@ -1699,7 +1704,7 @@ sub save_filter {
             $obj ? $obj->name($name) : $app->param( 'name', $name );
         }
         return $eh->error( $app->translate("User requires username") )
-            if ( !$name );
+            if ( !length($name) );
 
         if ( $name =~ m/([<>])/ ) {
             return $eh->error(
@@ -1769,21 +1774,24 @@ sub save_filter {
     }
 
     my $email = $obj ? $obj->email : $app->param('email');
-    return $eh->error(
-        MT->translate("Email Address is required for password reset.") )
-        unless $email;
-    if ( !is_valid_email($email) ) {
-        return $eh->error( $app->translate("Email Address is invalid.") );
-    }
+    if ($email) {
+        return $eh->error( $app->translate("Email Address is invalid.") )
+            unless is_valid_email($email);
 
-    if ( $email =~ m/([<>])/ ) {
+        if ( $email =~ m/([<>])/ ) {
+            return $eh->error(
+                $app->translate(
+                    "[_1] contains an invalid character: [_2]",
+                    $app->translate("Email Address"),
+                    $encode_html->($1)
+                )
+            );
+        }
+    }
+    elsif ( $app->config('RequiredUserEmail') ) {
         return $eh->error(
-            $app->translate(
-                "[_1] contains an invalid character: [_2]",
-                $app->translate("Email Address"),
-                $encode_html->($1)
-            )
-        );
+            MT->translate("Email Address is required for password reset.") )
+            unless is_valid_email($email);
     }
 
     if ( my $url = $obj ? $obj->url : $app->param('url') ) {
