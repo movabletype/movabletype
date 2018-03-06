@@ -2134,7 +2134,7 @@ subtest 'mode = edit (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: edit" );
-    ok( $out =~ m!redirect=1!i, "edit by child blog" );
+    ok( $out =~ m!permission=1!i, "edit by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2296,7 +2296,7 @@ subtest 'action = set_draft' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: set_draft" );
-    ok( $out =~ m!permission=1!i, "set_draft by other blog" );
+    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2452,7 +2452,7 @@ subtest 'action = set_draft (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: set_draft" );
-    ok( $out =~ m!permission=1!i, "set_draft by other website" );
+    ok( $out =~ m!not implemented!i, "set_draft by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2494,7 +2494,7 @@ subtest 'action = set_draft (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: set_draft" );
-    ok( $out =~ m!permission=1!i, "set_draft by other blog" );
+    ok( $out =~ m!not implemented!i, "set_draft by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2650,7 +2650,7 @@ subtest 'action = add_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: add_tags" );
-    ok( $out =~ m!permission=1!i, "add_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2806,7 +2806,7 @@ subtest 'action = add_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: add_tags" );
-    ok( $out =~ m!permission=1!i, "add_tags by other website" );
+    ok( $out =~ m!not implemented!i, "add_tags by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2848,7 +2848,7 @@ subtest 'action = add_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: add_tags" );
-    ok( $out =~ m!permission=1!i, "add_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "add_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3004,7 +3004,7 @@ subtest 'action = remove_tags' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: remove_tags" );
-    ok( $out =~ m!permission=1!i, "remove_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3160,7 +3160,7 @@ subtest 'action = remove_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: remove_tags" );
-    ok( $out =~ m!permission=1!i, "remove_tags by other website" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3202,7 +3202,7 @@ subtest 'action = remove_tags (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: remove_tags" );
-    ok( $out =~ m!permission=1!i, "remove_tags by other blog" );
+    ok( $out =~ m!not implemented!i, "remove_tags by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3316,7 +3316,7 @@ subtest 'action = open_batch_editor' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: open_batch_editor" );
-    ok( $out =~ m!permission=1!i, "open_batch_editor by other blog" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3430,7 +3430,7 @@ subtest 'action = open_batch_editor (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: open_batch_editor" );
-    ok( $out =~ m!permission=1!i, "open_batch_editor by other website" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by other website" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -3472,7 +3472,7 @@ subtest 'action = open_batch_editor (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: open_batch_editor" );
-    ok( $out =~ m!permission=1!i, "open_batch_editor by other blog" );
+    ok( $out =~ m!not implemented!i, "open_batch_editor by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',

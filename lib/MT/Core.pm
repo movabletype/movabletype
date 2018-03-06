@@ -2789,6 +2789,7 @@ sub load_core_permissions {
                 'remove_tags_from_entry_via_list'       => 1,
                 'edit_entry_authored_on'                => 1,
                 'edit_entry_unpublished_on'             => 1,
+                'save_edit_prefs'                       => 1,
             }
         },
         'blog.edit_all_posts' => {
