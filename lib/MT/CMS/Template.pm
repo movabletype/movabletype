@@ -3025,7 +3025,7 @@ sub publish_index_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $user->is_superuser()
+        unless $app->user->is_superuser()
         || $app->user->can_edit_templates()
         || (
         $perms
