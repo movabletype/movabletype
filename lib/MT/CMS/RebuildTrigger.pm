@@ -104,7 +104,7 @@ sub add {
     };
 
     my $terms = {};
-    if ( $type eq 'blog' ) {
+    if ( $type eq 'site' ) {
         $terms->{id} = { not => [$blog_id] };
         $terms->{class} = [ 'website', 'blog' ];
     }

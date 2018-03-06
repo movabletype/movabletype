@@ -1,0 +1,12 @@
+plugins/BlockEditor
+plugins/FacebookCommenters
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE
+plugins/GoogleAnalytics
+plugins/OpenID
+plugins/TinyMCE
+plugins/WXRImporter
+plugins/Markdown
+plugins/spamlookup
+plugins/Textile
+plugins/WidgetManager

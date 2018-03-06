@@ -22,6 +22,7 @@ sub start_export {
         if !$blog;
 
     $param{blog_id} = $blog_id;
+    $app->add_breadcrumb( $app->translate('Export Site Entries') );
     $app->load_tmpl( 'export.tmpl', \%param );
 }
 
@@ -31,11 +32,11 @@ sub export {
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
         or
-        return $app->error( $app->translate("Please select a blog."), 400 );
+        return $app->error( $app->translate("Please select a site."), 400 );
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Loading blog '[_1]' failed: [_2]", $blog_id,
+            "Loading site '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         ),
         404

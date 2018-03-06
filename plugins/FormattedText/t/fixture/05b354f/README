@@ -1,0 +1,14 @@
+addons/Cloud.pack
+addons/Commercial.pack
+addons/Enterprise.pack
+addons/Sync.pack
+plugins/BlockEditor
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE
+plugins/GoogleAnalytics
+plugins/TinyMCE
+plugins/WXRImporter
+plugins/Markdown
+plugins/spamlookup
+plugins/Textile
+plugins/WidgetManager

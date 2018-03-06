@@ -162,9 +162,7 @@ sub _hdlr_contents {
     # app.
     if ( ( $args->{offset} || '' ) eq 'auto' ) {
         $args->{offset} = 0;
-        if (   ( $args->{lastn} || $args->{limit} )
-            && ( my $app = MT->instance ) )
-        {
+        if ( ( $args->{limit} ) && ( my $app = MT->instance ) ) {
             if ( $app->isa('MT::App') ) {
                 if ( my $offset = $app->param('offset') ) {
                     $args->{offset} = $offset;
@@ -184,14 +182,11 @@ sub _hdlr_contents {
             $args{range_incl}{authored_on} = 1;
         }
         elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{lastn} = $limit;
+            $args->{limit} = $limit;
         }
         else {
             delete $args->{limit};
         }
-    }
-    elsif ( $args->{limit} && ( $args->{limit} > 0 ) ) {
-        $args->{lastn} = $args->{limit};
     }
 
     $terms{status} = MT::ContentStatus::RELEASE();
@@ -201,7 +196,9 @@ sub _hdlr_contents {
             if ( my $cat = $ctx->stash('category') ) {
                 if ( $cat->class eq $cat_class_type ) {
                     my $map = $ctx->stash('template_map');
-                    if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
+                    if ( $map
+                        && ( my $cat_field_id = $map->cat_field_id ) )
+                    {
                         push @{ $args{joins} },
                             MT::ContentFieldIndex->join_on(
                             'content_data_id',
@@ -244,7 +241,6 @@ sub _hdlr_contents {
             $terms{author_id} = $author->id;
         }
     }
-
     my $published = $ctx->{__stash}{content_ids_published} ||= {};
     if ( $args->{unique} ) {
         push @filters, sub { !exists $published->{ $_[0]->id } }
@@ -286,11 +282,43 @@ sub _hdlr_contents {
             }
         }
         if ( my $days = $args->{days} ) {
-            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
+            my $dt_field_id = 0;
+            my $dt_field    = '';
+
+            if ( my $arg = $args->{date_field} ) {
+                if (   $arg eq 'authored_on'
+                    || $arg eq 'modified_on'
+                    || $arg eq 'created_on' )
+                {
+                    $dt_field = $arg;
+                }
+                else {
+                    my $date_cf = '';
+                    $date_cf = MT->model('cf')->load($arg)
+                        if ( $arg =~ /^\d+$/ );
+                    ($date_cf)
+                        = MT->model('cf')->load( { unique_id => $arg } )
+                        unless ($date_cf);
+                    if ($date_cf) {
+                        $dt_field_id = $date_cf->id;
+                    }
+                }
+            }
+
+            unless ( $dt_field && $dt_field_id ) {
+                if ( my $map = $ctx->stash('template_map') ) {
+                    $dt_field_id = $map->dt_field_id;
+                }
+                else {
+                    $dt_field = 'authored_on';
+                }
+            }
+
+            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
+                $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            my $map = $ctx->stash('template_map');
-            if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
+            if ($dt_field_id) {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
                     'content_data_id',
@@ -302,124 +330,282 @@ sub _hdlr_contents {
                     );
             }
             else {
-                $terms{authored_on} = [$ago];
-                $args{range_incl}{authored_on} = 1;
-            }
-        }
-        else {
-
-            # Check attributes
-            my $found_valid_args = 0;
-            foreach my $valid_key (
-                'lastn',     'category', 'categories', 'tag',
-                'tags',      'author',   'days',       'min_score',
-                'max_score', 'min_rate', 'max_rate',   'min_count',
-                'max_count'
-                )
-            {
-                if ( exists( $args->{$valid_key} ) ) {
-                    $found_valid_args = 1;
-                    last;
-                }
-            }
-
-            if ( !$found_valid_args ) {
-
-                # Uses weblog settings
-                if ( my $days = $blog ? $blog->days_on_index : 10 ) {
-                    my @ago = offset_time_list( time - 3600 * 24 * $days,
-                        $blog_id );
-                    my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                        $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-                    my $map = $ctx->stash('template_map');
-                    if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
-                        push @{ $args{joins} },
-                            MT::ContentFieldIndex->join_on(
-                            'content_data_id',
-                            [   { content_field_id => $dt_field_id },
-                                '-and',
-                                {   value_datetime =>
-                                        { op => '>=', value => $ago }
-                                },
-                            ],
-                            { alias => 'dt_cf_idx' }
-                            );
-                    }
-                    else {
-                        $terms{authored_on} = [$ago];
-                        $args{range_incl}{authored_on} = 1;
-                    }
-                }
-                elsif ( my $limit = $blog ? $blog->entries_on_index : 10 ) {
-                    $args->{lastn} = $limit;
-                }
+                $terms{$dt_field} = [$ago];
+                $args{range_incl}{$dt_field} = 1;
             }
         }
 
         # Adds class_type
         $terms{class} = $class_type;
 
-        my $map = $ctx->stash('template_map');
-        $args{'sort'} = 'authored_on'
-            unless ( $map && $map->dt_field_id );
-        if ( $args->{sort_by} ) {
-            $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
-            $args->{sort_by} = 'ping_count'
-                if $args->{sort_by} eq 'trackback_count';
-            if ( $class->is_meta_column( $args->{sort_by} ) ) {
-                $post_sort_limit  = delete( $args->{limit} )  || 0;
-                $post_sort_offset = delete( $args->{offset} ) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
-                    delete $args->{lastn};
+        my $map        = $ctx->stash('template_map');
+        my $sort_by_cf = 0;
+        if ( my $sort_by = $args->{sort_by} ) {
+            if ( $sort_by =~ m/^field:.*$/ ) {
+                my ( $prefix, $value ) = split ':', $sort_by;
+                my ($cf) = MT->model('cf')->load( { name => $value } );
+                unless ($cf) {
+                    ($cf) = MT->model('cf')->load( { unique_id => $value } );
                 }
-                $no_resort = 0;
-            }
-            elsif ( $class->has_column( $args->{sort_by} ) ) {
-                $args{sort} = $args->{sort_by};
-                $no_resort = 1;
-            }
-            elsif (
-                $args->{limit}
-                && (   'score' eq $args->{sort_by}
-                    || 'rate' eq $args->{sort_by} )
-                )
-            {
-                $post_sort_limit  = delete( $args->{limit} )  || 0;
-                $post_sort_offset = delete( $args->{offset} ) || 0;
-                if ( $post_sort_limit || $post_sort_offset ) {
-                    delete $args->{lastn};
+                if ($cf) {
+                    my $data_type = MT->registry('content_field_types')
+                        ->{ $cf->type }{data_type};
+                    my $join = MT->model('cf_idx')->join_on(
+                        'content_data_id',
+                        { content_field_id => $cf->id },
+                        {   sort      => 'value_' . $data_type,
+                            direction => $args->{sort_order} || 'descend',
+                            alias     => 'cf_idx_' . $cf->unique_id
+                        }
+                    );
+                    if ( $args{join} ) {
+                        push @{ $args{joins} }, $args{join};
+                        push @{ $args{joins} }, $join;
+                        delete $args{join};
+                    }
+                    elsif ( $args{joins} ) {
+                        push @{ $args{joins} }, $join;
+                    }
+                    else {
+                        push @{ $args{joins} }, $join;
+                    }
+                    $sort_by_cf = 1;
                 }
-                $no_resort = 0;
+            }
+            unless ($sort_by_cf) {
+                $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
+                $args->{sort_by} = 'ping_count'
+                    if $args->{sort_by} eq 'trackback_count';
+                if ( $class->is_meta_column( $args->{sort_by} ) ) {
+                    $no_resort = 0;
+                }
+                elsif ( $class->has_column( $args->{sort_by} ) ) {
+                    $args{sort} = $args->{sort_by};
+                    $no_resort = 1;
+                }
+                elsif (
+                    $args->{limit}
+                    && (   'score' eq $args->{sort_by}
+                        || 'rate' eq $args->{sort_by} )
+                    )
+                {
+                    $no_resort = 0;
+                }
             }
         }
+        $args{'sort'} = 'authored_on'
+            if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
 
         if (%fields) {
-
-            # specifies we need a join with entry_meta;
-            # for now, we support one join
-            my ( $col, $val ) = %fields;
-            my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
-            $args{join} = [
-                $class->meta_pkg,
-                undef,
-                {   type          => 'field.' . $col,
-                    $type->{type} => $val,
-                    'entry_id'    => \'= entry_id'
+            foreach my $key ( keys %fields ) {
+                my $value = $fields{$key};
+                my ($cf) = MT->model('cf')->load( { name => $key } );
+                unless ($cf) {
+                    ($cf) = MT->model('cf')->load( { unique_id => $key } );
                 }
-            ];
+                my $type      = $cf->type;
+                my $data_type = MT->registry('content_field_types')
+                    ->{ $cf->type }{data_type};
+                if ( $type eq 'categories' ) {
+                    my $category_arg = $value;
+                    my ( $cexpr, $cats );
+                    if ( ref $category_arg ) {
+                        my $is_and = ( shift @{$category_arg} ) eq 'AND';
+                        $cats  = [ @{ $category_arg->[0] } ];
+                        $cexpr = $ctx->compile_category_filter(
+                            undef, $cats,
+                            {   'and'    => $is_and,
+                                children => $cat_class_type eq 'category'
+                                ? ( $args->{include_subcategories} ? 1 : 0 )
+                                : ( $args->{include_subfolders} ? 1 : 0 )
+                            }
+                        );
+                    }
+                    else {
+                        if (( $category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i )
+                            && ((   $cat_class_type eq 'category'
+                                    && !$args->{include_subcategories}
+                                )
+                                || ( $cat_class_type ne 'category'
+                                    && !$args->{include_subfolders} )
+                            )
+                            )
+                        {
+                            my @cats
+                                = $ctx->cat_path_to_category( $category_arg,
+                                [ \%blog_terms, \%blog_args ],
+                                $cat_class_type );
+                            if (@cats) {
+                                $cats = \@cats;
+                            }
+                            $cexpr
+                                = $ctx->compile_category_filter(
+                                $category_arg, $cats );
+                        }
+                        else {
+                            my @cats = $cat_class->load( \%blog_terms,
+                                \%blog_args );
+                            if (@cats) {
+                                $cats = \@cats;
+                            }
+                            $cexpr = $ctx->compile_category_filter(
+                                $category_arg,
+                                $cats,
+                                {   children => $cat_class_type eq 'category'
+                                    ? ( $args->{include_subcategories}
+                                        ? 1
+                                        : 0
+                                        )
+                                    : ( $args->{include_subfolders} ? 1 : 0 )
+                                }
+                            );
+                        }
+                    }
+                    if ($cexpr) {
+                        my @cat_ids = map { $_->id } @$cats;
+                        my $preloader = sub {
+                            my ($cd) = @_;
+                            my @c_ids
+                                = grep { $cd->is_in_category($_) } @$cats;
+                            my %map;
+                            $map{ $_->id } = 1 for @c_ids;
+                            \%map;
+                        };
+                        if ( !$archive_contents ) {
+                            if ( $category_arg !~ m/\bNOT\b/i ) {
+                                return
+                                    MT::Template::Context::_hdlr_pass_tokens_else(
+                                    @_)
+                                    unless @cat_ids;
+                                my $join = MT->model('cf_idx')->join_on(
+                                    'content_data_id',
+                                    {   content_field_id => $cf->id,
+                                        value_integer    => @cat_ids
+                                    },
+                                    { alias => 'cat_cf_idx' }
+                                );
+                                push @{ $args{joins} }, $join;
+                            }
+                        }
+                        push @filters,
+                            sub { $cexpr->( $preloader->( $_[0] ) ) };
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate(
+                                "You have an error in your '[_2]' attribute: [_1]",
+                                $category_arg,
+                                $key
+                            )
+                        );
+                    }
+                }
+                elsif ( $type eq 'tags' ) {
+                    require MT::Tag;
+                    require MT::ObjectTag;
+
+                    my $tag_arg = $value;
+                    my $terms;
+                    if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
+                        my @tags = MT::Tag->split( ',', $tag_arg );
+                        $terms = { name => \@tags };
+                        $tag_arg = join " or ", @tags;
+                    }
+                    my $tags = [
+                        MT::Tag->load(
+                            $terms,
+                            {   ( $terms ? ( binary => { name => 1 } ) : () ),
+                                join => MT::ObjectTag->join_on(
+                                    'tag_id',
+                                    {   object_datasource => 'content_data',
+                                        %blog_terms,
+                                    },
+                                    { %blog_args, unique => 1 }
+                                ),
+                            }
+                        )
+                    ];
+                    my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
+                    if ($cexpr) {
+                        my @tag_ids = map {
+                            $_->id,
+                                ( $_->n8d_id ? ( $_->n8d_id ) : () )
+                        } @$tags;
+                        my $preloader = sub {
+                            my ($cd_id) = @_;
+                            my %map;
+                            return \%map unless @tag_ids;
+                            my $terms = {
+                                tag_id            => \@tag_ids,
+                                object_id         => $cd_id,
+                                object_datasource => 'content_data',
+                                %blog_terms,
+                            };
+                            my $args = {
+                                %blog_args,
+                                fetchonly   => ['tag_id'],
+                                no_triggers => 1
+                            };
+                            my @ot_ids;
+                            @ot_ids = MT::ObjectTag->load( $terms, $args )
+                                if @tag_ids;
+                            $map{ $_->tag_id } = 1 for @ot_ids;
+                            \%map;
+                        };
+                        if ( !$archive_contents ) {
+                            if ( $tag_arg !~ m/\bNOT\b/i ) {
+                                return
+                                    MT::Template::Context::_hdlr_pass_tokens_else(
+                                    @_)
+                                    unless @tag_ids;
+                                $args{join} = MT::ObjectTag->join_on(
+                                    'object_id',
+                                    {   tag_id            => \@tag_ids,
+                                        object_datasource => 'content_data',
+                                        %blog_terms
+                                    },
+                                    { %blog_args, unique => 1 }
+                                );
+                            }
+                        }
+                        push @filters,
+                            sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+                    }
+                    else {
+                        return $ctx->error(
+                            MT->translate(
+                                "You have an error in your '[_2]' attribute: [_1]",
+                                $tag_arg,
+                                'tag'
+                            )
+                        );
+                    }
+                }
+                else {
+                    my $join = MT->model('cf_idx')->join_on(
+                        'content_data_id',
+                        {   content_field_id      => $cf->id,
+                            'value_' . $data_type => $value,
+                        },
+                        { alias => 'cf_idx_' . $cf->unique_id }
+                    );
+                    if ( $args{join} ) {
+                        push @{ $args{joins} }, $args{join};
+                        push @{ $args{joins} }, $join;
+                        delete $args{join};
+                    }
+                    elsif ( $args{joins} ) {
+                        push @{ $args{joins} }, $join;
+                    }
+                    else {
+                        push @{ $args{joins} }, $join;
+                    }
+                }
+            }
         }
 
         if ( !@filters ) {
-            if ( ( my $last = $args->{lastn} ) && ( !exists $args->{limit} ) )
-            {
-                $args{sort} = [
-                    { column => 'authored_on', desc => 'DESC' },
-                    { column => 'id',          desc => 'DESC' },
-                ];
-                $args{limit} = $last;
-                $no_resort = 0 if $args->{sort_by};
-            }
-            else {
+            unless ($sort_by_cf) {
                 if ( $args{sort} eq 'authored_on' ) {
                     my $dir = $args->{sort_order} || 'descend';
                     $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
@@ -431,60 +617,30 @@ sub _hdlr_contents {
                 else {
                     $args{direction} = $args->{sort_order} || 'descend';
                 }
-                $no_resort = 1 unless $args->{sort_by};
-                if (   ( my $last = $args->{lastn} )
-                    && ( exists $args->{limit} ) )
-                {
-                    $args{limit} = $last;
-                }
+            }
+            $no_resort = 1 unless $args->{sort_by};
+            if ( ( exists $args->{limit} ) && ( my $last = $args->{limit} ) )
+            {
+                $args{limit} = $last;
             }
             $args{offset} = $args->{offset} if $args->{offset};
 
-            #if ( $args->{recently_commented_on} ) {
-            #    my $contents_iter
-            #        = _rco_contents_iter( \%terms, \%args, \%blog_terms,
-            #        \%blog_args );
-            #    my $limit = $args->{recently_commented_on};
-            #    while ( my $e = $entries_iter->() ) {
-            #        push @entries, $e;
-            #        last unless --$limit;
-            #    }
-            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            #}
-            #else {
             @contents = $class->load( \%terms, \%args );
-
-            #}
         }
         else {
-            if ( ( $args->{lastn} ) && ( !exists $args->{limit} ) ) {
-                $args{direction} = 'descend';
-                $args{sort}      = 'authored_on';
-                $no_resort = 0 if $args->{sort_by};
-            }
-            else {
-                $args{direction} = $args->{sort_order} || 'descend';
-                $no_resort = 1 unless $args->{sort_by};
-            }
+            $args{direction} = $args->{sort_order} || 'descend';
+            $no_resort = 1 unless $args->{sort_by};
             my $iter;
 
-            #if ( $args->{recently_commented_on} ) {
-            #    $args->{lastn} = $args->{recently_commented_on};
-            #    $iter = _rco_entries_iter( \%terms, \%args, \%blog_terms,
-            #        \%blog_args );
-            #    $no_resort = $args->{sort_order} || $args->{sort_by} ? 0 : 1;
-            #}
-            #else {
             $iter = $class->load_iter( \%terms, \%args );
 
-            #}
             my $i   = 0;
             my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n   = $args->{lastn};
-        ENTRY: while ( my $c = $iter->() ) {
+            my $n   = $args->{limit};
+        CONTENT_DATA: while ( my $c = $iter->() ) {
                 for (@filters) {
-                    next ENTRY unless $_->($c);
+                    next CONTENT_DATA unless $_->($c);
                 }
                 next if $off && $j++ < $off;
                 push @contents, $c;
@@ -497,7 +653,9 @@ sub _hdlr_contents {
 
         # Don't resort a predefined list that's not in a published archive
         # page when we didn't request sorting.
-        if ( $args->{sort_by} || $args->{sort_order} || $ctx->{archive_type} )
+        if (   $args->{sort_by}
+            || $args->{sort_order}
+            || $ctx->{archive_type} )
         {
             my $so
                 = $args->{sort_order}
@@ -558,10 +716,10 @@ sub _hdlr_contents {
             my $i   = 0;
             my $j   = 0;
             my $off = $args->{offset} || 0;
-            my $n   = $args->{lastn};
-        ENTRY2: foreach my $c (@$archive_contents) {
+            my $n   = $args->{limit};
+        CONTENT_DATA2: foreach my $c (@$archive_contents) {
                 for (@filters) {
-                    next ENTRY2 unless $_->($c);
+                    next CONTENT_DATA2 unless $_->($c);
                 }
                 next if $off && $j++ < $off;
                 push @contents, $c;
@@ -574,8 +732,8 @@ sub _hdlr_contents {
             if ( $offset = $args->{offset} ) {
                 if ( $offset < scalar @$archive_contents ) {
                     @contents
-                        = @$archive_contents[ $offset .. $#$archive_contents
-                        ];
+                        = @$archive_contents[ $offset ..
+                        $#$archive_contents ];
                 }
                 else {
                     @contents = ();
@@ -584,18 +742,8 @@ sub _hdlr_contents {
             else {
                 @contents = @$archive_contents;
             }
-            if ( my $last = $args->{lastn} ) {
-                if ( scalar @contents > $last ) {
-                    @contents = @contents[ 0 .. $last - 1 ];
-                }
-            }
         }
     }
-
-    #my @contents
-    #    = $archive_contents
-    #    ? @{$archive_contents}
-    #    : MT::ContentData->load( \%terms, \%args );
 
     my $i       = 0;
     my $res     = '';
@@ -1135,7 +1283,8 @@ sub _hdlr_content_permalink {
     my $link = $c->permalink( $args ? $at : undef,
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $c->errstr );
-    $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
+    $link = MT::Util::strip_index( $link, $blog )
+        unless $args->{with_index};
     $link;
 }
 
@@ -1158,7 +1307,8 @@ sub _hdlr_author_has_content {
     $terms{author_id} = $author->id;
     $terms{status}    = MT::ContentStatus::RELEASE();
 
-    $ctx->set_content_type_load_context( $args, $cond, \%terms ) or return;
+    $ctx->set_content_type_load_context( $args, $cond, \%terms )
+        or return;
 
     MT::ContentData->exist( \%terms );
 }

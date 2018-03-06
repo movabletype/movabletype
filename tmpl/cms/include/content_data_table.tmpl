@@ -48,7 +48,7 @@
       <th class="head status si">
         <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
       </th>
-      <th class="head id primary"><span class="col-label"><__trans phrase="ID"></span></th>
+      <th class="head data-label primary"><span class="col-label"><__trans phrase="Data Label"></span></th>
       <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
@@ -92,7 +92,7 @@
       <td class="id">
         <strong>
           <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>&amp;content_type_id=<mt:var name="content_type_id" escape="html">" target="_blank">
-            <$mt:var name="id" escape="html"$>
+            <$mt:var name="label" escape="html"$>
           </a>
         </strong>
         <br/>

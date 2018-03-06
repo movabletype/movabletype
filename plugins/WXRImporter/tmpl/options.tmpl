@@ -1,6 +1,6 @@
 <mt:if name="missing_paths">
 <div class="error-message">
-  <__trans phrase="Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first." params="<mt:var name="script_uri">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
+  <__trans phrase="Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first." params="<mt:var name="script_uri">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
 </div>
 </mt:if>
 
@@ -12,15 +12,16 @@
 
     <mtapp:setting
         id="mt_site_path"
-        label="<__trans phrase="Replace with">"
-        class="form-inline">
-<select name="mt_site_path" class="form-control" onchange="setExtraPath(this)">
+        label="<__trans phrase="Replace with">">
+<div class="form-inline">
+<select name="mt_site_path" class="custom-select form-control" onchange="setExtraPath(this)">
 <option value="1">&#60;<MT_TRANS phrase="Site Root">&#62;</option>
 <mt:if name="enable_archive_paths">
 <option value="0">&#60;<MT_TRANS phrase="Archive Root">&#62;</option>
 </mt:if>
 </select>
 / <input name="mt_extra_path" id="mt_extra_path" class="form-control" />
+</div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -28,9 +29,12 @@
         label="<__trans phrase="Download attachments">"
         show_hint="1"
         hint_id="wpDownload"
-        hint="<__trans phrase="Requires the use of a cron job to download attachments from WordPress powered blog in the background.">">
-<label>
-  <input type="checkbox" name="wp_download" id="wp_download" value="1" aria-describedby="wpDownload" />
-  <__trans phrase="Download attachments (images and files) from the imported WordPress powered blog.">
-</label>
-    </mtapp:setting>
+        hint="<__trans phrase="Requires the use of a cron job to download attachments from WordPress powered blog in the background.">"
+    >
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input" type="checkbox" name="wp_download" id="wp_download" value="1" aria-describedby="wpDownload" />
+        <label class="custom-control-label" for="wp_download">
+          <__trans phrase="Download attachments (images and files) from the imported WordPress powered blog.">
+        </label>
+      </div>
+    /mtapp:setting>

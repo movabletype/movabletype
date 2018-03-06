@@ -202,15 +202,16 @@ sub edit {
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
     my $blockeditor_data;
-    if ( $app->param( 'block_editor_data' ) ) {
-      $blockeditor_data = $app->param( 'block_editor_data' );
-    } 
-    elsif($content_data_id || $data) {
-      if($data->{block_editor_data}){
+    if ( $app->param('block_editor_data') ) {
+        $blockeditor_data = $app->param('block_editor_data');
+    }
+    elsif ( $content_data_id || $data ) {
         $blockeditor_data = $data->{block_editor_data};
-      } else {
-        $blockeditor_data = $content_data->block_editor_data();
-      }
+    }
+    else {
+        if ($content_data) {
+            $blockeditor_data = $content_data->block_editor_data();
+        }
     }
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
@@ -300,7 +301,10 @@ sub edit {
                     = $$convert_breaks->{ $_->{content_field_id} };
             }
             elsif ( $content_data_id || $data ) {
-                my $key = 'content-field-' . $_->{content_field_id} . '_convert_breaks';
+                my $key
+                    = 'content-field-'
+                    . $_->{content_field_id}
+                    . '_convert_breaks';
                 $_->{convert_breaks} = $app->param($key);
             }
             else {
@@ -425,9 +429,9 @@ sub save {
                 $convert_breaks->{ $f->{id} } = $app->param(
                     'content-field-' . $f->{id} . '_convert_breaks' );
                 my $key = $f->{id} . '_convert_breaks';
-                $data->{ $key }
+                $data->{$key}
                     = $app->param(
-                        'content-field-' . $f->{id} . '_convert_breaks' );
+                    'content-field-' . $f->{id} . '_convert_breaks' );
             }
         }
     }
@@ -976,7 +980,7 @@ sub _check_permission {
     my $terms = {
         author_id   => $app->user->id,
         permissions => \'IS NOT NULL',
-        blog_id     => $app->blog->id,
+        $app->blog ? ( blog_id => $app->blog->id ) : (),
     };
 
     return 0 unless MT->model('permission')->count($terms);
@@ -1234,20 +1238,6 @@ sub cms_pre_load_filtered_list {
     push @$new_terms, ( '-and', $filters || { blog_id => 0 } );
     $load_options->{terms} = $new_terms;
 
-}
-
-sub start_import {
-    my $app = shift;
-    $app->add_breadcrumb( $app->translate('Import Site Content') );
-    my $param = { page_title => $app->translate('Import Site Content'), };
-    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
-}
-
-sub start_export {
-    my $app = shift;
-    $app->add_breadcrumb( $app->translate('Export Site Content') );
-    my $param = { page_title => $app->translate('Export Site Content'), };
-    $app->load_tmpl( 'not_implemented_yet.tmpl', $param );
 }
 
 sub preview {
@@ -1764,7 +1754,11 @@ sub build_content_data_table {
         my $row = {};
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
-        $row->{id}           = $content_data->id;
+        $row->{id} = $content_data->id;
+        $row->{label}
+            = defined $content_data->label && $content_data->label ne ''
+            ? $content_data->label
+            : $app->translate('(No Label)');
         $row->{object}       = $content_data;
         $row->{preview_data} = $content_data->preview_data;
         $row->{status_text}
@@ -1812,4 +1806,3 @@ sub build_content_data_table {
 }
 
 1;
-

@@ -33,8 +33,10 @@ sub core_search_apis {
                     && $blog_perms->can_edit_content_data( $content_data,
                     $author );
             },
-            search_cols =>
-                { identifier => sub { MT->translate('Basename') }, },
+            search_cols => {
+                identifier => sub { MT->translate('Basename') },
+                label      => sub { MT->translate('Data Label') },
+            },
             replace_cols       => [],
             can_replace        => 1,
             can_search_by_date => 1,
@@ -51,7 +53,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort    => 'name', limit => 0 }
+                    { sort => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -483,6 +485,43 @@ sub core_search_apis {
                 $args->{direction} = 'ascend';
             }
         },
+        'site' => {
+            'order'     => 1000,
+            'condition' => sub {
+                my $author = MT->app->user;
+                return 0 if $blog_id;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('administer');
+                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 0;
+            },
+            'label'      => 'Sites',
+            'handler'    => '$Core::MT::CMS::Website::build_website_table',
+            'perm_check' => sub {
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('edit_templates');
+                my ($obj) = @_;
+                my $perm = $author->permissions( $obj->id );
+                return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
+            },
+            'search_cols' => {
+                'name'        => sub { $app->translate('Name') },
+                'site_url'    => sub { $app->translate('Site URL') },
+                'site_path'   => sub { $app->translate('Site Root') },
+                'description' => sub { $app->translate('Description') },
+            },
+            'replace_cols'       => [],
+            'can_replace'        => 0,
+            'can_search_by_date' => 0,
+            'view'               => 'none',
+            'setup_terms_args'   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                $terms->{class}    = [ 'website', 'blog' ];
+                $args->{sort}      = 'name';
+                $args->{direction} = 'ascend';
+            }
+        },
     };
     return $types;
 }
@@ -693,7 +732,6 @@ sub do_search_replace {
     if ( ( 'user' eq $type ) ) {
         $type = 'author';
     }
-
     foreach my $obj_type (qw( role association )) {
         if ( $type eq $obj_type ) {
             $type = 'author';
@@ -729,7 +767,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort    => 'name', limit => 1 },
+            { sort => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -1156,7 +1194,8 @@ sub do_search_replace {
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
-                            = $content_type->get_field($content_field_id);
+                            = $content_type->get_field($content_field_id)
+                            or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
@@ -1192,34 +1231,49 @@ sub do_search_replace {
                         if ($replaced) {
                             if ( $content_field_id && !$app->param('error') )
                             {
-                                my $ss_validator
-                                    = $field_registry->{ss_validator};
-                                if ($ss_validator) {
-                                    $ss_validator
-                                        = $app->handler_to_coderef(
-                                        $ss_validator);
-                                    unless ($ss_validator) {
-                                        my $error = $app->translate(
-                                            'ss_validator of [_1] field is invalid',
-                                            $field_data->{type}
+                                if ( $field_data->{options}{required} ) {
+                                    my $is_empty = !ref $text
+                                        && ( !defined $text || $text eq '' );
+                                    if ($is_empty) {
+                                        $app->param(
+                                            'error',
+                                            $app->translate(
+                                                '"[_1]" field is required.',
+                                                $field_data->{options}{label}
+                                            )
                                         );
-                                        $app->param( 'error', $error );
                                     }
                                 }
-                                if ($ss_validator) {
-                                    my $error = $ss_validator->(
-                                        $app, $field_data, $text
-                                    );
-                                    if ($error) {
-                                        $error = $app->translate(
-                                            '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
-                                            $text,
-                                            $field_data->{options}{label},
-                                            $content_type->name,
-                                            $obj->id,
-                                            $error,
+                                unless ( $app->param('error') ) {
+                                    my $ss_validator
+                                        = $field_registry->{ss_validator};
+                                    if ($ss_validator) {
+                                        $ss_validator
+                                            = $app->handler_to_coderef(
+                                            $ss_validator);
+                                        unless ($ss_validator) {
+                                            my $error = $app->translate(
+                                                'ss_validator of [_1] field is invalid',
+                                                $field_data->{type}
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
+                                    }
+                                    if ($ss_validator) {
+                                        my $error = $ss_validator->(
+                                            $app, $field_data, $text
                                         );
-                                        $app->param( 'error', $error );
+                                        if ($error) {
+                                            $error = $app->translate(
+                                                '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
+                                                $text,
+                                                $field_data->{options}{label},
+                                                $content_type->name,
+                                                $obj->id,
+                                                $error,
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
                                     }
                                 }
                                 unless ( $app->param('error') ) {
