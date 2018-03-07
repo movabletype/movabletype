@@ -830,9 +830,11 @@ sub _nextprev {
             {   content_field_id => $date_field_id,
                 value_datetime   => { $op => $date_field_value }
             },
-            {   sort      => 'value_datetime',
-                direction => $desc,
-                alias     => 'sort_by_date_field'
+            {   sort => [
+                    { column => 'value_datetime', desc => $desc },
+                    { column => 'id',             desc => $desc }
+                ],
+                alias => 'sort_by_date_field'
             }
         );
         push @{ $args->{joins} }, $join;

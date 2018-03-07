@@ -93,7 +93,7 @@ $test_env->prepare_fixture(
                 unique_id => $cat_cf->unique_id,
             },
             {   id        => $date_cf->id,
-                order     => 6,
+                order     => 2,
                 type      => $date_cf->type,
                 options   => { label => $date_cf->name },
                 unique_id => $date_cf->unique_id,
