@@ -482,7 +482,9 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
       jQuery(this.root).find('.filter-blank').each(function (index, element) {
         var $node = jQuery(element)
         changeOption($node)
-        $node.on('change', changeOption)
+        $node.on('change', function () {
+          changeOption($node)
+        })
       })
     }.bind(this)
 
