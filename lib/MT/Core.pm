@@ -1926,10 +1926,6 @@ BEGIN {
             'DeepCopyRecursiveLimit'   => { default => 2 },
             'BulkLoadMetaObjectsLimit' => { default => 100 },
             'DisableMetaObjectCache'   => { default => 1, },
-            'SignOnURL' =>
-                { default => 'https://www.typekey.com/t/typekey/login?', },
-            'SignOffURL' =>
-                { default => 'https://www.typekey.com/t/typekey/logout?', },
             'ReturnToURL' => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
@@ -1962,7 +1958,6 @@ BEGIN {
             'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
-            'TypeKeyVersion'           => { default => '1.1' },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
