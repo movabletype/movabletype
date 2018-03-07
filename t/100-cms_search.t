@@ -65,7 +65,6 @@ $app = _run_app(
 	{ __test_user => $user, __mode => 'search_replace', blog_id => 0, do_search => 1, search => 'rain', _type => 'entry' } 
 );
 $out = delete $app->{__test_output};
-print STDERR $out;
 ok ($out, "Global entry search results are present");
 ok ($out =~ /Republish selected entries/i, "Publish entries button is present");
 ok ($out =~ /Delete selected entries/i, "Delete entries button is present");
