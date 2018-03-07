@@ -113,8 +113,8 @@ $test_env->prepare_fixture(sub {
         image_width  => 640,
         image_height => 480,
         mime_type    => 'image/jpeg',
-        label        => 'Sample File',
-        description  => 'Sample File',
+        label        => 'Sample Image',
+        description  => 'Sample Image',
     );
 
     my $file1 = MT::Test::Permission->make_asset(
@@ -317,6 +317,7 @@ subtest 'mode = asset_userpic' => sub {
 subtest 'mode = complete_upload' => sub {
 
     # By admim
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -393,7 +394,7 @@ subtest 'mode = dialog_asset_modal' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_asset_modal by admin" );
 
     # By Permitted user
@@ -409,7 +410,7 @@ subtest 'mode = dialog_asset_modal' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_asset_modal by permitted user"
     );
 
@@ -459,7 +460,7 @@ subtest 'mode = dialog_list_asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_list_asset by admin" );
 
     # By Permitted user
@@ -475,7 +476,7 @@ subtest 'mode = dialog_list_asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_list_asset by permitted user"
     );
 
@@ -874,7 +875,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out !~ m!Permission=1!i, "save by admin" );
+    ok( $out !~ m!Permission=1!i, "view by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -889,7 +890,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out !~ m!Permission=1!i, "save by permitted user" );
+    ok( $out !~ m!Permission=1!i, "view by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -904,7 +905,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save by other blog" );
+    ok( $out =~ m!Permission=1!i, "view by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -920,10 +921,10 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save by other permission" );
+    ok( $out =~ m!Permission=1!i, "view by other permission" );
 };
 
-subtest 'mode = save (type is file)' => sub {
+subtest 'mode = view (type is file)' => sub {
 
     # By admim
     $app = _run_app(
@@ -937,8 +938,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid Request!i, "view file by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -952,8 +953,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid Request!i, "view file by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -967,8 +968,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view" );
+    ok( $out =~ m!permission=1!i, "view file by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -983,11 +984,11 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid request!i, "view file by other permission" );
 };
 
-subtest 'mode = save (type is image)' => sub {
+subtest 'mode = view (type is image)' => sub {
 
     # By admim
     $app = _run_app(
@@ -1001,8 +1002,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid Request!i, "view image by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -1016,8 +1017,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid Request!i, "view image by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1031,8 +1032,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!permission=1!i, "view image by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1047,11 +1048,11 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid request!i, "view image by other permission" );
 };
 
-subtest 'mode = save (type is audio)' => sub {
+subtest 'mode = view (type is audio)' => sub {
 
     # By admim
     $app = _run_app(
@@ -1065,8 +1066,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid Request!i, "view audio by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -1080,8 +1081,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid Request!i, "view audio by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1095,8 +1096,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!permission=1!i, "view audio by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1111,11 +1112,11 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid request!i, "view audio by other permission" );
 };
 
-subtest 'mode = save (type is video)' => sub {
+subtest 'mode = view (type is video)' => sub {
 
     # By admim
     $app = _run_app(
@@ -1129,8 +1130,9 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid request!i, "view video by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -1144,8 +1146,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid Request!i, "view video by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1159,8 +1161,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!permission=1!i, "view video by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1175,8 +1177,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid request!i, "view video by other permission" );
 };
 
 subtest 'mode = save' => sub {
