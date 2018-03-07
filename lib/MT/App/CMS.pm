@@ -2312,11 +2312,6 @@ sub core_enable_object_methods {
             delete => 1,
             edit   => 1,
         },
-        video => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
     };
 }
 
@@ -2407,9 +2402,22 @@ sub is_authorized {
             { permissions => { not => '' } },
         ]
     ];
-    my $perm = MT->model('permission')->count($terms);
-    if ( $perm > 0 ) {
-        return 1;
+    my @perms = MT->model('permission')->load($terms);
+    if ( @perms ) {
+        foreach my $perm ( @perms ) {
+            if ( $perm->blog_id == 0 ) {
+                # Return true when user has any permissions
+                # except sign_in_*
+                my @grep = grep { $_ !~ /'sign_in_.*\'/ } split ",", $perm->permissions;
+                return 1 if @grep;
+            }
+            else {
+                # Anyway, return true when user has any permission
+                # for requested blog or parent site
+                return 1;
+            }
+        }
+        return $app->permission_denied();
     }
     else {
         return $app->permission_denied();
