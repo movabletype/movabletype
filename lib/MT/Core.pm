@@ -371,7 +371,8 @@ BEGIN {
                     },
                     base_type => 'float',
                 },
-                date => {
+                double => { base => '__virtual.float' },
+                date   => {
                     base          => '__virtual.base',
                     col_class     => 'date',
                     use_future    => 0,

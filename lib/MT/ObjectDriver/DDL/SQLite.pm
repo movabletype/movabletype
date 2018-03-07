@@ -191,6 +191,9 @@ sub type2db {
     elsif ( $type eq 'float' ) {
         return 'float';
     }
+    elsif ( $type eq 'double' ) {
+        return 'double';
+    }
     Carp::croak( "undefined type: " . $type );
 }
 
