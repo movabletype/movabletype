@@ -140,7 +140,7 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out =~ m!Invalid login.!i, "dashboard by other blog" );
+    ok( $out =~ m!permission=1!i, "dashboard by other blog" );
 };
 
 done_testing();
