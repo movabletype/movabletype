@@ -744,36 +744,65 @@ sub _nextprev {
 
     $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
 
-    my ( $content_field_id, $category_id );
-    if ( my $by_category = delete $terms->{by_category} ) {
-        if ( ref $by_category eq 'HASH' ) {
-            $content_field_id = $by_category->{content_field_id};
-            $category_id      = $by_category->{category_id};
+    my ( $category_field_id, $category_id, $date_field_id, $date_field_value,
+        $by );
+    if ( my $id = delete $terms->{category_field} ) {
+        my ($cf) = MT->model('cf')->load( { unique_id => $id } );
+        $cf = MT->model('cf')->load($id) unless $cf;
+        ($cf) = MT->model('cf')->load( { name => $id } ) unless $cf;
+        $category_field_id = $cf->id if $cf;
+        my @obj_cats = MT->model('objectcategory')->load(
+            {   cf_id     => $category_field_id,
+                object_ds => 'content_data',
+                object_id => $obj->id
+            }
+        );
+        foreach my $obj_cat (@obj_cats) {
+            $category_id = $obj_cat->category_id if $obj_cat->is_primary;
         }
-        $content_field_id ||= $obj->content_type->get_first_category_field_id
-            or return undef;
-        $category_id ||= ${ $obj->data->{$content_field_id} || [] }[0] || 0;
+    }
+
+    if ( my $id = delete $terms->{date_field} ) {
+        if (   $id eq 'authored_on'
+            || $id eq 'modified_on'
+            || $id eq 'created_on' )
+        {
+            $by = $id;
+        }
+        else {
+            my ($df) = MT->model('cf')->load( { unique_id => $id } );
+            $df = MT->model('cf')->load($id) unless $df;
+            ($df) = MT->model('cf')->load( { name => $id } ) unless $df;
+            if ($df) {
+                $date_field_id = $df->id;
+                my $data = $obj->data;
+                $date_field_value = $data->{$date_field_id};
+            }
+        }
     }
 
     my $label = '__' . $direction;
     $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
+    $label .= ':by_' . $by if $by;
     $label
-        .= ":content_field_id=${content_field_id}:category_id=${category_id}"
-        if $content_field_id;
-    $label .= ':by_modified_on' if $terms->{by_modified_on};
+        .= ":category_field_id=${category_field_id}:category_id=${category_id}"
+        if $category_field_id;
+    $label .= ":date_field_id=${date_field_id}" if $date_field_id;
     return $obj->{$label} if $obj->{$label};
 
     my $args = {};
 
-    if ($content_field_id) {
+    if ($category_field_id) {
         my $join;
         if ($category_id) {
             $join = MT::ContentFieldIndex->join_on(
                 'content_data_id',
-                {   content_field_id => $content_field_id,
+                {   content_field_id => $category_field_id,
                     value_integer    => $category_id,
                 },
-                { unique => 1 }
+                {   unique => 1,
+                    alias  => 'category_field',
+                },
             );
         }
         else {
@@ -782,37 +811,59 @@ sub _nextprev {
                 {   type      => 'left',
                     condition => {
                         content_data_id  => \'= cd_id',
-                        content_field_id => $content_field_id,
+                        content_field_id => $category_field_id,
                         value_integer    => \'IS NULL',
                     },
                     unique => 1,
                 }
             );
         }
-        $args->{join} = $join;
+        push @{ $args->{joins} }, $join;
     }
 
-    my $by = delete $terms->{by_modified_on} ? 'modified_on' : 'authored_on';
-
-    my $o;
-    if ( $args->{join} ) {
+    if ($date_field_id) {
         my $desc = $next ? 'ASC' : 'DESC';
         my $op   = $next ? '>'   : '<';
 
+        my $join = MT->model('cf_idx')->join_on(
+            'content_data_id',
+            {   content_field_id => $date_field_id,
+                value_datetime   => { $op => $date_field_value }
+            },
+            {   sort      => 'value_datetime',
+                direction => $desc,
+                alias     => 'sort_by_date_field'
+            }
+        );
+        push @{ $args->{joins} }, $join;
+    }
+
+    $by ||= 'authored_on';
+
+    my $o;
+    if ( $args->{joins} ) {
         $terms->{blog_id}         = $obj->blog_id;
         $terms->{content_type_id} = $obj->content_type_id;
 
-        $args->{sort} = [
-            { column => $by,  desc => $desc },
-            { column => 'id', desc => $desc },
-        ];
+        if ($date_field_id) {
+            $o = MT::ContentData->load( $terms, $args );
+        }
+        else {
+            my $desc = $next ? 'ASC' : 'DESC';
+            my $op   = $next ? '>'   : '<';
 
-        $o = MT::ContentData->load(
-            { %{$terms}, $by => { $op => $obj->$by } }, $args );
-        $o
-            ||= MT::ContentData->load(
-            { %{$terms}, $by => $obj->$by, id => { $op => $obj->id } },
-            $args );
+            $args->{sort} = [
+                { column => $by,  desc => $desc },
+                { column => 'id', desc => $desc },
+            ];
+
+            $o = MT::ContentData->load(
+                { %{$terms}, $by => { $op => $obj->$by } }, $args );
+            $o
+                ||= MT::ContentData->load(
+                { %{$terms}, $by => $obj->$by, id => { $op => $obj->id } },
+                $args );
+        }
     }
     else {
         $o = $obj->nextprev(

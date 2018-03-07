@@ -1551,24 +1551,12 @@ sub _hdlr_content_nextprev {
         or return $ctx->_no_content_error();
     my $terms = { status => MT::ContentStatus::RELEASE() };
     $terms->{by_author} = 1 if $args->{by_author};
-    if ( $args->{by_category} ) {
-        if ( $args->{content_field_id} || $args->{category_id} ) {
-            $terms->{by_category} = {};
-            if ( $args->{content_field_id} ) {
-                $terms->{by_category}{content_field_id}
-                    = $args->{content_field_id};
-            }
-            if ( $args->{category_id} ) {
-                $terms->{by_category}{category_id} = $args->{category_id};
-            }
-        }
-        else {
-            $terms->{by_category} = 1;
-        }
-    }
-    $terms->{by_modified_on} = 1 if $args->{by_modified_on};
+    $terms->{category_field} = $args->{category_field}
+        if $args->{category_field};
+    $terms->{date_field} = $args->{date_field} if $args->{date_field};
     my $content_data = $cd->$meth($terms);
     my $res          = '';
+
     if ($content_data) {
         my $builder = $ctx->stash('builder');
         local $ctx->{__stash}->{content} = $content_data;
