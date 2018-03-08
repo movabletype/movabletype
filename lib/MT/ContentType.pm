@@ -380,8 +380,10 @@ sub field_permissions {
 }
 
 sub permission_group {
-    my $obj = shift;
-    return '"' . $obj->name . '" content type';
+    my $obj     = shift;
+    my $name    = $obj->name;
+    my $site_id = $obj->blog_id;
+    qq{"$name" content type (site_id:$site_id)};
 }
 
 # class method
