@@ -1224,6 +1224,9 @@ $.mtValidateRules = {
     '.digit, .num': function ($e) {
         return !$e.val() || /^\d+$/.test($e.val());
     },
+    '.signed-digit': function ($e) {
+        return !$e.val() || /^-?\d+$/.test($e.val());
+    },
     '.number': function ($e) {
         return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
     },
@@ -1360,6 +1363,7 @@ $.mtValidateMessages = {
     '.url-field':     trans('Invalid URL'),
     '.required':      trans('This field is required'),
     '.digit, .num':   trans('This field must be an integer'),
+    '.signed-digit':  trans('This field must be a signed integer'),
     '.number':        trans('This field must be a number'),
     '.signed-number': trans('This field must be a signed number'),
     '.min-length':    trans('Please input [_1] characters or more', '{{min}}')
