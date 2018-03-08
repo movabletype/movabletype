@@ -1027,44 +1027,6 @@ sub comment_latest {
     );
 }
 
-MT::Comment->add_callback(
-    'post_save',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $comment ) = @_;
-        my $entry = MT::Entry->load( $comment->entry_id )
-            or return;
-        $entry->clear_cache('comment_latest');
-        my $count = MT::Comment->count(
-            {   entry_id => $comment->entry_id,
-                visible  => 1,
-            }
-        );
-        return unless ( $entry->comment_count != $count );
-        $entry->comment_count($count);
-        $entry->save;
-    },
-);
-
-MT::Comment->add_callback(
-    'post_remove',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $comment ) = @_;
-        my $entry = MT::Entry->load( $comment->entry_id )
-            or return;
-        $entry->clear_cache('comment_latest');
-        if ( $comment->visible ) {
-            my $count
-                = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
-            $entry->comment_count($count);
-            $entry->save;
-        }
-    },
-);
-
 sub pings {
     my $entry = shift;
     my ( $terms, $args ) = @_;
@@ -1084,49 +1046,6 @@ sub pings {
         );
     }
 }
-
-MT::TBPing->add_callback(
-    'post_save',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $ping ) = @_;
-        require MT::Trackback;
-        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
-            if ( $tb->entry_id ) {
-                my $entry = MT::Entry->load( $tb->entry_id )
-                    or return;
-                my $count = MT::TBPing->count(
-                    {   tb_id   => $tb->id,
-                        visible => 1,
-                    }
-                );
-                $entry->ping_count($count);
-                $entry->save;
-            }
-        }
-    }
-);
-
-MT::TBPing->add_callback(
-    'post_remove',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $ping ) = @_;
-        require MT::Trackback;
-        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
-            if ( $tb->entry_id && $ping->visible ) {
-                my $entry = MT::Entry->load( $tb->entry_id )
-                    or return;
-                my $count
-                    = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
-                $entry->ping_count($count);
-                $entry->save;
-            }
-        }
-    }
-);
 
 sub archive_file {
     my $entry = shift;

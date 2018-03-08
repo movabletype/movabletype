@@ -13,7 +13,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 55;
+plan tests => 50;
 
 use MT;
 use MT::Blog;
@@ -198,17 +198,6 @@ is( $entry->archive_url,
     'http://narnia.na/nana/archives/1978/01/a-rainy-day.html',
     'Archive URL' );
 is( $entry->archive_file, '1978/01/a-rainy-day.html', 'Archive file' );
-
-## Test comments, comment_count
-ok( $entry->comment_count, "Entry comment_count exists" );
-my @comments = @{ $entry->comments };
-ok( @comments, "Multiple comments exist" );
-is( $comments[0]->text,
-    'Postmodern false consciousness has always been firmly rooted in post-Freudian Lacanian neo-Marxist bojangles. Needless to say, this quickly and asymptotically approches a purpletacular jouissance of etic jumpinmypants.',
-    'Comment 1'
-);
-is( $comments[1]->text, 'Comment reply for comment 1',  'Comment 3' );
-is( $comments[2]->text, 'Comment reply for comment 11', 'Comment 2' );
 
 ## Test entry auto-generation
 $entry->excerpt('');

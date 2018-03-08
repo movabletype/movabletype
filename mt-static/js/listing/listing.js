@@ -456,7 +456,9 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
       jQuery(this.root).find('.filter-date').each(function (index, element) {
         var $node = jQuery(element)
         dateOption($node)
-        $node.on('change', dateOption)
+        $node.on('change', function () {
+          dateOption($node)
+        })
       })
       jQuery(this.root).find('input.date').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -482,7 +484,9 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
       jQuery(this.root).find('.filter-blank').each(function (index, element) {
         var $node = jQuery(element)
         changeOption($node)
-        $node.on('change', changeOption)
+        $node.on('change', function () {
+          changeOption($node)
+        })
       })
     }.bind(this)
 

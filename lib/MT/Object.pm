@@ -979,9 +979,8 @@ sub _translate_numeric_fields {
     my ( $obj, $orig_obj ) = @_;
 
     for my $field (
-        @{  $obj->columns_of_type(
-                'integer', 'boolean', 'smallint', 'float'
-            )
+        @{  $obj->columns_of_type( 'integer', 'boolean', 'smallint', 'float',
+                'double' )
         }
         )
     {
@@ -1986,7 +1985,12 @@ For storing text data.
 
 =item * float
 
-For storing floating point values.
+For storing single-precision floating point values (Some ObjectDriver
+can save double-precision floating point value to float type).
+
+=item * double
+
+For storing double-precision floating point values.
 
 =back
 

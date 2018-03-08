@@ -1012,18 +1012,6 @@ sub remove {
     $res;
 }
 
-# deprecated: use $blog->remote_auth_token instead
-sub effective_remote_auth_token {
-    my $blog = shift;
-    if ( scalar @_ ) {
-        return $blog->remote_auth_token(@_);
-    }
-    if ( $blog->remote_auth_token() ) {
-        return $blog->remote_auth_token();
-    }
-    undef;
-}
-
 sub flush_has_archive_type_cache {
     my $blog = shift;
     my ($type) = @_;

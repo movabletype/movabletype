@@ -15,7 +15,7 @@
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
   <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
+    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
       <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
@@ -145,9 +145,9 @@ function stopPropagation(e) {
 </mt:if>
 
 <mt:if name="scope_type" eq="user">
-<div class="mt-primaryNavigation__container" style="background-color: #595959; height: 100%;">
+<div class="mt-primaryNavigation__container" style="background-color: #595959;">
 <mt:else>
-<div class="mt-primaryNavigation__container position-absolute" style="background-color: #595959; display: none; top: 0; height: 100%;" onclick="stopPropagation(event);">
+<div class="mt-primaryNavigation__container position-absolute" style="background-color: #595959; display: none; top: 0; width: 100%; height: 100%;" onclick="stopPropagation(event);">
 </mt:if>
   <div class="mt-primaryNavigation__header--invert">
     <div class="col-10">
@@ -170,6 +170,24 @@ function stopPropagation(e) {
         <mtapp:svgicon id="ic_menu" title="<__trans phrase="Close Site Menu">">
       </a>
     </div>
+</mt:if>
+  </div>
+
+  <div class="mt-primaryNavigation__control--invert">
+<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
+<mt:if name="show_dashboard_link">
+    <a href="<mt:var name="script_url">?__mode=dashboard" class="btn btn-default">
+      <mtapp:svgicon id="ic_dashboard" title="Dashboard">
+      <__trans phrase="Dashboard">
+    </a>
+</mt:if>
+<mt:if name="scope_type" ne="system">
+  <mt:if name="can_access_to_system_dashboard">
+    <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="btn btn-default">
+      <mtapp:svgicon id="ic_system" title="System">
+      <__trans phrase="System">
+    </a>
+  </mt:if>
 </mt:if>
   </div>
 
@@ -216,20 +234,6 @@ function stopPropagation(e) {
       </li>
 </mt:unless>
     </ul>
-
-<mt:if name="scope_type" ne="system">
-  <mt:if name="can_access_to_system_dashboard">
-    <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
-      <__trans phrase="System">
-    </a>
-  </mt:if>
-</mt:if>
-<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
-<mt:if name="show_dashboard_link">
-    <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
-      <__trans phrase="Dashboard">
-    </a>
-</mt:if>
   </div>
 
 <mt:if name="scope_type" eq="user">
