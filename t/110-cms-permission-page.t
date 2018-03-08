@@ -933,7 +933,7 @@ subtest 'mode = save_entry_prefs (page)' => sub {
             __request_method => 'POST',
             __mode           => 'save_entry_prefs',
             _type            => 'page',
-            blog_id          => $website->id,
+            blog_id          => $blog->id,
             entry_prefs      => 'Custom',
             custom_prefs =>
                 'title,text,keywords,tags,category,feedback,assets',
