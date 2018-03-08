@@ -1367,7 +1367,7 @@ subtest 'mode = edit (edit, website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!__mode=dashboard&redirect=1!i,
+    ok( $out =~ m!permission=1!i,
         "edit (edit) by child blog" );
 
     $app = _run_app(
