@@ -2307,11 +2307,6 @@ sub core_enable_object_methods {
             edit   => 1,
             save   => 1,
         },
-        user => {
-            save   => 1,
-            delete => 1,
-            edit   => 1,
-        },
     };
 }
 
