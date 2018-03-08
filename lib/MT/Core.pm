@@ -398,8 +398,7 @@ BEGIN {
                                 if ( $key eq 'days' ) {
                                     return $prop->error(
                                         MT->translate(
-                                            q{Days must be a number.}
-                                        )
+                                            q{Days must be a number.})
                                     ) if $args->{days} =~ /\D/;
                                 }
                                 elsif ( $key ne 'option' ) {
@@ -1915,19 +1914,19 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'             => undef,
-            'SearchSortOrder'          => { default => 'ascend', },
-            'SearchNoOverride'         => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'      => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'       => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate'    => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'         => { alias => 'MaxResults', },
-            'SearchAltTemplate'        => { alias => 'AltTemplate' },
-            'SearchPrivateTags'        => { default => 0 },
-            'DeepCopyRecursiveLimit'   => { default => 2 },
-            'BulkLoadMetaObjectsLimit' => { default => 100 },
-            'DisableMetaObjectCache'   => { default => 1, },
-            'ReturnToURL' => undef,
+            'SearchSortBy'              => undef,
+            'SearchSortOrder'           => { default => 'ascend', },
+            'SearchNoOverride'          => { default => 'SearchMaxResults', },
+            'SearchResultDisplay'       => { alias => 'ResultDisplay', },
+            'SearchExcerptWords'        => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate'     => { alias => 'DefaultTemplate', },
+            'SearchMaxResults'          => { alias => 'MaxResults', },
+            'SearchAltTemplate'         => { alias => 'AltTemplate' },
+            'SearchPrivateTags'         => { default => 0 },
+            'DeepCopyRecursiveLimit'    => { default => 2 },
+            'BulkLoadMetaObjectsLimit'  => { default => 100 },
+            'DisableMetaObjectCache'    => { default => 1, },
+            'ReturnToURL'               => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
@@ -2002,7 +2001,7 @@ BEGIN {
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
-            'DefaultSiteURL'          => undef,    ## DEPRECATED
+            'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
@@ -2563,7 +2562,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
