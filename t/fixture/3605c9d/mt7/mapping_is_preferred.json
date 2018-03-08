@@ -324,7 +324,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -357,7 +357,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "62e90dcaa565436b1215255ac9e5b1c3979d3767",
+            "faa96e0fb83fe4e9e9b77cfa35e6510d17b2c8cc",
             null,
             null
          ],
@@ -372,7 +372,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "961c42a4ba3e2723232030b11c18aebfe55b8ca1",
+            "5510b6b2e811e6433acfec91a39c2ee9e3f43bfd",
             null,
             null
          ]
@@ -750,5 +750,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

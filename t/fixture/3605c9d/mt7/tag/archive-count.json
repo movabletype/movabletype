@@ -549,7 +549,7 @@
             "1",
             null,
             "__NOW__",
-            "54d7ae85541616519e851d9c05763db5d9bbb052",
+            "643e8db715fd67f708aa329a8c90aa5321be478f",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "1",
@@ -558,7 +558,7 @@
             null,
             "__NOW__",
             "2",
-            "00df125ad36f5fbcb7ca1f0947602bf1f7aa7b52",
+            "53af2be072d8de3042eaa44629960123abe3d317",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -570,7 +570,7 @@
             "1",
             null,
             "__NOW__",
-            "54d7ae85541616519e851d9c05763db5d9bbb052",
+            "643e8db715fd67f708aa329a8c90aa5321be478f",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "2",
@@ -579,7 +579,7 @@
             null,
             "__NOW__",
             "2",
-            "827007b33743fe14a7414ac8134b080aaad48122",
+            "a126ab2a1125955286f7b115d793fa344504feba",
             "2017-05-31 16:36:00",
             "201839"
          ],
@@ -591,7 +591,7 @@
             "1",
             null,
             "__NOW__",
-            "54d7ae85541616519e851d9c05763db5d9bbb052",
+            "643e8db715fd67f708aa329a8c90aa5321be478f",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -600,7 +600,7 @@
             null,
             "__NOW__",
             "2",
-            "41a0bc953f554d504d8ed06563eb199516f2f22b",
+            "c3d9f9bb52ca7d924cfd5f034adce3ca7027bdd3",
             "2017-05-31 16:36:00",
             "201939"
          ],
@@ -612,7 +612,7 @@
             "2",
             null,
             "__NOW__",
-            "a7054b09972b4def1d34c9287a45744b3144f4c8",
+            "91531e9fb246a2b5f85f1fae8c80eee1fcb320d9",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "4",
@@ -621,7 +621,7 @@
             null,
             "__NOW__",
             "2",
-            "694e9ac85f0f81c838ac134aa4f110ab8adca2a7",
+            "f5e614ca6dbc25480bbfacb6ebbf99c01e2de79a",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -661,7 +661,7 @@
             null,
             null,
             "categories",
-            "3ec9734a5c66cf9a65bcadb3d7801f160905ebf9"
+            "8b6a1f0f87c199b95b16bd6e4999e16d33212730"
          ],
          [
             "2",
@@ -678,7 +678,7 @@
             null,
             null,
             "categories",
-            "054a19437dae2c9504f933ae36bd5d494dbf0972"
+            "23283e06c6e4e1c2c04cdae901c31cbfa87c7db5"
          ]
       ]
    },
@@ -694,6 +694,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -711,6 +712,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ],
@@ -723,6 +725,7 @@
             "2",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -741,6 +744,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ],
@@ -753,6 +757,7 @@
             "4",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -768,7 +773,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -801,7 +806,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "54d7ae85541616519e851d9c05763db5d9bbb052",
+            "643e8db715fd67f708aa329a8c90aa5321be478f",
             null,
             null
          ],
@@ -816,7 +821,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "a7054b09972b4def1d34c9287a45744b3144f4c8",
+            "91531e9fb246a2b5f85f1fae8c80eee1fcb320d9",
             null,
             null
          ]
@@ -2477,5 +2482,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

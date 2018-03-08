@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "cbac5c96719e238c2ca563f31d04d43653927ff1",
+            "ef9e21a944698286df860d7cb378e2e8535a0d35",
             "0",
             null,
             "1",
-            "e71e505e4cb6eb1905869de7a6eeec22266e5dc4",
+            "b45ccdb5fa0038a6004ab707db290f9645c07778",
             null,
             null,
             "__NOW__",
             "2",
-            "e71e505e4cb6eb1905869de7a6eeec22266e5dc4",
+            "b45ccdb5fa0038a6004ab707db290f9645c07778",
             "2017-05-30 19:01:00",
             "201722"
          ],
@@ -369,16 +369,16 @@
             "1",
             null,
             "__NOW__",
-            "cbac5c96719e238c2ca563f31d04d43653927ff1",
+            "ef9e21a944698286df860d7cb378e2e8535a0d35",
             "0",
             null,
             "2",
-            "7d5ba9094434273d3d59d9d42bcd98379d2044a9",
+            "1a09add942a13e464141e7964576db48f1eed8b1",
             null,
             null,
             "__NOW__",
             "2",
-            "7d5ba9094434273d3d59d9d42bcd98379d2044a9",
+            "1a09add942a13e464141e7964576db48f1eed8b1",
             null,
             "201722"
          ]
@@ -391,7 +391,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -424,7 +424,7 @@
             null,
             "__NOW__",
             "test content data",
-            "cbac5c96719e238c2ca563f31d04d43653927ff1",
+            "ef9e21a944698286df860d7cb378e2e8535a0d35",
             null,
             null
          ]
@@ -758,5 +758,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

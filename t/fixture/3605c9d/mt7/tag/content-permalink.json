@@ -487,7 +487,7 @@
             "1",
             null,
             "__NOW__",
-            "2bdb4818fb489ed2a244384d4c1ed74ec533afd0",
+            "a2d43b66f057e6644df751d1bccd72a44f83e6d1",
             "0",
             null,
             "1",
@@ -496,7 +496,7 @@
             null,
             "__NOW__",
             "2",
-            "217bca81a5359e33db0bfce8a51552e55e878f7a",
+            "e784c1cab7e32c424b6c34aed9bd2207b8f1af8a",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -508,7 +508,7 @@
             "2",
             null,
             "__NOW__",
-            "03cde8adeee1e5ba944c6567553094c4a15ab47d",
+            "e39d353f76cbed2a5967e94087abe7367d475708",
             "0",
             null,
             "2",
@@ -517,7 +517,7 @@
             null,
             "__NOW__",
             "2",
-            "2cfef0464f12057555d28b0fd9cdca738bd273fc",
+            "fd2a7de6f495f7e777404e96201d377dbdceea7e",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -529,7 +529,7 @@
             "3",
             null,
             "__NOW__",
-            "57fc1505091b09a9e1ffda278a58f7b990089a31",
+            "1605eec98fd2bff3e22f9528fcb4481c3ef1d099",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -538,7 +538,7 @@
             null,
             "__NOW__",
             "2",
-            "23ce23bcb03661af080ca7f53ff1c9a2a194ca63",
+            "a73e18d4844d7a6dc6ce19d0c7599ccb3f7eae01",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -578,7 +578,7 @@
             null,
             null,
             "categories",
-            "f309e5510ee446713e424e9bc6526b0777b52925"
+            "ec4f09f3c012d66a61509299a26e5e2f2c9523a0"
          ]
       ]
    },
@@ -594,6 +594,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -611,6 +612,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ]
@@ -623,7 +625,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -656,7 +658,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "2bdb4818fb489ed2a244384d4c1ed74ec533afd0",
+            "a2d43b66f057e6644df751d1bccd72a44f83e6d1",
             null,
             null
          ],
@@ -671,7 +673,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "03cde8adeee1e5ba944c6567553094c4a15ab47d",
+            "e39d353f76cbed2a5967e94087abe7367d475708",
             null,
             null
          ],
@@ -686,7 +688,7 @@
             null,
             "__NOW__",
             "test content type 03",
-            "57fc1505091b09a9e1ffda278a58f7b990089a31",
+            "1605eec98fd2bff3e22f9528fcb4481c3ef1d099",
             null,
             null
          ]
@@ -2390,5 +2392,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }
