@@ -15,7 +15,7 @@
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
   <div class="mt-primaryNavigation__info">
-    <button class="btn btn-link btn-block text-left<mt:if name="scope_type" eq="user"> mt-primaryNavigation__system</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
+    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
       <img src="<mt:var name="author_userpic_url" escape="html">" alt="" widht="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
@@ -173,6 +173,24 @@ function stopPropagation(e) {
 </mt:if>
   </div>
 
+  <div class="mt-primaryNavigation__control--invert">
+<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
+<mt:if name="show_dashboard_link">
+    <a href="<mt:var name="script_url">?__mode=dashboard" class="btn btn-default">
+      <mtapp:svgicon id="ic_dashboard" title="Dashboard">
+      <__trans phrase="Dashboard">
+    </a>
+</mt:if>
+<mt:if name="scope_type" ne="system">
+  <mt:if name="can_access_to_system_dashboard">
+    <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="btn btn-default">
+      <mtapp:svgicon id="ic_system" title="System">
+      <__trans phrase="System">
+    </a>
+  </mt:if>
+</mt:if>
+  </div>
+
   <div class="mt-primaryNavigation__content">
     <ul class="mt-primaryNavigation__sites">
 <mt:loop name="fav_website_loop">
@@ -216,20 +234,6 @@ function stopPropagation(e) {
       </li>
 </mt:unless>
     </ul>
-
-<mt:if name="scope_type" ne="system">
-  <mt:if name="can_access_to_system_dashboard">
-    <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0" class="mt-primaryNavigation__system">
-      <__trans phrase="System">
-    </a>
-  </mt:if>
-</mt:if>
-<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
-<mt:if name="show_dashboard_link">
-    <a href="<mt:var name="script_url">?__mode=dashboard" class="mt-primaryNavigation__system">
-      <__trans phrase="Dashboard">
-    </a>
-</mt:if>
   </div>
 
 <mt:if name="scope_type" eq="user">
