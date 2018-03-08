@@ -48,10 +48,8 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $type    = $args->{type};
-    my $name    = $args->{name};
     my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
+    my $blog_id = $args->{blog_id}             || $ctx->stash('blog_id');
     my $blog    = $ctx->stash('blog');
 
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
@@ -60,20 +58,10 @@ sub _hdlr_contents {
     %terms = %blog_terms;
     %args  = %blog_args;
 
-    my %ct_terms = %terms;
-    if ($type) {
-        $ct_terms{unique_id} = $type;
-    }
-    elsif ($name) {
-        $ct_terms{name} = $name;
-    }
-    else {
-        my $tmpl = $ctx->stash('template');
-        %ct_terms = $tmpl
-            && $tmpl->content_type_id ? ( id => $tmpl->content_type_id ) : ();
-    }
-    my @content_type = MT::ContentType->load( \%ct_terms )
-        or return $ctx->error( MT->translate('Content Type was not found.') );
+    my @content_type
+        = _get_content_type( $ctx, $args, \%blog_terms, \%blog_args );
+    return $ctx->error( MT->translate('Content Type was not found.') )
+        unless @content_type;
     my $content_type_id
         = $#content_type == 0
         ? $content_type[0]->id
@@ -111,10 +99,10 @@ sub _hdlr_contents {
     }
     if ($use_stash) {
         foreach my $args_key (
-            'type',                  'name',
-            'days',                  'recently_commented_on',
-            'include_subcategories', 'include_blogs',
-            'exclude_blogs',         'blog_ids'
+            'content_type',          'days',
+            'recently_commented_on', 'include_subcategories',
+            'include_blogs',         'exclude_blogs',
+            'blog_ids'
             )
         {
             if ( exists( $args->{$args_key} ) ) {
@@ -314,7 +302,8 @@ sub _hdlr_contents {
                 }
             }
 
-            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
+            my @ago
+                = MT::Util::offset_time_list( time - 3600 * 24 * $days,
                 $blog_id );
             my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
                 $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
@@ -401,7 +390,8 @@ sub _hdlr_contents {
                 my $value = $fields{$key};
                 my ($cf) = MT->model('cf')->load( { name => $key } );
                 unless ($cf) {
-                    ($cf) = MT->model('cf')->load( { unique_id => $key } );
+                    ($cf)
+                        = MT->model('cf')->load( { unique_id => $key } );
                 }
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
@@ -416,7 +406,10 @@ sub _hdlr_contents {
                             undef, $cats,
                             {   'and'    => $is_and,
                                 children => $cat_class_type eq 'category'
-                                ? ( $args->{include_subcategories} ? 1 : 0 )
+                                ? ( $args->{include_subcategories}
+                                    ? 1
+                                    : 0
+                                    )
                                 : ( $args->{include_subfolders} ? 1 : 0 )
                             }
                         );
@@ -456,7 +449,10 @@ sub _hdlr_contents {
                                         ? 1
                                         : 0
                                         )
-                                    : ( $args->{include_subfolders} ? 1 : 0 )
+                                    : ( $args->{include_subfolders}
+                                        ? 1
+                                        : 0
+                                    )
                                 }
                             );
                         }
@@ -514,7 +510,10 @@ sub _hdlr_contents {
                     my $tags = [
                         MT::Tag->load(
                             $terms,
-                            {   ( $terms ? ( binary => { name => 1 } ) : () ),
+                            {   (   $terms
+                                    ? ( binary => { name => 1 } )
+                                    : ()
+                                ),
                                 join => MT::ObjectTag->join_on(
                                     'tag_id',
                                     {   object_datasource => 'content_data',
@@ -619,7 +618,8 @@ sub _hdlr_contents {
                 }
             }
             $no_resort = 1 unless $args->{sort_by};
-            if ( ( exists $args->{limit} ) && ( my $last = $args->{limit} ) )
+            if (   ( exists $args->{limit} )
+                && ( my $last = $args->{limit} ) )
             {
                 $args{limit} = $last;
             }
@@ -1814,6 +1814,33 @@ sub _check_and_invoke {
         or return $ctx->_no_content_error();
     local $ctx->{__stash}{entry} = $cd;
     $ctx->invoke_handler( $tag, $args, $cond );
+}
+
+sub _get_content_type {
+    my ( $ctx, $args, $blog_terms, $blog_args ) = @_;
+
+    my @ct;
+
+    if ( my $arg = $args->{content_type} ) {
+        my $class = MT->model('content_type');
+        if ( $arg =~ /^\d+$/ ) {
+            my $ct = $class->load($arg);
+            push @ct, $ct if $ct;
+        }
+        @ct = $class->load( { unique_id => $arg, %{$blog_terms} } )
+            unless @ct;
+        @ct = $class->load( { name => $arg, %{$blog_terms} } ) unless @ct;
+    }
+    else {
+        my $tmpl = $ctx->stash('template');
+        my %ct_terms
+            = $tmpl && $tmpl->content_type_id
+            ? ( id => $tmpl->content_type_id )
+            : ();
+        @ct = MT->model('content_type')->load( \%ct_terms );
+    }
+
+    return @ct;
 }
 
 1;

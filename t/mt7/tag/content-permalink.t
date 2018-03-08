@@ -205,18 +205,18 @@ __END__
 
 === MT::ContentPermalink ContentType 01
 --- template
-<mt:Contents type="[% content_type_01_unique_id %]"><mt:ContentPermalink></mt:Contents>
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink></mt:Contents>
 --- expected
 /test/archives/2017/09/mtcontentpermalink-test-data-01.html
 
 === MT::ContentPermalink ContentType 02
 --- template
-<mt:Contents type="[% content_type_02_unique_id %]"><mt:ContentPermalink></mt:Contents>
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink></mt:Contents>
 --- expected
 /test/archives/2017/09/mtcontentpermalink-test-data-02/
 
 === MT::ContentPermalink ContentType 03
 --- template
-<mt:Contents type="[% content_type_03_unique_id %]"><mt:ContentPermalink></mt:Contents>
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink></mt:Contents>
 --- expected
 /test/archives/category/mtcontentpermalink-test-data-03.html
