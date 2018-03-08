@@ -512,24 +512,24 @@
       "rows" : [
          [
             "2",
-            "2018-03-01 06:29:41",
+            "2018-03-08 04:12:28",
             "2",
             "content_data",
             "1",
             null,
             "__NOW__",
-            "4435db98bc8bfc7c03a33123ed6adb0245124f51",
+            "aa71d36b5c1c348b6daa7475fe4d142f746f99dc",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u000e20170603180500\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "1",
-            "eddec60b4e17d7742605aefa878bf065467d6641",
+            "15320c5fe21d0e38c485f8d7c640fe4d0b99aeeb",
             null,
             null,
             "__NOW__",
             "4",
-            "eddec60b4e17d7742605aefa878bf065467d6641",
+            "15320c5fe21d0e38c485f8d7c640fe4d0b99aeeb",
             "2017-05-31 16:36:00",
-            "201809"
+            "201810"
          ]
       ]
    },
@@ -567,7 +567,7 @@
             null,
             null,
             "date_and_time",
-            "e9ba3af68f2aa2fc3d3ea36c03c93893767dccb1"
+            "e4d05aa623fec5712a309922b58981365c71ca3c"
          ],
          [
             "2",
@@ -584,7 +584,7 @@
             null,
             null,
             "categories",
-            "f67d71b4d85f510afbc477efae415f32a3ffd31b"
+            "838acab25880a53e4c3921b1bcb91136ee43f0da"
          ]
       ]
    },
@@ -600,6 +600,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -617,6 +618,7 @@
             null,
             "2017-06-03 18:05:00",
             null,
+            null,
             "201722",
             null
          ],
@@ -632,6 +634,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ]
@@ -644,7 +647,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -672,12 +675,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(e9ba3af68f2aa2fc3d3ea36c03c93893767dccb1H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(e4d05aa623fec5712a309922b58981365c71ca3cH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "4435db98bc8bfc7c03a33123ed6adb0245124f51",
+            "aa71d36b5c1c348b6daa7475fe4d142f746f99dc",
             null,
             null
          ]
@@ -2387,5 +2390,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

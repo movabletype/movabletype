@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "9d05e769eb5a21f8b73a33829233bf2df6bec01c",
+            "1bfc743fd0cdbcfee0020495eda67e4eed9a0e3d",
             "0",
             null,
             "1",
-            "acce3df509d3f925cda58d646de151940b23fa31",
+            "849ab8523f8a68b0122b55a3d392fb2a241a10f6",
             null,
             null,
             "__NOW__",
             "1",
-            "acce3df509d3f925cda58d646de151940b23fa31",
+            "849ab8523f8a68b0122b55a3d392fb2a241a10f6",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -369,16 +369,16 @@
             "1",
             null,
             "__NOW__",
-            "9d05e769eb5a21f8b73a33829233bf2df6bec01c",
+            "1bfc743fd0cdbcfee0020495eda67e4eed9a0e3d",
             "0",
             null,
             "2",
-            "aa6930b9f8e00ff6a2cc14d8c110ae73d09d2975",
+            "e7d35305f617fb947668b3319a3a45c6b495c434",
             null,
             null,
             "__NOW__",
             "2",
-            "aa6930b9f8e00ff6a2cc14d8c110ae73d09d2975",
+            "e7d35305f617fb947668b3319a3a45c6b495c434",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -391,7 +391,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -424,7 +424,7 @@
             null,
             "__NOW__",
             "test content data",
-            "9d05e769eb5a21f8b73a33829233bf2df6bec01c",
+            "1bfc743fd0cdbcfee0020495eda67e4eed9a0e3d",
             null,
             null
          ]
@@ -758,5 +758,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

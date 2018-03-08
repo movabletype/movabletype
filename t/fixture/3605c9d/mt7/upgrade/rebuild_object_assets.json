@@ -437,16 +437,16 @@
             "1",
             null,
             "__NOW__",
-            "b8c49c7ecfe102fa734fce765ea6e21b693f27ec",
+            "d695365c70977ad551ae0e8d369d0d75a27fc667",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
             "1",
-            "bece6c1260656130bd54a0b05a454645dda91491",
+            "6d4e8e618e4a8c7891472fa424a187628e368eae",
             null,
             null,
             "__NOW__",
             "2",
-            "bece6c1260656130bd54a0b05a454645dda91491",
+            "6d4e8e618e4a8c7891472fa424a187628e368eae",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -486,7 +486,7 @@
             null,
             null,
             "asset",
-            "97e4de4ffe56e43440cef2f1aeb18140599db4e2"
+            "3db86758d46dea0c2e29b60bb413812d95d1bc61"
          ],
          [
             "1",
@@ -503,7 +503,7 @@
             null,
             null,
             "asset_audio",
-            "8d0c153a73a7eec39e09820934c8150e985f6f73"
+            "826b9f4d5ae178e9a7731e6885afd5fe795b1a6e"
          ],
          [
             "1",
@@ -520,7 +520,7 @@
             null,
             null,
             "asset_video",
-            "e052a9190e6482a8e93d3d7924b2025be6b21163"
+            "651edd3d07ba8334c41d78142f3016263380f381"
          ],
          [
             "1",
@@ -537,7 +537,7 @@
             null,
             null,
             "asset_image",
-            "3b1fb2460061d9a12db0c43e4010e6b5e70ba664"
+            "6b29538bf50d2f4d88536e92466350f92f9c2ba5"
          ]
       ]
    },
@@ -553,6 +553,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -570,6 +571,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ],
@@ -585,6 +587,7 @@
             null,
             null,
             null,
+            null,
             "2",
             null
          ],
@@ -597,6 +600,7 @@
             "3",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -612,6 +616,7 @@
             "4",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -627,7 +632,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -655,12 +660,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(97e4de4ffe56e43440cef2f1aeb18140599db4e2H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8d0c153a73a7eec39e09820934c8150e985f6f73H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_video\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(e052a9190e6482a8e93d3d7924b2025be6b21163H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(3b1fb2460061d9a12db0c43e4010e6b5e70ba664",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(3db86758d46dea0c2e29b60bb413812d95d1bc61H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_audio\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(826b9f4d5ae178e9a7731e6885afd5fe795b1a6eH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_video\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(651edd3d07ba8334c41d78142f3016263380f381H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6b29538bf50d2f4d88536e92466350f92f9c2ba5",
             "1",
             null,
             "__NOW__",
             "Sample Content Type 0",
-            "b8c49c7ecfe102fa734fce765ea6e21b693f27ec",
+            "d695365c70977ad551ae0e8d369d0d75a27fc667",
             null,
             null
          ]
@@ -1043,5 +1048,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }
