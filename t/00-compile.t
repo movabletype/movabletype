@@ -368,7 +368,6 @@ use_ok('MT::ArchiveType::Weekly');
 use_ok('MT::ArchiveType::Yearly');
 
 # XMLRPC support
-use_ok('MT::XMLRPC');
 use_ok('MT::XMLRPCServer');
 
 # Atom support
