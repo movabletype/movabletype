@@ -4,19 +4,19 @@
   <mtapp:ContentFieldOption
      id="number-min_value"
      label="<__trans phrase="Min Value">">
-    <input ref="min_value" type="number" name="min_value" id="number-min_value" class="form-control html5-form w-25" value={ options.min_value } min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
+    <input ref="min_value" type="number" name="min_value" id="number-min_value" class="form-control html5-form w-25" value={ options.min_value || <mt:var name="config.numberfieldminvalue" escape="js"> } min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="number-max_value"
      label="<__trans phrase="Max Value">">
-    <input ref="max_value" type="number" name="max_value" id="number-max_value" class="form-control html5-form w-25" value={ options.max_value} min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
+    <input ref="max_value" type="number" name="max_value" id="number-max_value" class="form-control html5-form w-25" value={ options.max_value || <mt:var name="config.numberfieldmaxvalue" escape="js"> } min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="number-decimal_places"
      label="<__trans phrase="Number of decimal places">">
-    <input ref="decimal_places" type="number" name="decimal_places" id="number-decimal_places" class="form-control html5-form w-25" min="0" max="<mt:var name="config.numberfielddecimalplaces" escape="html">" value={ options.decimal_places } >
+    <input ref="decimal_places" type="number" name="decimal_places" id="number-decimal_places" class="form-control html5-form w-25" min="0" max="<mt:var name="config.numberfielddecimalplaces" escape="html">" value={ options.decimal_places || 0 } >
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption

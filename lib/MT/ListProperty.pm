@@ -167,6 +167,7 @@ sub base {
         integer   => 'integer',
         text      => 'string',
         float     => 'float',
+        double    => 'float',
         ## TBD
         # blob      => '',
 

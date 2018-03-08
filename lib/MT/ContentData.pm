@@ -320,7 +320,9 @@ sub _update_cf_idx {
 
     my %cf_idx_hash;
     while ( my $cf_idx = $iter->() ) {
-        push @{ $cf_idx_hash{ $cf_idx->$cf_idx_data_col } ||= [] }, $cf_idx;
+        my $v = $cf_idx->$cf_idx_data_col;
+        $v = '' unless defined $v;
+        push @{ $cf_idx_hash{$v} ||= [] }, $cf_idx;
     }
 
     my @new_values;

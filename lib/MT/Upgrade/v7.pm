@@ -97,6 +97,11 @@ sub upgrade_functions {
             version_limit => 7.0027,
             priority      => 3.3,
         },
+        'v7_rebuild_number_filed_indexes' => {
+            code          => \&_v7_rebuild_number_field_indexes,
+            version_limit => 7.0029,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -783,6 +788,42 @@ sub _v7_migrate_content_data_data_column {
             $self->translate_escape(
                 "Error saving record: [_1].",
                 $content_data->errstr
+            )
+            );
+    }
+}
+
+sub _v7_rebuild_number_field_indexes {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of number field...')
+    );
+
+    my $join = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'number',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        $content_field_index->value_float(undef);
+        $content_field_index->value_double(
+            $content_data->data->{ $content_field->id } );
+
+        $content_field_index->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $content_field_index->errstr
+
             )
             );
     }

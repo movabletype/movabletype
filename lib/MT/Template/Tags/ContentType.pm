@@ -664,7 +664,7 @@ sub _hdlr_contents {
             my $col = $args->{sort_by} || 'authored_on';
             if ( $col ne 'score' ) {
                 if ( my $def = $class->column_def($col) ) {
-                    if ( $def->{type} =~ m/^integer|float$/ ) {
+                    if ( $def->{type} =~ m/^integer|float|double$/ ) {
                         @$archive_contents
                             = $so eq 'ascend'
                             ? sort { $a->$col() <=> $b->$col() }
@@ -687,7 +687,7 @@ sub _hdlr_contents {
                     if ( $class->is_meta_column($col) ) {
                         my $type = MT::Meta->metadata_by_name( $class, $col );
                         no warnings;
-                        if ( $type->{type} =~ m/integer|float/ ) {
+                        if ( $type->{type} =~ m/integer|float|double/ ) {
                             @$archive_contents
                                 = $so eq 'ascend'
                                 ? sort { $a->$col() <=> $b->$col() }

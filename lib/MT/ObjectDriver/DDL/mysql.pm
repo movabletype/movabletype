@@ -186,6 +186,9 @@ sub db2type {
     elsif ( $type eq 'float' ) {
         return 'float';
     }
+    elsif ( $type eq 'double' ) {
+        return 'double';
+    }
     Carp::croak( "undefined type: " . $type );
 }
 
@@ -224,6 +227,9 @@ sub type2db {
     elsif ( $type eq 'float' ) {
         return 'float';
     }
+    elsif ( $type eq 'double' ) {
+        return 'double';
+    }
     Carp::croak( "undefined type: " . $type );
 }
 
@@ -253,6 +259,7 @@ sub cast_column_sql {
         'timestamp' => 'timestamp',
         'boolean'   => 'signed',
         'float'     => 'signed',
+        'double'    => 'signed',
     );
     return
         "CAST(${field_prefix}_$name AS " . $cast_type{ $def->{type} } . ')';

@@ -181,7 +181,7 @@ sub insert_from_sql {
                     $value = '19700101000000'
                         ;    # non-null date or should it be 'now'?
                 }
-                elsif ( $def->{type} =~ m/int|float|boolean/ ) {
+                elsif ( $def->{type} =~ m/int|float|double|boolean/ ) {
                     $value = 0;
                 }
                 else {
@@ -193,7 +193,7 @@ sub insert_from_sql {
                 {
                     $value = $dbh->quote( $dbd->ts2db($value) );
                 }
-                elsif ( $def->{type} !~ m/int|float|boolean/ ) {
+                elsif ( $def->{type} !~ m/int|float|double|boolean/ ) {
                     $value = $dbh->quote($value);
                 }
             }
@@ -396,7 +396,7 @@ sub column_sql {
         if ( ( $def->{type} =~ m/time/ ) || $dbd->is_date_col($name) ) {
             $value = $dbh->quote( $dbd->ts2db($value) );
         }
-        elsif ( $def->{type} !~ m/int|float|boolean/ ) {
+        elsif ( $def->{type} !~ m/int|float|double|boolean/ ) {
             $value = $dbh->quote($value);
         }
         $default = ' DEFAULT ' . $value;
@@ -445,7 +445,7 @@ sub db2type {
         return 'float';
     }
     elsif ( $type == SQL_DOUBLE ) {
-        return 'float';
+        return 'double';
     }
     elsif ( $type == SQL_REAL ) {
         return 'float';

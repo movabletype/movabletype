@@ -16,6 +16,7 @@ my %IdxTypes = (
     datetime => 1,
     integer  => 1,
     float    => 1,
+    double   => 1,
 );
 
 __PACKAGE__->install_properties(
@@ -29,12 +30,14 @@ __PACKAGE__->install_properties(
             'value_datetime'   => 'datetime',
             'value_integer'    => 'integer',
             'value_float'      => 'float',
+            'value_double'     => 'double',
         },
         indexes => {
             value_varchar  => 1,
             value_datetime => 1,
             value_integer  => 1,
-            value_float    => 1
+            value_float    => 1,
+            value_double   => 1,
         },
         datasource      => 'cf_idx',
         long_datasource => 'content_field_index',
@@ -97,6 +100,26 @@ sub column_as_datetime {
         minute    => $m,
         second    => $s,
         time_zone => $four_digit_offset
+    );
+}
+
+sub content_field {
+    my $self = shift;
+    $self->cache_property(
+        'content_field',
+        sub {
+            MT->model('content_field')->load( $self->content_field_id || 0 );
+        },
+    );
+}
+
+sub content_data {
+    my $self = shift;
+    $self->cache_property(
+        'content_data',
+        sub {
+            MT->model('content_data')->load( $self->content_data_id || 0 );
+        },
     );
 }
 
