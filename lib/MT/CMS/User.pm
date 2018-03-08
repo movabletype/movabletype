@@ -137,6 +137,10 @@ sub edit {
             }
         }
 
+        if ( my $unique_id = $perms->{$key}{content_type_unique_id} ) {
+            $perm->{content_type_unique_id} = $unique_id;
+        }
+
         push @perms, $perm;
     }
 
@@ -309,6 +313,10 @@ sub edit_role {
                 }
                 $perm->{children} = join ',', @child;
             }
+        }
+
+        if ( my $unique_id = $perms->{$key}{content_type_unique_id} ) {
+            $perm->{content_type_unique_id} = $unique_id;
         }
 
         push @perms, $perm;
@@ -1370,7 +1378,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args => { sort => 'name' },
+                {   args         => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,

@@ -1027,26 +1027,6 @@ sub comment_latest {
     );
 }
 
-sub pings {
-    my $entry = shift;
-    my ( $terms, $args ) = @_;
-    my $tb = $entry->trackback;
-    return undef unless $tb;
-    if ( $terms || $args ) {
-        $terms ||= {};
-        $terms->{tb_id} = $tb->id;
-        return [ MT::TBPing->load( $terms, $args ) ];
-    }
-    else {
-        $entry->cache_property(
-            'pings',
-            sub {
-                [ MT::TBPing->load( { tb_id => $tb->id } ) ];
-            }
-        );
-    }
-}
-
 sub archive_file {
     my $entry = shift;
     my ($at)  = @_;

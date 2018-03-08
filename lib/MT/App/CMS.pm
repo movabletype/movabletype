@@ -41,13 +41,8 @@ sub init {
 }
 
 sub _has_feedback_plugins {
-    my $switch = MT->config->PluginSwitch || {};
-    for my $plugin (qw/ Comments Trackback /) {
-        return 1
-            if exists $MT::Plugins{$plugin}
-            && ( !defined $MT::Plugins{$plugin}{enabled}
-            || $MT::Plugins{$plugin}{enabled} )
-            && ( !defined $switch->{$plugin} || $switch->{$plugin} );
+    for (qw/ Comments Trackback /) {
+        return 1 if MT->has_plugin($_);
     }
     return;
 }
@@ -185,7 +180,6 @@ sub core_methods {
             no_direct => 1,
         },
 
-        'ping'               => "${pkg}Entry::send_pings",
         'rebuild_phase'      => "${pkg}Blog::rebuild_phase",
         'rebuild'            => "${pkg}Blog::rebuild_pages",
         'rebuild_new_phase'  => "${pkg}Blog::rebuild_new_phase",

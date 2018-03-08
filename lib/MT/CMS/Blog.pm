@@ -1112,13 +1112,19 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
-            require MT::CMS::Entry;
-            MT::CMS::Entry::ping_continuation(
-                $app,
-                $entry, $blog,
-                OldStatus => $old_status,
-                IsNew     => $is_new,
-            );
+            if ( MT->has_plugin('Trackback') ) {
+                require Trackback::CMS::Entry;
+                Trackback::CMS::Entry::ping_continuation(
+                    $app,
+                    $entry, $blog,
+                    OldStatus => $old_status,
+                    IsNew     => $is_new,
+                );
+            }
+            else {
+                require MT::CMS::Entry;
+                MT::CMS::Entry::_finish_rebuild( $app, $entry, $is_new );
+            }
         }
         elsif ($content_data_id) {
             require MT::ContentData;
