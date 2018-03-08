@@ -50,16 +50,6 @@ sub _login {
     $app->user($author);
     $app->{session} = $session;
 
-    $app->log(
-        $app->translate(
-            "User '[_1]' (ID:[_2]) logged in successfully", $author->name,
-            $author->id
-        ),
-        level    => MT::Log::INFO(),
-        class    => 'author',
-        category => 'login_user',
-    );
-
     ( $author, 1 );
 }
 

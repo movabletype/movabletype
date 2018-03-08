@@ -1477,6 +1477,7 @@ sub add_breadcrumb {
 }
 
 sub is_authorized {1}
+sub can_sign_in {1}
 
 sub commenter_cookie { COMMENTER_COOKIE_NAME() }
 
@@ -2424,6 +2425,12 @@ sub login {
                     'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
                 )
             ) if !defined $commenter_blog_id || $commenter_blog_id > 0;
+
+            # Application level login validation
+            if ( !$app->can_sign_in( $author ) ) {
+                MT::Auth->invalidate_credentials( { app => $app } );
+                return $app->error( $app->translate('Invalid login.') );
+            }
 
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );

@@ -2139,7 +2139,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => [ "blog", "website" ],
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2148,7 +2148,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -2333,6 +2333,28 @@ sub validate_magic {
     }
 }
 
+sub can_sign_in {
+    my $app = shift;
+    my ($user) = @_;
+
+    if ( !$user->can_sign_in_cms() ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by user who does not have sign in permission. '[_1]' (ID:[_2])",
+                    $user->name,
+                    $user->id,
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
+        return 0;
+    }
+
+    return 1;
+}
+
 sub is_authorized {
     my $app = shift;
 
@@ -2343,24 +2365,12 @@ sub is_authorized {
     my $user = $app->user;
     return unless $user;
 
+    # User should have sign in system permission
+    return $app->errtrans('Invalid login.')
+        unless $app->can_sign_in($user);
+
     # System administrator is alweays true.
     return 1 if $user->is_superuser;
-
-    # User should have sign in system permission
-    if ( !$user->can_sign_in_cms() ) {
-        $app->log(
-            {   message => $app->translate(
-                    "Failed login attempt by user who does not have sign in permission.'[_1]' (ID:[_2]",
-                    $user->name,
-                    $user->id,
-                ),
-                level    => MT::Log::SECURITY(),
-                category => 'login_user',
-                class    => 'author',
-            }
-        );
-        return $app->permission_denied();
-    }
 
     # User has Edit Templates permission on system, always true.
     # Permission will be verified on each mode.
@@ -2392,12 +2402,14 @@ sub is_authorized {
         ]
     ];
     my @perms = MT->model('permission')->load($terms);
-    if ( @perms ) {
-        foreach my $perm ( @perms ) {
+    if (@perms) {
+        foreach my $perm (@perms) {
             if ( $perm->blog_id == 0 ) {
+
                 # Return true when user has any permissions
                 # except sign_in_*
-                my @grep = grep { $_ !~ /'sign_in_.*\'/ } split ",", $perm->permissions;
+                my @grep = grep { $_ !~ /'sign_in_.*\'/ } split ",",
+                    $perm->permissions;
                 return 1 if @grep;
             }
             else {
@@ -4457,7 +4469,7 @@ sub _build_category_list {
         my $tb_count_iter
             = MT::TBPing->count_group_by(
             { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() },
-            { group   => ['tb_id'] } );
+            { group => ['tb_id'] } );
         while ( my ( $count, $tb_id ) = $tb_count_iter->() ) {
             $tb_counts->{$tb_id} = $count;
         }
