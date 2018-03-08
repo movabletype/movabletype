@@ -301,10 +301,11 @@ sub _manage_content_data_permission {
 
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group        => $self->permission_group,
-            label        => 'Manage Content Data',
-            order        => 100,
-            inherit_from => \@perms,
+            group                  => $self->permission_group,
+            label                  => 'Manage Content Data',
+            order                  => 100,
+            content_type_unique_id => $self->unique_id,
+            inherit_from           => \@perms,
         }
     );
 }
@@ -318,6 +319,7 @@ sub _create_content_data_permission {
             order => 200,
             permitted_action =>
                 { 'create_new_content_data_' . $self->unique_id => 1, },
+            content_type_unique_id => $self->unique_id,
         }
     );
 }
@@ -341,7 +343,8 @@ sub _publish_content_data_permission {
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
                 'rebuild'                                               => 1,
             },
-            inherit_from => \@perms,
+            content_type_unique_id => $self->unique_id,
+            inherit_from           => \@perms,
         }
     );
 }
@@ -360,6 +363,7 @@ sub _edit_all_content_data_permission {
                 'publish_all_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
             },
+            content_type_unique_id => $self->unique_id,
         }
     );
 }
@@ -376,15 +380,21 @@ sub field_permissions {
 }
 
 sub permission_group {
-    my $obj = shift;
-    return '"' . $obj->name . '" content type';
+    my $obj     = shift;
+    my $name    = $obj->name;
+    my $site_id = $obj->blog_id;
+    qq{"$name" content type (site_id:$site_id)};
 }
 
 # class method
 sub permission_groups {
     my $class         = shift;
     my @content_types = __PACKAGE__->load;
-    my @groups        = map { $_->permission_group } @content_types;
+    my @groups        = map {
+        +{  ct_perm_group_unique_id => $_->unique_id,
+            ct_perm_group_label     => $_->permission_group,
+            }
+    } @content_types;
     return \@groups;
 }
 
