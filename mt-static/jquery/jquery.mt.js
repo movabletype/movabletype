@@ -1227,6 +1227,9 @@ $.mtValidateRules = {
     '.number': function ($e) {
         return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
     },
+    '.signed-number': function ($e) {
+        return !$e.val() || /\d/.test($e.val()) && /^(-?\d+)?\.?\d*$/.test($e.val());
+    },
     '.min-length': function ($e) {
         var minLength = Number($e.data('mt-min-length')) || 0;
         if ($e.val().length >= minLength) {
@@ -1350,15 +1353,16 @@ $.mtValidateAddMessages = function ( rules ) {
 };
 
 $.mtValidateMessages = {
-    '.date':        trans('Invalid date format'),
-    '.time':        trans('Invalid time format'),
-    '.email':       trans('Invalid email address'),
-    '.url':         trans('Invalid URL'),
-    '.url-field':   trans('Invalid URL'),
-    '.required':    trans('This field is required'),
-    '.digit, .num': trans('This field must be an integer'),
-    '.number':      trans('This field must be a number'),
-    '.min-length':  trans('Please input [_1] characters or more', '{{min}}')
+    '.date':          trans('Invalid date format'),
+    '.time':          trans('Invalid time format'),
+    '.email':         trans('Invalid email address'),
+    '.url':           trans('Invalid URL'),
+    '.url-field':     trans('Invalid URL'),
+    '.required':      trans('This field is required'),
+    '.digit, .num':   trans('This field must be an integer'),
+    '.number':        trans('This field must be a number'),
+    '.signed-number': trans('This field must be a signed number'),
+    '.min-length':    trans('Please input [_1] characters or more', '{{min}}')
 };
 
 $.fn.extend({
