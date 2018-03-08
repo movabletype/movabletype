@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "88b442aad49cd470336cdbc7213ce8f0e06239aa",
+            "11355c6abadb77bf66d95a433e1ba4d09ffb64de",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             "1",
-            "74bc27a053c7ce74d5371af7fc0a618db1483c77",
+            "ac4c1aa7647fea4404b36d690047fbaa9666fe97",
             null,
             null,
             "__NOW__",
             "2",
-            "74bc27a053c7ce74d5371af7fc0a618db1483c77",
+            "ac4c1aa7647fea4404b36d690047fbaa9666fe97",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -397,7 +397,7 @@
             null,
             null,
             "single_line_text",
-            "c01e55e03dc041e91a510315f1ede35d2b839680"
+            "edff396c5681051a23b252abff43094a374cb94d"
          ]
       ]
    },
@@ -413,6 +413,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -431,6 +432,7 @@
             null,
             null,
             null,
+            null,
             "test text"
          ]
       ]
@@ -442,7 +444,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -470,12 +472,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(c01e55e03dc041e91a510315f1ede35d2b839680",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(edff396c5681051a23b252abff43094a374cb94d",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "88b442aad49cd470336cdbc7213ce8f0e06239aa",
+            "11355c6abadb77bf66d95a433e1ba4d09ffb64de",
             null,
             null
          ]
@@ -809,5 +811,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

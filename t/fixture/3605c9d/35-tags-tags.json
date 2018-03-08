@@ -362,7 +362,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -406,7 +406,7 @@
             null,
             null,
             "1",
-            "2018-03-01 09:58:55",
+            "2018-03-08 07:35:23",
             "content",
             "1",
             null,
@@ -431,14 +431,14 @@
             null,
             null,
             null,
-            "201809"
+            "201810"
          ],
          [
             null,
             null,
             null,
             "1",
-            "2018-03-01 09:58:55",
+            "2018-03-08 07:35:24",
             "content",
             "1",
             null,
@@ -463,7 +463,7 @@
             null,
             null,
             null,
-            "201809"
+            "201810"
          ]
       ]
    },
@@ -883,5 +883,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

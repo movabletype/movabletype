@@ -386,16 +386,16 @@
             "1",
             null,
             "__NOW__",
-            "6fb6bd355f7d804f071e38f1b323c59f45deaf84",
+            "bd9d3a09ad997b55085294a3aca86824375ff24a",
             "0",
             null,
             "1",
-            "71d497865d8896e09ac5717cd5b4bdfcb85282c2",
+            "56b0e8aa6dc4eb5c4745e80e701987a6399fbf90",
             null,
             null,
             "__NOW__",
             "2",
-            "71d497865d8896e09ac5717cd5b4bdfcb85282c2",
+            "56b0e8aa6dc4eb5c4745e80e701987a6399fbf90",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -408,7 +408,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -441,7 +441,7 @@
             null,
             "__NOW__",
             "test content data",
-            "6fb6bd355f7d804f071e38f1b323c59f45deaf84",
+            "bd9d3a09ad997b55085294a3aca86824375ff24a",
             null,
             null
          ]
@@ -775,5 +775,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

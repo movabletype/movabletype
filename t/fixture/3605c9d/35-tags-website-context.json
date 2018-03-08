@@ -728,7 +728,7 @@
       ],
       "rows" : [
          [
-            "AllowComments 1\nCommenterRegistration Allow=1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\nStaticFilePath ./mt-static\n",
+            "AllowComments 1\nCommenterRegistration Allow=1\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\nStaticFilePath ./mt-static\n",
             "1"
          ]
       ]
@@ -777,7 +777,7 @@
             "1",
             null,
             "entry",
-            "3",
+            "0",
             null,
             null,
             "2011-01-01 00:00:00",
@@ -819,7 +819,7 @@
             null,
             null,
             "2012-02-02 00:00:00",
-            "1",
+            "0",
             null,
             "2",
             null,
@@ -996,7 +996,7 @@
             null,
             "tag:localhost,2018:/first_website//2.8",
             "1",
-            "2018-03-01 10:06:31",
+            "2018-03-08 07:43:27",
             "blog_entry_1",
             "2",
             null,
@@ -1021,7 +1021,7 @@
             "Blog Entry 1",
             null,
             null,
-            "201809"
+            "201810"
          ]
       ]
    },
@@ -2464,10 +2464,10 @@
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "iDt45VScXacJ0JLYhD095lNiVr0GFJZOolkWewTr",
+            "jz3Ox2XcVuz7d9E2mSeEzuCosk4v4NQDFzao3ibT",
             "US",
             "1",
-            "1519898789"
+            "1520495005"
          ]
       ]
    },
@@ -4200,5 +4200,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }

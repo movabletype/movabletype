@@ -348,7 +348,7 @@
             "1",
             null,
             "__NOW__",
-            "9edacee0022f75ae2431f91392763a79cac1b871",
+            "3ee2acd96e77fa490e01527acb1b9c0585638f53",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             "1",
@@ -357,7 +357,7 @@
             null,
             "__NOW__",
             "2",
-            "642323ae1c754e64561c5d7524c2d7bfffcd175a",
+            "139050f52e5985fe54cba0c0a8b4a6888747111c",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -397,7 +397,7 @@
             null,
             null,
             "tags",
-            "87292eb6e86ddd1e6a1a95b5dae88272dc9fad5f"
+            "d2341e1761a6636a7b947898365a9d9011d0caf6"
          ]
       ]
    },
@@ -413,6 +413,7 @@
          "cf_idx_modified_on",
          "cf_idx_value_blob",
          "cf_idx_value_datetime",
+         "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
          "cf_idx_value_varchar"
@@ -430,6 +431,7 @@
             null,
             null,
             null,
+            null,
             "1",
             null
          ],
@@ -442,6 +444,7 @@
             "2",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -457,6 +460,7 @@
             "3",
             null,
             "__NOW__",
+            null,
             null,
             null,
             null,
@@ -472,7 +476,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0027\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
             "1"
          ]
       ]
@@ -500,12 +504,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007my tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(87292eb6e86ddd1e6a1a95b5dae88272dc9fad5f",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007my tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(d2341e1761a6636a7b947898365a9d9011d0caf6",
             "1",
             null,
             "__NOW__",
             "Sample Content Type 0",
-            "9edacee0022f75ae2431f91392763a79cac1b871",
+            "3ee2acd96e77fa490e01527acb1b9c0585638f53",
             null,
             null
          ]
@@ -903,5 +907,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0027; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
 }
