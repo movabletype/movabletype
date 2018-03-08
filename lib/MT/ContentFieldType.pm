@@ -191,7 +191,8 @@ sub _number_registry {
                 base  => '__virtual.double',
                 col   => 'value_double',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
-                use_blank => 1,
+                use_blank  => 1,
+                use_signed => 1,
             },
         },
         options_validation_handler =>
