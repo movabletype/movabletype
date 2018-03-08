@@ -178,7 +178,7 @@ sub _multi_line_text_registry {
 
 sub _number_registry {
     {   label                => 'Number',
-        data_type            => 'float',
+        data_type            => 'double',
         order                => 40,
         can_data_label_field => 1,
         field_html           => 'field_html/field_html_number.tmpl',
@@ -188,8 +188,8 @@ sub _number_registry {
         ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
             number => {
-                base  => '__virtual.float',
-                col   => 'value_float',
+                base  => '__virtual.double',
+                col   => 'value_double',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },

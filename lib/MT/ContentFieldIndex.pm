@@ -103,4 +103,24 @@ sub column_as_datetime {
     );
 }
 
+sub content_field {
+    my $self = shift;
+    $self->cache_property(
+        'content_field',
+        sub {
+            MT->model('content_field')->load( $self->content_field_id || 0 );
+        },
+    );
+}
+
+sub content_data {
+    my $self = shift;
+    $self->cache_property(
+        'content_data',
+        sub {
+            MT->model('content_data')->load( $self->content_data_id || 0 );
+        },
+    );
+}
+
 1;
