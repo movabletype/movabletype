@@ -899,7 +899,7 @@ subtest 'mode = edit (edit, website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: edit" );
-    ok( $out =~ m!redirect=1!i, "edit (edit) by child blog" );
+    ok( $out =~ m!permission=1!i, "edit (edit) by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',
