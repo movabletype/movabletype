@@ -92,25 +92,28 @@ sub build_post_save_sub {
             );
             return unless $res;
 
-            my $list = $app->needs_ping(
-                Entry     => $entry,
-                Blog      => $blog,
-                OldStatus => $orig_entry->status,
-            );
-            require MT::Entry;
-            if ( $entry->status == MT::Entry::RELEASE() && $list ) {
-                MT::CMS::Entry::do_send_pings(
-                    $app,
-                    $blog->id,
-                    $entry->id,
-                    $orig_entry->status,
-                    sub {
-                        my ($has_errors) = @_;
-
-                        # Ignore errros
-                        return 1;
-                    }
+            if ( MT->has_plugin('Trackback') ) {
+                my $list = $app->needs_ping(
+                    Entry     => $entry,
+                    Blog      => $blog,
+                    OldStatus => $orig_entry->status,
                 );
+                require MT::Entry;
+                if ( $entry->status == MT::Entry::RELEASE() && $list ) {
+                    require Trackback::CMS::Entry;
+                    Trackback::CMS::Entry::do_send_pings(
+                        $app,
+                        $blog->id,
+                        $entry->id,
+                        $orig_entry->status,
+                        sub {
+                            my ($has_errors) = @_;
+
+                            # Ignore errros
+                            return 1;
+                        }
+                    );
+                }
             }
         }
     };

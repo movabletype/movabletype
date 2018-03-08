@@ -1510,6 +1510,15 @@ sub init_plugins {
         1;
     }
 
+    sub has_plugin {
+        my ( $mt, $plugin ) = @_;
+        return 0 unless defined $plugin;
+        return 0 unless exists $MT::Plugins{$plugin};
+        return 0
+            if defined $MT::Plugins{$plugin}{enabled}
+            && !$MT::Plugins{$plugin}{enabled};
+        return 1;
+    }
 }
 
 my %addons;
