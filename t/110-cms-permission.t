@@ -51,17 +51,13 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out, "Create a new asset" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Create a new Asset: result"
-);
+ok( $out =~ m/Invalid request\./i, "Create a new asset: result" );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
 $app = _run_app(
     'MT::App::CMS',
-    {   __test_user      => $user,
+    {   __test_user      => $other,
         __request_method => 'POST',
         __mode           => 'delete',
         _type            => 'asset',
@@ -74,7 +70,7 @@ ok( $out,                     "Delete asset" );
 location_param_contains(
     $out,
     { __mode => 'dashboard', permission => 1 },
-    "Delete asset: result"
+    "Update an asset: result"
 );
 
 # Update an asset
@@ -968,7 +964,7 @@ ok( $out,                     "Delete ping" );
 location_param_contains(
     $out,
     { __mode => 'dashboard', permission => 1 },
-    "Delete ping: result""
+    "Delete ping: result"
 );
 
 # Create a new Touch
@@ -1208,11 +1204,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok( $out,                          "Delete filter" );
-location_param_contains(
-    $out,
-    { __mode => 'dashboard', permission => 1 },
-    "Delete filter: result"
-);
+ok( $out =~ m/Permission Denied/i, "Delete filter: result" );
 
 ### Different type
 $user = MT::Author->load(997);    #ukawa
