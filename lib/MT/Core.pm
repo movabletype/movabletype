@@ -348,12 +348,12 @@ BEGIN {
                         return { option => 'equal', value => $val };
                     },
                     filter_tmpl => sub {
-                        my $prop      = shift;
-                        my $base_type = $prop->base_type;
+                        my $prop       = shift;
+                        my $base_type  = $prop->base_type;
+                        my $use_blank  = $prop->use_blank ? 'blank_' : '';
+                        my $use_signed = $prop->use_signed ? 'signed_' : '';
                         my $tmpl
-                            = $prop->use_blank
-                            ? "filter_form_blank_${base_type}"
-                            : "filter_form_${base_type}";
+                            = "filter_form_${use_blank}${use_signed}${base_type}";
                         qq{<mt:Var name="${tmpl}">};
                     },
                     base_type          => 'integer',
