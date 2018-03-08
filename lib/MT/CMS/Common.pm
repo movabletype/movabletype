@@ -22,6 +22,9 @@ sub save {
     return $app->errtrans("Invalid request.")
         unless $type;
 
+    return $app->errtrans("Invalid request.")
+        if !$id && $type eq 'asset';
+
     if ( exists $class->properties->{class_type} and $app->param('class') ) {
         my $classParamFilter
             = lc $app->config('DefaultClassParamFilter') || 'all';
