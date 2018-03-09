@@ -390,7 +390,7 @@ __END__
 
 === mt:ContentFieldValue with mt:Else
 --- template
-<mt:Contents blog_id="1" name="test content data" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue><mt:Else>Empty</mt:ContentField>
+<mt:Contents content_type="test content data" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue><mt:Else>Empty</mt:ContentField>
 </mt:ContentFields></mt:Contents>
 --- expected
 Empty
@@ -412,7 +412,7 @@ Empty
 
 === mt:ContentFieldValue no glue
 --- template
-<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField>
+<mt:Contents content_type="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField>
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
@@ -440,7 +440,7 @@ aaabbbccc
 
 === mt:ContentFieldValue with glue
 --- template
-<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue></mt:ContentField>
+<mt:Contents content_type="test content data" offset="1" limit="1"><mt:ContentFields><mt:ContentField glue=","><mt:ContentFieldValue></mt:ContentField>
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
@@ -468,7 +468,7 @@ aaa,bbb,ccc
 
 === mt:ContentFieldValue with convert_breaks
 --- template
-<mt:Contents blog_id="1" name="test content data" offset="1" limit="1"><mt:ContentField label="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
+<mt:Contents content_type="test content data" offset="1" limit="1"><mt:ContentField label="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
 --- expected
 <p>test multi line text<br />
 aaaaa</p>
@@ -476,7 +476,7 @@ aaaaa</p>
 
 === mt:ContentFieldValue with words
 --- template
-<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:Contents content_type="test content data" offset="1" limit="1">
 <mt:ContentField label="single line text"><mt:ContentFieldValue words="1"></mt:ContentField>
 <mt:ContentField label="multi line text"><mt:ContentFieldValue words="1"></mt:ContentField>
 </mt:Contents>
@@ -486,7 +486,7 @@ test
 
 === mt:ContentFieldValue with date format
 --- template
-<mt:Contents blog_id="1" name="test content data" offset="1" limit="1">
+<mt:Contents content_type="test content data" offset="1" limit="1">
 <mt:ContentField label="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
 <mt:ContentField label="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
 <mt:ContentField label="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>

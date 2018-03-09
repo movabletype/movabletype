@@ -59,7 +59,7 @@ __END__
 
 === MT::ContentAuthorUsername
 --- template
-<mt:Contents blog_id="1" content_type="test content data"><mt:ContentAuthorUsername></mt:Contents>
+<mt:Contents content_type="test content data"><mt:ContentAuthorUsername></mt:Contents>
 --- expected
 Abby
 

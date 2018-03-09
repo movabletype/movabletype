@@ -207,7 +207,7 @@ aaaaa
 
 === MT::Contents
 --- template
-<mt:Contents blog_id="1" content_type="test content type 1">a</mt:Contents>
+<mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
@@ -238,13 +238,13 @@ No Content Type could be found.
 
 === MT::ContentsW with limit
 --- template
-<mt:Contents blog_id="1" content_type="test content type 1" limit="3">a</mt:Contents>
+<mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
 
 === MT::Contents with sort_by content field
 --- template
-<mt:Contents blog_id="1" content_type="test content type 1" sort_by="field:single line text">
+<mt:Contents content_type="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected

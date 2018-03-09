@@ -361,7 +361,7 @@ __END__
 
 === mt:ContentField label="single line text"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="single line text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="single line text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -371,7 +371,7 @@ Footer
 
 === mt:ContentField label="multi line text"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="multi line text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="multi line text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -382,7 +382,7 @@ Footer
 
 === mt:ContentField label="number"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="number"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="number"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -392,7 +392,7 @@ Footer
 
 === mt:ContentField label="url"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="url"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="url"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -402,7 +402,7 @@ Footer
 
 === mt:ContentField label="embedded text"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="embedded text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="embedded text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -413,7 +413,7 @@ Footer
 
 === mt:ContentField label="date and time"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="date and time"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -423,7 +423,7 @@ Footer
 
 === mt:ContentField label="date and time" format_name="iso8601"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date and time"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="date and time"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue format_name="iso8601">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -433,7 +433,7 @@ Footer
 
 === mt:ContentField label="date_only"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="date_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -443,7 +443,7 @@ Footer
 
 === mt:ContentField label="date_only" format_name="iso8601"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="date_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="date_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue format_name="iso8601">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -453,7 +453,7 @@ Footer
 
 === mt:ContentField label="time_only"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="time_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -463,7 +463,7 @@ Footer
 
 === mt:ContentField label="time_only" format_name="iso8601"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="time_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="time_only"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:ContentFieldValue format_name="iso8601">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -473,7 +473,7 @@ Footer
 
 === mt:ContentField label="select box"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="select box"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="select box"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__key__">,<mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -483,7 +483,7 @@ Footer
 
 === mt:ContentField label="radio button"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="radio button"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="radio button"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__key__">,<mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -493,7 +493,7 @@ Footer
 
 === mt:ContentField label="checkboxes"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="checkboxes"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="checkboxes"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__key__">,<mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -505,13 +505,13 @@ Footer
 
 === mt:ContentField label="list"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="list" glue=":"><mt:ContentFieldHeader>Header:</mt:ContentFieldHeader><mt:var name="__value__"><mt:ContentFieldFooter>:Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+<mt:Contents content_type="test content data"><mt:ContentField label="list" glue=":"><mt:ContentFieldHeader>Header:</mt:ContentFieldHeader><mt:var name="__value__"><mt:ContentFieldFooter>:Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
 Header:aaa:bbb:ccc:Footer
 
 === mt:ContentField label="tables"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tables"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="tables"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -525,7 +525,7 @@ Footer
 
 === mt:ContentField label="tags"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="tags"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="tags"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:TagName>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -537,7 +537,7 @@ Footer
 
 === mt:ContentField label="categories"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="categories"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="categories"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:CategoryLabel>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -549,7 +549,7 @@ Footer
 
 === mt:ContentField label="asset_image"
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentField label="asset_image"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:Contents content_type="test content data"><mt:ContentField label="asset_image"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:AssetLabel>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
@@ -561,7 +561,7 @@ Footer
 
 === mt:ContentFieldLabel
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
 </mt:ContentFields></mt:Contents>
 --- expected
 single line text
@@ -583,7 +583,7 @@ asset_image
 
 === mt:ContentFieldType
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldType></mt:ContentFieldHeader></mt:ContentField>
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldType></mt:ContentFieldHeader></mt:ContentField>
 </mt:ContentFields></mt:Contents>
 --- expected
 single_line_text

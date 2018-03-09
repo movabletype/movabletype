@@ -77,12 +77,12 @@ __END__
 === MT::ContentsCount without modifier
 --- template
 <mt:ContentsCount>
---- error
-No Content Type could be found.
+--- expected
+5
 
 === MT::ContentsCount in contents context
 --- template
-<mt:Contents blog_id="1" name="test content type 1"><mt:ContentsHeader><mt:ContentsCount></mt:ContentsHeader></mt:Contents>
+<mt:Contents content_type="test content type 1"><mt:ContentsHeader><mt:ContentsCount></mt:ContentsHeader></mt:Contents>
 --- expected
 5
 
@@ -99,15 +99,15 @@ No Content Type could be found.
 --- expected
 5
 
-=== MT::ContentsCount with name modifier
+=== MT::ContentsCount with content_type modifier
 --- template
-<mt:ContentsCount name="test content type 1">
+<mt:ContentsCount content_type="test content type 1">
 --- expected
 5
 
-=== MT::ContentsCount with name modifier and wrong blog_id
+=== MT::ContentsCount with content_type modifier and wrong name
 --- template
-<mt:ContentsCount name="test content type 1" blog_id="2">
+<mt:ContentsCount content_type="test content type 2">
 --- error
 No Content Type could be found.
 
