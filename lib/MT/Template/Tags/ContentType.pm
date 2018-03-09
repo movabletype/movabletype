@@ -1628,20 +1628,20 @@ sub _hdlr_content_field {
         or return $ctx->_no_content_error;
 
     my $field_data;
-    if ( my $unique_id = $args->{unique_id} ) {
+    if ( my $id = $args->{content_field} ) {
+        ($field_data) = grep { $_->{id} == $id } @{ $content_type->fields }
+            if $id =~ m/^\d+$/;
         ($field_data)
-            = grep { $_->{unique_id} eq $unique_id }
-            @{ $content_type->fields };
-    }
-    elsif ( my $content_field_id = $args->{content_field_id} ) {
+            = grep { defined $_->{unique_id} && $_->{unique_id} eq $id }
+            @{ $content_type->fields }
+            unless $field_data;
         ($field_data)
-            = grep { $_->{id} == $content_field_id }
-            @{ $content_type->fields };
-    }
-    elsif ( defined( my $label = $args->{label} ) ) {
+            = grep { defined $_->{name} && $_->{name} eq $id }
+            @{ $content_type->fields }
+            unless $field_data;
         ($field_data)
-            = grep { $_->{options}{label} eq $label }
-            @{ $content_type->fields };
+            = grep { $_->{options}{label} eq $id } @{ $content_type->fields }
+            unless $field_data;
     }
     $field_data
         ||= $ctx->stash('content_field_data') || $content_type->fields->[0]
