@@ -137,7 +137,7 @@ sub _single_line_text_registry {
 
 sub _multi_line_text_registry {
     {   label                => 'Multi Line Text',
-        data_type            => 'blob',
+        data_type            => 'text',
         order                => 30,
         icon_class           => 'ic_multiline',
         can_data_label_field => 0,
@@ -152,7 +152,7 @@ sub _multi_line_text_registry {
         list_props  => {
             multi_line_text => {
                 base  => '__virtual.string',
-                col   => 'value_blob',
+                col   => 'value_text',
                 html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
