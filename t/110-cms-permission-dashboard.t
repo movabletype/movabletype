@@ -64,9 +64,6 @@ my $blog     = MT::Blog->load( { name => 'first blog' } );
 my $aikawa   = MT::Author->load( { name => 'aikawa' } );
 my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
 
-# remove system permissions
-MT::Permission->remove({author_id => $ichikawa->id, blog_id => 0});
-
 # Run
 my ( $app, $out );
 
