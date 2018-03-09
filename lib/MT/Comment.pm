@@ -67,13 +67,13 @@ __PACKAGE__->install_properties(
 );
 
 # Register Comment post-save callbacks for rebuild triggers
-my $rt = MT->model('rebuild_trigger');
 MT->add_callback(
     'post_save.comment',
     10,
     MT->component('core'),
     sub {
-        $rt->runner( 'post_feedback_save', 'comment_pub', @_ );
+        MT->model('rebuild_trigger')
+            ->runner( 'post_feedback_save', 'comment_pub', @_ );
     }
 );
 
