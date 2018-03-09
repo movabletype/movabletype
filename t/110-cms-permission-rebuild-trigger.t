@@ -110,7 +110,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                          "Request: add_rebuild_trigger" );
-    ok( $out !~ m!Permission denied!i, "add_rebuild_trigger by admin" );
+    ok( $out !~ m!permission=1!i, "add_rebuild_trigger by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -122,7 +122,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out !~ m!Permission denied!i,
+    ok( $out !~ m!permission=1!i,
         "add_rebuild_trigger by permitted user (blog)" );
 
     $app = _run_app(
@@ -135,7 +135,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out !~ m!Permission denied!i,
+    ok( $out !~ m!permission=1!i,
         "add_rebuild_trigger by permitted user (website)" );
 
     $app = _run_app(
@@ -148,7 +148,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!permission=1!i,
         "add_rebuild_trigger by non permitted user (blog)" );
 
     $app = _run_app(
@@ -161,7 +161,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!permission=1!i,
         "add_rebuild_trigger by non permitted user (website)" );
 
     $app = _run_app(
@@ -174,7 +174,7 @@ subtest 'mode = add_rebuild_trigger' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!Permission denied!i,
+    ok( $out =~ m!permission=1!i,
         "add_rebuild_trigger by other permission" );
 };
 
