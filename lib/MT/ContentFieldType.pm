@@ -1215,7 +1215,7 @@ sub _list_registry {
 
 sub _table_registry {
     {   label                => 'Table',
-        data_type            => 'blob',
+        data_type            => 'text',
         order                => 200,
         can_data_label_field => 0,
         data_load_handler =>
@@ -1233,7 +1233,7 @@ sub _table_registry {
         list_props => {
             tables => {
                 base            => '__virtual.string',
-                col             => 'value_blob',
+                col             => 'value_text',
                 display         => 'none',
                 filter_editable => 0,
                 html            => '$Core::MT::ContentFieldType::Table::html',
