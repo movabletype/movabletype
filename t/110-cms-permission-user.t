@@ -1456,7 +1456,6 @@ subtest 'action = delete_user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    print $out;
     ok( $out,                       "Request: delete_user" );
     ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
