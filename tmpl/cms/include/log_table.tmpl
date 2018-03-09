@@ -1,3 +1,11 @@
+<mt:setvarblock name="css_include" append="1">
+<style>
+td.log-message {
+  max-width: 200px;
+}
+</style>
+</mt:setvarblock>
+
 <mtapp:listing empty_message="<__trans phrase="No log records could be found." escape="html">">
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
