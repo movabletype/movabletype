@@ -185,6 +185,7 @@ my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
 my $date_cf = MT::ContentField->load( { name => 'date and time' } );
+my $cd4     = MT::ContentData->load(4);
 
 $vars->{ct_id}       = $ct->id;
 $vars->{ct_uid}      = $ct->unique_id;
@@ -192,6 +193,7 @@ $vars->{cf1_uid}     = $cf1->unique_id;
 $vars->{cf2_uid}     = $cf2->unique_id;
 $vars->{cf3_uid}     = $cf3->unique_id;
 $vars->{date_cf_uid} = $date_cf->unique_id;
+$vars->{cd4_uid}     = $cd4->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -285,11 +287,13 @@ test single line text 2
 --- expected
 test single line text 4
 
+
 === MT::Contents with days
 --- template
 <mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
 --- expected
 123
+
 
 === MT::Contents with date_field
 --- template
@@ -297,9 +301,24 @@ test single line text 4
 --- expected
 12
 
+
 === MT::Contents with glue
 --- template
 <mt:Contents blog_id="1" glue=","><mt:ContentID></mt:Contents>
 --- expected
 1,2,3,4,5
+
+
+=== MT::Contents with ID
+--- template
+<mt:Contents id="4"><mt:ContentID></mt:Contents>
+--- expected
+4
+
+
+=== MT::Contents with Unique ID
+--- template
+<mt:Contents unique_id="[% cd4_uid %]" glue=","><mt:ContentID></mt:Contents>
+--- expected
+4
 

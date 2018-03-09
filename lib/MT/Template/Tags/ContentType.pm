@@ -48,9 +48,11 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id = $args->{blog_id}             || $ctx->stash('blog_id');
-    my $blog    = $ctx->stash('blog');
+    my $id        = $args->{id};
+    my $unique_id = $args->{unique_id};
+    my $at        = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $blog_id   = $args->{blog_id} || $ctx->stash('blog_id');
+    my $blog      = $ctx->stash('blog');
 
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
@@ -99,6 +101,7 @@ sub _hdlr_contents {
     }
     if ($use_stash) {
         foreach my $args_key (
+            'id',                    'unique_id',
             'content_type',          'days',
             'recently_commented_on', 'include_subcategories',
             'include_blogs',         'exclude_blogs',
@@ -229,6 +232,30 @@ sub _hdlr_contents {
             $terms{author_id} = $author->id;
         }
     }
+
+    # Adds an ID filter to the filter list.
+    foreach my $id (qw/ id unique_id /) {
+        if (( my $target_id = $args->{$id} )
+            && (   ref( $args->{$id} )
+                || ( $id eq 'id' && $args->{$id} =~ m/^\d+$/ )
+                || ( $id eq 'unique_id' ) )
+            )
+        {
+            if ($archive_contents) {
+                if ( ref $target_id eq 'ARRAY' ) {
+                    my %ids = map { $_ => 1 } @$target_id;
+                    push @filters, sub { exists $ids{ $_[0]->id } };
+                }
+                else {
+                    push @filters, sub { $_[0]->id == $target_id };
+                }
+            }
+            else {
+                $terms{$id} = $target_id;
+            }
+        }
+    }
+
     my $published = $ctx->{__stash}{content_ids_published} ||= {};
     if ( $args->{unique} ) {
         push @filters, sub { !exists $published->{ $_[0]->id } }
