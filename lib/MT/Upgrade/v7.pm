@@ -796,6 +796,8 @@ sub _v7_migrate_content_data_data_column {
 sub _v7_rebuild_number_field_indexes {
     my $self = shift;
 
+    require MT::Log;
+
     $self->progress(
         $self->translate_escape(
             'Rebuilding MT::ContentFieldIndex of number field...')
@@ -818,14 +820,19 @@ sub _v7_rebuild_number_field_indexes {
         $content_field_index->value_double(
             $content_data->data->{ $content_field->id } );
 
-        $content_field_index->save
-            or return $self->error(
-            $self->translate_escape(
-                "Error saving record: [_1].",
-                $content_field_index->errstr
-
-            )
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
             );
+        }
     }
 }
 
