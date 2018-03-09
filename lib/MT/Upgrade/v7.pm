@@ -816,9 +816,21 @@ sub _v7_rebuild_number_field_indexes {
         my $content_field = $content_field_index->content_field or next;
         my $content_data  = $content_field_index->content_data  or next;
 
+        my $number_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $number_field_value || $number_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
         $content_field_index->value_float(undef);
-        $content_field_index->value_double(
-            $content_data->data->{ $content_field->id } );
+        $content_field_index->value_double($number_field_value);
 
         my $saved = $content_field_index->save;
         unless ($saved) {
