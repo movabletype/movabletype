@@ -12,6 +12,7 @@ use base qw( MT::Object );
 
 my %IdxTypes = (
     varchar  => 1,
+    text     => 1,
     blob     => 1,
     datetime => 1,
     integer  => 1,
@@ -26,6 +27,7 @@ __PACKAGE__->install_properties(
             'content_field_id' => 'integer',
             'content_data_id'  => 'integer',
             'value_varchar'    => 'string(255)',
+            'value_text'       => 'text',
             'value_blob'       => 'blob',
             'value_datetime'   => 'datetime',
             'value_integer'    => 'integer',
