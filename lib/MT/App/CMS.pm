@@ -1056,10 +1056,7 @@ sub core_list_actions {
                         : MT->translate("_WARNING_DELETE_USER");
                 },
                 code          => "${pkg}Common::delete",
-                permit_action => {
-                    permit_action => 'delete_user_via_list',
-                    system_action => 'delete_user_via_list',
-                },
+                permit_action => 'delete_user_via_list',
             },
             'enable' => {
                 label      => 'Enable',
