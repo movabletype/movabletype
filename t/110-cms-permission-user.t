@@ -1443,7 +1443,7 @@ subtest 'action = delete_user' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user            => $aikawa,
+        {   __test_user            => $ichikawa,
             __request_method       => 'POST',
             __mode                 => 'itemset_action',
             _type                  => 'author',
@@ -1451,13 +1451,14 @@ subtest 'action = delete_user' => sub {
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
             plugin_action_selector => 'delete_user',
-            id                     => $aikawa->id,
+            id                     => $ukawa->id,
             plugin_action_selector => 'delete_user',
         }
     );
     $out = delete $app->{__test_output};
+    print $out;
     ok( $out,                       "Request: delete_user" );
-    ok( $out =~ m!permission=1!i, "delete_user by non permitted user" );
+    ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
 
 done_testing();
