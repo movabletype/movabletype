@@ -68,7 +68,7 @@ function stopPropagation(e) {
 </script>
 </mt:if>
 
-<div class="mt-primaryNavigation">
+<div class="mt-primaryNavigation"<mt:if name="scope_type" eq="user"> style="background-color: #595959;"</mt:if>>
 <mt:if name="scope_type" ne="user">
   <div class="mt-primaryNavigation__container">
   <mt:if name="scope_type" eq="system">
@@ -148,7 +148,7 @@ function stopPropagation(e) {
 </mt:if>
 
 <mt:if name="scope_type" eq="user">
-  <div class="mt-primaryNavigation__container" style="background-color: #595959;">
+  <div class="mt-primaryNavigation__container">
 <mt:else>
   <div class="mt-primaryNavigation__container position-absolute" style="background-color: #595959; display: none; top: 0; width: 100%; height: 100%;" onclick="stopPropagation(event);">
 </mt:if>
