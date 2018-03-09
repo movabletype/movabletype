@@ -829,8 +829,14 @@ sub _v7_rebuild_number_field_indexes {
             next;
         }
 
+        if ( $number_field_value =~ /^-?\d+(\.\d+)?$/ ) {
+            $content_field_index->value_double($number_field_value);
+        }
+        else {
+            $content_field_index->value_double(
+                $content_field_index->value_float );
+        }
         $content_field_index->value_float(undef);
-        $content_field_index->value_double($number_field_value);
 
         my $saved = $content_field_index->save;
         unless ($saved) {
