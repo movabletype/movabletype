@@ -796,6 +796,8 @@ sub _v7_migrate_content_data_data_column {
 sub _v7_rebuild_number_field_indexes {
     my $self = shift;
 
+    require MT::Log;
+
     $self->progress(
         $self->translate_escape(
             'Rebuilding MT::ContentFieldIndex of number field...')
@@ -814,18 +816,41 @@ sub _v7_rebuild_number_field_indexes {
         my $content_field = $content_field_index->content_field or next;
         my $content_data  = $content_field_index->content_data  or next;
 
+        my $number_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $number_field_value || $number_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        if ( $number_field_value =~ /^-?\d+(\.\d+)?$/ ) {
+            $content_field_index->value_double($number_field_value);
+        }
+        else {
+            $content_field_index->value_double(
+                $content_field_index->value_float );
+        }
         $content_field_index->value_float(undef);
-        $content_field_index->value_double(
-            $content_data->data->{ $content_field->id } );
 
-        $content_field_index->save
-            or return $self->error(
-            $self->translate_escape(
-                "Error saving record: [_1].",
-                $content_field_index->errstr
-
-            )
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
             );
+        }
     }
 }
 
