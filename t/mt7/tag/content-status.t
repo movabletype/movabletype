@@ -65,7 +65,7 @@ __END__
 
 === MT::ContentStatus
 --- template
-<mt:Contents blog_id="1" name="test content data"><mt:ContentStatus>
+<mt:Contents content_type="test content data"><mt:ContentStatus>
 </mt:Contents>
 --- expected
 Publish

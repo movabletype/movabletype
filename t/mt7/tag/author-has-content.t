@@ -91,13 +91,13 @@ __END__
 
 === MT::AuthorHasContent (author_id=1)
 --- template
-<mt:Authors id="1"><mt:AuthorHasContent blog_id="1" name="test content type 1">true<mt:else>false</mt:AuthorHasContent></mt:Authors>
+<mt:Authors id="1"><mt:AuthorHasContent content_type="test content type 1">true<mt:else>false</mt:AuthorHasContent></mt:Authors>
 --- expected
 true
 
 === MT::AuthorHasContent (author_id=2)
 --- template
-<mt:Authors id="2" need_entry="0"><mt:AuthorHasContent blog_id="1" name="test content type 1">true<mt:else>false</mt:AuthorHasContent></mt:Authors>
+<mt:Authors id="2" need_entry="0"><mt:AuthorHasContent content_type="test content type 1">true<mt:else>false</mt:AuthorHasContent></mt:Authors>
 --- expected
 false
 

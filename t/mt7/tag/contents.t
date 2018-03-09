@@ -207,7 +207,7 @@ aaaaa
 
 === MT::Contents
 --- template
-<mt:Contents blog_id="1" name="test content type 1">a</mt:Contents>
+<mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
@@ -224,27 +224,27 @@ aaaaa
 --- expected
 aaaaa
 
-=== MT::Contents with name modifier
+=== MT::Contents with content_type modifier
 --- template
-<mt:Contents name="test content type 1">a</mt:Contents>
+<mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with name modifier and wrong blog_id
+=== MT::Contents with content_type modifier and wrong blog_id
 --- template
-<mt:Contents name="test content type 1" blog_ids="2">a</mt:Contents>
+<mt:Contents content_type="test content type 1" blog_ids="2">a</mt:Contents>
 --- error
 No Content Type could be found.
 
 === MT::ContentsW with limit
 --- template
-<mt:Contents blog_id="1" name="test content type 1" limit="3">a</mt:Contents>
+<mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
 
 === MT::Contents with sort_by content field
 --- template
-<mt:Contents blog_id="1" name="test content type 1" sort_by="field:single line text">
+<mt:Contents content_type="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected

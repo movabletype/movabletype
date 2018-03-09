@@ -88,7 +88,7 @@ __END__
 
 === MT::AuthorContentCount
 --- template
-<mt:Authors id="1"><mt:AuthorContentCount blog_id="1" name="test content type 1"></mt:Authors>
+<mt:Authors id="1"><mt:AuthorContentCount content_type="test content type 1"></mt:Authors>
 --- expected
 5
 

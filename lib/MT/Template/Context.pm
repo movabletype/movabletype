@@ -518,23 +518,13 @@ sub set_blog_load_context {
 
 sub set_content_type_load_context {
     my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
-    if ( my $content_type_id = $args->{content_type_id} ) {
-        $cd_terms->{content_type_id} = $content_type_id;
-    }
-    elsif ( my $ct_unique_id = $args->{ct_unique_id} ) {
-        $cd_terms->{ct_unique_id} = $ct_unique_id;
-    }
-    else {
-        my $blog_id = $args->{blog_id} || $ctx->stash('blog_id');
-        my $ct_name = $args->{name};
+    if ( my $arg = $args->{content_type} ) {
+        my $class = MT->model('content_type');
         my $ct;
-        if ( $blog_id && defined $ct_name && $ct_name ne '' ) {
-            $ct
-                = MT::ContentType->load(
-                { blog_id => $blog_id, name => $ct_name } );
-        }
-        $ct ||= $ctx->stash('content_type')
-            or return $ctx->_no_content_type_error;
+        $ct = $class->load($arg) if ( $arg =~ /^\d+$/ );
+        $ct = $class->load( { unique_id => $arg } ) unless $ct;
+        $ct = $class->load( { name      => $arg } ) unless $ct;
+        return $ctx->_no_content_type_error unless $ct;
         $cd_terms->{content_type_id} = $ct->id;
     }
     1;
