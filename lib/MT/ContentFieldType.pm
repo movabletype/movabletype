@@ -1032,14 +1032,14 @@ sub _image_registry {
 
 sub _embedded_text_registry {
     {   label                => 'Embedded Text',
-        data_type            => 'blob',
+        data_type            => 'text',
         order                => 160,
         can_data_label_field => 0,
         replaceable          => 1,
         list_props           => {
             embedded_text => {
                 base  => '__virtual.string',
-                col   => 'value_blob',
+                col   => 'value_text',
                 html  => '$Core::MT::ContentFieldType::Common::html_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
