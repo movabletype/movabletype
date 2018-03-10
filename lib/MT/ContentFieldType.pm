@@ -215,7 +215,7 @@ sub _number_registry {
 
 sub _url_registry {
     {   label                => 'URL',
-        data_type            => 'blob',
+        data_type            => 'text',
         order                => 50,
         can_data_label_field => 1,
         replaceable          => 1,
@@ -224,7 +224,7 @@ sub _url_registry {
         list_props   => {
             url => {
                 base  => '__virtual.string',
-                col   => 'value_blob',
+                col   => 'value_text',
                 terms => '$Core::MT::ContentFieldType::Common::terms_text',
                 use_blank => 1,
             },
