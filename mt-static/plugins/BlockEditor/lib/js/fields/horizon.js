@@ -3,9 +3,12 @@
     var label = trans('horizon');
 
     BEF.Horizon = function () { BEF.apply(this, arguments) };
-    BEF.Horizon.create_button = function () {
-        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_hr"></use></svg></div><label>' + label + '</label></div>');
-    };
+    $.extend(BEF.Horizon, {
+        label: trans('horizon'),
+        create_button: function () {
+          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_hr"></use></svg>' + label + '</button>');
+        },
+    });
     $.extend(BEF.Horizon.prototype, BEF.prototype, {
         id: '',
         input_field: '',

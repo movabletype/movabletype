@@ -204,13 +204,12 @@ sub edit {
     my $blockeditor_data;
     if ( $app->param('block_editor_data') ) {
         $blockeditor_data = $app->param('block_editor_data');
-    }
-    elsif ( $content_data_id || $data ) {
-        $blockeditor_data = $data->{block_editor_data};
-    }
-    else {
+    } else {
         if ($content_data) {
             $blockeditor_data = $content_data->block_editor_data();
+        }
+        elsif ( $content_data_id || $data ) {
+            $blockeditor_data = $data->{block_editor_data};
         }
     }
     my $content_field_types = $app->registry('content_field_types');
