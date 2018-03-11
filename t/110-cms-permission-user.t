@@ -1204,7 +1204,7 @@ subtest 'mode = view (type is commenter)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: view" );
-    ok( $out =~ m!permission=1!i, "view by others" );
+    ok( $out =~ m!Invalid request!i, "view by others" );
 };
 
 subtest 'mode = view (type is user)' => sub {
