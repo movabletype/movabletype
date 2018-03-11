@@ -253,8 +253,6 @@ sub dialog_insert_asset {
 
         $asset->on_upload( \%param );
         if ( $param{thumb} ) {
-          MT->log('thumnail');
-          MT->log($asset->id);
             $asset = MT->model('asset')->load( $param{thumb_asset_id} )
                 || return $asset->error(
                 MT->translate(
@@ -262,8 +260,6 @@ sub dialog_insert_asset {
                     $param->{thumb_asset_id}
                 )
                 );
-            MT->log(' -> ');
-            MT->log($asset->id);
         }
         push @$assets, $asset;
     }
