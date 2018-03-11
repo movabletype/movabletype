@@ -3,7 +3,7 @@
   <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js"></script>
   <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js"></script>
   <mt:loop name="blockeditor_fields">
-    <script src="<mt:if name="path"><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
+    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
   </mt:loop>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">

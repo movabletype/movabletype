@@ -26,15 +26,15 @@
             var self = this;
             var fields = self.get_fields();
             var data = {};
-            Object.keys(fields).forEach(function(field_type){
+            Object.keys(fields).forEach(function(field_type, index){
                 var id = generate_unique_id();
-                var button = fields[field_type].create_button();
+                var button = $(fields[field_type].create_button());
                 button.on('click', function(){
                     var field_class = fields[field_type];
                     callback(self.editor_id, self.create_field.call(self, field_class, id, data));
                 });
-
-                buttons.push(button);
+                button = button.wrapAll('<div class="col col-6 button-col"></div>').parent();
+                buttons.push(button)
             });
             return buttons;
         },
@@ -52,6 +52,15 @@
                 field_instance.options = data.options;
             }
             return field_instance.create_field(field_instance, id, data, delete_clallback.call(self));
+        },
+        option_field: function(field_class, id, data){
+            var self = this;
+            var field_instance = new field_class();
+            self.field_instances[id] = field_instance;
+            if(data.options && Object.keys(data.options).length > 0){
+                field_instance.options = data.options;
+            }
+            return field_instance.create_options_field(field_instance, id, data);
         },
         get_data: function(){
             var self = this;

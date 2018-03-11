@@ -4,7 +4,7 @@
     text-align: center; /* for no-flexbox browsers */
 }
 .alignbutton button.active {
-  background: #0176BF;
+  background: #5FBCEB;
 }
 .add_menu {
   display: flex;

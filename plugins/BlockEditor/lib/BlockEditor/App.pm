@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 use BlockEditor;
+use MT::CMS::Asset;
+
+my $default_thumbnail_size = 60;
 
 sub param_edit_content_data {
     my ( $cb, $app, $param, $tmpl ) = @_;
@@ -31,7 +34,92 @@ sub param_edit_content_data {
     $param->{blockeditor_tmpl} = $editor_tmpl;
 }
 
-sub block_editor_asset {
+sub dialog_list_asset {
+    my $app = shift;
+
+    my $blog_id = $app->param('blog_id');
+    my $mode_userpic = $app->param('upload_mode') || '';
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog_id && $mode_userpic ne 'upload_userpic';
+
+    my $blog_class = $app->model('blog');
+    my $blog;
+    $blog = $blog_class->load($blog_id) if $blog_id;
+
+    my %param;
+    MT::CMS::Asset::_set_start_upload_params( $app, \%param );
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            if $blog_id && !$app->can_do('access_to_insert_asset_list');
+    }
+
+    $param{can_multi} = 1
+        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
+        && $app->param('can_multi');
+
+    $param{filter} = $app->param('filter')
+        if defined $app->param('filter');
+    $param{filter_val} = $app->param('filter_val')
+        if defined $app->param('filter_val');
+    $param{search} = $app->param('search') if defined $app->param('search');
+    $param{edit_field} = $app->param('edit_field')
+        if defined $app->param('edit_field');
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = $app->param('asset_select');
+    $param{require_type} = $app->param('require_type');
+
+    if ($blog_id) {
+        $param{blog_id}      = $blog_id;
+        $param{edit_blog_id} = $blog_id,;
+    }
+
+    $param{upload_mode} = $mode_userpic;
+    if ($mode_userpic) {
+        $param{user_id}      = $param{filter_val} || $app->user->id;
+        $param{require_type} = 'image';
+        $param{'is_image'}   = 1;
+        $param{can_upload}   = 1;
+    }
+
+    if ( $param{require_type} ) {
+        my $req_class = $app->model( $param{require_type} );
+        $param{require_type_label} = $req_class->class_label;
+    }
+
+    require MT::Asset;
+    my $subclasses = MT::Asset->list_subclasses;
+
+    my @class_filters;
+    foreach my $k (@$subclasses) {
+        my $c = $k->{class};
+        push @class_filters,
+            {
+            key   => $k->{type},
+            label => $c->class_label_plural,
+            };
+    }
+    $param{class_filter_loop} = \@class_filters if @class_filters;
+
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
+    $param{asset_id} = $app->param('asset_id')
+        if defined $app->param('asset_id');
+    $param{options} = $app->param('options')
+        if defined $app->param('options');
+
+    return plugin()->load_tmpl( 'cms/dialog/asset_modal.tmpl', \%param );
+}
+
+sub dialog_insert_options {
     my $app    = shift;
     my (%args) = @_;
     my $assets = $args{assets};
@@ -52,11 +140,161 @@ sub block_editor_asset {
 
         $assets = \@assets;
     }
+    $assets = [$assets] if 'ARRAY' ne ref $assets;
 
-    my $params->{assets} = $assets;
-    $params->{edit_field} = $app->param('edit_field') || '';
+    # Should not allow to insert asset from other site.
+    my $blog_id = $app->param('blog_id');
+    my $blog    = MT->model('blog')->load($blog_id)
+        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my %blog_ids;
+    if ( !$blog->is_blog ) {
+        %blog_ids = map { $_->id => 1 } @{ $blog->blogs };
+    }
+    $blog_ids{$blog_id} = 1;
+    foreach my $a (@$assets) {
+        return $app->errtrans('Invalid request.')
+            unless defined $blog_ids{ $a->blog_id };
+    }
 
-    plugin()->load_tmpl( 'cms/dialog/asset_insert.tmpl', $params );
+    # Permission check
+    my $perms = $app->permissions
+        or return $app->errtrans('No permissions');
+    return $app->errtrans('No permissions')
+        unless $perms->can_do('insert_asset');
+
+    # Make a insert option loop
+    my $options_loop;
+    foreach my $a (@$assets) {
+        my $param = {
+            id        => $a->id,
+            filename  => $a->file_name,
+            url       => $a->url,
+            label     => $a->label,
+            thumbnail => MT::CMS::Asset::_make_thumbnail_url(
+                $a, { size => $default_thumbnail_size }
+            ),
+            thumbnail_type => $a->class,
+            class_label    => $a->class_label,
+        };
+        if ( defined $app->param('options') ) {
+            my $options_json = $app->param('options');
+            my $options;
+            require Encode;
+            require JSON;
+            if ( Encode::is_utf8($options_json) ) {
+                $options = eval { JSON::from_json($options_json) } || {};
+            }
+            else {
+                $options = eval { JSON::decode_json($options_json) } || {};
+            }
+            $param->{$_} = $options->{$_} for keys %$options;
+        }
+        my $html = _insert_options( $a, $param ) || '';
+        $param->{options} = $html;
+        push @$options_loop, $param;
+    }
+
+    my %param;
+    $param{options_loop} = $options_loop;
+    $param{edit_field}   = $app->param('edit_field') || '';
+    $param{new_entry}    = $app->param('asset_select') ? 0 : 1;
+
+    return plugin()
+        ->load_tmpl( 'cms/dialog/multi_asset_options.tmpl', \%param );
+}
+
+sub dialog_insert_asset {
+    my $app = shift;
+    my ($param) = @_;
+
+    $app->validate_magic() or return;
+
+    my $edit_field = $app->param('edit_field') || '';
+    if ( $edit_field =~ m/^customfield_.*$/ ) {
+        return $app->permission_denied()
+            unless $app->permissions;
+    }
+    else {
+        return $app->permission_denied()
+            unless $app->can_do('insert_asset');
+    }
+
+    my %param;
+
+    require MT::Asset;
+    my $text;
+    my $assets;
+
+    # Parse JSON.
+    my $prefs = $app->param('prefs_json');
+    $prefs =~ s/^"|"$//g;
+    $prefs =~ s/\\"/"/g;
+    $prefs =~ s/\\\\/\\/g;
+    $prefs = eval { MT::Util::from_json($prefs) };
+    if ( !$prefs ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    foreach my $item (@$prefs) {
+        my $id = $item->{id};
+        return $app->errtrans('Invalid request.')
+            unless $id;
+        my $asset = MT::Asset->load($id)
+            or return $app->errtrans( 'Cannot load asset #[_1]', $id );
+        foreach my $k ( keys %$item ) {
+            my $name = $k;
+            if ( $k =~ m/(.*)[-|_]$id/ig ) {
+                $param{$1} = $item->{$k};
+            }
+            $param{$name} = $item->{$k};
+        }
+        $param{wrap_text} = 1;
+        $param{new_entry} = $app->param('new_entry') ? 1 : 0;
+
+        $asset->on_upload( \%param );
+        if ( $param{thumb} ) {
+          MT->log('thumnail');
+          MT->log($asset->id);
+            $asset = MT->model('asset')->load( $param{thumb_asset_id} )
+                || return $asset->error(
+                MT->translate(
+                    "Cannot load image #[_1]",
+                    $param->{thumb_asset_id}
+                )
+                );
+            MT->log(' -> ');
+            MT->log($asset->id);
+        }
+        push @$assets, $asset;
+    }
+
+    my @assets_data;
+    $param{assets}     = \@$assets;
+    $param{edit_field} = $edit_field;
+    return plugin()->load_tmpl( 'cms/dialog/asset_insert.tmpl', \%param );
+}
+
+sub _insert_options {
+    my $asset = shift;
+    my ($param) = @_;
+
+    my $app   = MT->instance;
+    my $perms = $app->{perms};
+    my $blog  = $asset->blog or return;
+
+    $param->{do_thumb}
+        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
+
+    $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
+    $param->{ 'align_' . $_ }
+        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+        for qw(none left center right);
+    $param->{width}
+        = $blog->image_default_width
+        || $asset->image_width
+        || 0;
+
+    return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }
 
 1;

@@ -3,14 +3,13 @@
     var BEF = MT.BlockEditorField;
     var label = trans('header');
 
-    BEF.Header = function () {
-        BEF.apply(this, arguments)
-        BEF.Header.label = 'header';
-        BEF.Header.svg_name = 'ic_header';
-    };
-    BEF.Header.create_button = function () {
-        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg></div><label>' + label + '</label></div>');
-    };
+    BEF.Header = function () { BEF.apply(this, arguments) };
+    $.extend(BEF.Header, {
+        label: trans('header'),
+        create_button: function () {
+          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg>' + label + '</button>');
+        },
+    });
     $.extend(BEF.Header.prototype, BEF.prototype, {
         options: {},
         get_id: function () {

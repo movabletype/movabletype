@@ -1,0 +1,154 @@
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form id="asset-detail-panel-form">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<div id="asset_details">
+<mt:loop name="options_loop" >
+<div class="row asset-detail-panel" data-asset-id="<mt:var name="id">">
+  <div class="form-group col">
+    <mt:if name="thumbnail">
+            <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
+    <mt:else>
+            <img src="<mt:var name="static_uri">images/file-<mt:var name="thumbnail_type" escape="html">.svg" width="60" height="60">
+    </mtif>
+  </div>
+  <!-- options -->
+  <mt:var name="options">
+  <!-- /options -->
+</div>
+</mt:loop>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+<a
+   accesskey="x"
+   data-dismiss="modal"
+   data-mt-modal-close
+   class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
+   title="<__trans phrase="Cancel (x)">">
+  <__trans phrase="Cancel"></a>
+
+<button
+   onclick="history.back(); return false;"
+   type="submit"
+   accesskey="x"
+   class="btn btn-default"
+   title="<__trans phrase="Back (x)">">
+  <__trans phrase="Back"></button>
+
+<button
+   type="submit"
+   accesskey="s"
+   title="<__trans phrase="OK (s)">"
+   class="close-button action primary button btn btn-primary">
+  <__trans phrase="OK"></button>
+
+</mt:setvarblock>
+<mt:setvarblock name="form_footer">
+</form>
+
+<form id="asset-detail-form" action="<mt:var name="script_url">" method="post">
+  <input type="hidden" name="__mode" value="block_editor_dialog_insert_asset" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="prefs_json" value="" />
+  <input type="hidden" name="new_entry" value="1" />
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('input[name="include"]').click(function() {
+    var id = jQuery(this).parents('.asset-detail-panel').attr('data-asset-id');
+    jQuery('#include_prefs-' + id).toggle();
+  });
+
+  jQuery('button.primary').click(function(){
+    var options = [];
+    var errors = 0;
+    jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
+      var $this = jQuery(this);
+      var id = $this.attr('data-asset-id');
+      var opts = {};
+      opts.id = id;
+      if(jQuery(this).find('[name="asset-option-thumbnail"]').prop('checked')){
+        if ( !jQuery(this).find('[name="asset-option-width"]').mtValidate('default')) {
+          // each continue
+          errors = 1;
+          return true;
+        }
+      }
+      jQuery(this).find('input').each(function() {
+        if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
+         if(jQuery(this).prop('checked')) {
+           opts[jQuery(this).attr('name')] = jQuery(this).val();
+         }
+        }
+        else {
+          opts[jQuery(this).attr('name')] = jQuery(this).val();
+        }
+      });
+      opts['asset-option-align-'+id] = jQuery(this).find('.alignbutton button.active').attr('data-arign');
+      options.push(opts);
+    });
+
+    if( errors == 0 ){
+      var json = JSON.stringify(options);
+      var $form = jQuery('#asset-detail-form');
+      $form.find('[name="prefs_json"]').val(json);
+      $form.submit();
+    }
+    return false;
+  });
+
+  jQuery('input[name="asset-option-width"]').keypress(function(event){
+    var key = event.charCode || event.keyCode;
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
+        ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+        return true;
+    if (key > 60000) // handles range of special keys such as arrow keys
+        return true;
+    if (event.ctrlKey || event.altKey)
+        return true;
+    if ((key < 48) || (key > 57)){
+      event.preventDefault
+      return false;
+    }
+    return true;
+  });
+  jQuery.mtValidateAddRules({
+      '[name="asset-option-width"]': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+  });
+  jQuery.mtValidateAddMessages({
+      '[name="asset-option-width"]': '<__trans phrase="This field must be a positive integer.">'
+  });
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+  /* <![CDATA[ */
+  function cancel_click(btn) {
+      var frm = btn.form;
+      frm.onsubmit = function() {return cancel_upload(frm)};
+      return true;
+  }
+  function cancel_upload(frm) {
+      frm['__mode'].value = 'cancel_upload';
+      jQuery.fn.mtModal.close();
+      return true;
+  }
+  /* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
+

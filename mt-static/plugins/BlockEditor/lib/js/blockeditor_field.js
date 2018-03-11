@@ -56,14 +56,6 @@
             }();
 
             var option_field = $('<div class="field_options row py-2 justify-content-start"></div>');
-            // var option_id_field = $('<div class="col-3"><div class="form-group"><label class="form-control-label" for="' + id + '_option_class">id</label><input type="text" name="field_option_id" class="field_option_id form-control" id="' + id + '_option_class"></div>');
-            // option_id_field.on('change', '.field_option_id', option_callback);
-            // option_field.append(option_id_field);
-
-            // var option_class_field = $('<div class="col-3"><div class="form-group"><label class="form-control-label" for="' + id + '_option_class">class</label><input type="text" name="field_option_class" class="field_option_class form-control" id="' + id + '_option_class"></div></div>');
-            // option_class_field.on('change', '.field_option_class', option_callback);
-            // option_field.append(option_class_field);
-
             field_content.append(option_field);
 
             if(data.options ){
@@ -79,6 +71,31 @@
             }
             return field_content;
 
+        },
+        create_options_field: function(field_instance, id, data){
+          var self = this;
+          var option_callback = function () {
+              return function () {
+                  var name = $(this).attr('name');
+                  var val = $(this).val();
+                  field_instance.set_option.call(self, name, val);
+              };
+          }();
+
+          var option_field = $('<div class="field_options row py-2 justify-content-start"></div>');
+
+          if(data.options ){
+              if(data.options.id){
+                  option_id_field.find('.field_option_id').val(data.options.id);
+              }
+              if(data.options.class){
+                  option_class_field.find('.field_option_class').val(data.options.class);
+              }
+          }
+          if ('get_field_options' in self) {
+              option_field.append($('<div class="field_options row no-gutters py-2"></div>').append(self.get_field_options( $('<div class="col"></div>'))));
+          }
+          return option_field;
         },
         get_field_data: function(id){
             var self = this;

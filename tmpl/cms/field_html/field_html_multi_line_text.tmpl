@@ -38,6 +38,24 @@
 <mt:Unless name="blockeditor_data_field">
 <mt:setvar name="blockeditor_data_field" value="1">
 <input type="hidden" id="block_editor_data" name="block_editor_data" mt:raw-name="1">
+
+<div class="modal modal-blockeditor" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
 <mt:setvarblock name="jq_js_include" append="1">
 ;(function(){
   jQuery(window).on('pre_autosave', function() {

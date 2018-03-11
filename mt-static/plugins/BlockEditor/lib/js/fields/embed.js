@@ -4,16 +4,19 @@
     var label = trans('embed');
 
     BEF.Embed = function () { BEF.apply(this, arguments) };
-    BEF.Embed.create_button = function () {
-        return $('<div class="add"><div class="mt-icon--contentblock"><svg title="' + label + '" role="img" class="mt-icon mt-icon--sm"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg></div><label>' + label + '</label></div>');
-    };
+    $.extend(BEF.Embed, {
+        label: trans('embed'),
+        create_button: function () {
+          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg>' + label + '</button>');
+        },
+    });
     $.extend(BEF.Embed.prototype, BEF.prototype, {
         options: {},
         get_id: function () {
             return self.id;
         },
         get_type: function () {
-            return 'Embed';
+            return 'embed';
         },
         get_svg_name: function() {
             return 'ic_code';
@@ -51,6 +54,6 @@
         }
     });
 
-    MT.BlockEditorFieldManager.register('Embed', BEF.Embed);
+    MT.BlockEditorFieldManager.register('embed', BEF.Embed);
 
 })(jQuery);
