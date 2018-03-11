@@ -9456,8 +9456,7 @@ li {
 }
 
 .mt-primaryNavigation__footer:hover, .mt-primaryNavigation__footer--invert:hover {
-  border-bottom: 1px solid #A5A5A5;
-  color: #FFFFFF;
+  color: #2F2F2F;
   text-decoration: none;
 }
 
@@ -9474,6 +9473,10 @@ li {
 }
 
 .mt-primaryNavigation__footer--invert {
+  color: #FFFFFF;
+}
+
+.mt-primaryNavigation__footer--invert:hover {
   color: #FFFFFF;
 }
 

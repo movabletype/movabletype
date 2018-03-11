@@ -75,7 +75,7 @@ __END__
 
 === MT::SiteContentCount
 --- template
-<mt:SiteContentCount blog_id="1" name="test content type 1">
+<mt:SiteContentCount content_type="test content type 1">
 --- expected
 5
 

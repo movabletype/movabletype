@@ -194,31 +194,31 @@ __END__
 
 === MT:ContentPrevious
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="test content type"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd2_id %][% cd1_id %]
 
 === MT:ContentPrevious with by_author="1"
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious by_author="1"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="test content type"><mt:ContentPrevious by_author="1"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd1_id %]
 
 === MT:ContentPrevious with date_field="modified_on"
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious date_field="modified_on"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="test content type"><mt:ContentPrevious date_field="modified_on"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd3_id %][% cd2_id %]
 
 === MT:ContentPrevious with category_field="hoge"
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious category_field="[% cat_cf_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="test content type"><mt:ContentPrevious category_field="[% cat_cf_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd1_id %]
 
 === MT:ContentPrevious with date_field
 --- template
-<mt:Contents blog_id="1" name="test content type"><mt:ContentPrevious date_field="[% date_cf_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="test content type"><mt:ContentPrevious date_field="[% date_cf_id %]"><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd3_id %][% cd2_id %]
 

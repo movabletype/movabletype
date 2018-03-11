@@ -102,6 +102,26 @@ sub upgrade_functions {
             version_limit => 7.0029,
             priority      => 3.2,
         },
+        'v7_rebuild_multi_line_text_field_indexes' => {
+            code          => \&_v7_rebuild_multi_line_text_field_indexes,
+            version_limit => 7.0031,
+            priority      => 3.2,
+        },
+        'v7_rebuild_tables_field_indexes' => {
+            code          => \&_v7_rebuild_tables_field_indexes,
+            version_limit => 7.0032,
+            priority      => 3.2,
+        },
+        'v7_rebuild_embedded_text_field_indexes' => {
+            code          => \&_v7_rebuild_embedded_text_field_indexes,
+            version_limit => 7.0033,
+            priority      => 3.2,
+        },
+        'v7_rebuild_url_field_indexes' => {
+            code          => \&_v7_rebuild_url_field_indexes,
+            version_limit => 7.0034,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -796,6 +816,8 @@ sub _v7_migrate_content_data_data_column {
 sub _v7_rebuild_number_field_indexes {
     my $self = shift;
 
+    require MT::Log;
+
     $self->progress(
         $self->translate_escape(
             'Rebuilding MT::ContentFieldIndex of number field...')
@@ -814,18 +836,265 @@ sub _v7_rebuild_number_field_indexes {
         my $content_field = $content_field_index->content_field or next;
         my $content_data  = $content_field_index->content_data  or next;
 
+        my $number_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $number_field_value || $number_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        if ( $number_field_value =~ /^-?\d+(\.\d+)?$/ ) {
+            $content_field_index->value_double($number_field_value);
+        }
+        else {
+            $content_field_index->value_double(
+                $content_field_index->value_float );
+        }
         $content_field_index->value_float(undef);
-        $content_field_index->value_double(
-            $content_data->data->{ $content_field->id } );
 
-        $content_field_index->save
-            or return $self->error(
-            $self->translate_escape(
-                "Error saving record: [_1].",
-                $content_field_index->errstr
-
-            )
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
             );
+        }
+    }
+}
+
+sub _v7_rebuild_multi_line_text_field_indexes {
+    my $self = shift;
+
+    require MT::Log;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of multi_line_text field...')
+    );
+
+    my $join_content_field = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'multi_line_text',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join_content_field } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        my $multi_line_text_field_value
+            = $content_data->data->{ $content_field->id };
+        unless ( defined $multi_line_text_field_value ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        $content_field_index->value_text($multi_line_text_field_value);
+        $content_field_index->value_blob(undef);
+
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
+            );
+        }
+    }
+}
+
+sub _v7_rebuild_tables_field_indexes {
+    my $self = shift;
+
+    require MT::Log;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of tables field...')
+    );
+
+    my $join_content_field = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'tables',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join_content_field } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        my $tables_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $tables_field_value || $tables_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        $content_field_index->value_text($tables_field_value);
+        $content_field_index->value_blob(undef);
+
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
+            );
+        }
+    }
+}
+
+sub _v7_rebuild_embedded_text_field_indexes {
+    my $self = shift;
+
+    require MT::Log;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of embedded_text field...')
+    );
+
+    my $join_content_field = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'embedded_text',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join_content_field } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        my $embedded_text_field_value
+            = $content_data->data->{ $content_field->id };
+        if ( !defined $embedded_text_field_value
+            || $embedded_text_field_value eq '' )
+        {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        $content_field_index->value_text($embedded_text_field_value);
+        $content_field_index->value_blob(undef);
+
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
+            );
+        }
+    }
+}
+
+sub _v7_rebuild_url_field_indexes {
+    my $self = shift;
+
+    require MT::Log;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of url field...')
+    );
+
+    my $join_content_field = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'url',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join_content_field } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        my $url_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $url_field_value || $url_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        $content_field_index->value_text($url_field_value);
+        $content_field_index->value_blob(undef);
+
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
+            );
+        }
     }
 }
 

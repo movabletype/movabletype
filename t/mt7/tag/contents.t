@@ -185,6 +185,7 @@ my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
 my $date_cf = MT::ContentField->load( { name => 'date and time' } );
+my $cd4     = MT::ContentData->load(4);
 
 $vars->{ct_id}       = $ct->id;
 $vars->{ct_uid}      = $ct->unique_id;
@@ -192,6 +193,7 @@ $vars->{cf1_uid}     = $cf1->unique_id;
 $vars->{cf2_uid}     = $cf2->unique_id;
 $vars->{cf3_uid}     = $cf3->unique_id;
 $vars->{date_cf_uid} = $date_cf->unique_id;
+$vars->{cd4_uid}     = $cd4->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -207,7 +209,7 @@ aaaaa
 
 === MT::Contents
 --- template
-<mt:Contents blog_id="1" name="test content type 1">a</mt:Contents>
+<mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
@@ -224,27 +226,27 @@ aaaaa
 --- expected
 aaaaa
 
-=== MT::Contents with name modifier
+=== MT::Contents with content_type modifier
 --- template
-<mt:Contents name="test content type 1">a</mt:Contents>
+<mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with name modifier and wrong blog_id
+=== MT::Contents with content_type modifier and wrong blog_id
 --- template
-<mt:Contents name="test content type 1" blog_ids="2">a</mt:Contents>
+<mt:Contents content_type="test content type 1" blog_ids="2">a</mt:Contents>
 --- error
 No Content Type could be found.
 
 === MT::ContentsW with limit
 --- template
-<mt:Contents blog_id="1" name="test content type 1" limit="3">a</mt:Contents>
+<mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
 
 === MT::Contents with sort_by content field
 --- template
-<mt:Contents blog_id="1" name="test content type 1" sort_by="field:single line text">
+<mt:Contents content_type="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
@@ -285,11 +287,13 @@ test single line text 2
 --- expected
 test single line text 4
 
+
 === MT::Contents with days
 --- template
 <mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
 --- expected
 123
+
 
 === MT::Contents with date_field
 --- template
@@ -297,9 +301,24 @@ test single line text 4
 --- expected
 12
 
+
 === MT::Contents with glue
 --- template
 <mt:Contents blog_id="1" glue=","><mt:ContentID></mt:Contents>
 --- expected
 1,2,3,4,5
+
+
+=== MT::Contents with ID
+--- template
+<mt:Contents id="4"><mt:ContentID></mt:Contents>
+--- expected
+4
+
+
+=== MT::Contents with Unique ID
+--- template
+<mt:Contents unique_id="[% cd4_uid %]" glue=","><mt:ContentID></mt:Contents>
+--- expected
+4
 

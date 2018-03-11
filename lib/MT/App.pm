@@ -991,9 +991,8 @@ sub init {
     }
 
     # Register restore callback to restore blog assciation of triggers
-    my $rt = MT->model('rebuild_trigger');
     MT->add_callback( 'restore', 10, $app,
-        sub { $rt->runner( 'post_restore', @_ ) } );
+        sub { MT->model('rebuild_trigger')->runner( 'post_restore', @_ ) } );
 
     $app->{vtbl} = $app->registry("methods");
     return $app;

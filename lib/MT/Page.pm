@@ -41,21 +41,23 @@ MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 
 # Register page post-save callback for rebuild triggers
-my $rt = MT->model('rebuild_trigger');
 MT->add_callback(
     'cms_post_save.page', 10,
     MT->component('core'),
-    sub { $rt->runner( 'post_entry_save', @_ ); }
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
 );
 MT->add_callback(
     'api_post_save.page', 10,
     MT->component('core'),
-    sub { $rt->runner( 'post_entry_save', @_ ); }
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
 );
 MT->add_callback(
-    'cms_post_bulk_save.pages', 10,
+    'cms_post_bulk_save.pages',
+    10,
     MT->component('core'),
-    sub { $rt->runner( 'post_entries_bulk_save', @_ ); }
+    sub {
+        MT->model('rebuild_trigger')->runner( 'post_entries_bulk_save', @_ );
+    }
 );
 
 __PACKAGE__->add_callback(

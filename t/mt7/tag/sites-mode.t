@@ -232,7 +232,7 @@ __END__
 
 === mt:Sites mode="loop"
 --- template
-<mt:Sites include_blogs="[% include_sites %]" mode="loop"><mt:Contents name="test content data">
+<mt:Sites include_blogs="[% include_sites %]" mode="loop"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
 --- expected
 test single line text 5
@@ -248,7 +248,7 @@ test single line text 6
 
 === mt:Sites mode="context"
 --- template
-<mt:Sites include_blogs="[% include_sites %]" mode="context"><mt:Contents name="test content data">
+<mt:Sites include_blogs="[% include_sites %]" mode="context"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites>
 --- expected
 test single line text 10
@@ -264,7 +264,7 @@ test single line text 1
 
 === mt:ChildSites mode="loop"
 --- template
-<mt:ChildSites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents name="test content data">
+<mt:ChildSites include_blogs="[% include_blogs %]" mode="loop"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
 --- expected
 test single line text 5
@@ -280,7 +280,7 @@ test single line text 6
 
 === mt:ChildSites mode="context"
 --- template
-<mt:ChildSites include_blogs="[% include_blogs %]" mode="context"><mt:Contents name="test content data">
+<mt:ChildSites include_blogs="[% include_blogs %]" mode="context"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
 --- expected
 test single line text 10
@@ -296,7 +296,7 @@ test single line text 1
 
 === mt:MultiBlog mode="loop"
 --- template
-<mt:MultiBlog include_blogs="[% include_sites %]" mode="loop"><mt:Contents name="test content data">
+<mt:MultiBlog include_blogs="[% include_sites %]" mode="loop"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
 --- expected
 test single line text 5
@@ -312,7 +312,7 @@ test single line text 6
 
 === mt::MultiBlog mode="context"
 --- template
-<mt:MultiBlog include_blogs="[% include_sites %]" mode="context"><mt:Contents name="test content data">
+<mt:MultiBlog include_blogs="[% include_sites %]" mode="context"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:MultiBlog>
 --- expected
 test single line text 10
