@@ -18,6 +18,11 @@ text_filters:
             return 0;
           }
 
+content_field_types:
+  multi_line_text:
+    ss_validator: $BlockEditor::BlockEditor::App::ss_validator
+
+
 applications:
   cms:
     methods:

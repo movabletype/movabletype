@@ -1,3 +1,4 @@
+<div class="group-container multi_line_text-field-container content-field" <mt:var name="required">>
 <div class="mt-collapse--contentblock">
   <div class="mt-collapse__container">
     <div class="col">
@@ -27,7 +28,7 @@
        <div class="col">
           <div class="form-group">
             <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-                <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
+                <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
             </div>
         </div>
       </div>
@@ -37,7 +38,7 @@
 
 <mt:Unless name="blockeditor_data_field">
 <mt:setvar name="blockeditor_data_field" value="1">
-<input type="hidden" id="block_editor_data" name="block_editor_data" mt:raw-name="1">
+<input type="hidden" id="block_editor_data" name="block_editor_data" class="content-field" mt:raw-name="1">
 
 <div class="modal modal-blockeditor" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -64,5 +65,18 @@
     setMultiLineTextData($form);
   });
 })();
+jQuery.mtValidateAddRules({
+  'div.multi_line_text-field-container': function ($e) {
+    var required = $e.data('mt-required') ? true : false;
+    var editor_id = $e.find('.editorfield').attr('id');
+    var content = app.editors[editor_id].getContent();
+    if ( required && content == '' ) {
+        this.error = true;
+        this.errstr = trans('This field is required');
+        return false;
+    }
+    return true;
+  }
+});
 </mt:setvarblock>
 </mt:Unless>

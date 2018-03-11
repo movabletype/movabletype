@@ -149,6 +149,7 @@ sub _multi_line_text_registry {
         field_value_handler =>
             '$Core::MT::ContentFieldType::MultiLineText::field_value_handler',
         replaceable => 1,
+        ss_validator => '$Core::MT::ContentFieldType::MultiLineText::ss_validator',
         list_props  => {
             multi_line_text => {
                 base  => '__virtual.string',
@@ -185,7 +186,6 @@ sub _number_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::Number::field_html_params',
         replaceable  => 1,
-        ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
             number => {
                 base  => '__virtual.double',

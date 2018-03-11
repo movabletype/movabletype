@@ -122,6 +122,29 @@
         $.updateblock();
       });
 
+      $.mtValidateAddRules({
+        'div.multi_line_text-field-container': function ($e) {
+          var required = $e.data('mt-required') ? true : false;
+          var format = $e.find('.convert_breaks').val();
+          var data = false;
+          if(format == 'blockeditor'){
+            var obj = $this.blockeditor('get_data');
+            data = Object.keys(obj).length > 0 ? true : false;
+          } else {
+            var content = app.editors[editor_id].getContent();
+            data = content != '' ? true : false;
+          }
+          if ( required && !data ) {
+              this.error = true;
+              this.errstr = trans('This field is required');
+              return false;
+          }
+          return true;
+        }
+      });
+
+
+
     });
   };
   var _destroy = function() {
