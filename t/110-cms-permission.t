@@ -365,7 +365,6 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-print STDERR $out;
 ok( $out,                     "Delete comment" );
 ok( $out =~ m/Invalid request\./i, "Delete comment: result" );
 
