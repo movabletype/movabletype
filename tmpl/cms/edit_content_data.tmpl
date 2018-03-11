@@ -844,7 +844,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       m = this.name.match(/-(\d+)$/);
       if (m) {
         fieldId = m[1];
-        $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1">' + this.value + '</textarea>'));
+        $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1"></textarea>'));
+        $form.find('textarea[name=content-field-multi-' + fieldId + ']').val(this.value);
       }
     });
 

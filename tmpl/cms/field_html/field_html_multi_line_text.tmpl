@@ -27,7 +27,7 @@
        <div class="col">
           <div class="form-group">
             <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-                <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+                <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
             </div>
         </div>
       </div>

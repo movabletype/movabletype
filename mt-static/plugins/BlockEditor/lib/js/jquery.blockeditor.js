@@ -111,7 +111,6 @@
       jQuery(window).on('pre_autosave', function() {
         $.updateblock();
         log('pre_autosave updateblock');
-        log(jQuery('#block_editor_data').val());
       });
 
       block_field.on('change', 'input[mt\\:watch-change="1"]', function(event) {
