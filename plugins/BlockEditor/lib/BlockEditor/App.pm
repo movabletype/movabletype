@@ -33,27 +33,7 @@ sub param_edit_content_data {
     my $editor_tmpl = plugin()->load_tmpl('editor.tmpl');
     $param->{blockeditor_tmpl} = $editor_tmpl;
 }
-sub ss_validator {
-  my ( $app, $field_data, $data ) = @_;
 
-  my $options          = $field_data->{options} || {};
-  my $required         = $options->{required};
-  if(!$required){
-    return undef;
-  }
-  my $field_label      = $options->{label};
-  my $field_type       = $field_data->{type};
-  my $field_type_label = $field_data->{type_label};
-
-
-  my $format = $app->param('content-field-' . $field_data->{id} . '_convert_breaks' );
-  if($format eq 'blockeditor'){
-    if(!$app->param('block_editor_data')){
-      return $app->translate(qq{"${field_label}" field is required.});
-    }
-  }
-  return undef;
-}
 sub dialog_list_asset {
     my $app = shift;
 
