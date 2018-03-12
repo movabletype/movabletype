@@ -186,6 +186,7 @@ sub _number_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::Number::field_html_params',
         replaceable  => 1,
+        ss_validator => '$Core::MT::ContentFieldType::Number::ss_validator',
         list_props   => {
             number => {
                 base  => '__virtual.double',
