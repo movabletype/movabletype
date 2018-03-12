@@ -26,7 +26,7 @@
             self.id = id;
             self.edit_field = $('<div class="form-group"></div>');
             self.edit_field_input = $('<textarea id="' + self.id + '-text" class="text high html5-form form-control content-field" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
-            self.edit_field_input.html(data["value"]);
+            self.edit_field_input.text(data["value"]);
             self.edit_field.append(self.edit_field_input);
             self.edit_field.append($('<input type="hidden" data-target="' + self.id + '-text" value="richtext">'));
 
