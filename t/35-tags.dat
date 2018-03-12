@@ -246,7 +246,7 @@
 { "r" : "1", "t" : "<MTAssets limit='1' offset='1'><$MTAssetID$></MTAssets>", "e" : "7"}, #245
 { "r" : "1", "t" : "<MTAssets limit='1' offset='5'><$MTAssetID$></MTAssets>", "e" : ""}, #246
 { "r" : "1", "t" : "<MTAssets tag='alpha'><$MTAssetID$></MTAssets>", "e" : "1765"}, #247
-{ "r" : "1", "t" : "<MTAssets sort_by='file_name' sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "5;6;7;1;2;"}, #248
+{ "r" : "1", "t" : "<MTAssets sort_by='file_name' sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "1;2;5;6;7;"}, #248
 { "r" : "1", "t" : "<MTAssets sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "2;5;6;7;1;"}, #249
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetFileName$></MTAssets>", "e" : "test.jpg"}, #250
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetURL$></MTAssets>", "e" : "http://narnia.na/nana/images/test.jpg"}, #251
