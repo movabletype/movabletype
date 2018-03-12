@@ -1443,6 +1443,16 @@ sub _hdlr_content_calendar {
                 $prefix = $year . $month - 1;
             }
         }
+        elsif ( $prefix eq 'next' ) {
+            my $year  = substr $today, 0, 4;
+            my $month = substr $today, 4, 2;
+            if ( $month + 1 == 13 ) {
+                $prefix = $year + 1 . "01";
+            }
+            else {
+                $prefix = $year . $month + 1;
+            }
+        }
         else {
             return $ctx->error(
                 MT->translate("Invalid month format: must be YYYYMM") )
@@ -1494,19 +1504,58 @@ sub _hdlr_content_calendar {
                 + $start_with_offset
         ) % 7
     );
+
+    # date_field
+    my $dt_field    = 'authored_on';
+    my $dt_field_id = 0;
+    if ( my $arg = $args->{date_field} ) {
+        if (   $arg eq 'authored_on'
+            || $arg eq 'modified_on'
+            || $arg eq 'created_on' )
+        {
+            $dt_field = $arg;
+        }
+        else {
+            my $date_cf = '';
+            $date_cf = MT->model('cf')->load($arg)
+                if ( $arg =~ /^\d+$/ );
+            ($date_cf) = MT->model('cf')->load( { unique_id => $arg } )
+                unless ($date_cf);
+            ($date_cf) = MT->model('cf')->load( { name => $arg } )
+                unless ($date_cf);
+            if ($date_cf) {
+                $dt_field_id = $date_cf->id;
+            }
+        }
+    }
+
     my $cd_terms = {};
     my $cd_args  = {};
     $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
         or return;
+    $cd_args->{join} = MT::ContentFieldIndex->join_on(
+        'content_data_id',
+        {   content_field_id => $dt_field_id,
+            value_datetime   => [ $start, $end ]
+        },
+        {   range_incl => { 'value_datetime' => 1 },
+            'sort'     => 'value_datetime',
+            direction  => 'ascend'
+        }
+    ) if $dt_field_id;
     my $iter = MT::ContentData->load_iter(
-        {   blog_id     => $blog_id,
-            authored_on => [ $start, $end ],
-            status      => MT::ContentStatus::RELEASE(),
+        {   blog_id => $blog_id,
+            ( !$dt_field_id ? ( $dt_field => [ $start, $end ] ) : () ),
+            status => MT::ContentStatus::RELEASE(),
             %{$cd_terms},
         },
-        {   range_incl => { authored_on => 1 },
-            'sort'     => 'authored_on',
-            direction  => 'ascend',
+        {   (   !$dt_field_id
+                ? ( range_incl => { $dt_field => 1 },
+                    'sort'     => $dt_field,
+                    direction  => 'ascend'
+                    )
+                : ()
+            ),
             %{$cd_args},
         }
     );
@@ -1529,7 +1578,14 @@ sub _hdlr_content_calendar {
             $this_day = $prefix . sprintf( "%02d", $day - $pad_start );
             my $no_loop = 0;
             if (@left) {
-                if ( substr( $left[0]->authored_on, 0, 8 ) eq $this_day ) {
+                my $datetime = '';
+                if ($dt_field_id) {
+                    $datetime = $left[0]->data->{$dt_field_id} || '';
+                }
+                else {
+                    $datetime = $left[0]->authored_on;
+                }
+                if ( $datetime && substr( $datetime, 0, 8 ) eq $this_day ) {
                     @cds  = @left;
                     @left = ();
                 }
@@ -1540,7 +1596,14 @@ sub _hdlr_content_calendar {
             unless ( $no_loop || $iter_drained ) {
                 while ( my $cd = $iter->() ) {
                     next unless !$cat || $cd->is_in_category($cat);
-                    my $cd_day = substr $cd->authored_on, 0, 8;
+                    my $datetime = '';
+                    if ($dt_field_id) {
+                        $datetime = $cd->data->{$dt_field_id} || '';
+                    }
+                    else {
+                        $datetime = $cd->authored_on;
+                    }
+                    my $cd_day = $datetime ? substr( $datetime, 0, 8 ) : '';
                     push( @left, $cd ), last
                         unless $cd_day eq $this_day;
                     push @cds, $cd;
