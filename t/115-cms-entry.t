@@ -1003,6 +1003,24 @@ subtest 'Save prefs check' => sub {
     ok( $json->{result}{success}, 'Json result is success' );
 };
 
+subtest 'Save prefs check type mismatch' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save_entry_prefs',
+            _type            => 'template',
+            blog_id          => $website->id,
+            entry_prefs      => 'Custom',
+            custom_prefs =>
+                'title,text,keywords,tags,category,feedback,assets',
+            sort_only => 'false',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    ok( $out =~ m!Invalid request.!i, "save_prefs check type mismatch" );
+};
+
 done_testing();
 
 sub _get_entries_menu_labels {

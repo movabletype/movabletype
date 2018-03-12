@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -633,7 +633,6 @@ sub search_terms {
         $terms->[1]->{authored_on}
             = { between => [ $date_start, $date_end ] };
     }
-
     ( \@terms, \%args );
 }
 
@@ -1002,8 +1001,8 @@ sub query_parse {
         foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
+                $search .= " $type:$filter";
             }
-            $search .= " $type:$filter";
         }
     }
 
@@ -1093,7 +1092,14 @@ sub _query_parse_core {
                         $filter_types->{ $term->{field} } );
                     if ($code) {
                         my $join_args = $code->( $app, $term );
-                        push @joins, $join_args;
+                        if ( 'ARRAY' eq ref $join_args->[0] ) {
+                            foreach my $j (@$join_args) {
+                                push @joins, $j;
+                            }
+                        }
+                        else {
+                            push @joins, $join_args;
+                        }
                         next;
                     }
                 }
@@ -1167,8 +1173,11 @@ sub _query_parse_core {
 sub _join_category {
     my ( $app, $term ) = @_;
     my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
+    if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ) {
         $query =~ s/'/"/g;
+        if ( !exists $term->{field} && $query =~ /^[^\"].*\s.*[^\"]$/ ) {
+            $query = '"' . $term->{term} . '"';
+        }
     }
 
     my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
@@ -1179,25 +1188,62 @@ sub _join_category {
     }
 
     # search for exact match
-    my ($terms)
-        = $app->_query_parse_core( $lucene_struct,
-        { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
-    return unless $terms && @$terms;
-    push @$terms, '-and',
-        {
-        id      => \'= placement_category_id',
-        blog_id => \'= entry_blog_id',
-        };
-
-    require MT::Placement;
-    require MT::Category;
-    return MT::Placement->join_on(
-        undef,
-        { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
-        {   join   => MT::Category->join_on( undef, $terms, {} ),
-            unique => 1
+    my $joins;
+    if (scalar @$lucene_struct > 1
+        && (   $lucene_struct->[1]->{conj}
+            && $lucene_struct->[1]->{conj} eq 'AND' )
+        )
+    {
+        while ( my $t = shift @$lucene_struct ) {
+            my $j = _join_category( $app, $t );
+            push @$joins, $j;
         }
-    );
+    }
+    else {
+        my $make_alias = sub {
+            my $length = shift @_ || 8;
+            my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+            my $str = '';
+            while ( length $str < $length ) {
+                $str .= @seed[ int rand( scalar @seed ) ];
+            }
+
+            return $str;
+        };
+        require MT::Placement;
+        require MT::Category;
+        my $place_class = $app->model('placement');
+        my $cat_class   = $app->model('category');
+        my $trail       = $make_alias->(4);
+        my $p_alias     = $place_class->datasource . '_' . $trail;
+        my $c_alias     = $cat_class->datasource . '_' . $trail;
+
+        my ($terms)
+            = $app->_query_parse_core( $lucene_struct,
+            { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
+        next unless $terms && @$terms;
+
+        push @$terms, '-and',
+            {
+            id      => \"= $p_alias.placement_category_id",
+            blog_id => \'= entry_blog_id',
+            };
+
+        my $join = MT::Placement->join_on(
+            undef,
+            { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
+            {   join => MT::Category->join_on(
+                    undef, $terms, { alias => $c_alias }
+                ),
+                unique => 1,
+                alias  => $p_alias
+            }
+        );
+
+        push @$joins, @$join;
+    }
+    return $joins;
+
 }
 
 # add author filter to entry search

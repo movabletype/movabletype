@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -336,6 +336,8 @@ sub rebuild_permissions {
     my $assoc = shift;
     require MT::Permission;
     MT::Permission->rebuild($assoc);
+
+    $assoc->_rebuild_favorite;
 }
 
 sub user {
@@ -435,6 +437,17 @@ sub objects_to_terms {
         return undef;
     }
     $terms;
+}
+
+sub _rebuild_favorite {
+    my ($obj) = @_;
+
+    my $app = MT->instance;
+    return if !$app or $app->isa('MT::App::Upgrader');
+    return if $obj->type != USER_BLOG_ROLE;
+
+    my $user = $obj->user;
+    $user->rebuild_favorite_sites;
 }
 
 1;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -255,15 +255,8 @@ sub core_search_apis {
                 my $app    = MT->instance;
                 my $author = $app->user;
                 my $perm   = $author->permissions( $obj->blog_id );
-
-                if (   $app->param('edit_field')
-                    && $app->param('edit_field') =~ m/^customfield_.*$/ )
-                {
-                    !$perm->is_empty;
-                }
-                else {
-                    $perm->can_do('search_assets');
-                }
+                return 1 if $perm && $perm->can_do('search_assets');
+                return 0;
             },
             'search_cols' => {
                 'file_name'   => sub { $app->translate('Filename') },
@@ -601,7 +594,8 @@ sub search_replace {
         && $app->param('_type') =~ /entry|page|comment|ping|template/ )
     {
         if ( $app->param('blog_id') ) {
-            my $perms = $app->permissions;
+            my $perms = $app->permissions
+                or return $app->permission_denied();
             $param->{can_republish} = $perms->can_rebuild
                 || $app->user->is_superuser;
             $param->{can_empty_junk} = $perms->can_rebuild

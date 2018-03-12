@@ -14,40 +14,38 @@
     </div>
   </mt:if>
 
-  <mt:if name="author_name">
-    <ul class="list-inline">
-      <li class="list-inline-item">
-        <a href="<__trans phrase="http://www.movabletype.org">">
-          <__trans phrase="MovableType.org">
-        </a>
-      </li>
-      <li class="list-inline-item">
-        <a href="<__trans phrase="http://plugins.movabletype.org/">">
-          <__trans phrase="Plugins">
-        </a>
-      </li>
-      <li class="list-inline-item">
-        <a href="<__trans phrase="http://www.movabletype.org/documentation/">">
-          <__trans phrase="Documentation">
-        </a>
-      </li>
-      <li class="list-inline-item">
-        <a href="<mt:var name="mt_support">">
-          <__trans phrase="Support">
-        </a>
-      </li><mt:if name="language_id" eq="ja">
-      <li class="list-inline-item">
-        <a href="<__trans phrase="http://forums.movabletype.org/">">
-          <__trans phrase="Forums">
-        </a>
-      </li></mt:if>
-      <li class="list-inline-item">
-        <a href="<mt:var name="mt_feedback_url">">
-          <__trans phrase="Send Us Feedback">
-        </a>
-      </li>
-    </ul>
-  </mt:if>
+  <ul class="list-inline">
+    <li class="list-inline-item">
+      <a href="<__trans phrase="http://www.movabletype.org">">
+        <__trans phrase="MovableType.org">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<__trans phrase="http://plugins.movabletype.org/">">
+        <__trans phrase="Plugins">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<__trans phrase="http://www.movabletype.org/documentation/">">
+        <__trans phrase="Documentation">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<mt:var name="mt_support">">
+        <__trans phrase="Support">
+      </a>
+    </li><mt:if name="language_id" eq="ja">
+    <li class="list-inline-item">
+      <a href="<__trans phrase="http://forums.movabletype.org/">">
+        <__trans phrase="Forums">
+      </a>
+    </li></mt:if>
+    <li class="list-inline-item">
+      <a href="<mt:var name="mt_feedback_url">">
+        <__trans phrase="Send Us Feedback">
+      </a>
+    </li>
+  </ul>
 
     <p>
       <small>

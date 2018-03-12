@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -119,7 +119,6 @@ sub edit {
 
 sub save {
     my $app   = shift;
-    my $perms = $app->permissions;
     my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
@@ -462,7 +461,6 @@ sub js_add_category {
     }
     my $user            = $app->user;
     my $blog_id         = $app->param('blog_id');
-    my $perms           = $app->permissions;
     my $type            = $app->param('_type') || 'category';
     my $category_set_id = 0;
     if ( $type eq 'category' ) {

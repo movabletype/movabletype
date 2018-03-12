@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -454,8 +454,15 @@ sub can_do {
         $perm =~ s/'(.+)'/$1/;
         return 1 if 'administer' eq $perm;
         next if $self->is_restricted($perm);
-        $perm = join( '.',
-            ( ( $self->blog_id != 0 ? 'blog' : 'system' ), $perm ) );
+        $perm = join(
+            '.',
+            (   (   ( defined $self->blog_id && $self->blog_id != 0 )
+                    ? 'blog'
+                    : 'system'
+                ),
+                $perm
+            )
+        );
         my $result = __PACKAGE__->_confirm_action( $perm, $action );
         return $result if defined $result;
     }
@@ -870,6 +877,44 @@ sub load_permissions_from_action {
             if $pkg->_confirm_action( $p, $action, $permissions );
     }
     return $perms;
+}
+
+__PACKAGE__->add_trigger( pre_save => \&_rebuild_permissions );
+
+sub _rebuild_permissions {
+    my ( $perm, $orig ) = @_;
+    my $app = MT->instance;
+    return if !$app or $app->isa('MT::App::Upgrader');
+
+    # In restoring, nothing to do.
+    return if $app->request('__restore_in_progress');
+
+    # rebuild permissions for this user / blog
+    my $user_id = $perm->author_id;
+    my $blog_id = $perm->blog_id;
+
+    return unless $user_id && $blog_id;
+
+    # Clear all permissions then rebuild it.
+    $perm->permissions('');
+
+    # find all blogs for this user
+    my $user = MT::Author->load($user_id) or return;
+
+    my $role_iter = $user->role_iter( { blog_id => $blog_id } );
+    if ($role_iter) {
+        while ( my $role = $role_iter->() ) {
+            $perm->add_permissions($role);
+        }
+    }
+
+    # find all blogs for this user through groups
+    $role_iter = $user->group_role_iter( { blog_id => $blog_id } );
+    if ($role_iter) {
+        while ( my $role = $role_iter->() ) {
+            $perm->add_permissions($role);
+        }
+    }
 }
 
 1;

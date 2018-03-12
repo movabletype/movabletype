@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,102 +19,104 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name     => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name     => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name     => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name     => 'ogawa',
-        nickname => 'Goro Ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro Ogawa',
+        );
 
-    my $kagawa = MT::Test::Permission->make_author(
-        name     => 'kagawa',
-        nickname => 'Ichiro Kagawa',
-    );
+        my $kagawa = MT::Test::Permission->make_author(
+            name     => 'kagawa',
+            nickname => 'Ichiro Kagawa',
+        );
 
-    my $kikkawa = MT::Test::Permission->make_author(
-        name     => 'kikkawa',
-        nickname => 'Jiro Kikkawa',
-    );
+        my $kikkawa = MT::Test::Permission->make_author(
+            name     => 'kikkawa',
+            nickname => 'Jiro Kikkawa',
+        );
 
-    my $kumekawa = MT::Test::Permission->make_author(
-        name     => 'Kumekawa',
-        nickname => 'Saburo Kumekawa',
-    );
+        my $kumekawa = MT::Test::Permission->make_author(
+            name     => 'Kumekawa',
+            nickname => 'Saburo Kumekawa',
+        );
 
-    my $kemikawa = MT::Test::Permission->make_author(
-        name     => 'kemikawa',
-        nickname => 'Shiro Kemikawa',
-    );
+        my $kemikawa = MT::Test::Permission->make_author(
+            name     => 'kemikawa',
+            nickname => 'Shiro Kemikawa',
+        );
 
-    my $komiya = MT::Test::Permission->make_author(
-        name     => 'komiya',
-        nickname => 'Goro Komiya',
-    );
+        my $komiya = MT::Test::Permission->make_author(
+            name     => 'komiya',
+            nickname => 'Goro Komiya',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Role
-    my $manage_users = MT::Test::Permission->make_role(
-        name        => 'Manage Users',
-        permissions => "'manage_users'",
-    );
-    my $manage_pages = MT::Test::Permission->make_role(
-        name        => 'Manage Pages',
-        permissions => "'manage_pages'",
-    );
-    my $edit_all_posts = MT::Test::Permission->make_role(
-        name        => 'Edit All Posts',
-        permissions => "'edit_all_posts'",
-    );
-    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+        # Role
+        my $manage_users = MT::Test::Permission->make_role(
+            name        => 'Manage Users',
+            permissions => "'manage_users'",
+        );
+        my $manage_pages = MT::Test::Permission->make_role(
+            name        => 'Manage Pages',
+            permissions => "'manage_pages'",
+        );
+        my $edit_all_posts = MT::Test::Permission->make_role(
+            name        => 'Edit All Posts',
+            permissions => "'edit_all_posts'",
+        );
+        my $designer
+            = MT::Role->load( { name => MT->translate('Designer') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa   => $manage_users   => $blog );
-    MT::Association->link( $ichikawa => $manage_users   => $website );
-    MT::Association->link( $ukawa    => $manage_pages   => $blog );
-    MT::Association->link( $egawa    => $edit_all_posts => $blog );
-    MT::Association->link( $ogawa    => $designer       => $blog );
-    MT::Association->link( $kagawa   => $manage_users   => $second_blog );
-    MT::Association->link( $kikkawa  => $manage_pages   => $second_blog );
-    MT::Association->link( $kumekawa => $edit_all_posts => $second_blog );
-});
+        require MT::Association;
+        MT::Association->link( $aikawa   => $manage_users    => $blog );
+        MT::Association->link( $ichikawa => $manage_users    => $website );
+        MT::Association->link( $ukawa    => $manage_pages    => $blog );
+        MT::Association->link( $egawa    => $edit_all_posts  => $blog );
+        MT::Association->link( $ogawa    => $designer        => $blog );
+        MT::Association->link( $kagawa   => $manage_users    => $second_blog );
+        MT::Association->link( $kikkawa  => $manage_pages    => $second_blog );
+        MT::Association->link( $kumekawa => $edit_all_posts  => $second_blog );
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
 
@@ -133,8 +136,8 @@ my $komiya   = MT::Author->load( { name => 'komiya' } );
 my $admin = MT::Author->load(1);
 
 require MT::Role;
-my $manage_users = MT::Role->load( { name => 'Manage Users' } );
-my $manage_pages = MT::Role->load( { name => 'Manage Pages' } );
+my $manage_users   = MT::Role->load( { name => 'Manage Users' } );
+my $manage_pages   = MT::Role->load( { name => 'Manage Pages' } );
 my $edit_all_posts = MT::Role->load( { name => 'Edit All Posts' } );
 
 # Run
@@ -1042,6 +1045,212 @@ subtest 'mode = save' => sub {
     ok( $out =~ m!permission=1!i, "save by others" );
 };
 
+subtest 'mode = save (type is commenter)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
+subtest 'mode = save (type is user)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: save" );
+    ok( $out =~ m!Invalid Request!i, "save own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "save by others" );
+};
+
+subtest 'mode = view' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: view" );
+    ok( $out !~ m!permission=1!i, "view by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: view" );
+    ok( $out !~ m!permission=1!i, "view own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'author',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: view" );
+    ok( $out =~ m!permission=1!i, "view by others" );
+};
+
+subtest 'mode = view (type is commenter)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: view" );
+    ok( $out !~ m!permission=1!i, "view by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: view" );
+    ok( $out =~ m!Invalid request!i, "view by others" );
+};
+
+subtest 'mode = view (type is user)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: view" );
+    ok( $out =~ m!Invalid request!i, "view by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: view" );
+    ok( $out =~ m!Invalid Request!i, "view own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'view',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: viwe" );
+    ok( $out =~ m!Invalid request!i, "view by others" );
+};
+
 subtest 'mode = delete' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -1084,6 +1293,94 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: cfg_system_users" );
     ok( $out =~ m!permission=1!i, "delete by others" );
+};
+
+subtest 'mode = delete (type is commenter' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $komiya->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'commenter',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "delete by others" );
+};
+
+subtest 'mode = delete (type is user' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $komiya->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete own record" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'user',
+            blog_id          => 0,
+            id               => $aikawa->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out =~ m!Invalid request!i, "delete by others" );
 };
 
 subtest 'action = recover_passwords' => sub {
@@ -1146,7 +1443,7 @@ subtest 'action = delete_user' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user            => $aikawa,
+        {   __test_user            => $ichikawa,
             __request_method       => 'POST',
             __mode                 => 'itemset_action',
             _type                  => 'author',
@@ -1154,13 +1451,13 @@ subtest 'action = delete_user' => sub {
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
             plugin_action_selector => 'delete_user',
-            id                     => $aikawa->id,
+            id                     => $ukawa->id,
             plugin_action_selector => 'delete_user',
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete_user" );
-    ok( $out =~ m!Invalid login.!i, "delete_user by non permitted user" );
+    ok( $out,                       "Request: delete_user" );
+    ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
 
 done_testing();

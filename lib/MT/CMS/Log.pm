@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,6 @@ sub view {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 PERMCHECK: {
         if ($blog_id) {
             last PERMCHECK
@@ -347,7 +346,6 @@ sub reset {
 sub export {
     my $app       = shift;
     my $user      = $app->user;
-    my $perms     = $app->permissions;
     my $blog      = $app->blog;
     my $blog_view = $blog ? 1 : 0;
     my $blog_ids;

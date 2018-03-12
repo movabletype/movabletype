@@ -110,9 +110,8 @@ subtest 'mode = export' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: export" );
-    ok( $out =~ m!You do not have export permissions!i,
-        "export by other blog" );
+    ok( $out,                     "Request: export" );
+    ok( $out =~ m!permission=1!i, "export by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',

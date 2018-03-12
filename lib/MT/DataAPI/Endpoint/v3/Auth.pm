@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -49,16 +49,6 @@ sub _login {
 
     $app->user($author);
     $app->{session} = $session;
-
-    $app->log(
-        $app->translate(
-            "User '[_1]' (ID:[_2]) logged in successfully", $author->name,
-            $author->id
-        ),
-        level    => MT::Log::INFO(),
-        class    => 'author',
-        category => 'login_user',
-    );
 
     ( $author, 1 );
 }

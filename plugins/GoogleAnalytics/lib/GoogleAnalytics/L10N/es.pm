@@ -1,7 +1,7 @@
 # This program is distributed under the terms of
 # The MIT License (MIT)
 #
-# Copyright (c) 2017 Six Apart, Ltd.
+# Copyright (c) 2018 Six Apart, Ltd.
 #
 # $Id$
 

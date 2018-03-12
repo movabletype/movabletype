@@ -67,7 +67,7 @@ sub config {
 sub add {
     my $app = shift;
 
-    return $app->translate("Permission denied.")
+    return $app->permission_denied()
         unless $app->user->is_superuser()
         || ( $app->blog
         && $app->user->permissions( $app->blog->id )->can_administer_site() );

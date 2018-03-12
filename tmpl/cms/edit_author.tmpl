@@ -17,6 +17,13 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="system_msg" id="system_msg">
+<mt:if name="email_is_blank">
+  <mtapp:statusmsg
+     id="saved"
+     class="warning">
+    <__trans phrase="Email Address is required for password reset.">
+  </mtapp:statusmsg>
+</mt:if>
 <mt:if name="saved">
   <mtapp:statusmsg
      id="saved"
@@ -301,7 +308,7 @@ function showPasswordField() {
 
     <mtapp:setting
        id="email"
-       required="$auth_mode_mt"
+       required="$email_is_required"
        label="<__trans phrase="Email Address">"
        label_for="email">
        <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> />

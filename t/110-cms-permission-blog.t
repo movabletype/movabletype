@@ -563,8 +563,8 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                   "Request: list" );
-    ok( $out =~ m!redirect=1!i, "list by other blog" );
+    ok( $out,                     "Request: list" );
+    ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1271,6 +1271,117 @@ subtest 'mode = save (edit)' => sub {
     done_testing();
 };
 
+subtest 'mode = save (type is site)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save (edit) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save (edit) by permitted user (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save (edit) by permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $tsuda,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save (edit) by non permitted user (create blog)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save (edit) by other blog (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $suda,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save (edit) by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'save',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: save" );
+    ok( $out =~ m!Invalid request!i, "save (edit) by other permission" );
+    done_testing();
+};
+
 subtest 'mode = edit (new)' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -1421,6 +1532,117 @@ subtest 'mode = edit (edit)' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: edit" );
     ok( $out =~ m!Permission=1!i, "edit (edit) by other permission" );
+    done_testing();
+};
+
+subtest 'mode = edit (type is site)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit (edit) by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit (edit) by permitted user (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit (edit) by permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $tsuda,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit (edit) by non permitted user (create blog)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit (edit) by other blog (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $suda,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit (edit) by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'edit',
+            _type            => 'site',
+            name             => 'BlogName',
+            id               => $blog->id,
+            blog_id          => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: edit" );
+    ok( $out =~ m!Invalid request!i, "edit (edit) by other permission" );
     done_testing();
 };
 
@@ -1730,6 +1952,102 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
+    done_testing();
+};
+
+subtest 'mode = delete ( type is site)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by admin" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $aikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by permitted user (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ogawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by non permitted user (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $tsuda,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by non permitted user (create blog)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $kemikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other blog (blog admin)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $suda,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other blog (edit config)" );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $ichikawa,
+            __request_method => 'POST',
+            __mode           => 'delete',
+            _type            => 'site',
+            id               => $blog->id,
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out,                     "Request: delete" );
+    ok( $out =~ m!Invalid request!i, "delete by other permission" );
     done_testing();
 };
 

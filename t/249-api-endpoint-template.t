@@ -584,7 +584,10 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/publish',
             method       => 'POST',
-            restrictions => { 1 => [qw/ administer_site rebuild /], },
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ administer_site rebuild edit_templates /],
+            },
             code         => 403,
             error        => 'Do not have permission to publish a template.',
         },
