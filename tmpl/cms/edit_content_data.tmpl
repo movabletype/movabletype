@@ -834,7 +834,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   });
 
   function resetMultiLineTextData($form) {
-    $form.find("input[name^=content-field-multi-]").remove();
+    $form.find("textarea[name^=content-field-multi-]").remove();
     $form.find("input[name=blockeditor-data]").remove();
   }
 
@@ -844,7 +844,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       m = this.name.match(/-(\d+)$/);
       if (m) {
         fieldId = m[1];
-        $form.append(jQuery('<input type="hidden" name="content-field-multi-' + fieldId + '" value="' + this.value + '" mt:raw-name="1">'));
+        $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1"></textarea>'));
+        $form.find('textarea[name=content-field-multi-' + fieldId + ']').val(this.value);
       }
     });
 
@@ -856,9 +857,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       }
     });
     if(Object.keys(block_editor_data).length > 0) {
-      $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(JSON.stringify(block_editor_data)))
+      $form.append(jQuery('#block_editor_data').val(JSON.stringify(block_editor_data)))
     } else {
-      $form.append(jQuery('<input type="hidden" name="blockeditor-data">').val(''))
+      $form.append(jQuery('#block_editor_data').val(''))
     }
   }
 

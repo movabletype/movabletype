@@ -122,6 +122,11 @@ sub upgrade_functions {
             version_limit => 7.0034,
             priority      => 3.2,
         },
+        'v7_rebuild_single_line_text_field_indexes' => {
+            code          => \&_v7_rebuild_single_line_text_field_indexes,
+            version_limit => 7.0036,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -1081,6 +1086,60 @@ sub _v7_rebuild_url_field_indexes {
 
         $content_field_index->value_text($url_field_value);
         $content_field_index->value_blob(undef);
+
+        my $saved = $content_field_index->save;
+        unless ($saved) {
+            MT->log(
+                {   message => $self->translate_escape(
+                        'Error saving record (ID:[_1]): [_2].',
+                        $content_field_index->id,
+                        $content_field_index->errstr,
+                    ),
+                    level    => MT::Log::ERROR(),
+                    category => 'upgrade',
+                }
+            );
+        }
+    }
+}
+
+sub _v7_rebuild_single_line_text_field_indexes {
+    my $self = shift;
+
+    require MT::Log;
+
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::ContentFieldIndex of single_line_text field...')
+    );
+
+    my $join_content_field = MT->model('content_field')->join_on(
+        undef,
+        {   content_type_id => \'= cf_idx_content_type_id',
+            type            => 'single_line_text',
+        },
+    );
+    my $iter
+        = MT->model('content_field_index')
+        ->load_iter( undef, { join => $join_content_field } );
+    while ( my $content_field_index = $iter->() ) {
+        my $content_field = $content_field_index->content_field or next;
+        my $content_data  = $content_field_index->content_data  or next;
+
+        my $content_field_value = $content_data->data->{ $content_field->id };
+        if ( !defined $content_field_value || $content_field_value eq '' ) {
+            $content_field_index->remove
+                or return $self->error(
+                $self->translate_escape(
+                    'Error removing record (ID:[_1]): [_2].',
+                    $content_field_index->id,
+                    $content_field_index->errstr,
+                )
+                );
+            next;
+        }
+
+        $content_field_index->value_varchar($content_field_value);
 
         my $saved = $content_field_index->save;
         unless ($saved) {

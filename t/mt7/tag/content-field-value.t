@@ -468,7 +468,7 @@ aaa,bbb,ccc
 
 === mt:ContentFieldValue with convert_breaks
 --- template
-<mt:Contents content_type="test content data" offset="1" limit="1"><mt:ContentField label="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
+<mt:Contents content_type="test content data" offset="1" limit="1"><mt:ContentField content_field="multi line text"><mt:ContentFieldValue convert_breaks="1"></mt:ContentField></mt:Contents>
 --- expected
 <p>test multi line text<br />
 aaaaa</p>
@@ -477,8 +477,8 @@ aaaaa</p>
 === mt:ContentFieldValue with words
 --- template
 <mt:Contents content_type="test content data" offset="1" limit="1">
-<mt:ContentField label="single line text"><mt:ContentFieldValue words="1"></mt:ContentField>
-<mt:ContentField label="multi line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+<mt:ContentField content_field="single line text"><mt:ContentFieldValue words="1"></mt:ContentField>
+<mt:ContentField content_field="multi line text"><mt:ContentFieldValue words="1"></mt:ContentField>
 </mt:Contents>
 --- expected
 test
@@ -487,11 +487,11 @@ test
 === mt:ContentFieldValue with date format
 --- template
 <mt:Contents content_type="test content data" offset="1" limit="1">
-<mt:ContentField label="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
-<mt:ContentField label="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
-<mt:ContentField label="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
-<mt:ContentField label="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
-<mt:ContentField label="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
 </mt:Contents>
 --- expected
 2017

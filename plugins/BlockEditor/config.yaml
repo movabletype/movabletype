@@ -21,7 +21,9 @@ text_filters:
 applications:
   cms:
     methods:
-      block_editor_asset: $BlockEditor::BlockEditor::App::block_editor_asset
+      blockeditor_dialog_list_asset: $BlockEditor::BlockEditor::App::dialog_list_asset
+      block_editor_dialog_insert_options: $BlockEditor::BlockEditor::App::dialog_insert_options
+      block_editor_dialog_insert_asset: $BlockEditor::BlockEditor::App::dialog_insert_asset
 
 callbacks:
   MT::App::CMS::template_param.edit_content_data: $BlockEditor::BlockEditor::App::param_edit_content_data
@@ -31,15 +33,18 @@ blockeditor_fields:
     label: 'H'
     # path: "plugins/sample/sample.js"
     order: 10
-  image:
-    label: 'image'
+  text:
+    label: 'text'
     order: 20
-  horizon:
-    label: 'Horizon'
-    order: 30
   embed:
     label: 'Embed'
+    order: 30
+  image:
+    label: 'image'
     order: 40
+  horizon:
+    label: 'Horizon'
+    order: 50
   # gallery:
   #   label: 'Gallery'
   #   order: 50

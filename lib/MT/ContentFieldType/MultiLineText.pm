@@ -16,7 +16,7 @@ sub field_html_params {
 
     my $options        = $field_data->{options};
     my $input_format = $options->{input_format};
-    my $required = $options->{required} ? 'required' : '';
+    my $required = $options->{required} ? 'data-mt-required="1"' : '';
 
     {   convert_breaks => $input_format,
         required       => $required,
