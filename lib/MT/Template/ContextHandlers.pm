@@ -989,6 +989,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
             ContentIdentifier =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_identifier',
+            ContentLabel =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_label',
             ContentPermalink =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_permalink',
             ContentSiteDescription =>

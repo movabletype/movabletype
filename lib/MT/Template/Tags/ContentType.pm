@@ -1835,6 +1835,19 @@ sub _hdlr_content_field_type {
     $field_data->{type} || '';
 }
 
+=head2 ContentLabel
+
+Outputs the label of the current content data in context.
+
+=cut
+
+sub _hdlr_content_label {
+    my ( $ctx, $args ) = @_;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->no_content_error;
+    defined $content_data->label ? $content_data->label : '';
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
