@@ -12,10 +12,8 @@ use MT::I18N qw( first_n_text const );
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $required = $field_data->{options}{required} ? 'required' : '';
-    my $max_length = $field_data->{options}{max_length};
-    if ( my $ml = $field_data->{options}{max_length} ) {
-        $max_length = qq{maxlength="${ml}"};
-    }
+    my $max_length = $field_data->{options}{max_length} ||= 1024;
+    $max_length = qq{maxlength="${max_length}"};
     my $min_length_class = '';
     my $min_length_data  = '';
     if ( my $ml = $field_data->{options}{min_length} ) {
@@ -34,9 +32,9 @@ sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
     $data = '' unless defined $data && $data ne '';
 
-    my $options     = $field_data->{options} || {};
-    my $max_length  = $options->{max_length};
-    my $min_length  = $options->{min_length};
+    my $options    = $field_data->{options} || {};
+    my $max_length = $options->{max_length} || 1024;
+    my $min_length = $options->{min_length};
     my $field_label = $options->{label};
 
     if ( $max_length && length $data > $max_length ) {
