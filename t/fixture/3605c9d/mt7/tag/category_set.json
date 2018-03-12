@@ -604,7 +604,7 @@
             null,
             null,
             "categories",
-            "3ff999c83ad443c4f452312451fb53fb6e6e1edb"
+            "5330bbfe135f9806273342a3d95f845499737029"
          ],
          [
             "2",
@@ -621,7 +621,7 @@
             null,
             null,
             "categories",
-            "656f2f622d444e6ea2c5c2d916d9113f0db91cf5"
+            "e3caed08d369e4b31a7c1b1586f36176529a369c"
          ]
       ]
    },
@@ -632,7 +632,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0034\n",
             "1"
          ]
       ]
@@ -665,7 +665,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "7bd5784ab9d2a41d078339d4dce11e472472a524",
+            "0e83ef274be4c6aa3629970fd18f3e34dad527bb",
             null,
             null
          ],
@@ -680,7 +680,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "f59377a800293887fcaf3304ed4d33e70870082a",
+            "90dd40ded8fd055a4aac3b8fe1bbf35240595d52",
             null,
             null
          ]
@@ -3472,5 +3472,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0034; formattedtext 1.00"
 }
