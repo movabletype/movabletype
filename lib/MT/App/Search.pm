@@ -1001,8 +1001,8 @@ sub query_parse {
         foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
-                $search .= " $type:$filter";
             }
+            $search .= " $type:$filter";
         }
     }
 
