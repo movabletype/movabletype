@@ -1462,11 +1462,31 @@ sub _hdlr_content_calendar {
     else {
         $prefix = $today;
     }
-    my ( $cat_name, $cat );
+    my ( $cat_name, $cat, $category_set_id, @cat_field_ids );
+    my $cat_set_name = '';
+    if ( defined $args->{category_set} ) {
+        my $category_set;
+        my $id            = $args->{category_set};
+        my $cat_set_class = MT->model('category_set');
+        $category_set = $cat_set_class->load($id) if $id =~ m/^\d+$/;
+        $category_set = $cat_set_class->load( { unique_id => $id } )
+            unless $category_set;
+        $category_set = $cat_set_class->load( { name => $id } )
+            unless $category_set;
+        if ($category_set) {
+            $cat_set_name    = $category_set->name;
+            $category_set_id = $category_set->id;
+            my @cat_fields = MT->model('cf')->load(
+                {   blog_id            => $blog_id,
+                    related_cat_set_id => $category_set_id
+                }
+            );
+            @cat_field_ids = map { $_->id } @cat_fields;
+        }
+    }
     if ( defined $args->{category} ) {
         $cat_name = $args->{category};
-        my $category_set_id = $args->{category_set_id};
-        $cat = MT::Category->load(
+        $cat      = MT::Category->load(
             {   label   => $cat_name,
                 blog_id => $blog_id,
                 $category_set_id
@@ -1486,12 +1506,19 @@ sub _hdlr_content_calendar {
     unless ($calendar_cache) {
         $r->cache( 'content_calendar', $calendar_cache = {} );
     }
-    if ( exists $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }
-        && $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }{'uc'} eq
-        $uncompiled )
+    if (exists $calendar_cache->{ $blog_id . ":"
+                . $prefix
+                . $cat_name
+                . $cat_set_name }
+        && $calendar_cache->{ $blog_id . ":"
+                . $prefix
+                . $cat_name
+                . $cat_set_name }{'uc'} eq $uncompiled )
     {
-        return $calendar_cache->{ $blog_id . ":" . $prefix . $cat_name }
-            {output};
+        return $calendar_cache->{ $blog_id . ":"
+                . $prefix
+                . $cat_name
+                . $cat_set_name }{output};
     }
     $today .= sprintf "%02d", $ts[3];
     my ( $start, $end ) = MT::Util::start_end_month($prefix);
@@ -1533,16 +1560,34 @@ sub _hdlr_content_calendar {
     my $cd_args  = {};
     $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
         or return;
-    $cd_args->{join} = MT::ContentFieldIndex->join_on(
-        'content_data_id',
-        {   content_field_id => $dt_field_id,
-            value_datetime   => [ $start, $end ]
-        },
-        {   range_incl => { 'value_datetime' => 1 },
-            'sort'     => 'value_datetime',
-            direction  => 'ascend'
-        }
-    ) if $dt_field_id;
+    if ($dt_field_id) {
+        my $join = MT::ContentFieldIndex->join_on(
+            'content_data_id',
+            [   { content_field_id => $dt_field_id },
+                '-and',
+                [   { value_datetime => { op => '>=', value => $start } },
+                    '-and',
+                    { value_datetime => { op => '<=', value => $end } }
+                ],
+            ],
+            {   range_incl => { 'value_datetime' => 1 },
+                'sort'     => 'value_datetime',
+                direction  => 'ascend',
+                alias      => 'dt_cf_idx'
+            }
+        );
+        push @{ $cd_args->{joins} }, $join;
+    }
+    if (@cat_field_ids) {
+        my $join = MT::ContentFieldIndex->join_on(
+            'content_data_id',
+            {   content_field_id => [@cat_field_ids],
+                ( $cat ? ( value_integer => $cat->id ) : () ),
+            },
+            { alias => 'cat_cf_idx' }
+        );
+        push @{ $cd_args->{joins} }, $join;
+    }
     my $iter = MT::ContentData->load_iter(
         {   blog_id => $blog_id,
             ( !$dt_field_id ? ( $dt_field => [ $start, $end ] ) : () ),
@@ -1595,7 +1640,8 @@ sub _hdlr_content_calendar {
             }
             unless ( $no_loop || $iter_drained ) {
                 while ( my $cd = $iter->() ) {
-                    next unless !$cat || $cd->is_in_category($cat);
+
+                    #next unless !$cat || $cd->is_in_category($cat);
                     my $datetime = '';
                     if ($dt_field_id) {
                         $datetime = $cd->data->{$dt_field_id} || '';

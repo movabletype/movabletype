@@ -49,12 +49,44 @@ $test_env->prepare_fixture(
             name            => 'date and time',
             type            => 'date_and_time',
         );
+        my $category_set = MT::Test::Permission->make_category_set(
+            blog_id => $ct->blog_id,
+            name    => 'test category set',
+        );
+        my $cf_category = MT::Test::Permission->make_content_field(
+            blog_id            => $ct->blog_id,
+            content_type_id    => $ct->id,
+            name               => 'categories',
+            type               => 'categories',
+            related_cat_set_id => $category_set->id,
+        );
+        my $category1 = MT::Test::Permission->make_category(
+            blog_id         => $category_set->blog_id,
+            category_set_id => $category_set->id,
+            label           => 'category1',
+        );
+        my $category2 = MT::Test::Permission->make_category(
+            blog_id         => $category_set->blog_id,
+            category_set_id => $category_set->id,
+            label           => 'category2',
+        );
         my $fields = [
             {   id        => $cf_datetime->id,
                 order     => 1,
                 type      => $cf_datetime->type,
                 options   => { label => $cf_datetime->name },
                 unique_id => $cf_datetime->unique_id,
+            },
+            {   id      => $cf_category->id,
+                order   => 2,
+                type    => $cf_category->type,
+                options => {
+                    label        => $cf_category->name,
+                    category_set => $category_set->id,
+                    multiple     => 1,
+                    max          => 5,
+                    min          => 1,
+                },
             },
         ];
         $ct->fields($fields);
@@ -68,12 +100,14 @@ $test_env->prepare_fixture(
             blog_id         => $blog_id,
             content_type_id => $ct->id,
             authored_on     => '20170629000000',
+            data =>
+                { $cf_category->id => [ $category2->id, $category1->id ], },
         );
         my $cd3 = MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct->id,
             authored_on     => $next_month . '15000000',
-            data => { $cf_datetime->id => $this_month . '03180500', }
+            data => { $cf_datetime->id => $this_month . '03180500', },
         );
     }
 );
@@ -135,3 +169,40 @@ __END__
 <mt:CalendarIfContents><mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
 --- expected
 3
+
+
+=== MT::ContentCalendar with category_set
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
