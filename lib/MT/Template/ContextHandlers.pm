@@ -25,11 +25,11 @@ sub core_tags {
         block => {
 
             ## Core
-            Ignore    => sub {''},
-            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore         => sub {''},
+            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -911,7 +911,7 @@ sub core_tags {
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
             CommentRank => sub {''},
-            PingRank => sub {''},
+            PingRank    => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
@@ -989,6 +989,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
             ContentIdentifier =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_identifier',
+            ContentLabel =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_label',
             ContentPermalink =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_permalink',
             ContentSiteDescription =>
