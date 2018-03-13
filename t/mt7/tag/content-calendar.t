@@ -35,10 +35,30 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
+        my @ts = MT::Util::offset_time_list( time, $blog_id );
+        my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+        my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+
         my $ct = MT::Test::Permission->make_content_type(
             name    => 'test content data',
             blog_id => $blog_id,
         );
+        my $cf_datetime = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'date and time',
+            type            => 'date_and_time',
+        );
+        my $fields = [
+            {   id        => $cf_datetime->id,
+                order     => 1,
+                type      => $cf_datetime->type,
+                options   => { label => $cf_datetime->name },
+                unique_id => $cf_datetime->unique_id,
+            },
+        ];
+        $ct->fields($fields);
+        $ct->save or die $ct->errstr;
         my $cd1 = MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct->id,
@@ -48,6 +68,12 @@ $test_env->prepare_fixture(
             blog_id         => $blog_id,
             content_type_id => $ct->id,
             authored_on     => '20170629000000',
+        );
+        my $cd3 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            authored_on     => $next_month . '15000000',
+            data => { $cf_datetime->id => $this_month . '03180500', }
         );
     }
 );
@@ -95,3 +121,17 @@ __END__
 30
 
 
+=== MT::ContentCalendar with month="next"
+--- template
+<mt:ContentCalendar month="next" content_type="test content data">
+<mt:CalendarIfContents><mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+15
+
+
+=== MT::ContentCalendar with date_field
+--- template
+<mt:ContentCalendar date_field="date and time" content_type="test content data">
+<mt:CalendarIfContents><mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+3
