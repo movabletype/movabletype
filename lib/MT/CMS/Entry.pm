@@ -1593,7 +1593,7 @@ sub save_entries {
 
     my $perms = $app->permissions
         or $app->permission_denied();
-    my $type    = $app->param('_type');
+    my $type    = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;

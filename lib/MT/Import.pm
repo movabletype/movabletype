@@ -251,6 +251,7 @@ sub get_options_html {
         $tmpl->param($param) if $param;
     }
     my $html = $tmpl->output();
+    $html = '' unless defined $html;
     if ( $html =~ m/<(_|MT)_TRANS /i ) {
         if ( my $c = $importer->{plugin} ) {
             $html = $c->translate_templatized($html);
