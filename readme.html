@@ -5,7 +5,7 @@
     <title>Movable Type Read Me</title>
     <style type="text/css">html{background-color:#f3f3f3}body{line-height:1.618;color:#2b2b2b;font-family:'Helvatica Neue',Helvatica,Arial,sans-serif;font-size:14px}a{color:#507ea4;outline:0}a:hover,a:active{color:#839b5c;text-decoration:none}h1,h2,h3,h4,h5,h6{margin-top:2em;color:#000}li{margin:.618em 0}.nav{position:absolute;top:0;left:0;width:100%;padding:0 1.618em}.nav li{display:inline;margin:0}.nav li:after{content:'\007C';margin:0 0 0 .3em}.nav li:last-child:after{display:none;}#container{position:relative;width:750px;margin:1.618em auto;padding:.618em 1.618em;border:1px solid #c0c6c9;background-color:#fff;border-radius:3px}#logo{margin:2.5em 0 1.62em;text-align:center}</style>
     <script type="text/javascript">
-      var languages = new Array('de', 'en', 'es', 'fr', 'ja', 'nl');
+      var languages = new Array('de', 'en', 'es', 'fr', 'ja', 'nl', 'ru');
       function swapLanguage(lang) {
           for(var i = 0; i < languages.length; i++) {
               var d = document.getElementById(languages[i]);
@@ -40,6 +40,7 @@
         <li><a href="#" onclick="swapLanguage('fr');">Français</a></li>
         <li><a href="#" onclick="swapLanguage('ja');">日本語</a></li>
         <li><a href="#" onclick="swapLanguage('nl');">Nederlands</a></li>
+        <li><a href="#" onclick="swapLanguage('ru');">Русский</a></li>
       </ul>
       <div id="en"><!-- Start English -->
         <p class="intro">Thank you for choosing Movable Type, the premiere solution for your blogging and website management needs. This file will explain how to get up and running; click on the highlighted sections for more information on that subject.</p>
@@ -300,6 +301,59 @@
         <h3>Meer hulp nodig?</h3>
         <p>Bijkomende antwoorden of ondersteuning nodig? Kijk in de <a href="http://www.movabletype.org/documentation/installation/">gedetailleerde installatiegids</a>.</p>
       </div><!-- End Dutch -->
+
+      <div id="ru" style="display: none;"><!-- Start Russian -->
+        <h1>Добро пожаловать в Movable Type</h1>
+        <p>Спасибо, что выбрали Movable Type — лучший инструмент для блогинга. Из этого файла вы узнаете, как установить и запустить платформу. Для получения дополнительной информации перейдите по необходимым ссылкам.</p>
+
+        <h2>Прежде, чем начать</h2>
+        <p>Для работы с Movable Type необходимы следующие приложения:</p>
+        <ul>
+          <li><p>Perl 5.6.1 или выше;</p></li>
+          <li><p>Веб-сервер Apache или Windows IIS;</p></li>
+          <li><p>Доступ к базе данных MySQL, SQLite или Postgres;</p></li>
+          <li><p>И следующие модули Perl:</p>
+          <li>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+          </li>
+        </ul>  
+        <p><em>Скорее всего, вам не придётся самостоятельно устанавливать модули Perl, так как на большинстве серверов они уже установлены. В случае необходимости ознакомьтесь с документацией:<br />
+        &nbsp;— <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">Как узнать список установленных модулей</a>;<br />
+        &nbsp;— <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">Как устанавливать модули Perl</a>.</em></p>
+
+        <h2>Обновление Movable Type</h2>
+        <p>Если вы обновляете Movable Type до 4&ndash;й версии, мы рекомендуем сначала сделать резервную копию базы данных и всех файлов. После этого загрузите файлы Movable Type 4 поверх предыдущей инсталляции. А затем откройте Movable Type в браузере, как при обычной работе, процесс обновления запустится автоматически.</p>
+
+        <h2>Установка Movable Type</h2>
+        <p>Прежде чем приступить к установке:</p>
+        <ol>
+          <li>Загрузите на сервер все файлы Movable Type, кроме папки «mt-static». Файлы должны быть загружены в папку «cgi-bin», в которой разрешено выполнение CGI скриптов. Например, вот как может выглядеть стандартная установка: <tt>http://example.com/cgi-bin/mt/</tt>.</li>
+          <li>Папку «mt-static» необходимо загрузить в корневую директорию вашего сайта, чтобы доступ к ней был следующего вида: <tt>http://example.com/mt-static/</tt>.</li>
+          <li>На все .cgi файлы (например, mt.cgi, mt-search.cgi, и т.д.), находящиеся в директории Movable Type, необходимо выставить права доступа (CHMOD) 755.</li>
+          <li>Откройте Movable Type в браузере. Например, адрес может выглядеть так: <tt>http://moi-sait.ru/cgi-bin/mt/mt.cgi</tt>.
+          <li>Автоматически запустится инсталлятор. Следуйте инструкциям установки.</li>
+        </ol>
+
+        <h2>Решение проблем</h2>
+        <h3>Настройка пути к статическим файлам</h3>
+        <p>На некоторых веб-серверах не разрешён доступ к статическим файла (изображения, таблицы стилей, javascript) в папке cgi-bin, поэтому-то и необходимо разместить папку mt-static в корневой директории сайта. Если вы разместили папку mt-static в одной директории со скриптами Movable Type, просто переместите её в корневую директорию. Более подробная информация о <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">папке mt-static</a>.</p>
+
+        <h3>Internal Server Errors (500&ndash;я ошибка)</h3>
+        <p>Чаще всего такая ошибка возникает, когда неправильно выставлены права на CGI скрипты. Для них необходимо установить права доступа 755. Но иногда такая ошибка возникает в ряде других случаев. Пожалуйста, ознакомьтесь с более подробной информацией по этой теме <a href="http://www.movabletype.org/documentation/install/">инсталляционном гиде</a> или в <a href="http://www.sixapart.com/movabletype/kb/">базе знаний</a> (вся документация на английском языке).</p>
+
+        <h3>Дополнительная информация</h3>
+        <p>Для получения дополнительной информации по установке Movable Type, ознакомьтесь с <a href="http://www.movabletype.org/documentation/installation/">инсталляционным гидом</a>.</p>
+        <h3>Полезные ссылки</h3>
+        <ul>
+          <li><p><a href="http://movable-type.ru/">Блог о Movable Type</a></p></li>
+          <li><p><a href="http://movable-type.ru/forums/">Русскоязычный форум</a></p></li>
+          <li><a href="http://groups.google.com/group/movable-type">Группа Movable Type в Google</a></li>
+        </ul>
+      </div><!-- End Russian -->
 
     </div>
   </body>

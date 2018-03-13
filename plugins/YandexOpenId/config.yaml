@@ -1,0 +1,18 @@
+name: 'Яндекс.OpenID'
+id: YandexId
+key: YandexId
+description: 'Авторизация комментаторов через Яндекс.'
+version: 1.11
+author_name: 'Andrey Serebryakov'
+author_link: 'http://blogstudio.ru/'
+plugin_link: 'http://code.google.com/p/mt-plugins/wiki/YandexOpenId'
+commenter_authenticators:
+    Yandex:
+        label: 'Yandex'
+        class: 'MT::Auth::Yandex'
+        login_form_params: $YandexId::MT::Auth::Yandex::commenter_auth_params
+        condition: $YandexId::MT::Auth::Yandex::openid_commenter_condition
+        logo: 'plugins/YandexOpenId/images/yandex.png'
+        logo_small: 'plugins/YandexOpenId/images/yandex_logo.png'
+        login_form: 'tmpl/auth_yandex.tmpl'
+

@@ -467,6 +467,9 @@ sub format_ts {
         if ( $lang eq 'ja' ) {
             $f{a} = substr $L->[0][ $f{w} ] || '', 0, 1;
         }
+        elsif ( $lang eq 'ru' ) {
+            $f{a} = $Languages{'ru_short'}->[0][ $f{w} || '' ];
+        }
         else {
             $f{a} = substr_wref $L->[0][ $f{w} ] || '', 0, 3;
         }
@@ -1145,6 +1148,72 @@ sub xliterate_utf8 {
         "\xc5\xbc" => 'z',     # latin small letter z with dot above
         "\xc5\xb9" => 'Z',     # latin capital letter z with acute
         "\xc5\xba" => 'z',     # latin small letter z with acute
+        "\xd0\x90" => 'A',     # cyrillic capital letter A
+        "\xd0\x91" => 'B',     # cyrillic capital letter BE
+        "\xd0\x92" => 'V',     # cyrillic capital letter VE
+        "\xd0\x93" => 'G',     # cyrillic capital letter GHE
+        "\xd0\x94" => 'D',     # cyrillic capital letter DE
+        "\xd0\x95" => 'E',     # cyrillic capital letter IE
+        "\xd0\x81" => 'E',     # cyrillic capital letter IO
+        "\xd0\x96" => 'Zh',    # cyrillic capital letter ZHE 
+        "\xd0\x97" => 'Z',     # cyrillic capital letter ZE
+        "\xd0\x98" => 'I',     # cyrillic capital letter I
+        "\xd0\x99" => 'Y',     # cyrillic capital letter SHORT I
+        "\xd0\x9a" => 'K',     # cyrillic capital letter KA
+        "\xd0\x9b" => 'L',     # cyrillic capital letter EL
+        "\xd0\x9c" => 'M',     # cyrillic capital letter EM
+        "\xd0\x9d" => 'N',     # cyrillic capital letter EN
+        "\xd0\x9e" => 'O',     # cyrillic capital letter O
+        "\xd0\x9f" => 'P',     # cyrillic capital letter PE
+        "\xd0\xa0" => 'R',     # cyrillic capital letter ER
+        "\xd0\xa1" => 'S',     # cyrillic capital letter ES
+        "\xd0\xa2" => 'T',     # cyrillic capital letter TE
+        "\xd0\xa3" => 'U',     # cyrillic capital letter U
+        "\xd0\xa4" => 'F',     # cyrillic capital letter EF
+        "\xd0\xa5" => 'H',     # cyrillic capital letter HA
+        "\xd0\xa6" => 'C',     # cyrillic capital letter TSE
+        "\xd0\xa7" => 'Ch',    # cyrillic capital letter CHE
+        "\xd0\xa8" => 'Sh',    # cyrillic capital letter SHA
+        "\xd0\xa9" => 'Sch',   # cyrillic capital letter SHCHA
+        "\xd0\xaa" => '_',     # cyrillic capital letter HARD SIGN
+        "\xd0\xab" => 'Y',     # cyrillic capital letter YERU
+        "\xd0\xac" => '_',     # cyrillic capital letter SOFT SIGN
+        "\xd0\xad" => 'E',     # cyrillic capital letter E
+        "\xd0\xae" => 'Yu',    # cyrillic captial letter JU
+        "\xd0\xaf" => 'Ya',    # cyrillic capital letter YA
+        "\xd0\xb0" => 'a',     # cyrillic small letter A
+        "\xd0\xb1" => 'b',     # cyrillic small letter BE
+        "\xd0\xb2" => 'v',     # cyrillic small letter VE
+        "\xd0\xb3" => 'g',     # cyrillic small letter GHE
+        "\xd0\xb4" => 'd',     # cyrillic small letter DE
+        "\xd0\xb5" => 'e',     # cyrillic small letter IE
+        "\xd1\x91" => 'e',     # cyrillic small letter IO
+        "\xd0\xb6" => 'zh',    # cyrillic small letter ZHE
+        "\xd0\xb7" => 'z',     # cyrillic small letter ZE
+        "\xd0\xb8" => 'i',     # cyrillic small letter I
+        "\xd0\xb9" => 'y',     # cyrillic small letter SHORT I
+        "\xd0\xba" => 'k',     # cyrillic small letter KA
+        "\xd0\xbb" => 'l',     # cyrillic small letter EL
+        "\xd0\xbc" => 'm',     # cyrillic small letter EM
+        "\xd0\xbd" => 'n',     # cyrillic small letter EN
+        "\xd0\xbe" => 'o',     # cyrillic small letter O
+        "\xd0\xbf" => 'p',     # cyrillic small letter PE
+        "\xd1\x80" => 'r',     # cyrillic small letter ER
+        "\xd1\x81" => 's',     # cyrillic small letter ES
+        "\xd1\x82" => 't',     # cyrillic small letter TE
+        "\xd1\x83" => 'u',     # cyrillic small letter U
+        "\xd1\x84" => 'f',     # cyrillic small letter EF
+        "\xd1\x85" => 'h',     # cyrillic small letter HA
+        "\xd1\x86" => 'c',     # cyrillic small letter TSE
+        "\xd1\x87" => 'ch',    # cyrillic small letter CHE
+        "\xd1\x88" => 'sh',    # cyrillic small letter SHA
+        "\xd1\x89" => 'sch',   # cyrillic small letter SHCHA
+        "\xd1\x8a" => '_',     # cyrillic small letter HARD SIGN
+        "\xd1\x8b" => 'y',     # cyrillic small letter YERU
+        "\xd1\x8c" => '_',     # cyrillic small letter SOFT SIGN
+        "\xd1\x8d" => 'e',     # cyrillic small letter E
+        "\xd1\x8e" => 'yu',    # cyrillic small letter YU
+        "\xd1\x8f" => 'ya',    # cyrillic small letter YA
     );
 
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
@@ -1892,6 +1961,20 @@ sub mark_odd_rows {
         "%e. %B %Y",
         "%H:%M",
     ],
+
+    'ru' => [
+        [ ('Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+           'Четверг', 'Пятница', 'Суббота') ],
+        [ ('Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль',
+              'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь') ],
+        [ qw( AM PM ) ],
+        "%d.%m.%Y %H:%M",
+        "%d.%m.%Y",
+        "%H:%M",
+      ],
+    'ru_short' => [
+        [ ('Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб') ],
+      ],
 );
 
 $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};

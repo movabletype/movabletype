@@ -25,9 +25,13 @@
   <mt:if name="author_name_length">
     <ul id="footer-nav" class="inline-nav">
       <li><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
+      <mt:if name="local_lang_id" eq="ru">
+        <li><a href="http://movable-type.ru/">MT.ru</a></li>
+        <li><a href="http://movable-type.ru/forums/">Форум</a></li>
+      </mt:If>
       <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
       <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
-      <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
+      <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a><mt:if name="local_lang_id" eq="ru"> и <a href="http://movable-type.ru/wiki/">на русском</a></mt:If></li>
       <li><a href="<mt:var name="mt_support">"><__trans phrase="Support"></a></li>
       <li><a href="<__trans phrase="http://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
       <li><a href="<mt:var name="mt_feedback_url">"><__trans phrase="Send Us Feedback"></a></li>

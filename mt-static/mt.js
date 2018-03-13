@@ -973,7 +973,73 @@ var dirify_table = {
     "\u017B": 'Z',    // latin capital letter z with dot above
     "\u017C": 'z',    // latin small letter z with dot above
     "\u0179": 'Z',    // latin capital letter z with acute
-    "\u017A": 'z'     // latin small letter z with acute
+    "\u017A": 'z',     // latin small letter z with acute
+    "\u0410": 'A',    // cyrillic captial letter A 
+    "\u0411": 'B',    // cyrillic capital letter BE 
+    "\u0412": 'V',    // cyrillic capital letter VE
+    "\u0413": 'G',    // cyrillic capital letter GHE
+    "\u0414": 'D',    // cyrillic capital letter DE
+    "\u0415": 'E',    // cyrillic capital letter IE
+    "\u0401": 'E',   // cyrillic captial letter IO
+    "\u0416": 'Zh',   // cyrillic capital letter ZHE
+    "\u0417": 'Z',    // cyrillic capital letter ZE
+    "\u0418": 'I',    // cyrillic capital letter I 
+    "\u0419": 'Y',    // cyrillic capital letter SHORT I
+    "\u041A": 'K',    // cyrillic capital letter KA 
+    "\u041B": 'L',    // cyrillic capital letter EL 
+    "\u041C": 'M',    // cyrillic capital letter EM
+    "\u041D": 'N',    // cyrillic capital letter EN
+    "\u041E": 'O',    // cyrillic capital letter O
+    "\u041F": 'P',    // cyrillic capital letter PE 
+    "\u0420": 'R',    // cyrillic capital letter ER
+    "\u0421": 'S',    // cyrillic capital letter ES
+    "\u0422": 'T',    // cyrillic capital letter TE
+    "\u0423": 'U',    // cyrillic capital letter U
+    "\u0424": 'F',    // cyrillic capital letter EF 
+    "\u0425": 'H',    // cyrillic capital letter HA
+    "\u0426": 'C',    // cyrillic capital letter TSE
+    "\u0427": 'Ch',   // cyrillic capital letter CHE
+    "\u0428": 'Sh',   // cyrillic capital letter SHA
+    "\u0429": 'Shh',  // cyrillic capital letter SHCHA
+    "\u042A": '_',    // cyrillic capital letter HARD SIGN
+    "\u042B": 'Y',    // cyrillic capital letter YERU
+    "\u042C": '_',    // cyrillic capital letter SOFT SIGN
+    "\u042D": 'E',    // cyrillic capital letter E
+    "\u042E": 'Yu',   // cyrillic capital letter YU
+    "\u042F": 'Ya',   // cyrillic capital letter YA
+    "\u0430": 'a',    // cyrillic small letter A 
+    "\u0431": 'b',    // cyrillic small letter BE 
+    "\u0432": 'v',    // cyrillic small letter VE 
+    "\u0433": 'g',    // cyrillic small letter GHE 
+    "\u0434": 'd',    // cyrillic small letter DE 
+    "\u0435": 'e',    // cyrillic small letter IE
+    "\u0451": 'e',    // cyrillic small letter IO
+    "\u0436": 'zh',   // cyrillic small letter ZHE 
+    "\u0437": 'z',    // cyrillic small letter ZE 
+    "\u0438": 'i',    // cyrillic small letter I 
+    "\u0439": 'y',    // cyrillic small letter SHORT I 
+    "\u043A": 'k',    // cyrillic small letter KA 
+    "\u043B": 'l',    // cyrillic small letter EL 
+    "\u043C": 'm',    // cyrillic small letter EM 
+    "\u043D": 'n',    // cyrillic small letter EN 
+    "\u043E": 'o',    // cyrillic small letter O 
+    "\u043F": 'p',    // cyrillic small letter PE 
+    "\u0440": 'r',    // cyrillic small letter ER 
+    "\u0441": 's',    // cyrillic small letter ES 
+    "\u0442": 't',    // cyrillic small letter TE 
+    "\u0443": 'u',    // cyrillic small letter U 
+    "\u0444": 'f',    // cyrillic small letter EF 
+    "\u0445": 'h',    // cyrillic small letter HA 
+    "\u0446": 'c',    // cyrillic small letter TSE 
+    "\u0447": 'ch',   // cyrillic small letter CHE 
+    "\u0448": 'sh',   // cyrillic small letter SHA 
+    "\u0449": 'shh',  // cyrillic small letter SHCHA 
+    "\u044A": '_',    // cyrillic small letter HARD SIGN 
+    "\u044B": 'y',    // cyrillic small letter YERU 
+    "\u044C": '_',    // cyrillic small letter SOFT SIGN 
+    "\u044D": 'e',    // cyrillic small letter E 
+    "\u044E": 'yu',    // cyrillic small letter YU 
+    "\u044F": 'ya'   // cyrillic small letter YA 
 };
 
 function dirify (s) {

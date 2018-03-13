@@ -1,0 +1,16 @@
+name: 'Update Pings RU'
+id: UpdatePingsRU
+key: UpdatePingsRU
+author_link: http://blogstudio.ru/
+author_name: Andrey Serebryakov
+version: 1.0
+description: Отправка уведомлений о появлении записей на популярные сервисы
+plugin_link: http://code.google.com/p/mt-plugins/wiki/UpdatePingsRU
+
+ping_servers:
+    yandexblogs:
+        label: 'Яндекс.Блоги'
+        url: http://ping.blogs.yandex.ru/RPC2
+    pingomatic:
+        label: 'Ping-O-Matic (пингует 21 сервис автоматически)'
+        url: http://rpc.pingomatic.com/

@@ -67,7 +67,7 @@ if ( opendir DH, $addon_path ) {
 
 $js .= `cat $_` foreach @files;
 
-foreach my $lang (qw(ja de nl fr es)) {
+foreach my $lang (qw(ja de nl fr es ru)) {
     eval 'require MT::L10N::' . $lang
         or die "failed to find package MT::L10N::$lang";
 

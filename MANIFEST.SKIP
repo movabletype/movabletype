@@ -166,6 +166,25 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^addons/AWS.pack
 
 #?language=ja ^plugins/zemanta
+#?language=ru ^plugins/zemanta
+#?language=de ^plugins/YandexOpenId
+#?language=de ^mt-static/plugins/YandexOpenId
+#?language=de ^plugins/UpdatePingsRU
+#?language=en_us ^plugins/YandexOpenId
+#?language=en_us ^mt-static/plugins/YandexOpenId
+#?language=en_us ^plugins/UpdatePingsRU
+#?language=es ^plugins/YandexOpenId
+#?language=es ^mt-static/plugins/YandexOpenId
+#?language=es ^plugins/UpdatePingsRU
+#?language=fr ^plugins/YandexOpenId
+#?language=fr ^mt-static/plugins/YandexOpenId
+#?language=fr ^plugins/UpdatePingsRU
+#?language=ja ^plugins/YandexOpenId
+#?language=ja ^mt-static/plugins/YandexOpenId
+#?language=ja ^plugins/UpdatePingsRU
+#?language=nl ^plugins/YandexOpenId
+#?language=nl ^mt-static/plugins/YandexOpenId
+#?language=nl ^plugins/UpdatePingsRU
 
 ^schemas
 \bknown-issues
@@ -271,6 +290,7 @@ index\.html\..*
 readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
+^ru-filter.pl$
 ^exports/
 
 ^mt-static/plugins/Motion

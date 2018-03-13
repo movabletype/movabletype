@@ -222,6 +222,27 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Select the language in which you would like dates on your blog displayed.'
         => '',
     'Language for date display:' => '',
+<<<<<<< HEAD
+    'Czech' => '',
+    'Danish' => '',
+    'Dutch' => '',
+    'English' => '',
+    'French' => '',
+    'German' => '',
+    'Icelandic' => '',
+    'Japanese' => '',
+    'Italian' => '',
+    'Norwegian' => '',
+    'Polish' => '',
+    'Portuguese' => '',
+    'Russian' => '',
+    'Slovak' => '',
+    'Slovenian' => '',
+    'Spanish' => '',
+    'Suomi' => '',
+    'Swedish' => '',
+    'Select whether you want your posts displayed in ascending (oldest at top) or descending (newest at top) order.' => '',
+=======
     'Czech'                      => '',
     'Danish'                     => '',
     'Dutch'                      => '',
@@ -241,6 +262,7 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Swedish'                    => '',
     'Select whether you want your posts displayed in ascending (oldest at top) or descending (newest at top) order.'
         => '',
+>>>>>>> mt6.1
     'Order of entries displayed:' => '',
     'Ascending'                   => '',
     'Descending'                  => '',
