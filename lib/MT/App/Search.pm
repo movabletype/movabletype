@@ -1052,12 +1052,12 @@ sub _query_parse_core {
         $val =~ s/%/\\%/;
 
         my %rvalues = (
-            REQUIREDlike   => { like     => '%' . $val . '%' },
+            REQUIREDlike   => { like => '%' . $val . '%' },
             REQUIRED1      => $val,
-            NORMALlike     => { like     => '%' . $val . '%' },
+            NORMALlike     => { like => '%' . $val . '%' },
             NORMAL1        => $val,
             PROHIBITEDlike => { not_like => '%' . $val . '%' },
-            PROHIBITED1    => { not      => $val }
+            PROHIBITED1    => { not => $val }
         );
         $rvalues{ $_[0] };
     };
