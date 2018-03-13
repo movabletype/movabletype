@@ -1601,7 +1601,7 @@ sub _hdlr_if {
             $key   = $args->{key}   if exists $args->{key};
         }
 
-        $value = $ctx->var($var) || '';
+        $value = defined $ctx->var($var) ? $ctx->var($var) : '';
 
         if ( ref($value) ) {
             if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
