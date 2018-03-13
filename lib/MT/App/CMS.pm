@@ -4086,9 +4086,9 @@ sub add_to_favorite_websites {
 }
 
 sub _entry_prefs_from_params {
-    my $app      = shift;
-    my ($prefix) = @_;
-    my $disp     = $app->param('entry_prefs') || '';
+    my $app    = shift;
+    my $prefix = shift || '';
+    my $disp   = $app->param('entry_prefs') || '';
     my @fields;
     if ( lc $disp eq 'custom' ) {
         @fields = split /,/, $app->param( $prefix . 'custom_prefs' ) || '';

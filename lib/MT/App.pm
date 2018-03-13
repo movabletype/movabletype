@@ -849,7 +849,7 @@ sub response_content {
 
 sub set_x_frame_options_header {
     my $app             = shift;
-    my $x_frame_options = $app->config->XFrameOptions;
+    my $x_frame_options = $app->config->XFrameOptions || '';
 
     # If set as NONE MT should not output X-Frame-Options header.
     return if lc $x_frame_options eq 'none';
@@ -4207,7 +4207,7 @@ sub mt_path {
         = $app->{is_admin}
         ? ( $cfg->AdminCGIPath || $cfg->CGIPath )
         : $cfg->CGIPath;
-    if ( $path =~ m!^https?://[^/]+(/?.*)$!i ) {
+    if ( $path && $path =~ m!^https?://[^/]+(/?.*)$!i ) {
         $path = $1;
     }
     elsif ( !$path ) {
