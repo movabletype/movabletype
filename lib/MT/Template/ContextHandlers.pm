@@ -985,6 +985,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_date',
             ContentModifiedDate =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_date',
+            ContentEditLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_edit_link',
             ContentID =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
             ContentIdentifier =>
