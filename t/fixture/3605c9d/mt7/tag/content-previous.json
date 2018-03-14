@@ -462,16 +462,16 @@
             "1",
             null,
             "__NOW__",
-            "e6e590e544149d76cedb1eee3803c979782152e1",
+            "fc5d121bec9bc92238f3c4b0113c3e471f4a5e69",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20180308180500",
             "1",
-            "b8f6b902aacad420e7e2d05a70353d624b305621",
+            "6e63147d1874562be139fbf10f2aff92b3c1048b",
             null,
             null,
             "2017-06-01 19:30:00",
             "2",
-            "b8f6b902aacad420e7e2d05a70353d624b305621",
+            "6e63147d1874562be139fbf10f2aff92b3c1048b",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -483,16 +483,16 @@
             "1",
             null,
             "__NOW__",
-            "e6e590e544149d76cedb1eee3803c979782152e1",
+            "fc5d121bec9bc92238f3c4b0113c3e471f4a5e69",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20180307180500",
             "2",
-            "a7be61c14d3933ac4efec6ad67026bef5d8edcd5",
+            "3e91fb58b281437675521c5a5a95cbea47ff8bc6",
             null,
             null,
             "2017-05-31 19:30:00",
             "2",
-            "a7be61c14d3933ac4efec6ad67026bef5d8edcd5",
+            "3e91fb58b281437675521c5a5a95cbea47ff8bc6",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -504,16 +504,16 @@
             "1",
             null,
             "__NOW__",
-            "e6e590e544149d76cedb1eee3803c979782152e1",
+            "fc5d121bec9bc92238f3c4b0113c3e471f4a5e69",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20180306180500",
             "3",
-            "c010ce5f6cb5f41bbbab773c22353346fadcc5b1",
+            "3e5fa965ca43b599385759375244d0781a0cac06",
             null,
             null,
             "2017-05-30 19:30:00",
             "2",
-            "c010ce5f6cb5f41bbbab773c22353346fadcc5b1",
+            "3e5fa965ca43b599385759375244d0781a0cac06",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -553,7 +553,7 @@
             null,
             null,
             "categories",
-            "4ec1d6d2fd9707d9f210f521bd9fb3b45207a501"
+            "29224c1869fe85d7a3374985ebad1775181785f2"
          ],
          [
             "1",
@@ -570,7 +570,7 @@
             null,
             null,
             "date_and_time",
-            "76d5cdb8c43754775d1c33cebe1a01fa3a5b599d"
+            "269d6fed3347ef352ba36d6919fbc77cb058476c"
          ]
       ]
    },
@@ -589,6 +589,7 @@
          "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
+         "cf_idx_value_text",
          "cf_idx_value_varchar"
       ],
       "rows" : [
@@ -606,6 +607,7 @@
             null,
             null,
             "1",
+            null,
             null
          ],
          [
@@ -622,6 +624,7 @@
             null,
             null,
             "201810",
+            null,
             null
          ],
          [
@@ -638,6 +641,7 @@
             null,
             null,
             "2",
+            null,
             null
          ],
          [
@@ -654,6 +658,7 @@
             null,
             null,
             "201810",
+            null,
             null
          ],
          [
@@ -670,6 +675,7 @@
             null,
             null,
             "1",
+            null,
             null
          ],
          [
@@ -686,6 +692,7 @@
             null,
             null,
             "201810",
+            null,
             null
          ]
       ]
@@ -697,7 +704,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
             "1"
          ]
       ]
@@ -725,12 +732,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(4ec1d6d2fd9707d9f210f521bd9fb3b45207a501H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(76d5cdb8c43754775d1c33cebe1a01fa3a5b599d",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(29224c1869fe85d7a3374985ebad1775181785f2H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(269d6fed3347ef352ba36d6919fbc77cb058476c",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "e6e590e544149d76cedb1eee3803c979782152e1",
+            "fc5d121bec9bc92238f3c4b0113c3e471f4a5e69",
             null,
             null
          ]
@@ -1120,5 +1127,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
 }

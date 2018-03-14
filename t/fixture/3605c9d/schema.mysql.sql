@@ -1,6 +1,6 @@
 -- 
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Thu Mar  8 18:48:33 2018
+-- Created on Wed Mar 14 03:57:36 2018
 -- 
 SET foreign_key_checks=0;
 
@@ -541,7 +541,8 @@ CREATE TABLE `mt_cf_idx` (
   `cf_idx_value_double` double(8, 2) NULL DEFAULT NULL,
   `cf_idx_value_float` float NULL DEFAULT NULL,
   `cf_idx_value_integer` integer(11) NULL DEFAULT NULL,
-  `cf_idx_value_varchar` varchar(255) NULL DEFAULT NULL,
+  `cf_idx_value_text` mediumtext NULL,
+  `cf_idx_value_varchar` varchar(1024) NULL DEFAULT NULL,
   INDEX `mt_cf_idx_value_datetime` (`cf_idx_value_datetime`),
   INDEX `mt_cf_idx_value_double` (`cf_idx_value_double`),
   INDEX `mt_cf_idx_value_float` (`cf_idx_value_float`),

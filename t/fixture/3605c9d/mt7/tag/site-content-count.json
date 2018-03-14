@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             "0",
             null,
             "1",
-            "16a60c783d7b3db5939e1001aa1f8316cbdb9de7",
+            "3a51c70db6ef63cac4f57e5a0bc75113a110d427",
             null,
             null,
             "__NOW__",
             "2",
-            "16a60c783d7b3db5939e1001aa1f8316cbdb9de7",
+            "3a51c70db6ef63cac4f57e5a0bc75113a110d427",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -369,16 +369,16 @@
             "1",
             null,
             "__NOW__",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             "0",
             null,
             "2",
-            "f02fac05a3f421afa4ad616c753df5e3f40352af",
+            "a4cb78f69c4d5e186ac81b815709eb836ebb3306",
             null,
             null,
             "__NOW__",
             "2",
-            "f02fac05a3f421afa4ad616c753df5e3f40352af",
+            "a4cb78f69c4d5e186ac81b815709eb836ebb3306",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -390,16 +390,16 @@
             "1",
             null,
             "__NOW__",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             "0",
             null,
             "3",
-            "02b328bd562749bb5a4dc7afae11155193746a4b",
+            "b793eb250310e7685d0bcd0c1635d12e500c4955",
             null,
             null,
             "__NOW__",
             "2",
-            "02b328bd562749bb5a4dc7afae11155193746a4b",
+            "b793eb250310e7685d0bcd0c1635d12e500c4955",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -411,16 +411,16 @@
             "1",
             null,
             "__NOW__",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             "0",
             null,
             "4",
-            "0891d028e2b63594b146ae07e36b34974f3183a3",
+            "10b3aff5e03ad729f06728ed824a622a49fbeb6f",
             null,
             null,
             "__NOW__",
             "2",
-            "0891d028e2b63594b146ae07e36b34974f3183a3",
+            "10b3aff5e03ad729f06728ed824a622a49fbeb6f",
             "2017-05-31 16:36:00",
             "201722"
          ],
@@ -432,16 +432,16 @@
             "1",
             null,
             "__NOW__",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             "0",
             null,
             "5",
-            "3c23c5eea2423445357043c57b6c9779caa57aaa",
+            "7ca38522c87dc68c44d09cb5430adaa242b1b071",
             null,
             null,
             "__NOW__",
             "2",
-            "3c23c5eea2423445357043c57b6c9779caa57aaa",
+            "7ca38522c87dc68c44d09cb5430adaa242b1b071",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -454,7 +454,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
             "1"
          ]
       ]
@@ -487,7 +487,7 @@
             null,
             "__NOW__",
             "test content type 1",
-            "978aed25e33a822b5b245cd36f207ae29753f4e3",
+            "d720fbab1e1da680ddad7a3de94ca63203b8c1db",
             null,
             null
          ]
@@ -821,5 +821,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
 }
