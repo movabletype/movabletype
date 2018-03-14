@@ -4,19 +4,23 @@
 <mt:var name="setup_categories_css" value="1">
 <mt:setvarblock name="css_include" append="1">
 <style>
-.category-list li:not(:first-child) > span:first-child {
+.category-list li:not(:first-child) > a.primary {
+    text-decoration: none;
+}
+
+.category-list li:not(:first-child) > a.primary > span:first-child {
     display: none;
 }
 
-.category-list li:not(:first-child) > span:not(:first-child) {
+.category-list li:not(:first-child) > a.primary > span:not(:first-child) {
     display: inline-block;
 }
 
-.category-list li:not(:first-child):hover > span:first-child {
+.category-list li:not(:first-child):hover > a.primary > span:first-child {
     display: inline-block;
 }
 
-.category-list li:not(:first-child):hover > span:not(:first-child) {
+.category-list li:not(:first-child):hover > a.primary > span:not(:first-child) {
     display: none;
 }
 
@@ -105,13 +109,13 @@
                           </li>
                           [# } else { #]
                           <li mt:focus-hover="1" mt:id="[#= cat.id #]">
-                            <span>
-                              <mtapp:svgicon id="ic_fav" title="Primary" size="sm">
-                            </span>
-                            <span>
-                              <mtapp:svgicon id="ic_blank" title="Blank" size="sm">
-                            </span>
                             <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
+                              <span>
+                                <mtapp:svgicon id="ic_fav" title="Primary" size="sm">
+                              </span>
+                              <span>
+                                <mtapp:svgicon id="ic_blank" title="Blank" size="sm">
+                              </span>
                               [#= label #]
                             </a>
                             <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-inline-block" title="[#|h "Remove" #]">
