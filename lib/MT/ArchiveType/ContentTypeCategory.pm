@@ -187,14 +187,14 @@ sub archive_contents_count {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param, $content_type_id ) = @_;
+    my ( $ctx, $param, $content_type_id ) = @_;
 
     $content_type_id ||=
           $ctx->stash('template')
         ? $ctx->stash('template')->content_type_id
         : undef;
 
-    my $limit = $param{limit};
+    my $limit = $param->{limit};
     if ( $limit && ( $limit eq 'auto' ) ) {
         my $blog = $ctx->stash('blog');
         $limit = $blog->entries_on_index if $blog;

@@ -176,14 +176,14 @@ sub archive_group_iter {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param, $content_type_id ) = @_;
+    my ( $ctx, $param, $content_type_id ) = @_;
     my $ts
-        = $param{year}
+        = $param->{year}
         ? sprintf( "%04d%02d%02d000000",
-        $param{year}, $param{month}, $param{day} )
+        $param->{year}, $param->{month}, $param->{day} )
         : $ctx->stash('current_timestamp');
-    my $author = $param{author} || $ctx->stash('author');
-    my $limit = $param{limit};
+    my $author = $param->{author} || $ctx->stash('author');
+    my $limit = $param->{limit};
     $obj->dated_author_contents( $ctx, 'Author-Daily', $author, $ts, $limit,
         $content_type_id );
 }

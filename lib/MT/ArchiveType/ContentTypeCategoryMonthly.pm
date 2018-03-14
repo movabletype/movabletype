@@ -211,13 +211,13 @@ sub archive_group_iter {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param, $content_type_id ) = @_;
+    my ( $ctx, $param, $content_type_id ) = @_;
     my $ts
-        = $param{year}
-        ? sprintf( "%04d%02d%02d000000", $param{year}, $param{month}, 1 )
+        = $param->{year}
+        ? sprintf( "%04d%02d%02d000000", $param->{year}, $param->{month}, 1 )
         : $ctx->stash('current_timestamp');
-    my $cat = $param{category} || $ctx->stash('archive_category');
-    my $limit = $param{limit};
+    my $cat = $param->{category} || $ctx->stash('archive_category');
+    my $limit = $param->{limit};
     $obj->dated_category_contents( $ctx, 'Category-Monthly', $cat, $ts,
         $limit, $content_type_id );
 }
