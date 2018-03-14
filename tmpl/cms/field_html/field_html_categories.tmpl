@@ -35,6 +35,10 @@
     border-radius: 0.25rem;
     border-top-color: #a5a5a5;
 }
+
+.form-group.add-category-form {
+    margin-top: 1rem;
+}
 </style>
 </mt:setvarblock>
 </mt:unless>
@@ -143,7 +147,7 @@
               </mt:section>';
 
               Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-              [# div.className="form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a>
+              [# div.className="form-group form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a>
               </mt:section>';
 
               new Timer(function () {
@@ -197,10 +201,10 @@
 
           <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
-              <div class="category-selector-header">
+              <div class="category-selector-header form-group">
                   <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
               </div>
-              <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="form-inline add-category-form hidden" style="display: none;">
+              <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="form-group form-inline add-category-form hidden" style="display: none;">
                   <input id="add-category-input-<mt:var name="content_field_id" escape="html">" class="form-control add-category-input input-hint" type="text" value="" placeholder="<__trans phrase="Category Name">" />
                   <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></span></a>
                   <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="<__trans phrase="Remove">" size="sm"></span></a>
