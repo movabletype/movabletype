@@ -415,9 +415,9 @@ sub tag_handler_content_type {
         or return $ctx->_no_content_error;
 
     my $ids = $content_data->data->{ $field_data->{id} };
-    my @archive_contents
+    my @contents
         = MT->model('content_data')->load( { id => $ids } );
-    local $ctx->{__stash}{archive_contents} = \@archive_contents;
+    local $ctx->{__stash}{contents} = \@contents;
 
     $ctx->invoke_handler( 'contents', $args, $cond );
 }

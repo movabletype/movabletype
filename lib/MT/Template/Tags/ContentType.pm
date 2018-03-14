@@ -120,12 +120,12 @@ sub _hdlr_contents {
 
     my $archive_contents;
     if ($use_stash) {
-        $archive_contents = $ctx->stash('archive_contents');
+        $archive_contents = $ctx->stash('contents');
         if ( !$archive_contents && $at ) {
             my $archiver = MT->publisher->archiver($at);
             if ( $archiver && $archiver->group_based ) {
                 $archive_contents
-                    = $archiver->archive_group_contents( $ctx, %$args,
+                    = $archiver->archive_group_contents( $ctx, $args,
                     $content_type_id );
             }
         }
@@ -146,7 +146,7 @@ sub _hdlr_contents {
         }
     }
 
-    local $ctx->{__stash}{archive_contents};
+    local $ctx->{__stash}{contents};
 
     # handle automatic offset based on 'offset' query parameter
     # in case we're invoked through mt-view.cgi or some other
@@ -1641,7 +1641,6 @@ sub _hdlr_content_calendar {
             unless ( $no_loop || $iter_drained ) {
                 while ( my $cd = $iter->() ) {
 
-                    #next unless !$cat || $cd->is_in_category($cat);
                     my $datetime = '';
                     if ($dt_field_id) {
                         $datetime = $cd->data->{$dt_field_id} || '';

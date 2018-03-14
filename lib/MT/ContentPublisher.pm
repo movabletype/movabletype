@@ -1104,8 +1104,7 @@ sub rebuild_file {
                 require MT::Promise;
                 my $contents
                     = sub { $archiver->archive_group_contents($ctx) };
-                $ctx->stash( 'archive_contents',
-                    MT::Promise::delay($contents) );
+                $ctx->stash( 'contents', MT::Promise::delay($contents) );
             }
             else {
                 require MT::Promise;
