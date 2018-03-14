@@ -103,13 +103,13 @@ sub archive_group_iter {
 
 sub archive_group_contents {
     my $obj = shift;
-    my ( $ctx, %param, $content_type_id ) = @_;
+    my ( $ctx, $param, $content_type_id ) = @_;
     my $ts
-        = $param{year}
+        = $param->{year}
         ? sprintf( "%04d%02d%02d000000",
-        $param{year}, $param{month}, $param{day} )
+        $param->{year}, $param->{month}, $param->{day} )
         : undef;
-    my $limit = $param{limit};
+    my $limit = $param->{limit};
     $obj->dated_group_contents( $ctx, 'Daily', $ts, $limit,
         $content_type_id );
 }

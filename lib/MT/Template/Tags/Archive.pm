@@ -304,9 +304,9 @@ sub _hdlr_archives {
                 $archiver->archive_group_entries( $ctx, %curr );
             }
         ) if $archiver->group_based;
-        local $ctx->{__stash}{archive_contents} = delay(
+        local $ctx->{__stash}{contents} = delay(
             sub {
-                $archiver->archive_group_contents( $ctx, %curr );
+                $archiver->archive_group_contents( $ctx, \%curr );
             }
         ) if $archiver->contenttype_group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
