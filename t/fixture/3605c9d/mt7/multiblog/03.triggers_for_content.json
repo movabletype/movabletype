@@ -494,16 +494,16 @@
             "1",
             null,
             "__NOW__",
-            "0c927bef24d620588525387dd4c257ee6c9b94db",
+            "adac3456ae2c158e78a089b75c1a2d2e54a30329",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             "1",
-            "4eb75bd1ad9f00bdf6784b70d89bea0655a44217",
+            "3d41a291f1540b06e4d28f4814db173f56539350",
             null,
             null,
             "__NOW__",
             "2",
-            "4eb75bd1ad9f00bdf6784b70d89bea0655a44217",
+            "3d41a291f1540b06e4d28f4814db173f56539350",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -543,7 +543,7 @@
             null,
             null,
             "single_line_text",
-            "46fe4de99759e50a929fd24727b85f0b86edcfb2"
+            "dcf68d168ed38a377eafa50e42cc9c6f1e1fe56f"
          ]
       ]
    },
@@ -562,6 +562,7 @@
          "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
+         "cf_idx_value_text",
          "cf_idx_value_varchar"
       ],
       "rows" : [
@@ -579,6 +580,7 @@
             null,
             null,
             null,
+            null,
             "test text"
          ]
       ]
@@ -590,7 +592,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
             "1"
          ]
       ]
@@ -618,12 +620,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(46fe4de99759e50a929fd24727b85f0b86edcfb2",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(dcf68d168ed38a377eafa50e42cc9c6f1e1fe56f",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "0c927bef24d620588525387dd4c257ee6c9b94db",
+            "adac3456ae2c158e78a089b75c1a2d2e54a30329",
             null,
             null
          ]
@@ -1904,7 +1906,7 @@
             "Sign In",
             null,
             "1",
-            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
+            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name && !u.is_anonymous) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
             "widget"
          ],
          [
@@ -3026,7 +3028,7 @@
             "Sign In",
             null,
             "1",
-            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
+            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name && !u.is_anonymous) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
             "widget"
          ],
          [
@@ -3437,5 +3439,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
 }

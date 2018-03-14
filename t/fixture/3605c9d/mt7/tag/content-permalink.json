@@ -487,7 +487,7 @@
             "1",
             null,
             "__NOW__",
-            "a2d43b66f057e6644df751d1bccd72a44f83e6d1",
+            "83a462cf8fa9d41e466c7507c1a2f14e1c1bc15d",
             "0",
             null,
             "1",
@@ -496,7 +496,7 @@
             null,
             "__NOW__",
             "2",
-            "e784c1cab7e32c424b6c34aed9bd2207b8f1af8a",
+            "1e9b2fbc1d8606002638c5ca9224b65f947b4fba",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -508,7 +508,7 @@
             "2",
             null,
             "__NOW__",
-            "e39d353f76cbed2a5967e94087abe7367d475708",
+            "0436fdc58ddf1bcc3978bb55fc4fe8ec71ffa3c7",
             "0",
             null,
             "2",
@@ -517,7 +517,7 @@
             null,
             "__NOW__",
             "2",
-            "fd2a7de6f495f7e777404e96201d377dbdceea7e",
+            "ef72ee74f040c23d35a09ba0b06cc2b2662ab850",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -529,7 +529,7 @@
             "3",
             null,
             "__NOW__",
-            "1605eec98fd2bff3e22f9528fcb4481c3ef1d099",
+            "0728975e2b3b0c535200d2a7c51fc9de3f017714",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -538,7 +538,7 @@
             null,
             "__NOW__",
             "2",
-            "a73e18d4844d7a6dc6ce19d0c7599ccb3f7eae01",
+            "ddfd392baf9e3c02cb83b0b71cc2d5d0e250cb0f",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -578,7 +578,7 @@
             null,
             null,
             "categories",
-            "ec4f09f3c012d66a61509299a26e5e2f2c9523a0"
+            "fa31d11ea834310990e5cbd78e8d4e107386fb1b"
          ]
       ]
    },
@@ -597,6 +597,7 @@
          "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
+         "cf_idx_value_text",
          "cf_idx_value_varchar"
       ],
       "rows" : [
@@ -614,6 +615,7 @@
             null,
             null,
             "1",
+            null,
             null
          ]
       ]
@@ -625,7 +627,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
             "1"
          ]
       ]
@@ -658,7 +660,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "a2d43b66f057e6644df751d1bccd72a44f83e6d1",
+            "83a462cf8fa9d41e466c7507c1a2f14e1c1bc15d",
             null,
             null
          ],
@@ -673,7 +675,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "e39d353f76cbed2a5967e94087abe7367d475708",
+            "0436fdc58ddf1bcc3978bb55fc4fe8ec71ffa3c7",
             null,
             null
          ],
@@ -688,7 +690,7 @@
             null,
             "__NOW__",
             "test content type 03",
-            "1605eec98fd2bff3e22f9528fcb4481c3ef1d099",
+            "0728975e2b3b0c535200d2a7c51fc9de3f017714",
             null,
             null
          ]
@@ -1969,7 +1971,7 @@
             "Sign In",
             null,
             "1",
-            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
+            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name && !u.is_anonymous) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
             "widget"
          ],
          [
@@ -2392,5 +2394,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
 }

@@ -535,16 +535,16 @@
             "1",
             null,
             "__NOW__",
-            "c5b4ba60384b72c2af117cf2863f4110b14bfbd5",
+            "2c2696cb8180a1d9cb96f0ad43f6b58f8d8184c3",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u000e20170603180500\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "1",
-            "1451e78b19c99204f65266b9f9541401c000fbe8",
+            "926a39cb26301df960d0ba5e8b3e3a2e75792f97",
             null,
             null,
             "__NOW__",
             "2",
-            "1451e78b19c99204f65266b9f9541401c000fbe8",
+            "926a39cb26301df960d0ba5e8b3e3a2e75792f97",
             "2017-05-31 16:36:00",
             "201736"
          ]
@@ -584,7 +584,7 @@
             null,
             null,
             "date_and_time",
-            "9b8d09d55425a660845a87922ec5ee9b6bd9c52d"
+            "2b7f559a18681afedff55270abc3d63db4599faf"
          ],
          [
             "2",
@@ -601,7 +601,7 @@
             null,
             null,
             "categories",
-            "d84ef98cc69369b02b458684ee603d1a1109d6d1"
+            "90010dbe678bf743e55cefad81f302df6bd70f5a"
          ]
       ]
    },
@@ -620,6 +620,7 @@
          "cf_idx_value_double",
          "cf_idx_value_float",
          "cf_idx_value_integer",
+         "cf_idx_value_text",
          "cf_idx_value_varchar"
       ],
       "rows" : [
@@ -637,6 +638,7 @@
             null,
             null,
             "201722",
+            null,
             null
          ],
          [
@@ -653,6 +655,7 @@
             null,
             null,
             "1",
+            null,
             null
          ]
       ]
@@ -664,7 +667,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0029\n",
+            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
             "1"
          ]
       ]
@@ -692,12 +695,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(9b8d09d55425a660845a87922ec5ee9b6bd9c52dH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(2b7f559a18681afedff55270abc3d63db4599fafH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "c5b4ba60384b72c2af117cf2863f4110b14bfbd5",
+            "2c2696cb8180a1d9cb96f0ad43f6b58f8d8184c3",
             null,
             null
          ]
@@ -2112,7 +2115,7 @@
             "Sign In",
             null,
             "1",
-            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
+            "<mt:IfRegistrationAllowed>\n<div class=\"widget-sign-in widget\">\n    <h3 class=\"widget-header\">Sign In</h3>\n    <div id=\"signin-widget-content\" class=\"widget-content\"></div>\n</div>\n<script type=\"text/javascript\">\n/* <![CDATA[ */\nfunction mtUpdateSignInWidget(u) {\n    var el = document.getElementById('signin-widget-content');\n    var content = '';\n    if (!el) return;\n    if (u) {\n        if (u && u.is_authenticated) {\n            user = u;\n            mtSaveUser();\n        } else {\n            // user really isn't logged in; so let's do this!\n            return mtSignIn();\n        }\n    } else {\n        u = mtGetUser();\n    }\n    if (u && u.name && !u.is_anonymous) {\n        var url;\n        if (u.is_authenticated) {\n            if (u.is_author) {\n                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';\n                url += '&return_url=' + encodeURIComponent( location.href );\n            } else {\n                url = u.url;\n            }\n        } else if (u.url) {\n            url = u.url;\n        } else {\n            url = null;\n        }\n        var content = 'You are signed in as ';\n        if (url)\n            content += '<a href=\"' + url + '\">' + u.name + '</a>';\n        else\n            content += u.name;\n        content += '.  (<a href=\"javascript:void(0)\" onclick=\"return mtSignOutOnClick()\">sign out</a>)';\n    } else if (u && u.is_banned) {\n        content = 'You do not have permission to sign in to this blog.';\n    } else {\n        content = '<a href=\"javascript:void(0)\" onclick=\"return mtSignInOnClick(\\'signin-widget-content\\')\">Sign In</a>';\n    }\n    el.innerHTML = content;\n}\nmtAttachEvent('usersignin', mtUpdateSignInWidget);\nmtUpdateSignInWidget();\n/* ]]> */\n</script>\n</mt:IfRegistrationAllowed>\n",
             "widget"
          ],
          [
@@ -2579,5 +2582,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0029; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
 }
