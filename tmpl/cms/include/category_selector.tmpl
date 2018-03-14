@@ -21,9 +21,9 @@
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
+        [# div.className="add-category-form form-inline m-3"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" style="width: 10rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
 <mt:else>
-        [# div.className="add-category-form form-inline"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 8rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
+        [# div.className="add-category-form form-inline m-3"; div.style.display = "none" #]<input id="add-category-input-movable" class="form-control form-control-sm add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" style="width: 10rem;" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><mtapp:svgicon id="ic_add" color="success" size="sm" title="Add"></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" size="sm" title="Cancel"></a>
 </mt:if>
         </mt:section>';
     <mt:ignore>
@@ -37,7 +37,7 @@
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector" style="display: none;">
 <mt:if name="object_type" eq="entry">
     <mt:if name="can_edit_categories">
-    <div class="text-right category-selector-header">
+    <div class="text-right category-selector-header mb-3">
         <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>">
             <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add">
         </a>
@@ -45,7 +45,7 @@
     </mt:if>
 </mt:if>
 <mt:if name="can_edit_categories">
-    <div id="add-category-form" class="form-inline add-category-form" style="display: none;">
+    <div id="add-category-form" class="form-inline add-category-form mb-3" style="display: none;">
         <input id="add-category-input" class="form-control add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
         <a href="javascript:void(0);" mt:command="add" class="add-category-save-link">
           <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">">
