@@ -26,7 +26,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     archive_file_for format_ts dirify remove_html
     days_in wday_from_ts encode_js decode_js get_entry spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
-    decode_xml is_valid_url is_url discover_tb convert_high_ascii
+    decode_xml is_valid_url is_url convert_high_ascii
     mark_odd_rows dsa_verify perl_sha1_digest relative_date
     perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
     start_background_task launch_background_tasks substr_wref
@@ -505,48 +505,6 @@ is( is_valid_ip('123.123.123.123/0'),  '0', 'is_valid_ip() invalid ip' );
 is( is_valid_ip('123.123.123.123/33'), '0', 'is_valid_ip() invalid ip' );
 
 ### other utilities
-my $tb_content = <<__HTML__;
-<html>
-<head>
-    <!--
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/">
-<rdf:Description
-    rdf:about="http://example.com/2002/12/24/1/index.html"
-    trackback:ping="http://example.com/mt/mt-tb.cgi/9999"
-    dc:title="Foo"
-    dc:identifier="http://example.com/2002/12/24/1/index.html"
-    dc:subject="Bar"
-    dc:description="Foo Bar Foo Bar ..."
-    dc:creator="Baz"
-    dc:date="2002-12-24T10:30:45Z" />
-</rdf:RDF>
--->
-</head>
-<body>
-</body>
-</html>
-__HTML__
-is_deeply(
-    discover_tb(
-        'http://example.com/2002/12/24/1/index.html',
-        undef, \$tb_content
-    ),
-    {   'permalink'      => 'http://example.com/2002/12/24/1/index.html',
-        'title'          => 'Foo',
-        'ping_url'       => 'http://example.com/mt/mt-tb.cgi/9999',
-        'dc:identifier'  => 'http://example.com/2002/12/24/1/index.html',
-        'dc:title'       => 'Foo',
-        'dc:date'        => '2002-12-24T10:30:45Z',
-        'dc:subject'     => 'Bar',
-        'dc:description' => 'Foo Bar Foo Bar ...',
-        'dc:creator'     => 'Baz',
-        'rdf:about'      => 'http://example.com/2002/12/24/1/index.html',
-        'trackback:ping' => 'http://example.com/mt/mt-tb.cgi/9999',
-    },
-    'discover_tb()'
-);
 
 my @list = ( { v => 1 }, { v => 2 }, { v => 3 }, { v => 4 }, );
 

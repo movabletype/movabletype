@@ -2417,7 +2417,7 @@ sub pre_save {
             $perms->save;
         }
     }
-    $obj->discover_tb_from_entry();
+    $obj->discover_tb_from_entry() if MT->has_plugin('Trackback');
     1;
 }
 

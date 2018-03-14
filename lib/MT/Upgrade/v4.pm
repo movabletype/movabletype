@@ -1291,8 +1291,10 @@ sub core_update_entry_counts {
     while ( my $e = $iter->() ) {
         $rows++;
         $c{ $e->id } = $e;
-        if ( my $tb = $e->trackback ) {
-            $tb{ $tb->id } = $e;
+        if ( MT->has_plugin('Trackback') ) {
+            if ( my $tb = $e->trackback ) {
+                $tb{ $tb->id } = $e;
+            }
         }
         $continue = 1, last if scalar $rows == $self->max_rows;
     }

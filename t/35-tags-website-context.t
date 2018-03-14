@@ -695,33 +695,6 @@ $test_env->prepare_fixture(sub {
         );
         $objscore4->save or die $objscore4->errstr;
 
-        # Create tbping
-        my $tbp1 = $mt->model('tbping')->new;
-        $tbp1->set_values(
-            {   blog_id       => $blog_id,
-                tb_id         => $e2->trackback->id,
-                ip            => '127.0.0.1',
-                visible       => 1,
-                junk_status   => 1,                    # NOT_JUNK
-                last_moved_on => '20080808000000',
-                blog_name     => 'first website',
-            }
-        );
-        $tbp1->save or die $tbp1->errstr;
-
-        my $tbp2 = $mt->model('tbping')->new;
-        $tbp2->set_values(
-            {   blog_id       => $blog_id,
-                tb_id         => 1,
-                ip            => '127.0.0.1',
-                visible       => 1,
-                junk_status   => 1,                  # NOT_JUNK
-                last_moved_on => '20090909000000',
-                blog_name     => 'first website',
-            }
-        );
-        $tbp2->save or die $tbp2->errstr;
-
         # Create asset
         my $as1 = $mt->model('asset')->new;
         $as1->set_values(

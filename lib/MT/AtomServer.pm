@@ -661,7 +661,7 @@ sub new_post {
     }
 ## xxx mt/typepad-specific fields
     $app->apply_basename( $entry, $atom );
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     if ( my @link = $atom->link ) {
         my $i         = 0;
@@ -778,7 +778,7 @@ sub edit_post {
     }
 ## xxx mt/typepad-specific fields
     $app->apply_basename( $entry, $atom );
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( 'api_pre_save.entry', $app, $entry, $orig_entry )
         or return $app->error( 500,
