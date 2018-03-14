@@ -423,10 +423,6 @@ sub setup {
         category_id => $w_cat1->id,
         entry_id    => $w_e1->id,
     );
-    my $w_e_tb1 = MT::Test::Permission->make_ping(
-        blog_id => $w->id,
-        tb_id   => $w_e1->trackback->id,
-    );
 
     # Create comment
     my $w_cmt1 = MT::Test::Permission->make_comment(

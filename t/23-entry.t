@@ -13,7 +13,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 50;
+plan tests => 41;
 
 use MT;
 use MT::Blog;
@@ -209,18 +209,3 @@ is( $entry->get_excerpt, 'On a drizzly...', 'get_excerpt' );
 $entry->convert_breaks('textile_2');
 $entry->text("Foo _bar_ baz");
 is( $entry->get_excerpt, 'Foo bar baz...', 'get_excerpt' );
-
-## Test TrackBack object generation
-$entry->allow_pings(1);
-ok( $entry->save, 'save' );
-my $tb = MT::Trackback->load( { entry_id => $entry->id } );
-isa_ok( $tb, 'MT::Trackback' );
-is( $tb->entry_id,    $entry->id,          'entry_id' );
-is( $tb->description, $entry->get_excerpt, 'description' );
-is( $tb->title,       $entry->title,       'title' );
-is( $tb->url,         $entry->permalink,   'url' );
-is( $tb->is_disabled, 0,                   'is_disabled' );
-$entry->allow_pings(0);
-ok( $entry->save, 'save' );
-$tb = MT::Trackback->load( { entry_id => $entry->id } );
-is( $tb->is_disabled, 1, 'is_disabled' );

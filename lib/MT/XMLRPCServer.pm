@@ -455,7 +455,7 @@ sub _new_entry {
             ) > 0
             );
     }
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( "api_pre_save.$obj_type", $mt, $entry, $orig_entry )
         || die MT::XMLRPCServer::_fault(
@@ -668,7 +668,7 @@ sub _edit_entry {
             b    => { value => time(), type => 'epoch' }
             ) > 0;
     }
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( "api_pre_save.$obj_type", $mt, $entry, $orig_entry )
         || die MT::XMLRPCServer::_fault(
@@ -1501,7 +1501,7 @@ sub publishScheduledFuturePosts {
         my $entry = MT::Entry->load($entry_id);
         if ( $entry && $entry->authored_on <= $now ) {
             $entry->status( MT::Entry::RELEASE() );
-            $entry->discover_tb_from_entry();
+            $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
             $entry->save or die $entry->errstr;
 
             $types{ $entry->class } = 1;
