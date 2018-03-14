@@ -382,12 +382,9 @@ sub tag_handler_multiple {
 sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
-    my $asset_class
-        = $field_data->{type} eq 'asset' ? 'file' : $field_data->{type};
-    $asset_class =~ s/^asset_(.*)/$1/;
     my $asset_terms = {
         id     => $value,
-        class  => $asset_class,
+        class  => '*',
         parent => \'IS NULL',
     };
     my $asset_args = { null => { parent => 1 } };
