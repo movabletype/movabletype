@@ -327,94 +327,21 @@ sub import_contents {
                             $entry->keywords($piece) if $piece =~ /\S/;
                         }
                         elsif ( $piece =~ s/^COMMENT:\r?\n// ) {
-                            ## Comments are: AUTHOR, EMAIL, URL, IP, DATE (in any order),
-                            ## then body
-                            my $comment = MT::Comment->new
-                                or die( "Couldn't construct MT::Comment "
-                                    . MT::Comment->errstr );
-                            $comment->blog_id($blog_id);
-                            $comment->approve;
-                            my @lines = split /\r?\n/, $piece;
-                            my ( $i, $body_idx ) = (0) x 2;
-                        COMMENT:
-                            for my $line (@lines) {
-                                $line =~ s!^\s*!!;
-                                my ( $key, $val ) = split /\s*:\s*/, $line, 2;
-                                if ( $key eq 'AUTHOR' ) {
-                                    $comment->author($val);
-                                }
-                                elsif ( $key eq 'EMAIL' ) {
-                                    $comment->email($val);
-                                }
-                                elsif ( $key eq 'URL' ) {
-                                    $comment->url($val);
-                                }
-                                elsif ( $key eq 'IP' ) {
-                                    $comment->ip($val);
-                                }
-                                elsif ( $key eq 'DATE' ) {
-                                    my $date
-                                        = __PACKAGE__->_convert_date($val)
-                                        or next;
-                                    $comment->created_on($date);
-                                }
-                                else {
-                                    ## Now we have reached the body of the comment;
-                                    ## everything from here until the end of the
-                                    ## array is body.
-                                    $body_idx = $i;
-                                    last COMMENT;
-                                }
-                                $i++;
+                            if ( MT->has_plugin('Comments') ) {
+                                require Comments::Import;
+                                my $comment
+                                    = Comments::Import::_comment_to_import(
+                                    $piece, $blog_id );
+                                push @comments, $comment;
                             }
-                            $comment->text( join "\n",
-                                @lines[ $body_idx .. $#lines ] );
-                            push @comments, $comment;
                         }
                         elsif ( $piece =~ s/^PING:\r?\n// ) {
-                            ## Pings are: TITLE, URL, IP, DATE, BLOG NAME,
-                            ## then excerpt
-                            require MT::TBPing;
-                            my $ping = MT::TBPing->new;
-                            $ping->blog_id($blog_id);
-                            my @lines = split /\r?\n/, $piece;
-                            my ( $i, $body_idx ) = (0) x 2;
-                        PING:
-                            for my $line (@lines) {
-                                $line =~ s!^\s*!!;
-                                my ( $key, $val ) = split /\s*:\s*/, $line, 2;
-                                if ( $key eq 'TITLE' ) {
-                                    $ping->title($val);
-                                }
-                                elsif ( $key eq 'URL' ) {
-                                    $ping->source_url($val);
-                                }
-                                elsif ( $key eq 'IP' ) {
-                                    $ping->ip($val);
-                                }
-                                elsif ( $key eq 'DATE' ) {
-                                    if ( my $date
-                                        = __PACKAGE__->_convert_date($val) )
-                                    {
-                                        $ping->created_on($date);
-                                    }
-                                }
-                                elsif ( $key eq 'BLOG NAME' ) {
-                                    $ping->blog_name($val);
-                                }
-                                else {
-                                    ## Now we have reached the ping excerpt;
-                                    ## everything from here until the end of the
-                                    ## array is body.
-                                    $body_idx = $i;
-                                    last PING;
-                                }
-                                $i++;
+                            if ( MT->has_plugin('Trackback') ) {
+                                require Trackback::Import;
+                                my $ping = Trackback::Import::_ping_to_import(
+                                    $piece, $blog_id );
+                                push @pings, $ping;
                             }
-                            $ping->excerpt( join "\n",
-                                @lines[ $body_idx .. $#lines ] );
-                            $ping->approve;
-                            push @pings, $ping;
                         }
                         else {
                             if ($additional_keys) {
@@ -533,73 +460,15 @@ sub import_contents {
                     }
 
                     ## Save comments.
-                    for my $comment (@comments) {
-                        $comment->entry_id( $entry->id );
-                        $cb->(
-                            MT->translate(
-                                "Creating new comment (from '[_1]')...",
-                                encode_html( $comment->author )
-                            )
-                        );
-                        if ( $comment->save ) {
-                            $cb->(
-                                MT->translate( "ok (ID [_1])", $comment->id )
-                                    . "\n" );
-                        }
-                        else {
-                            $cb->( MT->translate("failed") . "\n" );
-                            return __PACKAGE__->error(
-                                MT->translate(
-                                    "Saving comment failed: [_1]",
-                                    $comment->errstr
-                                )
-                            );
-                        }
+                    if ( MT->has_plugin('Comments') ) {
+                        Comments::Import::_save_comments( $cb, $entry,
+                            \@comments );
                     }
 
                     ## Save pings.
-                    if (@pings) {
-                        my $tb;
-                        unless ( $tb = $entry->trackback ) {
-                            $tb = MT->model('trackback')->new;
-                            $tb->blog_id( $entry->blog_id );
-                            $tb->entry_id( $entry->id );
-                            $tb->category_id(0);  ## category_id can't be NULL
-                            $tb->title( $entry->title );
-                            $tb->description( $entry->get_excerpt );
-                            $tb->url( $entry->permalink );
-                            $tb->is_disabled(0);
-                            $tb->save
-                                or return __PACKAGE__->error( $tb->errstr );
-                            $entry->trackback($tb);
-                        }
-
-                        for my $ping (@pings) {
-                            $ping->tb_id( $tb->id );
-                            $cb->(
-                                MT->translate(
-                                    "Creating new ping ('[_1]')...",
-                                    encode_html( $ping->title )
-                                )
-                            );
-                            if ( $ping->save ) {
-                                $cb->(
-                                    MT->translate(
-                                        "ok (ID [_1])", $ping->id
-                                        )
-                                        . "\n"
-                                );
-                            }
-                            else {
-                                $cb->( MT->translate("failed") . "\n" );
-                                return __PACKAGE__->error(
-                                    MT->translate(
-                                        "Saving ping failed: [_1]",
-                                        $ping->errstr
-                                    )
-                                );
-                            }
-                        }
+                    if ( MT->has_plugin('Trackback') ) {
+                        Trackback::Import::_save_pings( $cb, $entry,
+                            \@pings );
                     }
                 }
                 1;
