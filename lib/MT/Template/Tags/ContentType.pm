@@ -15,6 +15,7 @@ use MT::ContentField;
 use MT::ContentStatus;
 use MT::ContentType;
 use MT::Util;
+use MT::Util::ContentType;
 
 =head2 Contents
 
@@ -60,8 +61,7 @@ sub _hdlr_contents {
     %terms = %blog_terms;
     %args  = %blog_args;
 
-    my @content_type
-        = _get_content_type( $ctx, $args, \%blog_terms, \%blog_args );
+    my @content_type = _get_content_type( $ctx, $args, \%blog_terms );
     return $ctx->error( MT->translate('Content Type was not found.') )
         unless @content_type;
     my $content_type_id
@@ -2093,19 +2093,13 @@ sub _check_and_invoke {
 }
 
 sub _get_content_type {
-    my ( $ctx, $args, $blog_terms, $blog_args ) = @_;
+    my ( $ctx, $args, $blog_terms ) = @_;
 
     my @ct;
 
-    if ( my $arg = $args->{content_type} ) {
-        my $class = MT->model('content_type');
-        if ( $arg =~ /^\d+$/ ) {
-            my $ct = $class->load($arg);
-            push @ct, $ct if $ct;
-        }
-        @ct = $class->load( { unique_id => $arg, %{$blog_terms} } )
-            unless @ct;
-        @ct = $class->load( { name => $arg, %{$blog_terms} } ) unless @ct;
+    if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+        @ct = MT::Util::ContentType::get_content_types( $args->{content_type},
+            $blog_terms );
     }
     else {
         my $tmpl = $ctx->stash('template');

@@ -188,6 +188,7 @@ use_ok('MT::DataAPI::Resource::v4::ContentType');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Util::ContentType');
 
 SKIP: {
 
