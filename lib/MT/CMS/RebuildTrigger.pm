@@ -114,9 +114,10 @@ sub add {
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
-            panel_type   => $type,
-            list_noncron => 1,
-            panel_multi  => 0,
+            panel_type      => $type,
+            list_noncron    => 1,
+            panel_multi     => 0,
+            rebuild_trigger => 1,
         };
         $app->listing(
             {   terms    => $terms,
@@ -131,8 +132,9 @@ sub add {
     }
     else {
         my $params = {};
-        $params->{panel_multi}  = 0;
-        $params->{blog_id}      = $blog_id;
+        $params->{panel_multi}     = 0;
+        $params->{rebuild_trigger} = 1;
+        $params->{blog_id}         = $blog_id;
         $params->{dialog_title} = $app->translate("Create Rebuild Trigger");
         $params->{panel_loop}   = [];
 
