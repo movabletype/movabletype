@@ -1339,52 +1339,15 @@ sub clone_with_children {
             );
         }
 
-        if ( ( !exists $classes->{'MT::Comment'} )
-            || $classes->{'MT::Comment'} )
-        {
-
-            # Comments can only be cloned if entries are cloned.
-            my $state = MT->translate("Cloning comments for blog...");
-            $callback->( $state, "comments" );
-            require MT::Comment;
-            $iter = MT::Comment->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            my %comment_parents;
-            while ( my $comment = $iter->() ) {
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'comments'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-
-                my $new_comment = $comment->clone();
-                delete $new_comment->{column_values}->{id};
-                delete $new_comment->{changed_cols}->{id};
-                $new_comment->entry_id( $entry_map{ $comment->entry_id } );
-                $new_comment->blog_id($new_blog_id);
-                $new_comment->save or die $new_comment->errstr;
-                $comment_map{ $comment->id } = $new_comment->id;
-                if ( $comment->parent_id ) {
-                    $comment_parents{ $new_comment->id }
-                        = $comment->parent_id;
-                }
+        if ( MT->has_plugin('Comments') ) {
+            if ( ( !exists $classes->{'MT::Comment'} )
+                || $classes->{'MT::Comment'} )
+            {
+                require Comments::Blog;
+                Comments::Blog::_clone_comments( $callback, $old_blog_id,
+                    $new_blog_id,
+                    { entry => \%entry_map, comment => \%comment_map } );
             }
-            foreach ( keys %comment_parents ) {
-                my $comment = MT::Comment->load($_);
-                if ($comment) {
-                    $comment->parent_id(
-                        $comment_map{ $comment_parents{ $comment->id } } );
-                    $comment->save or die $comment->errstr;
-                }
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'comments'
-            );
         }
 
         if ( ( !exists $classes->{'MT::ObjectTag'} )
@@ -1489,117 +1452,34 @@ sub clone_with_children {
         );
     }
 
-    if ( ( !exists $classes->{'MT::Trackback'} )
-        || $classes->{'MT::Trackback'} )
-    {
-        my $state = MT->translate("Cloning TrackBacks for blog...");
-        $callback->( $state, "tbs" );
-        require MT::Trackback;
-        $iter = MT::Trackback->load_iter( { blog_id => $old_blog_id } );
-        $counter = 0;
-        while ( my $tb = $iter->() ) {
-            next
-                unless ( $tb->entry_id && $entry_map{ $tb->entry_id } )
-                || ( $tb->category_id && $cat_map{ $tb->category_id } );
-
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'tbs'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $tb_id  = $tb->id;
-            my $new_tb = $tb->clone();
-            delete $new_tb->{column_values}->{id};
-            delete $new_tb->{changed_cols}->{id};
-
-            if ( $tb->category_id ) {
-                if ( my $cid = $cat_map{ $tb->category_id } ) {
-                    my $cat_tb
-                        = MT::Trackback->load( { category_id => $cid } );
-                    if ($cat_tb) {
-                        my $changed;
-                        if ( $tb->passphrase ) {
-                            $cat_tb->passphrase( $tb->passphrase );
-                            $changed = 1;
-                        }
-                        if ( $tb->is_disabled ) {
-                            $cat_tb->is_disabled(1);
-                            $changed = 1;
-                        }
-                        $cat_tb->save if $changed;
-                        $tb_map{$tb_id} = $cat_tb->id;
-                        next;
-                    }
-                }
-            }
-            elsif ( $tb->entry_id ) {
-                if ( my $eid = $entry_map{ $tb->entry_id } ) {
-                    my $entry_tb = MT::Entry->load($eid)->trackback;
-                    if ($entry_tb) {
-                        my $changed;
-                        if ( $tb->passphrase ) {
-                            $entry_tb->passphrase( $tb->passphrase );
-                            $changed = 1;
-                        }
-                        if ( $tb->is_disabled ) {
-                            $entry_tb->is_disabled(1);
-                            $changed = 1;
-                        }
-                        $entry_tb->save if $changed;
-                        $tb_map{$tb_id} = $entry_tb->id;
-                        next;
-                    }
-                }
-            }
-
-            # A trackback wasn't created when saving the entry/category,
-            # (perhaps trackbacks are now disabled for the entry/category?)
-            # so create one now
-            $new_tb->entry_id( $entry_map{ $tb->entry_id } )
-                if $tb->entry_id && $entry_map{ $tb->entry_id };
-            $new_tb->category_id( $cat_map{ $tb->category_id } )
-                if $tb->category_id && $cat_map{ $tb->category_id };
-            $new_tb->blog_id($new_blog_id);
-            $new_tb->save or die $new_tb->errstr;
-            $tb_map{$tb_id} = $new_tb->id;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'tbs'
-        );
-
-        if ( ( !exists $classes->{'MT::TBPing'} )
-            || $classes->{'MT::TBPing'} )
+    if ( MT->has_plugin('Trackback') ) {
+        if ( ( !exists $classes->{'MT::Trackback'} )
+            || $classes->{'MT::Trackback'} )
         {
-            my $state = MT->translate("Cloning TrackBack pings for blog...");
-            $callback->( $state, "pings" );
-            require MT::TBPing;
-            $iter = MT::TBPing->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            while ( my $ping = $iter->() ) {
-                next unless $tb_map{ $ping->tb_id };
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'pings'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-                my $new_ping = $ping->clone();
-                delete $new_ping->{column_values}->{id};
-                delete $new_ping->{changed_cols}->{id};
-                $new_ping->tb_id( $tb_map{ $ping->tb_id } );
-                $new_ping->blog_id($new_blog_id);
-                $new_ping->save or die $new_ping->errstr;
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'pings'
+            require Trackback::Blog;
+            Trackback::Blog::_clone_trackbacks(
+                $callback,
+                $old_blog_id,
+                $new_blog_id,
+                {   entry     => \%entry_map,
+                    category  => \%cat_map,
+                    trackback => \%tb_map
+                }
             );
+
+            if ( ( !exists $classes->{'MT::TBPing'} )
+                || $classes->{'MT::TBPing'} )
+            {
+                Trackback::Blog::_clone_pings(
+                    $callback,
+                    $old_blog_id,
+                    $new_blog_id,
+                    {   entry     => \%entry_map,
+                        category  => \%cat_map,
+                        trackback => \%tb_map
+                    }
+                );
+            }
         }
     }
 
