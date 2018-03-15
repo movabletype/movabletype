@@ -461,24 +461,28 @@ sub import_contents {
 
                     ## Save comments.
                     if ( MT->has_plugin('Comments') ) {
+                        require Comments::Import;
                         Comments::Import::_save_comments( $cb, $entry,
                             \@comments );
                     }
 
                     ## Save pings.
                     if ( MT->has_plugin('Trackback') ) {
+                        require Trackback::Import;
                         Trackback::Import::_save_pings( $cb, $entry,
                             \@pings );
                     }
                 }
                 1;
             };
+            $cb->($@) if $@;
             return unless $result;
         }
 
         __PACKAGE__->errstr ? undef : 1;
 
     };    # end try block
+    $cb->($@) if $@;
 
     $import_result;
 }
