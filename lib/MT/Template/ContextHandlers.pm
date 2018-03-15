@@ -1020,6 +1020,15 @@ sub core_tags {
             ContentFieldType =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_type',
 
+            ContentTypeDescription =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_description',
+            ContentTypeName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_name',
+            ContentTypeID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_id',
+            ContentTypeUniqueID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_unique_id',
+
             ## Category Set
             CategorySetName =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
