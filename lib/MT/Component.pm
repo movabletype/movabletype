@@ -507,7 +507,7 @@ sub _generate_l10n_module {
         eval "require $class";
         $got_class = 1;
     }
-    elsif ( MT->config('RequiredCompatibility') < 5.0 ) {
+    elsif ( ( MT->config('RequiredCompatibility') || 0 ) < 5.0 ) {
         my @paths = split '::', $class;
         $paths[-1] .= '.pm';
         my $inc_path = join '/', @paths;
