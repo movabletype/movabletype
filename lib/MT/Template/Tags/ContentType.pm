@@ -162,23 +162,7 @@ sub _hdlr_contents {
         }
     }
 
-    if ( ( $args->{limit} || '' ) eq 'auto' ) {
-        my ( $days, $limit );
-        my $blog = $ctx->stash('blog');
-        if ( $blog && ( $days = $blog->days_on_index ) ) {
-            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
-            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{authored_on} = [$ago];
-            $args{range_incl}{authored_on} = 1;
-        }
-        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{limit} = $limit;
-        }
-        else {
-            delete $args->{limit};
-        }
-    }
+    delete $args->{limit} if ( ( $args->{limit} || '' ) eq 'auto' );
 
     $terms{status} = MT::ContentStatus::RELEASE();
 
