@@ -466,7 +466,7 @@ sub init_website {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
-    if ( $param{'support_unwritable'} == 1 ) {
+    if ( $param{'support_unwritable'} ) {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
@@ -824,7 +824,8 @@ sub main {
         $param->{mt_version_incremented} = 1;
         MT->log(
             {   message => MT->translate(
-                    "Movable Type has been upgraded to version [_1].", $app->release_version_id,
+                    "Movable Type has been upgraded to version [_1].",
+                    $app->release_version_id,
                 ),
                 class    => 'system',
                 category => 'upgrade',
@@ -838,7 +839,7 @@ sub main {
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version} = $app->release_version_id;
+    $param->{mt_version}  = $app->release_version_id;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;
