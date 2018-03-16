@@ -47,140 +47,130 @@ filters {
     error    => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture('db');
 
-        # Content Type
-        my $ct = MT::Test::Permission->make_content_type(
-            name    => 'test content type 1',
-            blog_id => $blog_id,
-        );
-        my $cf_single_line_text = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'single line text',
-            type            => 'single_line_text',
-        );
-        my $category_set = MT::Test::Permission->make_category_set(
-            blog_id => $blog_id,
-            name    => 'test category set',
-        );
-        my $cf_category = MT::Test::Permission->make_content_field(
-            blog_id            => $blog_id,
-            content_type_id    => $ct->id,
-            name               => 'categories',
-            type               => 'categories',
-            related_cat_set_id => $category_set->id,
-        );
-        my $category1 = MT::Test::Permission->make_category(
-            blog_id         => $blog_id,
-            category_set_id => $category_set->id,
-            label           => 'category1',
-        );
-        my $category2 = MT::Test::Permission->make_category(
-            blog_id         => $blog_id,
-            category_set_id => $category_set->id,
-            label           => 'category2',
-        );
-        my $cf_tag = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'tags',
-            type            => 'tags',
-        );
-        my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
-        my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
-        my $cf_datetime = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'date and time',
-            type            => 'date_and_time',
-        );
-        my $cf_date = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'date_only',
-            type            => 'date_only',
-        );
-        my $fields = [
-            {   id        => $cf_single_line_text->id,
-                order     => 1,
-                type      => $cf_single_line_text->type,
-                options   => { label => $cf_single_line_text->name },
-                unique_id => $cf_single_line_text->unique_id,
-            },
-            {   id      => $cf_category->id,
-                order   => 2,
-                type    => $cf_category->type,
-                options => {
-                    label        => $cf_category->name,
-                    category_set => $category_set->id,
-                    multiple     => 1,
-                    max          => 5,
-                    min          => 1,
-                },
-            },
-            {   id      => $cf_tag->id,
-                order   => 3,
-                type    => $cf_tag->type,
-                options => {
-                    label    => $cf_tag->name,
-                    multiple => 1,
-                    max      => 5,
-                    min      => 1,
-                },
-            },
-            {   id        => $cf_datetime->id,
-                order     => 4,
-                type      => $cf_datetime->type,
-                options   => { label => $cf_datetime->name },
-                unique_id => $cf_datetime->unique_id,
-            },
-            {   id        => $cf_date->id,
-                order     => 5,
-                type      => $cf_date->type,
-                options   => { label => $cf_date->name },
-                unique_id => $cf_date->unique_id,
-            },
-        ];
-        $ct->fields($fields);
-        $ct->save or die $ct->errstr;
-
-        # Content Data
-        my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
-            = localtime(time);
-        $mday++;
-        MT::Test::Permission->make_content_data(
-            blog_id         => $blog_id,
-            content_type_id => $ct->id,
-            status          => MT::ContentStatus::RELEASE(),
-            data            => {
-                $cf_single_line_text->id => 'test single line text ' . $_,
-                (   $_ == 2
-                    ? ( $cf_category->id =>
-                            [ $category2->id, $category1->id ] )
-                    : ()
-                ),
-                (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
-                    : ()
-                ),
-                $cf_datetime->id => sprintf( "%04d%02d%02d",
-                    $year + 1900,
-                    $mon + 1,
-                    $mday - $_ ),
-                $cf_date->id => sprintf( "%04d%02d%02d",
-                    $year + 1900,
-                    $mon + 1,
-                    $mday - $_ ),
-            },
-            authored_on =>
-                sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
-        ) for ( 1 .. 5 );
-    }
+# Content Type
+my $ct = MT::Test::Permission->make_content_type(
+    name    => 'test content type 1',
+    blog_id => $blog_id,
 );
+my $cf_single_line_text = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'single line text',
+    type            => 'single_line_text',
+);
+my $category_set = MT::Test::Permission->make_category_set(
+    blog_id => $blog_id,
+    name    => 'test category set',
+);
+my $cf_category = MT::Test::Permission->make_content_field(
+    blog_id            => $blog_id,
+    content_type_id    => $ct->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
+);
+my $category1 = MT::Test::Permission->make_category(
+    blog_id         => $blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
+);
+my $category2 = MT::Test::Permission->make_category(
+    blog_id         => $blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
+);
+my $cf_tag = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'tags',
+    type            => 'tags',
+);
+my $tag1 = MT::Test::Permission->make_tag( name => 'tag1' );
+my $tag2 = MT::Test::Permission->make_tag( name => 'tag2' );
+my $cf_datetime = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'date and time',
+    type            => 'date_and_time',
+);
+my $cf_date = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'date_only',
+    type            => 'date_only',
+);
+my $fields = [
+    {   id        => $cf_single_line_text->id,
+        order     => 1,
+        type      => $cf_single_line_text->type,
+        options   => { label => $cf_single_line_text->name },
+        unique_id => $cf_single_line_text->unique_id,
+    },
+    {   id      => $cf_category->id,
+        order   => 2,
+        type    => $cf_category->type,
+        options => {
+            label        => $cf_category->name,
+            category_set => $category_set->id,
+            multiple     => 1,
+            max          => 5,
+            min          => 1,
+        },
+    },
+    {   id      => $cf_tag->id,
+        order   => 3,
+        type    => $cf_tag->type,
+        options => {
+            label    => $cf_tag->name,
+            multiple => 1,
+            max      => 5,
+            min      => 1,
+        },
+    },
+    {   id        => $cf_datetime->id,
+        order     => 4,
+        type      => $cf_datetime->type,
+        options   => { label => $cf_datetime->name },
+        unique_id => $cf_datetime->unique_id,
+    },
+    {   id        => $cf_date->id,
+        order     => 5,
+        type      => $cf_date->type,
+        options   => { label => $cf_date->name },
+        unique_id => $cf_date->unique_id,
+    },
+];
+$ct->fields($fields);
+$ct->save or die $ct->errstr;
 
-my $ct = MT::ContentType->load( { name => 'test content type 1' } );
+# Content Data
+my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
+    = localtime(time);
+$mday++;
+MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    status          => MT::ContentStatus::RELEASE(),
+    data            => {
+        $cf_single_line_text->id => 'test single line text ' . $_,
+        (   $_ == 2
+            ? ( $cf_category->id => [ $category2->id, $category1->id ] )
+            : ()
+        ),
+        (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
+            : ()
+        ),
+        $cf_datetime->id =>
+            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
+        $cf_date->id =>
+            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
+    },
+    authored_on =>
+        sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
+) for ( 1 .. 5 );
+
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
