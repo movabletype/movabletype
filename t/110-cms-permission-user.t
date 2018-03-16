@@ -107,14 +107,14 @@ $test_env->prepare_fixture(
             = MT::Role->load( { name => MT->translate('Designer') } );
 
         require MT::Association;
-        MT::Association->link( $aikawa   => $manage_users    => $blog );
-        MT::Association->link( $ichikawa => $manage_users    => $website );
-        MT::Association->link( $ukawa    => $manage_pages    => $blog );
-        MT::Association->link( $egawa    => $edit_all_posts  => $blog );
-        MT::Association->link( $ogawa    => $designer        => $blog );
-        MT::Association->link( $kagawa   => $manage_users    => $second_blog );
-        MT::Association->link( $kikkawa  => $manage_pages    => $second_blog );
-        MT::Association->link( $kumekawa => $edit_all_posts  => $second_blog );
+        MT::Association->link( $aikawa   => $manage_users   => $blog );
+        MT::Association->link( $ichikawa => $manage_users   => $website );
+        MT::Association->link( $ukawa    => $manage_pages   => $blog );
+        MT::Association->link( $egawa    => $edit_all_posts => $blog );
+        MT::Association->link( $ogawa    => $designer       => $blog );
+        MT::Association->link( $kagawa   => $manage_users   => $second_blog );
+        MT::Association->link( $kikkawa  => $manage_pages   => $second_blog );
+        MT::Association->link( $kumekawa => $edit_all_posts => $second_blog );
     }
 );
 
@@ -1203,8 +1203,13 @@ subtest 'mode = view (type is commenter)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
-    ok( $out =~ m!Invalid request!i, "view by others" );
+    ok( $out, "Request: view" );
+    if ( $app->has_plugin('Comments') ) {
+        ok( $out =~ m!permission=1!, "view by others" );
+    }
+    else {
+        ok( $out =~ m!Invalid request!i, "view by others" );
+    }
 };
 
 subtest 'mode = view (type is user)' => sub {
@@ -1456,7 +1461,7 @@ subtest 'action = delete_user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                       "Request: delete_user" );
+    ok( $out,                        "Request: delete_user" );
     ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
 
