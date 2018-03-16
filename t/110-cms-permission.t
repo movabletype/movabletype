@@ -3,17 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 'addons/Commercial.pack/lib',
-    'addons/Enterprise.pack/lib';
+use lib 'addons/Commercial.pack/lib', 'addons/Enterprise.pack/lib';
 
 use MT;
 use MT::Author;
@@ -25,12 +25,14 @@ MT::Test->init_app;
 my $mt = MT->instance;
 
 # Make additional data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-    MT::Test->init_data;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+        MT::Test->init_data;
 
-    make_data();
-});
+        make_data();
+    }
+);
 
 my ( $app, $out );
 my $blog  = MT::Blog->load(1);
@@ -50,7 +52,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out, "Create a new asset" );
+ok( $out,                          "Create a new asset" );
 ok( $out =~ m/Invalid request\./i, "Create a new asset: result" );
 
 # Delete Asset
@@ -66,7 +68,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete asset" );
+ok( $out, "Delete asset" );
 location_param_contains(
     $out,
     { __mode => 'dashboard', permission => 1 },
@@ -365,8 +367,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete comment" );
-ok( $out =~ m/Invalid request\./i, "Delete comment: result" );
+ok( $out, "Delete comment" );
+if ( $app->has_plugin('Comments') ) {
+    ok( $out =~ m/permission=1/i, "Delete comment: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Delete comment: result" );
+}
 
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
@@ -938,8 +945,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new ping" );
-ok( $out =~ m/Invalid request\./i, "Create a new ping: result" );
+ok( $out, "Create a new ping" );
+if ( $app->has_plugin('Trackback') ) {
+    ok( $out =~ m/permission=1/i, "Create a new Ping: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Create a new ping: result" );
+}
 
 # Delete Ping
 # __mode=delete&_type=ping&id=1
@@ -953,8 +965,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete ping" );
-ok( $out =~ m/Invalid request\./i, "Delete ping: result" );
+ok( $out, "Delete ping" );
+if ( $app->has_plugin('Trackback') ) {
+    ok( $out =~ m/permission=1/i, "Delete ping: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Delete ping: result" );
+}
 
 # Create a new Touch
 # __mode=save&_type=touch
