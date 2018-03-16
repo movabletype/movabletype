@@ -55,11 +55,20 @@ $test_env->prepare_fixture(
             name    => 'test content type 1',
             blog_id => $blog_id,
         );
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 2',
+            blog_id => $blog_id,
+        );
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct1->id,
             status          => MT::ContentStatus::RELEASE(),
         ) for ( 1 .. 5 );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct2->id,
+            status          => MT::ContentStatus::RELEASE(),
+        ) for ( 1 .. 3 );
     }
 );
 
@@ -78,7 +87,7 @@ __END__
 --- template
 <mt:ContentsCount>
 --- expected
-5
+8
 
 === MT::ContentsCount in contents context
 --- template
@@ -86,20 +95,26 @@ __END__
 --- expected
 5
 
-=== MT::ContentsCount with content_type_id modifier
+=== MT::ContentsCount in contents context with limit modifier
 --- template
-<mt:ContentsCount content_type_id="[% ct1_id %]">
+<mt:Contents content_type="test content type 1" limit="3"><mt:ContentsHeader><mt:ContentsCount></mt:ContentsHeader></mt:Contents>
+--- expected
+3
+
+=== MT::ContentsCount with content_type="id" modifier
+--- template
+<mt:ContentsCount content_type="[% ct1_id %]">
 --- expected
 5
 
-=== MT::ContentsCount with ct_unique_id modifier
+=== MT::ContentsCount with content_type="unique_id" modifier
 --- SKIP
 --- template
-<mt:ContentsCount ct_unique_id="[% ct1_uid %]">
+<mt:ContentsCount content_type="[% ct1_uid %]">
 --- expected
 5
 
-=== MT::ContentsCount with content_type modifier
+=== MT::ContentsCount with content_type="name" modifier
 --- template
 <mt:ContentsCount content_type="test content type 1">
 --- expected
@@ -107,7 +122,7 @@ __END__
 
 === MT::ContentsCount with content_type modifier and wrong name
 --- template
-<mt:ContentsCount content_type="test content type 2">
+<mt:ContentsCount content_type="test content type 3">
 --- error
 No Content Type could be found.
 

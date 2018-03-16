@@ -1181,40 +1181,16 @@ sub _hdlr_contents_count {
         $count = scalar @{$contents};
     }
     else {
-        my $by = $args->{by_modified_on} ? 'modified_on' : 'authored_on';
-
         my %terms = (
             blog_id => $ctx->stash('blog_id'),
             status  => MT::ContentStatus::RELEASE(),
         );
-        my %args = (
-            sort      => $by,
-            direction => 'descend',
-        );
+        my %args = ();
 
         $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
             or return;
 
-        my ( $days, $limit );
-        my $blog = $ctx->stash('blog');
-        if ( $blog && ( $days = $blog->days_on_index ) ) {
-            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
-                $ctx->stash('blog_id') );
-            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{$by} = [$ago];
-            $args{range_incl}{$by} = 1;
-        }
-        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{lastn} = $limit;
-        }
-
-        my $iter = MT::ContentData->load_iter( \%terms, \%args );
-        my $last = $args->{lastn};
-        while ( my $cd = $iter->() ) {
-            return $count if $last && $last <= $count;
-            $count++;
-        }
+        $count = MT::ContentData->count( \%terms, \%args );
     }
 
     $ctx->count_format( $count, $args );
