@@ -10345,6 +10345,22 @@ fieldset.form-group {
   padding: 0.2rem 0.5rem;
 }
 
+.mt-contentblock__add {
+  display: block;
+  margin: 1rem 0;
+  position: relative;
+  border-top: 1px solid #A5A5A5;
+  cursor: pointer;
+  text-align: center;
+}
+
+.mt-contentblock__add .mt-icon, .mt-contentblock__add .mt-icon--primary, .mt-contentblock__add .mt-icon--secondary, .mt-contentblock__add .mt-icon--success, .mt-contentblock__add .mt-icon--info, .mt-contentblock__add .mt-icon--warning, .mt-contentblock__add .mt-icon--danger, .mt-contentblock__add .mt-icon--inverse {
+  position: absolute;
+  top: -12px;
+  background: #FFFFFF;
+  pointer-events: bounding-box;
+}
+
 /* Tabs */
 .mt-tabs {
   margin-bottom: 1rem;
@@ -10441,6 +10457,7 @@ fieldset.form-group {
 .modal-cancel:not([href]):not([tabindex]) {
   display: inline-block;
   margin: 0 1rem 0 0;
+  cursor: pointer;
   color: #004B9A;
   text-decoration: underline;
   vertical-align: middle;
