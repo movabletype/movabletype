@@ -787,7 +787,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <mt:var name="field_html" mteval="1">
   <mt:elseif name="data_type" eq="varchar">
     <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
-  <mt:elseif name="data_type" eq="blob">
+  <mt:elseif name="data_type" eq="text">
       <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
     </mt:if>
   <mt:elseif name="data_type" eq="integer">
