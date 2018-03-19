@@ -10,10 +10,12 @@
         <input type="checkbox" name="thumb" id="create_thumbnail-<mt:var name="id">" class="custom-control-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
         <label class="custom-control-label form-inline" for="create_thumbnail-<mt:var name="id" escape="html">">
           <__trans phrase="Use thumbnail">
-          (<__trans phrase="width:">
-          <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number" value="<mt:var name="thumb_width" escape="html">"/>
-          <__trans phrase="pixels">)
         </label>
+      </div>
+      <div class="form-group form-inline mt-3 ml-5">
+        (<__trans phrase="width:">
+        <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number w-10 mx-2" value="<mt:var name="thumb_width" escape="html">"/>
+        <__trans phrase="pixels">)
       </div>
       <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
     </div>
