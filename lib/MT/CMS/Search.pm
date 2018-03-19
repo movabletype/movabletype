@@ -53,7 +53,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
+                    { sort    => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -767,7 +767,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
+            { sort    => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -802,7 +802,11 @@ sub do_search_replace {
         }
     }
     my $quicksearch_id;
-    if ( $quicksearch && ( $search || '' ) ne '' && $search !~ m{ \D }xms ) {
+    if (   $quicksearch
+        && defined $search
+        && $search ne ''
+        && $search !~ m{ \D }xms )
+    {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
@@ -851,7 +855,7 @@ sub do_search_replace {
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
     my $plain_search = $search;
-    if ( ( $search || '' ) ne '' ) {
+    if ( defined $search && $search ne '' ) {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
     }
@@ -1170,7 +1174,7 @@ sub do_search_replace {
         my $content_field_types = $app->registry('content_field_types');
 
         my $re;
-        if ( ( $search || '' ) ne '' ) {
+        if ( defined $search && $search ne '' ) {
             $re = eval {qr/$search/};
             if ( my $err = $@ ) {
                 return $app->error(
@@ -1520,6 +1524,9 @@ sub do_search_replace {
     }
 
     my $error = $app->param('error') || '';
+    my $res_search
+        = $do_replace ? $app->param('orig_search') : $app->param('search');
+    $res_search = '' unless defined $res_search;
     my %res = (
         error               => $error,
         limit               => $limit,
@@ -1531,13 +1538,11 @@ sub do_search_replace {
         object_label        => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type         => $type,
-        search              => (
-            $do_replace ? scalar $app->param('orig_search')
-            : scalar $app->param('search')
-            )
-            || '',
-        searched => (
-            $do_replace ? scalar $app->param('orig_search')
+        search              => $res_search,
+        searched            => (
+            $do_replace
+            ? ( defined $app->param('orig_search')
+                    && $app->param('orig_search') ne '' )
             : (        $do_search
                     && defined $app->param('search')
                     && $app->param('search') ne '' )

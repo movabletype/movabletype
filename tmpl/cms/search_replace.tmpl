@@ -174,11 +174,11 @@ function toggleContentTypeDateTimeInputs() {
   <mt:if name="entry_type">
     <input type="hidden" name="entry_type" value="<mt:var name="entry_type" escape="html">" />
   </mt:if>
-  <mt:if name="searched"><mt:if name="search">
+  <mt:if name="searched"><mt:if name="search" ne="">
     <input type="hidden" name="orig_search" value="<mt:var name="search" escape="html">" /></mt:if>
   </mt:if>
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="return_args" value="<mt:if name="search">search=<mt:var name="search" escape="html">&amp;</mt:if><mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:if name="search" ne="">search=<mt:var name="search" escape="html">&amp;</mt:if><mt:var name="return_args" escape="html">" />
     <input type="hidden" name="replace_ids" value="" />
     <input type="hidden" name="do_search" value="" />
     <input type="hidden" name="do_replace" value="" />
