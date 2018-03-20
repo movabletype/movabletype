@@ -31,7 +31,7 @@
       var $this = $(this);
       var editor_id = $this.attr('id');
       var block_field = $('<div class="' + block_field_class + ' sortable"></div>');
-      var add_field = $('<div class="add_field-group"><div class="add_block"><svg title="追加" role="img" class="mt-icon mt-icon--lg"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_add"/></svg></div></div>');
+      var add_field = $('<a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_add"/></svg></a>');
 
       var manager = new MT.BlockEditorFieldManager(editor_id);
       managers[editor_id] = manager;
