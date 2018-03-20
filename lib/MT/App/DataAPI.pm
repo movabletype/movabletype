@@ -2193,12 +2193,11 @@ sub core_endpoints {
         },
 
         # content_field
-        {   id => 'list_content_fields',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::ContentField::list",
+        {   id      => 'list_content_fields',
+            route   => '/sites/:site_id/contentTypes/:content_type_id/fields',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::ContentField::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2211,9 +2210,8 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of content fields.',
             },
         },
-        {   id => 'create_content_field',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields',
+        {   id    => 'create_content_field',
+            route => '/sites/:site_id/contentTypes/:content_type_id/fields',
             resources   => ['content_field'],
             verb        => 'POST',
             version     => 4,
@@ -2265,12 +2263,11 @@ sub core_endpoints {
         },
 
         # content_data
-        {   id => 'list_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::ContentData::list",
+        {   id      => 'list_content_data',
+            route   => '/sites/:site_id/contentTypes/:content_type_id/data',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::ContentData::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2285,13 +2282,12 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id => 'create_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data',
-            resources   => ['content_data'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::ContentData::create",
+        {   id        => 'create_content_data',
+            route     => '/sites/:site_id/contentTypes/:content_type_id/data',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::create",
             error_codes => {
                 403 => 'Do not have permission to create a content data.',
             },
