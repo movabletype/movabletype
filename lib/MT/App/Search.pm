@@ -102,7 +102,7 @@ sub _filter_terms {
 sub init_request {
     my $app = shift;
 
-    if ( $app->isa('MT::App::Search') ) {
+    if ( $app->isa('MT::App::Search') && !$app->isa('MT::App::DataAPI') ) {
         $app->SUPER::init_request(@_);
         $app->mode('tag') if $app->param('tag');
     }
@@ -213,7 +213,8 @@ sub takedown {
     delete $app->{searchparam};
     delete $app->{search_string};
     delete $app->{cache_keys};
-    $app->SUPER::takedown(@_) if $app->isa('MT::App::Search');
+    $app->SUPER::takedown(@_)
+        if $app->isa('MT::App::Search') && !$app->isa('MT::App::DataAPI');
 }
 
 sub generate_cache_keys {
@@ -985,6 +986,27 @@ sub renderfeed {
         $app->{response_content_type} = $content_type;
     }
     return $out;
+}
+
+sub renderdata_api {
+    my $app = shift;
+    my ( $count, $iter ) = @_;
+
+    my @objects;
+    if ($iter) {
+        while ( my $obj = $iter->() ) {
+            push @objects, $obj;
+        }
+    }
+
+    require MT::DataAPI::Resource;
+    my $result = {
+        totalResults => ( $count || 0 ),
+        items => MT::DataAPI::Resource->from_object( \@objects ),
+    };
+
+    my $json = $app->current_format->{serialize}->($result);
+    return $json;
 }
 
 sub query_parse {
