@@ -2297,8 +2297,7 @@ BEGIN {
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
 
                 # This is for search endpoint.
-                default =>
-                    sub { MT::App::Search::core_parameters( MT->app ) },
+                default        => sub { MT->app->core_parameters() },
                 import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();

@@ -35,15 +35,31 @@ sub SearchAltTemplates {
         $_[0]->config->SearchAltTemplate
     );
 }
-sub SearchCacheTTL            { $_[0]->config->SearchCacheTTL }
-sub SearchDefaultTemplate     { $_[0]->config->SearchDefaultTemplate }
-sub SearchMaxResults          { $_[0]->config->SearchMaxResults }
-sub SearchNoOverride          { $_[0]->config->SearchNoOverride }
-sub SearchResultDisplay       { $_[0]->config->SearchResultDisplay }
-sub SearchSortBy              { $_[0]->config->SearchSortBy }
-sub SearchTemplatePath        { $_[0]->config->SearchTemplatePath }
-sub SearchThrottleIPWhitelist { $_[0]->config->SearchThrottleIPWhitelist }
-sub SearchThrottleSeconds     { $_[0]->config->SearchThrottleSeconds }
+
+sub SearchCacheTTL {
+    _get_config_value( $_[0], 'SearchCacheTTL' );
+}
+sub SearchDefaultTemplate { $_[0]->config->SearchDefaultTemplate }
+sub SearchMaxResults      { $_[0]->config->SearchMaxResults }
+sub SearchNoOverride      { $_[0]->config->SearchNoOverride }
+sub SearchResultDisplay   { $_[0]->config->SearchResultDisplay }
+sub SearchSortBy          { $_[0]->config->SearchSortBy }
+sub SearchTemplatePath    { $_[0]->config->SearchTemplatePath }
+
+sub SearchThrottleIPWhitelist {
+    _get_config_value( $_[0], 'SearchThrottleIPWhitelist' );
+}
+
+sub SearchThrottleSeconds {
+    _get_config_value( $_[0], 'SearchThrottleSeconds' );
+}
+
+sub _get_config_value {
+    my ( $app, $key ) = @_;
+    $app->isa('MT::App::Search::ContentData')
+        ? $app->$key
+        : $app->config->$key;
+}
 
 sub init {
     my $app = shift;
@@ -681,14 +697,14 @@ sub _cache_out {
     }
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{result},
-        $result, $app->SearchCacheTTL );
+        $result, SearchCacheTTL($app) );
     if ( exists( $app->{response_content_type} )
         && ( 'text/html' ne $app->{response_content_type} ) )
     {
         $cache_driver->set(
             $app->{cache_keys}{content_type},
             $app->{response_content_type},
-            $app->SearchCacheTTL
+            SearchCacheTTL($app)
         );
     }
 }
@@ -1409,7 +1425,7 @@ sub _default_throttle {
     }
 
     my $ip        = $app->remote_ip;
-    my $whitelist = $app->SearchThrottleIPWhitelist;
+    my $whitelist = SearchThrottleIPWhitelist($app);
     if ($whitelist) {
 
         # check for $ip in $whitelist
@@ -1438,7 +1454,7 @@ sub _default_throttle {
             die $msg;
         };
         $app->{__have_throttle} = 1;
-        alarm( $app->SearchThrottleSeconds );
+        alarm( SearchThrottleSeconds($app) );
         $$result = 1;
     }
     1;
@@ -1448,7 +1464,7 @@ sub _default_takedown {
     my ( $cb, $app ) = @_;
     alarm(0) if $app->{__have_throttle};
     if ( my $cache_driver = $app->{cache_driver} ) {
-        $cache_driver->purge_stale( 2 * $app->SearchCacheTTL );
+        $cache_driver->purge_stale( 2 * SearchCacheTTL($app) );
     }
     delete $app->{searchparam};
     1;
