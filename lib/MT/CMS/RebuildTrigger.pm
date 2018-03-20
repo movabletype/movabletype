@@ -320,6 +320,7 @@ sub add {
         }
         $params->{action_loop}  = action_loop($app);
         $params->{trigger_loop} = trigger_loop($app);
+        $params->{site_name}    = $app->blog->name;
 
         $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
     }
