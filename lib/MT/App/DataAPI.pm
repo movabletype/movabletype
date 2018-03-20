@@ -2193,12 +2193,11 @@ sub core_endpoints {
         },
 
         # content_field
-        {   id => 'list_content_fields',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::ContentField::list",
+        {   id      => 'list_content_fields',
+            route   => '/sites/:site_id/contentTypes/:content_type_id/fields',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::ContentField::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2211,9 +2210,8 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of content fields.',
             },
         },
-        {   id => 'create_content_field',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields',
+        {   id    => 'create_content_field',
+            route => '/sites/:site_id/contentTypes/:content_type_id/fields',
             resources   => ['content_field'],
             verb        => 'POST',
             version     => 4,
@@ -2265,12 +2263,11 @@ sub core_endpoints {
         },
 
         # content_data
-        {   id => 'list_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::ContentData::list",
+        {   id      => 'list_content_data',
+            route   => '/sites/:site_id/contentTypes/:content_type_id/data',
+            verb    => 'GET',
+            version => 4,
+            handler => "${pkg}v4::ContentData::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2285,13 +2282,12 @@ sub core_endpoints {
             },
             requires_login => 0,
         },
-        {   id => 'create_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data',
-            resources   => ['content_data'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::ContentData::create",
+        {   id        => 'create_content_data',
+            route     => '/sites/:site_id/contentTypes/:content_type_id/data',
+            resources => ['content_data'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::ContentData::create",
             error_codes => {
                 403 => 'Do not have permission to create a content data.',
             },
@@ -3226,90 +3222,6 @@ sub load_entry_prefs {
 
 sub _parse_entry_prefs {
     MT::App::CMS::_parse_entry_prefs(@_);
-}
-
-# MT::App::Search
-
-sub first_blog_id {
-    MT::App::Search::first_blog_id(@_);
-}
-
-sub generate_cache_keys {
-    MT::App::Search::generate_cache_keys(@_);
-}
-
-sub init_cache_driver {
-    MT::App::Search::init_cache_driver(@_);
-}
-
-sub create_blog_list {
-    MT::App::Search::create_blog_list(@_);
-}
-
-sub throttle_control {
-    MT::App::Search::throttle_control(@_);
-}
-
-sub throttle_response {
-    MT::App::Search::throttle_response(@_);
-}
-
-sub check_cache {
-    MT::App::Search::check_cache(@_);
-}
-
-sub search_terms {
-    my ($app) = @_;
-    if ( $app->param('tagSearch') ) {
-        require MT::App::Search::TagSearch;
-        return MT::App::Search::TagSearch::search_terms(@_);
-    }
-    else {
-        return MT::App::Search::search_terms(@_);
-    }
-}
-
-sub query_parse {
-    my ($app) = @_;
-    if ( $app->param('freeText') ) {
-        require MT::App::Search::FreeText;
-        return MT::App::Search::FreeText::query_parse(@_);
-    }
-    else {
-        return MT::App::Search::query_parse(@_);
-    }
-}
-
-sub _query_parse_core {
-    MT::App::Search::_query_parse_core(@_);
-}
-
-sub execute {
-    MT::App::Search::execute(@_);
-}
-
-sub count {
-    MT::App::Search::count(@_);
-}
-
-sub render {
-    my $app = shift;
-    my ( $count, $iter ) = @_;
-
-    my @objects;
-    if ($iter) {
-        while ( my $obj = $iter->() ) {
-            push @objects, $obj;
-        }
-    }
-
-    my $result = {
-        totalResults => ( $count || 0 ),
-        items => MT::DataAPI::Resource->from_object( \@objects ),
-    };
-
-    my $json = $app->current_format->{serialize}->($result);
-    return $json;
 }
 
 sub validate_magic {

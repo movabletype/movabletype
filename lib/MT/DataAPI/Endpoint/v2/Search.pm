@@ -37,8 +37,16 @@ sub search {
         );
     }
 
+    my $search_class
+        = $app->param('freeText')
+        ? 'MT::App::Search::FreeText'
+        : 'MT::App::Search';
+    local @MT::App::DataAPI::ISA = ($search_class);
+
     MT::App::Search::init_request($app);
     return $app->error( $app->errstr, 400 ) if $app->errstr;
+
+    $app->param( 'format', 'data_api' );
 
     my $result;
     if ($tag_search) {
