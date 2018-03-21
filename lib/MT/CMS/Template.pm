@@ -2797,7 +2797,7 @@ sub refresh_individual_templates {
 
     # force saving the revision when indiv. templates are refreshed.
     $app->param( 'save_revision', 1 );
-    $app->param( 'revision-note', $app->translate('Template Referesh') );
+    $app->param( 'revision-note', $app->translate('Template Refresh') );
 
     require MT::DefaultTemplates;
     my $tmpl_list;

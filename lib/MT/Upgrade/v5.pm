@@ -762,7 +762,7 @@ sub _v5_remove_technorati {
         $blog->save;
         $self->progress(
             $self->translate_escape(
-                "Removing technorati update-ping service from [_1] (ID:[_2]).",
+                "Removing Technorati update-ping service from [_1] (ID:[_2]).",
                 $blog->name,
                 $blog->id,
             )

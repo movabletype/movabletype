@@ -422,7 +422,7 @@ sub core_widgets {
             default  => 1,
         },
         system_information => {
-            label    => 'System Infromation',
+            label    => 'System Information',
             template => 'widget/system_information.tmpl',
             handler  => "${pkg}Dashboard::system_information_widget",
             singular => 1,

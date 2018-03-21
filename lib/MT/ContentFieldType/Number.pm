@@ -112,11 +112,11 @@ sub options_validation_handler {
         $min_value =~ /^[+\-]?\d+(\.\d+)?$/;
 
         return $app->translate(
-            "A minimun value must be an integer, or must be set decimal places to use decimal value."
+            "A minimum value must be an integer, or must be set decimal places to use decimal value."
         ) if !$decimal_places and defined $1;
 
         return $app->translate(
-            "A minimun value must be an integer and between [_1] and [_2]",
+            "A minimum value must be an integer and between [_1] and [_2]",
             $cfg_min_value, $cfg_max_value )
             if $min_value < $cfg_min_value || $min_value > $cfg_max_value;
     }

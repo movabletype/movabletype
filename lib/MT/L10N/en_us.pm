@@ -145,7 +145,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Clicking the link below will export all of your current weblog entries to the Tangent server. This is generally a one-time push of your entries, to be done after you have installed the Tangent add-on for Movable Type, but conceivably it could be executed whenever you wish.',
 
     '_NO_SUPERUSER_DISABLE' =>
-        'Because you are a system administrator on the Movable Type system, you can not disable yourself.',
+        'Because you are a system administrator on the Movable Type system, you cannot disable yourself.',
 
     '_USAGE_AUTHORS' =>
         'This is a list of all of the users in the Movable Type system. You can edit a user\'s profile by clicking on his/her name.',

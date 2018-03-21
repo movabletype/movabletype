@@ -87,6 +87,6 @@ jQuery(function() {
     jQuery.mtValidateAddMessages({
         '.valid-path': trans('You must set a valid path.'),
         '.valid-custom-path': trans('You must set a valid path.'),
-        '.upload-destination': trans('You must set a path begining with %s or %a.')
+        '.upload-destination': trans('You must set a path beginning with %s or %a.')
     });
 });
