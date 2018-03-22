@@ -9791,6 +9791,16 @@ fieldset.form-group {
   text-align: center;
 }
 
+.mt-categorylist {
+  margin: 1rem 0 0 0;
+  max-height: 10rem;
+  padding: 1rem;
+  border: 1px solid #CACACA;
+  border-radius: 0.25rem;
+  background: #FFFFFF;
+  overflow-y: auto;
+}
+
 /* Buttons */
 .btn, .mt-primaryNavigation__footer, .mt-primaryNavigation__footer--invert {
   cursor: pointer;
