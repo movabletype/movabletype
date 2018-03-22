@@ -26,31 +26,31 @@ sub ExcludeBlogs { $_[0]->config->ContentDataExcludeBlogs }
 sub IncludeBlogs { $_[0]->config->ContentDataIncludeBlogs }
 
 sub SearchAlwaysAllowTemplateID {
-    $_[0]->config->SearchContentDataAlwaysAllowTemplateID;
+    $_[0]->config->ContentDataSearchAlwaysAllowTemplateID;
 }
 
 sub SearchAltTemplates {
-    +(  $_[0]->config->default('SearchContentDataAltTemplate'),
-        $_[0]->config->SearchContentDataAltTemplate
+    +(  $_[0]->config->default('ContentDataSearchAltTemplate'),
+        $_[0]->config->ContentDataSearchAltTemplate
     );
 }
-sub SearchCacheTTL { $_[0]->config->SearchContentDataCacheTTL }
+sub SearchCacheTTL { $_[0]->config->ContentDataSearchCacheTTL }
 
 sub SearchDefaultTemplate {
-    $_[0]->config->SearchContentDataDefaultTemplate;
+    $_[0]->config->ContentDataSearchDefaultTemplate;
 }
-sub SearchMaxResults    { $_[0]->config->SearchContentDataMaxResults }
-sub SearchNoOverride    { $_[0]->config->SearchContentDataNoOverride }
-sub SearchResultDisplay { $_[0]->config->SearchContentDataResultDisplay }
-sub SearchSortBy        { $_[0]->config->SearchContentDataSortBy }
-sub SearchTemplatePath  { $_[0]->config->SearchContentDataTemplatePath }
+sub SearchMaxResults    { $_[0]->config->ContentDataSearchMaxResults }
+sub SearchNoOverride    { $_[0]->config->ContentDataSearchNoOverride }
+sub SearchResultDisplay { $_[0]->config->ContentDataSearchResultDisplay }
+sub SearchSortBy        { $_[0]->config->ContentDataSearchSortBy }
+sub SearchTemplatePath  { $_[0]->config->ContentDataSearchTemplatePath }
 
 sub SearchThrottleIPWhitelist {
-    $_[0]->config->SearchContentDataThrottleIPWhitelist;
+    $_[0]->config->ContentDataSearchThrottleIPWhitelist;
 }
 
 sub SearchThrottleSeconds {
-    $_[0]->config->SearchContentDataThrottleSeconds;
+    $_[0]->config->ContentDataSearchThrottleSeconds;
 }
 
 sub core_methods {

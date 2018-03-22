@@ -1776,7 +1776,7 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'SearchContentDataTemplatePath' => {
+            'ContentDataSearchTemplatePath' => {
                 default => sub { $_[0]->SearchTemplatePath }
             },
             'ThemesDirectory' => {
@@ -1896,8 +1896,8 @@ BEGIN {
             'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
-            'SearchContentDataAlwaysAllowTemplateId' => {
-                default => sub { $_[0]->SearchAlwaysAllowTemplateId }
+            'ContentDataSearchAlwaysAllowTemplateID' => {
+                default => sub { $_[0]->SearchAlwaysAllowTemplateID }
             },
             'PreviewInNewWindow'  => { default => 1, },
             'BasenameCheckCompat' => { default => 0, },
@@ -1928,28 +1928,28 @@ BEGIN {
                 default => 'feed results_feed.tmpl',
             },
             'SearchSortBy'            => undef,
-            'SearchContentDataSortBy' => {
+            'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
             },
             'SearchSortOrder'  => { default => 'ascend', },
             'SearchNoOverride' => { default => 'SearchMaxResults', },
-            'SearchContentDataNoOverride' => {
+            'ContentDataSearchNoOverride' => {
                 default => sub { $_[0]->SearchNoOverride }
             },
             'SearchResultDisplay'            => { alias => 'ResultDisplay', },
-            'SearchContentDataResultDisplay' => {
+            'ContentDataSearchResultDisplay' => {
                 default => sub { $_[0]->SearchResultDisplay }
             },
             'SearchExcerptWords'    => { alias => 'ExcerptWords', },
             'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
-            'SearchContentDataDefaultTemplate' =>
+            'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
             'SearchMaxResults'            => { alias => 'MaxResults', },
-            'SearchContentDataMaxResults' => {
+            'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
             'SearchAltTemplate'            => { alias => 'AltTemplate' },
-            'SearchContentDataAltTemplate' => {
+            'ContentDataSearchAltTemplate' => {
                 type    => 'ARRAY',
                 default => 'feed content_data_results_feed.tmpl',
             },
@@ -1962,15 +1962,15 @@ BEGIN {
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
             'SearchCacheTTL'            => { default => 20, },
-            'SearchContentDataCacheTTL' => {
+            'ContentDataSearchCacheTTL' => {
                 default => sub { $_[0]->SearchCacheTTL }
             },
             'SearchThrottleSeconds'            => { default => 5 },
-            'SearchContentDataThrottleSeconds' => {
+            'ContentDataSearchThrottleSeconds' => {
                 default => sub { $_[0]->SearchThrottleSeconds }
             },
-            'SearchThrottleIPWhitelist'    => undef,
-            'SearchContentDataIPWhitelist' => {
+            'SearchThrottleIPWhitelist'            => undef,
+            'ContentDataSearchThrottleIPWhitelist' => {
                 default => sub { $_[0]->SearchThrottleIPWhitelist }
             },
             'SearchContentTypes' => undef,
