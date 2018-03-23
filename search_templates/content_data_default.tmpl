@@ -112,6 +112,9 @@
 
                           <MTBlogResultFooter>
                               </div>
+                              <div class="content-navi">
+                                  <mt:IfPreviousResults><a href="<$mt:PreviousLink$>" rel="prev">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</mt:IfPreviousResults><mt:PagerBlock><mt:IfCurrentPage><$mt:Var name="__value__"$><mt:Else><a href="<$mt:PagerLink$>"><$mt:Var name="__value__"$></a></mt:IfCurrentPage><mt:Unless name="__last__">&nbsp;</mt:Unless></mt:PagerBlock><mt:IfMoreResults>&nbsp;&nbsp;<a href="<$mt:NextLink$>" rel="next"><__trans phrase="Next"> &gt;</a></mt:IfMoreResults>
+                              </div>
                           </MTBlogResultFooter>
                           <MTIfMaxResultsCutoff>
                           <MT_TRANS phrase="Showing the first [_1] results." params="<$MTMaxResults$>">
