@@ -222,44 +222,6 @@ sub add {
                                 }
                             }
                         }
-                        elsif ( $source eq 'object' ) {
-                            if ( !$app->param('search') ) {
-                                if ( ( my $loop = $param->{object_loop} )
-                                    && !$offset )
-                                {
-                                    push @$loop,
-                                        {
-                                        id    => '1',
-                                        label => $app->translate(
-                                            'Entry or Page'
-                                        ),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id => '2',
-                                        label =>
-                                            $app->translate('Content Type'),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id    => '3',
-                                        label => $app->translate('Comment'),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id    => '4',
-                                        label => $app->translate('Trackback'),
-                                        description => $app->translate(''),
-                                        };
-                                    $count = $count + 4;
-                                    splice( @$loop, $limit )
-                                        if scalar(@$loop) > $limit;
-                                }
-                            }
-                        }
                         return $count;
                     },
                 },
