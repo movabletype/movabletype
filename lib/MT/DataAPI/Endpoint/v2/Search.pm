@@ -47,6 +47,7 @@ sub search {
     return $app->error( $app->errstr, 400 ) if $app->errstr;
 
     $app->param( 'format', 'data_api' );
+    local *MT::App::Search::renderdata_api = \&_renderdata_api;
 
     my $result;
     if ($tag_search) {
@@ -68,6 +69,27 @@ sub search {
     $app->print_encode($result);
 
     return;
+}
+
+sub _renderdata_api {
+    my $app = shift;
+    my ( $count, $iter ) = @_;
+
+    my @objects;
+    if ($iter) {
+        while ( my $obj = $iter->() ) {
+            push @objects, $obj;
+        }
+    }
+
+    require MT::DataAPI::Resource;
+    my $result = {
+        totalResults => ( $count || 0 ),
+        items => MT::DataAPI::Resource->from_object( \@objects ),
+    };
+
+    my $json = $app->current_format->{serialize}->($result);
+    return $json;
 }
 
 1;

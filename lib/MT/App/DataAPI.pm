@@ -2353,6 +2353,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to publish content_data.', },
         },
+
+        # search
+        {   id      => 'search',
+            route   => '/search',
+            version => 4,
+            handler => "${pkg}v4::Search::search",
+            error_codes =>
+                { 403 => 'Do not have permission to search objects.', },
+            requires_login => 0,
+        },
     ];
 }
 
