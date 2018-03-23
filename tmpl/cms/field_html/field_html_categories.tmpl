@@ -205,17 +205,15 @@
 
           <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
-              <div class="category-selector-header form-group">
-                  <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"><__trans phrase="Add"></a>
+            <div class="input-group">
+              <input id="add-category-input-<mt:var name="content_field_id" escape="html">" type="text" class="form-control add-category-input" placeholder="<__trans phrase="Category Name">" aria-label="<__trans phrase="Category Name">">
+              <div class="input-group-append">
+                <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></button>
               </div>
-              <div id="add-category-form-<mt:var name="content_field_id" escape="html">" class="form-group form-inline add-category-form hidden" style="display: none;">
-                  <input id="add-category-input-<mt:var name="content_field_id" escape="html">" class="form-control add-category-input input-hint" type="text" value="" placeholder="<__trans phrase="Category Name">" />
-                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></span></a>
-                  <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="<__trans phrase="Remove">" size="sm"></span></a>
-              </div>
+            </div>
           </mt:if>
-            <div class="mt-suggest position-relative">
-              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list" class="category-selector-list mt_suggest__list p-4">
+            <div class="mt-categorylist">
+              <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">-list">
               </div>
             </div>
           </div><!-- /category-selector -->
