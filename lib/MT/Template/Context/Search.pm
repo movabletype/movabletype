@@ -488,9 +488,25 @@ sub context_script {
     }
 
     my $content_field = $ctx->stash('search_content_field');
-    $link .= '&content_field=' . encode_url($content_field) if $content_field;
+    $link
+        .= '&content_field='
+        . encode_url( _decode_utf8_if_needed($content_field) )
+        if $content_field;
+
+    my $content_types = $ctx->stash('search_content_types');
+    $link
+        .= '&SearchContentTypes='
+        . encode_url( _decode_utf8_if_needed($content_types) )
+        if $content_types;
 
     $link;
+}
+
+sub _decode_utf8_if_needed {
+    my $str = shift;
+    my $enc = MT->config->PublishCharset;
+    return $str unless lc($enc) =~ /^utf-?8$/ && !Encode::is_utf8($str);
+    Encode::decode_utf8($str);
 }
 
 1;
