@@ -31,6 +31,9 @@ sub search {
     return $app->error( $app->errstr, 400 ) if $app->errstr;
 
     $app->param( 'format', 'data_api' );
+    local *MT::App::Search::ContentData::renderdata_api
+        = \&MT::DataAPI::Endpoint::v2::Search::_renderdata_api;
+
     my $result = $app->process;
     $app->takedown;
     return unless $result;

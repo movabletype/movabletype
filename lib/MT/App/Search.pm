@@ -1024,27 +1024,6 @@ sub renderfeed {
     return $out;
 }
 
-sub renderdata_api {
-    my $app = shift;
-    my ( $count, $iter ) = @_;
-
-    my @objects;
-    if ($iter) {
-        while ( my $obj = $iter->() ) {
-            push @objects, $obj;
-        }
-    }
-
-    require MT::DataAPI::Resource;
-    my $result = {
-        totalResults => ( $count || 0 ),
-        items => MT::DataAPI::Resource->from_object( \@objects ),
-    };
-
-    my $json = $app->current_format->{serialize}->($result);
-    return $json;
-}
-
 sub query_parse {
     my $app = shift;
     my (%columns) = @_;
