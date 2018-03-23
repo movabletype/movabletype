@@ -256,12 +256,12 @@ sub init_core_registry {
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
                 label =>
-                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.',
+                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan via OpenID.',
             },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
                 label =>
-                    'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.',
+                    'This module is needed to enable comment registration. Also required in order to send mail via an SMTP Server.',
             },
             'XML::Atom' => {
                 link  => 'http://search.cpan.org/dist/XML-Atom',
@@ -270,7 +270,7 @@ sub init_core_registry {
             'Cache::Memcached' => {
                 link => 'http://search.cpan.org/dist/Cache-Memcached',
                 label =>
-                    'This module is required in order to use memcached as caching mechanism used by Movable Type.',
+                    'This module is required in order to use memcached as caching mechanism by Movable Type.',
             },
             'Archive::Tar' => {
                 link => 'http://search.cpan.org/dist/Archive-Tar',

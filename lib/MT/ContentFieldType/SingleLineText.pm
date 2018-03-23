@@ -57,7 +57,7 @@ sub options_validation_handler {
             or $min_length > 1024 )
         {
             return $app->translate(
-                "A number of minimum length of '[_1]' ([_2]) must be a positive integer between 0 and 1024.",
+                "A minimum length number for '[_1]' ([_2]) must be a positive integer between 0 and 1024.",
                 $label, $field_label
             );
         }
@@ -70,7 +70,7 @@ sub options_validation_handler {
             or $max_length > 1024 )
         {
             return $app->translate(
-                "A number of maximum length of '[_1]' ([_2]) must be a positive integer between 1 and 1024.",
+                "A maximum length number for '[_1]' ([_2]) must be a positive integer between 1 and 1024.",
                 $label, $field_label
             );
         }
@@ -81,7 +81,7 @@ sub options_validation_handler {
         my $max = '' ne $max_length ? $max_length : 1024;
         if ( length($initial_value) > $max ) {
             return $app->translate(
-                "An initial value of '[_1]' ([_2]) must be shorter than [_3] characters",
+                "An initial value for '[_1]' ([_2]) must be shorter than [_3] characters",
                 $label, $field_label, $max );
         }
     }

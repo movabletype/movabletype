@@ -4281,7 +4281,7 @@ EOT
 
 =head2 App:ContentFieldOption
 
-An application template tag used to display an content field option form field.
+An application template tag used to display a content field option form field.
 
 B<Attributes:>
 
@@ -5208,11 +5208,11 @@ name, identifier, or outfile.
 
 =item * entry_id
 
-The numeric system ID of the entry. This attribute can not use with blog_id.
+The numeric system ID of the entry. This attribute cannot use with blog_id.
 
 =item * blog_id
 
-The numeric system ID of the blog/website. This attribute can not use with entry_id.
+The numeric system ID of the blog/website. This attribute cannot use with entry_id.
 
 =item * with_index (optional; default "0")
 

@@ -2262,7 +2262,7 @@ which appeared in the XMl file but could not be restored because
 any parent objects are missing.  The hash keys are stored in
 the format MT::ObjectClassName#old_id and hash values are 1.
 
-$callback is a code reference which will print out the passed paramter.
+$callback is a code reference which will print out the passed parameter.
 Callback method can use this to communicate with users.
 
 If a plugin has an MT::Object derived type, the plugin will register 
@@ -2304,7 +2304,7 @@ which appeared in the XMl file but could not be restored because
 any parent objects are missing.  The hash keys are stored in
 the format MT::ObjectClassName#old_id and hash values are 1.
 
-$callback is a code reference which will print out the passed paramter.
+$callback is a code reference which will print out the passed parameter.
 Callback method can use this to communicate with users.
 
 =item restore_asset
@@ -2316,7 +2316,7 @@ Calling convention is:
 This callback is called when asset's actual file is restored.
 $asset has new url and path.
 
-$callback is a code reference which will print out the passed paramter.
+$callback is a code reference which will print out the passed parameter.
 Callback method can use this to communicate with users.
 
 =back

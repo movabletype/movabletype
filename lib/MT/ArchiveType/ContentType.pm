@@ -47,7 +47,7 @@ sub archive_file {
     my $content   = $ctx->{__stash}{content};
 
     my $file;
-    Carp::confess("archive_file_for ContentType archive needs an content")
+    Carp::confess("archive_file_for ContentType archive needs a content")
         unless $content;
     if ($file_tmpl) {
         $ctx->{current_timestamp} = $timestamp;

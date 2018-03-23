@@ -9,14 +9,14 @@
 
   <mtapp:ContentFieldOption
      id="content_type-min"
-     label="<__trans phrase="Minimum number of selection">"
+     label="<__trans phrase="Minimum number of selections">"
      attr="show={ options.multiple }">
     <input ref="min" type="number" name="min" id="content_type-min" class="form-control w-25" min="0" value={ options.min }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="content_type-max"
-     label="<__trans phrase="maximum number of selection">"
+     label="<__trans phrase="Maximum number of selections">"
      attr="show={ options.multiple }">
     <input ref="max" type="number" name="max" id="content_type-max" class="form-control w-25" min="1" value={ options.max }>
   </mtapp:ContentFieldOption>
@@ -38,7 +38,7 @@
         class="warning"
         can_close="0"
       >
-        <__trans phrase="There is no content type that can be selected. Please create a content type if you use Content Type field type.">
+        <__trans phrase="There is no content type that can be selected. Please create a content type if you use the Content Type field type.">
       </mtapp:statusmsg>
     </mt:if>
   </mtapp:ContentFieldOption>

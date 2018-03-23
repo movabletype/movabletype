@@ -36,7 +36,7 @@
       id="not-deleted"
       class="error"
       can_close="0">
-      <__trans phrase="Some content field was not deleted. You need to delete archive mapping for the content field first.">
+      <__trans phrase="Some content fields were not deleted. You need to delete archive mapping for the content field first.">
     </mtapp:statusmsg>
   </mt:if>
 </div>
@@ -134,7 +134,7 @@
       var hasNoValuesOption = $e.find('tbody tr').length == 0;
       if (hasNoValuesOption) {
         this.error = true;
-        this.errstr = trans('1 or more label-value pair is required');
+        this.errstr = trans('1 or more label-value pairs are required');
         return false;
       }
 

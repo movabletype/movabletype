@@ -157,7 +157,7 @@ sub options_validation_handler {
     my $time = $options->{initial_time} || '00:00:00';
     my $ts   = "$date $time";
     return $app->translate(
-        "Invalid date \'[_1]\'; An initial value times must be in the format HH:MM:SS.",
+        "Invalid date \'[_1]\'; An initial time value be in the format HH:MM:SS.",
         $time
     ) if !MT::Util::is_valid_date($ts);
 

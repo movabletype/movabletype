@@ -540,7 +540,7 @@ sub edit {
                 }
                 elsif ( $obj_type eq 'ct_archive' ) {
 
-                 # only include if it is NOT an contenttype-based archive type
+                 # only include if it is NOT a contenttype-based archive type
                     next if $archiver->contenttype_based;
                 }
                 elsif ( $obj_type eq 'ct' ) {

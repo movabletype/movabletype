@@ -548,7 +548,7 @@ sub preview_by_id {
     my $entry_json = $app->param( $entry->class )
         or return $app->error(
         $app->translate(
-            'A resource "[_1_]" is required.',
+            'A resource "[_1]" is required.',
             $entry->class_label
         ),
         400
@@ -664,7 +664,7 @@ sub _preview_common {
     $app->param( '_type', $entry->class );
 
 # TODO: Allow to make a preview content when Individual/Page mapping not found.
-# Currently, we can not make preview content when templatemap could not be found.
+# Currently, we cannot make preview content when templatemap could not be found.
     require MT::TemplateMap;
     my $at = $entry->class eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(

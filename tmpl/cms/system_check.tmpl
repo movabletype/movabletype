@@ -15,10 +15,10 @@
 
 <ul class="list-unstyled">
   <li>
-    <strong><__trans phrase="Memcache Status"></strong>:
-    <mt:setvarblock name="memcached_server_string"><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></mt:setvarblock><__trans phrase="Memcache is [_1]." params="<em><mt:var name="memcached_server_string"></em>">
+    <strong><__trans phrase="Memcached Status"></strong>:
+    <mt:setvarblock name="memcached_server_string"><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></mt:setvarblock><__trans phrase="Memcached is [_1]." params="<em><mt:var name="memcached_server_string"></em>">
   <mt:if name="memcached_enabled">
-    <mt:setvarblock name="memcached_status_string"><mt:if name="memcached_active"><__trans phrase="available"><mt:else><__trans phrase="unavailable"></mt:if></mt:setvarblock><__trans phrase="Memcache Server is [_1]." params="<em><mt:var name="memcached_status_string"></em>">
+    <mt:setvarblock name="memcached_status_string"><mt:if name="memcached_active"><__trans phrase="available"><mt:else><__trans phrase="unavailable"></mt:if></mt:setvarblock><__trans phrase="Memcached Server is [_1]." params="<em><mt:var name="memcached_status_string"></em>">
   </mt:if>
   </li>
   <li>
