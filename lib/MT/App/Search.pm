@@ -165,10 +165,7 @@ sub init_request {
         or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
     my $page = $app->param('page') || 1;
-    my $limit
-        = $app->param('limit')
-        || $blog->entries_on_index
-        || $app->SearchMaxResults;
+    my $limit = $app->get_limit($blog);
     my $offset;
     $offset = ( $page - 1 ) * $limit if ( $page && $limit );
     $app->param( 'limit',  $limit )  if $limit;
@@ -248,6 +245,16 @@ sub init_request {
     else {
         return $app->error( $app->translate('Invalid request.') );
     }
+}
+
+sub get_limit {
+    my $app = shift;
+    my ($blog) = @_;
+    my $limit
+        = $app->param('limit')
+        || $blog->entries_on_index
+        || $app->SearchMaxResults;
+    $limit;
 }
 
 sub _get_no_override {

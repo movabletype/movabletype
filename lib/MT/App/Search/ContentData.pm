@@ -84,6 +84,13 @@ sub init_request {
     $app->_parse_search_content_types;
 }
 
+sub get_limit {
+    my $app   = shift;
+    my $limit = $app->param('limit')
+        || $app->SearchMaxResults;
+    $limit;
+}
+
 sub prepare_context {
     my $app = shift;
     my $ctx = $app->SUPER::prepare_context(@_);
