@@ -813,10 +813,11 @@ sub template_param_list {
             $param->{set_name} = $set->name;
         }
 
-        my $verb = $set ? 'Edit' : 'Create';
         my $object_label = $app->translate('Category Set');
         $param->{page_title}
-            = $app->translate( "${verb} [_1]", $object_label );
+            = $set
+            ? $app->translate( "Edit [_1]",   $object_label )
+            : $app->translate( "Create [_1]", $object_label );
     }
     else {
         $param->{page_title}
