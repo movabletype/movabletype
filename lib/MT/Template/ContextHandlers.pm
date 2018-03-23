@@ -934,6 +934,7 @@ sub core_tags {
             SearchMaxResults =>
                 '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
             SearchIncludeBlogs   => sub {''},
+            SearchContentTypes   => sub {''},
             SearchTemplateID     => sub {0},
             SearchTemplateBlogID => sub {0},
 
@@ -4172,7 +4173,7 @@ sub _hdlr_app_contentfield_option_group {
   <mtapp:ContentFieldOption
      id="$type-required"
      label="<__trans phrase="Is this field required?">">
-    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required }><label for="$type-required"><__trans phrase="Is this field required?"></label>
+    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required } onclick={ changeStateRequired }><label for="$type-required"><__trans phrase="Is this field required?"></label>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
@@ -4270,6 +4271,10 @@ sub _hdlr_app_contentfield_option_group {
     this.parent.parent.recalcHeight(target)
 
     jQuery("a[aria-controls='field-options-" + this.fieldId + "']").attr('aria-expanded', false)
+  }
+
+  changeStateRequired(e) {
+    this.options.required = e.target.checked
   }
 
   $script
@@ -5590,8 +5595,9 @@ sub _hdlr_trackback_script {
 
 =head2 SearchScript
 
-Returns the value of the C<SearchScript> configuration setting. The
-default for this setting if unassigned is "mt-search.cgi".
+Returns the value of the C<SearchScript> or C<ContentDataSearchScript>
+configuration setting. The default for this setting if unassigned is
+"mt-search.cgi" or "mt-cdsearch.cgi".
 
 =for tags configuration
 
@@ -5599,7 +5605,9 @@ default for this setting if unassigned is "mt-search.cgi".
 
 sub _hdlr_search_script {
     my ($ctx) = @_;
-    return $ctx->{config}->SearchScript;
+    return MT->instance->isa('MT::App::Search::ContentData')
+        ? $ctx->{config}->ContentDataSearchScript
+        : $ctx->{config}->SearchScript;
 }
 
 ###########################################################################

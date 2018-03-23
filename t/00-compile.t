@@ -4,10 +4,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -125,6 +126,7 @@ use_ok('MT::CMS::Debug');
 use_ok('MT::Debug::GitInfo');
 
 # MT7
+use_ok('MT::App::Search::ContentData');
 use_ok('MT::ArchiveType::ContentType');
 use_ok('MT::ArchiveType::ContentTypeAuthor');
 use_ok('MT::ArchiveType::ContentTypeAuthorDaily');
@@ -181,6 +183,7 @@ use_ok('MT::DataAPI::Endpoint::v4::ContentData');
 use_ok('MT::DataAPI::Endpoint::v4::ContentField');
 use_ok('MT::DataAPI::Endpoint::v4::ContentType');
 use_ok('MT::DataAPI::Endpoint::v4::Publish');
+use_ok('MT::DataAPI::Endpoint::v4::Search');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::ContentData');
 use_ok('MT::DataAPI::Resource::v4::ContentField');
@@ -188,6 +191,7 @@ use_ok('MT::DataAPI::Resource::v4::ContentType');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Util::ContentType');
 
 SKIP: {
 

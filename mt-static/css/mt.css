@@ -9791,6 +9791,16 @@ fieldset.form-group {
   text-align: center;
 }
 
+.mt-categorylist {
+  margin: 1rem 0 0 0;
+  max-height: 10rem;
+  padding: 1rem;
+  border: 1px solid #CACACA;
+  border-radius: 0.25rem;
+  background: #FFFFFF;
+  overflow-y: auto;
+}
+
 /* Buttons */
 .btn, .mt-primaryNavigation__footer, .mt-primaryNavigation__footer--invert {
   cursor: pointer;
@@ -10355,10 +10365,11 @@ fieldset.form-group {
 }
 
 .mt-contentblock__add .mt-icon, .mt-contentblock__add .mt-icon--primary, .mt-contentblock__add .mt-icon--secondary, .mt-contentblock__add .mt-icon--success, .mt-contentblock__add .mt-icon--info, .mt-contentblock__add .mt-icon--warning, .mt-contentblock__add .mt-icon--danger, .mt-contentblock__add .mt-icon--inverse {
-  position: absolute;
+  display: block;
+  margin: 0 auto;
   top: -12px;
   background: #FFFFFF;
-  pointer-events: bounding-box;
+  pointer-events: all;
 }
 
 /* Tabs */

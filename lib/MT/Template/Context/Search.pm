@@ -18,6 +18,7 @@ sub load_core_tags {
             SearchString         => \&_hdlr_search_string,
             SearchResultCount    => \&_hdlr_result_count,
             MaxResults           => \&_hdlr_max_results,
+            SearchContentTypes   => \&_hdlr_search_content_types,
             SearchIncludeBlogs   => \&_hdlr_include_blogs,
             SearchTemplateID     => \&_hdlr_template_id,
             SearchTemplateBlogID => \&_hdlr_template_blog_id,
@@ -336,6 +337,8 @@ sub _hdlr_results {
             if $this_object->can('blog');
         local $ctx->{__stash}{blog_id} = $this_object->blog->id
             if $this_object->can('blog') && $this_object->blog;
+        local $ctx->{__stash}{content_type} = $this_object->content_type
+            if $this_object->isa('MT::ContentData');
         my $ts;
         if ( $this_object->isa('MT::Entry') ) {
             $ts = $this_object->authored_on;
@@ -415,12 +418,33 @@ sub _hdlr_results {
     $output;
 }
 
+###########################################################################
+
+=head2 SearchContentTypes
+
+Used in the search result template to pass the SearchContentTypes parameters
+through from the search form keeping the context of any followup search
+the same as the initial search.
+
+B<Example:>
+
+    <input type="hidden" name="SearchContentTypes" value="<$mt:SearchContenTypes$>" />
+
+=for tags search
+
+=cut
+
+sub _hdlr_search_content_types {
+    my $ret = $_[0]->stash('search_content_types');
+    defined $ret ? $ret : '';
+}
+
 sub context_script {
     my ( $ctx, $args, $cond ) = @_;
 
     my $search_string = decode_html( $ctx->stash('search_string') );
     my $cgipath       = $ctx->invoke_handler( 'cgipath', $args );
-    my $script        = $ctx->{config}->SearchScript;
+    my $script        = $ctx->invoke_handler( 'searchscript', $args );
     my $link = $cgipath . $script . '?search=' . encode_url($search_string);
     if ( my $mode = $ctx->stash('mode') ) {
         $mode = encode_url($mode);
@@ -462,7 +486,27 @@ sub context_script {
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }
+
+    my $content_field = $ctx->stash('search_content_field');
+    $link
+        .= '&content_field='
+        . encode_url( _decode_utf8_if_needed($content_field) )
+        if $content_field;
+
+    my $content_types = $ctx->stash('search_content_types');
+    $link
+        .= '&SearchContentTypes='
+        . encode_url( _decode_utf8_if_needed($content_types) )
+        if $content_types;
+
     $link;
+}
+
+sub _decode_utf8_if_needed {
+    my $str = shift;
+    my $enc = MT->config->PublishCharset;
+    return $str unless lc($enc) =~ /^utf-?8$/ && !Encode::is_utf8($str);
+    Encode::decode_utf8($str);
 }
 
 1;
