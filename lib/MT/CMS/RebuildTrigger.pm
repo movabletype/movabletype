@@ -42,7 +42,11 @@ sub config {
         my $objct_type
             = $rt->object_type == MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
             ? 'entry'
-            : 'content';
+            : $rt->object_type == MT::RebuildTrigger::TYPE_CONTENT_TYPE()
+            ? 'content'
+            : $rt->object_type == MT::RebuildTrigger::TYPE_COMMENT()
+            ? 'comment'
+            : 'ping';
         my $event
             = $rt->event == MT::RebuildTrigger::EVENT_SAVE()    ? 'save'
             : $rt->event == MT::RebuildTrigger::EVENT_PUBLISH() ? 'pub'
@@ -259,9 +263,10 @@ sub add {
                 label => $app->translate("Content Type")
             },
         ];
+        my $comment_switch = $app->config->PluginSwitch->{Comments};
         eval { require Comments; };
 
-        unless ($@) {
+        if ( !$@ && ( !defined($comment_switch) || $comment_switch != 0 ) ) {
             push @{ $params->{object_type_loop} },
                 {
                 id => MT::RebuildTrigger::type_text(
@@ -270,8 +275,11 @@ sub add {
                 label => $app->translate("Comment")
                 };
         }
+        my $trackback_switch = $app->config->PluginSwitch->{Trackback};
         eval { require Trackback; };
-        unless ($@) {
+        if ( !$@
+            && ( !defined($trackback_switch) || $trackback_switch != 0 ) )
+        {
             push @{ $params->{object_type_loop} },
                 {
                 id => MT::RebuildTrigger::type_text(
