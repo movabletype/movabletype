@@ -469,6 +469,8 @@ sub _get_content_data_ids_searched_by_actual_fields {
         value_float   => 'like',
         value_double  => 'like',
     );
+    my $searchable_field_types
+        = $app->model('content_type')->searchable_field_types_for_search;
     my ( $terms, $joins )
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
     my $args = {
@@ -480,7 +482,14 @@ sub _get_content_data_ids_searched_by_actual_fields {
                 [   { content_data_id => \'= cd_id' },
                     $terms && @$terms ? @$terms : (),
                 ],
-                { unique => 1 },
+                {   join => MT->model('content_field')->join_on(
+                        undef,
+                        {   id   => \'= cf_idx_content_field_id',
+                            type => $searchable_field_types,
+                        },
+                    ),
+                    unique => 1,
+                },
             ),
         ],
     };
