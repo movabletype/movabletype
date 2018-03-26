@@ -7,7 +7,7 @@
 
 
 $GLOBALS['i18n_default_settings'] = array(
-    'newsurl'=>'http://www.sixapart.com/movabletype/news/',
+    'newsurl'=>'https://www.sixapart.com/movabletype/news/',
     'publishcharset'=>'UTF-8',
     'timeoffset'=>'0',
     'defaulttimezone'=>'0',
@@ -15,7 +15,7 @@ $GLOBALS['i18n_default_settings'] = array(
     'logexportencoding'=>'',
     'categorynamenodash'=>'0',
     'exportencoding'=>'',
-    'supporturl'=>'http://www.sixapart.com/movabletype/support/',
-    'feedbackurl'=>'http://www.movabletype.org/feedback.html',
-    'newsboxurl'=>'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+    'supporturl'=>'https://www.sixapart.com/movabletype/support/',
+    'feedbackurl'=>'https://www.movabletype.org/feedback.html',
+    'newsboxurl'=>'https://www.sixapart.com/movabletype/news/mt4_news_widget.html',
 );

@@ -215,14 +215,6 @@ subtest 'Test on website' => sub {
         is( $cat->ping_urls, "http://localhost/dummy",
             'Category Trackback URLs is "http://localhost/dummy"' );
 
-        # Check Trackback Passphrase
-        my $tb_class = MT->model('trackback');
-        is( $tb_class->count(), 1, 'Trackback has created' );
-        my $tb = MT->model('trackback')->load( { category_id => $cat->id } );
-        ok( $tb, 'Loaded trackback' );
-        is( $tb->passphrase, 'Baz',
-            'Category Trackback Passphrase is "Baz"' );
-
         done_testing();
     };
 

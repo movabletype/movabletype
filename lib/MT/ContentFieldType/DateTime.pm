@@ -7,13 +7,12 @@ package MT::ContentFieldType::DateTime;
 use strict;
 use warnings;
 
-use MT::App::CMS;
 use MT::ContentFieldType::Common;
 use MT::Util ();
 
 sub html {
     MT::ContentFieldType::Common::html_datetime_common( @_,
-        MT::App::CMS::LISTING_TIMESTAMP_FORMAT() );
+        '%Y-%m-%d %H:%M:%S' );
 }
 
 sub field_html_params {

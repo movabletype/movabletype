@@ -1776,6 +1776,9 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
+            'ContentDataSearchTemplatePath' => {
+                default => sub { $_[0]->SearchTemplatePath }
+            },
             'ThemesDirectory' => {
                 default => 'themes',
                 path    => 1,
@@ -1876,35 +1879,45 @@ BEGIN {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
-            'FreeTextSearchScript' => { default => 'mt-ftsearch.cgi', },
-            'XMLRPCScript'         => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'           => { default => 'mt-atom.cgi', },
-            'UpgradeScript'        => { default => 'mt-upgrade.cgi', },
-            'CheckScript'          => { default => 'mt-check.cgi', },
-            'DataAPIScript'        => { default => 'mt-data-api.cgi', },
-            'PublishCharset'       => { default => 'utf-8', },
-            'SafeMode'             => { default => 1, },
-            'AllowFileInclude'     => { default => 0, },
-            'GlobalSanitizeSpec'   => {
+            'FreeTextSearchScript'    => { default => 'mt-ftsearch.cgi', },
+            'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
+            'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
+            'AtomScript'              => { default => 'mt-atom.cgi', },
+            'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
+            'CheckScript'             => { default => 'mt-check.cgi', },
+            'DataAPIScript'           => { default => 'mt-data-api.cgi', },
+            'PublishCharset'          => { default => 'utf-8', },
+            'SafeMode'                => { default => 1, },
+            'AllowFileInclude'        => { default => 0, },
+            'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'GenerateTrackBackRSS'        => { default => 0, },
-            'DBIRaiseError'               => { default => 0, },
-            'SearchAlwaysAllowTemplateID' => { default => 0, },
-            'PreviewInNewWindow'          => { default => 1, },
-            'BasenameCheckCompat'         => { default => 0, },
+            'GenerateTrackBackRSS'                   => { default => 0, },
+            'DBIRaiseError'                          => { default => 0, },
+            'SearchAlwaysAllowTemplateID'            => { default => 0, },
+            'ContentDataSearchAlwaysAllowTemplateID' => {
+                default => sub { $_[0]->SearchAlwaysAllowTemplateID }
+            },
+            'PreviewInNewWindow'  => { default => 1, },
+            'BasenameCheckCompat' => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
-            'NoOverride'          => { default => '', },
-            'RegexSearch'         => { default => 0, },
-            'CaseSearch'          => { default => 0, },
-            'ResultDisplay'       => { default => 'descend', },
-            'ExcerptWords'        => { default => 40, },
-            'SearchElement'       => { default => 'entries', },
-            'ExcludeBlogs'        => undef,
-            'IncludeBlogs'        => undef,
+            'NoOverride'              => { default => '', },
+            'RegexSearch'             => { default => 0, },
+            'CaseSearch'              => { default => 0, },
+            'ResultDisplay'           => { default => 'descend', },
+            'ExcerptWords'            => { default => 40, },
+            'SearchElement'           => { default => 'entries', },
+            'ExcludeBlogs'            => undef,
+            'ContentDataExcludeBlogs' => {
+                default => sub { $_[0]->ExcludeBlogs }
+            },
+            'IncludeBlogs'            => undef,
+            'ContentDataIncludeBlogs' => {
+                default => sub { $_[0]->IncludeBlogs }
+            },
             'DefaultTemplate'     => { default => 'default.tmpl', },
             'Type'                => { default => 'straight', },
             'MaxResults'          => { default => '20', },
@@ -1914,14 +1927,32 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'              => undef,
-            'SearchSortOrder'           => { default => 'ascend', },
-            'SearchNoOverride'          => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'       => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'        => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate'     => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'          => { alias => 'MaxResults', },
-            'SearchAltTemplate'         => { alias => 'AltTemplate' },
+            'SearchSortBy'            => undef,
+            'ContentDataSearchSortBy' => {
+                default => sub { $_[0]->SearchSortBy }
+            },
+            'SearchSortOrder'  => { default => 'ascend', },
+            'SearchNoOverride' => { default => 'SearchMaxResults', },
+            'ContentDataSearchNoOverride' => {
+                default => sub { $_[0]->SearchNoOverride }
+            },
+            'SearchResultDisplay'            => { alias => 'ResultDisplay', },
+            'ContentDataSearchResultDisplay' => {
+                default => sub { $_[0]->SearchResultDisplay }
+            },
+            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
+            'ContentDataSearchDefaultTemplate' =>
+                { default => 'content_data_default.tmpl' },
+            'SearchMaxResults'            => { alias => 'MaxResults', },
+            'ContentDataSearchMaxResults' => {
+                default => sub { $_[0]->SearchMaxResults }
+            },
+            'SearchAltTemplate'            => { alias => 'AltTemplate' },
+            'ContentDataSearchAltTemplate' => {
+                type    => 'ARRAY',
+                default => 'feed content_data_results_feed.tmpl',
+            },
             'SearchPrivateTags'         => { default => 0 },
             'DeepCopyRecursiveLimit'    => { default => 2 },
             'BulkLoadMetaObjectsLimit'  => { default => 100 },
@@ -1931,12 +1962,22 @@ BEGIN {
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
             'SearchCacheTTL'            => { default => 20, },
-            'SearchThrottleSeconds'     => { default => 5 },
-            'SearchThrottleIPWhitelist' => undef,
-            'CMSSearchLimit'            => { default => 125 },
-            'OneHourMaxPings'           => { default => 10, },
-            'OneDayMaxPings'            => { default => 50, },
-            'SupportURL'                => {
+            'ContentDataSearchCacheTTL' => {
+                default => sub { $_[0]->SearchCacheTTL }
+            },
+            'SearchThrottleSeconds'            => { default => 5 },
+            'ContentDataSearchThrottleSeconds' => {
+                default => sub { $_[0]->SearchThrottleSeconds }
+            },
+            'SearchThrottleIPWhitelist'            => undef,
+            'ContentDataSearchThrottleIPWhitelist' => {
+                default => sub { $_[0]->SearchThrottleIPWhitelist }
+            },
+            'SearchContentTypes' => undef,
+            'CMSSearchLimit'     => { default => 125 },
+            'OneHourMaxPings'    => { default => 10, },
+            'OneDayMaxPings'     => { default => 50, },
+            'SupportURL'         => {
                 default => 'http://www.sixapart.com/movabletype/support/',
             },
             'NewsURL' =>
@@ -2200,6 +2241,16 @@ BEGIN {
                 methods => sub { MT->app->core_methods() },
                 default => sub { MT->app->core_parameters() },
             },
+            'cd_search' => {
+                handler => 'MT::App::Search::ContentData',
+                script  => sub { MT->config->ContentDataSearchScript },
+                tags    => sub {
+                    require MT::Template::Context::Search;
+                    return MT::Template::Context::Search->load_core_tags();
+                },
+                methods => sub { MT->app->core_methods() },
+                default => sub { MT->app->core_parameters() },
+            },
             'cms' => {
                 handler         => 'MT::App::CMS',
                 script          => sub { MT->config->AdminScript },
@@ -2246,8 +2297,7 @@ BEGIN {
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
 
                 # This is for search endpoint.
-                default =>
-                    sub { MT::App::Search::core_parameters( MT->app ) },
+                default        => sub { MT->app->core_parameters() },
                 import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();

@@ -12,7 +12,7 @@ use MT::ContentFieldType::Common qw( get_cd_ids_by_left_join );
 use MT::Util ();
 
 sub html {
-    MT::ContentFieldType::Common::html_datetime_common( @_, '%I:%M:%S%p' );
+    MT::ContentFieldType::Common::html_datetime_common( @_, '%H:%M:%S' );
 }
 
 sub field_html_params {

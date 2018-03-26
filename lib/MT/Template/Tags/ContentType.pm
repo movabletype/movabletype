@@ -15,6 +15,7 @@ use MT::ContentField;
 use MT::ContentStatus;
 use MT::ContentType;
 use MT::Util;
+use MT::Util::ContentType;
 
 =head2 Contents
 
@@ -60,8 +61,7 @@ sub _hdlr_contents {
     %terms = %blog_terms;
     %args  = %blog_args;
 
-    my @content_type
-        = _get_content_type( $ctx, $args, \%blog_terms, \%blog_args );
+    my @content_type = _get_content_type( $ctx, $args, \%blog_terms );
     return $ctx->error( MT->translate('Content Type was not found.') )
         unless @content_type;
     my $content_type_id
@@ -2018,6 +2018,72 @@ sub _hdlr_content_edit_link {
         $edit_text;
 }
 
+=head2 ContentTypeDescription
+
+Returns the description of the current content type in context.
+
+=cut
+
+sub _hdlr_content_type_description {
+    my ( $ctx, $args ) = @_;
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->no_content_type_error;
+    defined $content_type->description
+        ? $content_type->description
+        : '';
+}
+
+=head2 ContentTypeName
+
+Outputs the name of the current content type in context.
+
+=cut
+
+sub _hdlr_content_type_name {
+    my ( $ctx, $args ) = @_;
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->no_content_type_error;
+    $content_type->name;
+}
+
+=head2 ContentTypeID
+
+Ouptuts the numeric ID for the current content type in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * pad (optional; default "0")
+
+Adds leading zeros to create a 6 character string. The default is 0 (false). This is equivalent to using the C<zero_pad> global filter with a value of 6.
+
+=back
+
+=cut
+
+sub _hdlr_content_type_id {
+    my ( $ctx, $args ) = @_;
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    return $args && $args->{pad}
+        ? ( sprintf "%06d", $content_type->id )
+        : $content_type->id;
+}
+
+=head2 ContentTypeUniqueID
+
+Outputs the unique_id field for the current content type in context.
+
+=cut
+
+sub _hdlr_content_type_unique_id {
+    my ( $ctx, $args, $cond ) = @_;
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error();
+    $content_type->unique_id;
+}
+
 sub _check_and_invoke {
     my ( $tag, $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
@@ -2027,19 +2093,13 @@ sub _check_and_invoke {
 }
 
 sub _get_content_type {
-    my ( $ctx, $args, $blog_terms, $blog_args ) = @_;
+    my ( $ctx, $args, $blog_terms ) = @_;
 
     my @ct;
 
-    if ( my $arg = $args->{content_type} ) {
-        my $class = MT->model('content_type');
-        if ( $arg =~ /^\d+$/ ) {
-            my $ct = $class->load($arg);
-            push @ct, $ct if $ct;
-        }
-        @ct = $class->load( { unique_id => $arg, %{$blog_terms} } )
-            unless @ct;
-        @ct = $class->load( { name => $arg, %{$blog_terms} } ) unless @ct;
+    if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+        @ct = MT::Util::ContentType::get_content_types( $args->{content_type},
+            $blog_terms );
     }
     else {
         my $tmpl = $ctx->stash('template');

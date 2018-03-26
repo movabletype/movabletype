@@ -475,12 +475,14 @@ sub import_contents {
                 }
                 1;
             };
+            $cb->($@) if $@;
             return unless $result;
         }
 
         __PACKAGE__->errstr ? undef : 1;
 
     };    # end try block
+    $cb->($@) if $@;
 
     $import_result;
 }

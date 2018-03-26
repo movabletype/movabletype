@@ -7,7 +7,6 @@ package MT::CMS::Category;
 
 use strict;
 use warnings;
-use MT::Util qw( encode_url encode_js );
 
 sub edit {
     my $cb = shift;
@@ -30,28 +29,10 @@ sub edit {
         $param->{path_prefix}
             = $site_url . ( $parent ? $parent->publish_path : '' );
         $param->{path_prefix} .= '/' unless $param->{path_prefix} =~ m!/$!;
-        require MT::Trackback;
-        my $tb = MT::Trackback->load( { category_id => $obj->id } );
 
-        if ($tb) {
-            my $list_pref = $app->list_pref('ping');
-            %$param = ( %$param, %$list_pref );
-            my $path = $app->config('CGIPath');
-            $path .= '/' unless $path =~ m!/$!;
-            if ( $path =~ m!^/! ) {
-                my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-                $path = $blog_domain . $path;
-            }
-
-            my $script = $app->config('TrackbackScript');
-            $param->{tb}     = 1;
-            $param->{tb_url} = $path . $script . '/' . $tb->id;
-            if ( $param->{tb_passphrase} = $tb->passphrase ) {
-                $param->{tb_url}
-                    .= '/' . encode_url( $param->{tb_passphrase} );
-            }
-            $app->load_list_actions( 'ping', $param->{ping_table}[0],
-                'pings' );
+        if ( MT->has_plugin('Trackback') ) {
+            require Trackback::CMS::Category;
+            Trackback::CMS::Category::_edit( $app, $blog, $obj, $param );
         }
     }
 
@@ -832,10 +813,11 @@ sub template_param_list {
             $param->{set_name} = $set->name;
         }
 
-        my $verb = $set ? 'Edit' : 'Create';
         my $object_label = $app->translate('Category Set');
         $param->{page_title}
-            = $app->translate( "${verb} [_1]", $object_label );
+            = $set
+            ? $app->translate( "Edit [_1]",   $object_label )
+            : $app->translate( "Create [_1]", $object_label );
     }
     else {
         $param->{page_title}

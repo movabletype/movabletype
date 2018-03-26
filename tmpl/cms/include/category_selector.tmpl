@@ -36,15 +36,17 @@
 
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector" style="display: none;">
 <mt:if name="object_type" eq="entry">
-    <mt:if name="can_edit_categories">
-    <div class="text-right category-selector-header mb-3">
-        <a class="add-category-new-parent-link d-inline-block" mt:command="show-add-category" href="javascript:void(0);" title="<$mt:var name="add_new_container_label_parent"$>">
-            <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add">
-        </a>
+  <mt:if name="can_edit_categories">
+  <div class="input-group">
+    <input id="add-category-input" type="text" class="form-control" placeholder="<$mt:var name="container_label_name"$>" aria-label="<$mt:var name="container_label_name"$>">
+    <div class="input-group-append">
+      <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add"></button>
     </div>
-    </mt:if>
+  </div>
+  </mt:if>
 </mt:if>
-<mt:if name="can_edit_categories">
+<mt:if name="object_type" eq="page">
+  <mt:if name="can_edit_categories">
     <div id="add-category-form" class="form-inline add-category-form mb-3" style="display: none;">
         <input id="add-category-input" class="form-control add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
         <a href="javascript:void(0);" mt:command="add" class="add-category-save-link">
@@ -54,8 +56,7 @@
           <mtapp:svgicon id="ic_remove" color="danger" size="sm" title="<__trans phrase="Cancel">">
         </a>
     </div>
+  </mt:if>
 </mt:if>
-    <div class="card p-1" style="height: 120px; overflow: auto; overflow-x: hidden;">
-      <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="card-block category-selector-list"></div>
-    </div>
+  <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="mt-categorylist"></div>
 </div><!-- /category-selector -->
