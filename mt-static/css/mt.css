@@ -10219,10 +10219,15 @@ fieldset.form-group {
 }
 
 /* Collapse */
-.mt-collapse, .mt-contentfield, .mt-contentblock {
+.mt-collapse, .mt-contentfield, .mt-collapse--contentblock, .mt-contentblock {
   padding: 0.5rem 0;
   border: 1px solid #A5A5A5;
   border-radius: 0.25rem;
+}
+
+.mt-collapse--contentblock {
+  border: 0;
+  border-bottom: 1px solid #CACACA;
 }
 
 .mt-collapse__content, .mt-collapse__blockset {
@@ -10293,22 +10298,22 @@ fieldset.form-group {
   margin-top: 0.5rem;
 }
 
-.mt-collapse .mt-icon--secondary, .mt-contentfield .mt-icon--secondary, .mt-contentblock .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary {
+.mt-collapse .mt-icon--secondary, .mt-contentfield .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--secondary, .mt-contentblock .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary {
   margin: 0 .5rem 0 0;
   -webkit-transition: 0.2s ease-in-out;
   transition: 0.2s ease-in-out;
 }
 
-.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon {
+.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse--contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon {
   margin: 0 0.2rem 0 0;
 }
 
-.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary {
   -webkit-transform: rotate(180deg);
           transform: rotate(180deg);
 }
 
-.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary {
   -webkit-transform: rotate(0deg);
           transform: rotate(0deg);
 }
