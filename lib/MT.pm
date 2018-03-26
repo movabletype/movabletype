@@ -52,7 +52,7 @@ BEGIN {
         $PRODUCT_NAME = 'Movable Type';
     }
     if ( $PORTAL_URL eq '__PORTAL' . '_URL__' ) {
-        $PORTAL_URL = 'http://www.movabletype.org/';
+        $PORTAL_URL = 'https://www.movabletype.org/';
     }
     if ( $VERSION_ID eq '__PRODUCT_VERSION' . '_ID__' ) {
         $VERSION_ID = $PRODUCT_VERSION;
@@ -130,7 +130,7 @@ sub version_slug {
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="http://www.movabletype.com/">
+<__trans phrase="https://www.movabletype.com/">
 SLUG
 }
 
@@ -2760,7 +2760,7 @@ sub help_url {
 
     my $url = $pkg->config->HelpURL;
     return $url if defined $url;
-    $url = $pkg->translate('http://www.movabletype.org/documentation/');
+    $url = $pkg->translate('https://www.movabletype.org/documentation/');
     if ($append) {
         $url .= $append;
     }

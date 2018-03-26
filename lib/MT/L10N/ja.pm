@@ -258,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Powered by <a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Powered by <a href="https://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'このブログは<a href="[_1]">クリエイティブ・コモンズ</a>でライセンスされています。',
 
 ## default_templates/calendar.mtml
@@ -472,7 +472,7 @@ use vars qw( @ISA %Lexicon );
 	'Pages' => 'ウェブページ',
 
 ## default_templates/powered_by.mtml
-	'_MTCOM_URL' => 'http://www.sixapart.jp/movabletype/',
+	'_MTCOM_URL' => 'https://www.sixapart.jp/movabletype/',
 
 ## default_templates/recent_assets.mtml
 
@@ -538,7 +538,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'バージョン [_1]',
-	'http://www.movabletype.com/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.movabletype.com/' => 'https://www.sixapart.jp/movabletype/',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => '[_1]',
 	'Got an error: [_1]' => 'エラーが発生しました: [_1]',
@@ -560,7 +560,7 @@ use vars qw( @ISA %Lexicon );
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
-	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
+	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
@@ -2383,7 +2383,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'Actions' => 'アクション',
-	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.jp/documentation/appendices/tags/%t.html',
+	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.jp/documentation/appendices/tags/%t.html',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
 	'Division by zero.' => 'ゼロ除算エラー',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
@@ -2779,7 +2779,7 @@ use vars qw( @ISA %Lexicon );
 	'A configuration value is required.' => '設定値は必須です。',
 	'The HASH type configuration directive should be in the format of "key=value"' => 'ハッシュ型の環境変数の設定値は、"key=value"の形式で入力してください。',
 	'[_1] for [_2] already exists.' => '[_2]はすでに[_1]の設定値として存在します。',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.jp/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '[_1]を削除してもよろしいですか?',
 	'configuration directive' => '環境変数',
 
@@ -3223,7 +3223,7 @@ use vars qw( @ISA %Lexicon );
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべての記事のフィードを購読することができます。},
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
 	'Feed Subscription' => '購読',
-	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
+	'http://www.sixapart.com/about/feeds' => 'https://www.sixapart.jp/about/feeds.html',
 	'What is this?' => 'フィードとは',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'タグ一覧はタグ検索でのみ表示',
 	'Other Tags' => 'その他のタグ',
@@ -3411,7 +3411,7 @@ use vars qw( @ISA %Lexicon );
 	'Disable Plugins' => 'プラグインを利用しない',
 	'Enable plugin functionality' => 'プラグインの機能を有効化する',
 	'Enable Plugins' => 'プラグインを利用する',
-	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.jp/',
+	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
 	'Find Plugins' => 'プラグインを探す',
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugin settings have been reset.' => 'プラグインの設定をリセットしました。',
@@ -3589,7 +3589,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Test Mail' => 'テストメールの送信',
 	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{このメールアドレスはMovable Typeから送られるメールの'From:'アドレスに利用されます。メールはパスワードの再設定、コメント投稿者の登録、コメントやトラックバックの通知、ユーザーまたはIPアドレスのロックアウト、その他の場合に送信されます。},
 	'Debug Mode' => 'デバッグモード',
-	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => '開発者向けの設定です。0以外の数字を設定すると、Movable Typeのデバッグメッセージを表示します。詳しくは<a href="http://www.movabletype.jp/documentation/appendices/config-directives/debugmode.html">ドキュメントを参照</a>してください。',
+	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => '開発者向けの設定です。0以外の数字を設定すると、Movable Typeのデバッグメッセージを表示します。詳しくは<a href="https://www.movabletype.jp/documentation/appendices/config-directives/debugmode.html">ドキュメントを参照</a>してください。',
 	'Performance Logging' => 'パフォーマンスログ',
 	'Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.' => 'パフォーマンスログを有効にして、ログ閾値で設定した秒数より時間のかかる処理をログに記録します。',
 	'Turn on performance logging' => 'パフォーマンスログを有効にする',
@@ -3934,7 +3934,7 @@ use vars qw( @ISA %Lexicon );
 	'External user ID' => '外部ユーザーID',
 	'The name displayed when content from this user is published.' => 'コンテンツの公開時に、この名前が表示されます。',
 	'The email address associated with this user.' => 'ユーザーのメールアドレスです。',
-	q{This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{ユーザーの個人ホームページのURL。表示する名前とウェブサイトURLは、コンテンツやコメントの公開時に利用されます。},
+	q{This User's website (e.g. https://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{ユーザーの個人ホームページのURL。表示する名前とウェブサイトURLは、コンテンツやコメントの公開時に利用されます。},
 	'The image associated with this user.' => 'ユーザーのプロフィール画像です。',
 	'Select Userpic' => 'プロフィール画像の選択',
 	'Remove Userpic' => 'プロフィール画像を削除',
@@ -4258,7 +4258,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'テンプレートの種類',
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Link to File' => 'ファイルへのリンク',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/settings.html" target="_blank">公開プロファイルについて</a>',
+	'Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="http://www.movabletype.jp/documentation/administrator/publishing/settings.html" target="_blank">公開プロファイルについて</a>',
         'Learn more about <a href="https://www.movabletype.org/documentation/appendices/archive-file-path-specifiers.html" target="_blank">Archive File Path Specifiers</a>' => '<a href="https://www.movabletype.jp/documentation/appendices/archive-file-path-specifiers.html" target="_blank">カスタムマッピング変数</a>',
 	'Create Archive Mapping' => '新しいアーカイブマッピングを作成',
 	'Statically (default)' => 'スタティック(既定)',
@@ -4559,13 +4559,13 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/footer.tmpl
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
-	'http://www.movabletype.org' => 'http://www.movabletype.jp',
+	'https://www.movabletype.org' => 'https://www.movabletype.jp',
 	'MovableType.org' => 'MovableType.jp',
-	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.jp/',
-	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
+	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.jp/',
+	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	'Wiki' => 'Wiki(英語)',
 	'Support' => 'サポート',
-	'http://forums.movabletype.org/' => 'http://communities.movabletype.jp/',
+	'https://forums.movabletype.org/' => 'https://communities.movabletype.jp/',
 	'Forums' => 'ユーザーコミュニティ',
 	'Send Us Feedback' => 'フィードバックはこちらへ',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
@@ -4802,7 +4802,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => '[_1]テーマの一覧',
 	'All Themes' => 'テーマの一覧',
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.jp/',
+	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
 	'Find Themes' => 'テーマを探す',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'テーマ "[_1]"を適用しました(<a href="[_2]">[quant,_3,つの警告,つの警告]</a>)。',
@@ -5071,7 +5071,7 @@ use vars qw( @ISA %Lexicon );
 	'Upgrade Check' => 'アップグレードのチェック',
 	'Do you want to proceed with the upgrade anyway?' => 'アップグレードを実行しますか?',
 	q{A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database.} => q{新しいバージョンの Movable Type をインストールしました。データベースのアップグレードを実行してください。},
-	q{The Movable Type Upgrade Guide can be found <a href='[_1]' target='_blank'>here</a>.} => q{Movable Typeアップグレードガイドは<a href='http://www.movabletype.jp/documentation/upgrade/' target='_blank'>こちらを</a>参照ください。},
+	q{The Movable Type Upgrade Guide can be found <a href='[_1]' target='_blank'>here</a>.} => q{Movable Typeアップグレードガイドは<a href='https://www.movabletype.jp/documentation/upgrade/' target='_blank'>こちらを</a>参照ください。},
 	'In addition, the following Movable Type components require upgrading or installation:' => '加えて、以下のコンポーネントのアップグレード、またはインストールが必要です。',
 	'The following Movable Type components require upgrading or installation:' => '以下のコンポーネントのアップグレード、またはインストールが必要です。',
 	'Begin Upgrade' => 'アップグレード開始',
@@ -5150,7 +5150,7 @@ use vars qw( @ISA %Lexicon );
 	'You can manage your blog by selecting an option from the menu located to the left of this message.' => 'このメッセージの左側のメニューでオプションを選択することでブログの管理ができます。',
 	'If you need assistance, try:' => 'サポートが必要な場合は以下を参照してください。',
 	'Movable Type User Manual' => 'Movable Type ユーザーマニュアル',
-	'http://www.sixapart.com/movabletype/support' => 'http://www.sixapart.jp/movabletype/support',
+	'https://www.sixapart.com/movabletype/support' => 'https://www.sixapart.jp/movabletype/support',
 	'Movable Type Technical Support' => 'Movable Type テクニカルサポート',
 	'Movable Type Community Forums' => 'Movable Type コミュニティフォーラム',
 	'Change this message.' => 'このメッセージを変更',
@@ -5401,7 +5401,7 @@ use vars qw( @ISA %Lexicon );
 	'Missing Optional Modules' => 'オプションのモジュールが見つかりません',
 	'Missing Required Modules' => '必要なモジュールが見つかりません',
 	'Minimal version requirement: [_1]' => '必須バージョン: [_1]',
-	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.jp/documentation/check_configuration.html',
+	'https://www.movabletype.org/documentation/installation/perl-modules.html' => 'https://www.movabletype.jp/documentation/check_configuration.html',
 	'Learn more about installing Perl modules.' => 'Perlモジュールのインストールについて',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'すべての必要なモジュールはインストールされています。モジュールの追加インストールは必要ありません。',
 
@@ -5425,7 +5425,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
 ## addons/Cloud.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
 	'HTTP Redirect' => 'URLリダイレクト',
@@ -5503,7 +5503,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www の有無を統一する。 <a href="[_1]">詳細</a>',
-	'http://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'http://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
+	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
 	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
 ## addons/Cloud.pack/lib/Cloud/Util.pm
@@ -5617,7 +5617,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
 
 ## addons/Commercial.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'バナー画像、水平型のナビゲーションなど、ホームページ用途に適したデザインです。あらかじめ用意されたページをカスタマイズして、簡単にウェブサイトを作成できます。',
 	'_PWT_ABOUT_BODY' => '
 <p><strong>以下の文章はサンプルです。内容を適切に書き換えてください。</strong></p>
@@ -5953,7 +5953,7 @@ use vars qw( @ISA %Lexicon );
 	', or press the enter key to %toggle% it' => '%toggle%ときはENTERキーを押します。',
 
 ## addons/Community.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'ブログの読者も参加して、コミュニティでコンテンツを更新するグループブログです。',
 	'Create forums where users can post topics and responses to topics.' => 'フォーラム形式のコミュニティ掲示板です。トピックを公開して、返信を投稿します。',
 	'Users followed by [_1]' => '[_1]に注目されているユーザー',
@@ -6371,7 +6371,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
 
 ## addons/Enterprise.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Permissions of group: [_1]' => 'グループ[_1]の権限',
 	'Group' => 'グループ',
 	'Groups associated with author: [_1]' => 'ユーザー[_1]と関連付けられたグループ',
@@ -6670,7 +6670,7 @@ use vars qw( @ISA %Lexicon );
 	'You successfully removed the users from this group.' => 'グループからユーザーを削除しました。',
 
 ## addons/Sync.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Migrated sync setting' => '移行されたサーバー配信設定',
 	'Sync' => 'サーバー配信',
 	'Sync Name' => '設定名',

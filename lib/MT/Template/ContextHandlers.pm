@@ -19,7 +19,7 @@ sub core_tags {
     my $tags = {
         help_url => sub {
             MT->translate(
-                'http://www.movabletype.org/documentation/appendices/tags/%t.html'
+                'https://www.movabletype.org/documentation/appendices/tags/%t.html'
             );
         },
         block => {
