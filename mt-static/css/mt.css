@@ -10148,7 +10148,7 @@ fieldset.form-group {
 
 /* Draggable */
 .mt-draggable {
-  margin: 0 0 0.1rem 0;
+  margin: 0 0 2px 0;
   padding: 0.5rem 0.5rem 0.5rem 0;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
