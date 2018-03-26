@@ -368,15 +368,14 @@ TC.attachLoadEvent( init );
     </form>
 </div>
 <mt:else>
-<div class="modal-body">
   <mt:loop name="panel_loop">
     <mt:include name="include/listing_panel.tmpl" use_page_content="1">
   </mt:loop>
 
 <!-- Select Object Panel -->
 <div id="object-panel" style="display: none;">
-  <div class="panel-body">
-  <div class="panel-header">
+  <div class="panel-body modal-body">
+  <div class="panel-header modal-description">
     <h4 class="title"><__trans phrase="Select Trigger Object"></h4>
     <div class="text-right">2 / 5</div>
   </div>
@@ -446,8 +445,8 @@ TC.attachLoadEvent( init );
 
 <!-- Select Event Panel -->
 <div id="event-panel" style="display: none;">
-  <div class="panel-body">
-  <div class="panel-header">
+  <div class="panel-body modal-body">
+  <div class="panel-header modal-description">
     <h4 class="title"><__trans phrase="Select Trigger Event"></h4>
     <div class="text-right">4 / 5</div>
   </div>
@@ -537,8 +536,8 @@ TC.attachLoadEvent( init );
 
 <!-- Select Action Panel -->
 <div id="action-panel" style="display: none;">
-  <div class="panel-body">
-  <div class="panel-header">
+  <div class="panel-body modal-body">
+  <div class="panel-header modal-description">
     <h4 class="title"><__trans phrase="Select Trigger Action"></h4>
     <div class="text-right">5 / 5</div>
   </div>
@@ -604,8 +603,6 @@ TC.attachLoadEvent( init );
     </form>
   </div>
   </div>
-</div>
-
 </div>
 </mt:if>
 
