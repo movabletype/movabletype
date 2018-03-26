@@ -551,6 +551,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Asset::field_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Asset::index_pre_save_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -674,6 +676,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Asset::field_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Asset::index_pre_save_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -795,6 +799,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::field_html_params',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Asset::field_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Asset::index_pre_save_handler',
         ss_validator => '$Core::MT::ContentFieldType::Asset::ss_validator',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
@@ -922,6 +928,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Common::tag_handler_asset',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Asset::index_pre_save_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_class   => 'asset',
@@ -1081,6 +1089,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::field_type_validation_handler',
         field_value_handler =>
             '$Core::MT::ContentFieldType::Categories::field_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Categories::index_pre_save_handler',
         ss_validator =>
             '$Core::MT::ContentFieldType::Categories::ss_validator',
         tag_handler => '$Core::MT::ContentFieldType::Categories::tag_handler',
@@ -1147,6 +1157,8 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::field_value_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Tags::feed_value_handler',
+        index_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Tags::index_pre_save_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
         search_class   => 'tag',

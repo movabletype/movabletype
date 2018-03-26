@@ -640,5 +640,55 @@ sub site_data_import_handler {
     @new_asset_ids ? \@new_asset_ids : undef;
 }
 
+sub index_pre_save_handler {
+    my ( $content_data, $field_data, $values ) = @_;
+
+    my $iter = MT->model('objectasset')->load_iter(
+        {   blog_id   => $content_data->blog_id,
+            object_ds => 'content_data',
+            object_id => $content_data->id,
+            cf_id     => $field_data->{id},
+        }
+    );
+
+    my %object_assets;
+    while ( my $oa = $iter->() ) {
+        push @{ $object_assets{ $oa->asset_id } ||= [] }, $oa;
+    }
+
+    my @new_asset_ids;
+    for my $asset_id (@$values) {
+        if ( $object_assets{$asset_id} && @{ $object_assets{$asset_id} } ) {
+            pop @{ $object_assets{$asset_id} };
+        }
+        else {
+            push @new_asset_ids, $asset_id;
+        }
+    }
+
+    my @removed_object_assets = map {@$_} values %object_assets;
+
+    for my $asset_id (@new_asset_ids) {
+        my $oa = pop @removed_object_assets;
+        $oa ||= MT->model('objectasset')->new(
+            blog_id   => $content_data->blog_id,
+            object_ds => 'content_data',
+            object_id => $content_data->id,
+            cf_id     => $field_data->{id},
+        );
+        $oa->asset_id($asset_id);
+        $oa->save
+            or die MT->translate( 'Saving object asset failed: [_1]',
+            $oa->errstr, );
+    }
+
+    require MT::ContentData;
+    MT::ContentData::_remove_objects( \@removed_object_assets )
+        or die MT->translate(
+        'Removing object assets failed: [_1]',
+        MT->model('objectasset')->errstr,
+        );
+}
+
 1;
 

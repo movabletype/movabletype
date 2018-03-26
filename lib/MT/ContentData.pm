@@ -279,18 +279,16 @@ sub save {
         $value = [$value] unless ref $value eq 'ARRAY';
         $value = [ grep { defined $_ && $_ ne '' } @$value ];
 
-        if (   $idx_type eq 'asset'
-            || $idx_type eq 'asset_audio'
-            || $idx_type eq 'asset_video'
-            || $idx_type eq 'asset_image' )
+        if ( my $handler
+            = $content_field_types->{$idx_type}{index_pre_save_handler} )
         {
-            $self->_update_object_assets( $content_type, $f, $value );
-        }
-        elsif ( $idx_type eq 'tags' ) {
-            $self->_update_object_tags( $content_type, $f, $value );
-        }
-        elsif ( $idx_type eq 'categories' ) {
-            $self->_update_object_categories( $content_type, $f, $value );
+            $handler = MT->handler_to_coderef($handler);
+            die MT->translate(
+                'Invalid index_pre_save_handler of content_field_type "[_1]"',
+                $idx_type
+            ) unless ref $handler eq 'CODE';
+
+            $handler->( $self, $f, $value );
         }
 
         my $cf_idx_data_col = 'value_' . $data_type;
@@ -360,178 +358,6 @@ sub _update_cf_idx {
         or die MT->translate(
         'Removing content field indexes failed: [_1]',
         MT->model('content_field_index')->errstr,
-        );
-}
-
-sub _update_object_assets {
-    my $self = shift;
-    my ( $content_type, $field_data, $values ) = @_;
-
-    my $iter = MT::ObjectAsset->load_iter(
-        {   blog_id   => $self->blog_id,
-            object_ds => 'content_data',
-            object_id => $self->id,
-            cf_id     => $field_data->{id},
-        }
-    );
-
-    my %object_assets;
-    while ( my $oa = $iter->() ) {
-        push @{ $object_assets{ $oa->asset_id } ||= [] }, $oa;
-    }
-
-    my @new_asset_ids;
-    for my $asset_id (@$values) {
-        if ( $object_assets{$asset_id} && @{ $object_assets{$asset_id} } ) {
-            pop @{ $object_assets{$asset_id} };
-        }
-        else {
-            push @new_asset_ids, $asset_id;
-        }
-    }
-
-    my @removed_object_assets = map {@$_} values %object_assets;
-
-    for my $asset_id (@new_asset_ids) {
-        my $oa = pop @removed_object_assets;
-        $oa ||= MT::ObjectAsset->new(
-            blog_id   => $self->blog_id,
-            object_ds => 'content_data',
-            object_id => $self->id,
-            cf_id     => $field_data->{id},
-        );
-        $oa->asset_id($asset_id);
-        $oa->save
-            or die MT->translate( 'Saving object asset failed: [_1]',
-            $oa->errstr, );
-    }
-
-    _remove_objects( \@removed_object_assets )
-        or die MT->translate(
-        'Removing object assets failed: [_1]',
-        MT->model('objectasset')->errstr,
-        );
-}
-
-sub _update_object_tags {
-    my $self = shift;
-    my ( $content_type, $field_data, $values ) = @_;
-
-    my $iter = MT::ObjectTag->load_iter(
-        {   blog_id           => $self->blog_id,
-            object_datasource => 'content_data',
-            object_id         => $self->id,
-            cf_id             => $field_data->{id},
-        }
-    );
-
-    my %object_tags;
-    while ( my $ot = $iter->() ) {
-        push @{ $object_tags{ $ot->tag_id } ||= [] }, $ot;
-    }
-
-    my @new_tag_ids;
-    for my $tag_id (@$values) {
-        if ( $object_tags{$tag_id} && @{ $object_tags{$tag_id} } ) {
-            pop @{ $object_tags{$tag_id} };
-        }
-        else {
-            push @new_tag_ids, $tag_id;
-        }
-    }
-
-    my @removed_object_tags = map {@$_} values %object_tags;
-
-    for my $tag_id (@new_tag_ids) {
-        my $ot = pop @removed_object_tags;
-        $ot ||= MT::ObjectTag->new(
-            blog_id           => $self->blog_id,
-            object_datasource => 'content_data',
-            object_id         => $self->id,
-            cf_id             => $field_data->{id},
-        );
-        $ot->tag_id($tag_id);
-        $ot->save
-            or
-            die MT->translate( 'Saving object tag failed: [_1]', $ot->errstr,
-            );
-    }
-
-    _remove_objects( \@removed_object_tags )
-        or die MT->translate( 'Removing object tags failed: [_1]',
-        MT->model('objecttag')->errstr );
-}
-
-sub _update_object_categories {
-    my $self = shift;
-    my ( $content_type, $field_data, $values ) = @_;
-
-    my $primary_cat_id = $values->[0];
-    my $is_primary     = 1;
-
-    my $iter = MT::ObjectCategory->load_iter(
-        {   blog_id   => $self->blog_id,
-            object_ds => 'content_data',
-            object_id => $self->id,
-            cf_id     => $field_data->{id},
-        }
-    );
-
-    my %object_cats;
-    while ( my $oc = $iter->() ) {
-        push @{ $object_cats{ $oc->category_id } ||= [] }, $oc;
-    }
-
-    my @new_cat_ids;
-    for my $cat_id (@$values) {
-        if ( $object_cats{$cat_id} && @{ $object_cats{$cat_id} } ) {
-            my $cat = pop @{ $object_cats{$cat_id} };
-            if ( $cat_id == $primary_cat_id && $is_primary ) {
-                unless ( $cat->is_primary ) {
-                    $cat->is_primary(1);
-                    $cat->save or die $cat->errstr;
-                    $is_primary = 0;
-                }
-            }
-            else {
-                if ( $cat->is_primary ) {
-                    $cat->is_primary(0);
-                    $cat->save or die $cat->errstr;
-                }
-            }
-        }
-        else {
-            push @new_cat_ids, $cat_id;
-        }
-    }
-
-    my @removed_object_cats = map {@$_} values %object_cats;
-
-    for my $cat_id (@new_cat_ids) {
-        my $oc = pop @removed_object_cats;
-        $oc ||= MT::ObjectCategory->new(
-            blog_id   => $self->blog_id,
-            object_ds => 'content_data',
-            object_id => $self->id,
-            cf_id     => $field_data->{id},
-        );
-        $oc->category_id($cat_id);
-        if ( $cat_id == $primary_cat_id && $is_primary ) {
-            $oc->is_primary(1);
-            $is_primary = 0;
-        }
-        else {
-            $oc->is_primary(0);
-        }
-        $oc->save
-            or die MT->translate( 'Saving object category failed: [_1]',
-            $oc->errstr, );
-    }
-
-    _remove_objects( \@removed_object_cats )
-        or die MT->translate(
-        'Removing object categories failed: [_1]',
-        MT->model('objectcategory')->errstr,
         );
 }
 

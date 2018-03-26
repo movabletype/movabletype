@@ -494,4 +494,77 @@ sub site_data_import_handler {
     @new_category_ids ? \@new_category_ids : undef;
 }
 
+sub index_pre_save_handler {
+    my ( $content_data, $field_data, $values ) = @_;
+
+    my $primary_cat_id = $values->[0];
+    my $is_primary     = 1;
+
+    my $iter = MT->model('objectcategory')->load_iter(
+        {   blog_id   => $content_data->blog_id,
+            object_ds => 'content_data',
+            object_id => $content_data->id,
+            cf_id     => $field_data->{id},
+        }
+    );
+
+    my %object_cats;
+    while ( my $oc = $iter->() ) {
+        push @{ $object_cats{ $oc->category_id } ||= [] }, $oc;
+    }
+
+    my @new_cat_ids;
+    for my $cat_id (@$values) {
+        if ( $object_cats{$cat_id} && @{ $object_cats{$cat_id} } ) {
+            my $cat = pop @{ $object_cats{$cat_id} };
+            if ( $cat_id == $primary_cat_id && $is_primary ) {
+                unless ( $cat->is_primary ) {
+                    $cat->is_primary(1);
+                    $cat->save or die $cat->errstr;
+                    $is_primary = 0;
+                }
+            }
+            else {
+                if ( $cat->is_primary ) {
+                    $cat->is_primary(0);
+                    $cat->save or die $cat->errstr;
+                }
+            }
+        }
+        else {
+            push @new_cat_ids, $cat_id;
+        }
+    }
+
+    my @removed_object_cats = map {@$_} values %object_cats;
+
+    for my $cat_id (@new_cat_ids) {
+        my $oc = pop @removed_object_cats;
+        $oc ||= MT->model('objectcategory')->new(
+            blog_id   => $content_data->blog_id,
+            object_ds => 'content_data',
+            object_id => $content_data->id,
+            cf_id     => $field_data->{id},
+        );
+        $oc->category_id($cat_id);
+        if ( $cat_id == $primary_cat_id && $is_primary ) {
+            $oc->is_primary(1);
+            $is_primary = 0;
+        }
+        else {
+            $oc->is_primary(0);
+        }
+        $oc->save
+            or die MT->translate( 'Saving object category failed: [_1]',
+            $oc->errstr, );
+    }
+
+    require MT::ContentData;
+    MT::ContentData::_remove_objects( \@removed_object_cats )
+        or die MT->translate(
+        'Removing object categories failed: [_1]',
+        MT->model('objectcategory')->errstr,
+        );
+}
+
 1;

@@ -340,5 +340,54 @@ sub site_data_import_handler {
     @new_tag_ids ? \@new_tag_ids : undef;
 }
 
+sub index_pre_save_handler {
+    my ( $content_data, $field_data, $values ) = @_;
+
+    my $iter = MT->model('objecttag')->load_iter(
+        {   blog_id           => $content_data->blog_id,
+            object_datasource => 'content_data',
+            object_id         => $content_data->id,
+            cf_id             => $field_data->{id},
+        }
+    );
+
+    my %object_tags;
+    while ( my $ot = $iter->() ) {
+        push @{ $object_tags{ $ot->tag_id } ||= [] }, $ot;
+    }
+
+    my @new_tag_ids;
+    for my $tag_id (@$values) {
+        if ( $object_tags{$tag_id} && @{ $object_tags{$tag_id} } ) {
+            pop @{ $object_tags{$tag_id} };
+        }
+        else {
+            push @new_tag_ids, $tag_id;
+        }
+    }
+
+    my @removed_object_tags = map {@$_} values %object_tags;
+
+    for my $tag_id (@new_tag_ids) {
+        my $ot = pop @removed_object_tags;
+        $ot ||= MT->model('objecttag')->new(
+            blog_id           => $content_data->blog_id,
+            object_datasource => 'content_data',
+            object_id         => $content_data->id,
+            cf_id             => $field_data->{id},
+        );
+        $ot->tag_id($tag_id);
+        $ot->save
+            or
+            die MT->translate( 'Saving object tag failed: [_1]', $ot->errstr,
+            );
+    }
+
+    require MT::ContentData;
+    MT::ContentData::_remove_objects( \@removed_object_tags )
+        or die MT->translate( 'Removing object tags failed: [_1]',
+        MT->model('objecttag')->errstr );
+}
+
 1;
 
