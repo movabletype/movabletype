@@ -81,7 +81,7 @@ rebuildMultiBlogTriggerTable();
   /* <![CDATA[ */
   var multiBlogRebuilds = new Array();
   <mt:loop name="rebuilds_loop">
-  multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<mt:var name="action_name" escape="html">", "<mt:var name="action_value">", "<mt:var name="blog_name" escape="html">", "<mt:var name="blog_id">", "<mt:var name="trigger_name">", "<mt:var name="trigger_value">", "<mt:var name="content_type_name">", "<mt:var name="content_type_id">");
+  multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<mt:var name="action_name" escape="html">", "<mt:var name="action_value">", "<mt:var name="blog_name" escape="html">", "<mt:var name="blog_id">", "<mt:var name="trigger_name">", "<mt:var name="trigger_value">", "<mt:var name="content_type_name">", "<mt:var name="content_type_id">", "<mt:var name="trigger_object">", "<mt:var name="trigger_action">");
   </mt:loop>
   
   function rebuildMultiBlogTriggerTable() {
@@ -98,9 +98,9 @@ rebuildMultiBlogTriggerTable();
               str += "<td scope=\"col\"> <__trans phrase="When"> "
                   + multiBlogRebuilds[i][2]
                   + "</td><td scope=\"col\">"
-                  + multiBlogRebuilds[i][4]
+                  + multiBlogRebuilds[i][8]
                   + "</td><td scope=\"col\">"
-                  + content_type
+                  + multiBlogRebuilds[i][9]
                   + "</td>";
               str += "<td scope=\"col\">" + multiBlogRebuilds[i][0] + "</td>";
               str += "<td scope=\"col\" class=\"si\"><a href=\"javascript:void(0)\" onclick=\"removeMultiBlogTrigger(" + i + ")\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></a></td>";
@@ -113,7 +113,7 @@ rebuildMultiBlogTriggerTable();
               values[i] += ":";
               values[i] += multiBlogRebuilds[i][7];
           }
-          str = "<table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Content Type" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></th></tr></thead>\n" + str + "</table>";
+          str = "<table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Data" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></th></tr></thead>\n" + str + "</table>";
           getByID('multiblog_blog_list').innerHTML = str;
           getByID('rebuild_triggers').value = values.join('|');
       }
@@ -124,8 +124,8 @@ rebuildMultiBlogTriggerTable();
       rebuildMultiBlogTriggerTable();
   }
   
-  function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId) {
-      multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId];
+  function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId, triggerObject, triggerEvent) {
+      multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId, triggerObject, triggerEvent];
       rebuildMultiBlogTriggerTable();
   }
   /* ]]> */

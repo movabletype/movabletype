@@ -199,7 +199,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Too many comments have been submitted from you in a short period of time.  Please try again in a short while.',
 
     '_INDEX_INTRO' =>
-        '<p>If you are installing Movable Type, you may want to review the <a href="http://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',
+        '<p>If you are installing Movable Type, you may want to review the <a href="https://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',
     '_LOG_TABLE_BY'         => 'By',
     '_REBUILD_PUBLISH'      => 'Publish',
     '_DATE_FROM'            => 'From',
@@ -207,9 +207,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_TIME_FROM'            => 'From',
     '_TIME_TO'              => 'To',
     '_SHORT_MAY'            => 'May',
-    '_MTCOM_URL'            => 'http://www.movabletype.com/',
-    '_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
-    '_THEME_DIRECTORY_URL'  => 'http://plugins.movabletype.org/',
+    '_MTCOM_URL'            => 'https://www.movabletype.com/',
+    '_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
+    '_THEME_DIRECTORY_URL'  => 'https://plugins.movabletype.org/',
     '_CATEGORY_BASENAME'    => 'Basename',
 
     '_AUTO'                => 1,
@@ -250,7 +250,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
     '_POWERED_BY' =>
-        'Powered by <a href="http://www.movabletype.org/"><$MTProductName$></a>',
+        'Powered by <a href="https://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
     '_WARNING_DELETE_USER_EUM' =>
         'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',

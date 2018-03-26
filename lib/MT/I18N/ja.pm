@@ -29,11 +29,11 @@ sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 {11}
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     {25}
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         {30}
 
-sub PORTAL_URL()   {'http://www.sixapart.jp/movabletype/'}
-sub SUPPORT_URL()  {'http://www.sixapart.jp/movabletype/support/'}
-sub NEWS_URL()     {'http://www.sixapart.jp/movabletype/'}
+sub PORTAL_URL()   {'https://www.sixapart.jp/movabletype/'}
+sub SUPPORT_URL()  {'https://www.sixapart.jp/movabletype/support/'}
+sub NEWS_URL()     {'https://www.sixapart.jp/movabletype/'}
 sub NEWSBOX_URL()  {'https://www.sixapart.jp/movabletype/news/newsbox.json'}
-sub FEEDBACK_URL() {'http://www.sixapart.jp/movabletype/feedback.html'}
+sub FEEDBACK_URL() {'https://www.sixapart.jp/movabletype/feedback.html'}
 sub LATEST_VERSION_URL()   {'https://movabletype.jp/latest_version.json'}
 sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {1}

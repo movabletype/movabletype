@@ -666,7 +666,7 @@
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action">
+<div class="text-right delete-action mt-4">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -1404,21 +1404,17 @@ div.mce-notification-error {
 
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
-  <div class="row mb-4">
-    <div class="col-6 pr-0">
-      <mt:if name="previous_entry_id">
-        <a class="btn btn-default w-100" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev"></a>
-      <mt:else>
-        <span class="btn btn-default w-100 disabled"><mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev"></span>
-      </mt:if>
-    </div>
-    <div class="col-6 pl-0">
-      <mt:if name="next_entry_id">
-        <a class="btn btn-default w-100" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm"></a>
-      <mt:else>
-        <span class="btn btn-default w-100 disabled"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm"></span>
-      </mt:if>
-    </div>
+  <div class="btn-group mb-4 w-100" role="group">
+    <mt:if name="previous_entry_id">
+      <a class="btn btn-default w-50" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev"></a>
+    <mt:else>
+      <a class="btn btn-default w-50 disabled"><mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev"></a>
+    </mt:if>
+    <mt:if name="next_entry_id">
+      <a class="btn btn-default w-50" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm"></a>
+    <mt:else>
+      <a class="btn btn-default w-50 disabled"><__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm"></a>
+    </mt:if>
   </div>
 </mt:setvarblock>
 </mt:unless>

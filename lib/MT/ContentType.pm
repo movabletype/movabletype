@@ -229,17 +229,46 @@ sub searchable_fields {
     my $fields = $obj->fields;
     my @searchable_fields;
     for my $f (@$fields) {
-        my $field_registry = MT->registry( 'content_field_types', $f->{type} )
-            or next;
-        if (   $field_registry->{replaceable}
-            || $field_registry->{replace_handler}
-            || $field_registry->{searchable}
-            || $field_registry->{search_handler} )
-        {
+        if ( $obj->_is_searchable_field_type( $f->{type} ) ) {
             push @searchable_fields, $f;
         }
     }
     \@searchable_fields;
+}
+
+sub searchable_field_types_for_search {
+    my $class = shift;
+    my @field_types;
+    my $field_registry = MT->registry('content_field_types');
+    for my $type ( keys %$field_registry ) {
+        next unless $class->_is_searchable_field_type($type);
+
+        my $data_type = $field_registry->{$type}{data_type};
+        next unless $class->_is_searchable_data_type_for_search($data_type);
+
+        push @field_types, $type;
+    }
+    \@field_types;
+}
+
+sub _is_searchable_data_type_for_search {
+    my $class = shift;
+    my ($data_type) = @_;
+    (          $data_type eq 'varchar'
+            || $data_type eq 'text'
+            || $data_type eq 'float'
+            || $data_type eq 'double' ) ? 1 : 0;
+}
+
+sub _is_searchable_field_type {
+    my $class          = shift;
+    my ($field_type)   = @_;
+    my $field_registry = MT->registry( 'content_field_types', $field_type )
+        or return 0;
+    (          $field_registry->{replaceable}
+            || $field_registry->{replace_handler}
+            || $field_registry->{searchable}
+            || $field_registry->{search_handler} ) ? 1 : 0;
 }
 
 sub _sort_fields {
