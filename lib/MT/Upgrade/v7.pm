@@ -742,6 +742,7 @@ sub v7_migrate_rebuild_trigger {
             $blog->save;
 
             # Trigger
+            require MT::RebuildTrigger;
             my $rebuild_triggers = ( $cfg->data || {} )->{rebuild_triggers};
             foreach ( split( /\|/, $rebuild_triggers ) ) {
                 my ( $action, $id, $event ) = split( /:/, $_ );
