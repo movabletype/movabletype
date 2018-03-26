@@ -48,17 +48,24 @@ function returnTrigger(ok) {
         var action_text = action_elm.parent().parent().parent().find('.panel-label').text();
         var action_value = action_elm.val();
         // Trigger
-        var object = jQuery('input[name="object-cb"]:checked').val();
-        var event = jQuery('input[name="event-cb"]:checked').val();
+        var object_elm = jQuery('input[name="object-cb"]:checked');
+        var object = object_elm.val();
+        var event_elm = jQuery('input[name="event-cb"]:checked');
+        var event = event_elm.val();
         var trigger_text = trigger_hash[ object + "_" + event ];
         var trigger_value = object + "_" + event;
+        var trigger_object = object_elm.parent().parent().parent().find('.panel-label').text();
+        var trigger_event = event_elm.parent().parent().parent().find('.panel-label').text();
         // Content Type
         var ct_elm = jQuery('input[name="content_type-cb"]:checked');
         var ct_id = ct_elm.attr('id');
         var content_type_text = ct_elm.parent().parent().parent().find('.panel-label').text();
         var content_type_id = ct_elm.val();
+        if (content_type_id) {
+            trigger_object = content_type_text;
+        }
 
-        win.addMultiBlogTrigger( action_text, action_value, blog_name, blog_id, trigger_text, trigger_value, content_type_text, content_type_id );
+        win.addMultiBlogTrigger( action_text, action_value, blog_name, blog_id, trigger_text, trigger_value, content_type_text, content_type_id, trigger_object, trigger_event );
         jQuery.fn.mtModal.close();
     }
 }
