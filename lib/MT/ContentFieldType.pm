@@ -258,6 +258,8 @@ sub _date_time_registry {
             '$Core::MT::ContentFieldType::DateTime::data_load_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::DateTime::feed_value_handler',
+        index_save_handler =>
+            '$Core::MT::ContentFieldType::Common::index_save_handler_date',
         preview_handler =>
             '$Core::MT::ContentFieldType::DateTime::preview_handler',
         ss_validator =>
@@ -307,6 +309,8 @@ sub _date_registry {
             '$Core::MT::ContentFieldType::Date::data_load_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Date::feed_value_handler',
+        index_save_handler =>
+            '$Core::MT::ContentFieldType::Common::index_save_handler_date',
         preview_handler =>
             '$Core::MT::ContentFieldType::Date::preview_handler',
         ss_validator =>

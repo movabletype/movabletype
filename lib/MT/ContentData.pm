@@ -28,6 +28,7 @@ use MT::ObjectTag;
 use MT::Tag;
 use MT::Serialize;
 use MT::Util;
+use MT::Util::ContentType;
 
 use constant TAG_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 
@@ -259,7 +260,9 @@ sub save {
     }
 
     # Week Number for authored_on
-    if ( my $week_number = _get_week_number( $self, 'authored_on' ) ) {
+    if ( my $week_number
+        = MT::Util::ContentType::get_week_number( $self, 'authored_on' ) )
+    {
         $self->week_number($week_number)
             if $week_number != ( $self->week_number || 0 );
     }
@@ -330,6 +333,17 @@ sub _update_cf_idx {
 
     my @removed_cf_idx = map {@$_} values %cf_idx_hash;
 
+    my $field_registry = MT->registry( 'content_field_types', $idx_type );
+    my $index_save_handler = $field_registry->{index_save_handler};
+    if ($index_save_handler) {
+        $index_save_handler = MT->handler_to_coderef($index_save_handler);
+        die MT->registry(
+            'Invalid index_save_handler of content_field_type "[_1]"',
+            $idx_type )
+            unless ref $index_save_handler eq 'CODE';
+    }
+    $index_save_handler ||= sub { };
+
     for my $new_value (@new_values) {
         my $cf_idx = pop @removed_cf_idx;
         $cf_idx ||= MT::ContentFieldIndex->new(
@@ -340,14 +354,7 @@ sub _update_cf_idx {
 
         $cf_idx->$cf_idx_data_col($new_value);
 
-        # Week Number for Content Field
-        if ( $idx_type eq 'date_and_time' || $idx_type eq 'date_only' ) {
-            if ( my $week_number
-                = _get_week_number( $cf_idx, 'value_datetime' ) )
-            {
-                $cf_idx->value_integer($week_number);
-            }
-        }
+        $index_save_handler->($cf_idx);
 
         $cf_idx->save
             or die MT->translate( 'Saving content field index failed: [_1]',
@@ -1116,15 +1123,6 @@ sub _make_title_html {
     $label = MT::Util::encode_html( $label, $can_double_encode );
 
     return qq{<span class="label">$label</span>};
-}
-
-sub _get_week_number {
-    my ( $obj, $column ) = @_;
-    if ( my $dt = $obj->column_as_datetime($column) ) {
-        my ( $yr, $w ) = $dt->week;
-        return $yr * 100 + $w;
-    }
-    return undef;
 }
 
 sub archive_file {

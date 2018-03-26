@@ -28,5 +28,14 @@ sub get_content_types {
     @ct;
 }
 
+sub get_week_number {
+    my ( $obj, $column ) = @_;
+    if ( my $dt = $obj->column_as_datetime($column) ) {
+        my ( $yr, $w ) = $dt->week;
+        return $yr * 100 + $w;
+    }
+    return undef;
+}
+
 1;
 

@@ -16,6 +16,7 @@ our @EXPORT_OK = qw(
 
 use MT;
 use MT::Util;
+use MT::Util::ContentType;
 
 sub get_cd_ids_by_inner_join {
     my $prop       = shift;
@@ -511,6 +512,15 @@ sub search_handler_reference {
         }
     }
     0;
+}
+
+# Week Number for Content Field
+sub index_save_handler_date {
+    my ($cf_idx) = @_;
+    my $week_number
+        = MT::Util::ContentType::get_week_number( $cf_idx, 'value_datetime' )
+        or return;
+    $cf_idx->value_integer($week_number);
 }
 
 1;
