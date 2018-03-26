@@ -114,9 +114,10 @@ sub add {
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
-            panel_type   => $type,
-            list_noncron => 1,
-            panel_multi  => 0,
+            panel_type      => $type,
+            list_noncron    => 1,
+            panel_multi     => 0,
+            rebuild_trigger => 1,
         };
         $app->listing(
             {   terms    => $terms,
@@ -131,8 +132,9 @@ sub add {
     }
     else {
         my $params = {};
-        $params->{panel_multi}  = 0;
-        $params->{blog_id}      = $blog_id;
+        $params->{panel_multi}     = 0;
+        $params->{rebuild_trigger} = 1;
+        $params->{blog_id}         = $blog_id;
         $params->{dialog_title} = $app->translate("Create Rebuild Trigger");
         $params->{panel_loop}   = [];
 
@@ -220,44 +222,6 @@ sub add {
                                 }
                             }
                         }
-                        elsif ( $source eq 'object' ) {
-                            if ( !$app->param('search') ) {
-                                if ( ( my $loop = $param->{object_loop} )
-                                    && !$offset )
-                                {
-                                    push @$loop,
-                                        {
-                                        id    => '1',
-                                        label => $app->translate(
-                                            'Entry or Page'
-                                        ),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id => '2',
-                                        label =>
-                                            $app->translate('Content Type'),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id    => '3',
-                                        label => $app->translate('Comment'),
-                                        description => $app->translate(''),
-                                        };
-                                    push @$loop,
-                                        {
-                                        id    => '4',
-                                        label => $app->translate('Trackback'),
-                                        description => $app->translate(''),
-                                        };
-                                    $count = $count + 4;
-                                    splice( @$loop, $limit )
-                                        if scalar(@$loop) > $limit;
-                                }
-                            }
-                        }
                         return $count;
                     },
                 },
@@ -318,6 +282,7 @@ sub add {
         }
         $params->{action_loop}  = action_loop($app);
         $params->{trigger_loop} = trigger_loop($app);
+        $params->{site_name}    = $app->blog->name;
 
         $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
     }
@@ -325,29 +290,45 @@ sub add {
 
 sub trigger_loop {
     my $app = shift;
-    [   {   trigger_key  => 'entry_save',
-            trigger_name => $app->translate('saves an entry/page'),
+    [   {   trigger_key    => 'entry_save',
+            trigger_name   => $app->translate('saves an entry/page'),
+            trigger_object => $app->translate('Entry/Page'),
+            trigger_action => $app->translate('Save'),
         },
-        {   trigger_key  => 'entry_pub',
-            trigger_name => $app->translate('publishes an entry/page'),
+        {   trigger_key    => 'entry_pub',
+            trigger_name   => $app->translate('publishes an entry/page'),
+            trigger_object => $app->translate('Entry/Page'),
+            trigger_action => $app->translate('Publish'),
         },
-        {   trigger_key  => 'entry_unpub',
-            trigger_name => $app->translate('unpublishes an entry/page'),
+        {   trigger_key    => 'entry_unpub',
+            trigger_name   => $app->translate('unpublishes an entry/page'),
+            trigger_object => $app->translate('Entry/Page'),
+            trigger_action => $app->translate('Unpublish'),
         },
-        {   trigger_key  => 'content_save',
-            trigger_name => $app->translate('saves an content'),
+        {   trigger_key    => 'content_save',
+            trigger_name   => $app->translate('saves an content'),
+            trigger_object => $app->translate('Content Type'),
+            trigger_action => $app->translate('Save'),
         },
-        {   trigger_key  => 'content_pub',
-            trigger_name => $app->translate('publishes an content'),
+        {   trigger_key    => 'content_pub',
+            trigger_name   => $app->translate('publishes an content'),
+            trigger_object => $app->translate('Content Type'),
+            trigger_action => $app->translate('Publish'),
         },
-        {   trigger_key  => 'content_unpub',
-            trigger_name => $app->translate('unpublishes an content'),
+        {   trigger_key    => 'content_unpub',
+            trigger_name   => $app->translate('unpublishes an content'),
+            trigger_object => $app->translate('Content Type'),
+            trigger_action => $app->translate('Unpublish'),
         },
-        {   trigger_key  => 'comment_pub',
-            trigger_name => $app->translate('publishes a comment'),
+        {   trigger_key    => 'comment_pub',
+            trigger_name   => $app->translate('publishes a comment'),
+            trigger_object => $app->translate('Comment'),
+            trigger_action => $app->translate('Publish'),
         },
-        {   trigger_key  => 'tb_pub',
-            trigger_name => $app->translate('publishes a TrackBack'),
+        {   trigger_key    => 'tb_pub',
+            trigger_name   => $app->translate('publishes a TrackBack'),
+            trigger_object => $app->translate('TrackBack'),
+            trigger_action => $app->translate('Publish'),
         },
     ];
 }
@@ -393,9 +374,13 @@ sub load_config {
         require MT::Blog;
 
         $args->{multiblog_trigger_loop} = trigger_loop($app);
-        my %triggers
-            = map { $_->{trigger_key} => $_->{trigger_name} }
-            @{ $args->{multiblog_trigger_loop} };
+        my %triggers = map {
+            $_->{trigger_key} => {
+                name   => $_->{trigger_name},
+                object => $_->{trigger_object},
+                action => $_->{trigger_action}
+                }
+        } @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop($app);
         my %actions = map { $_->{action_id} => $_->{action_name} }
@@ -415,8 +400,12 @@ sub load_config {
                     blog_name    => $app->translate(
                         '(All sites and child sites in this system)'
                     ),
-                    blog_id           => $id,
-                    trigger_name      => $triggers{$trigger},
+                    blog_id        => $id,
+                    trigger_name   => $triggers{$trigger}{name},
+                    trigger_object => $content_type_id
+                    ? $content_type_name
+                    : $triggers{$trigger}{object},
+                    trigger_action    => $triggers{$trigger}{action},
                     trigger_value     => $trigger,
                     content_type_name => $content_type_name,
                     content_type_id   => $content_type_id,
@@ -427,19 +416,27 @@ sub load_config {
                     action_value => $action,
                     blog_name =>
                         $app->translate('(All child sites in this site)'),
-                    blog_id           => $id,
-                    trigger_name      => $triggers{$trigger},
+                    blog_id        => $id,
+                    trigger_name   => $triggers{$trigger}{name},
+                    trigger_object => $content_type_id
+                    ? $content_type_name
+                    : $triggers{$trigger}{object},
+                    trigger_action    => $triggers{$trigger}{action},
                     trigger_value     => $trigger,
                     content_type_name => $content_type_name,
                     content_type_id   => $content_type_id,
                 };
             }
             elsif ( my $blog = MT::Blog->load( $id, { cached_ok => 1 } ) ) {
-                {   action_name       => $actions{$action},
-                    action_value      => $action,
-                    blog_name         => $blog->name,
-                    blog_id           => $id,
-                    trigger_name      => $triggers{$trigger},
+                {   action_name    => $actions{$action},
+                    action_value   => $action,
+                    blog_name      => $blog->name,
+                    blog_id        => $id,
+                    trigger_name   => $triggers{$trigger}{name},
+                    trigger_object => $content_type_id
+                    ? $content_type_name
+                    : $triggers{$trigger}{object},
+                    trigger_action    => $triggers{$trigger}{action},
                     trigger_value     => $trigger,
                     content_type_name => $content_type_name,
                     content_type_id   => $content_type_id,
