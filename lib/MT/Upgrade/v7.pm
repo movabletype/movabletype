@@ -734,11 +734,15 @@ sub v7_migrate_rebuild_trigger {
                 = ( $cfg->data || {} )->{default_mtmulitblog_blogs};
             my $default_mtmultiblog_action
                 = ( $cfg->data || {} )->{default_mtmultiblog_action};
+            my $blog_content_accessible
+                = ( $cfg->data || {} )->{blog_content_accessible};
             my $blog = MT->model('blog')->load($blog_id) or next;
             $blog->default_mt_sites_sites($default_mtmulitblog_blogs)
                 if defined $default_mtmulitblog_blogs;
             $blog->default_mt_sites_action($default_mtmultiblog_action)
                 if defined $default_mtmultiblog_action;
+            $blog->blog_content_accessible($blog_content_accessible)
+                if defined $blog_content_accessible;
             $blog->save;
 
             # Trigger
