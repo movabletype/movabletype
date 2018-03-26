@@ -107,5 +107,20 @@ sub search_handler {
     ( grep {/$search_regex/} @cell ) ? 1 : 0;
 }
 
+sub index_save_handler {
+    my ($cf_idx)   = @_;
+    my $table_body = $cf_idx->value_text;
+    my @matched    = $table_body =~ />([^<]+?)</gs;
+    my @filtered = grep { $_ !~ /^\s*$/ } @matched;
+    my @decoded;
+    if ( eval { require HTML::Entities; 1 } ) {
+        @decoded = map { HTML::Entities::decode_entities($_) } @filtered;
+    }
+    else {
+        require MT::Util;
+        @decoded = map { MT::Util::decode_html($_) } @filtered;
+    }
+}
+
 1;
 

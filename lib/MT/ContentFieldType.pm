@@ -1252,6 +1252,8 @@ sub _table_registry {
         field_html => 'field_html/field_html_table.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Table::field_html_params',
+        index_save_handler =>
+            '$Core::MT::ContentFieldType::Table::index_save_handler',
         tag_handler => '$Core::MT::ContentFieldType::Table::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::Table::feed_value_handler',
