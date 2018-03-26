@@ -3779,7 +3779,7 @@ use vars qw( @ISA %Lexicon );
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'ブログがありません。[_1]ブログを作成する</a>',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
-        'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-data-badge">Data</span> in <span class="badge destination-site-badge">Site</span> will be <span class="badge destination-action-badge">Action</span>' => '<span class="badge source-site-badge badge--selected">サイト</span>にある<span class="badge source-data-badge">データ</span>が<span class="badge source-trigger-badge">トリガー</span>されたとき、<span class="badge destination-site-badge">サイト</span>にある<span class="badge destination-data-badge">データ</span>が<span class="badge destination-action-badge">アクション</span>される。',
+        'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => '<span class="badge source-site-badge badge--selected">サイト</span>にある<span class="badge source-data-badge">データ</span>が<span class="badge source-trigger-badge">トリガー</span>されたとき、<span class="badge destination-site-badge">サイト</span>で<span class="badge destination-action-badge">アクション</span>される。',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'W:' => '幅:',

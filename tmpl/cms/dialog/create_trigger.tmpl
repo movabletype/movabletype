@@ -171,11 +171,6 @@ function init() {
         jQuery("." + next + "-badge").each( function( i, elem ){
           jQuery(elem).addClass('badge--selected');
         })
-        if ( next === 'destination-action' ) {
-            jQuery(".destination-data-badge").each( function( i, elem ){
-              jQuery(elem).addClass('badge--selected');
-            })
-        }
 
         next_event.apply(this,arguments);
     };
@@ -216,11 +211,6 @@ function init() {
         jQuery("." + prev + "-badge").each( function( i, elem ){
           jQuery(elem).addClass('badge--selected');
         })
-        if ( curr === 'destination-action' ) {
-            jQuery(".destination-data-badge").each( function( i, elem ){
-              jQuery(elem).removeClass('badge--selected');
-            })
-        }
 
         prev_event.apply(this,arguments);
     };
@@ -320,7 +310,7 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_rebuildtriggers">
-    <__trans phrase="IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-data-badge">Data</span> in <span class="badge destination-site-badge">Site</span> will be <span class="badge destination-action-badge">Action</span>">
+    <__trans phrase="IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>">
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
