@@ -1241,8 +1241,9 @@ sub _table_registry {
             '$Core::MT::ContentFieldType::Table::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Table::preview_handler',
-        search_handler =>
-            '$Core::MT::ContentFieldType::Table::search_handler',
+
+        # search_handler =>
+        #     '$Core::MT::ContentFieldType::Table::search_handler',
         list_props => {
             tables => {
                 base            => '__virtual.string',
