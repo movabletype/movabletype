@@ -288,6 +288,16 @@ function init() {
             return false;
         };
 
+        // Hide content type if content type does not exist in selected site.
+        jQuery('#content_type-panel').find('#selector').on('DOMSubtreeModified propertychange', function() {
+          if (jQuery('#content_type-panel').find('#no-data').prop('tagName') === 'DIV') {
+            jQuery('#object_content').hide();
+          }
+          else {
+            jQuery('#object_content').show();
+          }
+        });
+
         // Badge
         jQuery(".source-site-badge").each( function( i, elem ){
           jQuery(elem).addClass('badge--selected');
