@@ -40,6 +40,8 @@ sub make_author {
     my $author = MT::Author->new();
     $author->set_values($values);
     $author->set_password("pass");
+    $author->can_sign_in_cms(1);
+    $author->can_sign_in_data_api(1);
     $author->save()
         or die "Couldn't save author record: " . $author->errstr;
 
