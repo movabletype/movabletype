@@ -231,13 +231,14 @@ sub add {
                 },
             );
 
-            if (!$panel_params->{object_loop}
-                || ( $panel_params->{object_loop}
-                    && @{ $panel_params->{object_loop} } < 1 )
+            if ($source eq 'content_type'
+                && (!$panel_params->{object_loop}
+                    || ( $panel_params->{object_loop}
+                        && @{ $panel_params->{object_loop} } < 1 )
+                )
                 )
             {
                 $params->{"missing_$source"} = 1;
-                $params->{"missing_data"}    = 1;
             }
 
             push @{ $params->{panel_loop} }, $panel_params;
@@ -263,7 +264,9 @@ sub add {
                 label => $app->translate("Content Type")
             },
         ];
-        my $comment_switch = $app->config->PluginSwitch->{Comments};
+        my $plugin_switch = $app->config->PluginSwitch;
+        my $comment_switch
+            = defined($plugin_switch) ? $plugin_switch->{Comments} : 0;
         eval { require Comments; };
 
         if ( !$@ && ( !defined($comment_switch) || $comment_switch != 0 ) ) {
@@ -275,7 +278,8 @@ sub add {
                 label => $app->translate("Comment")
                 };
         }
-        my $trackback_switch = $app->config->PluginSwitch->{Trackback};
+        my $trackback_switch
+            = defined($plugin_switch) ? $plugin_switch->{Trackback} : 0;
         eval { require Trackback; };
         if ( !$@
             && ( !defined($trackback_switch) || $trackback_switch != 0 ) )

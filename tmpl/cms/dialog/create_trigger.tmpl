@@ -57,6 +57,9 @@ function returnTrigger(ok) {
         var trigger_object = object_elm.parent().parent().parent().find('.panel-label').text();
         var trigger_event = event_elm.parent().parent().parent().find('.panel-label').text();
         // Content Type
+        var content_type_text;
+        var content_type_id;
+        <mt:unless name="missing_content_type">
         var ct_elm = jQuery('input[name="content_type-cb"]:checked');
         var ct_id = ct_elm.attr('id');
         var content_type_text = ct_elm.parent().parent().parent().find('.panel-label').text();
@@ -64,6 +67,7 @@ function returnTrigger(ok) {
         if (content_type_id) {
             trigger_object = content_type_text;
         }
+        </mt:unless>
 
         win.addMultiBlogTrigger( action_text, action_value, blog_name, blog_id, trigger_text, trigger_value, content_type_text, content_type_id, trigger_object, trigger_event );
         jQuery.fn.mtModal.close();
@@ -89,6 +93,7 @@ function init() {
     panel = new ListingPanel("object");
     panels[panels.length] = panel;
     // Content Type
+    <mt:unless name="missing_content_type">
     <mt:loop name="panel_loop">
     <mt:if name="panel_type" eq="content_type">
     panel = new ListingPanel("<mt:var name="panel_type">");
@@ -96,6 +101,7 @@ function init() {
     panels[panels.length] = panel;
     </mt:if>
     </mt:loop>
+    </mt:unless>
     // Event
     panel = new ListingPanel("event");
     panels[panels.length] = panel;
@@ -118,9 +124,11 @@ function init() {
                 jQuery('#object_content').hide();
             }
             else {
+                <mt:unless name="missing_content_type">
                 jQuery('#object_content').show();
                 jQuery('#content_type-panel').find('.search-submit').click();
                 jQuery('#content_type-panel').find('.search-reset').hide();
+                </mt:unless>
             }
 
             // Badge
@@ -132,7 +140,9 @@ function init() {
             var checked = jQuery('input[name="object-cb"]:checked');
             var select_object = checked.val();
             if ( select_object !== 'content' ) {
+                <mt:unless name="missing_content_type">
                 dialog.currentPanel = 2;
+                </mt:unless>
                 jQuery('#object-panel').hide();
             }
             if ( select_object === 'comment' || select_object === 'tb' ) {
@@ -149,6 +159,7 @@ function init() {
             next        = select_object === 'content' ? 'source-data' : 'source-trigger';
             badge_label = checked.parent().parent().parent().find('.panel-label').text();
         }
+        <mt:unless name="missing_content_type">
         if ( dialog.currentPanel === 2 ) {
             // Badge
             curr        = 'source-data';
@@ -156,7 +167,12 @@ function init() {
             badge_label = jQuery('input[name="content_type-cb"]:checked').parent().parent().parent().find('.panel-label').text();
             badge_label = "<__trans phrase="Content Type">: " + badge_label;
         }
+        </mt:unless>
+        <mt:if name="missing_content_type">
+        if ( dialog.currentPanel === 2 ) {
+        <mt:else>
         if ( dialog.currentPanel === 3 ) {
+        </mt:if>
             // Badge
             curr        = 'source-trigger';
             next        = 'destination-action';
@@ -177,31 +193,43 @@ function init() {
     dialog.previousPanel = function(){
         var curr;
         var next;
-        if ( dialog.currentPanel === 4 ) {
-            // Badge
-            curr        = 'destination-action';
-            prev        = 'source-trigger';
-        }
+        <mt:if name="missing_content_type">
         if ( dialog.currentPanel === 3 ) {
+        <mt:else>
+        if ( dialog.currentPanel === 4 ) {
+        </mt:if>
+            // Badge
+            curr = 'destination-action';
+            prev = 'source-trigger';
+        }
+        <mt:if name="missing_content_type">
+        if ( dialog.currentPanel === 2 ) {
+        <mt:else>
+        if ( dialog.currentPanel === 3 ) {
+        </mt:if>
             var select_object = jQuery('input[name="object-cb"]:checked').val();
             if ( select_object !== 'content_type' ) {
+                <mt:unless name="missing_content_type">
                 dialog.currentPanel = 2;
+                </mt:unless>
                 jQuery('#event-panel').hide();
             }
 
             // Badge
-            curr        = 'source-trigger';
-            prev        = 'source-data';
+            curr = 'source-trigger';
+            prev = 'source-data';
         }
+        <mt:unless name="missing_content_type">
         if ( dialog.currentPanel === 2 ) {
             // Badge
-            curr        = 'source-trigger';
-            prev        = 'source-data';
+            curr = 'source-trigger';
+            prev = 'source-data';
         }
+        </mt:unless>
         if ( dialog.currentPanel === 1 ) {
             // Badge
-            curr        = 'source-data';
-            prev        = 'source-site';
+            curr = 'source-data';
+            prev = 'source-site';
         }
 
         // Badge
@@ -289,6 +317,9 @@ function init() {
         };
 
         // Hide content type if content type does not exist in selected site.
+        <mt:if name="missing_content_type">
+        jQuery('#object_content').hide();
+        <mt:else>
         jQuery('#content_type-panel').find('#selector').on('DOMSubtreeModified propertychange', function() {
           if (jQuery('#content_type-panel').find('#no-data').prop('tagName') === 'DIV') {
             jQuery('#object_content').hide();
@@ -297,6 +328,7 @@ function init() {
             jQuery('#object_content').show();
           }
         });
+        </mt:if>
 
         // Badge
         jQuery(".source-site-badge").each( function( i, elem ){
@@ -332,55 +364,17 @@ TC.attachLoadEvent( init );
     </button>
 </div>
 
-<mt:if name="missing_data">
-<div class="modal-body">
-    <mt:if name="missing_role">
-        <mtapp:statusmsg
-            id="generic-info"
-            class="info"
-            can_close="0">
-            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');" class="alert-link">">
-        </mtapp:statusmsg>
-    </mt:if>
-    <mt:if name="missing_group">
-        <mtapp:statusmsg
-            id="generic-info"
-            class="info"
-            can_close="0">
-            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');" class="alert-link">">
-        </mtapp:statusmsg>
-    </mt:if>
-    <mt:if name="missing_author">
-        <mtapp:statusmsg
-            id="generic-info"
-            class="info"
-            can_close="0">
-            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');" class="alert-link">">
-        </mtapp:statusmsg>
-    </mt:if>
-    <mt:if name="missing_blog">
-        <mtapp:statusmsg
-            id="generic-info"
-            class="info"
-            can_close="0">
-            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');" class="alert-link">">
-        </mtapp:statusmsg>
-    </mt:if>
-</div>
-<div class="modal-footer actions-bar">
-    <form onsubmit="return false" onclick="window.focus();">
-        <button
-           type="submit"
-           accesskey="x"
-           class="cancel action primary button btn btn-primary"
-           title="<__trans phrase="Close (x)">"
-           ><__trans phrase="Close"></button>
-    </form>
-</div>
-<mt:else>
-  <mt:loop name="panel_loop">
+  <mt:if name="missing_content_type">
+    <mt:loop name="panel_loop">
+      <mt:if name="panel_type" eq="site">
     <mt:include name="include/listing_panel.tmpl" use_page_content="1">
-  </mt:loop>
+      </mt:if>
+    </mt:loop>
+  <mt:else>
+    <mt:loop name="panel_loop">
+    <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+    </mt:loop>
+  </mt:if >
 
 <!-- Select Object Panel -->
 <div id="object-panel" style="display: none;">
@@ -614,7 +608,6 @@ TC.attachLoadEvent( init );
   </div>
   </div>
 </div>
-</mt:if>
 
 </mt:setvarblock>
 
