@@ -4159,7 +4159,7 @@ sub _hdlr_app_contentfield_option_group {
      id="$type-label"
      label="<__trans phrase="Label">"
      required="1">
-    <input type="text" ref="label" name="label" id="$type-label" class="form-control html5-form" oninput={ inputLabel } value={ options.label } required>
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control html5-form" oninput={ inputLabel } value={ options.label } required data-mt-content-field-unique>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption

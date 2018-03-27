@@ -146,12 +146,26 @@
       }
 
       return true;
+    },
+
+    '[data-mt-content-field-unique]': function ($e) {
+      if (!$e.val()) return true;
+      var isUnique = true;
+      $e.parents('#content-fields').find('input[data-mt-content-field-unique]').each(function () {
+        if (this.id == $e.attr('id')) return;
+        if (this.value == $e.val()) {
+          isUnique = false;
+          return false;
+        }
+      });
+      return isUnique;
     }
   });
 
   jQuery.mtValidateAddMessages({
     '.date-field': jQuery.mtValidateMessages['.date'],
-    '.time-field': jQuery.mtValidateMessages['.time']
+    '.time-field': jQuery.mtValidateMessages['.time'],
+    '[data-mt-content-field-unique]': trans('This field must be unique in this content type')
   });
 
   jQuery(document).on('after-mt-valid', '.values-option-table input[type=text]', function () {
@@ -166,6 +180,15 @@
     var ns = $block.data( 'mtValidator' );
     if ( !ns ) return true;
     $block.mtValid({ focus: false, afterTrigger: false });
+  });
+
+  jQuery(document).on('after-mt-valid', 'input[data-mt-content-field-unique]', function () {
+    jQuery(this).parents('#content-fields').find('input[data-mt-content-field-unique]').each(function () {
+      var $input = jQuery(this);
+      var ns = $input.data( 'mtValidator' );
+      if ( !ns ) return true;
+      $input.mtValid({ focus: false, afterTrigger: false });
+    });
   });
 
   var observer = riot.observable();

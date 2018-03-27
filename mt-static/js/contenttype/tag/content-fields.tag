@@ -418,9 +418,11 @@
                                         .mtValidate('selection-field-values-option')
      var contentFieldBlockIsValid  = jQuery('.content-field-block')
                                         .mtValidate('content-field-block')
+     var uniqueFieldsAreValid      = jQuery('input[data-mt-content-field-unique]')
+                                        .mtValidate('simple')
 
      return requiredFieldsAreValid && textFieldsInTableAreValid
-         && tableIsValid && contentFieldBlockIsValid
+         && tableIsValid && contentFieldBlockIsValid && uniqueFieldsAreValid
     }
 
   </script>
