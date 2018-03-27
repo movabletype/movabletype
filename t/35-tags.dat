@@ -865,5 +865,9 @@
 { "r" : "1", "t" : "<MTPages id=\"20\"><MTPageAssets sort_by=\"file_name\" sort_order=\"descend\" lastn=\"2\"><MTAssetFileName>;</MTPageAssets></MTPages>", "e" : "test_3.jpg;test_2.jpg;"}, #849
 { "r" : "1", "t" : "<MTPages id=\"20\"><MTPageAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTPageAssets></MTPages>", "e" : "test_2.jpg;test_3.jpg;"}, #850
 { "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"descend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_3.jpg;test_2.jpg;"}, #851
-{ "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_2.jpg;test_3.jpg;"} #852
+{ "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_2.jpg;test_3.jpg;"}, #852
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Markdown/Markdown.pl\">has Markdown.pl</MTHasPlugin>", "e" : "has Markdown.pl"}, #853
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Markdown\">has Markdown.pl (alias)</MTHasPlugin>", "e" : "has Markdown.pl (alias)"}, #854
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Awesome\">has Awesome<MTElse>doesn't have Awesome</MTHasPlugin>", "e" : "has Awesome"}, #855
+{ "r" : "1", "t" : "<MTHasPlugin name=\"NotExists\">has NotExists<MTElse>doesn't have NotExists</MTHasPlugin>", "e" : "doesn't have NotExists"} #856
 ]

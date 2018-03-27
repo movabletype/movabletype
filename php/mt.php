@@ -63,7 +63,7 @@ class MT {
     private static $_instance = null;
 
     static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-    static public $config_type_hash  = array('pluginswitch', 'pluginschemaversion', 'commenterregistration');
+    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration');
 
     /***
      * Constructor for MT class.
