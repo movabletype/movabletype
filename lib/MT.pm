@@ -1304,6 +1304,14 @@ sub init_plugins {
         delete $PluginSwitch->{$plugin_sig}
             unless exists $Plugins{$plugin_sig};
     }
+    for my $plugin_sig ( keys %Plugins ) {
+        if ( !exists $PluginSwitch->{$plugin_sig} ) {
+            $PluginSwitch->{$plugin_sig} = 1
+                if !exists $Plugins{$plugin_sig}{enabled}
+                or $Plugins{$plugin_sig}{enabled};
+        }
+    }
+
     if ( $plugin_sigs ne join ',', sort keys %$PluginSwitch ) {
         $mt->config->PluginSwitch( $PluginSwitch, 1 );
 
