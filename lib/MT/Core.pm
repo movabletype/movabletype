@@ -2042,7 +2042,7 @@ BEGIN {
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
-            'DefaultSiteURL'          => undef,                  ## DEPRECATED
+            'DefaultSiteURL'          => undef,    ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
@@ -2616,7 +2616,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
@@ -3207,9 +3207,12 @@ sub load_core_permissions {
         },
         'system.edit_templates' => {
             'group'        => 'sys_admin',
-            'inherit_from' => [ 'blog.edit_templates', 'blog.manage_themes' ],
-            'label'        => 'Manage Templates',
-            'order'        => 250,
+            'inherit_from' => [
+                'system.sign_in_cms', 'blog.edit_templates',
+                'blog.manage_themes'
+            ],
+            'label'            => 'Manage Templates',
+            'order'            => 250,
             'permitted_action' => {
                 'access_to_website_list'       => 1,
                 'access_to_blog_list'          => 1,
@@ -3223,6 +3226,7 @@ sub load_core_permissions {
         },
         'system.manage_plugins' => {
             'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
             'label'            => 'Manage Plugins',
             'order'            => 300,
             'permitted_action' => {
@@ -3236,6 +3240,7 @@ sub load_core_permissions {
         },
         'system.view_log' => {
             'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
             'label'            => 'View System Activity Log',
             'order'            => 400,
             'permitted_action' => {
@@ -3263,6 +3268,7 @@ sub load_core_permissions {
         },
         'system.create_site' => {
             'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
             'label'            => 'Create Sites',
             'order'            => 700,
             'permitted_action' => {
@@ -3301,10 +3307,10 @@ sub load_core_permissions {
             'display' => 0,
         },
         'system.manage_users_groups' => {
-            'group'            => 'sys_admin',
-            'label'            => 'Manage Users & Groups',
-            'order'            => 800,
-            'inherit_from'     => ['blog.manage_users'],
+            'group'        => 'sys_admin',
+            'label'        => 'Manage Users & Groups',
+            'order'        => 800,
+            'inherit_from' => [ 'system.sign_in_cms', 'blog.manage_users' ],
             'permitted_action' => {
                 'access_to_any_group_list'       => 1,
                 'access_to_system_dashboard'     => 1,
@@ -3323,11 +3329,13 @@ sub load_core_permissions {
             },
         },
         'system.manage_content_data' => {
-            group => 'sys_admin',
-            label => 'Manage Content Data',
-            order => 900,
-            inherit_from =>
-                [ 'blog.manage_content_data', 'blog.edit_assets' ],
+            group        => 'sys_admin',
+            label        => 'Manage Content Data',
+            order        => 900,
+            inherit_from => [
+                'system.sign_in_cms', 'blog.manage_content_data',
+                'blog.edit_assets'
+            ],
             permitted_action => {
                 'access_to_content_data_list'             => 1,
                 'add_tags_to_content_data_via_list'       => 1,
@@ -3358,11 +3366,14 @@ sub load_core_permissions {
             },
         },
         'system.manage_content_types' => {
-            group => 'sys_admin',
-            label => 'Manage Content Types',
-            order => 1000,
-            inherit_from =>
-                [ 'system.manage_content_data', 'blog.manage_category_set' ],
+            group          => 'sys_admin',
+            'inherit_from' => ['system.sign_in_cms'],
+            label          => 'Manage Content Types',
+            order          => 1000,
+            inherit_from   => [
+                'system.manage_content_data', 'blog.manage_category_set',
+                'system.sign_in_cms'
+            ],
             permitted_action => {
                 'access_to_system_dashboard' => 1,
                 'create_new_content_type'    => 1,

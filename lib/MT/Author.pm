@@ -796,8 +796,6 @@ sub save {
                 for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
                 $auth->api_password($pass);
             }
-            $auth->can_sign_in_cms(1);
-            $auth->can_sign_in_data_api(1);
         }
 
         # Generate basename

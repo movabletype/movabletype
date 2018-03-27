@@ -130,6 +130,7 @@ sub edit {
                 my @child;
                 foreach (@$inherit_from) {
                     my $child = $_;
+                    next unless $child =~ m/^system\./;
                     $child =~ s/^system\.//;
                     push @child, '#can_' . $child;
                 }
