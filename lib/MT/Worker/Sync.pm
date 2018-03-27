@@ -122,7 +122,7 @@ sub work {
                 my $elapsed
                     = sprintf( "done! (%0.02fs)", tv_interval($start) );
                 $mt->log(
-                    {   message => $mt->translate('Done Synchornizing Files'),
+                    {   message => $mt->translate('Done Synchronizing Files'),
                         metadata => log_time() . ' '
                             . $mt->translate(
                             'Done syncing files to [_1] ([_2])', $target,

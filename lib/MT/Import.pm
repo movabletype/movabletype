@@ -340,7 +340,7 @@ The subroutine referenced by the "options_param" key takes the following paramet
 
     blog_id: blog's id which is importing data.
 
-The subroutine should return a reference to a hash which contains paramters passed to
+The subroutine should return a reference to a hash which contains parameters passed to
 template upon building html.
 
 =head1 AUTHOR & COPYRIGHT

@@ -45,7 +45,7 @@ sub suite {
             method => 'POST',
             params => { log => {} },
             code   => 409,
-            error  => "A paramter \"message\" is required.\n",
+            error  => "A parameter \"message\" is required.\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/1/logs',

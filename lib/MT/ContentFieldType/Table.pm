@@ -72,13 +72,13 @@ sub options_validation_handler {
 
     my $initial_rows = $options->{initial_rows};
     return $app->translate(
-        "An initial rows of '[_1]' ([_2]) must be a positive integer.",
+        "Initial number of rows for '[_1]' ([_2]) must be a positive integer.",
         $label, $field_label )
         if $initial_rows and $initial_rows !~ /^\d+$/;
 
     my $initial_cols = $options->{initial_cols};
     return $app->translate(
-        "An initial columns of '[_1]' ([_2]) must be a positive integer.",
+        "Initial number of columns for '[_1]' ([_2]) must be a positive integer.",
         $label, $field_label )
         if $initial_cols and $initial_cols !~ /^\d+$/;
 

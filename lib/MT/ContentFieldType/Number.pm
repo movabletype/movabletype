@@ -51,7 +51,7 @@ sub ss_validator {
         : $app->config->NumberFieldMinValue;
 
     if ( $data !~ /^[+\-]?\d+(\.\d+)?$/ ) {
-        return $app->translate( '"[_1]" field value must be number.',
+        return $app->translate( '"[_1]" field value must be a number.',
             $field_label );
     }
 
@@ -99,10 +99,10 @@ sub options_validation_handler {
 
     my $decimal_places = $options->{decimal_places};
     if ($decimal_places) {
-        return $app->translate("A decimal places must be a positive integer.")
+        return $app->translate("Number of decimal places must be a positive integer.")
             unless $decimal_places =~ /^\d+$/;
         return $app->translate(
-            "A decimal places must be a positive integer and between 0 and [_1].",
+            "Number of decimal places must be a positive integer and between 0 and [_1].",
             $cfg_decimal_places
         ) if $decimal_places > $cfg_decimal_places;
     }
@@ -112,11 +112,11 @@ sub options_validation_handler {
         $min_value =~ /^[+\-]?\d+(\.\d+)?$/;
 
         return $app->translate(
-            "A minimun value must be an integer, or must be set decimal places to use decimal value."
+            "A minimum value must be an integer, or must be set with decimal places to use decimal value."
         ) if !$decimal_places and defined $1;
 
         return $app->translate(
-            "A minimun value must be an integer and between [_1] and [_2]",
+            "A minimum value must be an integer and between [_1] and [_2]",
             $cfg_min_value, $cfg_max_value )
             if $min_value < $cfg_min_value || $min_value > $cfg_max_value;
     }
@@ -126,7 +126,7 @@ sub options_validation_handler {
         $max_value =~ /^[+\-]?\d+(\.\d+)?$/;
 
         return $app->translate(
-            "A maximum value must be an integer, or must be set decimal places to use decimal value."
+            "A maximum value must be an integer, or must be set with decimal places to use decimal value."
         ) if !$decimal_places and defined $1;
 
         return $app->translate(
@@ -140,7 +140,7 @@ sub options_validation_handler {
         $initial_value =~ /^[+\-]?\d+(\.\d+)?$/;
 
         return $app->translate(
-            "An initial value must be an integer, or must be set decimal places to use decimal value."
+            "An initial value must be an integer, or must be set with decimal places to use decimal value."
         ) if !$decimal_places and defined $1;
 
         my $min = '' ne $min_value ? $min_value : $cfg_min_value;

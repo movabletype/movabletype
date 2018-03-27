@@ -72,10 +72,10 @@ sub options_validation_handler {
         unless $values;
 
     for my $value (@$values) {
-        return $app->translate("A label of values is required.")
+        return $app->translate("A label for each value is required.")
             unless $value->{label};
 
-        return $app->translate("A value of values is required.")
+        return $app->translate("A value for each label is required.")
             unless $value->{value};
     }
 
@@ -83,7 +83,7 @@ sub options_validation_handler {
     if ($multiple) {
         my $min = $options->{min};
         return $app->translate(
-            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            "A minimum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
             $label,
             $field_label
             )
@@ -93,7 +93,7 @@ sub options_validation_handler {
 
         my $max = $options->{max};
         return $app->translate(
-            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            "A maximum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
             $label,
             $field_label
             )
@@ -102,7 +102,7 @@ sub options_validation_handler {
             and ( $max !~ /^\d+$/ or $max < 1 );
 
         return $app->translate(
-            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            "A maximum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to the minimum selection number.",
             $label,
             $field_label
             )

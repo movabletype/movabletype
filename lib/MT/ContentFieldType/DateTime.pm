@@ -58,7 +58,7 @@ sub options_validation_handler {
     my $ts   = "$date $time";
 
     return $app->translate(
-        "Invalid date \'[_1]\'; An initial value dates must be in the format YYYY-MM-DD HH:MM:SS.",
+        "Invalid date \'[_1]\'; An initial date/time value must be in the format YYYY-MM-DD HH:MM:SS.",
         $ts,
     ) if !MT::Util::is_valid_date($ts);
 

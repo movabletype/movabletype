@@ -19,7 +19,7 @@ sub search {
 
     local $app->{mode} = $tag_search ? 'tag' : 'default';
 
-    # Check "search" paramter.
+    # Check "search" parameter.
     my $search;
     if ($tag_search) {
         $search = $app->param('tag') || $app->param('search');

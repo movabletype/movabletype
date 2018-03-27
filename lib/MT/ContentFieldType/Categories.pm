@@ -369,19 +369,19 @@ sub options_validation_handler {
     if ($multiple) {
         my $min = $options->{min};
         return $app->translate(
-            "A number of minimum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
+            "A minimum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to 0.",
             $label, $field_label
         ) if '' ne $min and $min !~ /^\d+$/;
 
         my $max = $options->{max};
         return $app->translate(
-            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
+            "A maximum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to 1.",
             $label,
             $field_label
         ) if '' ne $max and ( $max !~ /^\d+$/ or $max < 1 );
 
         return $app->translate(
-            "A number of maximum selection of '[_1]' ([_2]) must be a positive integer greater than or equal to a number of minimum selection.",
+            "A maximum selection number for '[_1]' ([_2]) must be a positive integer greater than or equal to the minimum selection number.",
             $label,
             $field_label
             )
@@ -433,7 +433,7 @@ sub field_type_validation_handler {
         = MT::CategorySet->exist( { blog_id => $app->blog->id } );
     unless ($category_set_exists) {
         return $app->translate(
-            'There is no category set that can be selected. Please create a category set if you use Categories field type.'
+            'There is no category set that can be selected. Please create a category set if you use the Categories field type.'
         );
     }
     return;

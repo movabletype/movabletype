@@ -556,7 +556,7 @@ sub dialog_move_blogs {
     my @id = $app->multi_param('id');
     if ( MT->model('website')->exist( { id => \@id, class => 'website' } ) ) {
         return $app->error(
-            $app->translate('This action cannot move top-level site.') );
+            $app->translate('This action cannot move a top-level site.') );
     }
 
     my $ids = join ',', @id;

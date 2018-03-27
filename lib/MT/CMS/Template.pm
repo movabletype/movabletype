@@ -540,7 +540,7 @@ sub edit {
                 }
                 elsif ( $obj_type eq 'ct_archive' ) {
 
-                 # only include if it is NOT an contenttype-based archive type
+                 # only include if it is NOT a contenttype-based archive type
                     next if $archiver->contenttype_based;
                 }
                 elsif ( $obj_type eq 'ct' ) {
@@ -2797,7 +2797,7 @@ sub refresh_individual_templates {
 
     # force saving the revision when indiv. templates are refreshed.
     $app->param( 'save_revision', 1 );
-    $app->param( 'revision-note', $app->translate('Template Referesh') );
+    $app->param( 'revision-note', $app->translate('Template Refresh') );
 
     require MT::DefaultTemplates;
     my $tmpl_list;

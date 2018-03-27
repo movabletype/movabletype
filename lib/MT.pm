@@ -1494,7 +1494,7 @@ sub init_plugins {
                         closedir $subdir;
                     }
                     else {
-                        warn "Can not read directory: $plugin_full_path";
+                        warn "Cannot read directory: $plugin_full_path";
                     }
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
