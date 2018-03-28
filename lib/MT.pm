@@ -1297,8 +1297,36 @@ sub init_plugins {
     my $use_plugins  = $cfg->UsePlugins;
     my @PluginPaths  = $cfg->PluginPath;
     my $PluginSwitch = $cfg->PluginSwitch || {};
-    return $mt->_init_plugins_core( $PluginSwitch, $use_plugins,
-        \@PluginPaths );
+    my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
+    $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
+
+    unless (%$PluginSwitch) {
+        for my $plugin_sig ( keys %Plugins ) {
+            if ( !exists $PluginSwitch->{$plugin_sig} ) {
+                $PluginSwitch->{$plugin_sig} = 1
+                    if !exists $Plugins{$plugin_sig}{enabled}
+                    or $Plugins{$plugin_sig}{enabled};
+            }
+        }
+    }
+
+    if ( $plugin_sigs ne join ',', sort keys %$PluginSwitch ) {
+        for my $plugin_sig ( keys %$PluginSwitch ) {
+            delete $PluginSwitch->{$plugin_sig}
+                unless exists $Plugins{$plugin_sig};
+        }
+
+        $mt->config->PluginSwitch( $PluginSwitch, 1 );
+
+        my %PluginAlias;
+        for my $plugin_sig ( keys %$PluginSwitch ) {
+            next unless ref $Plugins{$plugin_sig}{object};
+            my $alias = $Plugins{$plugin_sig}{object}->name or next;
+            $PluginAlias{$alias} = $plugin_sig if $alias ne $plugin_sig;
+        }
+        $mt->config->PluginAlias( \%PluginAlias, 1 );
+    }
+    return 1;
 }
 
 {
@@ -1401,6 +1429,7 @@ sub init_plugins {
             }
         }
         $Plugins{$plugin_sig}{enabled} = 1;
+        $PluginSwitch->{$plugin_sig} = 1;
         return 1;
     }
 
@@ -1435,6 +1464,7 @@ sub init_plugins {
 
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
+        $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
         $p->init_callbacks();
     }

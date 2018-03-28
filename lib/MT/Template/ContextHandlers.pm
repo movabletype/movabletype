@@ -331,6 +331,8 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'HasPlugin?' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_has_plugin',
 
             ## Content Type
             'AuthorHasContent?' =>
