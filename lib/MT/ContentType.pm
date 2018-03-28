@@ -409,17 +409,49 @@ sub field_permissions {
 }
 
 sub permission_group {
-    my $obj     = shift;
-    my $name    = $obj->name;
-    my $site_id = $obj->blog_id;
-    qq{"$name" content type (site_id:$site_id)};
+    my $obj  = shift;
+    my $name = $obj->name;
+    my $site = $obj->blog;
+    return MT->translate( '"[_1]" (Site: "[_2]" ID: [_3])',
+        $name, $site->name, $site->id );
+}
+
+sub blog {
+    my ($obj) = @_;
+    $obj->cache_property(
+        'blog',
+        sub {
+            my $blog_id = $obj->blog_id;
+            require MT::Blog;
+            MT::Blog->load($blog_id)
+                or $obj->error(
+                MT->translate(
+                    "Loading blog '[_1]' failed: [_2]",
+                    $blog_id,
+                    MT::Blog->errstr
+                        || MT->translate("record does not exist.")
+                )
+                );
+        }
+    );
 }
 
 # class method
 sub permission_groups {
     my $class         = shift;
-    my @content_types = __PACKAGE__->load;
-    my @groups        = map {
+    my @content_types = __PACKAGE__->load(
+        undef,
+        {   sort => [
+                {   column => 'blog_id',
+                    desc   => 'ASC',
+                },
+                {   column => 'name',
+                    desc   => 'ASC',
+                },
+            ]
+        }
+    );
+    my @groups = map {
         +{  ct_perm_group_unique_id => $_->unique_id,
             ct_perm_group_label     => $_->permission_group,
             }

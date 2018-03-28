@@ -223,7 +223,10 @@ function init() {
       </div>
     </mtapp:setting>
     </mt:if>
+  </mtapp:settinggroup>
 
+  <mtapp:settinggroup id="role-content-type-privileges">
+    <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
     <mt:loop name="content_type_perm_groups">
       <mtapp:setting
         id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
@@ -231,7 +234,7 @@ function init() {
         <div class="form-group">
         <mt:loop name="loaded_permissions">
         <mt:if name="content_type_unique_id" eq="$ct_perm_group_unique_id">
-          <div class="form-check">
+          <div class="form-check form-check-inline">
             <div class="custom-control custom-checkbox">
                 <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
                 <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
