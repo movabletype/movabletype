@@ -24,6 +24,7 @@ __PACKAGE__->install_properties(
             'author_id'      => 'integer',
             'startdate'      => 'string(80)',
             'virtual'        => 'boolean',
+            'cd_id'          => 'integer',
         },
         indexes => {
             blog_id        => 1,
@@ -35,6 +36,7 @@ __PACKAGE__->install_properties(
             startdate      => 1,
             category_id    => 1,
             author_id      => 1,
+            cd_id          => 1,
         },
         datasource  => 'fileinfo',
         primary_key => 'id',
