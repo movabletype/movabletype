@@ -266,7 +266,7 @@ sub add {
         ];
         my $plugin_switch = $app->config->PluginSwitch;
         my $comment_switch
-            = defined($plugin_switch) ? $plugin_switch->{Comments} : 0;
+            = defined($plugin_switch) ? $plugin_switch->{Comments} : 1;
         eval { require Comments; };
 
         if ( !$@ && ( !defined($comment_switch) || $comment_switch != 0 ) ) {
@@ -279,7 +279,7 @@ sub add {
                 };
         }
         my $trackback_switch
-            = defined($plugin_switch) ? $plugin_switch->{Trackback} : 0;
+            = defined($plugin_switch) ? $plugin_switch->{Trackback} : 1;
         eval { require Trackback; };
         if ( !$@
             && ( !defined($trackback_switch) || $trackback_switch != 0 ) )
