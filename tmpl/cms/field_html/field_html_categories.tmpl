@@ -53,8 +53,8 @@
     <div class="mt-collapse__container">
       <div class="col"></div>
       <div class="col-auto">
-        <a data-toggle="collapse" href="#categories-<mt:var name="content_field_id" escape="html">" aria-expanded="<mt:if name="selected_category_loop">false<mt:else>true</mt:if>" aria-controls="categories-<mt:var name="content_field_id" escape="html">" class="d-inline-block<mt:if name="selected_category_loop"> collapsed</mt:if>">
-          <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
+        <a data-toggle="collapse" href="#categories-<mt:var name="content_field_id" escape="html">" aria-expanded="<mt:if name="selected_category_loop">false<mt:else>true</mt:if>" aria-controls="categories-<mt:var name="content_field_id" escape="html">" class="btn btn-link d-inline-block<mt:if name="selected_category_loop"> collapsed</mt:if>">
+          <mt:if name="selected_category_loop"><__trans phrase="Edit"><mt:else><__trans phrase="Close"></mt:if>
         </a>
       </div>
     </div>
@@ -230,6 +230,14 @@
   </div>
 
 </div>
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('#categories-<mt:var name="content_field_id" escape="html">').on('hide.bs.collapse', function (e) {
+    jQuery(e.target).siblings('.mt-collapse__container:first-child').find('a').text('<__trans phrase="Edit">');
+  })
+  jQuery('#categories-<mt:var name="content_field_id" escape="html">').on('show.bs.collapse', function (e) {
+    jQuery(e.target).siblings('.mt-collapse__container:first-child').find('a').text('<__trans phrase="Close">');
+  })
+</mt:setvarblock>
 <mt:else>
 <div class="alert alert-warning">
   <__trans phrase="This field is disabled because valid Category Set is not selected in this field.">
