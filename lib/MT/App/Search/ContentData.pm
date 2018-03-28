@@ -318,7 +318,7 @@ sub search_terms {
     my $sort = $params->{'sort'};
     if ( $sort !~ /\w+\!$/ && $app->{searchparam}{SearchSortBy} ) {
         my $sort_by = $app->{searchparam}{SearchSortBy};
-        $sort_by =~ s/[^\w\-\.\,]+//g;
+        $sort_by =~ s/[^\w\-\.\,:]+//g;
         if ($sort_by) {
             my @sort_bys = split ',', $sort_by;
             foreach my $key (@sort_bys) {
