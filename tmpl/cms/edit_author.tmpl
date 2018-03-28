@@ -187,14 +187,6 @@ function removedUserpic(data) {
     return false
 }
 
-function init() {
-    var c = document.forms['profile'].elements['can_administer'];
-    if (c.checked)
-        document.forms['profile'].elements['can_administer'].onclick();
-}
-
-jQuery(document).load(init);
-
 <mt:if name="auth_mode_mt">
 <$mt:PasswordValidation form="profile" password="pass" username="name"$>
 </mt:if>
@@ -209,31 +201,6 @@ function isContainsMultiByte ( val ) {
     }
     return false;
 }
-
-jQuery.mtValidateAddRules({
-    "#pass": function($e) {
-        if ( isContainsMultiByte( $e.val() ) ) {
-            return false;
-        }
-        return true;
-    },
-    "#pass_verify": function($e) {
-        if ( isContainsMultiByte( $e.val() ) ) {
-            return false;
-        }
-        return true;
-    },
-});
-
-jQuery.mtValidateAddMessages({
-    "#pass": '<__trans phrase="You must use half-width character for password.">',
-    "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
-});
-
-jQuery('#profile').submit(function(eventObject) {
-    if ( !jQuery("#pass").mtValidate('simple') ) return false;
-    if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
-});
 
 function showPasswordField() {
     jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().focus();
@@ -589,6 +556,42 @@ function showPasswordField() {
     </mt:unless>
   </mt:unless>
 </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('input[type="checkbox"]').each(function(){
+    if (this.checked)
+        this.onclick();
+});
+
+jQuery.mtValidateAddRules({
+    "#pass": function($e) {
+        if ( isContainsMultiByte( $e.val() ) ) {
+            return false;
+        }
+        return true;
+    },
+    "#pass_verify": function($e) {
+        if ( isContainsMultiByte( $e.val() ) ) {
+            return false;
+        }
+        return true;
+    },
+});
+
+jQuery.mtValidateAddMessages({
+    "#pass": '<__trans phrase="You must use half-width character for password.">',
+    "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
+});
+
+jQuery('#profile').submit(function(eventObject) {
+    if ( !jQuery("#pass").mtValidate('simple') ) return false;
+    if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
+    jQuery("input:checked").each(function(){
+        this.disabled = false;
+    });
+});
+
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
