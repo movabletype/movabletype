@@ -1433,13 +1433,15 @@ sub search {
         my $stmt = $prepare_statement->( $driver, $class, $orig_terms,
             $orig_args );
 
+        return $stmt unless $class eq __PACKAGE__;
+
         my $dbd = $driver->dbd;
         my $tbl = $driver->table_for($class);
         unless ( ref $sort eq 'ARRAY' ) {
             $sort = [
                 {   column => $sort,
-                    desc   => $args->{direction}
-                        && $args->{direction} eq 'descend' ? 'DESC' : 'ASC',
+                    desc   => $direction
+                        && $direction eq 'descend' ? 'DESC' : 'ASC',
                 }
                 ],
                 ;
@@ -1538,11 +1540,14 @@ sub _prepare_statement_for_tmp {
                         )
                     )
             },
-            [   {   $driver->_decorate_column_name(
-                        MT->model('content_field'), 'id' ) =>
-                        $content_field_arg
-                },
-                '-or',
+            [   ( $content_field_arg =~ /^[0-9]+$/ )
+                ? ( {   $driver->_decorate_column_name(
+                            MT->model('content_field'), 'id' ) =>
+                            $content_field_arg
+                    },
+                    '-or',
+                    )
+                : (),
                 {   $driver->_decorate_column_name(
                         MT->model('content_field'), 'unique_id' ) =>
                         $content_field_arg
