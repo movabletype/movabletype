@@ -93,9 +93,6 @@ sub edit {
         if ( $app->config->ExternalUserManagement ) {
             return $app->error( MT->translate('Invalid request') );
         }
-        $param->{create_personal_weblog}
-            = $app->config->NewUserAutoProvisioning ? 1 : 0
-            unless exists $param->{create_personal_weblog};
         $param->{can_modify_password}     = MT::Auth->password_exists;
         $param->{can_modify_api_password} = 0;
         $param->{can_recover_password}    = MT::Auth->can_recover_password;
@@ -452,11 +449,6 @@ sub set_object_status {
             next;
         }
         next if $new_status == $obj->status;
-        my $create_blog
-            = (    $new_status == MT::Author::ACTIVE()
-                && $type eq 'author'
-                && $app->config->NewUserAutoProvisioning
-                && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
         if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
             my $eh = MT::ErrorHandler->new;
@@ -482,11 +474,6 @@ sub set_object_status {
             if ( $new_status == MT::Author::ACTIVE() ) {
                 push @sync, $obj;
             }
-        }
-        if ($create_blog) {
-
-            # provision new user with a personal blog
-            $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
     my $unchanged = 0;
@@ -665,39 +652,6 @@ sub cfg_system_users {
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
 
-    $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
-    if ( my $id = $param{new_user_theme_id} = $app->config('NewUserBlogTheme')
-        || 'rainier' )
-    {
-        require MT::Theme;
-        my $theme = MT::Theme->load($id);
-        if ($theme) {
-            $param{new_user_theme_name} = $theme->label;
-            my ( $thumb, $t_w, $t_h ) = $theme->thumbnail( size => 'small' );
-            $param{new_user_theme_thumbnail}   = $thumb;
-            $param{new_user_theme_thumbnail_w} = $t_w;
-            $param{new_user_theme_thumbnail_h} = $t_h;
-        }
-        else {
-            $app->config( 'NewUserBlogTheme', '', 1 );
-            $cfg->save_config();
-            delete $param{new_user_theme_id};
-        }
-    }
-    if ( my $id = $param{new_user_default_website_id}
-        = $app->config('NewUserDefaultWebsiteId') || '' )
-    {
-        require MT::Website;
-        my $website = MT::Website->load($id);
-        if ($website) {
-            $param{new_user_default_website_name} = $website->name;
-        }
-        else {
-            $app->config( 'NewUserDefaultWebsiteId', undef, 1 );
-            $cfg->save_config();
-            delete $param{new_user_default_website_id};
-        }
-    }
     $param{system_email_address} = $cfg->EmailAddressMain;
     $param{system_no_email}      = 1 unless $cfg->EmailAddressMain;
     $param{saved}                = $app->param('saved');
@@ -732,8 +686,7 @@ sub cfg_system_users {
 
     my @readonly_configs
         = qw( CommenterRegistration DefaultTimeZone DefaultUserLanguage DefaultUserTagDelimiter
-        NewUserAutoProvisioning NewUserBlogTheme NewUserDefaultWebsiteId UserPasswordValidation
-        UserPasswordMinLength );
+        NewUserBlogTheme NewUserDefaultWebsiteId UserPasswordValidation UserPasswordMinLength );
 
     my @config_warnings;
     for my $config_directive (@readonly_configs) {
@@ -742,9 +695,6 @@ sub cfg_system_users {
 
             if ( $config_directive eq 'DefaultUserLanguage' ) {
                 $param{default_language_readonly} = 1;
-            }
-            elsif ( $config_directive eq 'NewUserAutoProvisioning' ) {
-                $param{personal_weblog_readonly} = 1;
             }
             else {
                 my $snake_case = $config_directive;
@@ -803,10 +753,7 @@ sub save_cfg_system_users {
     my $personal_weblog  = $app->param('personal_weblog');
     my $default_user_tag_delimiter
         = $app->param('default_user_tag_delimiter');
-    $app->config( 'DefaultTimezone', $tz, 1 );
-    $app->config( 'NewUserAutoProvisioning', $personal_weblog ? 1 : 0, 1 );
-    $app->config( 'NewUserBlogTheme',        $theme_id,                   1 );
-    $app->config( 'NewUserDefaultWebsiteId', $default_website_id,         1 );
+    $app->config( 'DefaultTimezone',         $tz,                         1 );
     $app->config( 'DefaultUserLanguage',     $default_language,           1 );
     $app->config( 'DefaultUserTagDelimiter', $default_user_tag_delimiter, 1 );
     my $registration = $cfg->CommenterRegistration;
@@ -1379,7 +1326,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args         => { sort => 'name' },
+                {   args => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
@@ -1907,11 +1854,9 @@ sub post_save {
         $obj->add_default_roles;
 
         my $author_id = $obj->id;
-        if ( $app->param('create_personal_weblog') ) {
 
-            # provision new user with a personal blog
-            $app->run_callbacks( 'new_user_provisioning', $obj );
-        }
+        # provision new user with a personal blog
+        $app->run_callbacks( 'new_user_provisioning', $obj );
     }
     else {
         if ( $app->user->id == $obj->id ) {
@@ -1926,14 +1871,6 @@ sub post_save {
             {
                 $app->start_session();
             }
-        }
-        if (   $original->status == MT::Author::PENDING()
-            && $obj->status == MT::Author::ACTIVE()
-            && $app->config->NewUserAutoProvisioning )
-        {
-
-            # provision new user with a personal blog
-            $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
 

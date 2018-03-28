@@ -488,23 +488,6 @@ sub cfg_system_general {
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
 
-    $param{personal_weblog_readonly}
-        = $app->config->is_readonly('NewUserAutoProvisioning');
-    $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
-    if ( my $id = $param{new_user_template_blog_id}
-        = $app->config('NewUserTemplateBlogId') || '' )
-    {
-        my $blog = MT::Blog->load($id);
-        if ($blog) {
-            $param{new_user_template_blog_name} = $blog->name;
-        }
-        else {
-            $app->config( 'NewUserTemplateBlogId', undef, 1 );
-            $cfg->save_config();
-            delete $param{new_user_template_blog_id};
-        }
-    }
-
     my @readonly_configs = qw( EmailAddressMain DebugMode PerformanceLogging
         PerformanceLoggingPath PerformanceLoggingThreshold
         UserLockoutLimit UserLockoutInterval IPLockoutLimit

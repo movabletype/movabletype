@@ -31,18 +31,6 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-function clearWebsiteLocation() {
-    var el_name = MT.Util.getByID("new_user_default_website_name");
-    var el_id = MT.Util.getByID("new_user_default_website_id");
-    if (el_name && el_id) {
-        el_id.value = "";
-        el_name.innerHTML = "<__trans phrase="(No site selected)">";
-    }
-    var el_id_link = MT.Util.getByID("select-website-link");
-    if (el_id_link) {
-        el_id_link.innerHTML = "<__trans phrase="Select site">";
-    }
-}
 function clearNotifyUsers() {
     var el_name = MT.Util.getByID("notify_user_name");
     var el_id = MT.Util.getByID("notify_user_id");
@@ -165,66 +153,6 @@ function clearNotifyUsers() {
 
   <mtapp:settinggroup id="new-user-defaults">
     <legend class="h3"><__trans phrase="New User Defaults"></legend>
-    <mtapp:setting
-       id="personal_weblog"
-       label="<__trans phrase="Personal Child Site">">
-      <div class="form-group">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="personal_weblog" class="custom-control-input" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if><mt:if name="personal_weblog_readonly"> disabled="disabled"</mt:if> />
-          <label class="custom-control-label" for="personal_weblog"><__trans phrase="Automatically create a new child site for each new user."></label>
-        </div>
-      </div>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="new_user_default_website_id"
-       label="<__trans phrase="Personal Child Site Location">">
-      <div class="form-group">
-        <input type="hidden" id="new_user_default_website_id" name="new_user_default_website_id" value="<mt:var name="new_user_default_website_id" escape="html">" />
-        <span id="new_user_default_website_name">
-        <mt:if name="new_user_default_website_id">
-          <strong><mt:var name="new_user_default_website_name" escape="html"> (<mt:var name="new_user_default_website_id" escape="html">)</strong>
-          <mt:unless name="new_user_default_website_id_readonly">
-            <a href="javascript:void(0)" onclick="return clearWebsiteLocation()"><__trans phrase="Clear"></a> |
-          </mt:unless>
-        <mt:else>
-          <__trans phrase="(No site selected)">
-        </mt:if>
-        </span>
-        <mt:unless name="new_user_default_website_id_readonly">
-          <a id="select-website-link" href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=0&amp;idfield=new_user_default_website_id&amp;namefield=new_user_default_website_name" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
-            <mt:if name="new_user_default_website_id">
-              <__trans phrase="Change site">
-            <mt:else>
-              <__trans phrase="Select site">
-            </mt:if>
-          </a>
-        </mt:unless>
-      </div>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="new_user_theme"
-       label="<__trans phrase="Personal Child Site Theme">">
-      <input type="hidden" id="new_user_theme_id" name="new_user_theme_id" value="<mt:var name="new_user_theme_id" escape="html">"<mt:if name="new_user_blog_theme_readonly">disabled="disabled"</mt:if> />
-      <div id="new_user_theme_thumb">
-      <mt:if name="new_user_theme_thumbnail">
-        <img id="new_user_theme_thumb" class="img-thumbnail" src="<mt:var name="new_user_theme_thumbnail">" width="<mt:var name="new_user_theme_thumbnail_w">" height="<mt:var name="new_user_theme_thumbnail_h">" />
-      </mt:if>
-      </div>
-      <div id="new_user_theme_name">
-      <mt:if name="new_user_theme_id">
-        <strong><mt:var name="new_user_theme_name" escape="html"></strong>
-      <mt:else>
-        <__trans phrase="(No theme selected)">
-      </mt:if>
-      </div>
-    <mt:unless name="new_user_blog_theme_readonly">
-      <a id="select-theme-link" href="<mt:var name="script_url">?__mode=dialog_select_theme&amp;multi=0&amp;idfield=new_user_theme_id&amp;namefield=new_user_theme_name&amp;imagefield=new_user_theme_thumb" class="mt-open-dialog mt-modal-open" data-mt-modal-large><mt:if name="new_user_theme">
-        <__trans phrase="Change theme"><mt:else><__trans phrase="Select theme"></mt:if>
-      </a>
-    </mt:unless>
-    </mtapp:setting>
 
     <mtapp:setting
        id="default_language"

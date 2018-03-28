@@ -2037,8 +2037,6 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserAutoProvisioning' =>
-                { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
@@ -3528,13 +3526,6 @@ sub DefaultUserTagDelimiter {
     else {
         return ord(',');
     }
-}
-
-sub NewUserAutoProvisioning {
-    my $mgr = shift;
-    return $mgr->set_internal( 'NewUserAutoProvisioning', @_ ) if @_;
-    return 0 unless $mgr->NewUserDefaultWebsiteId;
-    $mgr->get_internal('NewUserAutoProvisioning');
 }
 
 sub UserSessionCookieName {

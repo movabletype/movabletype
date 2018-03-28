@@ -848,7 +848,7 @@ sub response_content {
 }
 
 sub set_x_frame_options_header {
-    my $app             = shift;
+    my $app = shift;
     my $x_frame_options = $app->config->XFrameOptions || '';
 
     # If set as NONE MT should not output X-Frame-Options header.
@@ -1044,8 +1044,6 @@ sub run_callbacks {
         MT->add_callback( 'MT::Config::post_save', 0, $app,
             sub { $app->reboot } );
         MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
-        MT->add_callback( 'new_user_provisioning', 5, $app,
-            \&_cb_user_provisioning );
         $callbacks_added = 1;
     }
 }
@@ -1289,164 +1287,6 @@ sub _cb_mark_blog {
     $mt_req->stash( 'blogs_touched', $blogs_touched );
 }
 
-sub _cb_user_provisioning {
-    my ( $cb, $user ) = @_;
-
-    # Cannot supply if website are not seleted.
-    my $website_class = MT->model('website');
-    my $website_id    = MT->config('NewUserDefaultWebsiteId');
-    my $website
-        = $website_id
-        ? $website_class->load($website_id)
-        : undef;
-    if ( !$website_id || !$website ) {
-        MT->log(
-            {   message => MT->translate(
-                    "Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.",
-                    ( $website_id ? $website_id : '' )
-                ),
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'new',
-            }
-        );
-        return;
-    }
-
-    # Supply user with what they need...
-    require MT::Blog;
-    require MT::Util;
-    my $new_blog;
-    my $blog_name = $user->nickname || MT->translate("First Weblog");
-
-    my $theme_id = MT->config('NewUserBlogTheme');
-    my $blog_id  = MT->config('NewUserTemplateBlogId');
-    if ($theme_id) {
-        $new_blog
-            = MT::Blog->create_default_blog( $blog_name, undef, $website_id );
-    }
-    elsif ($blog_id) {
-        my $blog = MT::Blog->load($blog_id);
-        if ( !$blog ) {
-            MT->log(
-                {   message => MT->translate(
-                        "Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.",
-                        $blog_id
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'new',
-                }
-            );
-            return;
-        }
-        $new_blog = $blog->clone(
-            {   Children => 1,
-                Classes  => { 'MT::Permission' => 0, 'MT::Association' => 0 },
-                BlogName => $blog_name,
-                Website  => $website_id,
-            }
-        );
-        if ( !$new_blog ) {
-            MT->log(
-                {   message => MT->translate(
-                        "Error provisioning blog for new user '[_1]' using template blog #[_2].",
-                        $user->id,
-                        $blog->id
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'new',
-                }
-            );
-            return;
-        }
-    }
-    else {
-        $new_blog
-            = MT::Blog->create_default_blog( $blog_name, undef, $website_id );
-    }
-
-    my $path = $user->basename;
-    $new_blog->site_path($path);
-
-    my $url         = $website->site_url;
-    my $website_url = $url;
-    $url .= '/' unless $url =~ m!/$!;
-    $url .= "$path/";
-    $url =~ s!^$website_url/*!!;
-    $new_blog->site_url( '/::/' . $url );
-
-    my $offset = MT->config('DefaultTimezone');
-    if ( defined $offset ) {
-        $new_blog->server_offset($offset);
-    }
-
-    $new_blog->save
-        or MT->log(
-        {   message => MT->translate(
-                "Error provisioning blog for new user '[_1]' (ID: [_2]).",
-                $user->id, $user->name
-            ),
-            level    => MT::Log::ERROR(),
-            class    => 'system',
-            category => 'new',
-        }
-        ),
-        return;
-    MT->log(
-        {   message => MT->translate(
-                "Blog '[_1]' (ID: [_2]) for user '[_3]' (ID: [_4]) has been created.",
-                $new_blog->name, $new_blog->id, $user->name, $user->id
-            ),
-            level    => MT::Log::INFO(),
-            class    => 'system',
-            category => 'new'
-        }
-    );
-
-    if ($theme_id) {
-        require MT::Theme;
-        my $theme = MT::Theme->load($theme_id);
-        if ($theme) {
-            $new_blog->theme_id($theme_id);
-            $new_blog->apply_theme;
-            $new_blog->save;
-        }
-    }
-
-    require MT::Role;
-    require MT::Association;
-    my @roles = MT::Role->load_by_permission("administer_site");
-    my $role;
-    foreach my $r (@roles) {
-        next if $r->permissions =~ m/\'administer_site\'/;
-        $role = $r;
-        last;
-    }
-    if ($role) {
-        MT::Association->link( $user => $role => $new_blog );
-    }
-    else {
-        MT->log(
-            {   message => MT->translate(
-                    "Error assigning blog administration rights to user '[_1]' (ID: [_2]) for blog '[_3]' (ID: [_4]). No suitable blog administrator role was found.",
-                    $user->name,     $user->id,
-                    $new_blog->name, $new_blog->id,
-                ),
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'new'
-            }
-        );
-    }
-
-# Apply permission to website administrator if (s)he has manage_member_blogs permission.
-    $website->add_blog($new_blog);
-
-    1;
-}
-
 # Along with _cb_unmark_blog and _cb_mark_blog, this is an elaborate
 # scheme to cause MT::Blog objects that are affected as a result of a
 # change to a child class to be updated with respect to their
@@ -1476,7 +1316,7 @@ sub add_breadcrumb {
 }
 
 sub is_authorized {1}
-sub can_sign_in {1}
+sub can_sign_in   {1}
 
 sub commenter_cookie { COMMENTER_COOKIE_NAME() }
 
@@ -2396,9 +2236,7 @@ sub login {
         );
 
         # provision user if configured to do so
-        if ( $app->config->NewUserAutoProvisioning ) {
-            MT->run_callbacks( 'new_user_provisioning', $author );
-        }
+        MT->run_callbacks( 'new_user_provisioning', $author );
         $new_login = 1;
     }
     my $author = $app->user;
@@ -2426,7 +2264,7 @@ sub login {
             ) if !defined $commenter_blog_id || $commenter_blog_id > 0;
 
             # Application level login validation
-            if ( !$app->can_sign_in( $author ) ) {
+            if ( !$app->can_sign_in($author) ) {
                 MT::Auth->invalidate_credentials( { app => $app } );
                 return $app->error( $app->translate('Invalid login.') );
             }

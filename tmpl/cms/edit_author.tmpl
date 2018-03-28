@@ -498,23 +498,6 @@ function showPasswordField() {
     </mtapp:setting>
   </fieldset>
 
-<mt:if name="new_object">
-  <mtapp:settinggroup id="author-optional-settings">
-    <legend class="h3"><__trans phrase="Options"></legend>
-    <mtapp:setting
-       id="create_user_blog"
-       label="<__trans phrase="Options">"
-       label_for="create_personal_weblog">
-      <div class="form-group">
-        <div class="custom-control custom-checkbox<mt:unless name="create_personal_weblog"> text-muted</mt:unless>">
-          <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" class="custom-control-input" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
-          <label class="custom-control-label" for="create_personal_weblog"><__trans phrase="Create personal child site for user"></label>
-        </div>
-      </div>
-    </mtapp:setting>
-  </mtapp:settinggroup>
-</mt:if>
-
   <mt:setvarblock name="action_buttons">
   <mt:if name="new_object">
     <button
