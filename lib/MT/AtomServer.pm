@@ -567,7 +567,8 @@ sub get_categories {
     $doc->appendAttribute(
         XML::XPath::Node::Attribute->new( 'fixed', 'yes' ) );
 
-    my $iter = MT::Category->load_iter( { blog_id => $blog->id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog->id, category_set_id => 0 } );
     while ( my $cat = $iter->() ) {
         my $cat_node
             = XML::XPath::Node::Element->new( 'atom:category', 'atom' );
@@ -599,7 +600,9 @@ sub new_post {
     ## it's present, but we want to give an error now if necessary.
     my ($cat);
     if ( my $label = $atom->get( NS_DC, 'subject' ) ) {
-        $cat = MT::Category->load( { blog_id => $blog->id, label => $label } )
+        $cat
+            = MT::Category->load(
+            { blog_id => $blog->id, category_set_id => 0, label => $label } )
             or return $app->error( 400, "Invalid category '$label'" );
     }
 
@@ -970,7 +973,7 @@ sub delete_post {
 
     # Delete archive file
     my %recipe;
-    $blog = MT::Blog->load( $entry->blog_id );
+    $blog   = MT::Blog->load( $entry->blog_id );
     %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
@@ -1399,7 +1402,8 @@ sub get_weblogs {
 sub get_categories {
     my $app  = shift;
     my $blog = $app->{blog};
-    my $iter = MT::Category->load_iter( { blog_id => $blog->id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog->id, category_set_id => 0 } );
     my $doc;
     if (LIBXML) {
         $doc = XML::LibXML::Document->createDocument( '1.0', 'utf-8' );
