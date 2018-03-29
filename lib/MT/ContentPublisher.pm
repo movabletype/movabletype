@@ -1041,6 +1041,8 @@ sub rebuild_file {
             period_start => $start,
             Category     => $category,
             category     => $category,
+            ContentData  => $content_data,
+            contentdata  => $content_data,
         );
 
         rename(
@@ -1092,6 +1094,8 @@ sub rebuild_file {
             Category     => $category,
             category     => $category,
             force        => ( $args{Force} ? 1 : 0 ),
+            ContentData  => $content_data,
+            contentdata  => $content_data,
         )
         )
     {
@@ -1193,6 +1197,8 @@ sub rebuild_file {
             template     => $tmpl,
             File         => $file,
             file         => $file
+            ContentData  => $content_data,
+            contentdata  => $content_data,
         );
         ## First check whether the content is actually
         ## changed. If not, we won't update the published
@@ -1265,6 +1271,8 @@ sub rebuild_file {
             category     => $category,
             File         => $file,
             file         => $file
+            ContentData  => $content_data,
+            contentdata  => $content_data,
         );
     }
     $timer->mark( "total:rebuild_file[template_id:" . $tmpl->id . "]" )
