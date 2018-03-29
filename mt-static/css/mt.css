@@ -9923,6 +9923,10 @@ fieldset.form-group {
 }
 
 /* Tables */
+.mt-table {
+  border: 1px solid #CACACA;
+}
+
 .mt-table th, .mt-table td {
   padding: .8rem;
 }
@@ -9946,7 +9950,9 @@ fieldset.form-group {
 .mt-table thead th {
   background: #F4F4F4;
   border-top: 0;
-  border-bottom: 1px solid #A5A5A5;
+  border-bottom: 1px solid #CACACA;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
   color: #2F2F2F;
   font-weight: bold;
   white-space: nowrap;
@@ -10403,9 +10409,14 @@ fieldset.form-group {
 }
 
 /* Modal */
+.modal-content {
+  border-radius: 0;
+}
+
 .modal-header {
   border-bottom: 0;
-  background: #495057;
+  border-radius: 0;
+  background: #595959;
   color: #FFFFFF;
 }
 
