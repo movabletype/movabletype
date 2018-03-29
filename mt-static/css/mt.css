@@ -4656,7 +4656,7 @@ tbody.collapse.show {
   color: white;
 }
 
-.card, .mt-widget, .mt-widget--panel {
+.card, .mt-table--outline, .mt-widget, .mt-widget--panel {
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -4673,17 +4673,17 @@ tbody.collapse.show {
   border-radius: 0.25rem;
 }
 
-.card > hr, .mt-widget > hr, .mt-widget--panel > hr {
+.card > hr, .mt-table--outline > hr, .mt-widget > hr, .mt-widget--panel > hr {
   margin-right: 0;
   margin-left: 0;
 }
 
-.card > .list-group:first-child .list-group-item:first-child, .mt-widget > .list-group:first-child .list-group-item:first-child, .mt-widget--panel > .list-group:first-child .list-group-item:first-child {
+.card > .list-group:first-child .list-group-item:first-child, .mt-table--outline > .list-group:first-child .list-group-item:first-child, .mt-widget > .list-group:first-child .list-group-item:first-child, .mt-widget--panel > .list-group:first-child .list-group-item:first-child {
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
 }
 
-.card > .list-group:last-child .list-group-item:last-child, .mt-widget > .list-group:last-child .list-group-item:last-child, .mt-widget--panel > .list-group:last-child .list-group-item:last-child {
+.card > .list-group:last-child .list-group-item:last-child, .mt-table--outline > .list-group:last-child .list-group-item:last-child, .mt-widget > .list-group:last-child .list-group-item:last-child, .mt-widget--panel > .list-group:last-child .list-group-item:last-child {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 }
@@ -4789,7 +4789,7 @@ tbody.collapse.show {
           flex-direction: column;
 }
 
-.card-deck .card, .card-deck .mt-widget, .card-deck .mt-widget--panel {
+.card-deck .card, .card-deck .mt-table--outline, .card-deck .mt-widget, .card-deck .mt-widget--panel {
   margin-bottom: 15px;
 }
 
@@ -4802,7 +4802,7 @@ tbody.collapse.show {
     margin-right: -15px;
     margin-left: -15px;
   }
-  .card-deck .card, .card-deck .mt-widget, .card-deck .mt-widget--panel {
+  .card-deck .card, .card-deck .mt-table--outline, .card-deck .mt-widget, .card-deck .mt-widget--panel {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -4829,7 +4829,7 @@ tbody.collapse.show {
           flex-direction: column;
 }
 
-.card-group > .card, .card-group > .mt-widget, .card-group > .mt-widget--panel {
+.card-group > .card, .card-group > .mt-table--outline, .card-group > .mt-widget, .card-group > .mt-widget--panel {
   margin-bottom: 15px;
 }
 
@@ -4840,83 +4840,92 @@ tbody.collapse.show {
         -ms-flex-flow: row wrap;
             flex-flow: row wrap;
   }
-  .card-group > .card, .card-group > .mt-widget, .card-group > .mt-widget--panel {
+  .card-group > .card, .card-group > .mt-table--outline, .card-group > .mt-widget, .card-group > .mt-widget--panel {
     -webkit-box-flex: 1;
         -ms-flex: 1 0 0%;
             flex: 1 0 0%;
     margin-bottom: 0;
   }
-  .card-group > .card + .card, .card-group > .mt-widget + .card, .card-group > .mt-widget--panel + .card, .card-group > .card + .mt-widget, .card-group > .mt-widget + .mt-widget, .card-group > .mt-widget--panel + .mt-widget, .card-group > .card + .mt-widget--panel, .card-group > .mt-widget + .mt-widget--panel, .card-group > .mt-widget--panel + .mt-widget--panel {
+  .card-group > .card + .card, .card-group > .mt-table--outline + .card, .card-group > .mt-widget + .card, .card-group > .mt-widget--panel + .card, .card-group > .card + .mt-table--outline, .card-group > .mt-table--outline + .mt-table--outline, .card-group > .mt-widget + .mt-table--outline, .card-group > .mt-widget--panel + .mt-table--outline, .card-group > .card + .mt-widget, .card-group > .mt-table--outline + .mt-widget, .card-group > .mt-widget + .mt-widget, .card-group > .mt-widget--panel + .mt-widget, .card-group > .card + .mt-widget--panel, .card-group > .mt-table--outline + .mt-widget--panel, .card-group > .mt-widget + .mt-widget--panel, .card-group > .mt-widget--panel + .mt-widget--panel {
     margin-left: 0;
     border-left: 0;
   }
-  .card-group > .card:first-child, .card-group > .mt-widget:first-child, .card-group > .mt-widget--panel:first-child {
+  .card-group > .card:first-child, .card-group > .mt-table--outline:first-child, .card-group > .mt-widget:first-child, .card-group > .mt-widget--panel:first-child {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-  .card-group > .card:first-child .card-img-top, .card-group > .mt-widget:first-child .card-img-top, .card-group > .mt-widget--panel:first-child .card-img-top,
+  .card-group > .card:first-child .card-img-top, .card-group > .mt-table--outline:first-child .card-img-top, .card-group > .mt-widget:first-child .card-img-top, .card-group > .mt-widget--panel:first-child .card-img-top,
   .card-group > .card:first-child .card-header,
+  .card-group > .mt-table--outline:first-child .card-header,
   .card-group > .mt-widget:first-child .card-header,
   .card-group > .mt-widget--panel:first-child .card-header {
     border-top-right-radius: 0;
   }
-  .card-group > .card:first-child .card-img-bottom, .card-group > .mt-widget:first-child .card-img-bottom, .card-group > .mt-widget--panel:first-child .card-img-bottom,
+  .card-group > .card:first-child .card-img-bottom, .card-group > .mt-table--outline:first-child .card-img-bottom, .card-group > .mt-widget:first-child .card-img-bottom, .card-group > .mt-widget--panel:first-child .card-img-bottom,
   .card-group > .card:first-child .card-footer,
+  .card-group > .mt-table--outline:first-child .card-footer,
   .card-group > .mt-widget:first-child .card-footer,
   .card-group > .mt-widget--panel:first-child .card-footer {
     border-bottom-right-radius: 0;
   }
-  .card-group > .card:last-child, .card-group > .mt-widget:last-child, .card-group > .mt-widget--panel:last-child {
+  .card-group > .card:last-child, .card-group > .mt-table--outline:last-child, .card-group > .mt-widget:last-child, .card-group > .mt-widget--panel:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-  .card-group > .card:last-child .card-img-top, .card-group > .mt-widget:last-child .card-img-top, .card-group > .mt-widget--panel:last-child .card-img-top,
+  .card-group > .card:last-child .card-img-top, .card-group > .mt-table--outline:last-child .card-img-top, .card-group > .mt-widget:last-child .card-img-top, .card-group > .mt-widget--panel:last-child .card-img-top,
   .card-group > .card:last-child .card-header,
+  .card-group > .mt-table--outline:last-child .card-header,
   .card-group > .mt-widget:last-child .card-header,
   .card-group > .mt-widget--panel:last-child .card-header {
     border-top-left-radius: 0;
   }
-  .card-group > .card:last-child .card-img-bottom, .card-group > .mt-widget:last-child .card-img-bottom, .card-group > .mt-widget--panel:last-child .card-img-bottom,
+  .card-group > .card:last-child .card-img-bottom, .card-group > .mt-table--outline:last-child .card-img-bottom, .card-group > .mt-widget:last-child .card-img-bottom, .card-group > .mt-widget--panel:last-child .card-img-bottom,
   .card-group > .card:last-child .card-footer,
+  .card-group > .mt-table--outline:last-child .card-footer,
   .card-group > .mt-widget:last-child .card-footer,
   .card-group > .mt-widget--panel:last-child .card-footer {
     border-bottom-left-radius: 0;
   }
-  .card-group > .card:only-child, .card-group > .mt-widget:only-child, .card-group > .mt-widget--panel:only-child {
+  .card-group > .card:only-child, .card-group > .mt-table--outline:only-child, .card-group > .mt-widget:only-child, .card-group > .mt-widget--panel:only-child {
     border-radius: 0.25rem;
   }
-  .card-group > .card:only-child .card-img-top, .card-group > .mt-widget:only-child .card-img-top, .card-group > .mt-widget--panel:only-child .card-img-top,
+  .card-group > .card:only-child .card-img-top, .card-group > .mt-table--outline:only-child .card-img-top, .card-group > .mt-widget:only-child .card-img-top, .card-group > .mt-widget--panel:only-child .card-img-top,
   .card-group > .card:only-child .card-header,
+  .card-group > .mt-table--outline:only-child .card-header,
   .card-group > .mt-widget:only-child .card-header,
   .card-group > .mt-widget--panel:only-child .card-header {
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
   }
-  .card-group > .card:only-child .card-img-bottom, .card-group > .mt-widget:only-child .card-img-bottom, .card-group > .mt-widget--panel:only-child .card-img-bottom,
+  .card-group > .card:only-child .card-img-bottom, .card-group > .mt-table--outline:only-child .card-img-bottom, .card-group > .mt-widget:only-child .card-img-bottom, .card-group > .mt-widget--panel:only-child .card-img-bottom,
   .card-group > .card:only-child .card-footer,
+  .card-group > .mt-table--outline:only-child .card-footer,
   .card-group > .mt-widget:only-child .card-footer,
   .card-group > .mt-widget--panel:only-child .card-footer {
     border-bottom-right-radius: 0.25rem;
     border-bottom-left-radius: 0.25rem;
   }
-  .card-group > .card:not(:first-child):not(:last-child):not(:only-child), .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child), .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) {
+  .card-group > .card:not(:first-child):not(:last-child):not(:only-child), .card-group > .mt-table--outline:not(:first-child):not(:last-child):not(:only-child), .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child), .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) {
     border-radius: 0;
   }
-  .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-img-top, .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child) .card-img-top, .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) .card-img-top,
+  .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-img-top, .card-group > .mt-table--outline:not(:first-child):not(:last-child):not(:only-child) .card-img-top, .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child) .card-img-top, .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) .card-img-top,
   .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-img-bottom,
+  .card-group > .mt-table--outline:not(:first-child):not(:last-child):not(:only-child) .card-img-bottom,
   .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child) .card-img-bottom,
   .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) .card-img-bottom,
   .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-header,
+  .card-group > .mt-table--outline:not(:first-child):not(:last-child):not(:only-child) .card-header,
   .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child) .card-header,
   .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) .card-header,
   .card-group > .card:not(:first-child):not(:last-child):not(:only-child) .card-footer,
+  .card-group > .mt-table--outline:not(:first-child):not(:last-child):not(:only-child) .card-footer,
   .card-group > .mt-widget:not(:first-child):not(:last-child):not(:only-child) .card-footer,
   .card-group > .mt-widget--panel:not(:first-child):not(:last-child):not(:only-child) .card-footer {
     border-radius: 0;
   }
 }
 
-.card-columns .card, .card-columns .mt-widget, .card-columns .mt-widget--panel {
+.card-columns .card, .card-columns .mt-table--outline, .card-columns .mt-widget, .card-columns .mt-widget--panel {
   margin-bottom: 0.75rem;
 }
 
@@ -4927,7 +4936,7 @@ tbody.collapse.show {
     -webkit-column-gap: 1.25rem;
             column-gap: 1.25rem;
   }
-  .card-columns .card, .card-columns .mt-widget, .card-columns .mt-widget--panel {
+  .card-columns .card, .card-columns .mt-table--outline, .card-columns .mt-widget, .card-columns .mt-widget--panel {
     display: inline-block;
     width: 100%;
   }
@@ -9923,10 +9932,6 @@ fieldset.form-group {
 }
 
 /* Tables */
-.mt-table {
-  border: 1px solid #CACACA;
-}
-
 .mt-table th, .mt-table td {
   padding: .8rem;
 }
@@ -9951,8 +9956,6 @@ fieldset.form-group {
   background: #F4F4F4;
   border-top: 0;
   border-bottom: 1px solid #CACACA;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
   color: #2F2F2F;
   font-weight: bold;
   white-space: nowrap;
