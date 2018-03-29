@@ -1414,5 +1414,220 @@ sub preview_data {
     $data;
 }
 
-1;
+sub search {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
 
+    return $class->SUPER::search(@_)
+        unless _has_content_field_sort( $args && $args->{sort} );
+
+    my $sort      = $args->{sort};
+    my $direction = $args->{direction};
+
+    require MT::ObjectDriver::Driver::DBI;
+    my $prepare_statement
+        = \&MT::ObjectDriver::Driver::DBI::prepare_statement;
+    no warnings 'redefine';
+    local *MT::ObjectDriver::Driver::DBI::prepare_statement = sub {
+        my ( $driver, $class, $orig_terms, $orig_args ) = @_;
+        my $stmt = $prepare_statement->( $driver, $class, $orig_terms,
+            $orig_args );
+
+        return $stmt unless $class eq __PACKAGE__;
+
+        my $dbd = $driver->dbd;
+        my $tbl = $driver->table_for($class);
+        unless ( ref $sort eq 'ARRAY' ) {
+            $sort = [
+                {   column => $sort,
+                    desc   => $direction
+                        && $direction eq 'descend' ? 'DESC' : 'ASC',
+                }
+                ],
+                ;
+        }
+        my @order;
+        my $index     = 1;
+        my $from_stmt = $stmt->from_stmt;
+        for my $s (@$sort) {
+            my $col = $s->{column};
+            if ( $col =~ /^field:([^:]+)$/ ) {
+                $col = $1;
+                my $join_condition
+                    = $dbd->db_column_name( $tbl, 'id', $args->{alias} )
+                    . " = sort$index."
+                    . $driver->_decorate_column_name(
+                    MT->model('content_field_index'),
+                    'content_data_id' );
+                my $stmt_sort = $class->_prepare_statement_for_sort(
+                    value => $col,
+                    index => $index,
+                );
+                my $sql_sort_table
+                    = '(' . $stmt_sort->as_sql . ") AS sort$index";
+                ( $from_stmt || $stmt )->add_join(
+                    $tbl,
+                    {   condition => $join_condition,
+                        table     => $sql_sort_table,
+                        type      => 'left',
+                    },
+                );
+                unshift @{ $stmt->bind },      @{ $stmt_sort->bind };
+                unshift @{ $from_stmt->bind }, @{ $stmt_sort->bind };
+                push @order,
+                    {
+                    column => "sort$index",
+                    desc   => $s->{desc},
+                    };
+                $index++;
+            }
+            else {
+                push @order,
+                    {
+                    column =>
+                        $dbd->db_column_name( $tbl, $col, $args->{alias} ),
+                    desc => $s->{desc},
+                    };
+            }
+        }
+        $from_stmt->order( \@order ) if @order;
+
+        $stmt;
+    };
+
+    local $args->{sort};
+    local $args->{direction};
+    $class->SUPER::search( $terms, $args );
+}
+
+sub _sort_columns {
+    my $class = shift;
+    qw(
+        value_datetime
+        value_double
+        value_float
+        value_text
+        value_varchar
+        value_blob
+        value_integer
+    );
+}
+
+sub _prepare_statement_for_tmp {
+    my $class = shift;
+    my ($content_field_arg) = @_;
+
+    my $driver = $class->driver;
+    my $dbd    = $driver->dbd;
+
+    my $stmt = $dbd->sql_class->new;
+
+    for my $col ( 'content_data_id', $class->_sort_columns ) {
+        my $db_col = $driver->_decorate_column_name(
+            MT->model('content_field_index'), $col );
+        $stmt->add_select( $db_col => $col );
+    }
+    $stmt->from(
+        [   $driver->table_for( MT->model('content_field') ),
+            $driver->table_for( MT->model('content_field_index') ),
+        ]
+    );
+    $stmt->add_complex_where(
+        [   {   $driver->_decorate_column_name( MT->model('content_field'),
+                    'id' ) => \(
+                    '= '
+                        . $driver->_decorate_column_name(
+                        MT->model('content_field_index'),
+                        'content_field_id'
+                        )
+                    )
+            },
+            [   ( $content_field_arg =~ /^[0-9]+$/ )
+                ? ( {   $driver->_decorate_column_name(
+                            MT->model('content_field'), 'id' ) =>
+                            $content_field_arg
+                    },
+                    '-or',
+                    )
+                : (),
+                {   $driver->_decorate_column_name(
+                        MT->model('content_field'), 'unique_id' ) =>
+                        $content_field_arg
+                },
+                '-or',
+                {   $driver->_decorate_column_name(
+                        MT->model('content_field'), 'name' ) =>
+                        $content_field_arg
+                },
+            ]
+        ]
+    );
+    $stmt->order(
+        [   {   column => $driver->_decorate_column_name(
+                    MT->model('content_field_index'), 'id'
+                ),
+                desc => 'ASC',
+            }
+        ]
+    );
+
+    $stmt;
+}
+
+sub _prepare_statement_for_sort {
+    my $class = shift;
+    my %args  = @_;
+    my $value = $args{value};
+    my $index = $args{index};
+
+    my $driver = $class->driver;
+    my $dbd    = $driver->dbd;
+
+    my $stmt = $dbd->sql_class->new;
+
+    my $content_data_id_col = 'content_data_id';
+    $stmt->add_select(
+        $driver->_decorate_column_name( MT->model('content_field_index'),
+            $content_data_id_col ) => $content_data_id_col
+    );
+
+    my $sort_col = q{''};
+    for my $col ( reverse $class->_sort_columns ) {
+        my $db_col = $driver->_decorate_column_name(
+            MT->model('content_field_index'), $col );
+        $sort_col = "IFNULL(GROUP_CONCAT($db_col), $sort_col)";
+    }
+    $sort_col .= " AS sort$index";
+    $stmt->add_select($sort_col);
+
+    my $stmt_tmp = $class->_prepare_statement_for_tmp($value);
+    my $sql_tmp  = $stmt_tmp->as_sql;
+    $stmt->from( ["($sql_tmp) AS tmp$index"] );
+    $stmt->bind( $stmt_tmp->bind );
+    $stmt->group(
+        {   column => $driver->_decorate_column_name(
+                MT->model('content_field_index'),
+                'content_data_id'
+            )
+        }
+    );
+
+    $stmt;
+}
+
+sub _has_content_field_sort {
+    my ($sort) = @_;
+    return 0 unless $sort;
+    my $has_field_prefix = sub { $_[0] =~ /^field:/ };
+    if ( ref $sort ) {
+        for my $s (@$sort) {
+            return 1 if $has_field_prefix->( $s->{column} );
+        }
+    }
+    else {
+        return 1 if $has_field_prefix->($sort);
+    }
+    0;
+}
+
+1;

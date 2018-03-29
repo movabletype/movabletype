@@ -57,6 +57,7 @@ t/update/
 yarn-error.log
 
 .perl-version
+perltidy.LOG
 
 cover_db/
 
