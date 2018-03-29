@@ -10418,7 +10418,7 @@ fieldset.form-group {
 }
 
 .modal-body {
-  max-height: 32rem;
+  max-height: 34rem;
   overflow-y: auto;
 }
 
@@ -10777,5 +10777,10 @@ a:hover .mt-icon--secondary {
   width: 0px;
   height: 0px;
   overflow: hidden;
+}
+
+/* Adjustments */
+.nav-tabs .nav-link.active {
+  border-color: #ddd #ddd #FFFFFF;
 }
 /*# sourceMappingURL=mt.css.map */
