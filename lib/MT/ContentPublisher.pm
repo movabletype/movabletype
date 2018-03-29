@@ -1196,7 +1196,7 @@ sub rebuild_file {
             Template     => $tmpl,
             template     => $tmpl,
             File         => $file,
-            file         => $file
+            file         => $file,
             ContentData  => $content_data,
             contentdata  => $content_data,
         );
@@ -1270,7 +1270,7 @@ sub rebuild_file {
             Category     => $category,
             category     => $category,
             File         => $file,
-            file         => $file
+            file         => $file,
             ContentData  => $content_data,
             contentdata  => $content_data,
         );
