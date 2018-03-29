@@ -24,7 +24,7 @@ parameters:
 <!-- Listing Panel -->
 <div id="<mt:var name="panel_type">-panel" style="display: none;">
 <mt:if name="use_page_content">
-  <div class="panel-body modal-body">
+  <div class="panel-body">
 </mt:if>
 
   <div class="panel-header modal-description">
@@ -47,6 +47,8 @@ parameters:
     <mt:var name="modal_rebuildtriggers">
   </div>
   </mt:if>
+
+  <div class="modal-body">
 
 <mt:if name="panel_searchable">
   <div class="align-items-center p-4 border rounded" style="background:#F4F4F4;">
@@ -181,6 +183,8 @@ parameters:
     <mt:var name="after_listing_panel">
   </div>
   </mt:if>
+
+  </div> <!-- modal-body -->
 
 <mt:setvarblock name="modal_footer">
   <div class="actions-bar actions-bar-bottom">
