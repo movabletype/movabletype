@@ -296,6 +296,16 @@ sub add {
         $params->{trigger_loop} = trigger_loop($app);
         $params->{site_name}    = $app->blog->name;
 
+        # Does a site have the content type?
+        my @sites = MT->model('blog')->load( { class => '*' } );
+        my @site_has_content_type = map {
+            my $site = $_;
+            my @content_type
+                = MT->model('content_type')->load( { blog_id => $site->id } );
+            { id => $_->id, value => $#content_type + 1 };
+        } @sites;
+        $params->{site_has_content_type} = \@site_has_content_type;
+
         $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
     }
 }

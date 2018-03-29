@@ -129,6 +129,17 @@ function init() {
                 jQuery('#content_type-panel').find('.search-submit').click();
                 jQuery('#content_type-panel').find('.search-reset').hide();
                 </mt:unless>
+                var site_has_content_type = {
+                <mt:loop name="site_has_content_type">
+                    '<mt:var name="id">': <mt:var name="value">,
+                </mt:loop>
+                };
+                if (site_has_content_type[site_id]) {
+                    jQuery('#object_content').show();
+                }
+                else {
+                    jQuery('#object_content').hide();
+                }
             }
 
             // Badge
@@ -319,15 +330,6 @@ function init() {
         // Hide content type if content type does not exist in selected site.
         <mt:if name="missing_content_type">
         jQuery('#object_content').hide();
-        <mt:else>
-        jQuery('#content_type-panel').find('#selector').on('DOMSubtreeModified propertychange', function() {
-          if (jQuery('#content_type-panel').find('#no-data').prop('tagName') === 'DIV') {
-            jQuery('#object_content').hide();
-          }
-          else {
-            jQuery('#object_content').show();
-          }
-        });
         </mt:if>
 
         // Badge
