@@ -793,9 +793,10 @@ sub rebuild_file {
     my ( $entry, $start, $end, $category, $author, $content_data );
 
     if ( $finfo = $args{FileInfo} ) {
-        $args{Author}   = $finfo->author_id   if $finfo->author_id;
-        $args{Category} = $finfo->category_id if $finfo->category_id;
-        $args{Entry}    = $finfo->entry_id    if $finfo->entry_id;
+        $args{Author}      = $finfo->author_id   if $finfo->author_id;
+        $args{Category}    = $finfo->category_id if $finfo->category_id;
+        $args{Entry}       = $finfo->entry_id    if $finfo->entry_id;
+        $args{ContentData} = $finfo->cd_id       if $finfo->cd_id;
         $map ||= MT::TemplateMap->load( $finfo->templatemap_id );
         $at  ||= $finfo->archive_type;
         if ( $finfo->startdate ) {
@@ -892,17 +893,6 @@ sub rebuild_file {
 
     require MT::FileInfo;
 
-# This kind of testing should be done at the time we save a post,
-# not during publishing!!!
-# if ($archiver->entry_based) {
-#     my $fcount = MT::FileInfo->count({
-#         blog_id => $blog->id,
-#         entry_id => $entry->id,
-#         file_path => $file},
-#         { not => { entry_id => 1 } });
-#     die MT->translate('The same archive file exists. You should change the basename or the archive path. ([_1])', $file) if $fcount > 0;
-# }
-
     my $base_url = $blog->archive_url;
     $base_url = $blog->site_url
         if $archiver->entry_based && $archiver->entry_class eq 'page';
@@ -945,13 +935,18 @@ sub rebuild_file {
     unless ($finfo) {
         my %terms;
         $terms{blog_id}     = $blog->id;
-        $terms{category_id} = $category->id if $archiver->category_based;
-        $terms{author_id}   = $author->id if $archiver->author_based;
-        $terms{entry_id}    = $entry->id if $archiver->entry_based;
-        $terms{startdate}   = $start
+        $terms{category_id} = $category->id
+            if $archiver->category_based;
+        $terms{author_id} = $author->id
+            if $archiver->author_based;
+        $terms{entry_id} = $entry->id
+            if $archiver->entry_based;
+        $terms{startdate} = $start
             if $archiver->date_based && ( !$archiver->entry_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
+        $terms{cd_id}          = $content_data->id
+            if $archiver->contenttype_based;
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
@@ -964,7 +959,6 @@ sub rebuild_file {
             $finfo = $finfos[0];
         }
         else {
-
          # if the shoe don't fit, remove all shoes and create the perfect shoe
             foreach (@finfos) { $_->remove(); }
 
@@ -973,15 +967,20 @@ sub rebuild_file {
                 {   Blog        => $blog->id,
                     TemplateMap => $map->id,
                     Template    => $tmpl_id,
-                    ( $archiver->entry_based && $entry )
-                    ? ( Entry => $entry->id )
-                    : (),
-                    StartDate => $start,
-                    ( $archiver->category_based && $category )
-                    ? ( Category => $category->id )
-                    : (),
-                    ( $archiver->author_based ) ? ( Author => $author->id )
-                    : (),
+                    StartDate   => $start,
+                    (          $archiver->entry_based
+                            && $entry ? ( Entry => $entry->id ) : ()
+                    ),
+                    (          $archiver->category_based
+                            && $category ? ( Category => $category->id ) : ()
+                    ),
+                    (          $archiver->author_based
+                            && $author ? ( Author => $author->id ) : ()
+                    ),
+                    (   $archiver->contenttype_based && $content_data
+                        ? ( ContentData => $content_data->id )
+                        : ()
+                    ),
                 }
                 )
                 || die "Couldn't create FileInfo because "
@@ -997,9 +996,7 @@ sub rebuild_file {
                 Author      => $author,
                 Timestamp   => $start,
                 TemplateMap => $map,
-                (   $args{ContentData}
-                    ? ( ContentData => $args{ContentData} )
-                    : ()
+               (   $content_data ? ( ContentData => $content_data ) : ()
                 ),
             }
         )
