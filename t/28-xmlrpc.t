@@ -1,15 +1,18 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require LWP::UserAgent::Local }
-        or plan skip_all => 'Some of the deps of LWP::UserAgent::Local are not installed';
+        or plan skip_all =>
+        'Some of the deps of LWP::UserAgent::Local are not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -47,6 +50,18 @@ my $password = 'seecret';
 my $author = MT->model('author')->load(2) or die MT->model('author')->errstr;
 $author->api_password($password);
 $author->save or die $author->errstr;
+
+my $category_set1 = MT::Test::Permission->make_category_set( blog_id => 1 );
+MT::Test::Permission->make_category(
+    blog_id         => 1,
+    category_set_id => $category_set1->id
+);
+
+my $category_set2 = MT::Test::Permission->make_category_set( blog_id => 2 );
+MT::Test::Permission->make_category(
+    blog_id         => 2,
+    category_set_id => $category_set2->id
+);
 
 use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
@@ -587,14 +602,18 @@ my @apis = (
     {   api    => 'mt.getCategoryList',
         params => [ 2, $username, $password ],
         pre    => sub {
-            while ( MT::Category->count( { blog_id => 2 } ) < 2 ) {
+            while (
+                MT::Category->count( { blog_id => 2, category_set_id => 0 } )
+                < 2 )
+            {
                 MT::Test::Permission->make_category( blog_id => 2 );
             }
         },
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 2 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 2, category_set_id => 0 } );
             ok( scalar(@cats) );
             ok( scalar(@$result) );
             is( scalar(@cats), scalar(@$result) );
@@ -660,8 +679,10 @@ my @apis = (
             $username,
             $password,
             sub {
-                my $c = MT::Category->load( { blog_id => 2 },
-                    { sort => 'id', direction => 'descend' } );
+                my $c = MT::Category->load(
+                    { blog_id => 2,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 [ { categoryId => $c->id } ];
             },
         ],
@@ -676,8 +697,10 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my $cat1 = MT::Category->load( { blog_id => 2 },
-                { sort => 'id', direction => 'descend' } );
+            my $cat1 = MT::Category->load(
+                { blog_id => 2,    category_set_id => 0 },
+                { sort    => 'id', direction       => 'descend' }
+            );
             my $cats = $entry->categories;
             is( scalar @$cats,           1 );
             is( $cats->[0]->label,       $cat1->label );
@@ -723,7 +746,9 @@ my @apis = (
             $username,
             $password,
             sub {
-                my @c = MT::Category->load( { blog_id => 2 },
+                my @c
+                    = MT::Category->load(
+                    { blog_id => 2, category_set_id => 0 },
                     { sort => 'id', direction => 'descend', limit => 2 } );
                 [   { categoryId => $c[0]->id, isPrimary => 1 },
                     { categoryId => $c[1]->id, isPrimary => 0 }
@@ -745,8 +770,10 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my $cat1 = MT::Category->load( { blog_id => 2 },
-                { sort => 'id', direction => 'descend' } );
+            my $cat1 = MT::Category->load(
+                { blog_id => 2,    category_set_id => 0 },
+                { sort    => 'id', direction       => 'descend' }
+            );
             my $cats = $entry->categories;
             is( scalar @$cats,           2 );
             is( $entry->category->label, $cat1->label );
@@ -791,7 +818,9 @@ my @apis = (
             $username,
             $password,
             sub {
-                my @c = MT::Category->load( { blog_id => 2 },
+                my @c
+                    = MT::Category->load(
+                    { blog_id => 2, category_set_id => 0 },
                     { sort => 'id', direction => 'descend', limit => 2 } );
                 [   { categoryId => $c[0]->id, isPrimary => 0 },
                     { categoryId => $c[1]->id, isPrimary => 1 }
@@ -813,7 +842,8 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my @cat = MT::Category->load( { blog_id => 2 },
+            my @cat
+                = MT::Category->load( { blog_id => 2, category_set_id => 0 },
                 { sort => 'id', direction => 'descend', limit => 2 } );
             my $cats = $entry->categories;
             is( scalar @$cats,           2 );
@@ -1265,9 +1295,10 @@ my @apis = (
     {   api    => 'metaWeblog.getCategories',
         params => [ 1, $username, $password ],
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 1 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 1, category_set_id => 0 } );
             for ( my $i = 0; $i <= $#cats; ++$i ) {
                 is( $cats[$i]->id,          $result->[$i]->{categoryId} );
                 is( $cats[$i]->label,       $result->[$i]->{categoryName} );
@@ -1287,14 +1318,18 @@ my @apis = (
     {   api    => 'metaWeblog.getCategories',
         params => [ 2, $username, $password ],
         pre    => sub {
-            while ( MT::Category->count( { blog_id => 2 } ) < 2 ) {
+            while (
+                MT::Category->count( { blog_id => 2, category_set_id => 0 } )
+                < 2 )
+            {
                 MT::Test::Permission->make_category( blog_id => 2, );
             }
         },
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 2 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 2, category_set_id => 0 } );
             for ( my $i = 0; $i <= $#cats; ++$i ) {
                 is( $cats[$i]->id,          $result->[$i]->{categoryId} );
                 is( $cats[$i]->label,       $result->[$i]->{categoryName} );
