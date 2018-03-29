@@ -107,14 +107,26 @@ sub set_info_for_url {
     else {
         $url_map->templatemap_id( $args->{TemplateMap} )
             if $args->{TemplateMap};
-        $url_map->template_id( $args->{Template} ) if $args->{Template};
-        $args->{Entry} = $args->{Entry}->id if ref $args->{Entry};
-        $url_map->entry_id( $args->{Entry} )      if $args->{Entry};
-        $url_map->startdate( $args->{StartDate} ) if $args->{StartDate};
-        $args->{Category} = $args->{Category}->id if ref $args->{Category};
-        $url_map->category_id( $args->{Category} ) if $args->{Category};
-        $args->{Author} = $args->{Author}->id if ref $args->{Author};
-        $url_map->author_id( $args->{Author} ) if $args->{Author};
+        $url_map->template_id( $args->{Template} )
+            if $args->{Template};
+        $args->{Entry} = $args->{Entry}->id
+            if ref $args->{Entry};
+        $url_map->entry_id( $args->{Entry} )
+            if $args->{Entry};
+        $url_map->startdate( $args->{StartDate} )
+            if $args->{StartDate};
+        $args->{Category} = $args->{Category}->id
+            if ref $args->{Category};
+        $url_map->category_id( $args->{Category} )
+            if $args->{Category};
+        $args->{Author} = $args->{Author}->id
+            if ref $args->{Author};
+        $url_map->author_id( $args->{Author} )
+            if $args->{Author};
+        $args->{ContentData} = $args->{ContentData}->id
+            if ref $args->{ContentData};
+        $url_map->cd_id( $args->{ContentData} )
+            if $args->{ContentData};
     }
     $url_map->archive_type($archive_type);
     $url_map->url($url);
