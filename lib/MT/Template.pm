@@ -87,11 +87,12 @@ __PACKAGE__->install_properties(
             'revision'              => 'integer meta',
         },
         indexes => {
-            blog_id    => 1,
-            name       => 1,
-            type       => 1,
-            outfile    => 1,
-            identifier => 1,
+            blog_id         => 1,
+            name            => 1,
+            type            => 1,
+            outfile         => 1,
+            identifier      => 1,
+            content_type_id => 1,
         },
         defaults => {
             'rebuild_me'     => 1,
