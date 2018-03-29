@@ -291,10 +291,11 @@ sub add {
         my $count_content_type = 0;
         my @site_has_content_type = map {
             my $site = $_;
-            my @content_type
-                = MT->model('content_type')->load( { blog_id => $site->id } );
-            $count_content_type += $#content_type + 1;
-            { id => $_->id, value => $#content_type + 1 };
+            my $count
+                = MT->model('content_type')
+                ->count( { blog_id => $site->id } );
+            $count_content_type += $count;
+            { id => $_->id, value => $count };
         } @sites;
         $params->{site_has_content_type} = \@site_has_content_type;
         $params->{"missing_content_type"} = 1 unless $count_content_type;
