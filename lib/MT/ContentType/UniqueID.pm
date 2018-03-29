@@ -17,7 +17,7 @@ my $Max_retry_count = 3;
 sub generate_unique_id {
     my $name = shift;
     unless ( defined $name && $name ne '' ) {
-        $name = 'basename';
+        $name = rand(9999);
     }
     my $key = join(
         $ENV{'REMOTE_ADDR'}     || '',
