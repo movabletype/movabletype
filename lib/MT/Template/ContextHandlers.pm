@@ -3613,9 +3613,11 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="table mt-table $listing_class $id-table$view">
+        <div class="mt-table--outline">
+          <table id="$id-table" class="table mt-table $listing_class $id-table$view">
 $insides
-        </table>
+          </table>
+        </div>
 TABLE
 
     if ($show_actions) {
