@@ -125,9 +125,7 @@ sub save {
         if $self->_exist_same_name;
 
     if ( !$self->id && !defined $self->unique_id ) {
-        my $unique_id
-            = MT::ContentType::UniqueID::generate_unique_id( $self->name );
-        $self->column( 'unique_id', $unique_id );
+        MT::ContentType::UniqueID::set_unique_id($self);
     }
 
     $self->SUPER::save(@_);
