@@ -210,24 +210,26 @@
     </p>
     <div id="entry-feedback-rating" class="detail">
       <div id="spam-log-listing" class="listing">
-        <table class="table mt-table bg-white">
-          <thead>
-            <tr>
-              <th id="jl-test" class="head" scope="col"><span class="col-label"><__trans phrase="Test"></span></th>
-              <th id="jl-score" class="head" scope="col"><span class="col-label"><__trans phrase="Score"></span></th>
-              <th id="jl-results" class="head" scope="col"><span class="col-label"><__trans phrase="Results"></span></th>
-            </tr>
-          </thead>
-          <tbody>
-          <mt:loop name="junk_log_loop">
-            <tr class="<mt:if name="__odd__">odd</mt:if>">
-              <td class="col"><mt:var name="test" escape="html"></td>
-              <td class="col"><mt:var name="score"></td>
-              <td class="col"><mt:var name="log"></td>
-            </tr>
-          </mt:loop>
-          </tbody>
-        </table>
+        <div class="mt-table--outline">
+          <table class="table mt-table bg-white">
+            <thead>
+              <tr>
+                <th id="jl-test" class="head" scope="col"><span class="col-label"><__trans phrase="Test"></span></th>
+                <th id="jl-score" class="head" scope="col"><span class="col-label"><__trans phrase="Score"></span></th>
+                <th id="jl-results" class="head" scope="col"><span class="col-label"><__trans phrase="Results"></span></th>
+              </tr>
+            </thead>
+            <tbody>
+            <mt:loop name="junk_log_loop">
+              <tr class="<mt:if name="__odd__">odd</mt:if>">
+                <td class="col"><mt:var name="test" escape="html"></td>
+                <td class="col"><mt:var name="score"></td>
+                <td class="col"><mt:var name="log"></td>
+              </tr>
+            </mt:loop>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

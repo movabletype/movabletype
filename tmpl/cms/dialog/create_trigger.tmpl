@@ -391,33 +391,35 @@ TC.attachLoadEvent( init );
   <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <mt:loop name="object_type_loop">
-          <tr id="object_<mt:var name="id">" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
-                <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <mt:var name="label">
-            </td>
-          </tr>
-          </mt:loop>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <mt:loop name="object_type_loop">
+            <tr id="object_<mt:var name="id">" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <mt:var name="label">
+              </td>
+            </tr>
+            </mt:loop>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>
@@ -464,53 +466,55 @@ TC.attachLoadEvent( init );
   <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr id="event_save" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
-                <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Save">
-            </td>
-          </tr>
-          <tr id="event_pup" class="even">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
-                <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Publish">
-            </td>
-          </tr>
-          <tr id="event_unpub" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
-                <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Unpublish">
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="event_save" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
+                  <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Save">
+              </td>
+            </tr>
+            <tr id="event_pup" class="even">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
+                  <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Publish">
+              </td>
+            </tr>
+            <tr id="event_unpub" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
+                  <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Unpublish">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>
@@ -557,33 +561,35 @@ TC.attachLoadEvent( init );
   <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <mt:loop name="action_loop">
-          <tr id="action_<mt:var name="action_id">" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
-                <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <mt:var name="action_name">
-            </td>
-          </tr>
-          </mt:loop>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <mt:loop name="action_loop">
+            <tr id="action_<mt:var name="action_id">" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
+                  <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <mt:var name="action_name">
+              </td>
+            </tr>
+            </mt:loop>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>

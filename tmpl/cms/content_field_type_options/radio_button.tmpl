@@ -5,24 +5,26 @@
      id="radio_button-values"
      required="1"
      label="<__trans phrase="Values">">
-    <table class="table mt-table values-option-table" ref="table">
-      <thead>
-        <tr>
-          <th scope="col"><__trans phrase="Selected"></th>
-          <th scope="col"><__trans phrase="Label"></th>
-          <th scope="col"><__trans phrase="Value"></th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr each={ values }>
-          <td><input type="radio" class="form-control" name={ id + '-initial' } checked={ checked } onchange={ enterInitial }></td>
-          <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
-          <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value } ></td>
-          <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="mt-table--outline mb-3">
+      <table class="table mt-table values-option-table" ref="table">
+        <thead>
+          <tr>
+            <th scope="col"><__trans phrase="Selected"></th>
+            <th scope="col"><__trans phrase="Label"></th>
+            <th scope="col"><__trans phrase="Value"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr each={ values }>
+            <td><input type="radio" class="form-control" name={ id + '-initial' } checked={ checked } onchange={ enterInitial }></td>
+            <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+            <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value } ></td>
+            <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="delete">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash" /></svg><__trans phrase="delete"></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg title="<__trans phrase="add">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="add"></button>
   </mtapp:ContentFieldOption>
 
