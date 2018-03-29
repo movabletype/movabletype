@@ -1447,7 +1447,8 @@ sub search {
                 ;
         }
         my @order;
-        my $index = 1;
+        my $index     = 1;
+        my $from_stmt = $stmt->from_stmt;
         for my $s (@$sort) {
             my $col = $s->{column};
             if ( $col =~ /^field:([^:]+)$/ ) {
@@ -1464,14 +1465,15 @@ sub search {
                 );
                 my $sql_sort_table
                     = '(' . $stmt_sort->as_sql . ") AS sort$index";
-                $stmt->add_join(
+                ( $from_stmt || $stmt )->add_join(
                     $tbl,
                     {   condition => $join_condition,
                         table     => $sql_sort_table,
                         type      => 'left',
                     },
                 );
-                unshift @{ $stmt->bind }, @{ $stmt_sort->bind };
+                unshift @{ $stmt->bind },      @{ $stmt_sort->bind };
+                unshift @{ $from_stmt->bind }, @{ $stmt_sort->bind };
                 push @order,
                     {
                     column => "sort$index",
@@ -1488,7 +1490,7 @@ sub search {
                     };
             }
         }
-        $stmt->order( \@order ) if @order;
+        $from_stmt->order( \@order ) if @order;
 
         $stmt;
     };
