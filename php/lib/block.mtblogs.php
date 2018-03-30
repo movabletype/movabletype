@@ -20,18 +20,6 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
             return '';
         }
 
-        if (isset($args['site_id'])) {
-            $args['site_ids'] = $args['site_id'];
-            unset($args['site_id']);
-            if (isset($args['blog_id'])) {
-                unset($args['blog_id']);
-            }
-        }
-        elseif (isset($args['blog_id'])) {
-            $args['blog_ids'] = $args['blog_id'];
-            unset($args['blog_id']);
-        }
-
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
@@ -141,7 +129,8 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             isset($args['exclude_websites']) ||
             isset($args['blog_ids']) ||
             isset($args['site_ids']) ||
-            isset($args['blog_id']) # in smarty_block_mtblogparentwebsite
+            isset($args['blog_id']) ||
+            isset($args['site_id']) # in smarty_block_mtblogparentwebsite
         )) {
             $args['include_blogs'] = 'all';
         }
