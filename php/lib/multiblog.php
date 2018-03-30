@@ -106,6 +106,16 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
     $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
 
+    # Include/exclude_sites modifier
+    if (isset($args['include_sites'])) {
+        $args['include_blogs'] = $args['include_sites'];
+        unset($args['include_sites']);
+    }
+    if (isset($args['exclude_sites'])) {
+        $args['exclude_blogs'] = $args['exclude_sites'];
+        unset($args['exclude_sites']);
+    }
+
     if (!isset($content)) {
         $ctx->set_override_context( true );
 
