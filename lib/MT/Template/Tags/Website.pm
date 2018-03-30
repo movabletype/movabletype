@@ -96,7 +96,12 @@ sub _hdlr_websites {
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
-    if ( $args->{blog_id} ) {
+    if ( $args->{site_id} ) {
+        $args->{site_ids} = $args->{site_id};
+        delete $args->{site_id};
+        delete $args->{blog_id} if $args->{blog_id};
+    }
+    elsif ( $args->{blog_id} ) {
         $args->{blog_ids} = $args->{blog_id};
         delete $args->{blog_id};
     }

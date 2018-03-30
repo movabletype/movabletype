@@ -455,15 +455,30 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 === mt:OtherBlog
 --- template
 <mt:OtherBlog blog_id="1"><mt:BlogName /></mt:OtherBlog>
+<mt:OtherBlog site_id="1"><mt:BlogName /></mt:OtherBlog>
 --- expected
+none
 none
 --- access_overrides
 { 1 => 2 }
 
 
-=== mt:OtherBlog and mt:Entry with category attribute
+=== mt:OtherBlog and mt:Entry with blog_id, category attribute
 --- template
 <mt:OtherBlog blog_id="1">
+    <mt:Entries category="foo" glue=",">
+        <mt:EntryTitle />
+    </mt:Entries>
+</mt:OtherBlog>
+--- expected
+Verse 3
+--- access_overrides
+{ 1 => 2 }
+
+
+=== mt:OtherBlog and mt:Entry with site_id, category attribute
+--- template
+<mt:OtherBlog site_id="1">
     <mt:Entries category="foo" glue=",">
         <mt:EntryTitle />
     </mt:Entries>

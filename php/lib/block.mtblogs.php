@@ -20,6 +20,18 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
             return '';
         }
 
+        if (isset($args['site_id'])) {
+            $args['site_ids'] = $args['site_id'];
+            unset($args['site_id']);
+            if (isset($args['blog_id'])) {
+                unset($args['blog_id']);
+            }
+        }
+        elseif (isset($args['blog_id'])) {
+            $args['blog_ids'] = $args['blog_id'];
+            unset($args['blog_id']);
+        }
+
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
