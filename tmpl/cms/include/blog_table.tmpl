@@ -49,7 +49,6 @@
   </mt:if>
     <th class="head entries num"><span class="col-label"><__trans phrase="Entries"></span></th>
     <th class="head pages num"><span class="col-label"><__trans phrase="Pages"></span></th>
-    <th class="head comments num"><span class="col-label"><__trans phrase="Comments"></span></th>
     <th class="head setting"><span class="col-label"><__trans phrase="Settings"></span></th>
   </tr>
   </mt:setvarblock>
@@ -79,7 +78,6 @@
     </mt:if>
       <td class="entries"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=current_website</mt:if>"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
       <td class="pages"><mt:if name="can_edit_pages"><a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=current_website</mt:if>"><mt:var name="num_pages"></a><mt:else><mt:var name="num_pages"></mt:if></td>
-      <td class="comments"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=current_website</mt:if>"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
       <td class="setting"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
     </tr>
 <mt:if name="__last__">
