@@ -55,6 +55,16 @@ function multiblog_function_wrapper($tag, &$args, &$_smarty_tpl) {
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
 
+    # Include/exclude_sites modifier
+    if (isset($args['include_sites'])) {
+        $args['include_blogs'] = $args['include_sites'];
+        unset($args['include_sites']);
+    }
+    if (isset($args['exclude_sites'])) {
+        $args['exclude_blogs'] = $args['exclude_sites'];
+        unset($args['exclude_sites']);
+    }
+
     # Load multiblog access control list
     $incl = $args['include_blogs']
          || $args['include_websites']

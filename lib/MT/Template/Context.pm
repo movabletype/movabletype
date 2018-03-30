@@ -358,10 +358,10 @@ sub set_blog_load_context {
 
     # Include/exclude_sites modifier
     if ( $attr->{include_sites} ) {
-        $attr->{include_blogs} = delete $args->{include_sites};
+        $attr->{include_blogs} = delete $attr->{include_sites};
     }
     if ( $attr->{exclude_sites} ) {
-        $attr->{exclude_blogs} = delete $args->{exclude_sites};
+        $attr->{exclude_blogs} = delete $attr->{exclude_sites};
     }
 
     # Preprocess from MultiBlog

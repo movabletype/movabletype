@@ -254,14 +254,14 @@ __END__
 
 === mt:Blogs
 --- template
-<mt:Blogs include_blogs="1,2,3">
+<mt:Blogs include_sites="1,2,3">
 <mt:BlogID />
 </mt:Blogs>
 --- expected
 
 === mt:Blog will be localizeing timestamp context if ignore_archive_context="1" is given.
 --- template
-<mt:Blogs include_blogs="1" ignore_archive_context="1">
+<mt:Blogs include_sites="1" ignore_archive_context="1">
 <mt:Entries limit="2" glue=","><mt:EntryTitle /></mt:Entries>
 </mt:Blogs>
 --- expected
@@ -273,7 +273,7 @@ A Rainy Day,Verse 5
 
 === mt:Entries
 --- template
-<mt:Entries include_blogs="1,2,3">
+<mt:Entries include_sites="1,2,3">
 <mt:EntryID />
 </mt:Entries>
 --- expected
@@ -281,7 +281,7 @@ A Rainy Day,Verse 5
 
 === mt:Categories
 --- template
-<mt:Categories include_blogs="1,2,3">
+<mt:Categories include_sites="1,2,3">
 <mt:CategoryID />
 </mt:Categories>
 --- expected
@@ -289,7 +289,7 @@ A Rainy Day,Verse 5
 
 === mt:Comments
 --- template
-<mt:Comments include_blogs="1,2,3">
+<mt:Comments include_sites="1,2,3">
 <mt:CommentBody />
 </mt:Comments>
 --- expected
@@ -297,7 +297,7 @@ A Rainy Day,Verse 5
 
 === mt:Pages
 --- template
-<mt:Pages include_blogs="1,2,3">
+<mt:Pages include_sites="1,2,3">
 <mt:PageID />
 </mt:Pages>
 --- expected
@@ -305,7 +305,7 @@ A Rainy Day,Verse 5
 
 === mt:Folders
 --- template
-<mt:Folders include_blogs="1,2,3">
+<mt:Folders include_sites="1,2,3">
 <mt:FolderID />
 </mt:Folders>
 --- expected
@@ -313,7 +313,7 @@ A Rainy Day,Verse 5
 
 === mt:Assets
 --- template
-<mt:Assets include_blogs="1,2,3">
+<mt:Assets include_sites="1,2,3">
 <mt:AssetID />
 </mt:Assets>
 --- expected
@@ -321,7 +321,7 @@ A Rainy Day,Verse 5
 
 === mt:Pings
 --- template
-<mt:Pings include_blogs="1,2,3">
+<mt:Pings include_sites="1,2,3">
 <mt:PingURL />
 </mt:Pings>
 --- expected
@@ -329,7 +329,7 @@ A Rainy Day,Verse 5
 
 === mt:Authors
 --- template
-<mt:Authors include_blogs="1,2,3">
+<mt:Authors include_sites="1,2,3">
 <mt:AuthorID />
 </mt:Authors>
 --- expected
@@ -337,7 +337,7 @@ A Rainy Day,Verse 5
 
 === mt:Tags
 --- template
-<mt:Tags include_blogs="1,2,3">
+<mt:Tags include_sites="1,2,3">
 <mt:TagName />
 </mt:Tags>
 --- expected
@@ -366,7 +366,7 @@ none
 === mt:Include after Multiblog with mode="context"
 --- template
 <mt:Entries blog_ids="1" lastn="1">
-<mt:MultiBlog mode="context" include_blogs="1">
+<mt:MultiBlog mode="context" include_sites="1">
 </mt:MultiBlog>
 <mt:Include module="template-module" />
 </mt:Entries>
@@ -391,14 +391,14 @@ template-module:2
 
 === mt:BlogCategoryCount
 --- template
-<mt:BlogCategoryCount include_blogs="1,2,3" />
+<mt:BlogCategoryCount include_sites="1,2,3" />
 --- expected
 6
 
 
 === mt:BlogEntryCount
 --- template
-<mt:BlogEntryCount include_blogs="1,2,3" />
+<mt:BlogEntryCount include_sites="1,2,3" />
 --- expected
 0
 
@@ -443,9 +443,9 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 { 1 => 2 }
 
 
-=== mt:MultiBlog include_blogs="all" mode="context"
+=== mt:MultiBlog include_sites="all" mode="context"
 --- template
-<mt:MultiBlog include_blogs="all" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
+<mt:MultiBlog include_sites="all" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
 --- expected
 2:1,4,5,6,7,8
 --- access_overrides

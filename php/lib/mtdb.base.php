@@ -162,6 +162,16 @@ abstract class MTDatabase {
         else
             $include_with_website = true;
 
+        # Include/exclude_sites modifier
+        if (isset($args['include_sites'])) {
+            $args['include_blogs'] = $args['include_sites'];
+            unset($args['include_sites']);
+        }
+        if (isset($args['exclude_sites'])) {
+            $args['exclude_blogs'] = $args['exclude_sites'];
+            unset($args['exclude_sites']);
+        }
+
         $incl = null;
         $excl = null;
         if ( isset($args['blog_ids'])
