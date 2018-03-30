@@ -402,64 +402,6 @@ sub _parse_search_content_types {
     $app->{searchparam}{SearchContentTypeID} = \@content_type_ids;
 }
 
-# sub _get_content_data_ids_searched_by_label_column {
-#     my $app = shift;
-#     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-#     my %columns = ( label => 'like' );
-#     my ( $terms, $joins )
-#         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
-#     $terms = [ $terms && @$terms ? @$terms : (), @$orig_terms ];
-#     my $args = {
-#         fetchonly => { id => 1 },
-#         joins     => [
-#             $joins && @$joins ? @$joins : (),
-#             MT->model('content_type')->join_on(
-#                 undef,
-#                 {   id => \'= cd_content_type_id',
-#                     data_label => [ \'IS NULL', '' ],
-#                 },
-#             ),
-#         ],
-#     };
-#     my $iter = MT->model('content_data')->load_iter( $terms, $args );
-#     my @content_data_ids;
-#
-#     while ( my $content_data = $iter->() ) {
-#         push @content_data_ids, $content_data->id;
-#     }
-#     wantarray ? ( \@content_data_ids, $joins ) : \@content_data_ids;
-# }
-
-# sub _get_content_data_ids_searched_by_label_datetime_column {
-#     my $app = shift;
-#     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-#     my %columns = ( value_datetime => 'like_sql' );
-#     my ( $terms, $joins )
-#         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
-#     my $args = {
-#         fetchonly => { id => 1 },
-#         joins     => [
-#             $joins && @$joins ? @$joins : (),
-#             MT->model('content_field_index')->join_on( undef, $terms ),
-#             MT->model('content_field')->join_on(
-#                 'content_type_id',
-#                 { type => [ 'date_and_time', 'date_only', 'time_only' ], },
-#                 {   join => MT->model('content_type')->join_on(
-#                         undef, { data_label => \'= cf_unique_id' },
-#                     )
-#                 },
-#             ),
-#         ],
-#     };
-#     my $iter = MT->model('content_data')->load_iter( $orig_terms, $args );
-#     my @content_data_ids;
-#
-#     while ( my $content_data = $iter->() ) {
-#         push @content_data_ids, $content_data->id;
-#     }
-#     wantarray ? ( \@content_data_ids, $joins ) : \@content_data_ids;
-# }
-
 sub _get_content_data_ids_searched_by_actual_fields {
     my $app = shift;
     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
