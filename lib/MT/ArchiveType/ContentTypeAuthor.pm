@@ -118,6 +118,7 @@ sub archive_contents_count {
         {   Blog        => $blog,
             ArchiveType => $at,
             Author      => $auth,
+            ContentData => $content_data,
         }
     );
 }
