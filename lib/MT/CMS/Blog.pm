@@ -2214,7 +2214,6 @@ sub build_blog_table {
     my $author           = $app->user;
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
-    my ( $entry_count, $page_count, $ping_count, $comment_count );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -2236,40 +2235,20 @@ sub build_blog_table {
         if ( $app->mode ne 'dialog_select_weblog' ) {
 
             # we should use count by group here...
-            $row->{num_entries} = (
-                  $entry_count
-                ? $entry_count->{$blog_id}
-                : $entry_count->{$blog_id}
-                    = $entry_class->count( { blog_id => $blog_id } )
-                )
-                || 0;
-            $row->{num_pages} = (
-                  $page_count
-                ? $page_count->{$blog_id}
-                : $page_count->{$blog_id}
-                    = $page_class->count( { blog_id => $blog_id } )
-                )
-                || 0;
-            $row->{num_comments} = (
-                  $comment_count
-                ? $comment_count->{$blog_id}
-                : $comment_count->{$blog_id} = MT::Comment->count(
-                    {   blog_id     => $blog_id,
-                        junk_status => MT::Comment::NOT_JUNK()
-                    }
-                )
-                )
-                || 0;
-            $row->{num_pings} = (
-                  $ping_count
-                ? $ping_count->{$blog_id}
-                : $ping_count->{$blog_id} = MT::TBPing->count(
-                    {   blog_id     => $blog_id,
-                        junk_status => MT::TBPing::NOT_JUNK()
-                    }
-                )
-                )
-                || 0;
+            $row->{num_entries}
+                = $entry_class->count( { blog_id => $blog_id } ) || 0;
+            $row->{num_pages}
+                = $page_class->count( { blog_id => $blog_id } ) || 0;
+            $row->{num_comments} = MT::Comment->count(
+                {   blog_id     => $blog_id,
+                    junk_status => MT::Comment::NOT_JUNK()
+                }
+            ) || 0;
+            $row->{num_pings} = MT::TBPing->count(
+                {   blog_id     => $blog_id,
+                    junk_status => MT::TBPing::NOT_JUNK()
+                }
+            ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
                 $row->{can_create_post}       = 1;
