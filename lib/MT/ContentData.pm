@@ -1472,8 +1472,10 @@ sub search {
                         type      => 'left',
                     },
                 );
-                unshift @{ $stmt->bind },      @{ $stmt_sort->bind };
-                unshift @{ $from_stmt->bind }, @{ $stmt_sort->bind };
+                unshift @{ $stmt->bind }, @{ $stmt_sort->bind };
+                if ($from_stmt) {
+                    unshift @{ $from_stmt->bind }, @{ $stmt_sort->bind };
+                }
                 push @order,
                     {
                     column => "sort$index",
@@ -1490,7 +1492,7 @@ sub search {
                     };
             }
         }
-        $from_stmt->order( \@order ) if @order;
+        ( $from_stmt || $stmt )->order( \@order ) if @order;
 
         $stmt;
     };
