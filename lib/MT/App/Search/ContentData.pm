@@ -476,7 +476,6 @@ sub _get_content_data_ids_searched_by_actual_fields {
     my $args = {
         fetchonly => { id => 1 },
         joins     => [
-            $joins && @$joins ? @$joins : (),
             MT->model('content_field_index')->join_on(
                 undef,
                 [   { content_data_id => \'= cd_id' },
@@ -516,13 +515,12 @@ sub _get_content_data_ids_searched_by_reference_fields {
             && $type_registry->{search_columns};
         my %columns
             = map { $_ => 'like' } @{ $type_registry->{search_columns} };
-        my ( $terms, $joins )
+        my ($terms)
             = $app->_query_parse_core( $lucene_struct, \%columns,
             $filter_types );
         my $args = {
             fetchonly => { id => 1 },
             joins     => [
-                $joins && @$joins ? @$joins : (),
                 MT->model('content_field_index')->join_on(
                     undef,
                     { content_data_id => \'= cd_id' },
@@ -553,7 +551,7 @@ sub _get_content_data_ids_searched_by_content_type_field {
     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
 
     my %columns = ();
-    my ( $terms, $joins )
+    my ($terms)
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
 
     my $iter = $app->model('content_field_index')->load_iter(
@@ -562,7 +560,6 @@ sub _get_content_data_ids_searched_by_content_type_field {
                 $app->model('content_data')->join_on(
                     undef,
                     [ @$orig_terms, { id => \'= cf_idx_content_data_id', }, ],
-                    { joins => [ $joins && @$joins ? @$joins : (), ], },
                 ),
                 $app->model('content_field')->join_on(
                     undef,
