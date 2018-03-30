@@ -356,6 +356,14 @@ sub set_blog_load_context {
     my $blog_id = $ctx->stash('blog_id');
     $col ||= 'blog_id';
 
+    # Include/exclude_sites modifier
+    if ( $attr->{include_sites} ) {
+        $attr->{include_blogs} = delete $args->{include_sites};
+    }
+    if ( $attr->{exclude_sites} ) {
+        $attr->{exclude_blogs} = delete $args->{exclude_sites};
+    }
+
     # Preprocess from MultiBlog
     MT::Template::Context::_preprocess_multiblog(@_);
 

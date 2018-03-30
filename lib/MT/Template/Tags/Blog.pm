@@ -74,9 +74,22 @@ sub _hdlr_blogs {
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
-    if ( $args->{blog_id} ) {
+    if ( $args->{site_id} ) {
+        $args->{site_ids} = $args->{site_id};
+        delete $args->{site_id};
+        delete $args->{blog_id} if $args->{blog_id};
+    }
+    elsif ( $args->{blog_id} ) {
         $args->{blog_ids} = $args->{blog_id};
         delete $args->{blog_id};
+    }
+
+    # Include/exclude_sites modifier
+    if ( $args->{include_sites} ) {
+        $args->{include_blogs} = delete $args->{include_sites};
+    }
+    if ( $args->{exclude_sites} ) {
+        $args->{exclude_blogs} = delete $args->{exclude_sites};
     }
 
     # If MTMultiBlog was called with no arguments, we check the

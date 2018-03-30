@@ -20,6 +20,16 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
             return '';
         }
 
+        # include/exclude_sites modifier
+        if (isset($args['include_sites'])) {
+            $args['include_blogs'] = $args['include_sites'];
+            unset($args['include_sites']);
+        }
+        if (isset($args['exclude_sites'])) {
+            $args['exclude_blogs'] = $args['exclude_sites'];
+            unset($args['exclude_sites']);
+        }
+
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
