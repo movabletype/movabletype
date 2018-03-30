@@ -346,7 +346,9 @@ A Rainy Day,Verse 5
 === mt:Include outside MultiBlog
 --- template
 <mt:Include module="blog-name" blog_id="1" />
+<mt:Include module="blog-name" site_id="1" />
 --- expected
+Test site
 Test site
 
 
