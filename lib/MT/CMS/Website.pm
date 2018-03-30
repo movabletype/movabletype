@@ -638,9 +638,7 @@ sub build_website_table {
     my (%args) = @_;
 
     my $website_class = $app->model('website');
-    my $tbp_class     = $app->model('ping');
     my $blog_class    = $app->model('blog');
-    my $comment_class = $app->model('comment');
     my $entry_class   = $app->model('entry');
     my $page_class    = $app->model('page');
 
@@ -679,16 +677,6 @@ sub build_website_table {
                 = $entry_class->count( { blog_id => $blog_id } ) || 0;
             $row->{num_pages}
                 = $page_class->count( { blog_id => $blog_id } ) || 0;
-            $row->{num_comments} = $comment_class->count(
-                {   blog_id     => $blog_id,
-                    junk_status => MT::Comment::NOT_JUNK()
-                }
-            ) || 0;
-            $row->{num_pings} = MT::TBPing->count(
-                {   blog_id     => $blog_id,
-                    junk_status => MT::TBPing::NOT_JUNK()
-                }
-            ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
                 $row->{can_edit_entries}      = 1;

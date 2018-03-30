@@ -2192,10 +2192,8 @@ sub build_blog_table {
     my (%args) = @_;
 
     my $blog_class    = $app->model('blog');
-    my $tbp_class     = $app->model('ping');
     my $entry_class   = $app->model('entry');
     my $page_class    = $app->model('page');
-    my $comment_class = $app->model('comment');
 
     my $iter;
     if ( $args{load_args} ) {
@@ -2239,16 +2237,6 @@ sub build_blog_table {
                 = $entry_class->count( { blog_id => $blog_id } ) || 0;
             $row->{num_pages}
                 = $page_class->count( { blog_id => $blog_id } ) || 0;
-            $row->{num_comments} = MT::Comment->count(
-                {   blog_id     => $blog_id,
-                    junk_status => MT::Comment::NOT_JUNK()
-                }
-            ) || 0;
-            $row->{num_pings} = MT::TBPing->count(
-                {   blog_id     => $blog_id,
-                    junk_status => MT::TBPing::NOT_JUNK()
-                }
-            ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
                 $row->{can_create_post}       = 1;
