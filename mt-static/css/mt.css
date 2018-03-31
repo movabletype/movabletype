@@ -9862,6 +9862,12 @@ fieldset.form-group {
   margin: 0 0.5rem 0 0;
 }
 
+.btn-contentblock--selected {
+  border-color: #5FBCEB;
+  -webkit-box-shadow: 0 0 0 2px #5FBCEB;
+          box-shadow: 0 0 0 2px #5FBCEB;
+}
+
 /* Inline Editor */
 .mt-editor {
   display: inline-block;
