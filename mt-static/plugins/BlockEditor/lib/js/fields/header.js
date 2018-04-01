@@ -1,62 +1,97 @@
 ; (function ($) {
 
     var BEF = MT.BlockEditorField;
-    var label = trans('header');
-
     BEF.Header = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Header, {
         label: trans('header'),
+        icon_class: 'ic_header',
+        type: 'header',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_header"></use></svg>' + label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock"><svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#' + this.icon_class + '"></use></svg>' + this.label + '</button>');
         },
     });
     $.extend(BEF.Header.prototype, BEF.prototype, {
-        options: {},
         get_id: function () {
-            return self.id;
+            return this.id;
+        },
+        get_label: function(){
+          return BEF.Header.label;
         },
         get_type: function () {
-            return 'header';
+            return BEF.Header.type;
         },
         get_svg_name: function() {
-            return 'ic_header';
+            return BEF.Header.icon_class;
         },
-        create: function (id, data) {
+        create: function (id,data) {
             var self = this;
             self.id = id;
-            self.edit_field = $('<div class="row no-gutters py-2"><div class="col"></div></div>');
-            self.edit_field_input = $('<div class="form-group"><textarea id="' + id + '" name="' + id + '" class="form-control w-100" mt:watch-change="1"></textarea></div>');
-            self.edit_field_input.find('textarea').val(data["value"]);
-            self.select_header = $('<div class="form-group"><label class="form-control-label" for="' + id + '-element">' + trans('a rank') + '</label><select class="custom-select form-control w-100" name="' + id + '-element"  mt:watch-change="1"><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option></select></div>');
-            if (data["elem"]) {
-                self.select_header.find('select').val(data["elem"]);
+            self.data = data;
+            if(!self.data.value){
+              self.data.value = trans('Header');
             }
-            self.edit_field.find('.col').append(self.select_header);
-            self.edit_field.find('.col').append(self.edit_field_input);
-            return self.edit_field;
+            if(!self.data.options){
+              self.data.options["elm"] = 'h1';
+            }
+            var html = self.get_html();
+            self.view_field = $('<div class="form-group"></div>');
+            self.view_field.append(html);
+            return self.view_field;
+        },
+        get_edit_field: function(){
+            var self = this;
+            self.options_field = $('<div class="edit_field form-group"></div>');
+            var elm_select = $('<div class="form-group"><label class="form-control-label" for="' + self.id + '-element">' + trans('a rank') + '</label><select class="custom-select form-control w-100" name="' + self.id + '-element"  mt:watch-change="1"></select></div>');
+
+            var elms = ['h1','h2','h3'];
+            elms.forEach(function(elm){
+                var option = $('<option></optiion>');
+                option.val(elm);
+                option.text(elm.toUpperCase());
+                if( typeof(self.data.options) == 'object' && self.data.options["elm"] == elm){
+                    option.attr('selected', true);
+                }
+                elm_select.find('select').append(option);
+            })
+            self.options_field.append(elm_select);
+            self.options_field.append('<div class="form-group"><textarea name="header-text" class="form-control w-100"></textarea></div>');
+            self.options_field.find('textarea').val(self.data.value);
+            return self.options_field;
+        },
+        save: function(){
+            var elm = this.options_field.find('select').val();
+            var value = this.options_field.find('textarea').val();
+            this.data.value = value;
+            this.data.options['elm'] = elm;
+            var html = this.get_html();
+            this.view_field.empty();
+            this.view_field.append(html);
         },
         set_option: function (name, val) {
             var style_name = name.replace('field_option_', '');
-            this.options[style_name] = val;
+            this.data.options[style_name] = val;
         },
         get_data: function () {
-            var self = this;
+            if(typeof(this.data.options) != 'object'){
+                this.data.options = {};
+            }
+            if(!this.data.options["elm"]){
+              this.data.options["elm"] = 'h1';
+            }
             return {
-                'value': self.edit_field_input.find('textarea').val(),
-                'elem': self.select_header.find('select').val(),
-                'html': self.get_html(),
-                'options': self.options,
+                'value': this.data.value,
+                'html': this.get_html(),
+                'options': this.data.options,
             }
         },
         get_html: function () {
-            var self = this;
-            var elm = self.select_header.find('select').val();
-            var html = '<' + elm;
-            Object.keys(self.options).forEach(function(key){
-                html += ' ' + key + '="' + self.options[key] + '"';
-            })
-            html += '>' + self.edit_field_input.find('textarea').val() + '</' + elm + '>';
-            return html;
+            var elm = this.data.options["elm"];
+            if(!elm || elm == ''){
+                elm = 'h1';
+            }
+            var html = $('<' + elm + '>');
+            html.text(this.data.value);
+            return html.prop("outerHTML");
         }
     });
 

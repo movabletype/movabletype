@@ -15,12 +15,7 @@
         },
         config: {
             mode: "exact",
-            plugins: [
-                "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
-                "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-                "table contextmenu directionality emoticons template textcolor paste textcolor colorpicker textpattern",
-                "mt_fullscreen mt"
-            ],
+            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen',
             language: $('html').attr('lang'),
             theme: "modern",
             skin: 'lightgray',
@@ -32,10 +27,10 @@
             plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
-            plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image',
+            plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image',
             // Buttons using in wysiwyg mode.
-            plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
-            plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,alignleft,aligncenter,alignright,indent,outdent,|,formatselect',
+            plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
+            plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect',
 
             plugin_mt_wysiwyg_insert_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
             plugin_mt_wysiwyg_selection_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
@@ -201,10 +196,10 @@
                 $.each(textarea.get(0).attributes, function(idx, attr){
                     attrs[attr.nodeName] = attr.nodeValue;
                 });
-                textarea.replaceWith(function(){
+                var editorElement = textarea.replaceWith(function(){
                     return $('<div />', attrs).append(adapter.$editorElement.val());
                 });
-
+                $('#' + adapter.id).removeAttr('style');
 
             } else if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
                 var div  = $('#' + adapter.id);
@@ -212,9 +207,10 @@
                 $.each(div.get(0).attributes, function(idx, attr){
                     attrs[attr.nodeName] = attr.nodeValue;
                 });
-                div.replaceWith(function(){
+                var editorElement = div.replaceWith(function(){
                     return $('<textarea />', attrs).val(adapter.$editorElement.html());
                 });
+                $('#' + adapter.id).removeAttr('style');
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 

@@ -201,17 +201,7 @@ sub edit {
         = $content_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
-    my $blockeditor_data;
-    if ( $app->param('block_editor_data') ) {
-        $blockeditor_data = $app->param('block_editor_data');
-    } else {
-        if ($content_data) {
-            $blockeditor_data = $content_data->block_editor_data();
-        }
-        elsif ( $content_data_id || $data ) {
-            $blockeditor_data = $data->{block_editor_data};
-        }
-    }
+
     my $content_field_types = $app->registry('content_field_types');
     @$array = map {
         my $e_unique_id = $_->{unique_id};
@@ -314,9 +304,6 @@ sub edit {
     } @$array;
 
     $param->{fields} = $array;
-    if ($blockeditor_data) {
-        $param->{block_editor_data} = $blockeditor_data;
-    }
 
     foreach
         my $name (qw( saved_added saved_changes err_msg content_type_id id ))
@@ -591,9 +578,6 @@ sub save {
 
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
-
-    my $block_editor_data = $app->param('block_editor_data');
-    $content_data->block_editor_data($block_editor_data);
 
     if ( !$content_type->data_label ) {
         my $data_label = $app->param('data_label');

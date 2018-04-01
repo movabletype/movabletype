@@ -1,62 +1,19 @@
-<mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-</mt:setvarblock>
+<mt:loop name="assets">
+    <mt:Asset id="$id">
+    <mt:setvars>
+    option_alt=asset-option-alt-<mt:var name="id" escape="html">
+    option_title=asset-option-title-<mt:var name="id" escape="html">
+    option_width=thumb_width-<mt:var name="id" escape="html">
+    option_caption=asset-option-caption-<mt:var name="id" escape="html">
+    option_align=asset-option-align-<mt:var name="id" escape="html">
+    </mt:setvars>
 
-<mt:setvarblock name="jq_js_include" append="1">
-  var $field = parent.jQuery( '#<mt:var name="edit_field" escape="js">' );
-  if ($field){
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview img' ).remove();
-      var ids = [];
-  <mt:loop name="assets">
-      <mt:Asset id="$id">
-      ids.push('<mt:var name="id" escape="JS">');
-      
-      <mt:setvars>
-      option_alt=asset-option-alt-<mt:var name="id" escape="html">
-      option_title=asset-option-title-<mt:var name="id" escape="html">
-      option_width=thumb_width-<mt:var name="id" escape="html">
-      option_caption=asset-option-caption-<mt:var name="id" escape="html">
-      option_align=asset-option-align-<mt:var name="id" escape="html">
-      </mt:setvars>
-      
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">-preview' ).css('background-image', 'url(<$mt:AssetURL$>)').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">-url' ).val('<$mt:AssetURL$>').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">_option_alt' ).val('<mt:var name="$option_alt" escape="html">').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">_option_title' ).val('<mt:var name="$option_title" escape="html">').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">_option_width' ).val('<mt:var name="$option_width" escape="html">').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">_option_caption' ).val('<mt:var name="$option_caption" escape="html">').trigger('change');
-      parent.jQuery( '#<mt:var name="edit_field" escape="js">_option_align' ).val('<mt:var name="$option_align" escape="html">').trigger('change');
-
-
-      </mt:Asset>
-  </mt:loop>
-      $field.val(ids.join(','));
-  }
-  parent.jQuery.fn.mtModal.close();
-
-</mt:setvarblock>
-
-<mt:setvarblock name="modal_body">
-</mt:setvarblock>
-
-<mt:setvarblock name="action_buttons">
-<a
-   accesskey="x"
-   data-dismiss="modal"
-   data-mt-modal-close
-   class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
-   title="<__trans phrase="Cancel (x)">">
-  <__trans phrase="Cancel"></a>
-
-<button
-   type="submit"
-   accesskey="s"
-   title="<__trans phrase="OK (s)">"
-   class="close-button action primary button btn btn-primary">
-  <__trans phrase="OK"></button>
-
-</mt:setvarblock>
-
-<mt:include name="layout/modal.tmpl">
-<mt:var name="layout">
-
+    <input type="hidden" class="asset-option-id" value="<mt:var name="id" escape="html">">
+    <input type="hidden" class="asset-option-url" value="<mt:AssetURL>">
+    <input type="hidden" class="asset-option-alt" value="<mt:var name="$option_alt" escape="html">">
+    <input type="hidden" class="asset-option-title" value="<mt:var name="$option_title" escape="html">">
+    <input type="hidden" class="asset-option-width" value="<mt:var name="$option_width" escape="html">">
+    <input type="hidden" class="asset-option-caption" value="<mt:var name="$option_caption" escape="html">">
+    <input type="hidden" class="asset-option-align" value="<mt:var name="$option_align" escape="html">">
+    </mt:Asset>
+</mt:loop>

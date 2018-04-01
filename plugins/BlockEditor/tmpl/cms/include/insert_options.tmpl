@@ -23,31 +23,32 @@
   <div class="form-group row">
       <label class="form-control-label"><__trans phrase="width:"></label>
       <div class="input-group">
-        <input type="number" name="thumb_width-<$mt:var name="id"$>" class="form-control" id="asset-option-width" value="<mt:var name="width" escape="html">" mt:watch-change="1">
+        <input type="number" name="thumb_width-<$mt:var name="id"$>" class="form-control" name="asset-option-width" id="asset-option-width" value="<mt:var name="width" escape="html">" mt:watch-change="1">
         <div class="input-group-append"><span class="input-group-text">px</span></div>
       </div>
   </div>
   <div class="form-group row alignbutton">
-    <button type="button" class="btn btn-default p-1 alignleft<mt:if name="align" eq="left"> active</mt:if>" data-arign="left" title="<__trans phrase="Align Left">" data-toggle="button" aria-pressed="false" >
+    <button type="button" class="btn btn-default p-1 alignleft<mt:if name="align" eq="left"> active</mt:if>" data-align="left" title="<__trans phrase="Align Left">" data-toggle="button" aria-pressed="false" >
       <svg title="<__trans phrase="Align Left">" role="img" class="mt-icon">
         <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignleft"/>
       </svg>
     </button>
-    <button type="button" class="btn btn-default p-1 aligncenter<mt:if name="align" eq="center"> active</mt:if>" data-arign="center" title="<__trans phrase="Align Center">" data-toggle="button" aria-pressed="false" >
+    <button type="button" class="btn btn-default p-1 aligncenter<mt:if name="align" eq="center"> active</mt:if>" data-align="center" title="<__trans phrase="Align Center">" data-toggle="button" aria-pressed="false" >
       <svg title="<__trans phrase="Align Center">" role="img" class="mt-icon">
         <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_aligncenter"/>
       </svg>
     </button>
-    <button type="button" class="btn btn-default p-1 alignright<mt:if name="align" eq="right"> active</mt:if>" data-arign="right" title="<__trans phrase="Align Right">" data-toggle="button" aria-pressed="false" >
+    <button type="button" class="btn btn-default p-1 alignright<mt:if name="align" eq="right"> active</mt:if>" data-align="right" title="<__trans phrase="Align Right">" data-toggle="button" aria-pressed="false" >
       <svg title="<__trans phrase="Align Right">" role="img" class="mt-icon">
         <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignright"/>
       </svg>
     </button>
-    <button type="button" class="btn btn-default p-1 alignnone<mt:if name="align" eq="noen"> active</mt:if>" data-arign="none" title="<__trans phrase="None">" data-toggle="button" aria-pressed="false" >
+    <button type="button" class="btn btn-default p-1 alignnone<mt:if name="align" eq="noen"> active</mt:if>" data-align="none" title="<__trans phrase="None">" data-toggle="button" aria-pressed="false" >
       <svg title="<__trans phrase="None">" role="img" class="mt-icon">
         <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignnone"/>
       </svg>
     </button>
+    <input type="hidden" name="asset-option-align-<$mt:var name="id"$>" value="<mt:if name="align"><mt:var name="align" escape="html"></mt:if>">
   </div>
   <div class="form-group row">
     <label class="form-control-label"><__trans phrase="Caption"></label>
@@ -55,14 +56,18 @@
   </div>
 
 </div>
-<mt:setvarblock name="jq_js_include" append="1">
+<script>
 jQuery('.alignbutton button').each(function(){
   jQuery(this).on('click', function(){
-    jQuery('.alignbutton button').removeClass('active');
-    jQuery('.alignbutton button').attr('aria-pressed', false);
-    jQuery(this).addClass('active');
-    jQuery(this).attr('aria-pressed', false);
+    jQuery('.alignbutton button').removeClass('btn-contentblock--selected');
+    jQuery(this).addClass('btn-contentblock--selected');
+    jQuery('[name="asset-option-align-<$mt:var name="id"$>"]').val(jQuery(this).data("align"));
     return false;
   });
 });
-</mt:setvarblock>
+<mt:if name="align">
+setTimeout(function(){
+  jQuery('[data-align="<mt:var name="align" escape="html">"]').click();
+},0);
+</mt:if>
+</script>
