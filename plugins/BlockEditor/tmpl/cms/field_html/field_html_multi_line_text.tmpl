@@ -146,8 +146,7 @@
       var field_id = response.result.field;
       jQuery('#'+field_id).html(response.result[field_id]);
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
-      jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext');
-      jQuery('#editor-input-content-field-'+field_id + '-blockeditor').parents('.editor-content').show();
+      jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
       app.editor.reload();
   }
   function changedTextFormat() {
