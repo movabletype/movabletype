@@ -146,10 +146,12 @@ $ct->fields($fields);
 $ct->save or die $ct->errstr;
 
 # Content Data
-my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
-    = localtime(time);
-$mday++;
-MT::Test::Permission->make_content_data(
+for( 1 .. 5 ){
+  my $sec_from_epoch = time - (60 * 60 * 24 * $_);
+  my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
+      = localtime($sec_from_epoch);
+
+  MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
     status          => MT::ContentStatus::RELEASE(),
@@ -163,13 +165,14 @@ MT::Test::Permission->make_content_data(
             : ()
         ),
         $cf_datetime->id =>
-            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
+            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
         $cf_date->id =>
-            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
+            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
     },
     authored_on =>
-        sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday - $_ ),
-) for ( 1 .. 5 );
+        sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
+  );
+}
 
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
