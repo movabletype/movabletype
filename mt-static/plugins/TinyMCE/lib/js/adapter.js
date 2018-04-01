@@ -199,7 +199,7 @@
                 var editorElement = textarea.replaceWith(function(){
                     return $('<div />', attrs).append(adapter.$editorElement.val());
                 });
-                $('#' + adapter.id).removeAttr('style');
+                $('#' + adapter.id).css({'height': 'auto'});
 
             } else if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
                 var div  = $('#' + adapter.id);
@@ -210,7 +210,6 @@
                 var editorElement = div.replaceWith(function(){
                     return $('<textarea />', attrs).val(adapter.$editorElement.html());
                 });
-                $('#' + adapter.id).removeAttr('style');
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 
