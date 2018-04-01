@@ -208,7 +208,10 @@
                     attrs[attr.nodeName] = attr.nodeValue;
                 });
                 var editorElement = div.replaceWith(function(){
-                    return $('<textarea />', attrs).val(adapter.$editorElement.html());
+                    var html = adapter.$editorElement.html();
+                    html = html.replace(/<br data-mce-bogus="1">/g,'');
+                    if(html.match(/^<p><\/p>$/)) html = '';
+                    return $('<textarea />', attrs).val(html);
                 });
             }
             adapter.$editorTextarea = $('#' + adapter.id);
