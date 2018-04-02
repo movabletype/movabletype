@@ -12,38 +12,44 @@ text_filters:
         condition: |
           sub {
             my $app = MT->instance;
-            if( $app->mode eq 'view' && $app->param('_type') eq 'content_data' ){
+            if( ( $app->mode eq 'view' || $app->mode eq 'edit' ) && $app->param('_type') eq 'content_data' ){
               return 1;
             }
             return 0;
           }
 
+content_field_types:
+  multi_line_text:
+    field_html: cms/field_html/field_html_multi_line_text.tmpl
+    field_html_params: $BlockEditor::BlockEditor::App::field_html_params
+    data_load_handler: $BlockEditor::BlockEditor::App::data_load_handler
+
 applications:
   cms:
     methods:
-      blockeditor_dialog_list_asset: $BlockEditor::BlockEditor::App::dialog_list_asset
-      block_editor_dialog_insert_options: $BlockEditor::BlockEditor::App::dialog_insert_options
-      block_editor_dialog_insert_asset: $BlockEditor::BlockEditor::App::dialog_insert_asset
+      blockeditor_dialog_list_asset: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_list_asset
+      blockeditor_dialog_insert_options: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_insert_options
+      blockeditor_dialog_insert_asset: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_insert_asset
 
-callbacks:
-  MT::App::CMS::template_param.edit_content_data: $BlockEditor::BlockEditor::App::param_edit_content_data
+    callbacks:
+      template_param.edit_content_data: $BlockEditor::BlockEditor::App::template_param_edit_content_data
+      cms_pre_save.content_data: $BlockEditor::BlockEditor::App::pre_save_content_data
 
-blockeditor_fields: 
+blockeditor_fields:
   header:
-    label: 'H'
-    # path: "plugins/sample/sample.js"
+    label: Header
     order: 10
   text:
-    label: 'text'
+    label: Text Block
     order: 20
   embed:
-    label: 'Embed'
+    label: Embed
     order: 30
   image:
-    label: 'image'
+    label: Image
     order: 40
   horizon:
-    label: 'Horizon'
+    label: Horizon
     order: 50
   # gallery:
   #   label: 'Gallery'
