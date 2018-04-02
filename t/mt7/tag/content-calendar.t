@@ -31,85 +31,80 @@ filters {
     error    => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture('db');
 
-        my @ts = MT::Util::offset_time_list( time, $blog_id );
-        my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
-        my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+my @ts = MT::Util::offset_time_list( time, $blog_id );
+my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
 
-        my $ct = MT::Test::Permission->make_content_type(
-            name    => 'test content data',
-            blog_id => $blog_id,
-        );
-        my $cf_datetime = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'date and time',
-            type            => 'date_and_time',
-        );
-        my $category_set = MT::Test::Permission->make_category_set(
-            blog_id => $ct->blog_id,
-            name    => 'test category set',
-        );
-        my $cf_category = MT::Test::Permission->make_content_field(
-            blog_id            => $ct->blog_id,
-            content_type_id    => $ct->id,
-            name               => 'categories',
-            type               => 'categories',
-            related_cat_set_id => $category_set->id,
-        );
-        my $category1 = MT::Test::Permission->make_category(
-            blog_id         => $category_set->blog_id,
-            category_set_id => $category_set->id,
-            label           => 'category1',
-        );
-        my $category2 = MT::Test::Permission->make_category(
-            blog_id         => $category_set->blog_id,
-            category_set_id => $category_set->id,
-            label           => 'category2',
-        );
-        my $fields = [
-            {   id        => $cf_datetime->id,
-                order     => 1,
-                type      => $cf_datetime->type,
-                options   => { label => $cf_datetime->name },
-                unique_id => $cf_datetime->unique_id,
-            },
-            {   id      => $cf_category->id,
-                order   => 2,
-                type    => $cf_category->type,
-                options => {
-                    label        => $cf_category->name,
-                    category_set => $category_set->id,
-                    multiple     => 1,
-                    max          => 5,
-                    min          => 1,
-                },
-            },
-        ];
-        $ct->fields($fields);
-        $ct->save or die $ct->errstr;
-        my $cd1 = MT::Test::Permission->make_content_data(
-            blog_id         => $blog_id,
-            content_type_id => $ct->id,
-            authored_on     => '20170602000000',
-        );
-        my $cd2 = MT::Test::Permission->make_content_data(
-            blog_id         => $blog_id,
-            content_type_id => $ct->id,
-            authored_on     => '20170629000000',
-            data =>
-                { $cf_category->id => [ $category2->id, $category1->id ], },
-        );
-        my $cd3 = MT::Test::Permission->make_content_data(
-            blog_id         => $blog_id,
-            content_type_id => $ct->id,
-            authored_on     => $next_month . '15000000',
-            data => { $cf_datetime->id => $this_month . '03180500', },
-        );
-    }
+my $ct = MT::Test::Permission->make_content_type(
+    name    => 'test content data',
+    blog_id => $blog_id,
+);
+my $cf_datetime = MT::Test::Permission->make_content_field(
+    blog_id         => $ct->blog_id,
+    content_type_id => $ct->id,
+    name            => 'date and time',
+    type            => 'date_and_time',
+);
+my $category_set = MT::Test::Permission->make_category_set(
+    blog_id => $ct->blog_id,
+    name    => 'test category set',
+);
+my $cf_category = MT::Test::Permission->make_content_field(
+    blog_id            => $ct->blog_id,
+    content_type_id    => $ct->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
+);
+my $category1 = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
+);
+my $category2 = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
+);
+my $fields = [
+    {   id        => $cf_datetime->id,
+        order     => 1,
+        type      => $cf_datetime->type,
+        options   => { label => $cf_datetime->name },
+        unique_id => $cf_datetime->unique_id,
+    },
+    {   id      => $cf_category->id,
+        order   => 2,
+        type    => $cf_category->type,
+        options => {
+            label        => $cf_category->name,
+            category_set => $category_set->id,
+            multiple     => 1,
+            max          => 5,
+            min          => 1,
+        },
+    },
+];
+$ct->fields($fields);
+$ct->save or die $ct->errstr;
+my $cd1 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => '20170602000000',
+);
+my $cd2 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => '20170629000000',
+    data => { $cf_category->id => [ $category2->id, $category1->id ], },
+);
+my $cd3 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => $next_month . '15000000',
+    data            => { $cf_datetime->id => $this_month . '03180500', },
 );
 
 MT::Test::Tag->run_perl_tests($blog_id);
