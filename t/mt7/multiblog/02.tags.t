@@ -252,12 +252,20 @@ SKIP:
 
 __END__
 
-=== mt:Blogs
+=== mt:Blogs with include_blogs
+--- template
+<mt:Blogs include_blogs="1,2,3">
+<mt:BlogID />
+</mt:Blogs>
+--- expected
+
+=== mt:Blogs with include_sites
 --- template
 <mt:Blogs include_sites="1,2,3">
 <mt:BlogID />
 </mt:Blogs>
 --- expected
+2
 
 === mt:Blog will be localizeing timestamp context if ignore_archive_context="1" is given.
 --- template
@@ -394,6 +402,13 @@ template-module:2
 <mt:BlogCategoryCount include_sites="1,2,3" />
 --- expected
 6
+
+
+=== mt:BlogEntryCount with include_blogs
+--- template
+<mt:BlogEntryCount include_blogs="1,2,3" />
+--- expected
+0
 
 
 === mt:BlogEntryCount
