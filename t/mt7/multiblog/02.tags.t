@@ -259,13 +259,14 @@ __END__
 </mt:Blogs>
 --- expected
 
+
 === mt:Blogs with include_sites
 --- template
 <mt:Blogs include_sites="1,2,3">
 <mt:BlogID />
 </mt:Blogs>
 --- expected
-2
+
 
 === mt:Blog will be localizeing timestamp context if ignore_archive_context="1" is given.
 --- template
@@ -278,6 +279,7 @@ A Rainy Day,Verse 5
 { current_timestamp => '19780131073500', current_timestamp_end => '19780131074500' }
 --- access_overrides
 { 1 => 2 }
+
 
 === mt:Entries
 --- template
