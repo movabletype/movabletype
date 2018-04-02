@@ -55,18 +55,9 @@ function multiblog_function_wrapper($tag, &$args, &$_smarty_tpl) {
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
 
-    # Include/exclude_sites modifier
-    if (isset($args['include_sites'])) {
-        $args['include_blogs'] = $args['include_sites'];
-        unset($args['include_sites']);
-    }
-    if (isset($args['exclude_sites'])) {
-        $args['exclude_blogs'] = $args['exclude_sites'];
-        unset($args['exclude_sites']);
-    }
-
     # Load multiblog access control list
-    $incl = $args['include_blogs']
+    $incl = $args['include_sites']
+         || $args['include_blogs']
          || $args['include_websites']
          || $args['blog_id']
          || $args['blog_ids']
@@ -106,16 +97,6 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
     $ctx = $_smarty_tpl->smarty;
     $tag = $ctx->this_tag();
 
-    # Include/exclude_sites modifier
-    if (isset($args['include_sites'])) {
-        $args['include_blogs'] = $args['include_sites'];
-        unset($args['include_sites']);
-    }
-    if (isset($args['exclude_sites'])) {
-        $args['exclude_blogs'] = $args['exclude_sites'];
-        unset($args['exclude_sites']);
-    }
-
     if (!isset($content)) {
         $ctx->set_override_context( true );
 
@@ -146,13 +127,15 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
         }
 
         # Load multiblog access control list
-        $incl = $args['include_blogs']
+        $incl = $args['include_sites']
+             || $args['include_blogs']
              || $args['include_websites']
              || $args['blog_id']
              || $args['blog_ids']
              || $tag == 'mtblogs'
              || $tag == 'mtwebsites';
-        $excl = $args['exclude_blogs']
+        $excl = $args['exclude_sites']
+             || $args['exclude_blogs']
              || $args['exclude_websites'];
         if ( $incl || $excl ) {
             $acl = multiblog_load_acl($ctx);

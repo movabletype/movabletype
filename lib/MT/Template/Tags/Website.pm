@@ -106,17 +106,11 @@ sub _hdlr_websites {
         delete $args->{blog_id};
     }
 
-    # Include/exclude_sites modifier
-    if ( $args->{include_sites} ) {
-        $args->{include_blogs} = delete $args->{include_sites};
-    }
-    if ( $args->{exclude_sites} ) {
-        $args->{exclude_blogs} = delete $args->{exclude_sites};
-    }
-
     # If MTMultiBlog was called with no arguments, we check the
     # blog-level settings for the default includes/excludes.
     unless ( $args->{blog_ids}
+        || $args->{include_sites}
+        || $args->{exclude_sites}
         || $args->{include_blogs}
         || $args->{exclude_blogs}
         || $args->{include_websites}
@@ -185,16 +179,19 @@ sub _hdlr_websites {
 sub _context {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $include_blogs = $args->{include_blogs} || $args->{blog_ids};
+    my $include_blogs
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{blog_ids};
+    my $exclude_blogs = $args->{exclude_sites} || $args->{exclude_blogs};
 
     # Assuming multiblog context, set it.
-    if ( $include_blogs || $args->{exclude_blogs} ) {
+    if ( $include_blogs || $exclude_blogs ) {
         $ctx->stash( 'sites_context', 1 );
         $ctx->stash( 'sites_include_blog_ids', join( ',', $include_blogs ) )
             if $include_blogs;
-        $ctx->stash( 'sites_exclude_blog_ids',
-            join( ',', $args->{exclude_blogs} ) )
-            if $args->{exclude_blogs};
+        $ctx->stash( 'sites_exclude_blog_ids', join( ',', $exclude_blogs ) )
+            if $exclude_blogs;
     }
 
     # Evaluate container contents and return output
@@ -216,7 +213,8 @@ sub _loop {
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
     $args{'no_class'} = 1
-        if ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' )
+        if ( $args->{include_sites} )
+        || ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' )
         || ( $args->{include_website}
         && lc $args->{include_website} eq 'all' )
         || ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' )

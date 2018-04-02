@@ -881,5 +881,10 @@
 { "r" : "1", "t" : "<MTEntries include_sites='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #865
 { "r" : "1", "t" : "<MTEntries include_sites='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #866
 { "r" : "1", "t" : "<MTEntries include_sites='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #867
-{ "r" : "1", "t" : "<MTAssets include_sites=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"} #868
+{ "r" : "1", "t" : "<MTAssets include_sites=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #868
+{ "r" : "0", "t" : "<MTWebsiteCommentCount site_ids='1' include_sites='2'>", "e" : "9"}, #869
+{ "r" : "0", "t" : "<MTWebsitePingCount site_ids='1' include_sites='2'>", "e" : "2"}, #870
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all' exclude_sites='1'>", "e" : "0"}, #871
+{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelCategories><MTCategoryLabel>;<$mt:SubCatsRecurse max_depth=\"1\"$></MTTopLevelCategories></MTWebSites>", "e" : "Japan;Tokyo;US;California;"}, #872
+{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelFolders><MTFolderLabel>;<$mt:SubFolderRecurse max_depth=\"1\"$></MTTopLevelFolders></MTWebSites>", "e" : "Product;Consumer;"} #873
 ]
