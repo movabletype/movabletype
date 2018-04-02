@@ -108,7 +108,7 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
-        if ( (  isset($args['include_sites']))
+        if ( (  isset($args['include_sites'])   && $args['include_sites'] === 'all' )
             || (isset($args['include_blogs'])   && $args['include_blogs'] === 'all' )
             || (isset($args['include_website']) && $args['include_website'] === 'all' )
             || (isset($args['blog_ids'])        && $args['blog_ids'] === 'all' )

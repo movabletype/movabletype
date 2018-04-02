@@ -195,7 +195,7 @@ sub _loop {
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
     $args{'no_class'} = 1
-        if ( $args->{include_sites} )
+        if ( $args->{include_sites} && lc $args->{include_sites} eq 'all' )
         || ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' )
         || ( $args->{include_website}
         && lc $args->{include_website} eq 'all' )
