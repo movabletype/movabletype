@@ -242,9 +242,9 @@ TC.TagComplete.prototype.onDivMouseOut = function()
 TC.TagComplete.prototype.constructCompletionBox = function()
 {
     var div = this.completion_box;
-    var ul = div.children[0];
-    while ( ul.children[0] )
-        ul.children[0].remove();
+    var ul = div.firstElementChild;
+    while ( ul.hasChildNodes() )
+        ul.removeChild( ul.firstChild );
     for ( var i = 0; i < this.suggestedCompletions.length; i++ )
     {
         var inner = document.createElement('span');

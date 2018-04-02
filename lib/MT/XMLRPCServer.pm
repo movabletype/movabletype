@@ -1411,22 +1411,11 @@ sub getTrackbackPings {
 
     _validate_params( [$entry_id] ) or return;
 
-    require MT::Trackback;
-    require MT::TBPing;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    my $tb = MT::Trackback->load( { entry_id => $entry_id } ) or return [];
-    my $iter = MT::TBPing->load_iter( { tb_id => $tb->id } );
-    my @data;
+    return unless MT->has_plugin('Trackback');
 
-    while ( my $ping = $iter->() ) {
-        push @data,
-            {
-            pingTitle => SOAP::Data->type( string => $ping->title || '' ),
-            pingURL => SOAP::Data->type( string => $ping->source_url || '' ),
-            pingIP  => SOAP::Data->type( string => $ping->ip         || '' ),
-            };
-    }
-    \@data;
+    require Trackback::XMLRPCServer;
+    Trackback::XMLRPCServer::_getTrackbackPings($entry_id);
 }
 
 sub publishPost {

@@ -320,7 +320,7 @@ sub edit_role {
         push @perms, $perm;
     }
 
-    @perms = sort { $a->{order} || 0 <=> $b->{order} || 0 } @perms;
+    @perms = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @perms;
 
     $param{'loaded_permissions'} = \@perms;
 
