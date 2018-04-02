@@ -1956,68 +1956,6 @@ sub _hdlr_content_label {
     defined $content_data->label ? $content_data->label : '';
 }
 
-=head2 ContentEditLink
-
-A link to edit the content data in context from the Movable Type CMS. This tag is
-only recognized in system templates where an authenticated user is
-logged-in.
-
-B<Attributes:>
-
-=over 4
-
-=item * text (optional; default "Edit")
-
-A phrase to use for the edit link.
-
-=back
-
-B<Example:>
-
-    <$mt:ContentEditLink$>
-
-=for tags search
-
-=cut
-
-sub _hdlr_content_edit_link {
-    my ( $ctx, $args ) = @_;
-    my $user = $ctx->stash('user') or return '';
-    my $content_data = $ctx->stash('content')
-        or return $ctx->error(
-        MT->translate(
-            'You used an [_1] tag outside of the proper context.',
-            '<$MTContentEditLink$>'
-        )
-        );
-    my $blog_id = $content_data->blog_id;
-    my $cfg     = MT->config;
-    my $url     = $cfg->AdminCGIPath || $cfg->CGIPath;
-    $url .= '/' unless $url =~ m!/$!;
-    require MT::Permission;
-    my $perms = MT::Permission->load(
-        {   author_id => $user->id,
-            blog_id   => $blog_id
-        }
-    );
-    return ''
-        unless $perms
-        && $perms->can_edit_content_data( $content_data, $user );
-    my $app = MT->instance;
-    my $edit_text = $args->{text} || $app->translate("Edit");
-    return sprintf q([<a href="%s%s%s">%s</a>]), $url, $cfg->AdminScript,
-        $app->uri_params(
-        'mode' => 'view',
-        args   => {
-            '_type'         => 'content_data',
-            id              => $content_data->id,
-            blog_id         => $blog_id,
-            content_type_id => $content_data->content_type_id,
-        }
-        ),
-        $edit_text;
-}
-
 =head2 ContentTypeDescription
 
 Returns the description of the current content type in context.
