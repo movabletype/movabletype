@@ -90,6 +90,6 @@ Blog: 10,Blog: 11,Blog: 12,Blog: 13,Blog: 14,Blog: 15,Blog: 16,Blog: 17,Blog: 18
 
 === mt:Blogs with include/exclude_sites
 --- template
-<mt:Blogs include_sites="1-20" exclude_sites="1"><mt:BlogName />,</mt:Blogs>
+<mt:Blogs include_sites="1-20" exclude_sites="1,2"><mt:BlogName />,</mt:Blogs>
 --- expected
 Blog: 10,Blog: 11,Blog: 12,Blog: 13,Blog: 14,Blog: 15,Blog: 16,Blog: 17,Blog: 18,Blog: 19,Blog: 20,Blog: 3,Blog: 4,Blog: 5,Blog: 6,Blog: 7,Blog: 8,Blog: 9,
