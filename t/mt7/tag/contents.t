@@ -146,32 +146,32 @@ $ct->fields($fields);
 $ct->save or die $ct->errstr;
 
 # Content Data
-for( 1 .. 5 ){
-  my $sec_from_epoch = time - (60 * 60 * 24 * $_);
-  my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
-      = localtime($sec_from_epoch);
+for ( 1 .. 5 ) {
+    my $sec_from_epoch = time - ( 60 * 60 * 24 * ( $_ - 1 ) );
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
+        = localtime($sec_from_epoch);
 
-  MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    status          => MT::ContentStatus::RELEASE(),
-    data            => {
-        $cf_single_line_text->id => 'test single line text ' . $_,
-        (   $_ == 2
-            ? ( $cf_category->id => [ $category2->id, $category1->id ] )
-            : ()
-        ),
-        (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
-            : ()
-        ),
-        $cf_datetime->id =>
+    MT::Test::Permission->make_content_data(
+        blog_id         => $blog_id,
+        content_type_id => $ct->id,
+        status          => MT::ContentStatus::RELEASE(),
+        data            => {
+            $cf_single_line_text->id => 'test single line text ' . $_,
+            (   $_ == 2
+                ? ( $cf_category->id => [ $category2->id, $category1->id ] )
+                : ()
+            ),
+            (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
+                : ()
+            ),
+            $cf_datetime->id =>
+                sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
+            $cf_date->id =>
+                sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
+        },
+        authored_on =>
             sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
-        $cf_date->id =>
-            sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
-    },
-    authored_on =>
-        sprintf( "%04d%02d%02d", $year + 1900, $mon + 1, $mday ),
-  );
+    );
 }
 
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
