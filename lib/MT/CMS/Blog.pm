@@ -2422,7 +2422,7 @@ sub update_publishing_profile {
 
                 # FIXME: enumeration of types
                 type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category' ],
+                    [ 'index', 'archive', 'individual', 'page', 'category', 'ct', 'ct_archive' ],
             }
         );
         for my $tmpl (@templates) {
