@@ -421,7 +421,8 @@ sub set_blog_load_context {
         my ( @blogs, $blog_ids );
         @blogs = MT->model('blog')->load( { parent_id => $website->id } );
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
-        push @$blog_ids, $website->id if $attr->{include_with_website};
+        push @$blog_ids, $website->id
+            if $attr->{include_parent_site} || $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
             ; # We should use non-existing blog id when calculated blog_ids is empty
