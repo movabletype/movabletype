@@ -886,5 +886,7 @@
 { "r" : "0", "t" : "<MTWebsitePingCount site_ids='1' include_sites='2'>", "e" : "2"}, #870
 { "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all' exclude_sites='1'>", "e" : "0"}, #871
 { "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelCategories><MTCategoryLabel>;<$mt:SubCatsRecurse max_depth=\"1\"$></MTTopLevelCategories></MTWebSites>", "e" : "Japan;Tokyo;US;California;"}, #872
-{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelFolders><MTFolderLabel>;<$mt:SubFolderRecurse max_depth=\"1\"$></MTTopLevelFolders></MTWebSites>", "e" : "Product;Consumer;"} #873
+{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelFolders><MTFolderLabel>;<$mt:SubFolderRecurse max_depth=\"1\"$></MTTopLevelFolders></MTWebSites>", "e" : "Product;Consumer;"}, #873
+{ "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_blogs=\"siblings\" include_parent_site=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" }, #874
+{ "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_sites=\"siblings\" include_parent_site=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" } #875
 ]

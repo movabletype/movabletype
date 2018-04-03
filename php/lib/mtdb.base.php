@@ -157,7 +157,7 @@ abstract class MTDatabase {
     }
 
     public function include_exclude_blogs(&$args) {
-        if ( empty( $args['include_with_website'] ) )
+        if ( empty( $args['include_parent_site'] ) && empty( $args['include_with_website'] ) )
             $include_with_website = false;
         else
             $include_with_website = true;
@@ -834,8 +834,9 @@ abstract class MTDatabase {
             $blog_ctx_arg = isset($args['include_blogs']) ?
                 array('include_blogs' => $args['include_blogs']) :
                 array('exclude_blogs' => $args['exclude_blogs']);
-            if (isset($args['include_blogs']) && isset($args['include_with_website'])) {
-                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $args['include_with_website']));
+            $include_with_website = $args['include_parent_site'] || $args['include_with_website'];
+            if (isset($args['include_blogs']) && isset($include_with_website)) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $include_with_website));
             }
         }
 
