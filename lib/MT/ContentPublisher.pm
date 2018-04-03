@@ -1322,9 +1322,6 @@ sub rebuild_from_fileinfo {
     my $template = MT::Template->load( $fi->template_id )
         or return $pub->error(
         MT->translate( 'Cannot load template #[_1].', $fi->template_id ) );
-        . $fi->template_id . "] "
-        . $template->name
-        . " loaded\n";
     if ( $at eq 'index' ) {
         $pub->rebuild_indexes(
             BlogID   => $fi->blog_id,
