@@ -295,4 +295,16 @@ sub is_parent_content_type_id {
     ( grep { $_ == $ct_id } @{$parent_ct_ids} ) ? 1 : 0;
 }
 
+sub type_registry {
+    my $self = shift;
+    return unless defined $self->type && $self->type ne '';
+    MT->registry( 'content_field_types', $self->type );
+}
+
+sub data_type {
+    my $self = shift;
+    my $type_registry = $self->type_registry or return;
+    $type_registry->{data_type};
+}
+
 1;
