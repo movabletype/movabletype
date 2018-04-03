@@ -1803,6 +1803,7 @@ sub _populate_archive_loop {
                 name   => $map->{file_template},
                 value  => $map->{file_template},
                 custom => 1,
+                selected => 1,
                 };
         }
 

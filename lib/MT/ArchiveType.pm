@@ -238,9 +238,10 @@ sub archive_contents_count {
         && defined $map
         && $map ? $map->dt_field_id : '';
 
+    require MT::ContentStatus;
     my $count = MT->model('content_data')->count(
         {   blog_id => $blog->id,
-            status  => MT::Entry::RELEASE(),
+            status  => MT::ContentStatus::RELEASE(),
             (   $content_data
                 ? ( content_type_id => $content_data->content_type_id )
                 : ()

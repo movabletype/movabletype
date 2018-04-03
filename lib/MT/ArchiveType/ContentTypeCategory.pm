@@ -68,23 +68,30 @@ sub archive_file {
     my $content_data = $ctx->{__stash}{content};
     my $file;
 
-    my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
-
+    if ( !$cat ) {
+        my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
+        $cat
+            = $this_cat
+            ? ref $this_cat eq 'ARRAY'
+                ? $this_cat->[0]
+                : $this_cat
+            : undef;
+    }
     if ($file_tmpl) {
-        $ctx->stash( 'archive_category', $this_cat );
+        $ctx->stash( 'archive_category', $cat );
         $ctx->{inside_mt_categories} = 1;
-        $ctx->{__stash}{category} = $this_cat;
+        $ctx->{__stash}{category} = $cat;
     }
     else {
-        if ( !$this_cat ) {
+        if ( !$cat ) {
             return "";
         }
         my $label = '';
-        $label = dirify( $this_cat->label );
+        $label = dirify( $cat->label );
         if ( $label !~ /\w/ ) {
-            $label = $this_cat ? "cat" . $this_cat->id : "";
+            $label = $cat ? "cat" . $cat->id : "";
         }
-        $file = sprintf( "%s/index", $this_cat->category_path );
+        $file = sprintf( "%s/index", $cat->category_path );
     }
     $file;
 }
@@ -174,13 +181,17 @@ sub archive_group_iter {
 sub archive_contents_count {
     my $obj = shift;
     my ( $blog, $at, $content_data, $cat ) = @_;
+
     return $obj->SUPER::archive_contents_count(@_) unless $content_data;
+
     $cat = _get_this_cat( $cat, $content_data ) unless $cat;
     return 0 unless $cat;
+
     return $obj->SUPER::archive_contents_count(
         {   Blog        => $blog,
             ArchiveType => $at,
-            Category    => $cat
+            Category    => $cat,
+            ContentData => $content_data,
         }
     );
 }
