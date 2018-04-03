@@ -1,32 +1,38 @@
 ; (function ($) {
 
     var BEF = MT.BlockEditorField;
-    var label = trans('Text');
-
     BEF.Text = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Text, {
-        label: trans('Text'),
+        label: trans('text'),
+        icon_class: 'ic_textcolor',
+        type: 'text',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_textcolor"></use></svg>' + label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock"><svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#' + this.icon_class + '"></use></svg>' + this.label + '</button>');
         },
     });
     $.extend(BEF.Text.prototype, BEF.prototype, {
-        options: {},
-        get_id: function () {
-            return self.id;
+        get_id: function(){
+          return this.id;
+        },
+        get_label: function(){
+          return BEF.Text.label;
         },
         get_type: function () {
-            return 'text';
+            return BEF.Text.type;
         },
         get_svg_name: function() {
-            return 'ic_textcolor';
+            return BEF.Text.icon_class;
         },
         create: function (id, data) {
             var self = this;
             self.id = id;
-            self.edit_field = $('<div class="form-group"></div>');
-            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="text high html5-form form-control content-field" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
-            self.edit_field_input.text(data["value"]);
+            if(!self.data.value){
+              self.data.value = trans('Text');
+            }
+
+            self.edit_field = $('<div class="mt-contentblock__block"></div>');
+            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="text high html5-form form-control content-field　mt-contentblock__textarea" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
+            self.edit_field_input.text(self.data.value);
             self.edit_field.append(self.edit_field_input);
             self.edit_field.append($('<input type="hidden" data-target="' + self.id + '-text" value="richtext">'));
 
@@ -38,24 +44,23 @@
                   });
               });
             });
-
             return self.edit_field;
         },
-        set_option: function (name, val) {
-            var style_name = name.replace('field_option_', '');
-            this.options[style_name] = val;
+        save: function(){
+            this.data.value = $('#' + this.id + '-text').html();
         },
         get_data: function () {
             var self = this;
+            self.data.value = $('#' + self.id + '-text').html();
             return {
-                'value': $('#' + self.id + '-text').html(),
+                'value': self.data.value,
                 'html': self.get_html(),
                 'options': self.options,
             };
         },
         get_html: function () {
             var self = this;
-            var html = '<div>' + $('#' + self.id + '-text').html() + '</div>';
+            var html = '<div>' + this.data.value + '</div>';
 
             return html;
         }

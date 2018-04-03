@@ -10,12 +10,13 @@ use strict;
 use warnings;
 
 use BlockEditor;
-use MT::CMS::Asset;
+use MT::ContentFieldType::MultiLineText;
 
-my $default_thumbnail_size = 60;
+sub field_html_params {
+    my ( $app, $field_data ) = @_;
 
-sub param_edit_content_data {
-    my ( $cb, $app, $param, $tmpl ) = @_;
+    my $param = MT::ContentFieldType::MultiLineText->field_html_params( $app,
+        $field_data );
 
     my $blockeditor_fields       = $app->registry('blockeditor_fields');
     my @blockeditor_fields_array = map {
@@ -30,10 +31,132 @@ sub param_edit_content_data {
         = sort { $a->{order} <=> $b->{order} } @blockeditor_fields_array;
     $param->{blockeditor_fields} = \@blockeditor_fields_array;
 
-    my $editor_tmpl = plugin()->load_tmpl('editor.tmpl');
-    $param->{blockeditor_tmpl} = $editor_tmpl;
+    my $blog            = $app->blog;
+    my $content_type_id = $app->param('content_type_id')
+        or return $app->errtrans("Invalid request.");
+    my $content_type = MT::ContentType->load($content_type_id)
+        or return $app->errtrans('Invalid request.');
+
+    my $data;
+    if ( $app->param('_recover') && !$app->param('reedit') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            my $autosave_data = $sess_obj->thaw_data;
+            if ($autosave_data) {
+                $data = $autosave_data->{data};
+            }
+        }
+    }
+
+    if ( $app->param('reedit') ) {
+        $data = $app->param('serialized_data');
+        unless ( ref $data ) {
+            $data = JSON::decode_json($data);
+        }
+    }
+
+    my $content_data_id = $app->param('id');
+
+    my $content_data;
+    if ($content_data_id) {
+        $content_data = MT::ContentData->load(
+            {   id              => $content_data_id,
+                blog_id         => $content_type->blog_id,
+                content_type_id => $content_type->id,
+            }
+            )
+            or return $app->error(
+            $app->translate(
+                'Load failed: [_1]',
+                MT::ContentData->errstr
+                    || $app->translate('(no reason given)')
+            )
+            );
+
+        if ( $blog->use_revision ) {
+
+            my $original_revision = $content_data->revision;
+            my $rn                = $app->param('r');
+            if ( defined $rn && $rn != $content_data->current_revision ) {
+                my $rev
+                    = $content_data->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $content_data = $rev->[0];
+                }
+            }
+        }
+    }
+    $data = $content_data->data if $content_data && !$data;
+    my $convert_breaks
+        = $content_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
+
+    my $blockeditor_data;
+    if ( $app->param('block_editor_data') ) {
+        $blockeditor_data = $app->param('block_editor_data');
+    }
+    else {
+        if ($content_data) {
+            $blockeditor_data = $content_data->block_editor_data();
+        }
+        elsif ( $content_data_id || $data ) {
+            $blockeditor_data = $data->{block_editor_data};
+        }
+    }
+    if ($blockeditor_data) {
+        $param->{block_editor_data} = $blockeditor_data;
+    }
+
+    return $param;
 }
 
+sub data_load_handler {
+    my ( $app, $field_data ) = @_;
+
+    my $field_id = $field_data->{id};
+    my $convert_breaks
+        = $app->param("content-field-${field_id}_convert_breaks");
+    $convert_breaks = '' unless defined $convert_breaks;
+
+    if ( $convert_breaks eq 'blockeditor' ) {
+        my $data_json = $app->param('block_editor_data');
+        my $data_obj;
+        my $html = "";
+        my @blockdata;
+        if ($data_json) {
+            $data_obj = JSON->new->utf8(0)->decode($data_json);
+            my $editor_id
+                = 'editor-input-content-field-' . $field_id . '-blockeditor';
+            while ( my ( $block_id, $block_data )
+                = each( %{ $data_obj->{$editor_id} } ) )
+            {
+                push( @blockdata, $block_data );
+            }
+            @blockdata = sort { $a->{order} <=> $b->{order} } @blockdata;
+            foreach my $val (@blockdata) {
+                $html .= $val->{html};
+                $html .= "\n";
+            }
+        }
+        return $html;
+    }
+    elsif ( $convert_breaks eq 'richtext' ) {
+        return scalar $app->param("editor-input-content-field-$field_id");
+    }
+    else {
+        return scalar $app->param("content-field-multi-$field_id");
+    }
+
+}
+
+sub pre_save_content_data {
+    my ( $cb, $app, $content_data, $org_obj ) = @_;
+    my $block_editor_data = $app->param('block_editor_data');
+    $content_data->block_editor_data($block_editor_data);
+}
+
+=head
 sub dialog_list_asset {
     my $app = shift;
 
@@ -292,5 +415,6 @@ sub _insert_options {
 
     return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }
+=cut
 
 1;
