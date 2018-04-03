@@ -26,12 +26,12 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{state_params} = [
-        '_type',      'id',
-        'tab',        'offset',
-        'filter',     'filter_val',
-        'blog_id',    'is_power_edit',
-        'filter_key', 'type',
-        'content_type_id'
+        '_type',           'id',
+        'tab',             'offset',
+        'filter',          'filter_val',
+        'blog_id',         'is_power_edit',
+        'filter_key',      'type',
+        'content_type_id', 'content_data_id',
     ];
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
@@ -2136,7 +2136,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2145,7 +2145,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
