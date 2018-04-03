@@ -1121,7 +1121,7 @@ sub _make_field_list_props {
         my $field_type = $content_field_types->{$idx_type} or next;
 
         for my $prop_name ( keys %{ $field_type->{list_props} || {} } ) {
-
+            next if $prop_name eq 'plugin';
             next
                 if $parent_field_data
                 && $prop_name ne $idx_type

@@ -626,8 +626,8 @@ pre code {
 
 .container {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 14px;
+  padding-left: 14px;
   margin-right: auto;
   margin-left: auto;
 }
@@ -658,8 +658,8 @@ pre code {
 
 .container-fluid, .container-single-column {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 14px;
+  padding-left: 14px;
   margin-right: auto;
   margin-left: auto;
 }
@@ -670,8 +670,8 @@ pre code {
   display: flex;
   -ms-flex-wrap: wrap;
       flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right: -14px;
+  margin-left: -14px;
 }
 
 .no-gutters, .mt-draggable, .mt-contentfield .mt-collapse__container {
@@ -694,8 +694,8 @@ pre code {
   position: relative;
   width: 100%;
   min-height: 1px;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 14px;
+  padding-left: 14px;
 }
 
 .col, .mt-productHeader, .mt-mainContent, .mt-mainContent--scrollable, .mt-footer, .mt-widget__data {
@@ -4790,7 +4790,7 @@ tbody.collapse.show {
 }
 
 .card-deck .card, .card-deck .mt-table--outline, .card-deck .mt-widget, .card-deck .mt-widget--panel {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 @media (min-width: 576px) {
@@ -4799,8 +4799,8 @@ tbody.collapse.show {
     -webkit-box-direction: normal;
         -ms-flex-flow: row wrap;
             flex-flow: row wrap;
-    margin-right: -15px;
-    margin-left: -15px;
+    margin-right: -14px;
+    margin-left: -14px;
   }
   .card-deck .card, .card-deck .mt-table--outline, .card-deck .mt-widget, .card-deck .mt-widget--panel {
     display: -webkit-box;
@@ -4813,9 +4813,9 @@ tbody.collapse.show {
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
             flex-direction: column;
-    margin-right: 15px;
+    margin-right: 14px;
     margin-bottom: 0;
-    margin-left: 15px;
+    margin-left: 14px;
   }
 }
 
@@ -4830,7 +4830,7 @@ tbody.collapse.show {
 }
 
 .card-group > .card, .card-group > .mt-table--outline, .card-group > .mt-widget, .card-group > .mt-widget--panel {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 @media (min-width: 576px) {
@@ -5731,15 +5731,15 @@ button.close {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  padding: 15px;
+  padding: 1rem;
   border-bottom: 1px solid #CACACA;
   border-top-left-radius: 0.3rem;
   border-top-right-radius: 0.3rem;
 }
 
 .modal-header .close {
-  padding: 15px;
-  margin: -15px -15px -15px auto;
+  padding: 1rem;
+  margin: -1rem -1rem -1rem auto;
 }
 
 .modal-title {
@@ -10419,6 +10419,7 @@ fieldset.form-group {
 
 /* Modal */
 .modal-content {
+  position: relative;
   border-radius: 0;
 }
 
@@ -10439,7 +10440,12 @@ fieldset.form-group {
 
 .modal-body {
   max-height: 34rem;
-  overflow-y: auto;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-footer {
+  width: 100%;
 }
 
 .modal-description {

@@ -361,7 +361,8 @@ sub set_blog_load_context {
 
     # Grab specified blog IDs
     my $blog_ids
-        = $attr->{blog_ids}
+        = $attr->{include_sites}
+        || $attr->{blog_ids}
         || $attr->{include_blogs}
         || $attr->{site_ids}
         || $attr->{include_websites};
@@ -456,11 +457,14 @@ sub set_blog_load_context {
 
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
-    if (   $attr->{exclude_blogs}
+    if (   $attr->{exclude_sites}
+        || $attr->{exclude_blogs}
         || $attr->{exclude_websites}
         || $attr->{deny_blogs} )
     {
-        my $exclude_ids = $attr->{exclude_blogs}
+        my $exclude_ids
+            = $attr->{exclude_sites}
+            || $attr->{exclude_blogs}
             || $attr->{exclude_websites};
         return $ctx->error(
             MT->translate(
@@ -878,6 +882,8 @@ sub _preprocess_multiblog {
     # If we're running under MT-Search, set the context based on the search
     # parameters available.
     unless ( $args->{blog_id}
+        || $args->{include_sites}
+        || $args->{exclude_sites}
         || $args->{blog_ids}
         || $args->{site_ids}
         || $args->{include_blogs}
@@ -904,12 +910,16 @@ sub _preprocess_multiblog {
 
     # Load sites access control list
     my $incl
-        = $args->{include_blogs}
+        = $args->{include_sites}
+        || $args->{include_blogs}
         || $args->{include_websites}
         || $args->{blog_id}
         || $args->{blog_ids}
         || grep( $_ eq $tag, 'blogs', 'websites' );
-    my $excl = $args->{exclude_blogs} || $args->{exclude_websites};
+    my $excl
+        = $args->{exclude_sites}
+        || $args->{exclude_blogs}
+        || $args->{exclude_websites};
     for ( $incl, $excl ) {
         next unless $_;
         s{\s+}{}g;    # Remove spaces
