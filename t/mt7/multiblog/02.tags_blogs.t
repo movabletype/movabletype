@@ -279,7 +279,7 @@ __END__
 
 === mt:Blogs with blog_ids and class="*" (Default access: denied)
 --- template
-<mt:Blogs include_blogs="1,3" class="*">
+<mt:Blogs include_sites="1,3" class="*">
 <mt:BlogID />
 </mt:Blogs>
 --- expected

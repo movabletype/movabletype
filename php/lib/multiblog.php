@@ -56,7 +56,8 @@ function multiblog_function_wrapper($tag, &$args, &$_smarty_tpl) {
     $ctx->localize($localvars);
 
     # Load multiblog access control list
-    $incl = $args['include_blogs']
+    $incl = $args['include_sites']
+         || $args['include_blogs']
          || $args['include_websites']
          || $args['blog_id']
          || $args['blog_ids']
@@ -126,13 +127,15 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
         }
 
         # Load multiblog access control list
-        $incl = $args['include_blogs']
+        $incl = $args['include_sites']
+             || $args['include_blogs']
              || $args['include_websites']
              || $args['blog_id']
              || $args['blog_ids']
              || $tag == 'mtblogs'
              || $tag == 'mtwebsites';
-        $excl = $args['exclude_blogs']
+        $excl = $args['exclude_sites']
+             || $args['exclude_blogs']
              || $args['exclude_websites'];
         if ( $incl || $excl ) {
             $acl = multiblog_load_acl($ctx);

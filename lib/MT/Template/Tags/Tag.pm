@@ -214,6 +214,14 @@ sub _hdlr_tags {
     require MT::Entry;
     my $type = $args->{type} || MT::Entry->datasource;
 
+    # Include/exclude_sites modifier
+    if ( $args->{include_sites} ) {
+        $args->{include_blogs} = delete $args->{include_sites};
+    }
+    if ( $args->{exclude_sites} ) {
+        $args->{exclude_blogs} = delete $args->{exclude_sites};
+    }
+
     unless ( $args->{blog_id}
         || $args->{include_blogs}
         || $args->{exclude_blogs} )
