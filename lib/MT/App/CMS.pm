@@ -1859,14 +1859,6 @@ sub core_menus {
             display => 0,
         },
 
-        'content_type:boilerplates' => {
-            label      => '_CONTENT_TYPE_BOILERPLATES',
-            order      => 300,
-            mode       => 'list_ct_boilerplates',
-            permission => 'administer',
-            view       => ['system'],
-            permission => 'manage_content_types',
-        },
         'content_type:manage_content_type' => {
             label      => 'Manage',
             order      => 100,
