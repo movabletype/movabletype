@@ -318,7 +318,7 @@ sub _hdlr_tags {
     local $ctx->{__stash}{exclude_blogs} = $args->{exclude_blogs};
     local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};
     local $ctx->{__stash}{include_with_website}
-        = $args->{include_with_website};
+        = $args->{include_parent_site} || $args->{include_with_website};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
     local $ctx->{__stash}{class_type}    = $type;
