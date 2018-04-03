@@ -25,7 +25,8 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    $blog_id = $args['blog_id'];
+    $blog_id = $args['site_id'];
+    $blog_id or $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
     if ($args['local'])
         $blog_id = $ctx->stash('local_blog_id');

@@ -43,69 +43,71 @@
         </nav>
 </mt:setvarblock>
 
-<div id="listing" class="listing line has-filter">
+<div id="listing" class="listing line has-filter mt-3">
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <table id="asset-table" class="table mt-table listing-table">
-        <thead>
-          <th class="head cb mt-table__control">&nbsp;</th>
-          <th class="head si file-status" scope="col">
-            <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
-          </th>
-          <th class="head primary string" scope="col"><span class="col-label"><__trans phrase="label"></span></th>
-        </thead>
+      <div class="mt-table--outline">
+        <table id="asset-table" class="table mt-table listing-table">
+          <thead>
+            <th class="head cb mt-table__control">&nbsp;</th>
+            <th class="head si file-status" scope="col">
+              <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
+            </th>
+            <th class="head primary string" scope="col"><span class="col-label"><__trans phrase="label"></span></th>
+          </thead>
 </mt:unless>
-        <tbody>
+          <tbody>
 <mt:if name="object_loop">
   <mt:loop name="object_loop">
-          <tr id="asset-<mt:var name="id" escape="html">">
+            <tr id="asset-<mt:var name="id" escape="html">">
     <mt:if name="can_multi">
-            <td class="cb">
-              <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
-              </div>
-            </td>
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
     <mt:else>
-            <td class="cb">
-              <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <div class="custom-control custom-radio">
-                <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" />
-                <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
-              </div>
-            </td>
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control custom-radio">
+                  <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" />
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
     </mt:if>
-            <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+              <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
     <mt:if name="file_is_missing">
-              <mtapp:svgicon id="ic_error" size="sm" color="warning">
+                <mtapp:svgicon id="ic_error" size="sm" color="warning">
     <mt:else>
-              <mtapp:svgicon id="ic_checkbox" size="sm" color="success">
+                <mtapp:svgicon id="ic_checkbox" size="sm" color="success">
     </mt:if>
-            </td>
-            <td class="asset-label primary">
+              </td>
+              <td class="asset-label primary">
     <mt:if name="has_thumbnail">
-              <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
-                <$mt:var name="label" escape="html"$>
-              </a>
-              <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
+                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
+                  <$mt:var name="label" escape="html"$>
+                </a>
+                <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
     <mt:else>
-      <mt:var name="label" escape="html">
+                <mt:var name="label" escape="html">
     </mt:if>
-            </td>
-          </tr>
+              </td>
+            </tr>
   </mt:loop>
 <mt:else>
-          <tr class="odd">
-            <td class="fullwidth-row" colspan="3">
-              <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
-            </td>
-          </tr>
+            <tr class="odd">
+              <td class="fullwidth-row" colspan="3">
+                <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
+              </td>
+            </tr>
 </mt:if>
-        </tbody>
+          </tbody>
 <mt:unless name="json">
-      </table>
+        </table>
+      </div>
     </div>
     <div id="actions-bar" class="float-right line">
   <mt:var name="list_actions">

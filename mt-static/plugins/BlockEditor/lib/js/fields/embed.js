@@ -6,6 +6,8 @@
     BEF.Embed = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Embed, {
         label: trans('embed'),
+        icon_class: 'ic_code',
+        type: 'embed',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg>' + label + '</button>');
         },
@@ -15,17 +17,20 @@
         get_id: function () {
             return self.id;
         },
+        get_label: function(){
+          return BEF.Embed.label;
+        },
         get_type: function () {
-            return 'embed';
+            return BEF.Embed.type;
         },
         get_svg_name: function() {
-            return 'ic_code';
+            return BEF.Embed.icon_class;
         },
         create: function (id, data) {
             var self = this;
             self.id = id;
             self.edit_field = $('<div class="form-group"></div>');
-            self.edit_field_input = $('<textarea id="' + id + '" class="text high html5-form form-control content-field" name="' + id + '" mt:watch-change="1"></textarea>');
+            self.edit_field_input = $('<textarea id="' + id + '" class="text high html5-form form-control content-field　mt-contentblock__textarea" name="' + id + '" mt:watch-change="1"></textarea>');
             self.edit_field_input.val(data["value"]);
             self.edit_field.append(self.edit_field_input);
             return self.edit_field;

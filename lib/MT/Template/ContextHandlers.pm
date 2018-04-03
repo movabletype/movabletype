@@ -25,11 +25,11 @@ sub core_tags {
         block => {
 
             ## Core
-            Ignore         => sub {''},
-            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore    => sub {''},
+            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -331,6 +331,8 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'HasPlugin?' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_has_plugin',
 
             ## Content Type
             'AuthorHasContent?' =>
@@ -911,7 +913,7 @@ sub core_tags {
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
             CommentRank => sub {''},
-            PingRank    => sub {''},
+            PingRank => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
@@ -986,8 +988,6 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_date',
             ContentModifiedDate =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_date',
-            ContentEditLink =>
-                '$Core::MT::Template::Tags::ContentType::_hdlr_content_edit_link',
             ContentID =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
             ContentIdentifier =>
@@ -3611,9 +3611,11 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="table mt-table $listing_class $id-table$view">
+        <div class="mt-table--outline">
+          <table id="$id-table" class="table mt-table $listing_class $id-table$view">
 $insides
-        </table>
+          </table>
+        </div>
 TABLE
 
     if ($show_actions) {
@@ -4647,6 +4649,7 @@ B<Example:> Passing Parameters to a Template Module
         my $_stash_blog = $ctx->stash('blog');
         my $blog_id
             = $arg->{global}             ? 0
+            : defined( $arg->{site_id} ) ? $arg->{site_id}
             : defined( $arg->{blog_id} ) ? $arg->{blog_id}
             : $_stash_blog               ? $_stash_blog->id
             :                              0;

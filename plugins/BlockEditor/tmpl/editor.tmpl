@@ -2,6 +2,7 @@
   <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js"></script>
   <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js"></script>
   <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js"></script>
+  <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/modal_window.js"></script>
   <mt:loop name="blockeditor_fields">
     <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
   </mt:loop>

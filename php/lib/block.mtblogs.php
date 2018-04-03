@@ -23,6 +23,8 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
+                or $args['include_sites'] 
+                or $args['exclude_sites']
                 or $args['include_blogs'] 
                 or $args['exclude_blogs']
                 or $args['include_websites'] 
@@ -72,10 +74,10 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
         # Assuming multiblog context, set it.
         $stash_to_args = array(
             $prefix . 'include_blog_ids' => array(
-                'include_blogs', 'blog_ids', 'include_websites',
+                'include_sites', 'include_blogs', 'blog_ids', 'include_websites',
             ),
             $prefix . 'exclude_blog_ids' => array(
-                'exclude_blogs',
+                'exclude_sites', 'exclude_blogs',
             ),
         );
         foreach ($stash_to_args as $stash_key => $args_keys) {
@@ -106,6 +108,15 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
+        if ( (  isset($args['include_sites'])   && $args['include_sites'] === 'all' )
+            || (isset($args['include_blogs'])   && $args['include_blogs'] === 'all' )
+            || (isset($args['include_website']) && $args['include_website'] === 'all' )
+            || (isset($args['blog_ids'])        && $args['blog_ids'] === 'all' )
+            || (isset($args['site_ids'])        && $args['site_ids'] === 'all' ) )
+        {
+            $args['class'] = '*';
+        }
+
         if ($args['ignore_archive_context']) {
             $ctx->stash('contents', null);
             $ctx->stash('entries', null);
@@ -123,13 +134,16 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $args['denies'] = $acl['deny'];
 
         if (!(
+            isset($args['include_sites']) ||
+            isset($args['exclude_sites']) ||
             isset($args['include_blogs']) ||
             isset($args['exclude_blogs']) ||
             isset($args['include_websites']) ||
             isset($args['exclude_websites']) ||
             isset($args['blog_ids']) ||
             isset($args['site_ids']) ||
-            isset($args['blog_id']) # in smarty_block_mtblogparentwebsite
+            isset($args['blog_id']) ||
+            isset($args['site_id']) # in smarty_block_mtblogparentwebsite
         )) {
             $args['include_blogs'] = 'all';
         }

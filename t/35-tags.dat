@@ -865,5 +865,26 @@
 { "r" : "1", "t" : "<MTPages id=\"20\"><MTPageAssets sort_by=\"file_name\" sort_order=\"descend\" lastn=\"2\"><MTAssetFileName>;</MTPageAssets></MTPages>", "e" : "test_3.jpg;test_2.jpg;"}, #849
 { "r" : "1", "t" : "<MTPages id=\"20\"><MTPageAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTPageAssets></MTPages>", "e" : "test_2.jpg;test_3.jpg;"}, #850
 { "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"descend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_3.jpg;test_2.jpg;"}, #851
-{ "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_2.jpg;test_3.jpg;"} #852
+{ "r" : "1", "t" : "<MTEntries id=\"1\"><MTEntryAssets sort_by=\"file_name\" sort_order=\"ascend\" lastn=\"2\"><MTAssetFileName>;</MTEntryAssets></MTEntries>", "e" : "test_2.jpg;test_3.jpg;"}, #852
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Markdown/Markdown.pl\">has Markdown.pl</MTHasPlugin>", "e" : "has Markdown.pl"}, #853
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Markdown\">has Markdown.pl (alias)</MTHasPlugin>", "e" : "has Markdown.pl (alias)"}, #854
+{ "r" : "1", "t" : "<MTHasPlugin name=\"Awesome\">has Awesome<MTElse>doesn't have Awesome</MTHasPlugin>", "e" : "has Awesome"}, #855
+{ "r" : "1", "t" : "<MTHasPlugin name=\"NotExists\">has NotExists<MTElse>doesn't have NotExists</MTHasPlugin>", "e" : "doesn't have NotExists"}, #856
+{ "r" : "0", "t" : "<MTWebsiteCommentCount site_ids='1' include_sites='2'>", "e" : "1"}, #857
+{ "r" : "1", "t" : "<MTWebsitePageCount site_ids='1' include_sites='2'>", "e" : "1"}, #858
+{ "r" : "0", "t" : "<MTWebsitePingCount site_ids='1' include_sites='2'>", "e" : "0"}, #859
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='1' include_sites='2'>", "e" : "0"}, #860
+{ "r" : "1", "t" : "<MTMultiBlog include_sites='all' mode='loop'><MTEntries category='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #861
+{ "r" : "1", "t" : "<MTMultiBlog include_sites='all' mode='loop'><MTEntries categories='1'><MTEntryTitle></MTEntries></MTMultiBlog>", "e" : "" }, #862
+{ "r" : "1", "t" : "<mt:Pages tags=\"@about\" include_sites=\"siblings\" include_with_website=\"1\"><$mt:PageTitle$></mt:Pages>", "e" : "About" }, #863
+{ "r" : "1", "t" : "<MTEntries include_sites='all' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #864
+{ "r" : "1", "t" : "<MTEntries include_sites='all' class_type='entry' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #865
+{ "r" : "1", "t" : "<MTEntries include_sites='all' class_type='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "page"}, #866
+{ "r" : "1", "t" : "<MTEntries include_sites='all' class='page' lastn='1'><MTEntryClass></MTEntries>", "e" : "entry"}, #867
+{ "r" : "1", "t" : "<MTAssets include_sites=\"1\" limit=\"1\"><mt:AssetThumbnailURL></MTAssets>", "e" : "http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg"}, #868
+{ "r" : "0", "t" : "<MTWebsiteCommentCount site_ids='1' include_sites='2'>", "e" : "9"}, #869
+{ "r" : "0", "t" : "<MTWebsitePingCount site_ids='1' include_sites='2'>", "e" : "2"}, #870
+{ "r" : "1", "t" : "<MTWebsiteEntryCount site_ids='all' exclude_sites='1'>", "e" : "0"}, #871
+{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelCategories><MTCategoryLabel>;<$mt:SubCatsRecurse max_depth=\"1\"$></MTTopLevelCategories></MTWebSites>", "e" : "Japan;Tokyo;US;California;"}, #872
+{ "r" : "1", "t" : "<MTWebSites include_sites=\"2\"><MTTopLevelFolders><MTFolderLabel>;<$mt:SubFolderRecurse max_depth=\"1\"$></MTTopLevelFolders></MTWebSites>", "e" : "Product;Consumer;"} #873
 ]

@@ -5,6 +5,8 @@
     BEF.Horizon = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Horizon, {
         label: trans('horizon'),
+        icon_class: 'ic_hr',
+        type: 'horizon',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_hr"></use></svg>' + label + '</button>');
         },
@@ -17,36 +19,30 @@
         get_id: function () {
             return self.id;
         },
+        get_label: function(){
+          return BEF.Horizon.label;
+        },
         get_type: function () {
-            return 'horizon';
+            return BEF.Horizon.type;
         },
         get_svg_name: function() {
-          return 'ic_hr';
+          return BEF.Horizon.icon_class;
         },
-        create: function (id, data) {
-            this.id = id;
-            return "";
-        },
-        set_option: function (name, val) {
-            var style_name = name.replace('field_option_', '');
-            this.options[style_name] = val;
+        create: function () {
+            this.view_field = $('<div class="form-group"></div>');
+            this.view_field.append(this.get_html());
+            return this.view_field;
         },
         get_data: function () {
             var self = this;
             return {
                 'value': '',
                 'html': self.get_html(),
-                'options': self.options,
+                'options': {},
             };
         },
         get_html: function () {
-            var self = this;
-            var html = '<hr';
-            Object.keys(self.options).forEach(function(key){
-                html += ' ' + key + '="' + self.options[key] + '"';
-            })
-            html += '>';
-            return html;
+            return '<hr>';
         }
     });
 

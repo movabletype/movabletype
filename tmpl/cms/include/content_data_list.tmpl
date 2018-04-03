@@ -22,69 +22,71 @@
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <table id="content-data-table" class="table mt-table listing-table">
-        <thead>
-          <th class="head cb mt-table__control">&nbsp;</th>
-          <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="Label"></span>
-          </th>
-          <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="Data"></span>
-          </th>
-          <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="Date Modified"></span>
-          </th>
-          <th class="head string" scope="col">
-            <span class="col-label"><__trans phrase="Author"></span>
-          </th>
-        </thead>
+      <div class="mt-table--outline">
+        <table id="content-data-table" class="table mt-table listing-table">
+          <thead>
+            <th class="head cb mt-table__control">&nbsp;</th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Label"></span>
+            </th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Data"></span>
+            </th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Date Modified"></span>
+            </th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Author"></span>
+            </th>
+          </thead>
 </mt:unless>
-        <tbody>
+          <tbody>
 <mt:loop name="object_loop">
-          <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td scope="row" class="cb">
-              <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-              <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
-                <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" data-label="<mt:var name="label" escape="html">" />
-                <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
-              </div>
-            </td>
-            <td class="content-data-label primary">
-              <mt:var name="label" escape="html">
-            </td>
-            <td class="content-data-data">
-              <p>
-                <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
-                  <span><__trans phrase="Open"></span>
-                  <span><__trans phrase="Close"></span>
-                </a>
-              </p>
-              <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
-                <div class="card">
-                  <div class="card-body">
-                    <mt:var name="preview_data">
+            <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+              <td scope="row" class="cb">
+                <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
+                  <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" data-label="<mt:var name="label" escape="html">" />
+                  <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+              <td class="content-data-label primary">
+                <mt:var name="label" escape="html">
+              </td>
+              <td class="content-data-data">
+                <p>
+                  <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+                    <span><__trans phrase="Open"></span>
+                    <span><__trans phrase="Close"></span>
+                  </a>
+                </p>
+                <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
+                  <div class="card">
+                    <div class="card-body">
+                      <mt:var name="preview_data">
+                    </div>
                   </div>
                 </div>
-              </div>
-            </td>
-            <td class="content-data-modified-date">
-              <mt:var name="modified_date" escape="html">
-            </td>
-            <td class="content-data-author">
-              <mt:var name="author_name" escape="html">
-            </td>
-          </tr>
+              </td>
+              <td class="content-data-modified-date">
+                <mt:var name="modified_date" escape="html">
+              </td>
+              <td class="content-data-author">
+                <mt:var name="author_name" escape="html">
+              </td>
+            </tr>
 </mt:loop>
 <mt:unless name="object_loop">
-          <tr class="odd">
-            <td class="fullwidth-row" colspan="4">
-              <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
-            </td>
-          </tr>
+            <tr class="odd">
+              <td class="fullwidth-row" colspan="4">
+                <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
+              </td>
+            </tr>
 </mt:unless>
-        </tbody>
+          </tbody>
 <mt:unless name="json">
-      </table>
+        </table>
+      </div>
     </div>
     <div id="actions-bar" class="float-right line">
       <mt:var name="list_actions">

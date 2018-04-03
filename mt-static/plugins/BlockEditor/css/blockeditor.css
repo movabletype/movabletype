@@ -1,27 +1,16 @@
-.add_block {
-    display: flex;
-    align-items: center;
-    text-align: center; /* for no-flexbox browsers */
+.mt-contentblock__block {
+  display: block;
+  word-wrap: break-word;
 }
-.alignbutton button.active {
-  background: #5FBCEB;
+.blockeditor .asset_field {
+  max-width: 100%;
 }
-.add_menu {
-  display: flex;
-  
+.blockeditor .asset_field img {
+  width: auto;
+  max-width: 100%;
+  min-width: auto;
 }
-.add_block:before,
-.add_block:after {
-    border-top: 1px solid;
-    content: "";
-    display: inline; /* for IE */
-    flex-grow: 1;
-}
-
-.add_block:before {
-    margin-right: 0.5em;
-}
-
-.add_block:after {
-    margin-left: 0.5em;
+.div.mce-tinymce-inline {
+  margin-top: 10px;
+  margin-left: 50px;
 }

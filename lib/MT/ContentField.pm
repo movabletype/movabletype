@@ -125,9 +125,7 @@ sub save {
         if $self->_exist_same_name;
 
     if ( !$self->id && !defined $self->unique_id ) {
-        my $unique_id
-            = MT::ContentType::UniqueID::generate_unique_id( $self->name );
-        $self->column( 'unique_id', $unique_id );
+        MT::ContentType::UniqueID::set_unique_id($self);
     }
 
     $self->SUPER::save(@_);
@@ -295,6 +293,18 @@ sub is_parent_content_type_id {
     my $parent_ct_ids
         = __PACKAGE__->get_parent_content_type_ids($child_ct_id) || [];
     ( grep { $_ == $ct_id } @{$parent_ct_ids} ) ? 1 : 0;
+}
+
+sub type_registry {
+    my $self = shift;
+    return unless defined $self->type && $self->type ne '';
+    MT->registry( 'content_field_types', $self->type );
+}
+
+sub data_type {
+    my $self = shift;
+    my $type_registry = $self->type_registry or return;
+    $type_registry->{data_type};
 }
 
 1;

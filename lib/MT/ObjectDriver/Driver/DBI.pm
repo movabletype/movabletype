@@ -68,8 +68,17 @@ sub start_query {
     my $driver = shift;
     my ( $sql, $bind ) = @_;
     if ( $MT::DebugMode && $MT::DebugMode & 4 ) {
+        local @MT::ObjectDriver::Driver::DBI::CARP_NOT = qw/
+            Data::ObjectDriver::Driver::BaseCache
+            /;
+        local @Data::ObjectDriver::Driver::BaseCache::CARP_NOT = qw/
+            Data::ObjectDriver::Driver::DBI
+            /;
+        local @Data::ObjectDriver::Driver::DBI::CARP_NOT = qw/
+            Data::ObjectDriver::BaseObject
+            /;
         $sql =~ s/\r?\n/ /g;
-        warn "QUERY: $sql";
+        Carp::carp "QUERY: $sql";
     }
     return $driver->SUPER::start_query(@_);
 }
@@ -196,11 +205,6 @@ sub direct_remove {
     my ( $class, $orig_terms, $orig_args ) = @_;
     $class->call_trigger( 'pre_direct_remove', $orig_terms, $orig_args );
     $driver->SUPER::direct_remove(@_);
-}
-
-sub search {
-    my $driver = shift;
-    $driver->SUPER::search(@_);
 }
 
 sub count_group_by {

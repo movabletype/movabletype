@@ -129,6 +129,17 @@ function init() {
                 jQuery('#content_type-panel').find('.search-submit').click();
                 jQuery('#content_type-panel').find('.search-reset').hide();
                 </mt:unless>
+                var site_has_content_type = {
+                <mt:loop name="site_has_content_type">
+                    '<mt:var name="id">': <mt:var name="value">,
+                </mt:loop>
+                };
+                if (site_has_content_type[site_id]) {
+                    jQuery('#object_content').show();
+                }
+                else {
+                    jQuery('#object_content').hide();
+                }
             }
 
             // Badge
@@ -319,15 +330,6 @@ function init() {
         // Hide content type if content type does not exist in selected site.
         <mt:if name="missing_content_type">
         jQuery('#object_content').hide();
-        <mt:else>
-        jQuery('#content_type-panel').find('#selector').on('DOMSubtreeModified propertychange', function() {
-          if (jQuery('#content_type-panel').find('#no-data').prop('tagName') === 'DIV') {
-            jQuery('#object_content').hide();
-          }
-          else {
-            jQuery('#object_content').show();
-          }
-        });
         </mt:if>
 
         // Badge
@@ -378,47 +380,51 @@ TC.attachLoadEvent( init );
 
 <!-- Select Object Panel -->
 <div id="object-panel" style="display: none;">
-  <div class="panel-body modal-body">
+  <div class="panel-body">
   <div class="panel-header modal-description">
-    <h4 class="title"><__trans phrase="Select Trigger Object"></h4>
+    <h4 class="title modal-label"><__trans phrase="Select Trigger Object"></h4>
     <div class="text-right">2 / 5</div>
   </div>
   <div class="modal-rebuildtriggers">
     <mt:var name="modal_rebuildtriggers">
   </div>
+  <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <mt:loop name="object_type_loop">
-          <tr id="object_<mt:var name="id">" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
-                <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <mt:var name="label">
-            </td>
-          </tr>
-          </mt:loop>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <mt:loop name="object_type_loop">
+            <tr id="object_<mt:var name="id">" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <mt:var name="label">
+              </td>
+            </tr>
+            </mt:loop>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>
   </div>
+  </div> <!-- modal-body -->
   <div class="modal-footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
@@ -449,67 +455,71 @@ TC.attachLoadEvent( init );
 
 <!-- Select Event Panel -->
 <div id="event-panel" style="display: none;">
-  <div class="panel-body modal-body">
+  <div class="panel-body">
   <div class="panel-header modal-description">
-    <h4 class="title"><__trans phrase="Select Trigger Event"></h4>
+    <h4 class="title modal-label"><__trans phrase="Select Trigger Event"></h4>
     <div class="text-right">4 / 5</div>
   </div>
   <div class="modal-rebuildtriggers">
     <mt:var name="modal_rebuildtriggers">
   </div>
+  <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr id="event_save" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
-                <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Save">
-            </td>
-          </tr>
-          <tr id="event_pup" class="even">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
-                <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Publish">
-            </td>
-          </tr>
-          <tr id="event_unpub" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
-                <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <__trans phrase="Unpublish">
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="event_save" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
+                  <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Save">
+              </td>
+            </tr>
+            <tr id="event_pup" class="even">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
+                  <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Publish">
+              </td>
+            </tr>
+            <tr id="event_unpub" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
+                  <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <__trans phrase="Unpublish">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>
   </div>
+  </div> <!-- modal-body -->
   <div class="modal-footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
@@ -540,47 +550,51 @@ TC.attachLoadEvent( init );
 
 <!-- Select Action Panel -->
 <div id="action-panel" style="display: none;">
-  <div class="panel-body modal-body">
+  <div class="panel-body">
   <div class="panel-header modal-description">
-    <h4 class="title"><__trans phrase="Select Trigger Action"></h4>
+    <h4 class="title modal-label"><__trans phrase="Select Trigger Action"></h4>
     <div class="text-right">5 / 5</div>
   </div>
   <div class="modal-rebuildtriggers">
     <mt:var name="modal_rebuildtriggers">
   </div>
+  <div class="modal-body">
   <div id="selector" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
-      <table class="table mt-table">
-        <thead>
-          <tr>
-            <th class="head cb mt-table__control">
-          
-              &nbsp;
-          
-            </th>
-            <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <mt:loop name="action_loop">
-          <tr id="action_<mt:var name="action_id">" class="odd">
-            <td class="cb" scope="row">
-              <div class="custom-control custom-radio">
-                <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
-                <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
-              </div>
-            </td>
-            <td class="panel-label">
-              <mt:var name="action_name">
-            </td>
-          </tr>
-          </mt:loop>
-        </tbody>
-      </table>
+      <div class="mt-table--outline">
+        <table class="table mt-table">
+          <thead>
+            <tr>
+              <th class="head cb mt-table__control">
+            
+                &nbsp;
+            
+              </th>
+              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <mt:loop name="action_loop">
+            <tr id="action_<mt:var name="action_id">" class="odd">
+              <td class="cb" scope="row">
+                <div class="custom-control custom-radio">
+                  <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
+                  <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
+                </div>
+              </td>
+              <td class="panel-label">
+                <mt:var name="action_name">
+              </td>
+            </tr>
+            </mt:loop>
+          </tbody>
+        </table>
+      </div>
     </form>
     <div class="text-right pagination" style="display: block;"></div>
   </div>
   </div>
+  </div> <!-- modal-body -->
   <div class="modal-footer">
   <div class="actions-bar actions-bar-bottom">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">

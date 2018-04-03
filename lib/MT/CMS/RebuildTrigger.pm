@@ -231,16 +231,6 @@ sub add {
                 },
             );
 
-            if ($source eq 'content_type'
-                && (!$panel_params->{object_loop}
-                    || ( $panel_params->{object_loop}
-                        && @{ $panel_params->{object_loop} } < 1 )
-                )
-                )
-            {
-                $params->{"missing_$source"} = 1;
-            }
-
             push @{ $params->{panel_loop} }, $panel_params;
         }
         $params->{return_args} = $app->return_args;
@@ -295,6 +285,20 @@ sub add {
         $params->{action_loop}  = action_loop($app);
         $params->{trigger_loop} = trigger_loop($app);
         $params->{site_name}    = $app->blog->name;
+
+        # Does a site have the content type?
+        my @sites = MT->model('blog')->load( { class => '*' } );
+        my $count_content_type = 0;
+        my @site_has_content_type = map {
+            my $site = $_;
+            my $count
+                = MT->model('content_type')
+                ->count( { blog_id => $site->id } );
+            $count_content_type += $count;
+            { id => $_->id, value => $count };
+        } @sites;
+        $params->{site_has_content_type} = \@site_has_content_type;
+        $params->{"missing_content_type"} = 1 unless $count_content_type;
 
         $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
     }

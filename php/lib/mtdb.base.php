@@ -164,13 +164,16 @@ abstract class MTDatabase {
 
         $incl = null;
         $excl = null;
-        if ( isset($args['blog_ids'])
+        if ( isset($args['include_sites'])
+          || isset($args['blog_ids'])
           || isset($args['include_blogs'])
           || isset($args['site_ids'])
           || isset($args['include_websites']) )
         {
             // The following are aliased
-            if ($args['blog_ids'])
+            if ($args['include_sites'])
+                $incl = $args['include_sites'];
+            elseif ($args['blog_ids'])
                 $incl = $args['blog_ids'];
             elseif ($args['include_blogs'])
                 $incl = $args['include_blogs'];
@@ -179,16 +182,21 @@ abstract class MTDatabase {
             elseif ($args['include_websites'])
                 $incl = $args['include_websites'];
             $args['include_blogs'] = $incl;
+            unset($args['include_sites']);
             unset($args['blog_ids']);
             unset($args['site_ids']);
             unset($args['include_websites']);
+        }
+        else if (isset($args['site_id'])) {
+            $incl = $args['site_id'];
         }
         else if (isset($args['blog_id'])) {
             $incl = $args['blog_id'];
         }
 
-        if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
-            $excl = $args['exclude_blogs'];
+        if (isset($args['exclude_sites']) || isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
+            $excl = $args['exclude_sites'];
+            $excl or $excl = $args['exclude_blogs'];
             $excl or $excl = $args['exclude_websites'];
 
             if ( !isset( $args['include_blogs'] ) ) {

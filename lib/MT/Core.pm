@@ -2010,6 +2010,7 @@ BEGIN {
             #    default => 'http://www.sixapart.com/movabletype/docs/4.0/',
             #},
             'UsePlugins'               => { default => 1, },
+            'PluginAlias'              => { type    => 'HASH', },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
             'YAMLModule'               => { default => undef },

@@ -26,12 +26,12 @@ sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
     $app->{state_params} = [
-        '_type',      'id',
-        'tab',        'offset',
-        'filter',     'filter_val',
-        'blog_id',    'is_power_edit',
-        'filter_key', 'type',
-        'content_type_id'
+        '_type',           'id',
+        'tab',             'offset',
+        'filter',          'filter_val',
+        'blog_id',         'is_power_edit',
+        'filter_key',      'type',
+        'content_type_id', 'content_data_id',
     ];
     $app->{template_dir}         = 'cms';
     $app->{plugin_template_path} = '';
@@ -2136,7 +2136,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2145,7 +2145,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -4392,7 +4392,6 @@ sub _build_category_list {
     my $blog_id         = $param{blog_id};
     my $new_cat_id      = $param{new_cat_id};
     my $include_markers = $param{markers};
-    my $counts          = $param{counts};
     my $type            = $param{type};
     my $cat_set_id;
     if ( $type eq 'category' ) {
@@ -4442,44 +4441,6 @@ sub _build_category_list {
     my $depth   = 0;
     my $i       = 1;
     my $top_cat = 1;
-    my ( $placement_counts, $tb_counts, %tb );
-
-    if ($counts) {
-        $app->model('placement');
-        $app->model('trackback');
-        $app->model('ping');
-
-        my $max_cat_id = 0;
-        foreach (@cats) {
-            $max_cat_id = $_->id if ( ref $_ ) && ( $_->id > $max_cat_id );
-        }
-
-        $placement_counts = {};
-        my $cat_entry_count_iter
-            = MT::Placement->count_group_by( { blog_id => $blog_id },
-            { group => ['category_id'] } );
-        while ( my ( $count, $category_id ) = $cat_entry_count_iter->() ) {
-            $placement_counts->{$category_id} = $count;
-        }
-
-        $tb_counts = {};
-        my $tb_count_iter
-            = MT::TBPing->count_group_by(
-            { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() },
-            { group => ['tb_id'] } );
-        while ( my ( $count, $tb_id ) = $tb_count_iter->() ) {
-            $tb_counts->{$tb_id} = $count;
-        }
-        my $tb_iter = MT::Trackback->load_iter(
-            {   blog_id     => $blog_id,
-                category_id => [ 1, $max_cat_id ]
-            },
-            { range_incl => { 'category_id' => 1 } }
-        );
-        while ( my $tb = $tb_iter->() ) {
-            $tb{ $tb->category_id } = $tb;
-        }
-    }
 
     while ( my $obj = shift @cats ) {
         my $row = {};
@@ -4531,24 +4492,6 @@ sub _build_category_list {
             $row->{category_label_full}     = $row->{category_label};
         }
         $row->{category_label_spacer} = '&nbsp; ' x $depth;
-        if ($counts) {
-            $row->{category_entrycount}
-                = $placement_counts
-                ? ( $placement_counts->{ $obj->id } || 0 )
-                : MT::Placement->count( { category_id => $obj->id } );
-            if ( my $tb = $tb{ $obj->id } ) {
-                $row->{has_tb} = 1;
-                $row->{tb_id}  = $tb->id;
-                $row->{category_tbcount}
-                    = $tb_counts
-                    ? ( $tb_counts->{ $tb->id } || 0 )
-                    : MT::TBPing->count(
-                    {   tb_id       => $tb->id,
-                        junk_status => MT::TBPing::NOT_JUNK(),
-                    }
-                    );
-            }
-        }
         if ( my $fields = $obj->show_fields ) {
             $row->{category_selected_fields} = $fields;
             my @fields = split /,/, $fields;
