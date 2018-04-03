@@ -291,21 +291,22 @@ function resize_upload_overlay() {
 }
 
   // Create upload overlay DOM once.
-  if (!jQuery('#upload-overlay-container').length) {
-    jQuery('body')
-      .append(
-        jQuery('<div id="upload-overlay-container" />')
-          .append('<div id="upload-overlay-background" />')
-          .append(
-            jQuery('<div id="upload-overlay-drop" />')
-              .append('<div id="upload-overlay-border" />')
-              .append(
-                jQuery('<div id="upload-overlay-message" />')
-                  .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><p><__trans phrase="Drag and drop here"></p>')
-              )
-           )
-      );
+  if (jQuery('#upload-overlay-container').length) {
+    jQuery('#upload-overlay-container').remove();
   }
+  jQuery('body')
+    .append(
+      jQuery('<div id="upload-overlay-container" />')
+        .append('<div id="upload-overlay-background" />')
+        .append(
+          jQuery('<div id="upload-overlay-drop" />')
+            .append('<div id="upload-overlay-border" />')
+            .append(
+              jQuery('<div id="upload-overlay-message" />')
+                .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><p><__trans phrase="Drag and drop here"></p>')
+            )
+         )
+    );
 
   // Bind events.
   jQuery(window)
@@ -491,7 +492,7 @@ function createUploadBlock () {
   }
   this.setAssetID = function(asset) {
     var id = asset.id;
-    jQuery('#select_asset input[name="asset_id"]').val(id);
+    jQuery('#select_asset input[name="asset_id"]').val(id).change();;
     
   }
 
@@ -685,9 +686,9 @@ jQuery('#blockeditor-upload-asset-panel').on('changePanel', function() {
     jQuery('#select_asset input[name="id"]').val(id.join(','));
 
     // Enable submit button
-    jQuery('#blockeditor-upload-asset-panel .actions-bar button.primary')
-      .removeAttr('disabled')
-      .removeClass('disabled');
+    // jQuery('#blockeditor-upload-asset-panel .actions-bar button.primary')
+    //   .removeAttr('disabled')
+    //   .removeClass('disabled');
   }
 });
 </mt:if>
