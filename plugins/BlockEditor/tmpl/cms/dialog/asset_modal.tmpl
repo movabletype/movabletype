@@ -485,8 +485,7 @@ function step1(){
   jQuery('.modal-blockeditor .actions-bar').hide();
   jQuery('.modal-blockeditor .actions-bar.step1').remove();
   var cancel_button = jQuery('<a data-dismiss="modal" class="modal-cancel">' + trans('Cancel') + '</a>');
-  var next_button = jQuery('<button type="button" class="btn btn-primary submit disabled">' + trans('Next') + '</button>');
-  <mt:unless name="asset_id">next_button.prop('disabled', true);</mt:unless>
+  var next_button = jQuery('<button type="button" class="btn btn-primary submit disabled" disabled>' + trans('Next') + '</button>');
   var actions_bar = jQuery('<div class="actions-bar step1"></div>');
   actions_bar.append(cancel_button);
   actions_bar.append(next_button);
@@ -494,7 +493,11 @@ function step1(){
   jQuery('.step1 [name="asset-img-id"]').on('change', function(){
     jQuery('.step1 .submit').prop('disabled', false).removeClass('disabled');
     jQuery('[name=asset_id]').val(jQuery(this).val());
-  }).change();
+  })<mt:if name="edit">.change()</mt:if>;
+  
+  jQuery('[name=asset_id]').on('change', function(){
+    next_button.prop('disabled', false).removeClass('disabled');
+  });
   next_button.on('click',function(){
     if(jQuery(this).is(':disabled')) return false;
     var asset_id = jQuery('[name=asset_id]').val();
