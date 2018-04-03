@@ -226,11 +226,19 @@
     }
   }
 
-    jQuery(document).one('click', '.upload_asset', function(){
+  function change_upload_panel(mode){
+    if(mode == 'upload'){
       jQuery('#blockeditor-list-asset-panel').hide();
       jQuery('#blockeditor-upload-asset-panel').show();
-    });
-    jQuery('#blockeditor-upload-asset-panel').hide();
+    }else {
+      jQuery('#blockeditor-list-asset-panel').show();
+      jQuery('#blockeditor-upload-asset-panel').hide();
+    }
+  }
+  jQuery(document).one('click', '.upload_asset', function(){
+    change_upload_panel('upload');
+  });
+  change_upload_panel('list');
   // Initial laoading
   loadAssetList(0);
 </script>

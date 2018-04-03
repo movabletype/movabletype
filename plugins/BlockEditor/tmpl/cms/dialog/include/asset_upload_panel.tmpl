@@ -98,7 +98,7 @@ h1.dialog-title {
 
 #upload-overlay-container {
   display: none;
-  z-index: 700;
+  z-index: 1060;
   position: fixed;
   top: 0;
 }
@@ -290,8 +290,6 @@ function resize_upload_overlay() {
     .css('left', left);
 }
 
-jQuery(window).load(function () {
-
   // Create upload overlay DOM once.
   if (!jQuery('#upload-overlay-container').length) {
     jQuery('body')
@@ -361,8 +359,6 @@ jQuery(window).load(function () {
       unbind();
     };
   }
-
-});
 
 function createFormData(file) {
   var fd = new FormData();
@@ -493,6 +489,11 @@ function createUploadBlock () {
     jQuery(data).appendTo(this.thumbnail);
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
+  this.setAssetID = function(asset) {
+    var id = asset.id;
+    jQuery('#select_asset input[name="asset_id"]').val(id);
+    
+  }
 
   this.setError = function(err) {
     this.cancelUpload.hide();
@@ -514,6 +515,7 @@ function createUploadBlock () {
 
 var queue = [];
 function uploadFiles(files, items) {
+    change_upload_panel('upload');
     if (!files || files.length === 0 ) {
         return;
     }
@@ -537,6 +539,7 @@ function uploadFiles(files, items) {
       return;
     }
   }
+  
   </mt:if>
 </mt:unless>
 
@@ -623,6 +626,7 @@ function uploadFile( formData, uploadBlock ) {
       // Success
       uploadBlock.setProgress(100);
       uploadBlock.setThumbnail(data.result.asset);
+      uploadBlock.setAssetID(data.result.asset);
 
       uploadBlock.progressbar.hide();
 
