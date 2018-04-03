@@ -1447,24 +1447,35 @@ sub search {
                 ;
         }
         my @order;
-        my $index     = 1;
-        my $from_stmt = $stmt->from_stmt;
+        my $sort_index = 1;
+        my $from_stmt  = $stmt->from_stmt;
         for my $s (@$sort) {
             my $col = $s->{column};
             if ( $col =~ /^field:([^:]+)$/ ) {
-                $col = $1;
+                my $search_fields = _get_search_fields($1);
+                next unless $search_fields && @$search_fields;
+                my $stmt_sort;
+                if ( _is_single_float_or_double_field($search_fields) ) {
+                    $stmt_sort
+                        = $class->_prepare_statement_for_single_number_sort(
+                        search_fields => $search_fields,
+                        sort_index    => $sort_index,
+                        );
+                }
+                else {
+                    $stmt_sort = $class->_prepare_statement_for_normal_sort(
+                        search_fields => $search_fields,
+                        sort_index    => $sort_index,
+                    );
+                }
+                my $sql_sort_table
+                    = '(' . $stmt_sort->as_sql . ") AS sort$sort_index";
                 my $join_condition
                     = $dbd->db_column_name( $tbl, 'id', $args->{alias} )
-                    . " = sort$index."
+                    . " = sort$sort_index."
                     . $driver->_decorate_column_name(
                     MT->model('content_field_index'),
                     'content_data_id' );
-                my $stmt_sort = $class->_prepare_statement_for_sort(
-                    value => $col,
-                    index => $index,
-                );
-                my $sql_sort_table
-                    = '(' . $stmt_sort->as_sql . ") AS sort$index";
                 ( $from_stmt || $stmt )->add_join(
                     $tbl,
                     {   condition => $join_condition,
@@ -1478,10 +1489,10 @@ sub search {
                 }
                 push @order,
                     {
-                    column => "sort$index",
+                    column => "sort$sort_index",
                     desc   => $s->{desc},
                     };
-                $index++;
+                $sort_index++;
             }
             else {
                 push @order,
@@ -1517,7 +1528,7 @@ sub _sort_columns {
 
 sub _prepare_statement_for_tmp {
     my $class = shift;
-    my ($content_field_arg) = @_;
+    my ($search_fields) = @_;
 
     my $driver = $class->driver;
     my $dbd    = $driver->dbd;
@@ -1534,34 +1545,18 @@ sub _prepare_statement_for_tmp {
             $driver->table_for( MT->model('content_field_index') ),
         ]
     );
+    my $id_column
+        = $driver->_decorate_column_name( MT->model('content_field'), 'id' );
     $stmt->add_complex_where(
-        [   {   $driver->_decorate_column_name( MT->model('content_field'),
-                    'id' ) => \(
+        [   {   $id_column => \(
                     '= '
                         . $driver->_decorate_column_name(
                         MT->model('content_field_index'),
                         'content_field_id'
                         )
-                    )
+                ),
             },
-            [   ( $content_field_arg =~ /^[0-9]+$/ )
-                ? ( {   $driver->_decorate_column_name(
-                            MT->model('content_field'), 'id' ) =>
-                            $content_field_arg
-                    },
-                    '-or',
-                    )
-                : (),
-                {   $driver->_decorate_column_name(
-                        MT->model('content_field'), 'unique_id' ) =>
-                        $content_field_arg
-                },
-                '-or',
-                {   $driver->_decorate_column_name(
-                        MT->model('content_field'), 'name' ) =>
-                        $content_field_arg
-                },
-            ]
+            { $id_column => [ map { $_->id } @$search_fields ], },
         ]
     );
     $stmt->order(
@@ -1576,11 +1571,11 @@ sub _prepare_statement_for_tmp {
     $stmt;
 }
 
-sub _prepare_statement_for_sort {
-    my $class = shift;
-    my %args  = @_;
-    my $value = $args{value};
-    my $index = $args{index};
+sub _prepare_statement_for_normal_sort {
+    my $class         = shift;
+    my %args          = @_;
+    my $search_fields = $args{search_fields};
+    my $sort_index    = $args{sort_index};
 
     my $driver = $class->driver;
     my $dbd    = $driver->dbd;
@@ -1599,12 +1594,12 @@ sub _prepare_statement_for_sort {
             MT->model('content_field_index'), $col );
         $sort_col = "IFNULL(GROUP_CONCAT($db_col), $sort_col)";
     }
-    $sort_col .= " AS sort$index";
+    $sort_col .= " AS sort$sort_index";
     $stmt->add_select($sort_col);
 
-    my $stmt_tmp = $class->_prepare_statement_for_tmp($value);
+    my $stmt_tmp = $class->_prepare_statement_for_tmp($search_fields);
     my $sql_tmp  = $stmt_tmp->as_sql;
-    $stmt->from( ["($sql_tmp) AS tmp$index"] );
+    $stmt->from( ["($sql_tmp) AS tmp$sort_index"] );
     $stmt->bind( $stmt_tmp->bind );
     $stmt->group(
         {   column => $driver->_decorate_column_name(
@@ -1613,6 +1608,38 @@ sub _prepare_statement_for_sort {
             )
         }
     );
+
+    $stmt;
+}
+
+sub _prepare_statement_for_single_number_sort {
+    my $class         = shift;
+    my %args          = @_;
+    my $search_fields = $args{search_fields};
+    my $sort_index    = $args{sort_index};
+
+    my $driver = $class->driver;
+    my $dbd    = $driver->dbd;
+
+    my $stmt = $dbd->sql_class->new;
+
+    my $content_data_id_col = 'content_data_id';
+    $stmt->add_select(
+        $driver->_decorate_column_name( MT->model('content_field_index'),
+            $content_data_id_col ) => $content_data_id_col
+    );
+
+    my $data_type = $search_fields->[0]->data_type;
+    my $sort_col
+        = $driver->_decorate_column_name( MT->model('content_field_index'),
+        "value_$data_type" )
+        . " AS sort$sort_index";
+    $stmt->add_select($sort_col);
+
+    my $stmt_tmp = $class->_prepare_statement_for_tmp($search_fields);
+    my $sql_tmp  = $stmt_tmp->as_sql;
+    $stmt->from( ["($sql_tmp) AS tmp$sort_index"] );
+    $stmt->bind( $stmt_tmp->bind );
 
     $stmt;
 }
@@ -1630,6 +1657,30 @@ sub _has_content_field_sort {
         return 1 if $has_field_prefix->($sort);
     }
     0;
+}
+
+sub _get_search_fields {
+    my ($value) = @_;
+    my @terms = (
+        ( $value =~ /^[0-9]+$/ ) ? ( { id => $value }, '-or', ) : (),
+        { unique_id => $value },
+        '-or', { name => $value },
+    );
+    my $iter = MT->model('content_field')->load_iter( \@terms );
+    my @search_fields;
+    while ( my $content_field = $iter->() ) {
+        push @search_fields, $content_field;
+    }
+    \@search_fields;
+}
+
+sub _is_single_float_or_double_field {
+    my ($search_fields) = @_;
+    return unless $search_fields && @$search_fields;
+    return 0
+        if ( grep { $_->type ne $search_fields->[0]->type } @$search_fields );
+    my $data_type = $search_fields->[0]->data_type;
+    ( $data_type eq 'float' || $data_type eq 'double' ) ? 1 : 0;
 }
 
 1;
