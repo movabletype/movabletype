@@ -207,11 +207,6 @@ sub direct_remove {
     $driver->SUPER::direct_remove(@_);
 }
 
-sub search {
-    my $driver = shift;
-    $driver->SUPER::search(@_);
-}
-
 sub count_group_by {
     my $driver = shift;
     my ( $class, $terms, $args ) = @_;

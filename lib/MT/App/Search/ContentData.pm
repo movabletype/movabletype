@@ -128,22 +128,157 @@ sub query_parse {
         return;
     }
 
-    my ( $ids, $joins )
-        = $app->_get_content_data_ids_searched_by_actual_fields( $orig_terms,
-        $lucene_struct, $filter_types );
-    my @content_data_ids = (
-        @$ids,
-        @{  $app->_get_content_data_ids_searched_by_reference_fields(
-                $orig_terms, $lucene_struct, $filter_types )
+    my $terms = $app->_query_parse_terms( $lucene_struct, $filter_types,
+        $orig_terms );
+    my $joins = $app->_query_parse_filter( $lucene_struct, $filter_types );
+
+    +{  terms => $terms,
+        args  => { ( $joins && @$joins ) ? ( joins => $joins ) : (), },
+    };
+}
+
+sub _query_parse_filter {
+    my $app = shift;
+    my ( $lucene_struct, $filter_types ) = @_;
+
+    $lucene_struct = Storable::dclone($lucene_struct);
+    my @joins;
+
+    while ( my $term = shift @$lucene_struct ) {
+        if ( 'TERM' eq $term->{query} || 'PHRASE' eq $term->{query} ) {
+            if (   exists $term->{field}
+                && $filter_types
+                && %$filter_types
+                && exists $filter_types->{ $term->{field} } )
+            {
+                my $code = $app->handler_to_coderef(
+                    $filter_types->{ $term->{field} } );
+                if ($code) {
+                    my $join_args = $code->( $app, $term ) or next;
+                    push @joins,
+                        ( 'ARRAY' eq ref $join_args->[0] )
+                        ? @$join_args
+                        : $join_args;
+                    next;
+                }
+            }
+        }
+        elsif ( 'SUBQUERY' eq $term->{query} ) {
+            my $more_joins = $app->_query_parse_filter( $term->{subquery},
+                $filter_types );
+            push @joins, @$more_joins;
+            next;
+        }
+    }
+
+    \@joins;
+}
+
+sub _query_parse_terms {
+    my $app = shift;
+    my ( $lucene_struct, $filter_types, $orig_terms ) = @_;
+
+    $lucene_struct = Storable::dclone($lucene_struct);
+    my @structure;
+
+    while ( my $term = shift @$lucene_struct ) {
+        if (   exists $term->{field}
+            && $filter_types
+            && %$filter_types
+            && !exists $filter_types->{ $term->{field} } )
+        {
+            # Colon in query but was not to specify a field.
+            # Treat it as a phrase including the colon.
+            my $field = delete $term->{field};
+            $term->{term} = $field . ':' . $term->{term};
+        }
+
+        my @tmp;
+        if ( 'TERM' eq $term->{query} || 'PHRASE' eq $term->{query} ) {
+            unless ( exists $term->{field} ) {
+                if ( 'PROHIBITED' eq $term->{type} ) {
+                    push @tmp,
+                        $app->_get_not_terms( $term->{term}, $orig_terms );
+                }
+                else {
+                    push @tmp,
+                        $app->_get_normal_terms( $term->{term}, $orig_terms );
+                }
+            }
+        }
+        elsif ( 'SUBQUERY' eq $term->{query} ) {
+            my $test_ = $app->_query_parse_terms( $term->{subquery},
+                $filter_types, $orig_terms );
+            next unless $test_ && @$test_;
+            if (@structure) {
+                push @structure,
+                    ( 'PROHIBITED' eq $term->{type} ) ? '-and_not' : '-and';
+            }
+            push @structure, @$test_;
+            next;
+        }
+
+        if ( exists $term->{conj} && 'OR' eq $term->{conj} ) {
+            if ( my $prev = pop @structure ) {
+                push @structure, [ $prev, '-or', \@tmp ];
+            }
+        }
+        elsif (@tmp) {
+            if (@structure) {
+                push @structure, '-and';
+            }
+            push @structure, \@tmp;
+        }
+    }
+
+    \@structure;
+}
+
+sub _get_not_terms {
+    my $app = shift;
+    my ( $value, $orig_terms ) = @_;
+
+    my $actual_ids
+        = $app->_get_not_ids_common( $value, $orig_terms,
+        '_get_normal_ids_for_actual_fields' );
+    my $reference_ids
+        = $app->_get_not_ids_common( $value, $orig_terms,
+        '_get_normal_ids_for_reference_fields' );
+    my $content_type_ids
+        = $app->_get_not_ids_common( $value, $orig_terms,
+        '_get_normal_ids_for_content_type_field' );
+
+    my $id_set_count
+        = ( $actual_ids       ? 1 : 0 )
+        + ( $reference_ids    ? 1 : 0 )
+        + ( $content_type_ids ? 1 : 0 );
+    return +{ id => \'> 0' } unless $id_set_count;
+
+    my %content_data_ids;
+    $content_data_ids{$_}++
+        for (
+        $actual_ids       ? @$actual_ids       : (),
+        $reference_ids    ? @$reference_ids    : (),
+        $content_type_ids ? @$content_type_ids : (),
+        );
+    my @content_data_ids = grep { $content_data_ids{$_} == $id_set_count }
+        keys %content_data_ids;
+    +{ id => @content_data_ids ? \@content_data_ids : 0 };
+}
+
+sub _get_normal_terms {
+    my $app = shift;
+    my ( $value, $orig_terms ) = @_;
+    my %content_data_ids = map { $_ => 1 } (
+        @{  $app->_get_normal_ids_for_actual_fields( $value, $orig_terms )
         },
-        @{  $app->_get_content_data_ids_searched_by_content_type_field(
-                $orig_terms, $lucene_struct, $filter_types )
+        @{  $app->_get_normal_ids_for_reference_fields( $value, $orig_terms )
+        },
+        @{  $app->_get_normal_ids_for_content_type_field( $value,
+                $orig_terms )
         },
     );
-
-    +{  terms => [ { id => @content_data_ids ? \@content_data_ids : 0 } ],
-        args  => { joins => $joins },
-    };
+    +{ id => %content_data_ids ? [ keys %content_data_ids ] : 0 };
 }
 
 sub search_terms {
@@ -402,89 +537,48 @@ sub _parse_search_content_types {
     $app->{searchparam}{SearchContentTypeID} = \@content_type_ids;
 }
 
-# sub _get_content_data_ids_searched_by_label_column {
-#     my $app = shift;
-#     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-#     my %columns = ( label => 'like' );
-#     my ( $terms, $joins )
-#         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
-#     $terms = [ $terms && @$terms ? @$terms : (), @$orig_terms ];
-#     my $args = {
-#         fetchonly => { id => 1 },
-#         joins     => [
-#             $joins && @$joins ? @$joins : (),
-#             MT->model('content_type')->join_on(
-#                 undef,
-#                 {   id => \'= cd_content_type_id',
-#                     data_label => [ \'IS NULL', '' ],
-#                 },
-#             ),
-#         ],
-#     };
-#     my $iter = MT->model('content_data')->load_iter( $terms, $args );
-#     my @content_data_ids;
-#
-#     while ( my $content_data = $iter->() ) {
-#         push @content_data_ids, $content_data->id;
-#     }
-#     wantarray ? ( \@content_data_ids, $joins ) : \@content_data_ids;
-# }
-
-# sub _get_content_data_ids_searched_by_label_datetime_column {
-#     my $app = shift;
-#     my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-#     my %columns = ( value_datetime => 'like_sql' );
-#     my ( $terms, $joins )
-#         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
-#     my $args = {
-#         fetchonly => { id => 1 },
-#         joins     => [
-#             $joins && @$joins ? @$joins : (),
-#             MT->model('content_field_index')->join_on( undef, $terms ),
-#             MT->model('content_field')->join_on(
-#                 'content_type_id',
-#                 { type => [ 'date_and_time', 'date_only', 'time_only' ], },
-#                 {   join => MT->model('content_type')->join_on(
-#                         undef, { data_label => \'= cf_unique_id' },
-#                     )
-#                 },
-#             ),
-#         ],
-#     };
-#     my $iter = MT->model('content_data')->load_iter( $orig_terms, $args );
-#     my @content_data_ids;
-#
-#     while ( my $content_data = $iter->() ) {
-#         push @content_data_ids, $content_data->id;
-#     }
-#     wantarray ? ( \@content_data_ids, $joins ) : \@content_data_ids;
-# }
-
-sub _get_content_data_ids_searched_by_actual_fields {
+sub _get_not_ids_common {
     my $app = shift;
-    my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-    my %columns = (
-        value_varchar => 'like',
-        value_text    => 'like',
-        value_float   => 'like',
-        value_double  => 'like',
-    );
-    my $searchable_field_types
-        = $app->model('content_type')->searchable_field_types_for_search;
-    my ( $terms, $joins )
-        = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
+    my ( $value, $orig_terms, $method ) = @_;
+    my @normal_ids = @{ $app->$method( $value, $orig_terms ) };
+    return unless @normal_ids;
+    my $terms = [ $orig_terms, { id => { not => \@normal_ids } }, ];
+    my $args = {
+        fetchonly => { id => 1 },
+        unique    => 1,
+    };
+    my %content_data_ids;
+    my $iter = MT->model('content_data')->load_iter( $terms, $args );
+
+    while ( my $content_data = $iter->() ) {
+        $content_data_ids{ $content_data->id } = 1;
+    }
+    [ keys %content_data_ids ];
+}
+
+sub _get_normal_ids_for_actual_fields {
+    my $app = shift;
+    my ( $value, $orig_terms ) = @_;
     my $args = {
         fetchonly => { id => 1 },
         joins     => [
             MT->model('content_field_index')->join_on(
                 undef,
                 [   { content_data_id => \'= cd_id' },
-                    $terms && @$terms ? @$terms : (),
+                    [   { value_varchar => { like => "%$value%" } },
+                        '-or',
+                        { value_text => { like => "%$value%" } },
+                        '-or',
+                        { value_float => { like => "%$value%" } },
+                        '-or',
+                        { value_double => { like => "%$value%" } },
+                    ],
                 ],
                 {   join => MT->model('content_field')->join_on(
                         undef,
                         {   id   => \'= cf_idx_content_field_id',
-                            type => $searchable_field_types,
+                            type => $app->model('content_type')
+                                ->searchable_field_types_for_search,
                         },
                     ),
                     unique => 1,
@@ -493,17 +587,16 @@ sub _get_content_data_ids_searched_by_actual_fields {
         ],
     };
     my $iter = MT->model('content_data')->load_iter( $orig_terms, $args );
-    my @content_data_ids;
-
+    my %content_data_ids;
     while ( my $content_data = $iter->() ) {
-        push @content_data_ids, $content_data->id;
+        $content_data_ids{ $content_data->id } = 1;
     }
-    wantarray ? ( \@content_data_ids, $joins ) : \@content_data_ids;
+    [ keys %content_data_ids ];
 }
 
-sub _get_content_data_ids_searched_by_reference_fields {
+sub _get_normal_ids_for_reference_fields {
     my $app = shift;
-    my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
+    my ( $value, $orig_terms ) = @_;
 
     my %content_data_ids;
     my $registry = $app->registry('content_field_types');
@@ -513,11 +606,9 @@ sub _get_content_data_ids_searched_by_reference_fields {
             unless $type_registry->{data_type} eq 'integer'
             && $type_registry->{search_class}
             && $type_registry->{search_columns};
-        my %columns
-            = map { $_ => 'like' } @{ $type_registry->{search_columns} };
-        my ($terms)
-            = $app->_query_parse_core( $lucene_struct, \%columns,
-            $filter_types );
+        my @terms = map { +( '-or', +{ $_ => +{ like => "%$value%" } } ) }
+            @{ $type_registry->{search_columns} };
+        shift @terms;
         my $args = {
             fetchonly => { id => 1 },
             joins     => [
@@ -528,9 +619,7 @@ sub _get_content_data_ids_searched_by_reference_fields {
                             MT->model( $type_registry->{search_class} )
                             ->join_on(
                             undef,
-                            [   { id => \'= cf_idx_value_integer' },
-                                $terms && @$terms ? @$terms : (),
-                            ],
+                            [ { id => \'= cf_idx_value_integer' }, \@terms, ],
                             ),
                     },
                 ),
@@ -546,13 +635,9 @@ sub _get_content_data_ids_searched_by_reference_fields {
     [ keys %content_data_ids ];
 }
 
-sub _get_content_data_ids_searched_by_content_type_field {
+sub _get_normal_ids_for_content_type_field {
     my $app = shift;
-    my ( $orig_terms, $lucene_struct, $filter_types ) = @_;
-
-    my %columns = ();
-    my ($terms)
-        = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
+    my ( $value, $orig_terms ) = @_;
 
     my $iter = $app->model('content_field_index')->load_iter(
         undef,
@@ -571,27 +656,24 @@ sub _get_content_data_ids_searched_by_content_type_field {
             unique => 1,
         },
     );
+
     my %parent_content_data_ids;
     while ( my $content_field_index = $iter->() ) {
         $parent_content_data_ids{ $content_field_index->value_integer } = 1;
     }
 
-    my $terms_for_children
-        = [ @$orig_terms, { id => [ keys %parent_content_data_ids ] } ];
-    my %filter_types_for_children;
-    my %content_data_ids = map { $_ => 1 } (
-        @{  $app->_get_content_data_ids_searched_by_actual_fields(
-                $terms_for_children, $lucene_struct,
-                \%filter_types_for_children
-            )
-        },
-        @{  $app->_get_content_data_ids_searched_by_reference_fields(
-                $terms_for_children, $lucene_struct,
-                \%filter_types_for_children
-            )
-        }
-    );
+    return [] unless %parent_content_data_ids;
 
+    my $terms_for_children
+        = [ @$orig_terms, +{ id => [ keys %parent_content_data_ids ] } ];
+    my %content_data_ids = map { $_ => 1 } (
+        @{  $app->_get_normal_ids_for_actual_fields( $value,
+                $terms_for_children )
+        },
+        @{  $app->_get_normal_ids_for_reference_fields( $value,
+                $terms_for_children )
+        },
+    );
     [ keys %content_data_ids ];
 }
 
