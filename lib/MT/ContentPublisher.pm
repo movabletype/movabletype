@@ -1291,8 +1291,153 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
-    my $mt = shift;
-    $mt->SUPER::rebuild_from_fileinfo(@_);
+    my $pub = shift;
+    my ($fi) = @_;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info(' Start rebuild_from_fileinfo.');
+
+    require MT::Blog;
+    require MT::ContentData;
+    require MT::ContentStatus;
+    require MT::Category;
+    require MT::Template;
+    require MT::TemplateMap;
+    require MT::Template::Context;
+
+    my $at = $fi->archive_type
+        or return $pub->error(
+        MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
+
+    # callback for custom archive types
+    return
+        unless MT->run_callbacks(
+        'build_archive_filter',
+        archive_type => $at,
+        file_info    => $fi
+        );
+
+    my $template = MT::Template->load( $fi->template_id )
+        or return $pub->error(
+        MT->translate( 'Cannot load template #[_1].', $fi->template_id ) );
+        . $fi->template_id . "] "
+        . $template->name
+        . " loaded\n";
+    if ( $at eq 'index' ) {
+        $pub->rebuild_indexes(
+            BlogID   => $fi->blog_id,
+            Template => $template,
+            FileInfo => $fi,
+            Force    => 1,
+        ) or return;
+        return 1;
+    }
+
+    return 1 if $at eq 'None';
+
+    my ( $start, $end );
+    my $blog;
+    if ( $fi->blog_id ) {
+        $blog = MT::Blog->load( $fi->blog_id )
+            or return $pub->error(
+            MT->translate( 'Cannot load blog #[_1].', $fi->blog_id ) );
+    }
+    my $content_data;
+    if ( $fi->cd_id ) {
+        $content_data = MT::ContentData->load( $fi->cd_id )
+            or return $pub->error(
+            MT->translate( "Parameter '[_1]' is required", 'ContentData' ) );
+    }
+
+    my $map = MT::TemplateMap->load( $fi->templatemap_id );
+    if ( $fi->startdate ) {
+        my $archiver = $pub->archiver($at);
+        if ( ( $start, $end ) = $archiver->date_range( $fi->startdate ) ) {
+
+            # Load Content by Content Data Index
+            my $dt_field_id = $map->dt_field_id;
+
+            $content_data = MT::ContentData->load(
+                {   blog_id         => $blog->id,
+                    content_type_id => $template->content_type_id,
+                    status          => MT::ContentStatus::RELEASE(),
+                    (   !$dt_field_id ? ( authored_on => [ $start, $end ] )
+                        : ()
+                    ),
+                },
+                {   limit => 1,
+                    (   !$dt_field_id ? ( range_incl => { authored_on => 1 } )
+                        : ()
+                    ),
+                    ( !$dt_field_id ? ( sort      => 'authored_on' ) : () ),
+                    ( !$dt_field_id ? ( direction => 'descend' )     : () ),
+                    (   $dt_field_id
+                        ? ( join => [
+                                'MT::ContentFieldIndex',
+                                'content_data_id',
+                                {   content_field_id => $dt_field_id,
+                                    value_datetime   => [ $start, $end ]
+                                },
+                                {   sort       => 'value_datetime',
+                                    range_incl => { value_datetime => 1 }
+                                }
+                            ]
+                            )
+                        : ()
+                    ),
+                }
+                )
+                or return $pub->error(
+                MT->translate(
+                    "Parameter '[_1]' is required", 'ContentData'
+                )
+                );
+        }
+    }
+
+    my $cat;
+    if ( $fi->category_id ) {
+        $cat = MT::Category->load( $fi->category_id );
+    }
+    my $author;
+    if ( $fi->author_id ) {
+        $author = MT::Author->load( $fi->author_id );
+    }
+
+    ## Load the template-archive-type map entries for this blog and
+    ## archive type. We do this before we load the list of entries, because
+    ## we will run through the files and check if we even need to rebuild
+    ## anything. If there is nothing to rebuild at all for this entry,
+    ## we save some time by not loading the list of entries.
+    my $file = $pub->archive_file_for( $content_data, $blog, $at, $cat, $map,
+        ( $fi->startdate ? $fi->startdate : undef ), $author );
+    if ( !defined($file) ) {
+        return $pub->error( $blog->errstr() );
+    }
+    $map->{__saved_output_file} = $file;
+
+    my $ctx = MT::Template::Context->new;
+    $ctx->{current_archive_type} = $at;
+    if ( $start && $end ) {
+        $ctx->{current_timestamp}     = $start;
+        $ctx->{current_timestamp_end} = $end;
+    }
+
+    my $arch_root
+        = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
+    return $pub->error(
+        MT->translate("You did not set your blog publishing path") )
+        unless $arch_root;
+
+    my %cond;
+    $pub->rebuild_file( $blog, $arch_root, $map, $at, $ctx, \%cond, 1,
+        FileInfo => $fi, )
+        or return;
+    MT::Util::Log->info(' End   rebuild_from_fileinfo.');
+
+    1;
 }
 
 sub _rebuild_content_archive_type {

@@ -70,7 +70,12 @@ sub archive_file {
 
     if ( !$cat ) {
         my $this_cat = $archiver->_get_this_cat( $cat, $content_data );
-        $cat = @$this_cat ? $this_cat->[0] : undef;
+        $cat
+            = $this_cat
+            ? ref $this_cat eq 'ARRAY'
+                ? $this_cat->[0]
+                : $this_cat
+            : undef;
     }
     if ($file_tmpl) {
         $ctx->stash( 'archive_category', $cat );
