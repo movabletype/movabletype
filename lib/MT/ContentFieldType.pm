@@ -400,7 +400,7 @@ sub _select_box_registry {
         field_html_params =>
             '$Core::MT::ContentFieldType::SelectBox::field_html_params',
         ss_validator =>
-            '$Core::MT::ContentFieldType::Common::ss_validator_multiple',
+            '$Core::MT::ContentFieldType::SelectBox::ss_validator_multiple',
         tag_handler =>
             '$Core::MT::ContentFieldType::Common::tag_handler_multiple',
         feed_value_handler =>

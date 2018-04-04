@@ -116,5 +116,54 @@ sub options_validation_handler {
     return;
 }
 
+sub ss_validator_multiple {
+    my ( $app, $field_data, $data, $type_label, $type_label_plural ) = @_;
+
+    if ( !defined $type_label_plural ) {
+        if ( defined $type_label ) {
+            $type_label_plural = $type_label;
+        }
+        else {
+            $type_label        = 'option';
+            $type_label_plural = 'options';
+        }
+    }
+
+    my $options = $field_data->{options} || {};
+
+    my $field_label = $options->{label};
+    my $multiple    = $options->{multieple};
+    my $required    = $options->{required};
+    my $max         = $options->{max};
+    my $min         = $options->{min};
+
+    if ( $multiple && $max && @{$data} > $max ) {
+        return $app->translate(
+            '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
+            ucfirst($type_label_plural), $max, $field_label
+        );
+    }
+    elsif ( $multiple && $min && @{$data} < $min ) {
+        return $app->translate(
+            '[_1] greater than or equal to [_2] must be selected in "[_3]" field.',
+            ucfirst($type_label_plural), $min, $field_label
+        );
+    }
+    if ( !$multiple && @{$data} >= 2 ) {
+        return $app->translate(
+            'Only 1 [_1] can be selected in "[_2]" field.',
+            lc($type_label), $field_label );
+    }
+
+    # Special case
+    # Select Box accepts empty value if this field is not required.
+    return if !$required && @$data == 1 && $data->[0] eq '';
+
+    require MT::ContentFieldType::Common;
+    exists $options->{values}
+        ? MT::ContentFieldType::Common::ss_validator_values(@_)
+        : undef;
+}
+
 1;
 
