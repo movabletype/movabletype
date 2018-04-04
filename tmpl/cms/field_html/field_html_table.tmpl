@@ -3,6 +3,19 @@
 </table>
 <input type="hidden" id="content-field-<mt:var name="content_field_id" escape="html">" name="content-field-<mt:var name="content_field_id" escape="html">" value="" mt:raw-name="1" />
 
+<mt:unless name="loaded_tables_field_css">
+  <mt:var name="loaded_tables_field_css" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.a-table-btn-group-list > .a-table-btn-list:first-child,
+.a-table-btn-group-list > .a-table-btn-list:last-child {
+  display: none;
+}
+</style>
+  </mt:setvarblock>
+</mt:unless>
+
 <mt:setvarblock name="jq_js_include" append="1">
 (function() {
   var increaseDecreaseColumns = <mt:if name="options{increase_decrease_cols}">true<mt:else>false</mt:if>;
