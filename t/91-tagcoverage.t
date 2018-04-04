@@ -82,7 +82,7 @@ my @removed_from_core = qw(
     UserSessionCookiePath UserSessionCookieTimeout
     UserSessionState WebsiteCommentCount WebsitePingCount
 
-    BlogIfCommentsOpen CategoryIfAllowPings
+    AuthorCommentCount BlogIfCommentsOpen CategoryIfAllowPings
     CommentEntry CommentIfModerated CommentParent
     CommentReplies CommenterIfTrusted CommenterUserpicAsset
     Comments CommentsFooter CommentsHeader
