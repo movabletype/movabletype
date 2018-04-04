@@ -174,7 +174,7 @@
     }
 
     this.updateIsLoading(true);
-    this.trigger('refresh_view');
+    this.trigger('refresh_view', { notCallListReady: true });
 
     var self = this;
 
@@ -196,7 +196,7 @@
         if (refreshCurrentFilter) {
           self.trigger('refresh_current_filter')
         }
-        self.trigger('refresh_view', moveToPagination);
+        self.trigger('refresh_view', { moveToPagination: moveToPagination });
       },
     });
   };
