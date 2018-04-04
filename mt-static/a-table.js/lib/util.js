@@ -87,3 +87,7 @@ module.exports.triggerEvent = function (el, eventName, options) {
   }
   el.dispatchEvent(event);
 };
+
+module.exports.removeIndentNewline = function (str) {
+  return str.replace(/(\n|\t)/g, '');
+};

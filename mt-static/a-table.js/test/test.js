@@ -15,7 +15,7 @@ var nightmare = Nightmare({
   show: true
 });
 
-var test_url = "file:///"+path.resolve(__dirname,"../examples/a-blogcms.html");
+var test_url = "file:///"+path.resolve(__dirname,"../examples/index.html");
 
 describe('test',function(){
   it('align-right',function(done){
