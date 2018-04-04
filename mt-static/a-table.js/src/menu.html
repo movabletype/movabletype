@@ -1,6 +1,14 @@
 <!-- BEGIN showBtnList:exist -->
 <div class="a-table-btn-group-list">
 	<div class="\{mark.btn.group\}">
+		<!-- BEGIN inputMode:touch#table -->
+		<button type="button" class="\{mark.btn.item\}" data-action-click="changeInputMode(source)"><i class="\{mark.icon.source\}"></i></button>
+		<!-- END inputMode:touch#table -->
+		<!-- BEGIN inputMode:touch#source -->
+		<button type="button" class="\{mark.btn.itemActive\}" data-action-click="changeInputMode(table)"><i class="\{mark.icon.source\}"></i></button>
+		<!-- END inputMode:touch#source -->
+	</div>
+	<div class="\{mark.btn.group\}">
 		<button type="button" class="\{mark.btn.item\}" data-action-click="mergeCells"><i class="\{mark.icon.merge\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="splitCell()"><i class="\{mark.icon.split\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="undo()"><i class="\{mark.icon.undo\}"></i></button>
 	</div>
 	<div class="\{mark.btn.group\}">
@@ -9,5 +17,29 @@
 	<div class="\{mark.btn.group\}">
 		<button type="button" class="\{mark.btn.item\}" data-action-click="align(left)"><i class="\{mark.icon.alignLeft\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="align(center)"><i class="\{mark.icon.alignCenter\}"></i></button><button type="button" class="\{mark.btn.item\}" data-action-click="align(right)"><i class="\{mark.icon.alignRight\}"></i></button>
 	</div>
+	<div class="\{mark.btn.group\}">
+		<div class="\{mark.actionGroup\}">
+			<label class="\{mark.label\}">セル</label>
+			<select class="\{mark.selector.self\}" data-bind="cellClass" data-action-change="changeCellClass()">
+				<option value="">---</option>
+				<!-- BEGIN selector.option:loop -->
+				<option value="{value}">{label}</option>
+				<!-- END selector.option:loop -->
+			</select>
+		</div>
+	</div>
+	<!-- BEGIN tableOption:exist -->
+	<div class="\{mark.btn.group\}">
+		<div class="\{mark.actionGroup\}">
+			<label class="\{mark.label\}">テーブル</label>
+			<select class="\{mark.selector.self\}" data-bind="tableClass" data-action-change="update">
+				<option value="">---</option>
+				<!-- BEGIN tableOption:loop -->
+				<option value="{value}">{label}</option>
+				<!-- END tableOption:loop -->
+			</select>
+		</div>
+	</div>
+	<!-- END tableOption:exist -->
 </div>
 <!-- END showBtnList:exist -->

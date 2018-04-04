@@ -2,7 +2,7 @@
 <ul class="a-table-menu" style="top:{menuY}px;left:{menuX}px;">
 	<!-- BEGIN mode:touch#cell -->
 	<li data-action-click="mergeCells">\{message.mergeCells\}</li>
-	<li data-action-click="splitCell()">\{message.splitCell\}</li>
+	<li data-action-click="splitCell">\{message.splitCell\}</li>
 	<li data-action-click="changeCellTypeTo(th)">\{message.changeToTh\}</li>
 	<li data-action-click="changeCellTypeTo(td)">\{message.changeToTd\}</li>
 	<li data-action-click="align(left)">\{message.alignLeft\}</li>
@@ -27,12 +27,23 @@
 		<tr class="a-table-header js-table-header">
 			<th class="a-table-first"></th>
 			<!-- BEGIN highestRow:loop -->
-			<th data-action-click="selectRow({i})"<!-- \BEGIN selectedRowNo:touch#{i} -->class="selected"<!-- \END selectedRowNo:touch#{i} -->><span class="a-table-toggle-btn"></span></th>
+			<!-- \BEGIN selectedRowNo:touch#{i} -->
+			<th data-action-click="unselect()" class="selected"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedRowNo:touch#{i} -->
+			<!-- \BEGIN selectedRowNo:touchnot#{i} -->
+			<th data-action-click="selectRow({i})"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedRowNo:touchnot#{i} -->
+			
 			<!-- END highestRow:loop -->
 		</tr>
 		<!-- BEGIN row:loop -->
 		<tr>
-			<th class="a-table-side js-table-side<!-- \BEGIN selectedColNo:touch#{i} --> selected<!-- \END selectedColNo:touch#{i} -->" data-action-click="selectCol({i})"><span class="a-table-toggle-btn"></span></th>
+			<!-- \BEGIN selectedColNo:touchnot#{i} -->
+			<th class="a-table-side js-table-side" data-action-click="selectCol({i})"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedColNo:touchnot#{i} -->
+			<!-- \BEGIN selectedColNo:touch#{i} -->
+			<th class="a-table-side js-table-side selected" data-action-click="unselect()"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedColNo:touch#{i} -->
 			<!-- \BEGIN row.{i}.col:loop -->
 			<td colspan="\{colspan\}" rowspan="\{rowspan\}" data-action="updateTable(\{i\},{i})" data-cell-id="\{i\}-{i}" class="<!-- \BEGIN selected:exist -->a-table-selected<!-- \END selected:exist --><!-- \BEGIN type:touch#th --> a-table-th<!-- END \type:touch#th --><!-- \BEGIN mark.top:exist --> a-table-border-top<!-- \END mark.top:exist --><!-- \BEGIN mark.right:exist --> a-table-border-right<!-- \END mark.right:exist --><!-- \BEGIN mark.bottom:exist --> a-table-border-bottom<!-- \END mark.bottom:exist --><!-- \BEGIN mark.left:exist --> a-table-border-left<!-- \END mark.left:exist --><!-- \BEGIN cellClass:exist --> \{cellClass\}<!-- \END cellClass:exist -->"><div class="a-table-editable \{align\}" contenteditable>\{value\}</div></td>
 			<!-- \END row.{i}.col:loop -->

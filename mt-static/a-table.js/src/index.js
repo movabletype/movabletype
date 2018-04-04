@@ -33,6 +33,8 @@ const defs = {
       td: 'a-table-icon a-table-icon-td03',
       th: 'a-table-icon a-table-icon-th02'
     },
+    label: 'a-table-label',
+    actionGroup: 'a-table-action-group',
     selector: {
       self: 'a-table-selector'
     }
@@ -62,14 +64,14 @@ const defs = {
 };
 
 
-class aTable extends aTemplate {
+export default class aTable extends aTemplate {
 
   constructor(ele, option) {
     super();
     this.id = aTable.getUniqId();
     this.menu_id = aTable.getUniqId();
     this.addTemplate(this.id, template);
-    this.addTemplate(this.menu_id, menu);
+    this.addTemplate(this.menu_id, util.removeIndentNewline(menu));
     this.data = extend({}, defs, option);
     const data = this.data;
     const selector = typeof ele === 'string' ? document.querySelector(ele) : ele;
@@ -79,7 +81,7 @@ class aTable extends aTemplate {
     data.showBtnList = true;
     data.row = this.parse(`<table>${selector.innerHTML}</table>`);
     data.tableResult = this.getTable();
-    data.tableClass = selector.getAttribute('class');
+    data.tableClass = selector.getAttribute('class') || "";
     data.highestRow = this.highestRow;
     data.history = [];
     data.inputMode = 'table';
@@ -614,6 +616,15 @@ class aTable extends aTemplate {
     }
   }
 
+  unselect() {
+    const data = this.data;
+    this.unselectCells();
+    data.selectedColNo = -1;
+    data.selectedRowNo = -1;
+    data.showMenu = false;
+    this.update();
+  }
+
   selectRow(i) {
     const data = this.data;
     this.unselectCells();
@@ -1124,8 +1135,8 @@ class aTable extends aTemplate {
       }
       data.history.push(clone(data.row));
       self.update();
-      if (self.afterAction) {
-        self.afterAction();
+      if (this.afterAction) {
+        this.afterAction();
       }
       return;
     }
@@ -1482,7 +1493,7 @@ class aTable extends aTemplate {
         }
       });
     });
-    if (flag) {
+    if (flag && cellClass) {
       data.cellClass = cellClass;
     } else {
       data.cellClass = '';
@@ -1536,5 +1547,3 @@ class aTable extends aTemplate {
   }
 
 }
-
-module.exports = aTable;
