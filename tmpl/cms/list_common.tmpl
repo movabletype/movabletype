@@ -112,6 +112,15 @@
 <script>
 var listStore;
 
+jQuery.event.special.listReady = {
+  setup: function ( data, ns ) {
+    return false;
+  },
+  teardown: function ( ns ) {
+    return false;
+  }
+};
+
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="default_sort_key">';

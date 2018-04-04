@@ -745,11 +745,17 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
 
     var self = this
 
-    opts.store.on('refresh_view', function (moveToPagination) {
+    opts.store.on('refresh_view', function (args = {}) {
+      var moveToPagination = args.moveToPagination
+      var notCallListReady = args.notCallListReady
+
       self.update()
       self.updateSubFields()
       if (moveToPagination) {
         window.document.body.scrollTop = window.document.body.scrollHeight
+      }
+      if (!notCallListReady) {
+        jQuery(window).trigger('listReady')
       }
     })
 
