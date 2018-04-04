@@ -698,6 +698,9 @@ export default class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   removeRow(selectedno) {
@@ -1100,6 +1103,9 @@ export default class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   insertColLeft(selectedno) {
@@ -1125,6 +1131,9 @@ export default class aTable extends aTemplate {
       }
       data.history.push(clone(data.row));
       self.update();
+      if (this.afterAction) {
+        this.afterAction();
+      }
       return;
     }
     targetPoints.forEach((point) => {
@@ -1142,6 +1151,9 @@ export default class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   beforeUpdated() {
@@ -1274,6 +1286,9 @@ export default class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   splitCell() {
@@ -1355,6 +1370,9 @@ export default class aTable extends aTemplate {
     data.history.push(clone(data.row));
     data.splited = true;
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   changeCellTypeTo(type) {
@@ -1369,6 +1387,9 @@ export default class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   align(align) {
@@ -1383,6 +1404,9 @@ export default class aTable extends aTemplate {
     data.showMenu = false;
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   getStyleByAlign(val) {
@@ -1445,6 +1469,9 @@ export default class aTable extends aTemplate {
     });
     data.history.push(clone(data.row));
     this.update();
+    if (this.afterAction) {
+      this.afterAction();
+    }
   }
 
   changeSelectOption() {
