@@ -9,9 +9,9 @@ JSONStream@^1.0.3:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
-a-template@0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/a-template/-/a-template-0.4.4.tgz#0b0034ed953a1bcdea63dcbc67215a7a8c54485a"
+a-template@^0.5.1:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/a-template/-/a-template-0.5.3.tgz#3ac2b709d0537211cb6ad479be7ac4dad4ce13b4"
   dependencies:
     array.prototype.find "^2.0.4"
     delegate "^3.1.2"
@@ -420,6 +420,10 @@ babel-messages@^6.22.0:
   resolved "https://registry.yarnpkg.com/babel-messages/-/babel-messages-6.22.0.tgz#36066a214f1217e4ed4164867669ecb39e3ea575"
   dependencies:
     babel-runtime "^6.22.0"
+
+babel-plugin-add-module-exports@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-add-module-exports/-/babel-plugin-add-module-exports-0.2.1.tgz#9ae9a1f4a8dc67f0cdec4f4aeda1e43a5ff65e25"
 
 babel-plugin-check-es2015-constants@^6.22.0:
   version "6.22.0"
