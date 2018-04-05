@@ -64,7 +64,7 @@ sub _hdlr_contents {
     my $content_type = _get_content_type( $ctx, $args, \%blog_terms );
     return $ctx->error($content_type) unless ref $content_type;
     my $content_type_id
-        = scalar(@$content_type)
+        = scalar(@$content_type) == 1
         ? $content_type->[0]->id
         : [ map { $_->id } @$content_type ];
 
