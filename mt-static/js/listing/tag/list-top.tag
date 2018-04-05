@@ -39,7 +39,8 @@
 
     var self = this
 
-    opts.store.on('refresh_view', function (args = {}) {
+    opts.store.on('refresh_view', function (args) {
+      if (!args) args = {}
       var moveToPagination = args.moveToPagination
       var notCallListReady = args.notCallListReady
 
