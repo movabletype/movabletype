@@ -10,6 +10,7 @@
     "babel-loader": "^5.3.2",
     "gulp": "^3.9.0",
     "gulp-rename": "^1.2.2",
+    "gulp-riot": "^1.1.4",
     "gulp-uglify": "^1.2.0",
     "lodash": "^3.10.1",
     "riot": "^2.2.4",
