@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<style>
+    .a {
+        fill: blue;
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+<div style="display: none;"><svg><symbol id="liwu" viewBox="-80 -72.013 160 144.025"><path d="M-71.949-16.039h55.974v-55.974h-55.974V-16.039z M16.102-16.039h55.975v-55.974H16.102V-16.039z M-80,32.013h64.025v-40H-80V32.013z M80,32.013v-40H16.102v40H80z M-7.923,32.013H8.051V-72.013H-7.923V32.013z M16.102,39.936 h-32.077v24.025h32.077V39.936z M64.025,39.936h-40l15.719,32.077h24.281V39.936z M-23.898,39.936h-40v32.077H-40L-23.898,39.936z" transform="matrix(1 0 0 -1 0 0)"></path></symbol><symbol id="qianbi" viewBox="-79.5 -79.5 159 159"><path d="M79.5,32.802l-93.538-93.538l-46.699,46.699L32.802,79.5L79.5,32.802z M-79.5-32.802L-32.802-79.5H-79.5 V-32.802z" transform="matrix(1 0 0 -1 0 0)"></path></symbol><symbol id="shangchuan" viewBox="-73.623 -78.055 147.245 156.11"><path d="M0.069,32.482L64.48-32.205H36.915v-45.85h-73.83l-0.139,45.85h-27.15L0.069,32.482z M73.623,78.055V59.632 H-73.623v18.423H73.623z" transform="matrix(1 0 0 -1 0 0)"></path></symbol></svg></div>
+
+<app></app>
+
+
+<script src="../node_modules/riot/riot+compiler.js"></script>
+<script src="../riot.ss.min.js"></script>
+<script type="riot/tag">
+    <app>
+        <h1><ss class="a b c" link="liwu"></ss> test1</h1>
+        <h1><ss class="a b c" link="shangchuan"></ss> test 2</h1>
+    </app>
+</script>
+
+<script>
+    riot.mount('*')
+</script>
