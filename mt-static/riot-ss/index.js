@@ -8,8 +8,12 @@ riot.tag('ss', '<svg></svg>', function (opts){
         use.setAttributeNS(
             'http://www.w3.org/1999/xlink', // xlink NS URI
             'href',                         // attribute (no 'xlink:')
-            '#' + opts.link)
+            opts.href)
 
+        svg.setAttribute('role', 'img')
+        if(opts.title){
+            svg.setAttribute('title', opts.title)
+        }
         if(opts.class){
             svg.setAttribute('class', opts.class)
         }
