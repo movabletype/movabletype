@@ -905,7 +905,7 @@ sub core_endpoints {
         },
         {   id          => 'get_page',
             route       => '/sites/:site_id/pages/:page_id',
-            version     => 1,
+            version     => 2,
             handler     => "${pkg}v2::Page::get",
             error_codes => {
                 403 =>
@@ -2256,6 +2256,7 @@ sub core_endpoints {
             route =>
                 '/sites/:site_id/contentTypes/:content_type_id/fields/permutate',
             verb        => 'POST',
+            version     => 4,
             handler     => "${pkg}v4::ContentField::permutate",
             error_codes => {
                 403 => 'Do not have permission to permutate content fields.',
