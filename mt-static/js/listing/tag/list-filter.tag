@@ -332,18 +332,22 @@
             if={ !filterTypeHash[item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
-              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
-            </svg>
+            <ss title={ trans('Add') }
+              class="mt-icon mt-icon--sm"
+              href={ StaticURI + 'images/sprite.svg#ic_add' }
+            >
+            </ss>
           </a>
           <a href="javascript:void(0);"
             if={ !filterTypeHash[item.type].singleton
               && parent.opts.item.args.items.length > 1 }
             onclick={ removeFilterItemContent }
           >
-            <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
-              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_remove' } />
-            </svg>
+            <ss title={ trans('Remove') }
+              class="mt-icon mt-icon--sm"
+              href={ StaticURI + 'images/sprite.svg#ic_remove' }
+            >
+            </ss>
           </a>
         </div>
       </div>
@@ -363,9 +367,11 @@
             if={ !filterTypeHash[opts.item.type].singleton }
             onclick={ addFilterItemContent }
           >
-            <svg title={ trans('Add') } role="img" class="mt-icon mt-icon--sm">
-              <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
-            </svg>
+            <ss title={ trans('Add') }
+              class="mt-icon mt-icon--sm"
+              href={ StaticURI + 'images/sprite.svg#ic_add' }
+            >
+            </ss>
           </a>
         </div>
       </div>
@@ -543,9 +549,11 @@
                   <div class="float-right">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
                     <a href="#" class="d-inline-block" onclick={ removeFilter }>
-                      <svg title={ trans('Remove') } role="img" class="mt-icon mt-icon--sm">
-                        <use xlink:href={ StaticURI + 'images/sprite.svg#ic_trash' } />
-                      </svg>
+                      <ss title={ trans('Remove') }
+                        class="mt-icon mt-icon--sm"
+                        href={ StaticURI + 'images/sprite.svg#ic_trash' }
+                      >
+                      </ss>
                     </a>
                   </div>
                 </virtual>
@@ -567,9 +575,11 @@
                   class="icon-mini-left addnew create-new apply-link d-inline-block"
                   onclick={ createNewFilter }
                 >
-                  <svg title={ trans( 'Add' ) } role="img" class="mt-icon mt-icon--sm">
-                    <use xlink:href={ StaticURI + 'images/sprite.svg#ic_add' } />
-                  </svg>
+                  <ss title={ trans('Add') }
+                    class="mt-icon mt-icon--sm"
+                    href={ StaticURI + 'images/sprite.svg#ic_add' }
+                  >
+                  </ss>
                   { trans( 'Create New' ) }
                 </a>
               </li>
@@ -784,3 +794,4 @@
     }
   </script>
 </list-filter-save-modal>
+
