@@ -2708,7 +2708,14 @@ else
 <mt:Authors><mt:AuthorCommentCount>
 </mt:Authors>
 --- expected
-1
+2
+
+=== mt:AuthorEntriesCount
+--- template _mt_websites
+<mt:Authors><mt:AuthorEntriesCount>
+</mt:Authors>
+--- expected
+7
 
 === mt:CommenterNameChunk
 --- SKIP
