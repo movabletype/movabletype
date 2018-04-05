@@ -1112,7 +1112,7 @@ ms@2.0.0:
 
 "mt-data-api-sdk@https://github.com/movabletype/mt-data-api-sdk-js.git#develop":
   version "0.1.0"
-  resolved "https://github.com/movabletype/mt-data-api-sdk-js.git#7068345502a4347fa94febe0fcccc513b70d8d7a"
+  resolved "https://github.com/movabletype/mt-data-api-sdk-js.git#8098d63e0e6e4df702ac8e7d37106d0c46d9c23f"
   dependencies:
     form-data "~0.0.10"
     xmlhttprequest "git://github.com/usualoma/node-XMLHttpRequest.git"
