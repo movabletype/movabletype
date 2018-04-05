@@ -5575,7 +5575,11 @@ var aTable = function (_aTemplate) {
       elem.focus();
       if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
         var range = document.createRange();
-        range.selectNodeContents(elem);
+        if (aTable.getBrowser() === 'firefox' && elem.hasChildNodes() && elem.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild);
+        } else {
+          range.selectNodeContents(elem);
+        }
         range.collapse(false);
         var sel = window.getSelection();
         sel.removeAllRanges();
