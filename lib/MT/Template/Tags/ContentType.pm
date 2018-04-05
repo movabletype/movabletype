@@ -61,13 +61,12 @@ sub _hdlr_contents {
     %terms = %blog_terms;
     %args  = %blog_args;
 
-    my @content_type = _get_content_type( $ctx, $args, \%blog_terms );
-    return $ctx->error( MT->translate('Content Type was not found.') )
-        unless @content_type;
+    my $content_type = _get_content_type( $ctx, $args, \%blog_terms );
+    return $ctx->error($content_type) unless ref $content_type;
     my $content_type_id
-        = $#content_type == 0
-        ? $content_type[0]->id
-        : [ map { $_->id } @content_type ];
+        = scalar(@$content_type)
+        ? $content_type->[0]->id
+        : [ map { $_->id } @$content_type ];
 
     my $class_type     = $args->{class_type} || 'content_data';
     my $class          = MT->model($class_type);
@@ -2033,22 +2032,64 @@ sub _check_and_invoke {
 sub _get_content_type {
     my ( $ctx, $args, $blog_terms ) = @_;
 
-    my @ct;
+    my @content_types = ();
+    my $template_ct;
+    my @not_found = ();
+    my $blog_ids  = $blog_terms->{blog_id};
 
-    if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
-        @ct = MT::Util::ContentType::get_content_types( $args->{content_type},
-            $blog_terms );
-    }
-    else {
-        my $tmpl = $ctx->stash('template');
-        my %ct_terms
-            = $tmpl && $tmpl->content_type_id
-            ? ( id => $tmpl->content_type_id )
-            : ();
-        @ct = MT->model('content_type')->load( \%ct_terms );
+    my $tmpl = $ctx->stash('template');
+    if ( $tmpl && $tmpl->content_type_id ) {
+        $template_ct
+            = MT->model('content_type')->load( $tmpl->content_type_id );
+        return unless $template_ct;
     }
 
-    return @ct;
+    my @blog_ids = ref $blog_ids ? @$blog_ids : ($blog_ids);
+
+    foreach my $blog_id (@blog_ids) {
+        if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+            my ($ct)
+                = MT::Util::ContentType::get_content_types(
+                $args->{content_type}, { blog_id => $blog_id } );
+            if ($ct) {
+                push @content_types, $ct;
+            }
+            else {
+                push @not_found, $blog_id;
+            }
+        }
+        else {
+            if ($template_ct) {
+                my %terms = ( name => $template_ct->name );
+                my ($ct)
+                    = MT->model('content_type')
+                    ->load(
+                    { name => $template_ct->name, blog_id => $blog_id } );
+                if ($ct) {
+                    push @content_types, $ct;
+                }
+                else {
+                    push @not_found, $blog_id;
+                }
+            }
+            else {
+                my @ct
+                    = MT->model('content_type')
+                    ->load( { blog_id => $blog_id } );
+                if (@ct) {
+                    push @content_types, @ct;
+                }
+                else {
+                    push @not_found, $blog_id;
+                }
+            }
+        }
+    }
+
+    return @not_found
+        ? MT->translate( "Content Type was not found. Blog ID: [_1]",
+        ( join ',', @not_found ) )
+        : \@content_types;
 }
 
 1;
