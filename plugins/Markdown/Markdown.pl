@@ -37,7 +37,7 @@ my $g_nested_brackets;
 $g_nested_brackets = qr{
     (?>                                 # Atomic matching
        [^\[\]]+                         # Anything other than brackets
-     | 
+     |
        \[
          (??{ $g_nested_brackets })     # Recursive set of nested brackets
        \]
@@ -318,7 +318,7 @@ sub _HashHTMLBlocks {
                     [ ]{0,$less_than_tab}
                     <(hr)               # start tag = $2
                     \b                  # word break
-                    ([^<>])*?           # 
+                    ([^<>])*?           #
                     /?>                 # the matching end tag
                     [ \t]*
                     (?=\n{2,}|\Z)       # followed by a blank line or end of document
@@ -411,6 +411,8 @@ sub _RunSpanGamut {
     $text = _EncodeAmpsAndAngles($text);
 
     $text = _DoItalicsAndBold($text);
+
+    $text = _DoStrike($text);
 
     # Do hard breaks:
     $text =~ s/ {2,}\n/ <br$g_empty_element_suffix\n/g;
@@ -1054,6 +1056,18 @@ sub _DoItalicsAndBold {
     return $text;
 }
 
+sub _DoStrike {
+    my $text = shift;
+
+    # These lines added by Bill Eccles, 2008-07-04
+    # And this style strike also used by Github.
+    # https://help.github.com/articles/github-flavored-markdown/#strikethrough
+    $text =~ s{ (~~) (?=\S) (.+?) (?<=\S) \1 }
+    {<strike>$2</strike>}gsx;
+
+    return $text;
+}
+
 sub _DoBlockQuotes {
     my $text = shift;
 
@@ -1425,8 +1439,8 @@ See the readme file for detailed release notes for this version.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2003-2004 John Gruber   
-<http://daringfireball.net/>   
+Copyright (c) 2003-2004 John Gruber
+<http://daringfireball.net/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
