@@ -745,7 +745,8 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
 
     var self = this
 
-    opts.store.on('refresh_view', function (args = {}) {
+    opts.store.on('refresh_view', function (args) {
+      if (!args) args = {}
       var moveToPagination = args.moveToPagination
       var notCallListReady = args.notCallListReady
 
