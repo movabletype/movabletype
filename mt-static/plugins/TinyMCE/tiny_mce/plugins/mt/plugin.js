@@ -560,7 +560,7 @@
 
             // Register buttons
             ed.addButton('mt_insert_html', {
-                icon : 'template',
+                icon : 'addhtml',
                 tooltip : 'mt_insert_html',
                 onclick : function() {
 
