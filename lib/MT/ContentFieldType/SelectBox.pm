@@ -132,7 +132,7 @@ sub ss_validator_multiple {
     my $options = $field_data->{options} || {};
 
     my $field_label = $options->{label};
-    my $multiple    = $options->{multieple};
+    my $multiple    = $options->{multiple};
     my $required    = $options->{required};
     my $max         = $options->{max};
     my $min         = $options->{min};
