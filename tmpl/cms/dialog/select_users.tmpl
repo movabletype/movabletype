@@ -26,11 +26,10 @@ function returnMemberSelection(ok) {
             var inputs = dialog.panels[0].tableSelect.selected();
             for (var i = 0; i < inputs.length; ++i) {
                 var inp = inputs[i];
+                if (inp.id == 'select_all') continue;
                 var row = jQuery(inp).parents('tr')[0];
                 if (!row) continue;
-                var labels = jQuery(row).find('label:not(.custom-control)');
-                if (labels.length == 0) continue;
-                names.push(labels.get(0).innerHTML + ' (' + inp.value + ')');
+                names.push(jQuery(row).find('.panel-label').text() + ' (' + inp.value + ')');
                 ids.push(inp.value);
             }
             el_id.value = ids.join(',');
