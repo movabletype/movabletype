@@ -990,6 +990,9 @@ sub make_menus {
         my $key = 'content_data:' . $ct->id;
         $menus->{$key} = {
             label => $ct->name,
+            no_translate => {
+                label => 1,
+            },
             mode  => 'list',
             args  => {
                 _type   => 'content_data',
