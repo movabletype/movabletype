@@ -1,7 +1,7 @@
 <$mt:setvar name="screen_type" value="dialog-screen dialog-grant-role"$>
 <mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
 
-<!--
+<mt:Ignore>
 This dialog presents a list of roles for selection. The user may
 select one and only one role.
 
@@ -28,7 +28,7 @@ creating a new association for a particular group
 To facilitate this, I need to create divs for each "page" of the dialog
 all but the first will be hidden. The "continue" button will toggle from
 one page to the following page.
--->
+</mt:Ignore>
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
@@ -79,11 +79,19 @@ function returnRoleSelection(ok) {
     if (ok) {
         parent.jQuery('span.items').empty();
 
+        var panel = panels[dialog.currentPanel];
+        var items = panel.selectionList.items();
         var ids = new Array();
-        jQuery('input[name=role-cb]:checked').each( function() {
-            ids.push(this.value);
-            parent.jQuery('span.items').append('<span id="selected-role-'+this.value+'" class="badge badge-default sticky-label selected-item">'+jQuery('tr#role-'+this.value+' > td.panel-label > label').text()+'&nbsp;<span class="tag-pill remove clickable">x</span></span>');
-        });
+        for(var i = 0; i < items.length; i++) {
+            var key = items[i];
+            if (panel.selectionList.itemHash[key]) {
+                var id = key.split('-')[1];
+                var label = panel.selectionList.itemHash[key].label
+                ids.push(id);
+                parent.jQuery('span.items').append(
+                  '<span id="selected-role-' + id + '" class="badge badge-pill badge-default sticky-label selected-item mr-2" aria-label="Close">' + label + '&nbsp;<span aria-hidden="true" class="tag-pill remove clickable" style="cursor: pointer;">×</span>');
+            }
+        }
         parent.jQuery('input#new_created_user_role').val( ids.join(",") );
     }
     jQuery.fn.mtModal.close();
@@ -298,8 +306,13 @@ function init() {
         args = args.replace(/&search=\w+/, '');
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
-    jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
-    jQuery('.select_assoc_type').trigger('change');
+    if ( jQuery('#modal-search').length ) {
+      jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
+      jQuery('.select_assoc_type').trigger('change');
+    }
+    else {
+      jQuery('.select_assoc_type').hide();
+    }
 </mt:if>
 }
 
@@ -388,7 +401,6 @@ TC.attachLoadEvent(init);
       <mt:include name="include/listing_panel.tmpl" use_page_content="1">
     </mt:loop>
 </mt:if>
-
 </mt:setvarblock>
 
 <mt:include name="layout/modal.tmpl">
