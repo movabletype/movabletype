@@ -259,7 +259,7 @@
                     setTimeout(function() {
                         self.$editorTextarea.show();
                         self.$editorIframe.hide();
-                        self.$editorPathRow.hide();
+                        self.$editorPathRow.children().hide();
                     }, 0);
 
                     this.editor = this.source;
@@ -277,7 +277,7 @@
                 });
 
                 this.$editorIframe.show();
-                this.$editorPathRow.show();
+                this.$editorPathRow.children().show();
                 this.$editorTextarea.hide();
 
                 this.editor = this.tinymce;
@@ -406,7 +406,7 @@
 
             adapter.$editorIframe = $('#' + adapter.id + '_ifr');
             adapter.$editorElement = adapter.$editorIframe;
-            adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
+            adapter.$editorPathRow = $('.mce-path');
             adapter.$editorIframeDoc = adapter.$editorIframe.get(0).contentWindow.document;
 
             adapter.$editorIframeBody = jQuery('body', adapter.$editorIframeDoc);
