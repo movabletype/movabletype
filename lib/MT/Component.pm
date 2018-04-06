@@ -748,6 +748,9 @@ sub __deep_localize_labels {
         }
         else {
             next unless $k =~ m/(?:\b|_)(?:hint|label|label_plural)\b/;
+            next
+                if exists $hash->{'no_translate'}
+                && $hash->{'no_translate'}->{$k};
             if ( !ref( my $label = $hash->{$k} ) ) {
                 $hash->{$k} = sub { $c->translate($label) };
             }

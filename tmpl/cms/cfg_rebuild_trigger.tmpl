@@ -57,14 +57,12 @@
   <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<mt:var name="rebuild_triggers">" />
   <p><a href="<mt:var name="script_url">?__mode=add_rebuild_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>
-  <mt:unless name="rebuilds_loop">
-    <mtapp:statusmsg
-       id="info"
-       class="info"
-       can_close="0">
-      <__trans phrase="You have not defined any rebuild triggers.">
-    </mtapp:statusmsg>
-  </mt:unless>
+  <mtapp:statusmsg
+     id="info-no-trigger"
+     class="info<mt:unless name="rebuilds_loop"> hidden</mt:unless>"
+     can_close="0">
+    <__trans phrase="You have not defined any rebuild triggers.">
+  </mtapp:statusmsg>
   <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>"></div>
 </mtapp:setting>
 
@@ -116,6 +114,10 @@ rebuildMultiBlogTriggerTable();
           str = "<div class=\"mt-table--outline\"><table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Data" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></th></tr></thead>\n" + str + "</table></div>";
           getByID('multiblog_blog_list').innerHTML = str;
           getByID('rebuild_triggers').value = values.join('|');
+          jQuery('#info-no-trigger').css('display', 'none');
+      }
+      else {
+          jQuery('#info-no-trigger').css('display', 'block');
       }
   }
   

@@ -56,15 +56,15 @@
      label="<__trans phrase="New Created User">"
      hint="<__trans phrase="Select a role that you want assigned to users that are created in the future.">"
      show_hint="1">
-    <div class="selected-items">
+    <div class="selected-items my-3">
       <span class="items">
     <mt:if name="new_roles">
-    <mt:loop name="new_roles">
-      <span id="selected-role-<mt:var name="role_id">" class="badge badge-default sticky-label selected-item">
-        <mt:var name="role_name" escape="html">&nbsp;
-        <span class="tag-pill remove clickable">x</span>
-      </span>
-    </mt:loop>
+      <mt:loop name="new_roles">
+        <span id="selected-role-<mt:var name="role_id">" class="badge badge-pill badge-default sticky-label selected-item mr-2" aria-label="Close">
+          <mt:var name="role_name" escape="html">&nbsp;
+            <span aria-hidden="true" class="tag-pill remove clickable" style="cursor: pointer;">×</span>
+        </span>
+      </mt:loop>
     <mt:else>
         <__trans phrase="(No role selected)">
     </mt:if>

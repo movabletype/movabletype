@@ -26,7 +26,7 @@
         <div class="row mt-widget__contenttype">
           <div class="col-5"><mt:Var name="name" escape="html"></div>
           <div class="col"><mt:If name="can_list"><a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"><__trans phrase="List"></a></mt:If></div>
-          <div class="col"><mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"><svg title="" role="img" class="mt-icon--primary"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="Create"></a></mt:if></div>
+          <div class="col"><mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><svg title="" role="img" class="mt-icon--primary"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="Create"></a></mt:if></div>
         </div>
       </mt:Loop>
       </div>
