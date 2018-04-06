@@ -538,6 +538,11 @@ export default class aTable extends aTemplate {
       const range = document.createRange();
       if (aTable.getBrowser() === 'firefox' && elem.hasChildNodes() && elem.lastChild.tagName === 'BR') {
         range.setEndBefore(elem.lastChild);
+      } else if (aTable.getBrowser() === 'ie11'
+        && elem.hasChildNodes() && elem.lastChild.tagName === 'P'
+        && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
+      {
+        range.setEndBefore(elem.lastChild.lastChild);
       } else {
         range.selectNodeContents(elem);
       }
