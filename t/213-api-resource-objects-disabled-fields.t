@@ -19,11 +19,11 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 
     # Disable Commercial.pack temporarily.
-    $test_env->disable_addon('Commercial.pack');
+    $test_env->skip_if_addon_exists('Commercial.pack');
 
     # Disable Comments/Trackback plugins, too
-    $test_env->disable_plugin('Comments');
-    $test_env->disable_plugin('Trackback');
+    $test_env->skip_if_plugin_exists('Comments');
+    $test_env->skip_if_plugin_exists('Trackback');
 }
 
 use File::Spec;

@@ -12,7 +12,7 @@ BEGIN {
 
     # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
     # An error occurs in save_community_prefs mode when Cloud.pack installed.
-    $test_env->disable_addon('Cloud.pack');
+    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
 use MT::Test;
