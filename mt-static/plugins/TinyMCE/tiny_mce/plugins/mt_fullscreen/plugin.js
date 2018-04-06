@@ -62,7 +62,6 @@
                     });
                 };
             });
-
             ed.addCommand('mtFullScreenFitToWindow', function() {
                 if (fitToWindow) {
                     fitToWindow();
@@ -76,8 +75,9 @@
             });
 
             ed.addCommand('mtFullScreen', function() {
+                // ed.execCommand('mceFullScreen');
                 if (! enabled) {
-                    editorSize = ed.execCommand('mtGetEditorSize');
+                    editorSize = ed.queryCommandValue('mtGetEditorSize');
 
                     $parent
                         .addClass('fullscreen_editor')
@@ -119,6 +119,7 @@
                     fitToWindow = function(){};
                     $window.unbind('resize.mt_fullscreen');
                 }
+                ed.fire('mtFullscreenStateChanged', {state: enabled});
 
                 forEachAffectedEditors(function() {
                     this.nodeChanged();
@@ -128,7 +129,13 @@
             ed.addMTButton('mt_fullscreen', {
                 icon: 'fullscreen',
                 tooltip: 'mt_fullscreen',
-                cmd: 'mtFullScreen'
+                cmd: 'mtFullScreen',
+                onPostRender: function () {
+                  var self = this;
+                  ed.on('mtFullscreenStateChanged', function (e) {
+                    self.active(e.state);
+                  });
+                }
             });
 
             ed.on('init', function(args) {
@@ -146,33 +153,6 @@
                     .find('textarea')
                     .map(function() { return this.id });
             });
-
-            ed.on('NodeChange', function(ed, cm) {
-                $.each(plugin.buttonIDs['mt_fullscreen'] || [], function() {
-                    cm.setActive(this, enabled);
-                });
-            });
-        },
-
-        createControl : function(name, cm) {
-            var editor = cm.editor;
-
-            if (name == 'mt_fullscreen') {
-                var ctrl = editor.buttons[name];
-
-                if (! this.buttonIDs[name]) {
-                    this.buttonIDs[name] = [];
-                }
-
-                var id = name + '_' + this.buttonIDs[name].length;
-                this.buttonIDs[name].push(id);
-
-                return cm.createButton(id, $.extend({}, ctrl, {
-                    'class': 'mce_' + name
-                }));
-            }
-
-            return null;
         },
 
         getInfo : function() {

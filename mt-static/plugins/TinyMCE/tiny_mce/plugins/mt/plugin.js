@@ -25,10 +25,7 @@
                 else {
                     func.apply(ed, arguments);
                 }
-
-                if (mode == 'source') {
-                    ed.fire('onMTSourceButtonClick', ed, ed.controlManager);
-                }
+                ed.fire('onMTSourceButtonClick');
             };
             for (k in funcs) {
                 modes[k] = 1;
@@ -679,10 +676,17 @@
                 tooltip : 'template.desc',
                 onclickFunctions : {
                     source: function(cmd, ui, val) {
-                        tinymce._setActive(ed);
                         ed.execCommand('mceTemplate');
                         setPopupWindowLoadedHook(mtSourceTemplateDialog);
+                        ed.fire('onMTSourceTemplateButtonClick');
                     }
+                },
+                onPostRender: function() {
+                    var self = this;
+
+                    ed.on('onMTSourceTemplateButtonClick', function(e) {
+                        self.active(ed.execCommand('mtGetStatus'));
+                    });
                 }
             });
 
@@ -701,12 +705,14 @@
                     var self = this;
 
                     ed.on('onMTSourceButtonClick', function(e) {
-                        self.active(e.state);
+                        var s = ed.mtEditorStatus;
+                        self.active( s.mode && s.mode == 'source');
                     });
                 }
             });
 
             ed.on('NodeChange', function() {
+
                 var s = ed.mtEditorStatus;
 
                 if (s.mode == 'source' &&

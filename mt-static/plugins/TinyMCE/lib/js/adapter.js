@@ -27,10 +27,10 @@
             plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
-            plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image',
+            plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
             // Buttons using in wysiwyg mode.
             plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
-            plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect',
+            plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
 
             plugin_mt_wysiwyg_insert_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
             plugin_mt_wysiwyg_selection_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
@@ -407,7 +407,13 @@
             adapter.$editorIframe = $('#' + adapter.id + '_ifr');
             adapter.$editorElement = adapter.$editorIframe;
             adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
+            adapter.$editorIframeDoc = adapter.$editorIframe.get(0).contentWindow.document;
 
+            adapter.$editorIframeBody = jQuery('body', adapter.$editorIframeDoc);
+            adapter.$editorIframeBody.css({
+                'white-space': 'pre-wrap',
+                'word-wrap': 'break-word'
+            });
             var save = ed.save;
             ed.save = function () {
                 if ( adapter.$editorIframe.css('display') != 'none' ) {
@@ -440,16 +446,21 @@
                 adapter.manager.setFormat(format);
             });
 
-            ed.addCommand('mtGetEditorSize', function() {
+            ed.addQueryValueHandler('mtGetEditorSize', function() {
                 return {
                     iframeHeight: adapter.$editorIframe.height(),
-                    textareaHeight: adapter.$editorTextarea.height()
+                    textareaHeight: adapter.$editorTextarea.height(),
                 };
             });
 
             ed.addCommand('mtRestoreEditorSize', function(size) {
+                if(!size) return;
+                editorContainer = adapter.tinymce.getContainer();
+                jQuery(editorContainer).width('');
                 adapter.$editorIframe.height(size['iframeHeight']);
                 adapter.$editorTextarea.height(size['textareaHeight']);
+                adapter.$editorIframe.css({'width': '100%'});
+                adapter.$editorTextarea.css({'width': ''});
             });
         },
         reload: function(){
