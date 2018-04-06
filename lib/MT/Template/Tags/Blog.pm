@@ -202,9 +202,13 @@ sub _loop {
         || $args->{blog_ids}
         || $args->{site_ids};
     $args{'no_class'} = 1
-        if ( $incl && lc $incl eq 'all' )
-        || ( ( $incl eq 'children' || $incl eq 'siblings' )
-        && ( $args->{include_parent_site} || $args->{include_with_website} )
+        if $incl
+        && (
+        ( lc $incl eq 'all' )
+        || (( $incl eq 'children' || $incl eq 'siblings' )
+            && (   $args->{include_parent_site}
+                || $args->{include_with_website} )
+        )
         );
 
     my $builder = $ctx->stash('builder');

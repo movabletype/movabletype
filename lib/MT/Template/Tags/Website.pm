@@ -222,11 +222,13 @@ sub _loop {
     my $tag_name = lc $ctx->stash('tag');
     $args{'no_class'} = 1
         if ( $tag_name ne 'websites' )
+        && $incl
         && (
-        ( $incl && lc $incl eq 'all' )
-        || ( ( $incl eq 'children' || $incl eq 'siblings' )
+        ( lc $incl eq 'all' )
+        || (( $incl eq 'children' || $incl eq 'siblings' )
             && (   $args->{include_parent_site}
-                || $args->{include_with_website} ) )
+                || $args->{include_with_website} )
+        )
         );
 
     my $builder = $ctx->stash('builder');
