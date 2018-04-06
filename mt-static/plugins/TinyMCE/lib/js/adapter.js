@@ -430,7 +430,7 @@
             }
             var save = ed.save;
             ed.save = function () {
-                if ( adapter.$editorIframe.css('display') != 'none' ) {
+                if ( this.editor !== this.source ) {
                     save.apply(ed, arguments);
                 }
             }
@@ -483,7 +483,6 @@
                     return;
                 }
                 last_updated = now;
-                console.log('call' + last_updated);
                 var height = adapter.$editorIframe.height();
                 adapter.$editorTextarea.height(height);
                 var width = '100%';
