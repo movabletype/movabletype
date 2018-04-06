@@ -382,7 +382,7 @@ sub runner {
 
 sub post_feedback_save {
     my $self = shift;
-    my ( $trigger, $feedback ) = @_;
+    my ( $trigger, $eh, $feedback ) = @_;
     if ( $feedback->visible ) {
         my $blog_id  = $feedback->blog_id;
         my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);

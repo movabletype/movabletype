@@ -252,14 +252,14 @@ run_test {
 run_test {
     my $comment = $app->model('comment')->load( { blog_id => 1 } );
     $comment->visible(1);
-    MT::RebuildTrigger->post_feedback_save( 'comment_pub', $comment );
+    MT::RebuildTrigger->post_feedback_save( 'comment_pub', undef, $comment );
     is( $rebuild_count, 1, 'called once in post_feedback_save for comment.' );
 };
 
 run_test {
     my $comment = $app->model('comment')->load( { blog_id => 1 } );
     $comment->visible(0);
-    MT::RebuildTrigger->post_feedback_save( 'comment_pub', $comment );
+    MT::RebuildTrigger->post_feedback_save( 'comment_pub', undef, $comment );
     is( $rebuild_count, 0,
         'not called once in post_feedback_save for invisible comment.' );
 };
@@ -268,7 +268,7 @@ run_test {
     my $comment = $app->model('comment')->new;
     $comment->blog_id(2);
     $comment->visible(1);
-    MT::RebuildTrigger->post_feedback_save( 'comment_pub', $comment );
+    MT::RebuildTrigger->post_feedback_save( 'comment_pub', undef, $comment );
     is( $rebuild_count, 0,
         'not called once in post_feedback_save for comment for blog not have trigger.'
     );
@@ -277,7 +277,7 @@ run_test {
 run_test {
     my $tbping = $app->model('tbping')->load( { blog_id => 1 } );
     $tbping->visible(1);
-    MT::RebuildTrigger->post_feedback_save( 'tb_pub', $tbping );
+    MT::RebuildTrigger->post_feedback_save( 'tb_pub', undef, $tbping );
     is( $rebuild_count, 1,
         'called once in post_feedback_save for trackback.' );
 };
@@ -285,7 +285,7 @@ run_test {
 run_test {
     my $tbping = $app->model('tbping')->load( { blog_id => 1 } );
     $tbping->visible(0);
-    MT::RebuildTrigger->post_feedback_save( 'tb_pub', $tbping );
+    MT::RebuildTrigger->post_feedback_save( 'tb_pub', undef, $tbping );
     is( $rebuild_count, 0,
         'not called once in post_feedback_save for invisible trackback.' );
 };
@@ -294,7 +294,7 @@ run_test {
     my $tbping = $app->model('tbping')->new;
     $tbping->blog_id(2);
     $tbping->visible(0);
-    MT::RebuildTrigger->post_feedback_save( 'tb_pub', $tbping );
+    MT::RebuildTrigger->post_feedback_save( 'tb_pub', undef, $tbping );
     is( $rebuild_count, 0,
         'not called once in post_feedback_save for invisible trackback for blog not have trigger.'
     );
