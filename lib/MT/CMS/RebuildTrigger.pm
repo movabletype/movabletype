@@ -48,7 +48,7 @@ sub config {
             ? 'content'
             : $rt->object_type == MT::RebuildTrigger::TYPE_COMMENT()
             ? 'comment'
-            : 'ping';
+            : 'tb';
         my $event
             = $rt->event == MT::RebuildTrigger::EVENT_SAVE()    ? 'save'
             : $rt->event == MT::RebuildTrigger::EVENT_PUBLISH() ? 'pub'
