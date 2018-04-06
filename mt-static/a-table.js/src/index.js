@@ -545,9 +545,13 @@ export default class aTable extends aTemplate {
         range.setEndBefore(elem.lastChild.lastChild);
       } else if (aTable.getBrowser() === 'edge'
         && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV'
-        && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
+        && elem.lastChild.hasChildNodes())
       {
-        range.setEndBefore(elem.lastChild.lastChild);
+        if (elem.lastChild.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild.lastChild);
+        } else {
+          range.setEndAfter(elem.lastChild.lastChild);
+        }
       } else {
         range.selectNodeContents(elem);
       }
@@ -843,7 +847,9 @@ export default class aTable extends aTemplate {
       if (this.afterEntered) {
         this.afterEntered();
       }
-    } else if (type === 'keyup' && aTable.getBrowser().indexOf('ie') !== -1) {
+    } else if (type === 'keyup'
+      && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge'))
+    {
       if (util.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === `${b}-${a}`) {
         data.history.push(clone(data.row));
         data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');

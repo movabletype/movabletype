@@ -5579,8 +5579,12 @@ var aTable = function (_aTemplate) {
           range.setEndBefore(elem.lastChild);
         } else if (aTable.getBrowser() === 'ie11' && elem.hasChildNodes() && elem.lastChild.tagName === 'P' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
           range.setEndBefore(elem.lastChild.lastChild);
-        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
-          range.setEndBefore(elem.lastChild.lastChild);
+        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes()) {
+          if (elem.lastChild.lastChild.tagName === 'BR') {
+            range.setEndBefore(elem.lastChild.lastChild);
+          } else {
+            range.setEndAfter(elem.lastChild.lastChild);
+          }
         } else {
           range.selectNodeContents(elem);
         }
@@ -5891,7 +5895,7 @@ var aTable = function (_aTemplate) {
         if (this.afterEntered) {
           this.afterEntered();
         }
-      } else if (type === 'keyup' && aTable.getBrowser().indexOf('ie') !== -1) {
+      } else if (type === 'keyup' && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge')) {
         if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
           data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
