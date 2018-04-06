@@ -386,16 +386,16 @@
             "1",
             null,
             "__NOW__",
-            "e8f111f7531200709c00d84962d4523999902681",
+            "f50e6a3e5263db0ee0f3014a1b1edee118802003",
             "0",
             null,
             "1",
-            "270fb02be76e2d5c5c153eb85adc8bcc01e03bd4",
+            "f0eec094af350cf76372f2e348ad11d89314b914",
             null,
             null,
             "__NOW__",
             "2",
-            "270fb02be76e2d5c5c153eb85adc8bcc01e03bd4",
+            "f0eec094af350cf76372f2e348ad11d89314b914",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -408,7 +408,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0038\n",
             "1"
          ]
       ]
@@ -441,7 +441,7 @@
             null,
             "__NOW__",
             "test content data",
-            "e8f111f7531200709c00d84962d4523999902681",
+            "f50e6a3e5263db0ee0f3014a1b1edee118802003",
             null,
             null
          ]
@@ -775,5 +775,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0038; formattedtext 1.00"
 }

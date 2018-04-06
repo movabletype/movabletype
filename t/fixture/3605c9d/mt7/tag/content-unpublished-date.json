@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "7cabdffb9a16267df4325cc32b6943815cbf0c6c",
+            "f39bf00f92e34d88a3eedd713a02cd15b482abf5",
             "0",
             null,
             "1",
-            "79ca126b49da93784dafa6a505ae747a651717fa",
+            "58bd95bc195fd8f6f942b105d7144c53fd25f5a8",
             null,
             null,
             "__NOW__",
             "2",
-            "79ca126b49da93784dafa6a505ae747a651717fa",
+            "58bd95bc195fd8f6f942b105d7144c53fd25f5a8",
             "2017-05-30 19:01:00",
             "201722"
          ],
@@ -369,16 +369,16 @@
             "1",
             null,
             "__NOW__",
-            "7cabdffb9a16267df4325cc32b6943815cbf0c6c",
+            "f39bf00f92e34d88a3eedd713a02cd15b482abf5",
             "0",
             null,
             "2",
-            "6453b69e4775474a2eb0190dbf7d1e44826f518f",
+            "fe895567e8ff15e20fbcf4a4044d7c564a68cfa9",
             null,
             null,
             "__NOW__",
             "2",
-            "6453b69e4775474a2eb0190dbf7d1e44826f518f",
+            "fe895567e8ff15e20fbcf4a4044d7c564a68cfa9",
             null,
             "201722"
          ]
@@ -391,7 +391,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0038\n",
             "1"
          ]
       ]
@@ -424,7 +424,7 @@
             null,
             "__NOW__",
             "test content data",
-            "7cabdffb9a16267df4325cc32b6943815cbf0c6c",
+            "f39bf00f92e34d88a3eedd713a02cd15b482abf5",
             null,
             null
          ]
@@ -758,5 +758,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0038; formattedtext 1.00"
 }
