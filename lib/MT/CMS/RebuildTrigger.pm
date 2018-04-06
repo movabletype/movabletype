@@ -23,7 +23,9 @@ sub config {
         $param->{blog_content_accessible}
             = $blog->blog_content_accessible || 0;
         $param->{default_mt_sites_action}
-            = $blog->default_mt_sites_action || 1;
+            = defined( $blog->default_mt_sites_action )
+            ? $blog->default_mt_sites_action
+            : 1;
         $param->{default_mt_sites_sites}
             = $blog->default_mt_sites_sites || '';
     }
@@ -569,7 +571,7 @@ sub save {
             $app->multi_param('blog_content_accessible') );
         $blog->default_mt_sites_action(
             $app->multi_param('default_mt_sites_action') )
-            if $app->multi_param('default_mt_sites_action');
+            if defined( $app->multi_param('default_mt_sites_action') );
         $blog->default_mt_sites_sites(
             $app->multi_param('default_mt_sites_sites') )
             if $app->multi_param('default_mt_sites_sites');
