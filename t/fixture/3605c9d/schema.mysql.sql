@@ -1,6 +1,6 @@
 -- 
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Wed Mar 14 03:57:36 2018
+-- Created on Fri Apr  6 13:46:12 2018
 -- 
 SET foreign_key_checks=0;
 
@@ -805,6 +805,7 @@ CREATE TABLE `mt_fileinfo` (
   `fileinfo_author_id` integer(11) NULL DEFAULT NULL,
   `fileinfo_blog_id` integer(11) NOT NULL,
   `fileinfo_category_id` integer(11) NULL DEFAULT NULL,
+  `fileinfo_cd_id` integer(11) NULL DEFAULT NULL,
   `fileinfo_entry_id` integer(11) NULL DEFAULT NULL,
   `fileinfo_file_path` mediumtext NULL,
   `fileinfo_id` integer(11) NOT NULL auto_increment,
@@ -817,6 +818,7 @@ CREATE TABLE `mt_fileinfo` (
   INDEX `mt_fileinfo_author_id` (`fileinfo_author_id`),
   INDEX `mt_fileinfo_blog_id` (`fileinfo_blog_id`),
   INDEX `mt_fileinfo_category_id` (`fileinfo_category_id`),
+  INDEX `mt_fileinfo_cd_id` (`fileinfo_cd_id`),
   INDEX `mt_fileinfo_entry_id` (`fileinfo_entry_id`),
   INDEX `mt_fileinfo_startdate` (`fileinfo_startdate`),
   INDEX `mt_fileinfo_template_id` (`fileinfo_template_id`),
@@ -1254,6 +1256,7 @@ CREATE TABLE `mt_template` (
   `template_text` mediumtext NULL,
   `template_type` varchar(25) NOT NULL,
   INDEX `mt_template_blog_id` (`template_blog_id`),
+  INDEX `mt_template_content_type_id` (`template_content_type_id`),
   INDEX `mt_template_identifier` (`template_identifier`),
   INDEX `mt_template_name` (`template_name`),
   INDEX `mt_template_outfile` (`template_outfile`),

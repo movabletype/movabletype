@@ -1056,7 +1056,7 @@
       ],
       "rows" : [
          [
-            "PluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nSchemaVersion 7.0036\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0038\n",
             "1"
          ]
       ]
@@ -1125,14 +1125,14 @@
             null,
             null,
             null,
-            "201811"
+            "201814"
          ],
          [
             null,
             null,
             null,
             "2",
-            "2018-03-14 04:02:04",
+            "2018-04-06 14:16:36",
             "content_1",
             "3",
             null,
@@ -1157,7 +1157,7 @@
             null,
             null,
             null,
-            "201811"
+            "201814"
          ],
          [
             null,
@@ -1189,14 +1189,14 @@
             null,
             null,
             null,
-            "201811"
+            "201814"
          ],
          [
             null,
             null,
             null,
             "2",
-            "2018-03-14 04:02:05",
+            "2018-04-06 14:16:37",
             "content_1",
             "3",
             null,
@@ -1221,7 +1221,7 @@
             null,
             null,
             null,
-            "201811"
+            "201814"
          ]
       ]
    },
@@ -1474,28 +1474,12 @@
          ],
          [
             "2",
-            "0",
-            null,
-            null,
-            "__NOW__",
-            null,
-            "3",
-            null,
-            "__NOW__",
-            null,
-            "'sign_in_cms','sign_in_data_api'",
-            null,
-            "0",
-            null
-         ],
-         [
-            "2",
             "3",
             null,
             null,
             "__NOW__",
             null,
-            "4",
+            "3",
             null,
             "__NOW__",
             null,
@@ -2031,7 +2015,7 @@
             "Banner Footer",
             null,
             "1",
-            "<div id=\"footer\">\n    <div id=\"footer-inner\">\n        <div id=\"footer-content\">\n            <div class=\"widget-powered widget\">\n                <div class=\"widget-content\">\n                    Powered by <a href=\"http://www.movabletype.org/\"><$MTProductName$></a>\n                </div>\n            </div>\n<mt:BlogIfCCLicense>\n            <div class=\"widget-creative-commons widget\">\n                <div class=\"widget-content\">\n                    This blog is licensed under a <a href=\"<$mt:BlogCCLicenseURL$>\">Creative Commons License</a>.\n                </div>\n            </div>\n</mt:BlogIfCCLicense>\n        </div>\n    </div>\n</div>\n",
+            "<div id=\"footer\">\n    <div id=\"footer-inner\">\n        <div id=\"footer-content\">\n            <div class=\"widget-powered widget\">\n                <div class=\"widget-content\">\n                    Powered by <a href=\"https://www.movabletype.org/\"><$MTProductName$></a>\n                </div>\n            </div>\n<mt:BlogIfCCLicense>\n            <div class=\"widget-creative-commons widget\">\n                <div class=\"widget-content\">\n                    This blog is licensed under a <a href=\"<$mt:BlogCCLicenseURL$>\">Creative Commons License</a>.\n                </div>\n            </div>\n</mt:BlogIfCCLicense>\n        </div>\n    </div>\n</div>\n",
             "custom"
          ],
          [
@@ -2581,7 +2565,7 @@
             "Powered By",
             null,
             "1",
-            "<div class=\"widget-powered widget\">\n    <div class=\"widget-content\">\n        <a href=\"http://www.movabletype.com/\"><img src=\"<$mt:StaticWebPath$>images/bug-pbmt-white.png\" alt=\"Powered by Movable Type <$mt:Version$>\" width=\"80\" height=\"61\" /></a>\n    </div>\n</div>\n",
+            "<div class=\"widget-powered widget\">\n    <div class=\"widget-content\">\n        <a href=\"https://www.movabletype.com/\"><img src=\"<$mt:StaticWebPath$>images/bug-pbmt-white.png\" alt=\"Powered by Movable Type <$mt:Version$>\" width=\"80\" height=\"61\" /></a>\n    </div>\n</div>\n",
             "widget"
          ],
          [
@@ -2999,7 +2983,7 @@
             "Banner Footer",
             null,
             "1",
-            "<div id=\"footer\">\n    <div id=\"footer-inner\">\n        <div id=\"footer-content\">\n            <div class=\"widget-powered widget\">\n                <div class=\"widget-content\">\n                    Powered by <a href=\"http://www.movabletype.org/\"><$MTProductName$></a>\n                </div>\n            </div>\n<mt:BlogIfCCLicense>\n            <div class=\"widget-creative-commons widget\">\n                <div class=\"widget-content\">\n                    This blog is licensed under a <a href=\"<$mt:BlogCCLicenseURL$>\">Creative Commons License</a>.\n                </div>\n            </div>\n</mt:BlogIfCCLicense>\n        </div>\n    </div>\n</div>\n",
+            "<div id=\"footer\">\n    <div id=\"footer-inner\">\n        <div id=\"footer-content\">\n            <div class=\"widget-powered widget\">\n                <div class=\"widget-content\">\n                    Powered by <a href=\"https://www.movabletype.org/\"><$MTProductName$></a>\n                </div>\n            </div>\n<mt:BlogIfCCLicense>\n            <div class=\"widget-creative-commons widget\">\n                <div class=\"widget-content\">\n                    This blog is licensed under a <a href=\"<$mt:BlogCCLicenseURL$>\">Creative Commons License</a>.\n                </div>\n            </div>\n</mt:BlogIfCCLicense>\n        </div>\n    </div>\n</div>\n",
             "custom"
          ],
          [
@@ -3549,7 +3533,7 @@
             "Powered By",
             null,
             "1",
-            "<div class=\"widget-powered widget\">\n    <div class=\"widget-content\">\n        <a href=\"http://www.movabletype.com/\"><img src=\"<$mt:StaticWebPath$>images/bug-pbmt-white.png\" alt=\"Powered by Movable Type <$mt:Version$>\" width=\"80\" height=\"61\" /></a>\n    </div>\n</div>\n",
+            "<div class=\"widget-powered widget\">\n    <div class=\"widget-content\">\n        <a href=\"https://www.movabletype.com/\"><img src=\"<$mt:StaticWebPath$>images/bug-pbmt-white.png\" alt=\"Powered by Movable Type <$mt:Version$>\" width=\"80\" height=\"61\" /></a>\n    </div>\n</div>\n",
             "widget"
          ],
          [
@@ -4092,5 +4076,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0036; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0038; formattedtext 1.00"
 }
