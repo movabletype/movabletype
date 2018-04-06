@@ -5579,6 +5579,8 @@ var aTable = function (_aTemplate) {
           range.setEndBefore(elem.lastChild);
         } else if (aTable.getBrowser() === 'ie11' && elem.hasChildNodes() && elem.lastChild.tagName === 'P' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
           range.setEndBefore(elem.lastChild.lastChild);
+        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild.lastChild);
         } else {
           range.selectNodeContents(elem);
         }
@@ -6617,6 +6619,8 @@ var aTable = function (_aTemplate) {
         }
       } else if (ua.indexOf('trident/7') != -1) {
         name = 'ie11';
+      } else if (ua.indexOf('edge') != -1) {
+        name = 'edge';
       } else if (ua.indexOf('chrome') != -1) {
         name = 'chrome';
       } else if (ua.indexOf('safari') != -1) {
