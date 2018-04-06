@@ -15,13 +15,14 @@
         },
         config: {
             mode: "exact",
-            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen',
+            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen,compat3x',
             language: $('html').attr('lang'),
             theme: "modern",
             skin: 'lightgray',
             menubar: false,
             branding: false,
             forced_root_block: 'p',
+            resize: true,
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
@@ -258,7 +259,10 @@
 
                     setTimeout(function() {
                         self.$editorTextarea.show();
-                        self.$editorIframe.hide();
+                        self.$editorIframe.css({
+                            'visibility': 'hidden',
+                            'position': 'absolute'
+                        });
                         self.$editorPathRow.children().hide();
                     }, 0);
 
@@ -276,7 +280,10 @@
                     this.tinymce.setContent(this.source.getContent());
                 });
 
-                this.$editorIframe.show();
+                this.$editorIframe.css({
+                    'visibility': 'visible',
+                    'position': 'static'
+                });
                 this.$editorPathRow.children().show();
                 this.$editorTextarea.hide();
 
@@ -400,20 +407,27 @@
                 resizeTo.apply(ed.theme, arguments);
             };
 
+            var Cookie = tinymce.plugins.MovableType.Cookie;
+            var size = Cookie.getHash("TinyMCE_" + ed.id + "_size");
+            if(size)
+                ed.theme.resizeTo(size.cw, size.ch);
+
+
             $('#' + adapter.id + '_tbl').css({
                 width: '100%'
             });
 
             adapter.$editorIframe = $('#' + adapter.id + '_ifr');
             adapter.$editorElement = adapter.$editorIframe;
-            adapter.$editorPathRow = $('.mce-path');
-            adapter.$editorIframeDoc = adapter.$editorIframe.get(0).contentWindow.document;
-
-            adapter.$editorIframeBody = jQuery('body', adapter.$editorIframeDoc);
-            adapter.$editorIframeBody.css({
-                'white-space': 'pre-wrap',
-                'word-wrap': 'break-word'
-            });
+            adapter.$editorPathRow = $(ed.getContainer()).find('.mce-path');
+            if(adapter.$editorIframe.length){
+                adapter.$editorIframeDoc = adapter.$editorIframe.get(0).contentWindow.document;
+                adapter.$editorIframeBody = jQuery('body', adapter.$editorIframeDoc);
+                adapter.$editorIframeBody.css({
+                    'white-space': 'pre-wrap',
+                    'word-wrap': 'break-word'
+                });
+            }
             var save = ed.save;
             ed.save = function () {
                 if ( adapter.$editorIframe.css('display') != 'none' ) {
@@ -462,6 +476,25 @@
                 adapter.$editorIframe.css({'width': '100%'});
                 adapter.$editorTextarea.css({'width': ''});
             });
+            var last_updated;
+            ed.on('ResizeEditor', function(e){
+                var now = new Date();
+                if (last_updated && now - last_updated < 150 ) {
+                    return;
+                }
+                last_updated = now;
+                console.log('call' + last_updated);
+                var height = adapter.$editorIframe.height();
+                adapter.$editorTextarea.height(height);
+                var width = '100%';
+                var Cookie = tinymce.plugins.MovableType.Cookie;
+				Cookie.setHash("TinyMCE_" + ed.id + "_size", {
+					cw : width,
+					ch : height
+				});
+                ed.theme.resizeTo(width, height, true);
+            });
+
         },
         reload: function(){
             if(this.tinymce) {

@@ -77,7 +77,8 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     vertical-align: baseline;
 }
 
-#editor-content textarea {
+#editor-content textarea,
+.editor-content textarea {
     width: 100%;
     height: 550px;
     padding: 10px;
@@ -94,6 +95,10 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     border-radius: 0;
 }
 #editor-content textarea:hover,
-#editor-content textarea:focus {
+#editor-content textarea:focus,
+.editor-content textarea:hover,
+.editor-content textarea:focus
+ {
     box-shadow: none;
 }
+
