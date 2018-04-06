@@ -1145,7 +1145,6 @@ sub _make_field_list_props {
             if ($parent_field_data) {
                 $label = $parent_field_data->{options}{label} . " ${label}";
             }
-            $label = MT->translate($label);
 
             my $prop_key;
             if ( $prop_name eq $idx_type ) {
