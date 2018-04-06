@@ -12,15 +12,22 @@
 .a-table-btn-group-list > .a-table-btn-list:last-child {
   display: none;
 }
+
+.a-table-btn {
+  cursor: pointer;
+}
 </style>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
-jQuery(document).on('focus', '.a-table-editable', function () {
-  if (this.textContent == '') {
-    this.innerHTML = '<br>';
-  }
-});
+var browserIsFirefox = window.navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
+if (browserIsFirefox) {
+  jQuery(document).on('focus', '.a-table-editable', function () {
+    if (this.textContent === '') {
+      this.innerHTML = '<br>';
+    }
+  });
+}
   </mt:setvarblock>
 </mt:unless>
 

@@ -536,7 +536,25 @@ export default class aTable extends aTemplate {
     if (typeof window.getSelection !== 'undefined'
       && typeof document.createRange !== 'undefined') {
       const range = document.createRange();
-      range.selectNodeContents(elem);
+      if (aTable.getBrowser() === 'firefox' && elem.hasChildNodes() && elem.lastChild.tagName === 'BR') {
+        range.setEndBefore(elem.lastChild);
+      } else if (aTable.getBrowser() === 'ie11'
+        && elem.hasChildNodes() && elem.lastChild.tagName === 'P'
+        && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
+      {
+        range.setEndBefore(elem.lastChild.lastChild);
+      } else if (aTable.getBrowser() === 'edge'
+        && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV'
+        && elem.lastChild.hasChildNodes())
+      {
+        if (elem.lastChild.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild.lastChild);
+        } else {
+          range.setEndAfter(elem.lastChild.lastChild);
+        }
+      } else {
+        range.selectNodeContents(elem);
+      }
       range.collapse(false);
       const sel = window.getSelection();
       sel.removeAllRanges();
@@ -829,7 +847,9 @@ export default class aTable extends aTemplate {
       if (this.afterEntered) {
         this.afterEntered();
       }
-    } else if (type === 'keyup' && aTable.getBrowser().indexOf('ie') !== -1) {
+    } else if (type === 'keyup'
+      && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge'))
+    {
       if (util.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === `${b}-${a}`) {
         data.history.push(clone(data.row));
         data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
@@ -1530,6 +1550,8 @@ export default class aTable extends aTemplate {
       }
     } else if (ua.indexOf('trident/7') != -1) {
       name = 'ie11';
+    } else if (ua.indexOf('edge') != -1) {
+      name = 'edge';
     } else if (ua.indexOf('chrome') != -1) {
       name = 'chrome';
     } else if (ua.indexOf('safari') != -1) {
