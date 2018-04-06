@@ -409,7 +409,7 @@ sub field_permissions {
 sub permission_group {
     my $obj  = shift;
     my $name = $obj->name;
-    my $site = $obj->blog;
+    my $site = $obj->blog or return MT->translate( '[_1]', $name );
     return MT->translate( '"[_1]" (Site: "[_2]" ID: [_3])',
         $name, $site->name, $site->id );
 }
