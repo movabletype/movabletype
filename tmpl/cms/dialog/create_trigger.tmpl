@@ -147,7 +147,7 @@ function init() {
             next        = 'source-data';
             badge_label = checked.parent().parent().parent().find('.panel-label').text();
         }
-        if ( dialog.currentPanel === 1 ) {
+        else if ( dialog.currentPanel === 1 ) {
             var checked = jQuery('input[name="object-cb"]:checked');
             var select_object = checked.val();
             if ( select_object !== 'content' ) {
@@ -171,7 +171,7 @@ function init() {
             badge_label = checked.parent().parent().parent().find('.panel-label').text();
         }
         <mt:unless name="missing_content_type">
-        if ( dialog.currentPanel === 2 ) {
+        else if ( dialog.currentPanel === 2 ) {
             // Badge
             curr        = 'source-data';
             next        = 'source-trigger';
@@ -180,9 +180,9 @@ function init() {
         }
         </mt:unless>
         <mt:if name="missing_content_type">
-        if ( dialog.currentPanel === 2 ) {
+        else if ( dialog.currentPanel === 2 ) {
         <mt:else>
-        if ( dialog.currentPanel === 3 ) {
+        else if ( dialog.currentPanel === 3 ) {
         </mt:if>
             // Badge
             curr        = 'source-trigger';
@@ -214,9 +214,9 @@ function init() {
             prev = 'source-trigger';
         }
         <mt:if name="missing_content_type">
-        if ( dialog.currentPanel === 2 ) {
+        else if ( dialog.currentPanel === 2 ) {
         <mt:else>
-        if ( dialog.currentPanel === 3 ) {
+        else if ( dialog.currentPanel === 3 ) {
         </mt:if>
             var select_object = jQuery('input[name="object-cb"]:checked').val();
             if ( select_object !== 'content_type' ) {
@@ -231,13 +231,13 @@ function init() {
             prev = 'source-data';
         }
         <mt:unless name="missing_content_type">
-        if ( dialog.currentPanel === 2 ) {
+        else if ( dialog.currentPanel === 2 ) {
             // Badge
             curr = 'source-trigger';
             prev = 'source-data';
         }
         </mt:unless>
-        if ( dialog.currentPanel === 1 ) {
+        else if ( dialog.currentPanel === 1 ) {
             // Badge
             curr = 'source-data';
             prev = 'source-site';
