@@ -212,13 +212,22 @@ sub _loop {
     # Set the context for blog loading
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
+
+    my $incl
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{include_website}
+        || $args->{blog_ids}
+        || $args->{site_ids};
+    my $tag_name = lc $ctx->stash('tag');
     $args{'no_class'} = 1
-        if ( $args->{include_sites} && lc $args->{include_sites} eq 'all' )
-        || ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' )
-        || ( $args->{include_website}
-        && lc $args->{include_website} eq 'all' )
-        || ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' )
-        || ( $args->{site_ids} && lc $args->{site_ids} eq 'all' );
+        if ( $tag_name ne 'websites' )
+        && (
+        ( $incl && lc $incl eq 'all' )
+        || ( ( $incl eq 'children' || $incl eq 'siblings' )
+            && (   $args->{include_parent_site}
+                || $args->{include_with_website} ) )
+        );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -239,10 +248,9 @@ sub _loop {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    my $tag_name = $ctx->stash('tag');
     if (  !$terms{class}
-        && $tag_name ne 'MultiBlog'
-        && $tag_name ne 'OtherBlog' )
+        && $tag_name ne 'multiblog'
+        && $tag_name ne 'otherblog' )
     {
         $terms{class} = 'website';
     }
