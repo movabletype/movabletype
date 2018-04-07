@@ -412,7 +412,7 @@ sub save_schema {
         %translator_args = (
             filters       => [ \&_sql_translator_filter_mysql ],
             producer      => 'MySQL',
-            producer_args => { mysql_version => 5 },
+            producer_args => { mysql_version => 5.000003 },
         );
     }
     my $translator = SQL::Translator->new(
