@@ -55,6 +55,18 @@
                 }
             };
         }
+        if (! opts['onPostRender']) {
+            opts['onPostRender'] = function() {
+                var self = this;
+
+                ed.on('onMTSourceButtonClick', function(e) {
+                    if(ed.mtProxies['source']){
+                        self.active(ed.mtProxies['source'].isStateActive(ed.sourceButtons[name]));
+                    }
+                });
+            }
+
+        }
 
         if (typeof(ed.mtButtons) == 'undefined') {
             ed.mtButtons = {};
@@ -201,7 +213,7 @@
 
             var supportedButtonsCache = {};
             var buttonRows            = this._initButtonSettings(ed);
-            var sourceButtons         = {};
+            ed.sourceButtons         = {};
 
 
 
@@ -319,6 +331,7 @@
                         .closest('tr')
                         .hide();
                 }
+                c["window"].find('[name=text]')[0].parent().hide();
             }
 
             function mtSourceTemplateDialog(c, close) {
@@ -347,11 +360,10 @@
                         (typeof(command) == 'string') &&
                         (plugin.buttonSettings.indexOf(name) != -1)
                        ) {
-                        sourceButtons[name] = command;
+                        ed.sourceButtons[name] = command;
                     }
                 });
             }
-
             ed.on('init', function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
@@ -686,7 +698,6 @@
                     });
                 }
             });
-
             ed.on('NodeChange', function() {
 
                 var s = ed.mtEditorStatus;
