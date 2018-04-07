@@ -491,7 +491,6 @@
 					cw : width,
 					ch : height
 				});
-                ed.theme.resizeTo(width, height, true);
             });
 
         },
