@@ -289,16 +289,7 @@
                             '$contents': this.$el.contents(),
                             'window': this
                         };
-                        callback(context, function() {
-                            tinymce.activeEditor.windowManager.
-                            tinymce.activeEditor.windowManager.close()
-
-                            //Move focus if webkit so that navigation back will read the item.
-                            if (tinymce.isWebKit) {
-                                $('#convert_breaks').focus();
-                            }
-                            proxies.source.focus();
-                        });
+                        callback(context);
                     });
                 });
             }
@@ -317,7 +308,8 @@
                                 'title': e.data.title
                             }
                         );
-                    close();
+                    if(typeof(close) == "function")
+                        close();
                 };
                 c["window"].on('submit', onSubmit);
 
@@ -330,28 +322,20 @@
             }
 
             function mtSourceTemplateDialog(c, close) {
-                function insertContent(ed, cmd, ui, val, a) {
-                    if (cmd == 'mceInsertContent') {
+                function insertContent(e) {
+                    if (e.command == 'mceInsertContent' && e.value) {
                         proxies
                             .source
                             .editor
-                            .insertContent(val);
-                        a.terminate = true;
+                            .insertContent(e.value);
                     }
                 };
 
-                function onSubmit() {
-                    ed.onBeforeExecCommand.add(insertContent);
-                    c['window'].TemplateDialog.insert();
-                    ed.onBeforeExecCommand.remove(insertContent);
+                function onSubmit(e) {
+                    ed.off('beforeExecCommand', insertContent);
                 };
-
-                setTimeout(function() {
-                    c['$contents']
-                        .find('form')
-                        .attr('onsubmit', '')
-                        .submit(onSubmit);
-                }, 0);
+                c["window"].on('submit', onSubmit);
+                ed.on('beforeExecCommand', insertContent);
             }
 
             function initSourceButtons(mode, format) {
@@ -676,18 +660,10 @@
                 tooltip : 'template.desc',
                 onclickFunctions : {
                     source: function(cmd, ui, val) {
-                        ed.execCommand('mceTemplate');
+                        ed.buttons.template.onclick();
                         setPopupWindowLoadedHook(mtSourceTemplateDialog);
-                        ed.fire('onMTSourceTemplateButtonClick');
                     }
                 },
-                onPostRender: function() {
-                    var self = this;
-
-                    ed.on('onMTSourceTemplateButtonClick', function(e) {
-                        self.active(ed.execCommand('mtGetStatus'));
-                    });
-                }
             });
 
             ed.addMTButton('mt_source_mode', {
