@@ -32,6 +32,14 @@ Lexicon['Select a Boilerplate'] = '<__trans phrase="Select a Boilerplate" encode
 <script type="text/javascript" src="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/extension.js"></script>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/skin/ui.css" type="text/css" />
+<style type="text/css">
+.mce-ico.mce-i-template,
+.mce-ico.mce-i-mt_source_template {
+    background: transparent url('<mt:Var name="static_uri">images/icons/ic_template.svg') no-repeat center/16px;
+    overflow: hidden;
+    text-indent: 100%;
+    white-space: nowrap;
+}
+</style>
 </mt:setvarblock>
 </mt:if>

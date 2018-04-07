@@ -48,13 +48,12 @@
                     var $outer = $parent.find('table:visible');
                     var $inner = $parent.find('.mceIframeContainer:visible');
 
-                    var offset_width  = $outer.width() - $inner.width();
                     var offset_height =
                         $outer.height() - $inner.height() + header_height;
 
                     forEachAffectedEditors(function() {
                         this.theme.resizeTo(
-                            $window.width() - offset_width,
+                            '100%',
                             $window.height() - offset_height,
                             false,
                             true
@@ -62,22 +61,22 @@
                     });
                 };
             });
-
             ed.addCommand('mtFullScreenFitToWindow', function() {
                 if (fitToWindow) {
                     fitToWindow();
                 }
             });
 
-            ed.addCommand('mtFullScreenIsEnabled', function() {
+            ed.addQueryValueHandler('mtFullScreenIsEnabled', function() {
                 // Return the string object.
                 // The IE makes an error when returning the boolean.
                 return enabled ? 'enabled' : '';
             });
 
             ed.addCommand('mtFullScreen', function() {
+                // ed.execCommand('mceFullScreen');
                 if (! enabled) {
-                    editorSize = ed.execCommand('mtGetEditorSize');
+                    editorSize = ed.queryCommandValue('mtGetEditorSize');
 
                     $parent
                         .addClass('fullscreen_editor')
@@ -89,7 +88,7 @@
                     $('body').addClass('fullscreen_editor_screen');
 
                     forEachAffectedEditors(function() {
-                        $('#' + this.id + '_resize').hide();
+                        $(ed.getContainer()).find('.mce-resizehandle').hide();
                     });
 
 
@@ -111,7 +110,7 @@
                     $('body').removeClass('fullscreen_editor_screen');
 
                     forEachAffectedEditors(function() {
-                        $('#' + this.id + '_resize').show();
+                        $(ed.getContainer()).find('.mce-resizehandle').show();
                     });
 
 
@@ -119,6 +118,7 @@
                     fitToWindow = function(){};
                     $window.unbind('resize.mt_fullscreen');
                 }
+                ed.fire('mtFullscreenStateChanged', {state: enabled});
 
                 forEachAffectedEditors(function() {
                     this.nodeChanged();
@@ -128,7 +128,13 @@
             ed.addMTButton('mt_fullscreen', {
                 icon: 'fullscreen',
                 tooltip: 'mt_fullscreen',
-                cmd: 'mtFullScreen'
+                cmd: 'mtFullScreen',
+                onPostRender: function () {
+                  var self = this;
+                  ed.on('mtFullscreenStateChanged', function (e) {
+                    self.active(e.state);
+                  });
+                }
             });
 
             ed.on('init', function(args) {
@@ -138,7 +144,7 @@
                 $header     = $parent.find('.editor-header');
                 $tabs       = $header.find('.tab');
                 if ($header.length == 0 || $tabs.length == 0) {
-                    $parent = $container.closest('.field-content');
+                    $parent = $container.closest('.editor-content');
                 }
                 fitToWindow = function(){};
 
@@ -146,33 +152,6 @@
                     .find('textarea')
                     .map(function() { return this.id });
             });
-
-            ed.on('NodeChange', function(ed, cm) {
-                $.each(plugin.buttonIDs['mt_fullscreen'] || [], function() {
-                    cm.setActive(this, enabled);
-                });
-            });
-        },
-
-        createControl : function(name, cm) {
-            var editor = cm.editor;
-
-            if (name == 'mt_fullscreen') {
-                var ctrl = editor.buttons[name];
-
-                if (! this.buttonIDs[name]) {
-                    this.buttonIDs[name] = [];
-                }
-
-                var id = name + '_' + this.buttonIDs[name].length;
-                this.buttonIDs[name].push(id);
-
-                return cm.createButton(id, $.extend({}, ctrl, {
-                    'class': 'mce_' + name
-                }));
-            }
-
-            return null;
         },
 
         getInfo : function() {
