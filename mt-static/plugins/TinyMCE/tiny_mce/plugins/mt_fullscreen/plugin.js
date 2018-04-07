@@ -67,7 +67,7 @@
                 }
             });
 
-            ed.addCommand('mtFullScreenIsEnabled', function() {
+            ed.addQueryValueHandler('mtFullScreenIsEnabled', function() {
                 // Return the string object.
                 // The IE makes an error when returning the boolean.
                 return enabled ? 'enabled' : '';

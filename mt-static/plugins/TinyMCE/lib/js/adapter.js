@@ -240,7 +240,7 @@
                     this.$editorTextarea
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
-                    if (! this.tinymce.execCommand('mtFullScreenIsEnabled')) {
+                    if (! this.tinymce.queryCommandValue('mtFullScreenIsEnabled')) {
                         var h = this.$editorIframe.height();
                         this.$editorTextarea.data('base-height', h);
                         if (tinyMCE.isIE) {
@@ -253,7 +253,7 @@
 
                     if (! calledInInit) {
                         this.ignoreSetDirty(function() {
-                            this.editor.save();
+                            this.editor.save.apply(this);
                         });
                     }
 
