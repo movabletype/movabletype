@@ -30,8 +30,10 @@
             var self = this;
             self.id = id;
             self.edit_field = $('<div class="form-group"></div>');
-            self.edit_field_input = $('<textarea id="' + id + '" class="text high html5-form form-control content-field　mt-contentblock__textarea" name="' + id + '" mt:watch-change="1"></textarea>');
+            self.edit_field_input = $('<textarea id="' + id + '" class="text high html5-form form-control content-field　mt-contentblock__embed" name="' + id + '" mt:watch-change="1"></textarea>');
             self.edit_field_input.val(data["value"]);
+            self.edit_field_input.prop('placeholder', trans('Please enter the embed code here.'));
+
             self.edit_field.append(self.edit_field_input);
             return self.edit_field;
         },
