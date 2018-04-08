@@ -30,6 +30,7 @@
   <mt:var name="loaded_multi_line_text_field_js" value="1">
 
   <mt:setvarblock name="jq_js_include" append="1">
+  <mt:if name="editors">
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
   editor_strategy.prototype.create = function(app, ids, format) {
@@ -64,6 +65,7 @@
           }
       });
   }
+  </mt:if>
 
 function convertedText(response) {
     if (response.error) {
@@ -101,6 +103,7 @@ function changedTextFormat() {
             return;
         }
     }
+    <mt:unless name="editors">
     if (cur_text_format == 'richtext') {
         // changing to plaintext editor
         jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
@@ -110,6 +113,9 @@ function changedTextFormat() {
         app.editor.setMode('textarea');
         app.editor.focus();
     } else if (option == 'richtext') {
+    <mt:else>
+    if (option == 'richtext') {
+    </mt:unless>
         app.saveHTML(false);
         // changing to richtext editor
         // convert existing format to richtext
@@ -140,7 +146,7 @@ function changedTextFormat() {
         //jQuery.post('<mt:var name="script_url">', param, convertedText);
     } else {
         jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-        app.editor.setMode(option);
+          <mt:if name="editors">app.editor.setMode(option);</mt:if>
         app.editor.focus();
     }
 }
