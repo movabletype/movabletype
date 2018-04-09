@@ -258,6 +258,19 @@ TC.TagComplete.prototype.constructCompletionBox = function()
         ul.appendChild(li);
     }
     div.parentElement.style.display = 'block';
+
+    var $scrollableParent = jQuery('.modal-body');
+    if ($scrollableParent.length == 0) {
+      $scrollableParent = jQuery(window);
+    }
+    var $parentElement = jQuery(div.parentElement);
+    var $inputBox = jQuery(this.input_box);
+    var margin = 30;
+    if ($scrollableParent.scrollTop() > $inputBox.offset().top) {
+      $scrollableParent.scrollTop($inputBox.offset().top - margin);
+    } else if ($scrollableParent.scrollTop() + jQuery(window).height() < $parentElement.offset().top + $parentElement.height()) {
+      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - jQuery(window).height());
+    }
 }
 
 TC.TagComplete.prototype.clearCompletions = function()
