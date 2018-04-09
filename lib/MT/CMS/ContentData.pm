@@ -398,7 +398,8 @@ sub save {
     my $content_data_id = $app->param('id');
     if ( !$content_data_id ) {
         return $app->permission_denied()
-            unless $perms->can_do('create_new_content_data_' . $content_type->unique_id);
+            unless $perms->can_do('create_new_content_data')
+            || $perms->can_do('create_new_content_data_' . $content_type->unique_id);
     }
     else {
         return $app->permission_denied()
