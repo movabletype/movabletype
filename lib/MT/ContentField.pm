@@ -190,9 +190,12 @@ sub permission {
     return +{
         $name => {
             group            => $content_type->permission_group,
-            label            => 'Manage "' . $obj->name . '" field',
+            label            => sub {
+                return MT->translate('Edit [_1] field', $obj->name )
+            },
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
+            content_type_unique_id => $content_type->unique_id,
         }
     };
 }
