@@ -3016,6 +3016,7 @@ sub load_core_permissions {
                 'open_select_author_dialog'               => 1,
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
+                'manage_content_data'                     => 1,
             },
         },
         'blog.manage_pages' => {
