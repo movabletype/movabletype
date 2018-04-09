@@ -364,10 +364,10 @@ function init() {
    type="submit"
    accesskey="s"
    title="<__trans phrase="Continue (s)">"
-   class="btn btn-primary continue action button primary for-blog"<mt:if name="website_loop">
-   style="display: none"</mt:if>
+   class="btn btn-primary continue action button primary for-blog"<mt:if name="website_loop"><mt:if name="blogs_loop">
+   style="display: none"</mt:if></mt:if>
    ><__trans phrase="Continue"></button>
-<mt:if name="website_loop">
+<mt:if name="website_loop"><mt:if name="blogs_loop">
 <button
    value="<__trans phrase="Back">"
    type="button"
@@ -385,7 +385,7 @@ function init() {
    class="continue action button primary for-website btn btn-primary"
    onclick="toggleWebsite();"
    ><__trans phrase="Continue"></button>
-</mt:if>
+</mt:if></mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
