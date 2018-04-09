@@ -4,14 +4,24 @@
 
 <mt:setvarblock name="css_include" append="1">
 <style>
-#content_data-listing-table td.data [aria-expanded=false] span:last-child,
-#content_data-listing-table td.data [aria-expanded=true] span:first-child {
-  display: none;
-}
-
 #content_data-listing-table td.data table td,
 #content_data-listing-table td.data table th {
   border: 1px solid #000000;
+}
+
+tr.preview-data {
+  background-color: #f4f4f4;
+}
+
+td.data .mt-icon--secondary{
+  margin: 0 .5rem 0 0;
+  transition: 0.2s ease-in-out;
+}
+td.data a[aria-expanded="false"] .mt-icon--secondary{
+  transform: rotate(180deg);
+}
+td.data a[aria-expanded="true"] .mt-icon--secondary{
+  transform: rotate(0deg);
 }
 </style>
 </mt:setvarblock>
@@ -49,12 +59,12 @@
         <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
       </th>
       <th class="head data-label primary"><span class="col-label"><__trans phrase="Data Label"></span></th>
-      <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
       </mt:unless>
       <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
       <th class="head datetime"><span class="col-label"><__trans phrase="Created"></span></th>
+      <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
       <th class="head view"><span class="col-label"><__trans phrase="View"></span></th>
     </tr>
     </mt:setvarblock>
@@ -63,7 +73,7 @@
   </thead>
   <tbody>
   </mt:if>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+    <tr>
       <td class="cb">
   <mt:if name="has_edit_access">
         <div class="custom-control custom-checkbox">
@@ -104,21 +114,6 @@
         &#160;
   </mt:if>
       </td>
-      <td class="data">
-        <p>
-          <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
-            <span><__trans phrase="Open"></span>
-            <span><__trans phrase="Close"></span>
-          </a>
-        </p>
-        <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
-          <div class="card">
-            <div class="card-body">
-              <mt:var name="preview_data">
-            </div>
-          </div>
-        </div>
-      </td>
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
       <td class="blog">
@@ -144,14 +139,26 @@
       </mt:if>
         </span>
       </td>
+      <td class="data">
+        <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+          <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
+        </a>
+      </td>
       <td class="view status-view">
   <mt:if name="content_data_permalink">
-        <a href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View [_1]" params="<mt:var name="content_type_name" escape="html">">">
+        <a class="d-inline-block" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View [_1]" params="<mt:var name="content_type_name" escape="html">">">
           <mtapp:svgicon id="ic_permalink" size="sm" title="<__trans phrase="View Content Data">">
         </a>
   <mt:else>
         &#160;
   </mt:if>
+      </td>
+    </tr>
+    <tr class="preview-data">
+      <td class="p-0" colspan="8">
+        <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
+          <mt:var name="preview_data">
+        </div>
       </td>
     </tr>
   <mt:if name="__last__">
@@ -186,6 +193,15 @@
     });
 
     jQuery('#content_data-listing-form').prepend('<input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">">');
+
+    jQuery('#content_data-listing-table tr.preview-data').hide();
+    jQuery('#content_data-listing-table tr.preview-data div')
+        .on('show.bs.collapse', function () {
+            jQuery(this).parents('tr').show();
+        })
+        .on('hidden.bs.collapse', function () {
+            jQuery(this).parents('tr').hide();
+        });
 
   <mt:if name="error">
     <mt:if name="replace">
