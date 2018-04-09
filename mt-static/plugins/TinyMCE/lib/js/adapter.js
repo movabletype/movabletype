@@ -200,7 +200,12 @@
                 var editorElement = textarea.replaceWith(function(){
                     return $('<div />', attrs).append(adapter.$editorElement.val());
                 });
-                $('#' + adapter.id).css({'height': 'auto'});
+                $('#' + adapter.id).css({
+                    'height': 'auto',
+                    'min-height': '350px',
+                    'max-width': '100%',
+                    'overflow-x': 'auto',
+                });
 
             } else if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
                 var div  = $('#' + adapter.id);
@@ -213,6 +218,12 @@
                     html = html.replace(/<br data-mce-bogus="1">/g,'');
                     if(html.match(/^<p><\/p>$/)) html = '';
                     return $('<textarea />', attrs).val(html);
+                });
+                $('#' + adapter.id).css({
+                    'height': '',
+                    'min-height': '',
+                    'max-width': '',
+                    'overflow-x': '',
                 });
             }
             adapter.$editorTextarea = $('#' + adapter.id);
