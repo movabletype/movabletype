@@ -21,7 +21,7 @@
     "copy-mt7-style-guide-gif": "cp -rf node_modules/mt7-style-guide/html/images/*.gif mt-static/images/",
     "copy-mt7-style-guide-svg": "cp -rf node_modules/mt7-style-guide/html/images/*.svg mt-static/images/",
     "copy-mt7-style-guide-icons": "rm -rf mt-static/image/icons/* && cp -rf node_modules/mt7-style-guide/html/images/icons/* mt-static/images/icons/",
-    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:6.9.2 bash -c \"npm install -g yarn riot-cli && yarn build-riot && git status -s && [ `git status -s | wc -l` = 0 ]\""
+    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:6.9.2 bash -c \"npm install -g yarn riot-cli && yarn build-riot\" && test `git status -s | wc -l` = 0"
   },
   "repository": {
     "type": "git",
