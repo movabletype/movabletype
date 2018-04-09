@@ -1058,7 +1058,6 @@ sub make_content_data {
 {
 
     my $mock_permission;
-    my ( %perms, $load_content_type_perm );
 
     sub _mock_perms_from_registry {
         eval { require Test::MockModule } or return;
@@ -1067,22 +1066,16 @@ sub make_content_data {
         $mock_permission->mock(
             'perms_from_registry',
             sub {
-                return \%perms if ( %perms && $load_content_type_perm );
-
-                my $regs = MT::Component->registry('permissions');
-                my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
-                %perms = map { $_ => MT->registry( 'permissions' => $_ ) }
-                    keys %keys;
+                my %perms = %{ $mock_permission->original('perms_from_registry')->() };
                 my $content_type_perm
                     = MT->app->model('content_type')->all_permissions;
-                %perms = +( %perms, %{$content_type_perm} );
-
-                $load_content_type_perm = 1 if $content_type_perm;
-
+                foreach my $k ( keys %$content_type_perm ) {
+                    next if exists $perms{$k};
+                    $perms{$k} = $content_type_perm->{$k};
+                }
                 \%perms;
             }
         ) if !$mock_permission->is_mocked('perms_from_registry');
-
     }
 }
 
