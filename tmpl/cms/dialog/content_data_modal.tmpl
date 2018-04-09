@@ -129,7 +129,7 @@ jQuery('.actions-bar button.primary').click(function() {
       return;
     }
 
-    var previewData = jQuery(input).parents('tr').find('.content-data-data .card-body').html();
+    var previewData = jQuery(input).parents('tr').next('.content-data-preview-data').find('div').html();
     var html = getCollapseHtml(id, label, previewData);
     $contentDataContainer.children('.alert').before(html);
   });
