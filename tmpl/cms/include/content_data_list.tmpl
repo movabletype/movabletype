@@ -30,13 +30,13 @@
               <span class="col-label"><__trans phrase="Label"></span>
             </th>
             <th class="head string" scope="col">
-              <span class="col-label"><__trans phrase="Data"></span>
-            </th>
-            <th class="head string" scope="col">
               <span class="col-label"><__trans phrase="Date Modified"></span>
             </th>
             <th class="head string" scope="col">
               <span class="col-label"><__trans phrase="Author"></span>
+            </th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Data"></span>
             </th>
           </thead>
 </mt:unless>
@@ -53,32 +53,29 @@
               <td class="content-data-label primary">
                 <mt:var name="label" escape="html">
               </td>
-              <td class="content-data-data">
-                <p>
-                  <a class="btn btn-link p-0" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
-                    <span><__trans phrase="Open"></span>
-                    <span><__trans phrase="Close"></span>
-                  </a>
-                </p>
-                <div class="collapse" id="content-data-data-<mt:var name="id" escape="html">">
-                  <div class="card">
-                    <div class="card-body">
-                      <mt:var name="preview_data">
-                    </div>
-                  </div>
-                </div>
-              </td>
               <td class="content-data-modified-date">
                 <mt:var name="modified_date" escape="html">
               </td>
               <td class="content-data-author">
                 <mt:var name="author_name" escape="html">
               </td>
+              <td class="content-data-data">
+                <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+                  <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
+                </a>
+              </td>
+            </tr>
+            <tr class="content-data-preview-data">
+              <td class="p-0" colspan="5">
+                <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
+                  <mt:var name="preview_data">
+                </div>
+              </td>
             </tr>
 </mt:loop>
 <mt:unless name="object_loop">
             <tr class="odd">
-              <td class="fullwidth-row" colspan="4">
+              <td class="fullwidth-row" colspan="5">
                 <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
               </td>
             </tr>
@@ -96,14 +93,24 @@
 
 <mt:setvarblock name="css_include" append="1">
 <style>
-td.content-data-data [aria-expanded=false] span:last-child,
-td.content-data-data [aria-expanded=true] span:first-child {
-  display: none;
-}
-
 td.content-data-data table td,
 td.content-data-data table th {
   border: 1px solid #000000;
+}
+
+tr.content-data-preview-data {
+  background-color: #f4f4f4;
+}
+
+.content-data-data .mt-icon--secondary{
+  margin: 0 .5rem 0 0;
+  transition: 0.2s ease-in-out;
+}
+.content-data-data a[aria-expanded="false"] .mt-icon--secondary{
+  transform: rotate(180deg);
+}
+.content-data-data a[aria-expanded="true"] .mt-icon--secondary{
+  transform: rotate(0deg);
 }
 </style>
 </mt:setvarblock>
@@ -157,6 +164,7 @@ function loadContentDataList(offset) {
           canPagenate = false;
         }
       }
+      jQuery('tr.content-data-preview-data').hide();
     },
     complete: function () {
       jQuery('.indicator, #listing-table-overlay').hide();
@@ -319,6 +327,14 @@ jQuery('.actions-bar button.primary').click(function () {
   }
   // Set content_data ID
   jQuery('#select_content_data input[name="id"]').val(ids.join(','));
+});
+
+jQuery(document).on('show.bs.collapse', 'tr.content-data-preview-data div', function () {
+  jQuery(this).parents('tr').show();
+});
+
+jQuery(document).on('hidden.bs.collapse', 'tr.content-data-preview-data div', function () {
+  jQuery(this).parents('tr').hide();
 });
 
 // Initial loading
