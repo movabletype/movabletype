@@ -294,7 +294,7 @@ function toggleContentTypeDateTimeInputs() {
               <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if><mt:if name="hidden"> style="display: none;"</mt:if>>
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="custom-control-input cb" />
-                  <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"></label>
+                  <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
                 </div>
               </li>
             </mt:loop>

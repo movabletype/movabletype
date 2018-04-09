@@ -1594,18 +1594,30 @@ sub do_search_replace {
             : exists( $search_api->{plugin} )
             ? $search_api->{plugin}->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
+        $search_field{replaceable}
+            = ( grep { $_ eq $field } @{ $search_api->{replace_cols} || [] } )
+            ? 1
+            : 0;
         push @search_cols, \%search_field;
     }
     if ( $res{object_type} eq 'content_data' ) {
         for my $ct (@content_types) {
-            push @search_cols, map {
-                +{  field       => '__field:' . $_->{id},
-                    label       => $_->{options}{label},
-                    selected    => exists( $cols{ '__field:' . $_->{id} } ),
+            for my $f ( @{ $ct->searchable_fields } ) {
+                push @search_cols,
+                    +{
+                    field       => '__field:' . $f->{id},
+                    label       => $f->{options}{label},
+                    selected    => exists( $cols{ '__field:' . $f->{id} } ),
                     hidden      => ( $ct->id != $content_type->id ) ? 1 : 0,
                     field_ct_id => $ct->id,
-                    }
-            } @{ $ct->searchable_fields };
+                    replaceable => (
+                        grep { $_->{id} == $f->{id} }
+                            @{ $ct->replaceable_fields }
+                        )
+                    ? 1
+                    : 0,
+                    };
+            }
         }
     }
     $res{'search_cols'} = \@search_cols;
