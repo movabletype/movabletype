@@ -13,6 +13,8 @@ env:
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.18" TEST_COMMAND="phpunit && make test-php-lint"
 
+    - TEST_COMMAND="npm run test-riot"
+
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
@@ -28,8 +30,6 @@ env:
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
     - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.24" TEST_COMMAND="phpunit && make test-php-lint"
-
-    - TEST_COMMAND="npm run test-riot"
 
 script:
   - if [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && $TEST_COMMAND" ; fi
