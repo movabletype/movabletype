@@ -10345,16 +10345,24 @@ fieldset.form-group {
   resize: none;
 }
 
+.mt-contentblock__embed {
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  resize: none;
+}
+
 .mt-contentblock__block {
   margin: 0 0 0.5rem;
   padding: 0.5rem;
   display: table;
   width: auto;
+  background: transparent;
+  -webkit-transition: background-color .15s ease-in-out;
+  transition: background-color .15s ease-in-out;
 }
 
 .mt-contentblock__block:hover {
   border-radius: 0.25rem;
-  background: #E0E0E0;
+  background: #F4F4F4;
   cursor: pointer;
 }
 
