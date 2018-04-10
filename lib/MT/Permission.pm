@@ -297,9 +297,6 @@ sub global_perms {
                 foreach my $pk (%$perms) {
                     my ( $scope, $name ) = split /\./, $pk;
                     next unless $scope && $name;
-                    next
-                        if defined $perms->{$pk}->{display}
-                        && $perms->{$pk}->{display} == 0;
                     my $label
                         = 'CODE' eq ref( $perms->{$pk}{label} )
                         ? $perms->{$pk}{label}->()
@@ -508,8 +505,7 @@ sub can_post {
 sub can_edit_authors {
     my $perms  = shift;
     my $author = $perms->user;
-    $perms->can_administer_site
-        || ( $author && $author->can_manage_users_groups() );
+    $perms->can_administer_site || ( $author && $author->can_manage_users_groups() );
 }
 
 sub can_edit_entry {
