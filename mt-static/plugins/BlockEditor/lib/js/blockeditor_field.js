@@ -36,8 +36,8 @@
             var edit_field_input = field_instance.create.apply(field_instance, [id, self.data]);
 
             var class_name = 'mt-contentblock__block';
-            if (edit_field_input.find('textarea').length > 0 || edit_field_input.find('[type=text]').length > 0){
-                class_name = 'mt-contentblock__textarea'
+            if (edit_field_input.find('.mt-contentblock__embed').length > 0){
+                class_name = 'mt-contentblock__block w-100'
             }
             var field_content = $('<div data-toggle="popover"' + self.id + '"></div>');
             field_content.addClass(class_name);

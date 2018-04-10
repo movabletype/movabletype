@@ -27,11 +27,11 @@
             var self = this;
             self.id = id;
             if(!self.data.value){
-              self.data.value = trans('Text');
+              self.data.value = '';
             }
 
-            self.edit_field = $('<div class="mt-contentblock__block"></div>');
-            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="text high html5-form form-control content-field　mt-contentblock__textarea" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
+            self.edit_field = $('<div></div>');
+            self.edit_field_input = $('<textarea id="' + self.id + '-text" class="mt-contentblock__textarea" name="' + self.id + '-text" mt:watch-change="1"></textarea>');
             self.edit_field_input.text(self.data.value);
             self.edit_field.append(self.edit_field_input);
             self.edit_field.append($('<input type="hidden" data-target="' + self.id + '-text" value="richtext">'));
