@@ -1042,7 +1042,7 @@ sub list {
         my @act;
         if ( 'CODE' eq ref $list_permission ) {
             my $code = $list_permission;
-            eval { @act = $code->(); };
+            eval { $list_permission = $code->(); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
@@ -1052,14 +1052,15 @@ sub list {
         elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
+            eval { $list_permission = $code->(); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
                 )
             ) if $@;
         }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
+
+        if ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
         }
         else {

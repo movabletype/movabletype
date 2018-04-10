@@ -974,18 +974,15 @@ sub site_list_widget {
             $item->{name} = $ct->name;
             $item->{can_create}
                 = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
+                || $perm->can_do('create_new_content_data')
                 ? 1
-                : $app->can_do("edit_all_content_data") ? 1
-                :                                         0;
+                : 0;
             $item->{can_list}
-                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
+                = $perm->can_do(
+                "access_to_content_data_list_" . $ct->unique_id )
+                || $perm->can_do('access_to_content_data_list')
                 ? 1
-                : $perm->can_do(
-                "publish_content_data_via_list_" . $ct->unique_id ) ? 1
-                : $perm->can_do( "edit_all_content_data_" . $ct->unique_id )
-                ? 1
-                : $app->can_do("edit_all_content_data") ? 1
-                :                                         0;
+                : 0;
             $item->{type_id}         = 'content_data_' . $ct->id;
             $item->{content_type_id} = $ct->id;
 

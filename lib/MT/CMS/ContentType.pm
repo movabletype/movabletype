@@ -863,7 +863,10 @@ sub _make_content_data_listing_screens {
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
             permission          => sub {
-                return 'access_to_content_data_list_' . $ct->unique_id;
+                return [
+                    'access_to_content_data_list_' . $ct->unique_id,
+                    'access_to_content_data_list',
+                ];
             },
             feed_link           => sub {
 
