@@ -29,9 +29,24 @@
                 <__trans phrase="Archive Templates">
               </a>
             </li>
+            <li id="ct-tab">
+              <a href="<$mt:var name="script_url_plus"$>#archive" onclick="showTable('ct-listing');">
+                <__trans phrase="Content type Templates">
+              </a>
+            </li>
             <li id="module-tab">
               <a href="<$mt:var name="script_url_plus"$>#module" onclick="showTable('module-listing');">
                 <__trans phrase="Template Modules">
+              </a>
+            </li>
+            <li id="widget-set-tab">
+              <a href="<$mt:var name="script_url_plus"$>#widget-set" onclick="showTable('widget-set-listing');">
+                <__trans phrase="Widget Sets">
+              </a>
+            </li>
+            <li id="widget-tab">
+              <a href="<$mt:var name="script_url_plus"$>#widget-set" onclick="showTable('widget-listing');">
+                <__trans phrase="Widget Templates">
               </a>
             </li>
         <mt:else>
@@ -53,6 +68,16 @@
             <li id="system-tab">
               <a href="<mt:var name="script_url">?__mode=list_template#system" onclick="showTable('system-listing');">
                 <__trans phrase="System Templates">
+              </a>
+            </li>
+            <li id="widget-set-tab">
+              <a href="<mt:var name="script_url">?__mode=list_template#widget-set" onclick="showTable('widget-set-listing');">
+                <__trans phrase="Widget Sets">
+              </a>
+            </li>
+            <li id="widget-tab">
+              <a href="<mt:var name="script_url">?__mode=list_template#widget" onclick="showTable('widget-listing');">
+                <__trans phrase="Widget Templates">
               </a>
             </li>
         </mt:if>
@@ -79,6 +104,12 @@
         </mt:if>
         </ul>
     </mtapp:widget>
+<mt:if name="object_loop">
+    <mtapp:widget id="tips" label="<__trans phrase="Helpful Tips">">
+        <p><__trans phrase="To add a widget set to your templates, use the following syntax:"></p>
+        <p><__trans phrase="<strong>&lt;$MTWidgetSet name=&quot;Name of the Widget Set&quot;$&gt;</strong>"></p>
+    </mtapp:widget>
+</mt:if>
     <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
 
@@ -87,9 +118,9 @@
 /* <![CDATA[ */
     <mt:unless name="filter_key" eq="backup_templates">
         <mt:if name="blog_id">
-var tableList = ["index", "archive", "module", "system"];
+var tableList = ["index", "archive", "ct", "module", "system", "widget-set", "widget"];
         <mt:else>
-var tableList = ["module", "email", "system"];
+var tableList = ["module", "email", "system", "widget-set", "widget"];
         </mt:if>
     <mt:else>
 var tableList = ["backup"];
@@ -123,6 +154,25 @@ function init() {
 </mt:loop>
     var name = (window.location.hash && window.location.hash.match( /^#/ ) ) ? window.location.hash.substr(1) : "all";
     showTable(name + "-listing");
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_inclue" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tableselect.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/widget.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var widgetSetTableSelect;
+var widgetTableSelect;
+function init() {
+    // setup
+    widgetSetTableSelect = new TC.TableSelect( "template-listing-table" );
+    widgetSetTableSelect.rowSelect = true;
+    widgetTableSelect = new TC.TableSelect( "widget-listing-table" );
+    widgetTableSelect.rowSelect = true;
 }
 /* ]]> */
 </script>
@@ -173,6 +223,93 @@ function init() {
 </mt:if>
 <$mt:include name="include/template_table.tmpl"$>
 </mt:loop>
+
+<mt:unless name="filter_key" eq="backup_templates">
+<mt:setvarblock name="listing_header">
+<h3><__trans phrase="Widget Sets"></h3>
+<p>
+  <a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
+    <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create Widget Set">">
+    <__trans phrase="Create Widget Set">
+  </a>
+</p>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+<button
+   onclick="MT.Util.doRemoveItems(MT.Util.getByID('widget-set-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
+   accesskey="x"
+   title="<__trans phrase="Delete selected Widget Sets (x)">"
+   class="btn btn-default button">
+  <__trans phrase="Delete">
+</button>
+</mt:setvarblock>
+<mt:setvar name="has_pulldown_actions" value="0">
+
+<mtapp:listing id="widget-set-listing" type="widget_set" hide_pager="1">
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="id-head" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="id-head"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+      <th class="head widgetmanager-widgets primary"><span class="col-label"><__trans phrase="Installed Widgets"></span></th>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" id="id_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
+          <label class="custom-control-label" for="id_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
+      <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
+      <td class="widgetmanager-widgets"><mt:var name="names" escape="html"></td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+<mt:else>
+  <div id="widget-set-listing" class="listing zero-state-listing zero-state">
+    <div class="listing-header">
+      <mt:var name="listing_header">
+    </div>
+    <mtapp:statusmsg
+       id="zero-state"
+       class="info zero-state"
+       can_close="0">
+      <__trans phrase="No widget sets could be found.">
+    </mtapp:statusmsg>
+  </div>
+</mtapp:listing>
+
+<mt:setvarblock name="create_link">
+<p>
+  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
+    <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create widget template">">
+    <__trans phrase="Create widget template">
+  </a>
+</p>
+</mt:setvarblock>
+
+<mt:include name="include/template_table.tmpl"
+    object_loop="$widget_table"
+    template_type="widget"
+    has_list_actions="$widget_has_list_actions"
+    has_pulldown_actions="$widget_has_pulldown_actions"
+    list_actions="$widget_list_actions"
+    more_list_actions="$widget_more_list_actions">
+</mt:unless>
+
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
