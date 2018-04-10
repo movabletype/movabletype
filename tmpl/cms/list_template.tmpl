@@ -217,6 +217,42 @@ function init() {
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
+
+<mt:unless name="filter_key" eq="backup_templates">
+<div class="form-row">
+  <div class="col-auto ml-auto form-inline">
+    <mtapp:svgicon id="ic_add" title="create" color="primary">
+    <select id="new-template-type" class="custom-select form-control ml-3" name="template_type_to_create">
+  <mt:if name="blog_id">
+      <option value="">Select template type</option>
+      <option value="index"><__trans phrase="Index"></option>
+      <option value="individual"><__trans phrase="Entry Archive"></option>
+      <option value="archive"><__trans phrase="Entry Listing Archive"></option>
+      <option value="page"><__trans phrase="Page Archive"></option>
+    <mt:if name="content_type_exists">
+      <option value="ct"><__trans phrase="Content Type Archive"></option>
+      <option value="ct_archive"><__trans phrase="Content Type Listing Archive"></option>
+    </mt:if>
+  </mt:if>
+      <option value="module"><__trans phrase="Template Module"></option>
+      <option value="<mt:var name="script_url" escape="html">?__mode=edit_widget&blog_id=<mt:var name="blog_id" escape="html">"><__trans phrase="Widget Set"></option>
+      <option value="widget"><__trans phrase="Widget Template"></option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button
+      id="create-template"
+      accesskey="c"
+      title="<__trans phrase="Create new template (c)">"
+      class="btn btn-primary"
+      disabled="disabled"
+    >
+      <__trans phrase="Create">
+    </button>
+  </div>
+</div>
+</mt:unless>
+
 <mt:loop name="template_type_loop">
 <mt:if name="__first__">
 <$mt:var name="list_filter_form"$>
@@ -227,12 +263,6 @@ function init() {
 <mt:unless name="filter_key" eq="backup_templates">
 <mt:setvarblock name="listing_header">
 <h3><__trans phrase="Widget Sets"></h3>
-<p>
-  <a href="<mt:var name="script_url">?__mode=edit_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
-    <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create Widget Set">">
-    <__trans phrase="Create Widget Set">
-  </a>
-</p>
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
@@ -292,15 +322,6 @@ function init() {
   </div>
 </mtapp:listing>
 
-<mt:setvarblock name="create_link">
-<p>
-  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create d-inline-block">
-    <mtapp:svgicon id="ic_add" size="sm" title="<__trans phrase="Create widget template">">
-    <__trans phrase="Create widget template">
-  </a>
-</p>
-</mt:setvarblock>
-
 <mt:include name="include/template_table.tmpl"
     object_loop="$widget_table"
     template_type="widget"
@@ -312,9 +333,42 @@ function init() {
 
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+#create-template-button[disabled] {
+  cursor: default;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
     init();
     jQuery.mtCheckbox();
+
+    function updateButtonStatus() {
+        var $selectBox = jQuery('select#new-template-type');
+        var $button = jQuery('button#create-template');
+        if ($selectBox.val()) {
+            $button.removeAttr('disabled');
+        } else {
+            $button.attr('disabled', 'disabled');
+        }
+    }
+    jQuery('select#new-template-type').on('change', updateButtonStatus);
+    updateButtonStatus();
+
+    jQuery('button#create-template').on('click', function () {
+        var newTemplateType = jQuery('#new-template-type').val();
+        var nextUrl;
+        if (newTemplateType.match(/\?/)) {
+            nextUrl = newTemplateType;
+        } else {
+            nextUrl = ScriptURI + '?__mode=view&_type=template'
+                            + '&blog_id=<mt:var name="blog_id" escape="js">'
+                            + '&type=' + newTemplateType;
+        }
+        location.href = nextUrl;
+    });
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
