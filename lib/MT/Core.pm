@@ -2725,7 +2725,6 @@ sub load_core_permissions {
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
                 'delete_website'                => 1,
-                'administer_site'               => 1,
 
                 # administer_blog
                 'access_to_blog_association_list'  => 1,

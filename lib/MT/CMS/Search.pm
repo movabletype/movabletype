@@ -916,17 +916,13 @@ sub do_search_replace {
                     $blog = MT::Blog->load($blog_id) if $blog_id;
                     if (   $blog
                         && !$blog->is_blog
-                        && ($author->permissions($blog_id)->has('administer_site')
+                        && ($author->permissions($blog_id)->has('create_site')
                             || $author->is_superuser )
                         )
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids;
-                        foreach my $b ( @blogs ) {
-                            push @blog_ids, $b->id
-                                if $author->permissions($b->id)->has('administer_site');
-                        }
+                        my @blog_ids = map { $_->id } @blogs;
                         push @blog_ids, $blog_id;
                         $terms{blog_id} = \@blog_ids;
                     }
@@ -943,15 +939,10 @@ sub do_search_replace {
                 $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
-                    && $author->permissions($blog_id)->has('administer_site') )
+                    && $author->permissions($blog_id)->has('create_site') )
                 {
-                    my @blogs
-                        = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids;
-                    foreach my $b ( @blogs ) {
-                        push @blog_ids, $b->id
-                            if $author->permissions($b->id)->has('administer_site');
-                    }
+                    my @blogs = MT::Blog->load( { parent_id => $blog->id } );
+                    my @blog_ids = map { $_->id } @blogs;
                     push @blog_ids, $blog_id;
                     %terms = ( blog_id => \@blog_ids );
                 }

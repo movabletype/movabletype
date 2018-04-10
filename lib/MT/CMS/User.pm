@@ -945,6 +945,16 @@ sub grant_role {
             foreach my $ug (@authors) {
                 next unless ref $ug;
                 MT::Association->link( $ug => $role => $blog );
+                if (   $admin_role
+                    && $role->has('create_site')
+                    && !$blog->is_blog )
+                {
+                    my $blogs = $blog->blogs;
+                    foreach my $mem_blog (@$blogs) {
+                        MT::Association->link(
+                            $ug => $admin_role => $mem_blog );
+                    }
+                }
             }
         }
     }

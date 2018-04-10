@@ -4549,15 +4549,11 @@ sub _load_child_blog_ids {
 
     my @ids;
     if (  !$blog->is_blog
-        && $user->permissions( $blog->id )->can_do('administer_site') )
+        && $user->permissions( $blog->id )->can_do('create_site') )
     {
         my $blogs = $blog->blogs();
-        if (  @$blogs ) {
-            foreach my $b ( @$blogs ) {
-                push @ids, $b->id
-                    if $user->permissions( $b->id )->can_do('administer_site');
-            }
-        }
+        @ids = map { $_->id } @$blogs
+            if @$blogs;
     }
 
     return \@ids;

@@ -141,6 +141,18 @@ sub _can_grant {
     return 1;
 }
 
+sub _exists_administer_blog_role {
+
+    # Load permission which has admiister_blog
+    my @admin_roles = MT::Role->load_by_permission("administer_site");
+    my $admin_role;
+    foreach my $r (@admin_roles) {
+        next if $r->permissions =~ m/\'administer_site\'/;
+        return 1;
+    }
+    return;
+}
+
 sub _grant {
     my ( $app, $param_user, $role, $site ) = @_;
 
@@ -152,6 +164,28 @@ sub _grant {
         ),
         500
         );
+
+    if (  !$site->is_blog
+        && $site->has_blog
+        && $role->has('create_site')
+        && _exists_administer_blog_role() )
+    {
+# Load Blog Administrator role. If no roles found, should be return successfully.
+        my @admin_roles = MT::Role->load_by_permission("administer_site");
+        return 1 unless @admin_roles;
+        my $admin_role = $admin_roles[0];
+
+        for my $blog ( @{ $site->blogs } ) {
+            MT::Association->link( $param_user, $admin_role, $blog )
+                or return $app->error(
+                $app->translate(
+                    'Granting permission failed: [_1]',
+                    MT::Association->errstr
+                ),
+                500
+                );
+        }
+    }
 
     return 1;
 }
