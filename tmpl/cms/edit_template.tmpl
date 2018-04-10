@@ -11,7 +11,23 @@
   <mt:if name="id">
 <__trans phrase="Edit Template">
   <mt:else>
+    <mt:if name="type" eq="index">
+<__trans phrase="Create Index Template">
+    <mt:elseif name="type" eq="individual">
+<__trans phrase="Create Entry Archive Template">
+    <mt:elseif name="type" eq="archive">
+<__trans phrase="Create Entry Listing Archive Template">
+    <mt:elseif name="type" eq="page">
+<__trans phrase="Create Page Archive Template">
+    <mt:elseif name="type" eq="ct">
+<__trans phrase="Create Content Type Archive Template">
+    <mt:elseif name="type" eq="ct_archive">
+<__trans phrase="Create Content Type Listing Archive Template">
+    <mt:elseif name="type" eq="custom">
+<__trans phrase="Create Template Module">
+    <mt:else>
 <__trans phrase="Create Template">
+    </mt:if>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
