@@ -36,7 +36,7 @@ sub list_actions {
             order      => 100,
             js_message => 'delete',
             button     => 1,
-            permission => 'manage_category_set,manage_content_types',
+            permission => 'manage_category_set',
         },
     };
 }

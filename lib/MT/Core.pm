@@ -1565,9 +1565,9 @@ BEGIN {
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
                 search_type         => 'author',
-                default_sort_key => 'created_on',
-                primary          => [ 'user_name', 'role_name' ],
-                view             => 'system',
+                default_sort_key    => 'created_on',
+                primary             => [ 'user_name', 'role_name' ],
+                view                => 'system',
             },
             role => {
                 object_label     => 'Role',
@@ -1629,6 +1629,7 @@ BEGIN {
                 default_sort_key    => 'name',
                 data_api_permission => undef,
                 scope_mode          => 'this',
+                permission          => 'access_to_category_set_list',
             },
             content_type => {
                 screen_label        => 'Manage Content Type',
@@ -1639,6 +1640,7 @@ BEGIN {
                 use_filters         => 0,
                 view                => [ 'website', 'blog' ],
                 primary             => 'name',
+                permission          => 'access_to_content_type_list',
             },
             content_field => {
                 object_label        => 'Content Field',
@@ -2977,12 +2979,13 @@ sub load_core_permissions {
             label              => 'Manage Content Types',
             order              => 300,
             'permitted_action' => {
-                'create_new_content_type'    => 1,
-                'delete_content_type'        => 1,
-                'edit_all_content_types'     => 1,
-                'edit_own_content_type'      => 1,
-                'manage_content_types'       => 1,
-                'save_multiple_content_type' => 1,
+                'create_new_content_type'     => 1,
+                'delete_content_type'         => 1,
+                'edit_all_content_types'      => 1,
+                'edit_own_content_type'       => 1,
+                'manage_content_types'        => 1,
+                'save_multiple_content_type'  => 1,
+                'access_to_content_type_list' => 1,
             }
         },
         'blog.manage_content_data' => {
@@ -3151,8 +3154,11 @@ sub load_core_permissions {
             'order'            => 1000,
             'inherit_from'     => ['blog.edit_categories'],
             'permitted_action' => {
-                'edit_category_set',           'save_category_set',
-                'access_to_category_set_list', 'delete_category_set',
+                'edit_category_set'           => 1,
+                'save_category_set'           => 1,
+                'access_to_category_set_list' => 1,
+                'delete_category_set'         => 1,
+                'manage_category_set'         => 1,
             }
         },
         'blog.upload' => {
@@ -3380,17 +3386,17 @@ sub load_core_permissions {
                 'system.sign_in_cms'
             ],
             permitted_action => {
-                'access_to_system_dashboard' => 1,
-                'create_new_content_type'    => 1,
-                'delete_content_type'        => 1,
-                'edit_all_content_types'     => 1,
-                'edit_own_content_type'      => 1,
-                'manage_content_types'       => 1,
-                'save_multiple_content_type' => 1,
-                'access_to_website_list'     => 1,
-                'access_to_blog_list'        => 1,
-                'use_tools:search'           => 0,
-
+                'access_to_system_dashboard'  => 1,
+                'create_new_content_type'     => 1,
+                'delete_content_type'         => 1,
+                'edit_all_content_types'      => 1,
+                'edit_own_content_type'       => 1,
+                'manage_content_types'        => 1,
+                'save_multiple_content_type'  => 1,
+                'access_to_website_list'      => 1,
+                'access_to_blog_list'         => 1,
+                'use_tools:search'            => 0,
+                'access_to_content_type_list' => 1,
             },
         },
     };
