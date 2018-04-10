@@ -206,37 +206,6 @@ sub add_blog {
 
     $blog->parent_id( $website->id );
     $blog->save;
-
-# Apply permission to website administrator if (s)he has manage_member_blogs permission.
-    my $author_class   = MT->model('author');
-    my @website_admins = $author_class->load(
-        { type => MT::Author::AUTHOR(), },
-        {   join => MT::Permission->join_on(
-                'author_id',
-                {   permissions => "\%'create_site'\%",
-                    blog_id     => $website->id,
-                },
-                { 'like' => { 'permissions' => 1 } }
-            )
-        }
-    );
-    if (@website_admins) {
-        require MT::Association;
-        require MT::Role;
-        my $user = MT->instance->user;
-        if ($user) {
-            my @roles = MT::Role->load_by_permission("administer_site");
-            my $role;
-            foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_site\'/;
-                $role = $r;
-                last;
-            }
-            foreach my $adm (@website_admins) {
-                MT::Association->link( $adm => $role => $blog );
-            }
-        }
-    }
 }
 
 1;
