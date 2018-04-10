@@ -341,11 +341,14 @@ sub _create_content_data_permission {
     my $self            = shift;
     my $permission_name = 'blog.create_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group => $self->permission_group,
-            label => 'Create Content Data',
-            order => 200,
-            permitted_action =>
-                { 'create_new_content_data_' . $self->unique_id => 1, },
+            group            => $self->permission_group,
+            label            => 'Create Content Data',
+            order            => 200,
+            permitted_action => {
+                'create_new_content_data_' . $self->unique_id => 1,
+                'access_to_insert_asset_list'                 => 1,
+                'insert_asset'                                => 1,
+            },
             content_type_unique_id => $self->unique_id,
         }
     );
@@ -388,6 +391,8 @@ sub _edit_all_content_data_permission {
                 'edit_all_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_all_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
+                'access_to_insert_asset_list'                           => 1,
+                'insert_asset'                                          => 1,
             },
             content_type_unique_id => $self->unique_id,
         }
