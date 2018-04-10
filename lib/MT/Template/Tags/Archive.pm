@@ -60,6 +60,14 @@ sub _hdlr_archive_set {
     my $vars    = $ctx->{__stash}{vars} ||= {};
 
     foreach my $type (@at) {
+        my $archiver = MT->publisher->archiver($type);
+        local $vars->{template_params} = {};
+        map {
+            $vars->{template_params}{ '__' . $_ }
+                = $archiver->template_params->{$_}
+            }
+            keys %{ $archiver->template_params };
+
         $blog->archive_type_preferred($type);
         local $ctx->{current_archive_type} = $type;
         local $vars->{__first__}           = $i == 1;
