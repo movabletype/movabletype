@@ -16,7 +16,7 @@ auto-completion of words using an input box and a DHTML selection menu
 /*
 - Given an array of possible auto-completion words...
 - Keep in memory the current word being typed
-- on keyDown:
+- on keyUp:
     - if the character is a space, kill the internal word memory
     - if the character is a tab, autocomplete with the selected word
     - otherwise, narrow down the list of possible matches
@@ -55,8 +55,8 @@ TC.TagComplete.prototype.attachElements = function()
         this.input_box = document.getElementById(this.id);
         if ( this.input_box ) {
             var self = this;
-            var keyDown = function( event ) { return self.keyDown( event ); }
-            TC.attachEvent( this.input_box, "keydown", keyDown );
+            var keyUp = function( event ) { return self.keyUp( event ); }
+            TC.attachEvent( this.input_box, "keyup", keyUp );
             this.input_box.setAttribute("autocomplete", "off");
         }
     }
@@ -69,7 +69,7 @@ TC.TagComplete.prototype.attachElements = function()
         window.setTimeout( "TC.TagComplete.instances[ '" + this.id + "' ].attachElements();", 1000 );
 }
 
-TC.TagComplete.prototype.keyDown = function( evt )
+TC.TagComplete.prototype.keyUp = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
@@ -268,8 +268,8 @@ TC.TagComplete.prototype.constructCompletionBox = function()
     var margin = 30;
     if ($scrollableParent.scrollTop() > $inputBox.offset().top) {
       $scrollableParent.scrollTop($inputBox.offset().top - margin);
-    } else if ($scrollableParent.scrollTop() + jQuery(window).height() < $parentElement.offset().top + $parentElement.height()) {
-      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - jQuery(window).height());
+    } else if ($scrollableParent.scrollTop() + $scrollableParent.height() < $parentElement.offset().top + $parentElement.height()) {
+      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - $scrollableParent.height());
     }
 }
 
