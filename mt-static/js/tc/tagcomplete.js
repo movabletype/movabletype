@@ -268,8 +268,8 @@ TC.TagComplete.prototype.constructCompletionBox = function()
     var margin = 30;
     if ($scrollableParent.scrollTop() > $inputBox.offset().top) {
       $scrollableParent.scrollTop($inputBox.offset().top - margin);
-    } else if ($scrollableParent.scrollTop() + jQuery(window).height() < $parentElement.offset().top + $parentElement.height()) {
-      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - jQuery(window).height());
+    } else if ($scrollableParent.scrollTop() + $scrollableParent.height() < $parentElement.offset().top + $parentElement.height()) {
+      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - $scrollableParent.height());
     }
 }
 
