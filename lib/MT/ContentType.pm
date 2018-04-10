@@ -345,9 +345,10 @@ sub _create_content_data_permission {
             label            => 'Create Content Data',
             order            => 200,
             permitted_action => {
-                'create_new_content_data_' . $self->unique_id => 1,
-                'access_to_insert_asset_list'                 => 1,
-                'insert_asset'                                => 1,
+                'access_to_content_data_list_' . $self->unique_id => 1,
+                'create_new_content_data_' . $self->unique_id     => 1,
+                'access_to_insert_asset_list'                     => 1,
+                'insert_asset'                                    => 1,
             },
             content_type_unique_id => $self->unique_id,
         }
@@ -366,6 +367,7 @@ sub _publish_content_data_permission {
             label            => 'Publish Content Data',
             order            => 300,
             permitted_action => {
+                'access_to_content_data_list_' . $self->unique_id       => 1,
                 'edit_own_published_content_data_' . $self->unique_id   => 1,
                 'edit_own_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_own_content_data_' . $self->unique_id          => 1,
@@ -386,6 +388,7 @@ sub _edit_all_content_data_permission {
             label            => 'Edit All Content Data',
             order            => 400,
             permitted_action => {
+                'access_to_content_data_list_' . $self->unique_id       => 1,
                 'edit_all_content_data_' . $self->unique_id             => 1,
                 'edit_all_published_content_data_' . $self->unique_id   => 1,
                 'edit_all_unpublished_content_data_' . $self->unique_id => 1,

@@ -37,20 +37,27 @@ sub edit {
 
     $param ||= {};
 
+    # Parameter check
     my $content_type_id = $app->param('content_type_id')
         or return $app->errtrans("Invalid request.");
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans('Invalid request.');
 
-    my $perm = $app->permissions;
-    $param->{can_publish_post} = 1
-        if (
-           $perm->can_do('publish_all_content_data')
-        || $perm->can_do('edit_all_content_data')
-        || $perm->can_do(
-            'publish_content_data_via_list_' . $content_type->unique_id
-        )
-        );
+    # Permission check
+    my $perm = $app->permissions
+        or return $app->permission_denied();
+
+    my $content_data_id = $app->param('id');
+    if ( !$content_data_id ) {
+        return $app->permission_denied()
+            unless $perm->can_do('create_new_content_data')
+            || $perm->can_do('create_new_content_data_' . $content_type->unique_id);
+    }
+    else {
+        return $app->permission_denied()
+            unless $perm->can_edit_content_data( $content_data_id,
+            $user );
+    }
 
     if ( $content_type->blog_id != $blog->id ) {
         return $app->return_to_dashboard( redirect => 1 );
@@ -104,7 +111,6 @@ sub edit {
 
     my $array           = $content_type->fields;
     my $ct_unique_id    = $content_type->unique_id;
-    my $content_data_id = $app->param('id');
 
     $param->{use_revision} = $blog->use_revision ? 1 : 0;
 
@@ -340,6 +346,9 @@ sub edit {
         $param->{can_edit_data_label} = 1;
         $param->{data_label} = $content_data_id ? $content_data->label : '';
     }
+
+    $param->{can_publish_post} = 1
+        if ( $perm->can_do('publish_all_content_data') || $perm->can_do('edit_all_content_data_$ct_unique_id')) || ( $content_data || $perm->can_republish_content_data( $content_data, $user )  );
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;

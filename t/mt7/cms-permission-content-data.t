@@ -253,9 +253,177 @@ my $cd2 = MT::ContentData->load({
 });
 
 ### Run
-
-# create
 my ( $app, $out );
+
+# Create new
+subtest 'mode = view (new)' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by admin' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $create_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by permitted user (create)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $publish_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by permitted user (publish)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $manage_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by permitted user (manage)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $manage_content_data_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by permitted user (manage_all)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $sys_manage_content_data_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out !~ /permission=1/, 'create by permitted user (sys)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $create_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site2->id,
+            content_type_id  => $content_type2->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type2->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out =~ /permission=1/, 'create by not permitted user (create)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $publish_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site2->id,
+            content_type_id  => $content_type2->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type2->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out =~ /permission=1/, 'create by not permitted user (publish)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $manage_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site2->id,
+            content_type_id  => $content_type2->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type2->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out =~ /permission=1/, 'create by not permitted user (manage)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $manage_content_data_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site2->id,
+            content_type_id  => $content_type2->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type2->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out =~ /permission=1/, 'create by non permitted user (manage_all)' );
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $edit_user,
+            __request_method => 'GET',
+            __mode           => 'view',
+            blog_id          => $site->id,
+            content_type_id  => $content_type->id,
+            _type            => 'content_data',
+            type             => 'content_data_' . $content_type->id,
+        },
+    );
+
+    $out = delete $app->{__test_output};
+    ok( $out =~ /permission=1/, 'create by not permitted user (edit)' );
+};
+
+# Save new
 subtest 'mode = save (new)' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -272,7 +440,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by admin' );
+    ok( $out !~ /permission=1/, 'save new by admin' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -289,7 +457,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (create)' );
+    ok( $out !~ /permission=1/, 'save new by permitted user (create)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -306,7 +474,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (publish)' );
+    ok( $out !~ /permission=1/, 'save new by permitted user (publish)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -323,7 +491,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (manage)' );
+    ok( $out !~ /permission=1/, 'save new by permitted user (manage)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -340,7 +508,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (manage_all)' );
+    ok( $out !~ /permission=1/, 'save new by permitted user (manage_all)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -357,7 +525,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (manage_sys)' );
+    ok( $out !~ /permission=1/, 'save new by permitted user (manage_sys)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -374,7 +542,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (create)' );
+    ok( $out =~ /permission=1/, 'save new by non permitted user (create)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -391,7 +559,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (publish)' );
+    ok( $out =~ /permission=1/, 'save new by non permitted user (publish)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -408,7 +576,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (manage)' );
+    ok( $out =~ /permission=1/, 'save new by non permitted user (manage)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -425,7 +593,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (manage_all)' );
+    ok( $out =~ /permission=1/, 'save new by non permitted user (manage_all)' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -442,7 +610,7 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (edit_all)' );
+    ok( $out =~ /permission=1/, 'save new by non permitted user (edit_all)' );
 
 };
 

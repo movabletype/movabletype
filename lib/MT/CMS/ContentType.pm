@@ -862,6 +862,9 @@ sub _make_content_data_listing_screens {
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
+            permission          => sub {
+                return 'access_to_content_data_list_' . $ct->unique_id;
+            },
             feed_link           => sub {
 
                 # TODO: fix permission
