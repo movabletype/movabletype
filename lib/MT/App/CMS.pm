@@ -713,7 +713,9 @@ sub core_content_actions {
                     type  => 'site',
                 },
                 return_args   => 1,
-                permit_action => 'create_any_association',
+                permit_action => {
+                    system_action => 'create_any_association',
+                },
                 order         => 100,
                 dialog        => 1,
             },
@@ -1676,7 +1678,7 @@ sub core_menus {
             order             => 300,
             mode              => "list",
             args              => { _type => "association", },
-            system_permission => 'administer',
+            system_permission => "administer,manage_users_groups",
             view              => "system",
         },
 

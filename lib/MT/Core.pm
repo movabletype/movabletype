@@ -1565,8 +1565,6 @@ BEGIN {
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
                 search_type         => 'author',
-
-                #permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary          => [ 'user_name', 'role_name' ],
                 view             => 'system',
@@ -3308,6 +3306,13 @@ sub load_core_permissions {
             'order'        => 800,
             'inherit_from' => [ 'system.sign_in_cms', 'blog.manage_users' ],
             'permitted_action' => {
+                'access_to_blog_member_list'     => 1,
+                'manage_users_groups'            => 1,
+                'search_members'                 => 1,
+                'search_authors'                 => 1,
+                'remove_user_assoc'              => 1,
+                'revoke_role'                    => 1,
+                'use_tools:search'               => 1,
                 'access_to_any_group_list'       => 1,
                 'access_to_system_dashboard'     => 1,
                 'grant_administer_role'          => 1,
@@ -3322,6 +3327,10 @@ sub load_core_permissions {
                 'access_to_website_list'         => 1,
                 'access_to_blog_list'            => 1,
                 'delete_user_via_list'           => 1,
+                'access_to_permission_list'      => 1,
+                'create_any_association'         => 1,
+                'grant_role_for_all_blogs'       => 1,
+                'use_tools:search'               => 1,
             },
         },
         'system.manage_content_data' => {

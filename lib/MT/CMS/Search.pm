@@ -345,6 +345,7 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
                 return 0 if !$blog_id;
 
                 my $cnt = MT->model('permission')->count(
@@ -361,6 +362,7 @@ sub core_search_apis {
             'perm_check' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
                 return 0 if !$blog_id;
 
                 my $perm = $author->permissions($blog_id);
@@ -533,6 +535,7 @@ sub can_search_replace {
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
     return 1 if $app->user->permissions(0)->can_do('view_log');
+    return 1 if $app->user->permissions(0)->can_do('manage_users_groups');
     if ($blog_id) {
         my $perms = $app->user->permissions($blog_id);
         return 0 unless $perms;
