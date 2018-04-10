@@ -54,6 +54,7 @@ sub template_params {
         archive_template            => 1,
         archive_listing             => 1,
         category_based_archive      => 1,
+        category_set_based_archive  => 1,
         contenttype_archive_listing => 1,
     };
 }
