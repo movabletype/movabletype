@@ -368,7 +368,6 @@ sub _publish_content_data_permission {
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
-                'rebuild'                                               => 1,
             },
             content_type_unique_id => $self->unique_id,
             inherit_from           => \@perms,
