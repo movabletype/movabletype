@@ -55,10 +55,11 @@ my $permitted_action
     . $content_type->unique_id
     . '-content_field:'
     . $content_field->unique_id;
+my $create_action = "create_content_data:" . $content_type->unique_id;
 
 my $edit_field_role = MT::Test::Permission->make_role(
     name => 'Edit Content Field "' . $content_field->name . '"',
-    permissions => "'" . $permitted_action . "'"
+    permissions => "'" . $create_action . "','" . $permitted_action . "'"
 );
 require MT::Association;
 MT::Association->link( $user => $edit_field_role => $site );
@@ -73,12 +74,12 @@ my ( $app, $out );
 $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $user,
-        __request_method => 'POST',
+        __request_method => 'GET',
         __mode           => 'view',
         blog_id          => $content_type->blog_id,
         content_type_id  => $content_type->id,
         _type            => 'content_data',
-        type             => 'content_data_1'
+        type             => 'content_data_' . $content_type->id
     },
 );
 
@@ -90,11 +91,12 @@ MT::Association->unlink( $user => $edit_field_role => $site );
 $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $user,
-        __request_method => 'POST',
+        __request_method => 'GET',
         __mode           => 'view',
         blog_id          => $content_type->blog_id,
         content_type_id  => $content_type->id,
         _type            => 'content_data',
+        type             => 'content_data_' . $content_type->id
     },
 );
 $out = delete $app->{__test_output};
