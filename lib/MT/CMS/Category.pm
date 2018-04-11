@@ -182,7 +182,7 @@ sub bulk_update {
             return $app->json_error( $app->translate("Permission denied.") );
 
         if ($is_category_set) {
-            return $app->json_error( $app->translate('Permission defined.') )
+            return $app->json_error( $app->translate('Permission denied.') )
                 unless ( $app->user->can_manage_content_types
                 || $app->can_do('save_category_set') );
         }
