@@ -11,7 +11,23 @@
   <mt:if name="id">
 <__trans phrase="Edit Template">
   <mt:else>
+    <mt:if name="type" eq="index">
+<__trans phrase="Create Index Template">
+    <mt:elseif name="type" eq="individual">
+<__trans phrase="Create Entry Archive Template">
+    <mt:elseif name="type" eq="archive">
+<__trans phrase="Create Entry Listing Archive Template">
+    <mt:elseif name="type" eq="page">
+<__trans phrase="Create Page Archive Template">
+    <mt:elseif name="type" eq="ct">
+<__trans phrase="Create Content Type Archive Template">
+    <mt:elseif name="type" eq="ct_archive">
+<__trans phrase="Create Content Type Listing Archive Template">
+    <mt:elseif name="type" eq="custom">
+<__trans phrase="Create Template Module">
+    <mt:else>
 <__trans phrase="Create Template">
+    </mt:if>
   </mt:if>
 </mt:if>
 </mt:setvarblock>
@@ -140,9 +156,9 @@
   </mt:if>
   <mt:if name="template_group" eq="widget">
     <li>
-      <a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
-        <mtapp:svgicon id="ic_related" title="<__trans phrase="Widgets">" size="sm">
-        <__trans phrase="Widgets">
+      <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related d-inline-block">
+        <mtapp:svgicon id="ic_related" title="<__trans phrase="List all templates">" size="sm">
+        <__trans phrase="List all templates">
       </a>
     </li>
     <mt:if name="can_edit_config">

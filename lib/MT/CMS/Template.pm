@@ -540,7 +540,7 @@ sub edit {
                 }
                 elsif ( $obj_type eq 'ct_archive' ) {
 
-                 # only include if it is NOT a contenttype-based archive type
+                  # only include if it is NOT a contenttype-based archive type
                     next if $archiver->contenttype_based;
                 }
                 elsif ( $obj_type eq 'ct' ) {
@@ -1022,24 +1022,13 @@ sub edit {
     $param->{can_create_new_content_type} = 1
         if $perms->can_do('create_new_content_type');
 
-    if ( $param->{type} && $param->{type} eq 'widget' ) {
-        $app->add_breadcrumb(
-            $app->translate('Widgets'),
-            $app->uri(
-                mode => 'list_widget',
-                args => { blog_id => $blog_id },
-            ),
-        );
-    }
-    else {
-        $app->add_breadcrumb(
-            $app->translate('Templates'),
-            $app->uri(
-                mode => 'list_template',
-                args => { blog_id => $blog_id },
-            ),
-        );
-    }
+    $app->add_breadcrumb(
+        $app->translate('Templates'),
+        $app->uri(
+            mode => 'list_template',
+            args => { blog_id => $blog_id },
+        ),
+    );
     if ( $param->{id} ) {
         $app->add_breadcrumb( $param->{name} );
     }
@@ -1061,9 +1050,14 @@ sub list {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
         unless $perms || $app->user->is_superuser;
-    if ( $perms && !$perms->can_edit_templates ) {
-        return $app->permission_denied();
-    }
+    return $app->permission_denied()
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site() )
+        );
     my $blog = $app->blog;
 
     require MT::Template;
@@ -1311,7 +1305,89 @@ sub list {
 
     $app->add_breadcrumb( $app->translate('Templates') );
 
-    return $app->load_tmpl( 'list_template.tmpl', $params );
+    my $widget_params = _generate_list_widget_params( $app, $blog_id );
+    my %merged_params = %$params;
+    for my $key ( keys %$widget_params ) {
+        if ( $key eq 'page_actions' ) {
+            next unless $widget_params->{$key};
+            push @{ $merged_params{$key} ||= [] },
+                @{ $widget_params->{$key} };
+        }
+        else {
+            $merged_params{$key} = $widget_params->{$key};
+        }
+    }
+
+    return $app->load_tmpl( 'list_template.tmpl', \%merged_params );
+}
+
+sub _generate_list_widget_params {
+    my ( $app, $blog_id ) = @_;
+
+    my $widget_loop = &build_template_table(
+        $app,
+        load_args => [
+            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+            { sort => 'name', direction => 'ascend' }
+        ],
+    );
+
+    my $iter
+        = $app->model('template')
+        ->load_iter(
+        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
+        { sort => 'name', direction => 'ascend' } );
+    my @widgetmanagers;
+    while ( my $widgetset = $iter->() ) {
+        next unless $widgetset;
+        my $ws_name = $widgetset->name;
+        $ws_name = '' if !defined $ws_name;
+        $ws_name =~ s/^\s+|\s+$//g;
+        $ws_name = "(" . $app->translate("No Name") . ")"
+            if $ws_name eq '';
+        my $ws = {
+            id            => $widgetset->id,
+            widgetmanager => $ws_name,
+        };
+        if ( my $modulesets = $widgetset->modulesets ) {
+            $ws->{widgets} = $modulesets;
+            my @names;
+            foreach my $module ( split ',', $modulesets ) {
+                my ($widget) = grep { $_->{id} eq $module } @$widget_loop;
+                push @names, $widget->{name} if $widget;
+            }
+            $ws->{names} = join( ', ', @names ) if @names;
+        }
+        push @widgetmanagers, $ws;
+    }
+
+    my @widget_loop;
+    if ($blog_id) {
+
+        # Remove system level widgets from the listing
+        @widget_loop = grep { $_->{blog_id} == $blog_id } @$widget_loop;
+    }
+    else {
+        @widget_loop = @$widget_loop;
+    }
+
+    my $param = {
+        @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
+        @widget_loop    ? ( widget_table => \@widget_loop )    : (),
+        search_type         => "template",
+        object_label        => $app->translate('Widget Template'),
+        object_label_plural => $app->translate('Widget Templates'),
+        template_type_label => $app->translate('Widget Templates'),
+    };
+
+    my $widget_actions = {};
+    $app->load_list_actions( 'template', $widget_actions );
+    $param->{ 'widget_' . $_ } = $widget_actions->{$_}
+        for keys %$widget_actions;
+
+    $param->{page_actions} = $app->page_actions('list_widget');
+
+    $param;
 }
 
 sub preview {
@@ -1652,7 +1728,7 @@ sub create_preview_content {
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {   limit => $number || 1,
+        {   limit     => $number || 1,
             direction => 'descend',
             'sort'    => 'authored_on',
             %$cat_args,
@@ -1801,9 +1877,9 @@ sub _populate_archive_loop {
             $custom = $map->{file_template};
             unshift @$tmpl_loop,
                 {
-                name   => $map->{file_template},
-                value  => $map->{file_template},
-                custom => 1,
+                name     => $map->{file_template},
+                value    => $map->{file_template},
+                custom   => 1,
                 selected => 1,
                 };
         }
@@ -3367,9 +3443,9 @@ sub edit_widget {
     }
 
     $app->add_breadcrumb(
-        $app->translate('Widgets'),
+        $app->translate('Templates'),
         $app->uri(
-            mode => 'list_widget',
+            mode => 'list_template',
             args => { blog_id => $blog_id },
         ),
     );
@@ -3381,96 +3457,6 @@ sub edit_widget {
     }
 
     $app->load_tmpl( 'edit_widget.tmpl', $param );
-}
-
-sub list_widget {
-    my $app = shift;
-    my (%opt) = @_;
-
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->permission_denied()
-        unless $app->user->is_superuser()
-        || $app->user->can_edit_templates()
-        || (
-        $perms
-        && (   $perms->can_edit_templates()
-            || $perms->can_administer_site() )
-        );
-
-    my $blog_id = $app->param('blog_id') || 0;
-
-    my $widget_loop = &build_template_table(
-        $app,
-        load_args => [
-            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
-            { sort => 'name', direction => 'ascend' }
-        ],
-    );
-
-    my $iter
-        = $app->model('template')
-        ->load_iter(
-        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
-        { sort => 'name', direction => 'ascend' } );
-    my @widgetmanagers;
-    while ( my $widgetset = $iter->() ) {
-        next unless $widgetset;
-        my $ws_name = $widgetset->name;
-        $ws_name = '' if !defined $ws_name;
-        $ws_name =~ s/^\s+|\s+$//g;
-        $ws_name = "(" . $app->translate("No Name") . ")"
-            if $ws_name eq '';
-        my $ws = {
-            id            => $widgetset->id,
-            widgetmanager => $ws_name,
-        };
-        if ( my $modulesets = $widgetset->modulesets ) {
-            $ws->{widgets} = $modulesets;
-            my @names;
-            foreach my $module ( split ',', $modulesets ) {
-                my ($widget) = grep { $_->{id} eq $module } @$widget_loop;
-                push @names, $widget->{name} if $widget;
-            }
-            $ws->{names} = join( ', ', @names ) if @names;
-        }
-        push @widgetmanagers, $ws;
-    }
-
-    my @widget_loop;
-    if ($blog_id) {
-
-        # Remove system level widgets from the listing
-        @widget_loop = grep { $_->{blog_id} == $blog_id } @$widget_loop;
-    }
-    else {
-        @widget_loop = @$widget_loop;
-    }
-
-    my $param = {
-        @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
-        @widget_loop    ? ( widget_table => \@widget_loop )    : (),
-        object_type         => "template",
-        search_type         => "template",
-        search_label        => MT::Template->class_label_plural,
-        listing_screen      => 1,
-        screen_id           => "list-widget-set",
-        object_label        => $app->translate('Widget Template'),
-        object_label_plural => $app->translate('Widget Templates'),
-        template_type_label => $app->translate('Widget Templates'),
-        blog_view           => 1,
-        exists( $opt{rebuild} ) ? ( rebuild => $opt{rebuild} ) : (),
-        exists( $opt{error} )   ? ( error   => $opt{error} )   : (),
-        exists( $opt{deleted} ) ? ( saved   => $opt{deleted} ) : ()
-    };
-    my $widget_actions = {};
-    $app->load_list_actions( 'template', $widget_actions );
-    $param->{ 'widget_' . $_ } = $widget_actions->{$_}
-        for keys %$widget_actions;
-    $param->{page_actions} = $app->page_actions('list_widget');
-
-    $app->add_breadcrumb( $app->translate('Widgets') );
-
-    $app->load_tmpl( 'list_widget.tmpl', $param );
 }
 
 sub delete_widget {

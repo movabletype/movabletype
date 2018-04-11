@@ -89,7 +89,6 @@ sub core_methods {
 
         ## Listing methods
         'list_template' => "${pkg}Template::list",
-        'list_widget'   => "${pkg}Template::list_widget",
         'list_asset'    => {
             code      => "${pkg}Asset::dialog_list_asset",
             condition => sub {
@@ -712,12 +711,11 @@ sub core_content_actions {
                     _type => 'user',
                     type  => 'site',
                 },
-                return_args   => 1,
-                permit_action => {
-                    system_action => 'create_any_association',
-                },
-                order         => 100,
-                dialog        => 1,
+                return_args => 1,
+                permit_action =>
+                    { system_action => 'create_any_association', },
+                order  => 100,
+                dialog => 1,
             },
         },
         'member' => {
@@ -1897,16 +1895,6 @@ sub core_menus {
             mode              => 'list_template',
             permission        => 'edit_templates',
             system_permission => 'edit_templates',
-            view              => [ "blog", 'website', 'system' ],
-        },
-        'design:widgets' => {
-            label => sub {
-                $app->translate( $app->blog ? 'Widgets' : 'Global Widgets' );
-            },
-            order             => 200,
-            mode              => 'list_widget',
-            permission        => 'edit_templates',
-            system_permission => "edit_templates",
             view              => [ "blog", 'website', 'system' ],
         },
         'design:themes' => {
