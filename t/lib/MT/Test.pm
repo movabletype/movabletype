@@ -421,7 +421,8 @@ sub init_upgrade {
         MT::Comment->remove;
 
         unless ( $args{not_create_website} ) {
-            my $website = MT::Website->new( name => 'First Website' );
+            my $website
+                = MT::Website->create_default_website('First Website');
             $website->save;
             my $author = MT::Author->load;
             my ($website_admin_role)
