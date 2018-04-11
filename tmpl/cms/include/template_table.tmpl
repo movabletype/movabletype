@@ -268,23 +268,3 @@ jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
     phrase: '<__trans phrase="to act upon" escape="js">'
 });
 </mt:setvarblock>
-
-<mt:setvarblock name="css_include" append="1">
-<style type="text/css">
-span.badge {
-  visibility: hidden;
-}
-</style>
-</mt:setvarblock>
-
-<mt:setvarblock name="jq_js_include" append="1">
-(function () {
-  var $badges = jQuery('table.listing td.publishing-method span.badge');
-  var maxWidth = $badges.toArray().reduce(function (previousWidth, badge) {
-    var width = jQuery(badge).width();
-    return (width > previousWidth) ? width : previousWidth;
-  }, 0);
-  $badges.width(maxWidth)
-         .css('visibility', 'visible');
-})();
-</mt:setvarblock>
