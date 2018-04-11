@@ -21,6 +21,7 @@ my ( $app, $out );
 
 subtest 'Upgrade from MT4 to MT7' => sub {
     MT::Test->init_db;
+    MT::Website->remove_all;
 
     my @blog_ids;
     foreach ( 0 .. 2 ) {
@@ -143,15 +144,13 @@ subtest 'Upgrade from MT4 to MT7' => sub {
 subtest 'Upgrade from MT5 to MT7' => sub {
     MT::Test->init_db;
 
-    my $website = MT::Test::Permission->make_website();
-    ok( $website, 'Create Website');
     my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
     ok( $blog, 'Create blog.' );
 
     is( MT::Website->count(), 1, 'There is one website.' );
     is( MT::Blog->count(),    1, 'There is one blog.' );
 
-    $website = MT::Website->load(1);
+    my $website = MT::Website->load(1);
     my $admin   = MT::Author->load(1);
     $admin->favorite_websites( [ $website->id ] );
     $admin->favorite_blogs(    [ $blog->id ] );
@@ -222,15 +221,13 @@ subtest 'Upgrade from MT5 to MT7' => sub {
 subtest 'Upgrade from MT6 to MT7' => sub {
     MT::Test->init_db;
 
-    my $website = MT::Test::Permission->make_website();
-    ok( $website, 'Create Website');
     my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
     ok( $blog, 'Create blog.' );
 
     is( MT::Website->count(), 1, 'There is one website.' );
     is( MT::Blog->count(),    1, 'There is one blog.' );
 
-    $website = MT::Website->load(1);
+    my $website = MT::Website->load(1);
     my $admin   = MT::Author->load(1);
     $admin->favorite_websites( [ $website->id ] );
     $admin->favorite_blogs(    [ $blog->id ] );
