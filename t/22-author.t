@@ -32,7 +32,6 @@ isa_ok( $mt, 'MT' );
     ok( $author->is_valid_password('bass'),   'bass is valid' );
     ok( !$author->is_valid_password('wrong'), 'wrong is invalid' );
 
-    ok( $author->can_create_blog,    'can create blog' );
     ok( $author->can_view_log,       'can view log' );
     ok( $author->can_manage_plugins, 'can manage plugins' );
 
@@ -111,7 +110,6 @@ isa_ok( $mt, 'MT' );
     # Non-superuser Bob D should only have selected permissions
     my $perm = $author->blog_perm(1);
     ok( $perm, "$author->blog_perm(1)" ) || die;
-    ok( !$author->can_create_blog,       'can_create_blog' );
     ok( !$author->can_view_log,          'can_view_log' );
     ok( !$author->can_manage_plugins,    'can manage plugins' );
     ok( !$author->can_edit_entry(1),     'Bob D can edit entry #1' );
@@ -185,9 +183,6 @@ isa_ok( $mt, 'MT' );
         "'manage_plugins'",
         'Delete edit_templates permission.'
     );
-
-    $author->can_create_blog(0);
-    is( $perm->(), "'manage_plugins'", 'Delete create_blog permission.' );
 
     $author->can_manage_plugins(0);
     ok( !$perm->(), 'Delete manage_plugins permission.' );
