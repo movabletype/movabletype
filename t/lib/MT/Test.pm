@@ -232,7 +232,7 @@ sub init_testdb {
             },
         }
     );
-    $pkg->init_db();
+    $pkg->init_db( not_create_website => 1 );
 }
 
 our $MEMCACHED_SEARCHED;
@@ -401,7 +401,8 @@ sub init_newdb {
 }
 
 sub init_upgrade {
-    my $pkg = shift;
+    my $pkg  = shift;
+    my %args = @_;
 
     require MT::Upgrade;
 
@@ -418,7 +419,20 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Page->remove;
         MT::Comment->remove;
+
+        unless ( $args{not_create_website} ) {
+            my $website
+                = MT::Website->create_default_website('First Website');
+            $website->save;
+            my $author = MT::Author->load;
+            my ($website_admin_role)
+                = MT::Role->load_by_permission('administer_site');
+            MT::Association->link(
+                $website => $website_admin_role => $author );
+        }
     };
+    warn $@ if $@;
+
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -914,16 +928,16 @@ It\'s a hard rain\'s a-gonna fall',
         if ( !$entry ) {
             $entry = MT::Entry->new();
             $entry->set_values(
-                {   blog_id   => 1,
-                    title     => "Verse $i",
-                    text      => $verses[$i],
-                    author_id => ( $i == 3 ? $bobd->id : $chuckd->id ),
-                    created_on  => sprintf( "%04d0131074501", $i + 1960 ),
-                    authored_on => sprintf( "%04d0131074501", $i + 1960 ),
-                    modified_on => sprintf( "%04d0131074601", $i + 1960 ),
-                    authored_on => sprintf( "%04d0131074501", $i + 1960 ),
+                {   blog_id        => 1,
+                    title          => "Verse $i",
+                    text           => $verses[$i],
+                    author_id      => ( $i == 3 ? $bobd->id : $chuckd->id ),
+                    created_on     => sprintf( "%04d0131074501", $i + 1960 ),
+                    authored_on    => sprintf( "%04d0131074501", $i + 1960 ),
+                    modified_on    => sprintf( "%04d0131074601", $i + 1960 ),
+                    authored_on    => sprintf( "%04d0131074501", $i + 1960 ),
                     allow_comments => ( $i <= 2 ? 0 : 1 ),
-                    status => MT::Entry::RELEASE(),
+                    status         => MT::Entry::RELEASE(),
                 }
             );
             $entry->id( $i + 3 );
@@ -1750,7 +1764,7 @@ sub _run_app {
             my ($cgi_fh) = new CGI::File::Temp( UNLINK => 1 )
                 or die "CGI::File::Temp: $!";
             my $basename = basename($src);
-            if ($^O eq 'MSWin32') {
+            if ( $^O eq 'MSWin32' ) {
                 require Encode;
                 Encode::from_to( $basename, 'cp932', 'utf8' );
             }
