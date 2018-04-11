@@ -19,8 +19,6 @@ sub edit {
     my $author = $app->user;
 
     # Load permissions from registry
-    my $registered_perms;
-    my $perms = $app->model('permission')->perms_from_registry;
     my %user_perms;
 
     if ($id) {
@@ -93,12 +91,15 @@ sub edit {
         if ( $app->config->ExternalUserManagement ) {
             return $app->error( MT->translate('Invalid request') );
         }
-        $param->{can_modify_password}     = MT::Auth->password_exists;
-        $param->{can_modify_api_password} = 0;
-        $param->{can_recover_password}    = MT::Auth->can_recover_password;
+        $param->{can_modify_password}       = MT::Auth->password_exists;
+        $param->{can_modify_api_password}   = 0;
+        $param->{can_recover_password}      = MT::Auth->can_recover_password;
+        $param->{perm_can_sign_in_cms}      = 1;
+        $param->{perm_can_sign_in_data_api} = 1;
     }
 
     # Make permission list
+    my $perms = $app->model('permission')->perms_from_registry;
     my @perms;
     my @keys = keys %$perms;
     foreach my $key (@keys) {
