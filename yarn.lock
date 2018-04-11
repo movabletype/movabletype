@@ -188,7 +188,7 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-bootstrap@^4.0.0:
+bootstrap@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-4.0.0.tgz#ceb03842c145fcc1b9b4e15da2a05656ba68469a"
 
@@ -1119,9 +1119,9 @@ ms@2.0.0:
 
 "mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#9fbcc4729990e775f48c2a74a7be1f2da90f9d7d"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#c0cf68e5539c2092eea9f86f9293f5fe30e77baf"
   dependencies:
-    bootstrap "^4.0.0"
+    bootstrap "4.0.0"
     winston "^2.3.1"
     xpath "0.0.24"
 
