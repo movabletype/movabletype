@@ -261,7 +261,7 @@ $test_env->prepare_fixture(sub {
 
     MT::Association->link( $negoro => $create_post => $blog );
 
-    $tsuda->can_create_blog(1);
+    $tsuda->can_create_site(1);
     $tsuda->save();
 
     $namegawa->can_edit_templates(1);
@@ -1222,7 +1222,7 @@ subtest 'mode = save (edit)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i,
-        "save (edit) by non permitted user (create blog)" );
+        "save (edit) by non permitted user (create site)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1333,7 +1333,7 @@ subtest 'mode = save (type is site)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i,
-        "save (edit) by non permitted user (create blog)" );
+        "save (edit) by non permitted user (create site)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1486,7 +1486,7 @@ subtest 'mode = edit (edit)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Permission=1!i,
-        "edit (edit) by non permitted user (create blog)" );
+        "edit (edit) by non permitted user (create site)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1597,7 +1597,7 @@ subtest 'mode = edit (type is site)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid request!i,
-        "edit (edit) by non permitted user (create blog)" );
+        "edit (edit) by non permitted user (create site)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1855,7 +1855,7 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i,
-        "delete by non permitted user (create blog)" );
+        "delete by non permitted user (create site)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
     MT::Association->link( $aikawa     => $site_admin      => $blog );
@@ -2008,7 +2008,7 @@ subtest 'mode = delete ( type is site)' => sub {
     $out = delete $app->{__test_output};
     ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i,
-        "delete by non permitted user (create blog)" );
+        "delete by non permitted user (create site)" );
 
     $app = _run_app(
         'MT::App::CMS',
