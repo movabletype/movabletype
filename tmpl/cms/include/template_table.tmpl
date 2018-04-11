@@ -141,25 +141,17 @@
     <mt:if name="template_type" eq="index">
       <td class="publishing-method">
       <mt:if name="build_type" eq="0">
-        <span class="badge badge-info">
-          <__trans phrase="Do Not Publish">
-        </span>
+        <__trans phrase="Do Not Publish">
       <mt:elseif name="build_type" eq="2">
-        <span class="badge badge-default">
-          <__trans phrase="Manual">
-        </span>
+        <__trans phrase="Manual">
       <mt:elseif name="build_type" eq="3">
-        <span class="badge badge-danger">
-          <__trans phrase="Dynamic">
-        </span>
+        <__trans phrase="Dynamic">
       <mt:elseif name="build_type" eq="4">
-        <span class="badge badge-success">
-          <__trans phrase="Publish Queue">
-        </span>
+        <__trans phrase="Publish Queue">
+      <mt:elseif name="build_type" eq="5">
+        <__trans phrase="Scheduled">
       <mt:else>
-        <span class="badge badge-primary">
-          <__trans phrase="Static">
-        </span>
+        <__trans phrase="Static">
       </mt:if>
       </td>
     <mt:else name="template_type" like="/(archive|ct)/">
@@ -170,26 +162,17 @@
             <mt:if name="selected">
           <li class="archive-publishing-method-item">
           <mt:if name="map_build_type" eq="0">
-            <span class="badge badge-info">
-              <__trans phrase="Do Not Publish">
-            </span>
+            <__trans phrase="Do Not Publish">
           <mt:elseif name="map_build_type" eq="2">
-            <span class="badge badge-default">
-              <__trans phrase="Manual">
-            </span>
+            <__trans phrase="Manual">
           <mt:elseif name="map_build_type" eq="3">
-            <span class="badge badge-danger">
-              <__trans phrase="Dynamic">
-            </span>
+            <__trans phrase="Dynamic">
           <mt:elseif name="map_build_type" eq="4">
-            <span class="badge badge-success">
-              <__trans phrase="Publish Queue">
-            </span>
+            <__trans phrase="Publish Queue">
+          <mt:elseif name="map_build_type" eq="5">
+            <__trans phrase="Scheduled">
           <mt:else>
-            <span class="badge badge-primary">
-              <__trans phrase="Static">
-            </span>
-          </mt:if>
+            <__trans phrase="Static"></mt:if>
           </li>
             </mt:if>
           </mt:loop>
