@@ -400,7 +400,59 @@ sub init_user {
     $param{initial_external_id} = $initial_external_id;
     $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
-    $app->init_website( \%param );
+
+    my $new_user;
+    use URI::Escape;
+    $new_user = {
+        user_name        => uri_escape_utf8( $param{initial_user} ),
+        user_nickname    => uri_escape_utf8( $param{initial_nickname} ),
+        user_password    => uri_escape_utf8( $param{initial_password} ),
+        user_email       => uri_escape_utf8( $param{initial_email} ),
+        user_lang        => $param{initial_lang},
+        user_external_id => $param{initial_external_id},
+    };
+    if ( my $email_system = $param{initial_use_system}
+        || $param{use_system_email} )
+    {
+        $new_user->{'use_system_email'} = $email_system;
+    }
+    my $steps;
+    my $install_mode = 1;
+    eval {
+        local $app->{upgrading} = 1;
+        require MT::Upgrade;
+        MT::Upgrade->do_upgrade(
+            Install => $install_mode,
+            DryRun  => 1,
+            App     => $app,
+            (   $install_mode
+                ? ( User => $new_user )
+                : ()
+            )
+        );
+        my $steps = $app->response->{steps};
+        my $fn    = \%MT::Upgrade::functions;
+        if ( $steps && @$steps ) {
+            @$steps = sort {
+                $fn->{ $a->[0] }->{priority} <=> $fn->{ $b->[0] }->{priority}
+            } @$steps;
+        }
+    };
+    die $@ if $@;
+    $steps = $app->response->{steps};
+    my $json_steps;
+    if ( $steps && @$steps ) {
+        $json_steps = MT::Util::to_json($steps);
+    }
+
+    $param{installing}    = $install_mode;
+    $param{up_to_date}    = $json_steps ? 0 : 1;
+    $param{initial_steps} = $json_steps;
+    $param{mt_admin_url}
+        = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+        . $app->config->AdminScript;
+
+    return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
 
 sub init_website {

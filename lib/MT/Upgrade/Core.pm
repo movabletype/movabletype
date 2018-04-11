@@ -149,7 +149,7 @@ sub seed_database {
     return undef if MT::Author->exist;
 
     $self->progress(
-        $self->translate_escape("Creating initial site and user records...")
+        $self->translate_escape("Creating initial user records...")
     );
 
     local $MT::CallbacksEnabled = 1;
@@ -221,48 +221,7 @@ sub seed_database {
             MT::Role->errstr
         )
         );
-
-    require MT::Website;
-    $param{website_name}
-        = exists $param{website_name}
-        ? _uri_unescape_utf8( $param{website_name} )
-        : MT->translate('First Website');
-    $param{website_path}
-        = exists $param{website_path}
-        ? _uri_unescape_utf8( $param{website_path} )
-        : '';
-    $param{website_url}
-        = exists $param{website_url}
-        ? _uri_unescape_utf8( $param{website_url} )
-        : '';
-    my $website = MT::Website->create_default_website(
-        $param{website_name},
-        site_theme    => $param{website_theme},
-        site_url      => $param{website_url},
-        site_path     => $param{website_path},
-        site_timezone => $param{website_timezone},
-        )
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            MT::Website->errstr
-        )
-        );
-    $website->save
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            $website->errstr
-        )
-        );
-    MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
     $author->save;
-
-    require MT::Association;
-    require MT::Role;
-    my ($website_admin_role)
-        = MT::Role->load_by_permission("administer_site");
-    MT::Association->link( $website => $website_admin_role => $author );
 
     if ( $param{use_system_email} ) {
         my $cfg = MT->config;
