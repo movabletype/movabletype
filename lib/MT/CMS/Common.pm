@@ -304,7 +304,10 @@ sub save {
                         $obj->is_superuser(1);
                     }
                     else {
+                        my %legacy_perms = { create_website => 1, create_blog => 1 };
                         foreach (@$sys_perms) {
+                            next if $legacy_perms{$_->[0]};
+
                             my $name  = 'can_' . $_->[0];
                             my $value = $app->param($name);
                             if ( defined $value ) {

@@ -1188,11 +1188,11 @@ Returns true if the user can view system level activity log, false otherwise.
 
 =head2 $perms->can_create_blog
 
-Returns true if the user can create a new weblog, false otherwise.
+DEPRECATED: Returns true if the user can create a new weblog, false otherwise.
 
 =head2 $perms->can_create_website
 
-Returns true if the user can create a new website, false otherwise.
+DEPRECATED: Returns true if the user can create a new website, false otherwise.
 
 =head2 $perms->can_manage_plugins
 

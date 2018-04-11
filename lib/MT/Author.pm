@@ -880,28 +880,17 @@ sub is_superuser {
 }
 
 sub can_create_blog {
-    my $author  = shift;
-    my $app     = MT->instance;
-    my $blog    = $app->can('blog') ? $app->blog : undef;
-    my $blog_id = $blog ? $blog->id : 0;
-
-    if (@_) {
-        $author->permissions($blog_id)->can_create_site(@_);
-    }
-    else {
-        $author->is_superuser()
-            || $author->permissions($blog_id)->can_create_site(@_);
-    }
+    return 0;
 }
 
 sub can_create_website {
     my $author = shift;
     if (@_) {
-        $author->permissions(0)->can_create_website(@_);
+        $author->permissions(0)->can_create_site(@_);
     }
     else {
         $author->is_superuser()
-            || $author->permissions(0)->can_create_website(@_);
+            || $author->permissions(0)->can_create_site(@_);
     }
 }
 
@@ -1704,11 +1693,11 @@ object or the ID of such an object.
 
 =head2 $author->can_create_blog([$bool])
 
-check or set author's permission to create blog
+DEPRECATED: check or set author's permission to create blog
 
 =head2 $author->can_create_website([$bool])
 
-check or set author's permission to create a website
+DEPRECATED: check or set author's permission to create a website
 
 =head2 $author->can_view_log([$bool])
 

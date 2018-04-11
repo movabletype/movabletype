@@ -701,12 +701,20 @@ sub _v7_remove_create_child_sites {
 
     my $iter = MT->model('permission')->load_iter( { blog_id => 0 } );
     while ( my $perm = $iter->() ) {
-        if ( $perm->can_create_blog ) {
-            $perm->can_create_blog(0);
+        my $permission = $perm->permissions;
+        my @new;
+        for my $p ( split ',', $permission ) {
+            push @new, $p if $p ne "'create_blog'";
+        }
+        if ( @new ) {
+            $permission = join ',', @new;
+            $perm->permissions( $permission );
             $perm->save();
         }
+        else {
+            $perm->remove;
+        }
     }
-
 }
 
 sub v7_migrate_rebuild_trigger {
