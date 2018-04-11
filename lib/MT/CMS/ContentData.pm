@@ -1226,7 +1226,9 @@ sub cms_pre_load_filtered_list {
         my $user_filter;
         $user_filter->{blog_id} = $perm->blog_id;
         if (   !$perm->can_do('publish_all_content_data')
-            && !$perm->can_do('edit_all_content_data') )
+               && !$perm->can_do('edit_all_content_data')
+               && !$perm->can_do('edit_all_content_data_' . $content_type->unique_id )
+           )
         {
             $user_filter->{author_id} = $user->id;
         }
