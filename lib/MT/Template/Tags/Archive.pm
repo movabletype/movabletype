@@ -61,12 +61,7 @@ sub _hdlr_archive_set {
 
     foreach my $type (@at) {
         my $archiver = MT->publisher->archiver($type);
-        local $vars->{template_params} = {};
-        map {
-            $vars->{template_params}{ '__' . $_ }
-                = $archiver->template_params->{$_}
-            }
-            keys %{ $archiver->template_params };
+        local $vars->{template_params} = $archiver->template_params;
 
         $blog->archive_type_preferred($type);
         local $ctx->{current_archive_type} = $type;
