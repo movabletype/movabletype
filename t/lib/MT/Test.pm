@@ -418,7 +418,22 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Page->remove;
         MT::Comment->remove;
+
+        my $call_from_init_testdb
+            = MT->component('core')->registry('upgrade_functions')
+            ->{core_seed_database}{code} ? 1 : 0;
+        unless ($call_from_init_testdb) {
+            my $website = MT::Website->new( name => 'First Website' );
+            $website->save;
+            my $author = MT::Author->load;
+            my ($website_admin_role)
+                = MT::Role->load_by_permission('administer_site');
+            MT::Association->link(
+                $website => $website_admin_role => $author );
+        }
     };
+    warn $@ if $@;
+
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
