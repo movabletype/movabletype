@@ -232,7 +232,7 @@ sub init_testdb {
             },
         }
     );
-    $pkg->init_db();
+    $pkg->init_db( not_create_website => 1 );
 }
 
 our $MEMCACHED_SEARCHED;
@@ -401,7 +401,8 @@ sub init_newdb {
 }
 
 sub init_upgrade {
-    my $pkg = shift;
+    my $pkg  = shift;
+    my %args = @_;
 
     require MT::Upgrade;
 
@@ -419,10 +420,7 @@ sub init_upgrade {
         MT::Page->remove;
         MT::Comment->remove;
 
-        my $call_from_init_testdb
-            = MT->component('core')->registry('upgrade_functions')
-            ->{core_seed_database}{code} ? 1 : 0;
-        unless ($call_from_init_testdb) {
+        unless ( $args{not_create_website} ) {
             my $website = MT::Website->new( name => 'First Website' );
             $website->save;
             my $author = MT::Author->load;
