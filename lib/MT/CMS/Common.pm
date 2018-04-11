@@ -1544,7 +1544,7 @@ sub filtered_list {
         my $allowed = 0;
         my @act;
         if ( 'CODE' eq ref $list_permission ) {
-            eval { @act = $list_permission->(); };
+            eval { $list_permission = $list_permission->(); };
             return $app->json_error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
@@ -1561,7 +1561,8 @@ sub filtered_list {
                 )
             ) if $@;
         }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
+
+        if ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
         }
         else {
