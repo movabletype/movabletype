@@ -441,7 +441,7 @@
             }
             var save = ed.save;
             ed.save = function () {
-                if ( this.editor !== this.source ) {
+                if ( ed.mtEditorStatus["mode"] === 'wysiwyg' ) {
                     save.apply(ed, arguments);
                 }
             }
