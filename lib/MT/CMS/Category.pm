@@ -566,7 +566,7 @@ sub can_view {
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
-    if ( $obj->category_set ) {
+    if ( $obj && $obj->category_set ) {
         return $author->permissions($blog_id)
             ->can_do('open_category_set_category_edit_screen');
     }
