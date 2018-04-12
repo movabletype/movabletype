@@ -68,7 +68,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: list" );
-    ok( $out =~ m!redirect=1!i, "list by admin" );
+    ok( $out =~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -81,7 +81,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: list" );
-    ok( $out =~ m!redirect=1!i, "list by non permitted user" );
+    ok( $out =~ m!permission=1!i, "list by non permitted user" );
 };
 
 subtest 'mode = save' => sub {
