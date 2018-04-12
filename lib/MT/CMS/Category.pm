@@ -581,8 +581,8 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    if ( $id ) {
-        $obj ||= MT->model('category')->load($obj)
+    if ( $id && !ref $id ) {
+        $obj ||= MT->model('category')->load($id)
             or return;
     }
     if ($obj) {
