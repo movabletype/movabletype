@@ -35,17 +35,7 @@
         </mt:if>
       </mt:if>
     </mt:if>
-    <mt:if name="template_type" eq="index">
-      <mt:if name="can_rebuild">
-  <button
-     type="button"
-     accesskey="a"
-     title="<__trans phrase="Publish selected templates (a)">"
-     class="btn btn-default button mt-publish-<mt:var name="template_type" default="template" escape="html">-templates">
-    <__trans phrase="Publish">
-  </button>
-      </mt:if>
-    <mt:elseif name="template_type" eq="archive">
+    <mt:if name="template_type" like="^(index|archive|ct)$">
       <mt:if name="can_rebuild">
   <button
      type="button"
