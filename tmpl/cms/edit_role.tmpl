@@ -225,6 +225,7 @@ function init() {
     </mt:if>
   </mtapp:settinggroup>
 
+<mt:if name="content_type_perm_groups">
   <mtapp:settinggroup id="role-content-type-privileges">
     <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
     <mt:loop name="content_type_perm_groups">
@@ -242,27 +243,25 @@ function init() {
           </div>
         </mt:if>
         </mt:loop>
-    </div>
       </mtapp:setting>
-      </mt:if>
     </mt:loop>
+  </mtapp:settinggroup>
+</mt:if>
 
   <mt:if name="id">
     <mt:if name="same_perm_loop">
-    <mtapp:setting
-       id="same_permissions"
-       label="<__trans phrase="Duplicate Roles">">
-      <div class="static">
-      <mt:loop name="same_perm_loop">
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">">
-          <mt:var name="name" escape="html">
-        </a>
-      </mt:loop>
-      </div>
-    </mtapp:setting>
+      <mtapp:settinggroup id="duplicate-roles">
+        <legend class="h3"><__trans phrase="Duplicate Roles"></legend>
+          <div class="static">
+            <ul>
+          <mt:loop name="same_perm_loop">
+              <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a></li>
+          </mt:loop>
+            </ul>
+          </div>
+      </mtapp:settinggroup>
     </mt:if>
   </mt:if>
-  </mtapp:settinggroup>
 
   <mt:setvarblock name="action_buttons">
     <button

@@ -460,7 +460,7 @@ sub permission_groups {
         +{  ct_perm_group_unique_id => $_->unique_id,
             ct_perm_group_label     => $_->permission_group,
             }
-    } @content_types;
+    } grep { $_->blog } @content_types;
     return \@groups;
 }
 
@@ -470,7 +470,8 @@ sub all_permissions {
     my $iter  = __PACKAGE__->load_iter();
     my @all_permissions;
     while ( my $content_type = $iter->() ) {
-        push( @all_permissions, $content_type->permissions );
+        push( @all_permissions, $content_type->permissions )
+            if $content_type->blog;
     }
     my %all_permission = map { %{$_} } @all_permissions;
     return \%all_permission;
