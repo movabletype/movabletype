@@ -182,10 +182,18 @@
     <mt:else name="template_type" like="(module|widget)">
       <mt:if name="blog_id">
       <td class="ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>">
+        <mt:if name="use_ssi">
+        <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
+        <mt:else>
         <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Disabled">" color="secondary">
+        </mt:if>
       </td>
       <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>">
+        <mt:if name="use_cache">
+        <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Cached">" color="success">
+        <mt:else>
         <mtapp:svgicon id="ic_remove" size="sm" title="<__trans phrase="Uncached">" color="secondary">
+        </mt:if>
       </td>
       </mt:if>
     </mt:if>
