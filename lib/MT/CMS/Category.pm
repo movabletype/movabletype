@@ -174,18 +174,19 @@ sub bulk_update {
 
     my $is_category_set = $app->param('is_category_set');
     my $set_id          = $app->param('set_id');
-
-    my $model = $app->param('datasource') || 'category';
+    my $model           = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
-        $app->can_do('edit_categories')
-            or
-            return $app->json_error( $app->translate("Permission denied.") );
-
         if ($is_category_set) {
             return $app->json_error( $app->translate('Permission denied.') )
                 unless ( $app->user->can_manage_content_types
                 || $app->can_do('save_category_set') );
         }
+        else {
+            $app->can_do('edit_categories')
+                or return $app->json_error(
+                $app->translate("Permission denied.") );
+        }
+
     }
     elsif ( 'folder' eq $model ) {
         $app->can_do('save_folder')
@@ -564,8 +565,15 @@ sub can_view {
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions($blog_id)
-        ->can_do('open_category_edit_screen');
+
+    if ( $obj->category_set ) {
+        return $author->permissions($blog_id)
+            ->can_do('open_category_set_category_edit_screen');
+    }
+    else {
+        return $author->permissions($blog_id)
+            ->can_do('open_category_edit_screen');
+    }
 }
 
 sub can_save {
@@ -582,7 +590,14 @@ sub can_save {
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions($blog_id)->can_do('save_category');
+
+    if ( $obj->category_set ) {
+        return $author->permissions($blog_id)
+            ->can_do('save_catefory_set_category');
+    }
+    else {
+        return $author->permissions($blog_id)->can_do('save_category');
+    }
 }
 
 sub can_delete {

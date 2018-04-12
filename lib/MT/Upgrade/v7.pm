@@ -33,15 +33,6 @@ sub upgrade_functions {
             priority      => 3.3,
             code          => \&_v7_migrate_privileges,
         },
-        'v7_rebuild_permissions' => {
-            version_limit => 7.0012,
-            priority      => 3.4,
-            updater       => {
-                type  => 'permission',
-                label => 'Rebuilding permissions...',
-                code  => sub { $_[0]->rebuild; },
-            },
-        },
         'v7_migrate_blog_templatemap_archive_type' => {
             code          => \&_v7_migrate_blog_templatemap_archive_type,
             version_limit => 7.0014,
@@ -125,6 +116,11 @@ sub upgrade_functions {
         'v7_rebuild_single_line_text_field_indexes' => {
             code          => \&_v7_rebuild_single_line_text_field_indexes,
             version_limit => 7.0036,
+            priority      => 3.2,
+        },
+        'v7_rebuild_permissions' => {
+            code          => \&_v7_rebuild_permissions,
+            version_limit => 7.0039,
             priority      => 3.2,
         },
     };
@@ -706,9 +702,9 @@ sub _v7_remove_create_child_sites {
         for my $p ( split ',', $permission ) {
             push @new, $p if $p ne "'create_blog'";
         }
-        if ( @new ) {
+        if (@new) {
             $permission = join ',', @new;
-            $perm->permissions( $permission );
+            $perm->permissions($permission);
             $perm->save();
         }
         else {
@@ -1170,4 +1166,21 @@ sub _v7_rebuild_single_line_text_field_indexes {
     }
 }
 
+sub _v7_rebuild_permissions {
+    my $self = shift;
+
+    # Rebuild if having 'manage_category_set'
+    $self->progress(
+        $self->translate_escape(
+            'Rebuilding MT::Permission records (remove edit_categories)...')
+    );
+
+    my $permission_class = MT->model('permission');
+
+    my $perm_iter = $permission_class->load_iter(
+        { permissions => { like => "%'manage_category_set'%" } } );
+    while ( my $perm = $perm_iter->() ) {
+        $perm->rebuild;
+    }
+}
 1;

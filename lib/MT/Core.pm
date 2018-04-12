@@ -1495,9 +1495,14 @@ BEGIN {
                 template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission            => {
-                    permit_action => 'access_to_category_list',
-                    inherit       => 0,
+                permission            => sub {
+                    my $app = shift;
+                    if ( $app->param('is_category_set') ) {
+                        return 'access_to_category_set_list';
+                    }
+                    else {
+                        return 'access_to_category_list';
+                    }
                 },
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
@@ -2985,6 +2990,7 @@ sub load_core_permissions {
                 'manage_content_types'        => 1,
                 'save_multiple_content_type'  => 1,
                 'access_to_content_type_list' => 1,
+                'edit_category_set'           => 1,
             }
         },
         'blog.manage_content_data' => {
@@ -3151,13 +3157,14 @@ sub load_core_permissions {
             'group'            => 'blog_admin',
             'label'            => 'Manage Category Set',
             'order'            => 1000,
-            'inherit_from'     => ['blog.edit_categories'],
             'permitted_action' => {
-                'edit_category_set'           => 1,
-                'save_category_set'           => 1,
-                'access_to_category_set_list' => 1,
-                'delete_category_set'         => 1,
-                'manage_category_set'         => 1,
+                'edit_category_set'                      => 1,
+                'save_category_set'                      => 1,
+                'access_to_category_set_list'            => 1,
+                'delete_category_set'                    => 1,
+                'manage_category_set'                    => 1,
+                'open_category_set_category_edit_screen' => 1,
+                'save_catefory_set_category'             => 1,
             }
         },
         'blog.upload' => {
@@ -3396,6 +3403,7 @@ sub load_core_permissions {
                 'access_to_blog_list'         => 1,
                 'use_tools:search'            => 0,
                 'access_to_content_type_list' => 1,
+                'edit_category_set'           => 1,
             },
         },
     };

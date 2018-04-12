@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,11 +12,12 @@ use MT::CategorySet;
 sub view {
     my $app = shift;
 
+    my $perm = $app->permissions
+        or return $app->permission_denied;
+
     return $app->permission_denied
         if ( !$app->user->is_superuser()
-        && !$app->user->can_manage_content_types()
-        && !$app->can_do('edit_category_set') );
-
+        && !$perm->can_do('edit_category_set') );
     if ( my $set_id = $app->param('id') ) {
         unless ( MT::CategorySet->exist($set_id) ) {
             return $app->errtrans( 'Invalid category_set_id: [_1]', $set_id );
