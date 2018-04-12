@@ -51,12 +51,12 @@ sub edit {
     if ( !$content_data_id ) {
         return $app->permission_denied()
             unless $perm->can_do('create_new_content_data')
-            || $perm->can_do('create_new_content_data_' . $content_type->unique_id);
+            || $perm->can_do(
+            'create_new_content_data_' . $content_type->unique_id );
     }
     else {
         return $app->permission_denied()
-            unless $perm->can_edit_content_data( $content_data_id,
-            $user );
+            unless $perm->can_edit_content_data( $content_data_id, $user );
     }
 
     if ( $content_type->blog_id != $blog->id ) {
@@ -109,8 +109,8 @@ sub edit {
     $param->{has_multi_line_text_field}
         = $content_type->has_multi_line_text_field;
 
-    my $array           = $content_type->fields;
-    my $ct_unique_id    = $content_type->unique_id;
+    my $array        = $content_type->fields;
+    my $ct_unique_id = $content_type->unique_id;
 
     $param->{use_revision} = $blog->use_revision ? 1 : 0;
 
@@ -348,7 +348,10 @@ sub edit {
     }
 
     $param->{can_publish_post} = 1
-        if ( $perm->can_do('publish_all_content_data') || $perm->can_do('edit_all_content_data_$ct_unique_id')) || ( $content_data || $perm->can_republish_content_data( $content_data, $user )  );
+        if ( $perm->can_do('publish_all_content_data')
+        || $perm->can_do('edit_all_content_data_$ct_unique_id') )
+        || ( $content_data
+        || $perm->can_republish_content_data( $content_data, $user ) );
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
@@ -397,7 +400,7 @@ sub save {
         or return $app->errtrans("Invalid request.");
     my $content_type = MT::ContentType->load($content_type_id)
         or return $app->errtrans("Invalid request.");
-    my $field_data   = $content_type->fields;
+    my $field_data          = $content_type->fields;
     my $content_field_types = $app->registry('content_field_types');
 
     # Permission check
@@ -408,7 +411,8 @@ sub save {
     if ( !$content_data_id ) {
         return $app->permission_denied()
             unless $perms->can_do('create_new_content_data')
-            || $perms->can_do('create_new_content_data_' . $content_type->unique_id);
+            || $perms->can_do(
+            'create_new_content_data_' . $content_type->unique_id );
     }
     else {
         return $app->permission_denied()
@@ -1004,12 +1008,10 @@ sub make_menus {
         my $blog = MT::Blog->load( $ct->blog_id ) or next;
         my $key = 'content_data:' . $ct->id;
         $menus->{$key} = {
-            label => $ct->name,
-            no_translate => {
-                label => 1,
-            },
-            mode  => 'list',
-            args  => {
+            label        => $ct->name,
+            no_translate => { label => 1, },
+            mode         => 'list',
+            args         => {
                 _type   => 'content_data',
                 type    => 'content_data_' . $ct->id,
                 blog_id => $ct->blog_id,
@@ -1194,7 +1196,9 @@ sub cms_pre_load_filtered_list {
     my $content_type = MT::ContentType->load( { id => $content_type_id } );
 
     my $user = $app->user;
-    return if $user->is_superuser;
+    return
+        if $user->is_superuser
+        || $user->permissions(0)->can_do('manage_content_data');
 
     my $blog_ids;
     $blog_ids = delete $terms->{blog_id}
@@ -1226,9 +1230,11 @@ sub cms_pre_load_filtered_list {
         my $user_filter;
         $user_filter->{blog_id} = $perm->blog_id;
         if (   !$perm->can_do('publish_all_content_data')
-               && !$perm->can_do('edit_all_content_data')
-               && !$perm->can_do('edit_all_content_data_' . $content_type->unique_id )
-           )
+            && !$perm->can_do('edit_all_content_data')
+            && !$perm->can_do(
+                'edit_all_content_data_' . $content_type->unique_id
+            )
+            )
         {
             $user_filter->{author_id} = $user->id;
         }
