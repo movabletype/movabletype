@@ -18,8 +18,64 @@ sub core_search_apis {
         content_data => {
             order     => 50,
             condition => sub {
-                $app->model('content_type')
-                    ->exist( { blog_id => $blog_id || \'> 0' } );
+                return 0
+                    unless $app->model('content_type')->exist(
+                    {   (     ($blog_id)
+                            ? ( blog_id => $blog_id )
+                            : ( blog_id => \'> 0' )
+                        )
+                    }
+                    );
+
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+
+                my $cnt = MT->model('permission')->count(
+                    [   [   {   (     ($blog_id)
+                                    ? ( blog_id => $blog_id )
+                                    : ( blog_id => \'> 0' )
+                                ),
+                                author_id => $author->id,
+                            },
+                            '-and',
+                            [   {   permissions => {
+                                        like => "\%'manage_content_data'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like => "\%'manage_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like => "\%'create_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like =>
+                                            "\%'edit_all_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like =>
+                                            "\%'publish_content_data:\%'\%"
+                                    },
+                                },
+                            ],
+                        ],
+                        '-or',
+                        {   author_id => $author->id,
+                            permissions =>
+                                { like => "\%'manage_content_data'\%" },
+                            blog_id => 0,
+                        },
+                    ]
+                );
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
             handler =>
                 '$Core::MT::CMS::ContentData::build_content_data_table',
@@ -53,7 +109,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort    => 'name', limit => 0 }
+                    { sort => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -577,6 +633,7 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+    my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
     return $app->permission_denied()
@@ -623,7 +680,16 @@ sub search_replace {
             = MT->model('content_type')
             ->load_iter( { blog_id => $blog_id || \'> 0' },
             { sort => 'name' } );
+        my $perms   = $user->permissions( $blog_id );
         while ( my $content_type = $iter->() ) {
+
+            next unless (
+                $user->is_superuser
+                || $user->permissions(0)->can_do('manage_content_data')
+                || $perms->can_do('manage_content_data')
+                || $perms->can_do('search_content_data_' . $content_type->unique_id)
+            );
+
             push @content_types,
                 +{
                 content_type_id   => $content_type->id,
@@ -676,7 +742,6 @@ sub search_replace {
             $param->{show_datetime_fields_type} = 'date';
         }
 
-        my $user       = $app->user;
         my $blog_perms = $user->permissions($blog_id);
         if ( $user->is_superuser ) {
             $param->{can_republish} = 1;
@@ -770,7 +835,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort    => 'name', limit => 1 },
+            { sort => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -916,16 +981,18 @@ sub do_search_replace {
                     $blog = MT::Blog->load($blog_id) if $blog_id;
                     if (   $blog
                         && !$blog->is_blog
-                           && ($author->permissions($blog_id)->has('administer_site')
+                        && ( $author->permissions($blog_id)
+                            ->has('administer_site')
                             || $author->is_superuser )
                         )
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
                         my @blog_ids;
-                        foreach my $b ( @blogs ) {
+                        foreach my $b (@blogs) {
                             push @blog_ids, $b->id
-                                if $author->permissions($b->id)->has('administer_site');
+                                if $author->permissions( $b->id )
+                                ->has('administer_site');
                         }
                     }
                     else {
@@ -941,14 +1008,16 @@ sub do_search_replace {
                 $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
-                    && $author->permissions($blog_id)->has('administer_site') )
+                    && $author->permissions($blog_id)->has('administer_site')
+                    )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids;
-                        foreach my $b ( @blogs ) {
-                            push @blog_ids, $b->id
-                                if $author->permissions($b->id)->has('administer_site');
-                        }
+                    my @blog_ids;
+                    foreach my $b (@blogs) {
+                        push @blog_ids, $b->id
+                            if $author->permissions( $b->id )
+                            ->has('administer_site');
+                    }
                 }
                 else {
                     %terms = ( blog_id => $blog_id );

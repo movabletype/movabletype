@@ -3020,6 +3020,7 @@ sub load_core_permissions {
                 'insert_asset'                            => 1,
                 'access_to_insert_asset_list'             => 1,
                 'manage_content_data'                     => 1,
+                'use_tools:search'                        => 1,
             },
         },
         'blog.manage_pages' => {
@@ -3379,7 +3380,7 @@ sub load_core_permissions {
                 'access_to_system_dashboard'              => 1,
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
-                'use_tools:search'                        => 0,
+                'use_tools:search'                        => 1,
             },
         },
         'system.manage_content_types' => {

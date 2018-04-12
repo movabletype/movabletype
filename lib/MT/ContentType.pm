@@ -347,8 +347,10 @@ sub _create_content_data_permission {
             permitted_action => {
                 'access_to_content_data_list_' . $self->unique_id => 1,
                 'create_new_content_data_' . $self->unique_id     => 1,
+                'search_content_data_' . $self->unique_id         => 1,
                 'access_to_insert_asset_list'                     => 1,
                 'insert_asset'                                    => 1,
+                'use_tools:search'                                => 1,
             },
             content_type_unique_id => $self->unique_id,
         }
@@ -373,6 +375,8 @@ sub _publish_content_data_permission {
                 'publish_own_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
                 'publish_content_data_via_list_' . $self->unique_id     => 1,
+                'search_content_data_' . $self->unique_id               => 1,
+                'use_tools:search'                                      => 1,
             },
             content_type_unique_id => $self->unique_id,
             inherit_from           => \@perms,
@@ -394,8 +398,10 @@ sub _edit_all_content_data_permission {
                 'edit_all_unpublished_content_data_' . $self->unique_id => 1,
                 'publish_all_content_data_' . $self->unique_id          => 1,
                 'set_entry_draft_via_list_' . $self->unique_id          => 1,
+                'search_content_data_' . $self->unique_id               => 1,
                 'access_to_insert_asset_list'                           => 1,
                 'insert_asset'                                          => 1,
+                'use_tools:search'                                      => 1,
             },
             content_type_unique_id => $self->unique_id,
         }
