@@ -19,9 +19,13 @@
       </select>
     </div>
     <div class="collapse mt-collapse__content px-0 show" id="collapseEditor-<mt:var name="content_field_id">">
+      <mt:unless name="editors">
+      <mt:include name="include/editor.tmpl">
+      <mt:else>
       <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
         <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
       </div>
+      </mt:unless>
     </div>
   </div>
 </div>
@@ -125,15 +129,6 @@ function changedTextFormat() {
             'field':      editor_id,
             'editor_id':  jQuery('#'+editor_id).val()
         };
-        /*
-        var params = {
-            uri: '<mt:var name="script_url">',
-            method: 'POST',
-            arguments: param,
-            load: convertedText
-        };
-        */
-
         jQuery.ajax({
           uri:    '<mt:var name="script_url">',
           type:   'POST',
@@ -142,8 +137,6 @@ function changedTextFormat() {
         .done(function(data){
           convertedText(data);
         });
-
-        //jQuery.post('<mt:var name="script_url">', param, convertedText);
     } else {
         jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           <mt:if name="editors">app.editor.setMode(option);</mt:if>
