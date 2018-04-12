@@ -24,7 +24,9 @@ sub _tags_for_blog {
     my @tags;
     my $cache_id;
     my $all_count;
-    my $class = MT->model($type);
+    my $class = $type eq 'content_type' ? MT->model('cd') : MT->model($type);
+    my $datasource
+        = $type eq 'content_type' ? 'content_data' : $class->datasource;
 
     if ( ref $terms->{blog_id} eq 'ARRAY' ) {
         $cache_id = join ',', @{ $terms->{blog_id} };
@@ -37,7 +39,7 @@ sub _tags_for_blog {
         require MT::Tag;
         my %temp_terms = %$terms;
         $temp_terms{is_private} = 0 unless $include_private;
-        @tags = MT::Tag->load_by_datasource( $class->datasource,
+        @tags = MT::Tag->load_by_datasource( $datasource,
             {%temp_terms}, {%$args} );
         $tag_cache->{$cache_id} = { tags => \@tags };
         $r->stash( $cache_key, $tag_cache );
@@ -56,15 +58,17 @@ sub _tags_for_blog {
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
-        my %tags       = map { $_->id => $_ } @tags;
-        my $ext_terms  = $class->terms_for_tags();
+        my %tags         = map { $_->id => $_ } @tags;
+        my $ext_terms    = $class->terms_for_tags();
+        my $content_type = $ctx->{__stash}{content_type};
+        $ext_terms->{content_type_id} = $content_type->id if $content_type;
+
         my $count_iter = $class->count_group_by(
             { ( $ext_terms ? (%$ext_terms) : () ), %$terms, },
             {   group  => ['objecttag_tag_id'],
                 'join' => MT::ObjectTag->join_on(
                     'object_id',
-                    { object_datasource => $class->datasource, %$terms },
-                    $args
+                    { object_datasource => $datasource, %$terms }, $args
                 ),
                 'asset' eq lc $type ? ( no_class => 1 ) : (),
                 %$args
@@ -259,6 +263,11 @@ sub _hdlr_tags {
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
 
+    # Set context of content type
+    local $ctx->{__stash}{content_type}
+        = $ctx->get_content_type_context( $args, $cond )
+        if $args->{content_type};
+
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;
     my ( $tags, $min, $max, $all_count )
@@ -321,7 +330,8 @@ sub _hdlr_tags {
         = $args->{include_parent_site} || $args->{include_with_website};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
-    local $ctx->{__stash}{class_type}    = $type;
+    local $ctx->{__stash}{class_type}
+        = $type eq 'content_type' ? 'cd' : $type;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $i = 0;
 

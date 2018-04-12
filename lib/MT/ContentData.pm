@@ -8,7 +8,7 @@ package MT::ContentData;
 
 use strict;
 use warnings;
-use base qw( MT::Object MT::Revisable );
+use base qw( MT::Object MT::Taggable MT::Revisable );
 
 use POSIX ();
 
@@ -626,7 +626,8 @@ sub author {
 }
 
 sub terms_for_tags {
-    return {};
+    require MT::ContentStatus;
+    return { status => MT::ContentStatus::RELEASE() };
 }
 
 sub get_tag_objects {
