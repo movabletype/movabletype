@@ -1017,7 +1017,7 @@ sub list {
             if ( $app->errstr ) {
                 return $app->error( $app->errstr );
             }
-            return $app->return_to_dashboard;
+            return $app->permission_denied();
         }
     }
 
