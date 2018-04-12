@@ -505,7 +505,8 @@ sub can_post {
 sub can_edit_authors {
     my $perms  = shift;
     my $author = $perms->user;
-    $perms->can_administer_site || ( $author && $author->can_manage_users_groups() );
+    $perms->can_administer_site
+        || ( $author && $author->can_manage_users_groups() );
 }
 
 sub can_edit_entry {

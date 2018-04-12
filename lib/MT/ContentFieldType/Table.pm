@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -73,14 +73,14 @@ sub options_validation_handler {
     my $initial_rows = $options->{initial_rows};
     return $app->translate(
         "Initial number of rows for '[_1]' ([_2]) must be a positive integer.",
-        $label, $field_label )
-        if $initial_rows and $initial_rows !~ /^\d+$/;
+        $label, $field_label
+    ) if $initial_rows and $initial_rows !~ /^\d+$/;
 
     my $initial_cols = $options->{initial_cols};
     return $app->translate(
         "Initial number of columns for '[_1]' ([_2]) must be a positive integer.",
-        $label, $field_label )
-        if $initial_cols and $initial_cols !~ /^\d+$/;
+        $label, $field_label
+    ) if $initial_cols and $initial_cols !~ /^\d+$/;
 
     return;
 }

@@ -411,6 +411,7 @@ sub init_user {
         user_lang        => $param{initial_lang},
         user_external_id => $param{initial_external_id},
     };
+
     if ( my $email_system = $param{initial_use_system}
         || $param{use_system_email} )
     {

@@ -28,8 +28,8 @@ sub edit {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild}  = 1 if $app->param('need_full_rebuild');
         $param->{need_index_rebuild} = 1 if $app->param('need_index_rebuild');
-        $param->{show_ip_info}       = $cfg->ShowIPInformation;
-        $param->{use_plugins}        = $cfg->UsePlugins;
+        $param->{show_ip_info} = $cfg->ShowIPInformation;
+        $param->{use_plugins}  = $cfg->UsePlugins;
 
         $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -232,8 +232,8 @@ sub edit {
             else {
                 $param->{system_disallow_registration} = 1;
             }
-            $param->{allow_reg_comments}     = $blog->allow_reg_comments;
-            $param->{allow_unreg_comments}   = $blog->allow_unreg_comments;
+            $param->{allow_reg_comments}   = $blog->allow_reg_comments;
+            $param->{allow_unreg_comments} = $blog->allow_unreg_comments;
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );

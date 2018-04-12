@@ -189,9 +189,9 @@ sub permission {
     my $name = 'blog.' . $permitted_action;
     return +{
         $name => {
-            group            => $content_type->permission_group,
-            label            => sub {
-                return MT->translate('Edit [_1] field', $obj->name )
+            group => $content_type->permission_group,
+            label => sub {
+                return MT->translate( 'Edit [_1] field', $obj->name );
             },
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),

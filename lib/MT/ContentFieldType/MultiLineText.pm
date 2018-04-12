@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,13 +10,12 @@ use warnings;
 use JSON ();
 use MT::I18N qw( first_n_text const );
 
-
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
-    my $options        = $field_data->{options};
+    my $options      = $field_data->{options};
     my $input_format = $options->{input_format};
-    my $required = $options->{required} ? 'data-mt-required="1"' : '';
+    my $required     = $options->{required} ? 'data-mt-required="1"' : '';
 
     {   convert_breaks => $input_format,
         required       => $required,

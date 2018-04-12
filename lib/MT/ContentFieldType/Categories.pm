@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -108,7 +108,7 @@ sub ss_validator {
 
     my $iter
         = MT::Category->load_iter(
-        { id        => $data, category_set_id => $options->{category_set} },
+        { id => $data, category_set_id => $options->{category_set} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -179,7 +179,7 @@ sub terms {
 
         my @cat_ids;
         my $iter = MT::Category->load_iter(
-            {   label           => { like => "%${string}%" },
+            {   label => { like => "%${string}%" },
                 category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },

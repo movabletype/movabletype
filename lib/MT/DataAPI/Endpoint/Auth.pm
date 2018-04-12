@@ -133,7 +133,7 @@ sub _authentication {
         }
         $app->clear_login_cookie;
 
-        return $app->error( 'Invalid login', 401 )
+        return $app->error( 'Invalid login', 401 );
     }
 
     my $access_token = make_access_token( $app, $session );
@@ -194,8 +194,8 @@ sub _authentication {
 
     $app->log(
         $app->translate(
-            "User '[_1]' (ID:[_2]) logged in successfully via data api.", $author->name,
-            $author->id
+            "User '[_1]' (ID:[_2]) logged in successfully via data api.",
+            $author->name, $author->id
         ),
         level    => MT::Log::INFO(),
         class    => 'author',

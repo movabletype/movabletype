@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -99,7 +99,8 @@ sub options_validation_handler {
 
     my $decimal_places = $options->{decimal_places};
     if ($decimal_places) {
-        return $app->translate("Number of decimal places must be a positive integer.")
+        return $app->translate(
+            "Number of decimal places must be a positive integer.")
             unless $decimal_places =~ /^\d+$/;
         return $app->translate(
             "Number of decimal places must be a positive integer and between 0 and [_1].",

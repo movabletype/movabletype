@@ -2419,7 +2419,8 @@ sub init_plugins {
                 "${pfx}Category::can_view",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg
-                . 'save_permission_filter.category' => "${pfx}Category::can_save",
+                . 'save_permission_filter.category' =>
+                "${pfx}Category::can_save",
 
             # folder callbacks
             $pkg

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -28,7 +28,7 @@ __PACKAGE__->install_properties(
             blog_id => 1,
             name    => 1,
         },
-        defaults      => { name => '', cat_count => 0, ct_count => 0 },
+        defaults => { name => '', cat_count => 0, ct_count => 0 },
         child_of      => [ 'MT::Blog', 'MT::Website' ],
         audit         => 1,
         child_classes => ['MT::Category'],

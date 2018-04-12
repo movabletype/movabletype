@@ -87,7 +87,11 @@ sub unlock {
 sub recover_password {
     my ( $app, $endpoint ) = @_;
 
-    if ( !( $app->user->can_manage_users_groups() && MT::Auth->can_recover_password ) ) {
+    if (!(  $app->user->can_manage_users_groups()
+            && MT::Auth->can_recover_password
+        )
+        )
+    {
         return $app->error(403);
     }
 
@@ -95,8 +99,7 @@ sub recover_password {
 
     require MT::App::CMS;
     my $cms = MT::App::CMS->new;
-    my ( $rc, $res )
-        = MT::CMS::Tools::reset_password( $cms, $user );
+    my ( $rc, $res ) = MT::CMS::Tools::reset_password( $cms, $user );
 
     if ($rc) {
         return +{ status => 'success', message => $res };
@@ -128,7 +131,7 @@ sub recover {
         );
     }
 
-    my $email = $app->param('email');
+    my $email   = $app->param('email');
     my $message = $app->translate(
         'An email with a link to reset your password has been sent to your email address ([_1]).',
         $email

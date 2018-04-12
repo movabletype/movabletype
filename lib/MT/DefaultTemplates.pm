@@ -103,11 +103,11 @@ BEGIN {
             },
         },
         'module' => {
-            'banner_header'  => { label => 'Banner Header', },
-            'banner_footer'  => { label => 'Banner Footer', },
-            'entry_summary'  => { label => 'Entry Summary', },
-            'html_head'      => { label => 'HTML Head', },
-            'sidebar'        => { label => 'Sidebar', },
+            'banner_header' => { label => 'Banner Header', },
+            'banner_footer' => { label => 'Banner Footer', },
+            'entry_summary' => { label => 'Entry Summary', },
+            'html_head'     => { label => 'HTML Head', },
+            'sidebar'       => { label => 'Sidebar', },
         },
         'widget' => {
             'about_this_page'       => { label => 'About This Page', },
@@ -178,10 +178,10 @@ BEGIN {
         },
         'global:module' => { 'footer-email' => { label => 'Mail Footer', }, },
         'global:email'  => {
-            'notify-entry'      => { label => 'Entry Notify', },
-            'recover-password'  => { label => 'Password Recovery', },
-            'lockout-user'      => { label => 'User Lockout', },
-            'lockout-ip'        => { label => 'IP Address Lockout', },
+            'notify-entry'     => { label => 'Entry Notify', },
+            'recover-password' => { label => 'Password Recovery', },
+            'lockout-user'     => { label => 'User Lockout', },
+            'lockout-ip'       => { label => 'IP Address Lockout', },
         },
     };
 }

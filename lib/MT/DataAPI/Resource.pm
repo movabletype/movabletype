@@ -46,7 +46,7 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::Folder::updatable_fields",
             },
         ],
-        'user'   => [
+        'user' => [
             {   version          => 1,
                 fields           => "${pkg}User::fields",
                 updatable_fields => "${pkg}User::updatable_fields",
@@ -167,10 +167,9 @@ sub core_resources {
         ],
         'content_field' => 'cf',
         'cd'            => [
-            {   version => 4,
-                fields  => "${pkg}v4::ContentData::fields",
-                updatable_fields =>
-                    "${pkg}v4::ContentData::updatable_fields",
+            {   version          => 4,
+                fields           => "${pkg}v4::ContentData::fields",
+                updatable_fields => "${pkg}v4::ContentData::updatable_fields",
             },
         ],
         'content_data' => 'cd',

@@ -312,8 +312,8 @@ sub build_plugin_table {
             my $block_tags    = $plugin->registry( 'tags', 'block' );
             my $function_tags = $plugin->registry( 'tags', 'function' );
             my $modifiers     = $plugin->registry( 'tags', 'modifier' );
-            my $junk_filters  = $plugin->registry('junk_filters');
-            my $text_filters  = $plugin->registry('text_filters');
+            my $junk_filters = $plugin->registry('junk_filters');
+            my $text_filters = $plugin->registry('text_filters');
 
             $row->{plugin_tags} = MT::App::CMS::listify(
                 [

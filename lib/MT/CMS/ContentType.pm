@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2007-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -112,7 +112,8 @@ sub edit {
 
         # Can be used as a data label?
         my $can_data_label
-            = $content_field_types->{$f->{type}}->{can_data_label_field} && $options->{required} ? 1 : 0;
+            = $content_field_types->{ $f->{type} }->{can_data_label_field}
+            && $options->{required} ? 1 : 0;
 
         my $field = {
             type      => $type,
@@ -397,7 +398,7 @@ sub save {
     my $content_field_types = $app->registry('content_field_types');
     my $data_label_field    = $app->param('label_field') || '';
     foreach my $field (@$field_list) {
-        my $type = $field->{type};
+        my $type     = $field->{type};
         my $field_id = $field->{id};
 
         if ( !exists $content_field_types->{$type} ) {
@@ -418,19 +419,20 @@ sub save {
         # Create or load content field
         my $content_field;
         if ( $content_type_id && $field_id ) {
-            $content_field = $cf_class->load( $field_id )
+            $content_field = $cf_class->load($field_id)
                 or return $app->errtrans(
-                "Cannot load content field data (ID: [_1])",
-                $field_id );
+                "Cannot load content field data (ID: [_1])", $field_id );
             $field->{label_field} = 1
-                if $data_label_field && $data_label_field eq $content_field->unique_id;
+                if $data_label_field
+                && $data_label_field eq $content_field->unique_id;
         }
         else {
             $content_field = $cf_class->new;
             $content_field->blog_id($blog_id);
             $content_field->type($type);
             $field->{label_field} = 1
-                if $data_label_field && $data_label_field eq $field->{options}->{id};
+                if $data_label_field
+                && $data_label_field eq $field->{options}->{id};
         }
 
         $content_field->name( $field->{options}->{label} );
@@ -770,7 +772,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi   => $content_field->options->{multiple} ? 1 : 0,
+                can_multi => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -784,8 +786,9 @@ sub _build_content_data_hasher {
     sub {
         my ( $obj, $row, %param ) = @_;
 
-        $row->{id}            = $obj->id;
-        $row->{label}         = $obj->label || MT->translate('No Label (ID:[_1])', $obj->id);
+        $row->{id} = $obj->id;
+        $row->{label}
+            = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
         $row->{modified_date} = MT::Util::format_ts( "%Y-%m-%d %H:%M:%S",
             $obj->modified_on, $obj->blog,
             $app->user ? $app->user->preferred_language : undef );
@@ -868,7 +871,7 @@ sub _make_content_data_listing_screens {
                     'access_to_content_data_list',
                 ];
             },
-            feed_link           => sub {
+            feed_link => sub {
 
                 # TODO: fix permission
                 my ($app) = @_;

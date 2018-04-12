@@ -304,9 +304,10 @@ sub save {
                         $obj->is_superuser(1);
                     }
                     else {
-                        my %legacy_perms = { create_website => 1, create_blog => 1 };
+                        my %legacy_perms
+                            = { create_website => 1, create_blog => 1 };
                         foreach (@$sys_perms) {
-                            next if $legacy_perms{$_->[0]};
+                            next if $legacy_perms{ $_->[0] };
 
                             my $name  = 'can_' . $_->[0];
                             my $value = $app->param($name);
@@ -1045,14 +1046,15 @@ sub list {
         my @act;
         if ( 'CODE' eq ref $list_permission ) {
             my $code = $list_permission;
-            eval { $list_permission = $code->( $app ); };
+            eval { $list_permission = $code->($app); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
                 )
             ) if $@;
         }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
+        {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
             eval { $list_permission = $code->(); };
@@ -1544,14 +1546,15 @@ sub filtered_list {
         my $allowed = 0;
         my @act;
         if ( 'CODE' eq ref $list_permission ) {
-            eval { $list_permission = $list_permission->( $app ); };
+            eval { $list_permission = $list_permission->($app); };
             return $app->json_error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
                 )
             ) if $@;
         }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
+        {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
             eval { @act = $code->(); };

@@ -2118,7 +2118,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => [ "blog", "website" ],
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2127,7 +2127,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -4540,10 +4540,11 @@ sub _load_child_blog_ids {
         && $user->permissions( $blog->id )->can_do('administer_site') )
     {
         my $blogs = $blog->blogs();
-        if (  @$blogs ) {
-            foreach my $b ( @$blogs ) {
+        if (@$blogs) {
+            foreach my $b (@$blogs) {
                 push @ids, $b->id
-                    if $user->permissions( $b->id )->can_do('administer_site');
+                    if $user->permissions( $b->id )
+                    ->can_do('administer_site');
             }
         }
     }

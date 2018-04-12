@@ -2191,9 +2191,9 @@ sub build_blog_table {
     my $app = shift;
     my (%args) = @_;
 
-    my $blog_class    = $app->model('blog');
-    my $entry_class   = $app->model('entry');
-    my $page_class    = $app->model('page');
+    my $blog_class  = $app->model('blog');
+    my $entry_class = $app->model('entry');
+    my $page_class  = $app->model('page');
 
     my $iter;
     if ( $args{load_args} ) {
@@ -2421,8 +2421,10 @@ sub update_publishing_profile {
             {   blog_id => $blog->id,
 
                 # FIXME: enumeration of types
-                type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category', 'ct', 'ct_archive' ],
+                type => [
+                    'index',    'archive', 'individual', 'page',
+                    'category', 'ct',      'ct_archive'
+                ],
             }
         );
         for my $tmpl (@templates) {

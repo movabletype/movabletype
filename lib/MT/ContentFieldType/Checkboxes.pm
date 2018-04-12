@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -44,8 +44,8 @@ sub field_html_params {
     }
 
     my $multiple = '';
-    my $max = $options->{max};
-    my $min = $options->{min};
+    my $max      = $options->{max};
+    my $min      = $options->{min};
     $multiple = 'data-mt-multiple="1"';
     $multiple .= qq{ data-mt-max-select="${max}"} if $max;
     $multiple .= qq{ data-mt-min-select="${min}"} if $min;
@@ -100,7 +100,7 @@ sub options_validation_handler {
 sub options_pre_save_handler {
     my ( $app, $type, $obj, $options ) = @_;
 
-    $options->{multiple} = 1; # Checkboxes is always enabeled.
+    $options->{multiple} = 1;    # Checkboxes is always enabeled.
 
     return;
 }

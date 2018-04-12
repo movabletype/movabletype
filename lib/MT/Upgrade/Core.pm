@@ -149,8 +149,7 @@ sub seed_database {
     return undef if MT::Author->exist;
 
     $self->progress(
-        $self->translate_escape("Creating initial user records...")
-    );
+        $self->translate_escape("Creating initial user records...") );
 
     local $MT::CallbacksEnabled = 1;
 

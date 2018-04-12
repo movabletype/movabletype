@@ -680,15 +680,18 @@ sub search_replace {
             = MT->model('content_type')
             ->load_iter( { blog_id => $blog_id || \'> 0' },
             { sort => 'name' } );
-        my $perms   = $user->permissions( $blog_id );
+        my $perms = $user->permissions($blog_id);
         while ( my $content_type = $iter->() ) {
 
-            next unless (
-                $user->is_superuser
+            next
+                unless (
+                   $user->is_superuser
                 || $user->permissions(0)->can_do('manage_content_data')
                 || $perms->can_do('manage_content_data')
-                || $perms->can_do('search_content_data_' . $content_type->unique_id)
-            );
+                || $perms->can_do(
+                    'search_content_data_' . $content_type->unique_id
+                )
+                );
 
             push @content_types,
                 +{

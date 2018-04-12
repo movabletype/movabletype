@@ -834,7 +834,7 @@ sub getUsersBlogs {
         }
         push @res,
             {
-            url      => SOAP::Data->type( string => $blog->site_url || '' ),
+            url => SOAP::Data->type( string => $blog->site_url || '' ),
             blogid   => SOAP::Data->type( string => $blog->id ),
             blogName => SOAP::Data->type( string => $blog->name || '' )
             };
@@ -1343,9 +1343,9 @@ sub getPostCategories {
         my $is_primary = $prim && $cat->id == $prim->id ? 1 : 0;
         push @data,
             {
-            categoryName => SOAP::Data->type( string  => $cat->label || '' ),
-            categoryId   => SOAP::Data->type( string  => $cat->id ),
-            isPrimary    => SOAP::Data->type( boolean => $is_primary ),
+            categoryName => SOAP::Data->type( string => $cat->label || '' ),
+            categoryId => SOAP::Data->type( string => $cat->id ),
+            isPrimary => SOAP::Data->type( boolean => $is_primary ),
             };
     }
     \@data;

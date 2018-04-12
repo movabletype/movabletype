@@ -27,7 +27,8 @@ sub can_save {
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
     if ( $obj->category_set ) {
-        return $author->permissions($blog_id)->can_do('save_catefory_set_category') ? 1 : 0;
+        return $author->permissions($blog_id)
+            ->can_do('save_catefory_set_category') ? 1 : 0;
     }
     else {
         return $author->permissions($blog_id)->can_do('save_category');

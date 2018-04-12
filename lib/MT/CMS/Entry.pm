@@ -15,8 +15,8 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $type       = $app->param('_type');
-    my $perms      = $app->permissions
+    my $type  = $app->param('_type');
+    my $perms = $app->permissions
         or return $app->permission_denied();
     my $blog_class = $app->model('blog');
     my $blog       = $app->blog;
@@ -1593,7 +1593,7 @@ sub save_entries {
 
     my $perms = $app->permissions
         or $app->permission_denied();
-    my $type    = $app->param('_type') || '';
+    my $type = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;

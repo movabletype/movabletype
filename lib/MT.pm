@@ -488,10 +488,10 @@ sub remove_callback {
 }
 
 sub is_callback_registered {
-    my $class    = shift;
-    my ( $meth ) = @_;
+    my $class = shift;
+    my ($meth) = @_;
 
-    foreach my $list ( @Callbacks ) {
+    foreach my $list (@Callbacks) {
         return 1 if exists $list->{$meth};
     }
     return 0;
