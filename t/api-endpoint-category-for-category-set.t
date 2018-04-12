@@ -231,7 +231,7 @@ sub irregular_tests_for_create_category {
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
-            restrictions => { $site_id => ['save_category'], },
+            restrictions => { $site_id => ['save_catefory_set_category'], },
             params => { category => { label => 'create-category-3', }, },
             code   => 403,
         }
@@ -410,7 +410,7 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
-            restrictions => { $site_id => ['save_category'], },
+            restrictions => { $site_id => ['save_catefory_set_category'], },
             params => { category => { label => 'update-category-2', }, },
             code   => 403,
         }

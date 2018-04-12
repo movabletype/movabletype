@@ -577,12 +577,12 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $obj ) = @_;
+    my ( $eh, $app, $id, $obj, $origin ) = @_;
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    if ( $obj && !ref $obj ) {
-        $obj = MT->model('category')->load($obj)
+    if ( $id ) {
+        $obj ||= MT->model('category')->load($obj)
             or return;
     }
     if ($obj) {
@@ -591,7 +591,7 @@ sub can_save {
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
-    if ( $obj->category_set ) {
+    if ( $obj && $obj->category_set ) {
         return $author->permissions($blog_id)
             ->can_do('save_catefory_set_category');
     }
