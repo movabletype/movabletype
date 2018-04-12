@@ -1,9 +1,0 @@
-id: SampleBlockField
-name: SampleBlockField
-version: 1.0
-
-blockeditor_fields:
-  sample:
-    label: 'Sample'
-    order: 100
-    path: 'plugins/SampleBlockField/js/sample.js'
