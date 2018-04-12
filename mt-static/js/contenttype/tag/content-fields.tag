@@ -37,7 +37,7 @@
                   <div class="col">
                     <div id="label-field" class="form-group">
                       <label for="label_field" class="form-control-label">{ trans('Data Label Field') }</label>
-                      <select id="label_field" name="label_field" class="form-control html5-form">
+                      <select id="label_field" name="label_field" class="form-control html5-form" onchange={ changeLabelField }>
                         <option value="" selected="{ opts.labelField == '' }">{ trans('Show input field to enter data label') }
                         <option each={ labelFields } value="{ value }" selected="{ value == parent.labelField }">{ label }</option>
                       </select>
@@ -393,6 +393,10 @@
       }
       self.labelFields = fields
       self.update()
+    }
+
+    changeLabelField(e) {
+        self.labelField = e.target.value
     }
 
     _moveField(item, pos) {
