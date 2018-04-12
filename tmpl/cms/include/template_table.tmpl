@@ -1,7 +1,16 @@
 <mt:setvarblock name="listing_header">
   <h3 class="tmpl-type-name"><mt:var name="template_type_label"></h3>
 <mt:unless name="template_type" like="/system|email|backup/">
-  <mt:if name="create_link">
+  <mt:if name="template_type" eq="ct">
+  <mt:unless name="content_type_exists">
+      <mtapp:statusmsg
+         id="zero-state"
+         class="info zero-state"
+         can_close="0">
+        <__trans phrase="No content type could be found.">
+      </mtapp:statusmsg>
+  </mt:unless>
+  <mt:elseif name="create_link">
     <mt:if name="template_type" eq="archive">
     <li><__trans phrase="Create Archive Template:"></li>
     </mt:if>
