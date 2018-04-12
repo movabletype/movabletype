@@ -4540,10 +4540,11 @@ sub _load_child_blog_ids {
         && $user->permissions( $blog->id )->can_do('administer_site') )
     {
         my $blogs = $blog->blogs();
-        if (  @$blogs ) {
-            foreach my $b ( @$blogs ) {
+        if (@$blogs) {
+            foreach my $b (@$blogs) {
                 push @ids, $b->id
-                    if $user->permissions( $b->id )->can_do('administer_site');
+                    if $user->permissions( $b->id )
+                    ->can_do('administer_site');
             }
         }
     }
