@@ -199,7 +199,7 @@ function stopPropagation(e) {
 <mt:loop name="fav_website_loop">
         <li>
   <mt:if name="fav_website_can_link">
-          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
+          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;__mode=dashboard" class="scope-link text-light">
             <mt:var name="fav_website_name" escape="html">
           </a>
   <mt:else>
@@ -212,7 +212,7 @@ function stopPropagation(e) {
           <ul class="list-unstyled">
     </mt:if>
             <li>
-              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link text-light">
+              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;__mode=dashboard" class="scope-link text-light">
                 <mt:var name="fav_blog_name" escape="html">
               </a>
             </li>
@@ -224,7 +224,7 @@ function stopPropagation(e) {
 </mt:loop>
 <mt:unless name="selector_hide_website_chooser">
         <li id="select-website" class="select-another">
-          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=__mode%3Ddashboard" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
             (<__trans phrase="Select another site...">)
           </a>
         </li>
