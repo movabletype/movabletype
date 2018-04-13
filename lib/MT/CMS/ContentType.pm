@@ -465,7 +465,8 @@ sub save {
 
     # Update content type object
     my $description = $app->param('description');
-    my $display_option = $app->param('user_disp_option') ? 1 : 0;
+    my $display_option
+        = $obj->id ? $app->param('user_disp_option') ? 1 : 0 : 1;
     $obj->blog_id($blog_id);
     $obj->name($name);
     $obj->description($description);
