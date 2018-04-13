@@ -196,32 +196,36 @@ function stopPropagation(e) {
 
     <div class="mt-primaryNavigation__content">
       <ul class="mt-primaryNavigation__sites">
+        <li class="text-light"><__trans phrase="Sites">
+          <ul class="list-unstyled">
 <mt:loop name="fav_website_loop">
-        <li>
+            <li>
   <mt:if name="fav_website_can_link">
-          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;__mode=dashboard" class="scope-link text-light">
-            <mt:var name="fav_website_name" escape="html">
-          </a>
+              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+                <mt:var name="fav_website_name" escape="html">
+              </a>
   <mt:else>
-          <span class="text-light">
-            <mt:var name="fav_website_name" escape="html">
-          </span>
+              <span class="text-light">
+                <mt:var name="fav_website_name" escape="html">
+              </span>
   </mt:if>
   <mt:loop name="fav_website_children">
     <mt:if name="__first__">
-          <ul class="list-unstyled">
+              <ul class="list-unstyled">
     </mt:if>
-            <li>
-              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;__mode=dashboard" class="scope-link text-light">
-                <mt:var name="fav_blog_name" escape="html">
-              </a>
-            </li>
+                <li>
+                  <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+                    <mt:var name="fav_blog_name" escape="html">
+                  </a>
+                </li>
     <mt:if name="__last__">
-          </ul>
+              </ul>
     </mt:if>
   </mt:loop>
         </li>
 </mt:loop>
+          </ul>
+        </li>
 <mt:unless name="selector_hide_website_chooser">
         <li id="select-website" class="select-another">
           <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=__mode%3Ddashboard" class="mt-open-dialog mt-modal-open scope-link text-light" data-mt-modal-large>
