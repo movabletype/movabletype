@@ -6,18 +6,14 @@
   <ul class="mt-widget__list">
     <mt:Loop name="logs">
     <li>
-      <span class="row">
-        <span class="col mt-widget--info"><mt:var name="created_on_formatted"></span>
-        <span class="col mt-widget--info text-right"><mt:if name="can_view_site_log"><a href="<mt:var name="mt_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a><mt:elseif name="can_access_site"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></mt:if></span>
-      </span>
+      <span class="mt-widget__info d-block"><mt:var name="created_on_formatted"></span>
+      <mt:if name="can_view_site_log"><span class="mt-widget__info d-block"><a href="<mt:var name="mt_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></span><mt:elseif name="can_access_site"><span class="mt-widget__info d-block"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id" escape="html">" title="<mt:var name="site_name" escape="html">"><mt:var name="site_name" escape="html"></a></span></mt:if>
       <mt:var name="log_message" escape="html">
     </li>
     </mt:Loop>
   </ul>
   <mt:Else>
-  <div class="row">
-    <div class="col"><__trans phrase="No [_1] could be found." params="<__trans phrase="Log">"></div>
-  </div>
+    <span class="mt-widget__info d-block"><__trans phrase="No [_1] could be found." params="<__trans phrase="Log">"></div></span>
   </mt:if>
 </mtapp:widget>
 

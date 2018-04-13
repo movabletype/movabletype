@@ -21,24 +21,30 @@
       </mt:If>
         </div>
       </div>
+    </div>
+    <div class="row">
       <div class="col">
       <mt:Loop name="content_types">
         <div class="row mt-widget__contenttype">
-          <div class="col-5"><mt:Var name="name" escape="html"></div>
+          <div class="col-8"><mt:Var name="name" escape="html"></div>
           <div class="col"><mt:If name="can_list"><a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"><__trans phrase="List"></a></mt:If></div>
           <div class="col"><mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><svg title="" role="img" class="mt-icon--primary"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add" /></svg><__trans phrase="Create"></a></mt:if></div>
         </div>
       </mt:Loop>
       </div>
     </div>
+    <div class="row">
+      <div class="col">
       <mt:If name="recent_post">
-    <h4 class="mt-widget__latest"><__trans phrase="Recent Posts"></h4>
-    <ul class="list-unstyled">
+        <h4 class="mt-widget__latest"><__trans phrase="Recent Posts"></h4>
+        <ul class="list-unstyled">
         <mt:Loop name="recent_post">
-      <li class="row"><span class="col-2"><mt:var name="created_on_formatted"></span><span class="col"><a href="<mt:var name="mt_url">?__mode=edit&_type=<mt:var name="object_type">&blog_id=<mt:var name="blog_id">&id=<mt:var name="id"><mt:if name="subtype">&type=<mt:var name="subtype"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id"></mt:if>">[<mt:var name="object_name" escape="html">] <mt:var name="title" escape="html"></a></span></li>
+          <li class="row"><span class="col-2"><mt:var name="created_on_formatted"></span><span class="col"><a href="<mt:var name="mt_url">?__mode=edit&_type=<mt:var name="object_type">&blog_id=<mt:var name="blog_id">&id=<mt:var name="id"><mt:if name="subtype">&type=<mt:var name="subtype"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id"></mt:if>">[<mt:var name="object_name" escape="html">] <mt:var name="title" escape="html"></a></span></li>
         </mt:Loop>
-    </ul>
+        </ul>
       </mt:If>
+      </div>
+    </div>
   </div>
     </mt:Loop>
   </mt:If>
