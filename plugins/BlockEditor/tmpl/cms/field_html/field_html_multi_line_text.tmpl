@@ -20,21 +20,26 @@
     </div>
 
     <mt:ignore>editor-content</mt:ignore>
-    <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>" data-editor->
+    <mt:unless name="editors">
+    <mt:include name="include/editor_multi.tmpl">
+    <mt:else>
+    <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
       <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
     </div>
+    </mt:unless>
 
     <mt:ignore>blockeditor-content</mt:ignore>
     <div id="editor-input-content-field-<mt:var name="content_field_id">-blockeditor" class="blockeditor sortable" data-blockeditor-field_id="<mt:var name="content_field_id">" hidden>
     </div>
-  </div>
-  <div id="blockeditor_add-<mt:var name="content_field_id">" hidden>
-    <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
+    <div id="blockeditor_add-<mt:var name="content_field_id">" class="pt-3" hidden>
+      <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
+    </div>
   </div>
 </div>
 
 <mt:unless name="loaded_multi_line_text_field">
   <mt:var name="loaded_multi_line_text_field" value="1">
+
 <input type="hidden" name="block_editor_data" id="block_editor_data" value="">
 
 <div class="modal modal-blockeditor" role="dialog" aria-labelledby="exampleModal" aria-hidden="true" >
@@ -75,6 +80,7 @@
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
+  <mt:if name="editors">
   // editor load
   var editor_strategy = MT.App.EditorStrategy.Multi;
   editor_strategy.prototype.create = function(app, ids, format) {
@@ -109,7 +115,7 @@
           }
       });
   }
-
+  </mt:if>
   var block_editor_data_json = '<mt:var name="block_editor_data" encode_js="1">';
   var blockeditor_data  = {};
   <mt:if name="block_editor_data">if(block_editor_data_json){
@@ -127,7 +133,11 @@
         target_data = blockeditor_data[editor_id];
       }
       jQuery('#' + editor_id).blockeditor(target_data);
+      <mt:unless name="editors">
+      jQuery('#' + target_id).hide();
+      <mt:else>
       jQuery('#' + target_id).parents('.editor-content').hide();
+      </mt:unless>
       var field_id = target_id.replace(/editor-input-content-field-/,'');
       jQuery('#blockeidor_menus-' + field_id + ' .nav-item').removeAttr('hidden');
       jQuery('#editor-input-content-field-' + field_id + '-blockeditor').removeAttr('hidden');
@@ -144,10 +154,17 @@
       }
 
       var field_id = response.result.field;
+      <mt:unless name="editors">
+      jQuery('#' + field_id + '-content').val(response.result[field_id]);
+      jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
+      jQuery('#'+field_id).removeClass('editor-plaintext');
+      app.setEditorIframeHTML(field_id);
+      <mt:else>
       jQuery('#'+field_id).html(response.result[field_id]);
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
       app.editor.reload();
+      </mt:unless>
   }
   function changedTextFormat() {
       var editor_id = jQuery(this).data('target');
@@ -155,7 +172,7 @@
       var option = this.options[this.selectedIndex].value;
       var field_id = editor_id.replace(/editor-input-content-field-/,'');
       var editor_name = editor_id.replace(/editor-input-/, '');
-      app.setEditor(editor_name);
+      app.setEditor(editor_id);
       // app.initEditor();
 
       var cur_text_format = jQuery(this).attr('data-orig_text_format');
@@ -196,11 +213,28 @@
               return;
           }
       }
+      <mt:unless name="editors">
+      if (cur_text_format == 'richtext' && option != 'blockeditor') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).addClass('editor-plaintext');
+
+          app.editor.setMode('textarea');
+          app.editor.focus();
+      } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).addClass('editor-plaintext');
+
+          var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
+          app.editor.setMode('textarea');
+          app.editor.setHTML(html);
+          jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
+          jQuery('#' + editor_id).parents('.editor-content').show();
+          app.editor.focus();
+      } else if (option == 'richtext') {
+      <mt:else>
       if (cur_text_format == 'richtext' && option != 'blockeditor') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
-
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 
           app.editor.reload();
           app.editor.setMode('textarea');
@@ -209,44 +243,52 @@
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-
+          var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
           app.editor.setMode('textarea');
-          app.editor.setContent(jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html'));
+          app.editor.setContent(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
           app.editor.focus();
-
       } else if (option == 'richtext') {
+      </mt:unless>
           app.saveHTML(false);
           // changing to richtext editor
           // convert existing format to richtext
           var param = {
-              '__mode': 'data_convert_to_html',
-              'format': cur_text_format
+              '__mode':     'data_convert_to_html',
+              'format':     cur_text_format,
+              'field':      editor_id,
+              'editor_id':  jQuery('#'+editor_id).val()
           };
-
-          param['field'] = editor_id;
           if( cur_text_format == 'blockeditor' ){
               param[editor_id] = jQuery('#' + editor_id + '-blockeditor').blockeditor('get_html');
               jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           } else {
+              <mt:unless name="editors">
+              param[editor_id] = jQuery('#'+editor_id + '-content').val();
+              <mt:else>
               param[editor_id] = jQuery('#'+editor_id).val();
+              </mt:unless>
           }
-
-          var params = {
-              uri: '<mt:var name="script_url">', method: 'POST',
-                  arguments: param, load: convertedText
-          };
-          jQuery.post('<mt:var name="script_url">', param, convertedText);
+          jQuery.ajax({
+            uri:    '<mt:var name="script_url">',
+            type:   'POST',
+            data:   param,
+          })
+          .done(function(data){
+            convertedText(data);
+          });
       } else {
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-          app.editor.setMode(option);
+          <mt:if name="editors">app.editor.setMode(option);</mt:if>
           app.editor.focus();
           if(option == "blockeditor"){
             var blockeditor_id = editor_id+'-blockeditor';
             jQuery('#' + blockeditor_id).blockeditor({});
+            <mt:unless name="editors">
+            jQuery('#' + editor_id).hide();
+            <mt:else>
             jQuery('#' + editor_id).parents('.editor-content').hide();
+            </mt:unless>
           }
       }
       if(option == 'blockeditor'){
@@ -256,7 +298,13 @@
         jQuery('#blockeidor_menus-' + field_id + ' .nav-item').attr('hidden','');
         jQuery('#editor-input-content-field-' + field_id + '-blockeditor').attr('hidden', '');
         jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
+        <mt:unless name="editors">
+        jQuery('#' + editor_id).show();
+        <mt:else>
+        jQuery('#' + editor_id).parents('.editor-content').show();
+        </mt:unless>
       }
+      jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
   }
 
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
@@ -278,7 +326,11 @@ jQuery.mtValidateAddRules({
       var obj = jQuery('#'+editor_id+'-blockeditor').blockeditor('get_data');
       data = Object.keys(obj).length > 0 ? true : false;
     } else {
+      <mt:unless name="editors">
+      var content = app.editors[editor_id].getHTML();
+      <mt:else>
       var content = app.editors[editor_id].getContent();
+      </mt:unless>
       data = content != '' ? true : false;
     }
     if ( required && !data ) {
@@ -301,6 +353,7 @@ function setMultiLineTextData($form) {
       fieldId = m[1];
       $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1"></textarea>'));
       $form.find('textarea[name=content-field-multi-' + fieldId + ']').val(this.value);
+      console.log($form.find('[content-field-multi-' + fieldId + ']').val());
     }
   });
 }

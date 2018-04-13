@@ -3,13 +3,6 @@
 
 */
 
-.editor-toolbar {
-    border-top-left-radius: 0;
-    border-radius: 0 5px 0 0;
-    -moz-user-select: none !important;
-    -moz-user-focus: none !important;
-}
-
 .editor-content .field {
     padding: 0;
 }
@@ -25,194 +18,197 @@
     display: none;
 }
 
-.editor-toolbar .button {
-    background: transparent url(../../images/buttons/toolbar/toolbar.gif) left top no-repeat;
+/* rich editor */
+#text-field {
+    position: static;
 }
-.editor-toolbar .button:hover:active {
-    background-image: url(../../images/buttons/toolbar/toolbar-active.gif);
+.editor-toolbar {
+    padding: 8px;
+    border: solid #c0c6c9;
+    border-width: 1px 1px 0;
+    background-color: #f3f3f3;
+    border-top-left-radius: 0;
+    border-radius: 0 5px 0 0;
+    -moz-user-select: none !important;
+    -moz-user-focus: none !important;
+}
+.editor-toolbar .button {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: 0;
+}
+.editor {
+    display: block;
+    position: relative;
+    padding: 0;
+    border-top: 0;
+    background-color: #fff;
+}
+
+.editor-content-iframe,
+#editor-content-iframe {
+    border: 1px solid #adadad;
+}
+
+.editor textarea,
+.editor iframe {
+    width: 100%;
+    min-width: 100%;
+    height: 550px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 0;
+}
+.editor textarea {
+    padding: 8px;
+    font-size: 14px;
+    font-family: monospace;
+    line-height: 1.3;
+}
+.textarea-enclosure {
+    background-color: #fff;
+    border-radius: 0 0 2px 2px;
+}
+.button.toolbar .button-label {
+    display: none;
+}
+
+
+/* new icons */
+.editor-toolbar .button,
+.editor-toolbar .button:hover {
+  background-repeat: no-repeat;
+  background-size: 16px;
+  background-position: center;
+  cursor: pointer;
+}
+.editor-toolbar .button {
+  border: 1px solid #E0E0E0;
+  border-radius: 0 0 2px 2px;
+  background-color: #F4F4F4;
+  vertical-align: middle;
 }
 .editor-toolbar .button:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-hover.gif);
+  border: 1px solid #f3f3f3;
+  border-radius: 0 0 2px 2px;
+  background-color: #FFFBBD;
 }
+
 .editor-toolbar .button.command-font-size-smaller,
 .editor-toolbar .button.command-font-size-smaller:hover {
-    background-position: 0 0;
+  background-image: url(../../images/icons/ic_textsmaller.svg);
 }
 .editor-toolbar .button.command-font-size-larger,
 .editor-toolbar .button.command-font-size-larger:hover {
-    background-position: -22px 0;
+  background-image: url(../../images/icons/ic_textbigger.svg);
 }
 .editor-toolbar .button.command-bold,
 .editor-toolbar .button.command-bold:hover {
-    background-position: -44px 0;
-}
-.editor-state-bold .button.command-bold,
-.editor-state-bold .button.command-bold:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_bold.svg);
 }
 .editor-toolbar .button.command-italic,
 .editor-toolbar .button.command-italic:hover {
-    background-position: -66px 0;
-}
-.editor-state-italic .button.command-italic,
-.editor-state-italic .button.command-italic:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_italic.svg);
 }
 .editor-toolbar .button.command-underline,
 .editor-toolbar .button.command-underline:hover {
-    background-position: -88px 0;
-}
-.editor-state-underline .button.command-underline,
-.editor-state-underline .button.command-underline:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_underline.svg);
 }
 .editor-toolbar .button.command-strikethrough,
 .editor-toolbar .button.command-strikethrough:hover {
-    margin-right: 10px;
-    background-position: -110px 0;
-}
-.editor-state-strikethrough .button.command-strikethrough,
-.editor-state-strikethrough .button.command-strikethrough:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
-}
-.editor-toolbar .button.command-color,
-.editor-toolbar .button.command-color:hover {
-    margin-right: 10px;
-    background-position: -132px 0;
+  background-image: url(../../images/icons/ic_crossoff.svg);
+  margin-right: 10px;
 }
 .editor-toolbar .button.command-insert-link,
 .editor-toolbar .button.command-insert-link:hover {
-    background-position: -154px 0;
+  background-image: url(../../images/icons/ic_link.svg);
 }
 .editor-toolbar .button.command-insert-email,
 .editor-toolbar .button.command-insert-email:hover {
-    margin-right: 10px;
-    background-position: -176px 0;
+  background-image: url(../../images/icons/ic_mail.svg);
+  margin-right: 10px;
 }
 .editor-toolbar .button.command-indent,
 .editor-toolbar .button.command-indent:hover {
-    background-position: -198px 0;
+  background-image: url(../../images/icons/ic_indent.svg);
 }
 .editor-toolbar .button.command-outdent,
 .editor-toolbar .button.command-outdent:hover {
-    background-position: -220px 0;
+  background-image: url(../../images/icons/ic_unindent.svg);
 }
 .editor-toolbar .button.command-insert-unordered-list,
 .editor-toolbar .button.command-insert-unordered-list:hover {
-    background-position: -242px 0;
-}
-.editor-state-unordered-list .button.command-insert-unordered-list,
-.editor-state-unordered-list .button.command-insert-unordered-list:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_list.svg);
 }
 .editor-toolbar .button.command-insert-ordered-list,
 .editor-toolbar .button.command-insert-ordered-list:hover {
-    margin-right: 10px;
-    background-position: -264px 0;
-}
-.editor-state-ordered-list .button.command-insert-ordered-list,
-.editor-state-ordered-list .button.command-insert-ordered-list:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
-}
-.editor-toolbar .button.command-enclosure-align-left,
-.editor-toolbar .button.command-enclosure-align-left:hover {
-    background-position: -286px 0;
-}
-.editor-state-enclosure-align-left .button.command-enclosure-align-left,
-.editor-state-enclosure-align-left .button.command-enclosure-align-left:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
-}
-.editor-toolbar .button.command-enclosure-align-center,
-.editor-toolbar .button.command-enclosure-align-center:hover {
-    background-position: -308px 0;
-}
-.editor-state-enclosure-align-center .button.command-enclosure-align-center,
-.editor-state-enclosure-align-center .button.command-enclosure-align-center:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
-}
-.editor-toolbar .button.command-enclosure-align-right,
-.editor-toolbar .button.command-enclosure-align-right:hover {
-    background-position: -330px 0;
-}
-.editor-state-enclosure-align-right .button.command-enclosure-align-right,
-.editor-state-enclosure-align-right .button.command-enclosure-align-right:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_ol.svg);
+  margin-right: 10px;
 }
 .editor-toolbar .button.command-justify-left,
 .editor-toolbar .button.command-justify-left:hover {
-    background-position: -352px 0;
-}
-.editor-state-justify-left .button.command-justify-left,
-.editor-state-justify-left .button.command-justify-left:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_alignleft.svg);
 }
 .editor-toolbar .button.command-justify-center,
 .editor-toolbar .button.command-justify-center:hover {
-    background-position: -374px 0;
-}
-.editor-state-justify-center .button.command-justify-center,
-.editor-state-justify-center .button.command-justify-center:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_aligncenter.svg);
 }
 .editor-toolbar .button.command-justify-right,
 .editor-toolbar .button.command-justify-right:hover {
-    margin-right: 10px;
-    background-position: -396px 0;
+  background-image: url(../../images/icons/ic_alignright.svg);
+  margin-right: 10px;
 }
-.editor-state-justify-right .button.command-justify-right,
-.editor-state-justify-right .button.command-justify-right:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
-}
-/*
-.editor-toolbar .button.command-spell-check,
-.editor-toolbar .button.command-spell-check:hover {
-    background-position: -462px 0;
-}
-*/
 .editor-toolbar .button.command-insert-image,
 .editor-toolbar .button.command-insert-image:hover {
-    background-position: -440px 0;
-}
-.editor-state-insert-image .button.command-insert-image,
-.editor-state-insert-image .button.command-insert-image:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+  background-image: url(../../images/icons/ic_image.svg);
 }
 .editor-toolbar .button.command-insert-file,
 .editor-toolbar .button.command-insert-file:hover {
-    margin-right: 10px;
-    background-position: -462px 0;
+  background-image: url(../../images/icons/ic_asset.svg);
+  margin-right: 10px;
 }
-.editor-state-insert-file .button.command-insert-file,
-.editor-state-insert-file .button.command-insert-file:hover {
-    background-image: url(../../images/buttons/toolbar/toolbar-click.gif);
+.field-buttons-formatting > span {
+  display: inline-block;
 }
-
 /* toggle */
-.editor-toolbar .button.command-toggle-wysiwyg,
-.editor-toolbar .button.command-toggle-html {
-    background-image: url(../../images/buttons/toolbar/toggle.gif);
-}
-.editor-toolbar .button.command-toggle-wysiwyg:hover,
-.editor-toolbar .button.command-toggle-html:hover {
-    background-image: url(../../images/buttons/toolbar/toggle-hover.gif);
-}
 .editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg,
-.editor-mode-textarea .editor-toolbar .button.command-toggle-html {
-    background-image: url(../../images/buttons/toolbar/toggle-active.gif);
-}
-.editor-toolbar .button.command-toggle-wysiwyg,
-.editor-toolbar .button.command-toggle-wysiwyg:hover {
-    margin-right: -3px;
-    border-right: 1px solid #b2b2b2;
-    background-position: 0 0;
-}
-.editor-toolbar .button.command-toggle-html,
-.editor-toolbar .button.command-toggle-html:hover {
-    background-position: -22px 0;
+.editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg:hover,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-wysiwyg,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-wysiwyg:hover  {
+  background-image: url(../../images/icons/ic_wysiwyg.svg);
+  margin-right: -3px;
+  border-right: 1px solid #b2b2b2;
 }
 
-/* comment */
-.comment-form-toolbar .button.command-underline,
-.comment-form-toolbar .button.command-insert-link {
-    margin-right: 10px;
+.editor-mode-iframe .editor-toolbar .button.command-toggle-html,
+.editor-mode-iframe .editor-toolbar .button.command-toggle-html:hover,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-html,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-html:hover  {
+  background-image: url(../../images/icons/ic_htmlmode.svg);
+}
+
+.editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg,
+.editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg:hover,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-html,
+.editor-mode-textarea .editor-toolbar .button.command-toggle-html:hover  {
+  background-color: #FFFBBD;
+}
+.field {
+    zoom: 1;
+}
+.field:before,
+.field:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020";
+}
+.field:after {
+    clear: both;
 }

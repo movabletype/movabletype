@@ -1309,7 +1309,7 @@ Pager = new Class(Object, {
             first_link.innerHTML = trans('Previous');
             first_item.appendChild(first_link);
             this.element.appendChild(first_item);
-            
+
             if(page - 2 >= 1){
               var item = doc.createElement('li');
               item.className = 'page-item first-last';
@@ -1320,7 +1320,7 @@ Pager = new Class(Object, {
               link.innerHTML = '1';
               item.appendChild(link);
               this.element.appendChild(item);
-      
+
               var hidden_item = doc.createElement('li');
               hidden_item.className = 'page-item';
               hidden_item.setAttribute('aria-hidden', 'true');

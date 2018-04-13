@@ -357,9 +357,7 @@
         },
 
         getHeight: function() {
-            return (this.editor === this.source) ?
-            this.$editorTextarea.height() :
-            this.$editorIframe.innerHeight();
+            return this.$editorElement.height();
         },
 
         setHeight: function(height) {
@@ -420,7 +418,7 @@
 
             var Cookie = tinymce.plugins.MovableType.Cookie;
             var size = Cookie.getHash("TinyMCE_" + ed.id + "_size");
-            if(size)
+            if(size && !this.tinymce.inline)
                 ed.theme.resizeTo(size.cw, size.ch);
 
 

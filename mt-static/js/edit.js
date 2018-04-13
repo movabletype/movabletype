@@ -12,7 +12,7 @@ MT.App = new Class( MT.App, {
 
     currentEditor: "content",
     editorMode: "textarea",
-    
+
 
     initComponents: function() {
         arguments.callee.applySuper( this, arguments );
@@ -36,11 +36,11 @@ MT.App = new Class( MT.App, {
             this.setDelegate( "categoryList", this.catList );
             this.catList.redraw( this.catCache );
         }
-        
+
         var cs = DOM.getElement( "open-category-selector1" );
         if ( defined( MT.App.selectedCategoryList ) && MT.App.selectedCategoryList.length == 0 && cs )
             this.categorySelector.open( cs );
-        
+
         if ( DOM.getElement( "calendar" ) )
             this.calendar = new this.constructor.Calendar( "calendar", "calendar" );
     },
@@ -48,7 +48,7 @@ MT.App = new Class( MT.App, {
 
     initEditor: Function.stub,
 
-    
+
     destroyObject: function() {
         this.categorySelector = null;
         this.catList = null;
@@ -57,12 +57,12 @@ MT.App = new Class( MT.App, {
         arguments.callee.applySuper( this, arguments );
     },
 
-    
+
     eventBeforeUnload: function( event ) {
         if ( this.editor ) {
-            if ( this.editor.changed ) 
+            if ( this.editor.changed )
                 this.changed = true;
-       
+
             /* preserve what they changed ( if they hit back ) */
             if ( this.changed )
                 this.saveHTML( false );
@@ -82,15 +82,15 @@ MT.App = new Class( MT.App, {
     eventClick: function( event ) {
         var command = this.getMouseEventCommand( event );
         switch( command ) {
-            
+
             case "openCategorySelector":
                 this.categorySelector.open( event.commandElement )
                 break;
-            
+
             case "closeCategorySelector":
                 this.categorySelector.close( event.commandElement );
                 break;
-            
+
             /* editor commands */
             case "setModeTextarea":
                 this.editor.setMode( "textarea" );
@@ -170,7 +170,7 @@ MT.App = new Class( MT.App, {
         return event.stop();
     },
 
-    
+
     setEditorIframeHTML: function() {
         this.editor.setHTML( this.editorInput[ app.currentEditor ].value );
         this.editor.setMode( "iframe" );
@@ -187,12 +187,12 @@ MT.App = new Class( MT.App, {
 
         this.changed = true;
     },
-    
-    
+
+
     saveHTML: function( resetChanged ) {
         if ( !this.editor )
             return;
-        
+
         this.fixHTML();
 
         this.editorInput[ this.currentEditor ].value = this.editor.getHTML();
@@ -230,11 +230,11 @@ MT.App = new Class( MT.App, {
                 ancs = this.editor.iframe.document.getElementsByTagName( "a" );
                 forms = this.editor.iframe.document.getElementsByTagName( "form" );
             }
-                
+
             if ( imgs )
                 for ( var i = 0; i < imgs.length; i++ )
                     imgs[ i ].src = imgs[ i ].src;
-                
+
             /* fix links, skiping over any with a anchor */
             if ( ancs )
                 for ( var i = 0; i < ancs.length; i++ )
@@ -295,7 +295,7 @@ MT.App = new Class( MT.App, {
 
 MT.App.CategoryList = new Class( Object, {
 
-    
+
     init: function( element, args ) {
         this.element = DOM.getElement( element );
 
@@ -312,7 +312,7 @@ MT.App.CategoryList = new Class( Object, {
         this.element = null;
     },
 
-        
+
     redraw: function( catCache ) {
         if ( !catCache )
             catCache = this.catCache || app.catCache;
@@ -367,7 +367,7 @@ MT.App.CategoryList = new Class( Object, {
                     setDirty(true);
                 }
                 break;
-            
+
             case "remove":
                 if ( !defined( id ) )
                     return;
@@ -382,7 +382,7 @@ MT.App.CategoryList = new Class( Object, {
                     setDirty(true);
                 }
                 break;
-                
+
             case "openCategorySelector":
                 categorySelector.open( event.commandElement );
                 break;

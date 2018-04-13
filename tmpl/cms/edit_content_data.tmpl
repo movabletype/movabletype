@@ -442,7 +442,7 @@ div.mce-notification-error {
 
 <mt:if name="has_multi_line_text_field">
   <mt:unless name="editors">
-    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor.tmpl"></mt:if>
+    <mt:if name="rich_editor"><mt:var name="rich_editor_tmpl"><mt:else><mt:include name="include/archetype_editor_multi.tmpl"></mt:if>
   <mt:else>
     <mt:include name="include/editor_script.tmpl" id="editor_script_include">
   </mt:unless>
@@ -652,12 +652,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   });
 
 
-  jQuery('#edit-content-type-data-form').submit( function(event) {
+  jQuery('#edit-content-type-data-form').on('submit', function(event) {
     var $form = jQuery(this);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+<mt:if name="has_multi_line_text_field">
         resetMultiLineTextData($form);
         setMultiLineTextData($form);
+</mt:if>
         setDirty(false);
         $form.get(0).submit();
         return false;
@@ -665,15 +667,17 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
+<mt:if name="has_multi_line_text_field">
         resetMultiLineTextData($form);
         setMultiLineTextData($form);
+</mt:if>
 
 <mt:if name="config.previewinnewwindow">
         $form.attr('mt:once', '1');
 </mt:if>
         $form.get(0).submit();
       }
-    })
+    });
     return false;
   });
 
