@@ -27,6 +27,7 @@ sub _tags_for_blog {
     my $class = $type eq 'content_type' ? MT->model('cd') : MT->model($type);
     my $datasource
         = $type eq 'content_type' ? 'content_data' : $class->datasource;
+    my $content_type_id = $ctx->{__stash}{content_type_id};
 
     if ( ref $terms->{blog_id} eq 'ARRAY' ) {
         $cache_id = join ',', @{ $terms->{blog_id} };
@@ -35,6 +36,7 @@ sub _tags_for_blog {
     else {
         $cache_id = $terms->{blog_id} || 'all';
     }
+    $cache_id .= ':' . $content_type_id if $content_type_id;
     if ( !$tag_cache->{$cache_id}{tags} ) {
         require MT::Tag;
         my %temp_terms = %$terms;
@@ -58,10 +60,9 @@ sub _tags_for_blog {
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
-        my %tags         = map { $_->id => $_ } @tags;
-        my $ext_terms    = $class->terms_for_tags();
-        my $content_type = $ctx->{__stash}{content_type};
-        $ext_terms->{content_type_id} = $content_type->id if $content_type;
+        my %tags = map { $_->id => $_ } @tags;
+        my $ext_terms = $class->terms_for_tags();
+        $ext_terms->{content_type_id} = $content_type_id if $content_type_id;
 
         my $count_iter = $class->count_group_by(
             { ( $ext_terms ? (%$ext_terms) : () ), %$terms, },
@@ -262,11 +263,14 @@ sub _hdlr_tags {
     my ( %blog_terms, %blog_args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
-
-    # Set context of content type
-    local $ctx->{__stash}{content_type}
-        = $ctx->get_content_type_context( $args, $cond )
-        if $args->{content_type};
+    if ( $type eq 'content_type' ) {
+        $ctx->set_content_type_load_context( $args, $cond, \%blog_terms,
+            \%blog_args )
+            or return;
+    }
+    local $ctx->{__stash}{content_type_id}
+        = delete $blog_terms{content_type_id}
+        if $blog_terms{content_type_id};
 
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;
