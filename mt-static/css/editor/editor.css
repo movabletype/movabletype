@@ -92,12 +92,14 @@
   border: 1px solid #E0E0E0;
   border-radius: 0 0 2px 2px;
   background-color: #F4F4F4;
+  vertical-align: middle;
 }
 .editor-toolbar .button:hover {
   border: 1px solid #f3f3f3;
   border-radius: 0 0 2px 2px;
   background-color: #FFFBBD;
 }
+
 .editor-toolbar .button.command-font-size-smaller,
 .editor-toolbar .button.command-font-size-smaller:hover {
   background-image: url(../../images/icons/ic_textsmaller.svg);
@@ -165,15 +167,15 @@
 .editor-toolbar .button.command-insert-image,
 .editor-toolbar .button.command-insert-image:hover {
   background-image: url(../../images/icons/ic_image.svg);
-  vertical-align: bottom;
 }
 .editor-toolbar .button.command-insert-file,
 .editor-toolbar .button.command-insert-file:hover {
   background-image: url(../../images/icons/ic_asset.svg);
   margin-right: 10px;
-  vertical-align: bottom;
 }
-
+.field-buttons-formatting > span {
+  display: inline-block;
+}
 /* toggle */
 .editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg,
 .editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg:hover,
