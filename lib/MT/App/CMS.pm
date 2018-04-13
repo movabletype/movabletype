@@ -539,6 +539,8 @@ sub init_plugins {
             $pkg . 'view_permission_filter.author' => "${pfx}User::can_view",
             $pkg . 'save_filter.author' => "${pfx}User::save_filter",
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
+            $pkg
+                . 'delete_ext_author_filter' => "${pfx}User::can_delete_this",
 
             # blog callbacks
             $pkg . 'view_permission_filter.blog' => "${pfx}Blog::can_view",
@@ -1056,8 +1058,10 @@ sub core_list_actions {
                         ? MT->translate("_WARNING_DELETE_USER_EUM")
                         : MT->translate("_WARNING_DELETE_USER");
                 },
-                code          => "${pkg}Common::delete",
-                permit_action => 'delete_user_via_list',
+                code      => "${pkg}Common::delete",
+                condition => sub {
+                    $app->user->can_do('delete_user_via_list');
+                },
             },
             'enable' => {
                 label      => 'Enable',

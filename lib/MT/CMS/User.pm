@@ -449,10 +449,10 @@ sub set_object_status {
         next unless $id;    # avoid 'empty' ids
         my $obj = $class->load($id);
         next unless $obj;
-        if ( ( $obj->id == $app->user->id ) && ( $type eq 'author' ) ) {
-            next;
-        }
+        next if ( $obj->id == $app->user->id ) && ( $type eq 'author' );
         next if $new_status == $obj->status;
+        next if !$app->user->is_superuser      && $obj->is_superuser;
+
         $obj->status($new_status);
         if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
             my $eh = MT::ErrorHandler->new;
@@ -1649,13 +1649,20 @@ sub can_save {
     }
 }
 
+sub can_delete_this {
+    my ( $eh, $app, $obj, $return_args ) = @_;
+    my $user = $app->user;
+
+    return 0 if $user->id == $obj->id;
+    return 1 if $user->is_superuser;
+    return 1 if $user->can_manage_users_groups && !$obj->is_superuser;
+
+    return 0;
+}
+
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
-    if ( $author->id == $obj->id ) {
-        return $eh->error(
-            MT->translate("You cannot delete your own user record.") );
-    }
     return 1 if $author->can_manage_users_groups;
     if ( !( $obj->created_by && $obj->created_by == $author->id ) ) {
         return $eh->error(

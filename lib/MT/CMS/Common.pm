@@ -289,7 +289,13 @@ sub save {
             = qw(is_superuser can_create_blog can_view_log can_edit_templates);
         delete $values{$_} for @cols;
 
-        if ( !$id || ( !$obj->is_superuser && $author->can_manage_users_groups ) ) {
+        delete $values{'status'}
+            if ( $author->id == $obj->id )
+            || ( !$author->is_superuser && $obj->is_superuser );
+
+        if ( !$id
+            || ( !$obj->is_superuser && $author->can_manage_users_groups ) )
+        {
             # Assign the auth_type unless it was assigned
             # through the form.
             $obj->auth_type( $app->config->AuthenticationModule )
@@ -2001,7 +2007,7 @@ sub delete {
         elsif ( $type eq 'author' ) {
             $app->run_callbacks( 'cms_delete_ext_author_filter',
                 $app, $obj, \%return_arg )
-                || return;
+                || next;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
