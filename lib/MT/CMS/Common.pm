@@ -287,37 +287,33 @@ sub save {
         #FIXME: Legacy columns - remove them
         my @cols
             = qw(is_superuser can_create_blog can_view_log can_edit_templates);
-        if ( !$author->is_superuser ) {
-            delete $values{$_} for @cols;
-        }
-        else {
-            if ( !$id || ( $author->id != $id ) ) {
+        delete $values{$_} for @cols;
 
-                # Assign the auth_type unless it was assigned
-                # through the form.
-                $obj->auth_type( $app->config->AuthenticationModule )
-                    unless $obj->auth_type;
-                if ( $values{'status'} == MT::Author::ACTIVE() ) {
-                    my $sys_perms      = MT::Permission->perms('system');
-                    my $can_administer = $app->param('can_administer');
-                    if ($can_administer) {
-                        $obj->is_superuser(1);
-                    }
-                    else {
-                        my %legacy_perms
-                            = { create_website => 1, create_blog => 1 };
-                        foreach (@$sys_perms) {
-                            next if $legacy_perms{ $_->[0] };
+        if ( !$id || ( !$obj->is_superuser && $author->can_manage_users_groups ) ) {
+            # Assign the auth_type unless it was assigned
+            # through the form.
+            $obj->auth_type( $app->config->AuthenticationModule )
+                unless $obj->auth_type;
+            if ( $values{'status'} == MT::Author::ACTIVE() ) {
+                my $sys_perms      = MT::Permission->perms('system');
+                my $can_administer = $app->param('can_administer');
+                if ($can_administer) {
+                    $obj->is_superuser(1);
+                }
+                else {
+                    my %legacy_perms
+                        = { create_website => 1, create_blog => 1 };
+                    foreach (@$sys_perms) {
+                        next if $legacy_perms{ $_->[0] };
 
-                            my $name  = 'can_' . $_->[0];
-                            my $value = $app->param($name);
-                            if ( defined $value ) {
-                                $obj->$name($value);
-                                delete $values{$name};
-                            }
-                            else {
-                                $obj->$name(0);
-                            }
+                        my $name  = 'can_' . $_->[0];
+                        my $value = $app->param($name);
+                        if ( defined $value ) {
+                            $obj->$name($value);
+                            delete $values{$name};
+                        }
+                        else {
+                            $obj->$name(0);
                         }
                     }
                 }

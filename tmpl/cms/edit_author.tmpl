@@ -489,7 +489,7 @@ function showPasswordField() {
       <mt:loop name="loaded_permissions">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
-            <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
+            <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modifiy_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
             <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
           </div>
         </div>
