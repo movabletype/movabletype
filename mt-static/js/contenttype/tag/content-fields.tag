@@ -37,8 +37,8 @@
                   <div class="col">
                     <div id="label-field" class="form-group">
                       <label for="label_field" class="form-control-label">{ trans('Data Label Field') }</label>
-                      <select id="label_field" name="label_field" class="form-control html5-form" onchange={ changeLabelField }>
-                        <option value="" selected="{ opts.labelField == '' }">{ trans('Show input field to enter data label') }
+                      <select id="label_field" name="label_field" class="custom-select form-control html5-form" onchange={ changeLabelField }>
+                        <option value="" selected={ labelField == "" }>{ trans('Show input field to enter data label') }
                         <option each={ labelFields } value="{ value }" selected="{ value == parent.labelField }">{ label }</option>
                       </select>
                     </div>
@@ -79,7 +79,7 @@
           <img src="{ StaticURI }images/dragdrop.gif" alt="{ trans('Drag and drop area') }" width="240" height="120">
           <p>{ trans('Please add a content field.') }</p>
         </div>
-        <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
+        <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd } style="width: 100%;"></div>
       </div>
     </fieldset>
   </form>
@@ -111,6 +111,16 @@
     self.dragoverState = false
     self.labelFields = null
     self.labelField = opts.labelField
+
+    self.on('updated', function () {
+      var select = self.root.querySelector('#label_field')
+      jQuery(select).find('option').each(function (index, option) {
+        if (option.attributes.selected) {
+          select.selectedIndex = index
+          return false
+        }
+      })
+    })
 
     // Drag start from content field list
     self.observer.on('mtDragStart', function() {
