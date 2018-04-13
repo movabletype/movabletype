@@ -8,6 +8,8 @@ package MT::ContentData;
 
 use strict;
 use warnings;
+
+use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Revisable );
 
 use POSIX ();
