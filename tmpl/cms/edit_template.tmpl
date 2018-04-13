@@ -293,7 +293,7 @@
       <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
       <select name="content_type_sel" id="content_type_sel" tabindex="13" class="custom-select form-control">
       <mt:loop name="ct_selects">
-      <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+      <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>
       </select>
    </div>
@@ -1278,7 +1278,7 @@ function saveTemplatePrefs( sync ) {
     <mt:if name="blog_id">
     <mt:if name="ct_selects">
     function setContentTypeInfo() {
-      var ct_data = <mt:var name="ct_data">;
+      var ct_data = JSON.parse(decodeURIComponent("<mt:var name="ct_data" escape="js">"));
       var id = jQuery("#content_type_sel").val();
       jQuery("#ct_label").text(ct_data[id].label);
       jQuery("#ct_id").text(ct_data[id].id);
@@ -1287,7 +1287,7 @@ function saveTemplatePrefs( sync ) {
     }
 
     function setContentFieldSelect(id) {
-      var cf_selects = <mt:var name="cf_selects">;
+      var cf_selects = JSON.parse(decodeURIComponent("<mt:var name="cf_selects" escape="js">"));
       jQuery("#content_field_sel").empty();
       if (cf_selects && cf_selects[id]) {
         jQuery.each( cf_selects[id], function( index, cf_select ) {
@@ -1299,7 +1299,7 @@ function saveTemplatePrefs( sync ) {
     }
 
     function setContentFieldInfo() {
-      var cf_data = <mt:var name="cf_data">;
+      var cf_data = JSON.parse(decodeURIComponent("<mt:var name="cf_data" escape="js">"));
       var id = jQuery("#content_field_sel").val();
       if (cf_data && cf_data[id]) {
         jQuery("#cf_label").text(cf_data[id].label);
