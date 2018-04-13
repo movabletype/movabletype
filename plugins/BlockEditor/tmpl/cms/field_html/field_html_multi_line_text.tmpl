@@ -227,15 +227,36 @@
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-
+          var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
           app.editor.setMode('textarea');
-          app.editor.setHTML(jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html'));
+          app.editor.setHTML(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
           app.editor.focus();
       } else if (option == 'richtext') {
       <mt:else>
-      if (option == 'richtext') {
+      if (cur_text_format == 'richtext' && option != 'blockeditor') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).addClass('editor-plaintext');
+
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+  
+          app.editor.reload();
+          app.editor.setMode('textarea');
+          app.editor.focus();
+      } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
+          // changing to plaintext editor
+          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
+
+          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
+
+          var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
+          app.editor.setMode('textarea');
+          app.editor.setContent(html);
+          jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
+          jQuery('#' + editor_id).parents('.editor-content').show();
+          app.editor.focus();
+      } else if (option == 'richtext') {
       </mt:unless>
           app.saveHTML(false);
           // changing to richtext editor
@@ -285,6 +306,11 @@
         jQuery('#blockeidor_menus-' + field_id + ' .nav-item').attr('hidden','');
         jQuery('#editor-input-content-field-' + field_id + '-blockeditor').attr('hidden', '');
         jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
+        <mt:unless name="editors">
+        jQuery('#' + editor_id).show();
+        <mt:else>
+        jQuery('#' + editor_id).parents('.editor-content').show();
+        </mt:unless>
       }
   }
 
