@@ -1051,6 +1051,9 @@ sub make_menus {
                         if $p->has( 'manage_content_data:' . $ct->unique_id );
 
                     $cond = 1, last
+                        if $p->has( 'edit_all_content_data:' . $ct->unique_id );
+
+                    $cond = 1, last
                         if $p->has( 'create_content_data:' . $ct->unique_id );
                 }
                 return $cond ? 1 : 0;
