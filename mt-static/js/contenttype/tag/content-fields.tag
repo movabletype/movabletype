@@ -79,7 +79,7 @@
           <img src="{ StaticURI }images/dragdrop.gif" alt="{ trans('Drag and drop area') }" width="240" height="120">
           <p>{ trans('Please add a content field.') }</p>
         </div>
-        <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd }></div>
+        <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd } style="width: 100%;"></div>
       </div>
     </fieldset>
   </form>
