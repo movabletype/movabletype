@@ -218,15 +218,12 @@
           // changing to plaintext editor
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-
           app.editor.setMode('textarea');
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
-          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
+          jQuery('#'+editor_id).addClass('editor-plaintext');
 
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
           app.editor.setMode('textarea');
           app.editor.setHTML(html);
@@ -237,18 +234,14 @@
       <mt:else>
       if (cur_text_format == 'richtext' && option != 'blockeditor') {
           // changing to plaintext editor
-          jQuery('#'+editor_id).addClass('editor-plaintext');
+          jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-  
           app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
-
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
           app.editor.setMode('textarea');
@@ -286,7 +279,6 @@
             convertedText(data);
           });
       } else {
-          jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
           <mt:if name="editors">app.editor.setMode(option);</mt:if>
           app.editor.focus();
           if(option == "blockeditor"){
@@ -312,6 +304,7 @@
         jQuery('#' + editor_id).parents('.editor-content').show();
         </mt:unless>
       }
+      jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
   }
 
   jQuery(document).on('change', '.convert_breaks', changedTextFormat);
@@ -333,7 +326,11 @@ jQuery.mtValidateAddRules({
       var obj = jQuery('#'+editor_id+'-blockeditor').blockeditor('get_data');
       data = Object.keys(obj).length > 0 ? true : false;
     } else {
+      <mt:unless name="editors">
       var content = app.editors[editor_id].getHTML();
+      <mt:else>
+      var content = app.editors[editor_id].getContent();
+      </mt:unless>
       data = content != '' ? true : false;
     }
     if ( required && !data ) {
@@ -356,6 +353,7 @@ function setMultiLineTextData($form) {
       fieldId = m[1];
       $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1"></textarea>'));
       $form.find('textarea[name=content-field-multi-' + fieldId + ']').val(this.value);
+      console.log($form.find('[content-field-multi-' + fieldId + ']').val());
     }
   });
 }

@@ -80,7 +80,7 @@ function convertedText(response) {
     jQuery('#editor-input-content-field-'+field_id).val(response.result[field_id]);
     jQuery('.convert_breaks[data-target=editor-input-content-field-'+field_id+']').attr('data-orig_text_format', 'richtext');
     jQuery('#'+field_id).removeClass('editor-plaintext');
-    app.setEditorIframeHTML();
+    app.setEditorIframeHTML(field_id);
     <mt:else>
     jQuery('#'+field_id).html(response.result[field_id]);
     jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
@@ -113,10 +113,7 @@ function changedTextFormat() {
     <mt:unless name="editors">
     if (cur_text_format == 'richtext') {
         // changing to plaintext editor
-        jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
-
-        jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-
+        jQuery('#'+editor_id).addClass('editor-plaintext');
         app.editor.setMode('textarea');
         app.editor.focus();
     } else if (option == 'richtext') {
@@ -146,10 +143,10 @@ function changedTextFormat() {
           convertedText(data);
         });
     } else {
-        jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
-          <mt:if name="editors">app.editor.setMode(option);</mt:if>
+        <mt:if name="editors">app.editor.setMode(option);</mt:if>
         app.editor.focus();
     }
+    jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 }
 
 jQuery(document).on('change', '.convert_breaks', changedTextFormat);
@@ -165,7 +162,11 @@ jQuery.mtValidateAddRules({
   'div.multi_line_text-field-container': function ($e) {
     var required = $e.data('mt-required') ? true : false;
     var editor_id = $e.find('.editorfield').attr('id');
+    <mt:unless name="editors">
     var content = app.editors[editor_id].getHTML();
+    <mt:else>
+    var content = app.editors[editor_id].getContent();
+    </mt:unless>
     if ( required && content == '' ) {
         this.error = true;
         this.errstr = trans('This field is required');

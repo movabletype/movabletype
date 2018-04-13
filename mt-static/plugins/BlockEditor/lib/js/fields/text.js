@@ -49,11 +49,19 @@
             return self.edit_field;
         },
         save: function(){
-            this.data.value = $('#' + this.id + '-text').val();
+            if($('#' + this.id + '-text').prop('tagName') == 'TEXTAREA'){
+                this.data.value = $('#' + this.id + '-text').val();
+            } else {
+                this.data.value = $('#' + this.id + '-text').html();
+            }
         },
         get_data: function () {
             var self = this;
-            self.data.value = $('#' + self.id + '-text').val();
+            if($('#' + this.id + '-text').prop('tagName') == 'TEXTAREA'){
+                self.data.value = $('#' + this.id + '-text').val();
+            } else {
+                self.data.value = $('#' + this.id + '-text').html();
+            }
             return {
                 'value': self.data.value,
                 'html': self.get_html(),
