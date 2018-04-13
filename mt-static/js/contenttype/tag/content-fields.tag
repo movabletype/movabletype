@@ -259,8 +259,8 @@
           self.recalcHeight(e.target)
         else
           self.recalcHeight(e.target.parentNode)
-        self.rebuildLabelFields()
       }
+      self.rebuildLabelFields()
 
       e.target.classList.remove('mt-draggable__area--dragover')
       e.preventDefault()
