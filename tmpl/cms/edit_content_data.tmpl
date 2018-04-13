@@ -656,8 +656,10 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var $form = jQuery(this);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
+<mt:if name="has_multi_line_text_field">
         resetMultiLineTextData($form);
         setMultiLineTextData($form);
+</mt:if>
         setDirty(false);
         $form.get(0).submit();
         return false;
@@ -665,8 +667,10 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
     validateInServerSide().done(function () {
       if (validateInClientSide()) {
+<mt:if name="has_multi_line_text_field">
         resetMultiLineTextData($form);
         setMultiLineTextData($form);
+</mt:if>
 
 <mt:if name="config.previewinnewwindow">
         $form.attr('mt:once', '1');
