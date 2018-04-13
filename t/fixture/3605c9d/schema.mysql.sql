@@ -1,6 +1,6 @@
 -- 
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Fri Apr  6 13:46:12 2018
+-- Created on Fri Apr 13 10:02:39 2018
 -- 
 SET foreign_key_checks=0;
 
@@ -250,7 +250,7 @@ CREATE TABLE `mt_blog` (
   `blog_archive_tmpl_individual` varchar(255) NULL DEFAULT NULL,
   `blog_archive_tmpl_monthly` varchar(255) NULL DEFAULT NULL,
   `blog_archive_tmpl_weekly` varchar(255) NULL DEFAULT NULL,
-  `blog_archive_type` text NULL DEFAULT NULL,
+  `blog_archive_type` varchar(2000) NULL DEFAULT NULL,
   `blog_archive_type_preferred` varchar(50) NULL DEFAULT NULL,
   `blog_archive_url` varchar(255) NULL DEFAULT NULL,
   `blog_autodiscover_links` tinyint(4) NULL DEFAULT NULL,
