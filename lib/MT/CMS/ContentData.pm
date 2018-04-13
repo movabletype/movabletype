@@ -325,7 +325,8 @@ sub edit {
     if ( $content_type->data_label ) {
         $param->{can_edit_data_label} = 0;
         if ($content_data_id) {
-            $param->{data_label} = $content_data->label;
+            $param->{data_label}
+                = $app->param('data_label') || $content_data->label;
         }
         else {
             my $field = MT->model('content_field')->load(
@@ -344,7 +345,8 @@ sub edit {
     }
     else {
         $param->{can_edit_data_label} = 1;
-        $param->{data_label} = $content_data_id ? $content_data->label : '';
+        $param->{data_label}          = $app->param('data_label')
+            || ( $content_data_id ? $content_data->label : '' );
     }
 
     $param->{can_publish_post} = 1
@@ -1051,7 +1053,8 @@ sub make_menus {
                         if $p->has( 'manage_content_data:' . $ct->unique_id );
 
                     $cond = 1, last
-                        if $p->has( 'edit_all_content_data:' . $ct->unique_id );
+                        if $p->has(
+                        'edit_all_content_data:' . $ct->unique_id );
 
                     $cond = 1, last
                         if $p->has( 'create_content_data:' . $ct->unique_id );
