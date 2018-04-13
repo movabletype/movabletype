@@ -388,25 +388,23 @@ sub _v7_migrate_privileges {
 }
 
 sub _migrate_system_privileges {
-    my $self             = shift;
-    my $permission_class = MT->model('permission');
+    my $self = shift;
 
     $self->progress(
         $self->translate_escape(
             'Migrating system level permissions to new structure...')
     );
 
-    my $perm_iter
-        = $permission_class->load_iter(
-        { permissions => { not => '\'comment\'' } },
-        { group       => 'author_id' } );
-    while ( my $perm = $perm_iter->() ) {
-        my $author = $perm->user;
-        $author->is_superuser(1) if $author->is_superuser();
+    my $iter = MT->model('author')->load_iter(
+        {   status => MT::Author::ACTIVE(),
+            type   => MT::Author::AUTHOR(),
+        }
+    );
+    while ( my $author = $iter->() ) {
         $author->can_sign_in_cms(1);
         $author->can_sign_in_data_api(1);
         $author->can_create_site(1)
-            if ( $perm->permissions =~ /create_website/ );
+            if ( $author->permissions(0)->permissions =~ /'create_website'/ );
         $author->save
             or return $self->error(
             $self->translate_escape(
@@ -691,12 +689,38 @@ sub _v7_rebuild_content_field_permissions {
 sub _v7_remove_create_child_sites {
     my $self = shift;
 
+    # Create a new role for migrate create_blog system privilege.
+    my $create_role_job = sub {
+        $self->progress(
+            $self->translate_escape(
+                'Create a new role for creating a child site...')
+        );
+
+        my $role_class = MT->model('role');
+        my $new_role   = $role_class->new();
+        $new_role->name( MT->translate('Create Child Site') );
+        $new_role->description( MT->translate('Create Child Site') );
+        $new_role->clear_full_permissions;
+        $new_role->set_these_permissions( ['create_site'] );
+        $new_role->save or return $self->error( $new_role->errstr );
+        return $new_role;
+    };
+
+    # Find create_blog record then migratet it
     $self->progress(
-        $self->translate_escape('Removing create child site permissions...')
+        $self->translate_escape('Migrating create child site permissions...')
     );
 
-    my $iter = MT->model('permission')->load_iter( { blog_id => 0 } );
+    my $iter = MT->model('permission')->load_iter(
+        {   blog_id     => 0,
+            permissions => { like => '%\'create_blog\'%' },
+        }
+    );
+    my $new_role;
     while ( my $perm = $iter->() ) {
+        $new_role = $create_role_job->()
+            unless $new_role;
+
         my $permission = $perm->permissions;
         my @new;
         for my $p ( split ',', $permission ) {
@@ -709,6 +733,21 @@ sub _v7_remove_create_child_sites {
         }
         else {
             $perm->remove;
+        }
+
+        my $user         = $perm->user;
+        my $website_iter = MT->model('website')->load_iter(
+            undef,
+            {   join => MT->model('permission')->join_on(
+                    'blog_id',
+                    {   author_id   => $user->id,
+                        permissions => { like => '%\'administer_site\'%' },
+                    }
+                ),
+            }
+        );
+        while ( my $site = $website_iter->() ) {
+            MT->model('association')->link( $user => $new_role => $site );
         }
     }
 }
