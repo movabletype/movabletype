@@ -55,11 +55,11 @@
         </div>
       </div>
       <div class="editor-content-enclosure editor">
-        <textarea name="_text_<mt:var name="content_field_id">" id="editor-input-content-field-<mt:var name="content_field_id">-textarea" class="editor-content-textarea text full"></textarea>
+        <textarea name="content-field-<mt:var name="content_field_id">" id="editor-input-content-field-<mt:var name="content_field_id">-textarea" class="editor-content-textarea text full"></textarea>
         <!-- the iframe bootstraps the js -->
         <$mt:setvar name="delayed_bootstrap" value="1"$>
         <iframe tabindex="3" id="editor-input-content-field-<mt:var name="content_field_id">-iframe" class="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
-        <input type="hidden" id="editor-input-content-field-<mt:var name="content_field_id">-content" name="content-field-<mt:var name="content_field_id">" value="<mt:var name="value" escape="html">" />
+        <input type="hidden" id="editor-input-content-field-<mt:var name="content_field_id">-content" name="editor-input-content-field-<mt:var name="content_field_id">" value="<mt:var name="value" escape="html">" />
       </div>
     </div>
   </div>

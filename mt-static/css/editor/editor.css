@@ -3,13 +3,6 @@
 
 */
 
-.editor-toolbar {
-    border-top-left-radius: 0;
-    border-radius: 0 5px 0 0;
-    -moz-user-select: none !important;
-    -moz-user-focus: none !important;
-}
-
 .editor-content .field {
     padding: 0;
 }
@@ -34,7 +27,10 @@
     border: solid #c0c6c9;
     border-width: 1px 1px 0;
     background-color: #f3f3f3;
-    border-radius: 3px 3px 0 0;
+    border-top-left-radius: 0;
+    border-radius: 0 5px 0 0;
+    -moz-user-select: none !important;
+    -moz-user-focus: none !important;
 }
 .editor-toolbar .button {
     display: inline-block;
@@ -54,7 +50,8 @@
     background-color: #fff;
 }
 
-.editor-content-iframe {
+.editor-content-iframe,
+#editor-content-iframe {
     border: 1px solid #adadad;
 }
 
@@ -168,11 +165,13 @@
 .editor-toolbar .button.command-insert-image,
 .editor-toolbar .button.command-insert-image:hover {
   background-image: url(../../images/icons/ic_image.svg);
+  vertical-align: bottom;
 }
 .editor-toolbar .button.command-insert-file,
 .editor-toolbar .button.command-insert-file:hover {
   background-image: url(../../images/icons/ic_asset.svg);
   margin-right: 10px;
+  vertical-align: bottom;
 }
 
 /* toggle */
@@ -197,4 +196,17 @@
 .editor-mode-textarea .editor-toolbar .button.command-toggle-html,
 .editor-mode-textarea .editor-toolbar .button.command-toggle-html:hover  {
   background-color: #FFFBBD;
+}
+.field {
+    zoom: 1;
+}
+.field:before,
+.field:after {
+    display: block;
+    height: 0;
+    visibility: hidden;
+    content: "\0020";
+}
+.field:after {
+    clear: both;
 }

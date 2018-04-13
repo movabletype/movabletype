@@ -105,6 +105,7 @@
           $('#blockeidor_menus-' + field_id).find('.nav-link').removeClass('active');
           $(this).addClass('active');
           if(mode == 'sort'){
+              jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
               block_field.sortable({
                 items: '.sort-enabled',
                 placeholder: 'placeholder',
@@ -120,6 +121,8 @@
                     manager.set_order(order);
                 }
               });
+          } else {
+              jQuery('#blockeditor_add-' + field_id).removeAttr('hidden');
           }
       });
 

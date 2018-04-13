@@ -38,20 +38,22 @@
 
             $(window).one('field_created', function(editor_id){
               $('#' + self.id + '-text').each(function (index, element) {
-                  new MT.EditorManager(this.id, {
-                      format: 'richtext',
-                      wrap: true,
-                  });
+                  if(MT.EditorManager){
+                      new MT.EditorManager(this.id, {
+                          format: 'richtext',
+                          wrap: true,
+                      });
+                  }
               });
             });
             return self.edit_field;
         },
         save: function(){
-            this.data.value = $('#' + this.id + '-text').html();
+            this.data.value = $('#' + this.id + '-text').val();
         },
         get_data: function () {
             var self = this;
-            self.data.value = $('#' + self.id + '-text').html();
+            self.data.value = $('#' + self.id + '-text').val();
             return {
                 'value': self.data.value,
                 'html': self.get_html(),
@@ -60,7 +62,7 @@
         },
         get_html: function () {
             var self = this;
-            var html = '<div>' + this.data.value + '</div>';
+            var html = '<div>' + self.data.value + '</div>';
 
             return html;
         }

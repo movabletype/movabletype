@@ -25,9 +25,10 @@ MT.App = new Class( MT.App, {
 
                 var editor_id = jQuery(this).data('target');
                 self.editor_ids.push(editor_id);
-                self.editors[editor_id] = self.addComponent( new MT.App.Editor( editor_id, self.editorMode ) );
 
-                self.editors[editor_id].editorMode = ( mode.value == "richtext" ) ? "iframe" : "textarea";
+                var editorMode = ( mode.value == "richtext" ) ? "iframe" : "textarea";
+                self.editors[editor_id] = self.addComponent( new MT.App.Editor( editor_id, editorMode ) );
+                self.editors[editor_id].editorMode = editorMode;
 
                 self.editors[editor_id].textarea.setTextMode( mode.value );
                 self.currentEditor = editor_id;
@@ -39,6 +40,9 @@ MT.App = new Class( MT.App, {
             })
         }
         self.editor = self.editors[ self.editor_ids[0] ];
+        jQuery('button.publish,button.preview').on('click', function(event) {
+          self.saveHTML( true );
+        });
     },
     setEditor: function( name ) {
         this.saveHTML( false );
@@ -57,7 +61,7 @@ MT.App = new Class( MT.App, {
         }
         this.editors[this.currentEditor].setHTML( this.editorsInput[ this.currentEditor ].value );
         this.editors[this.currentEditor].setMode( "iframe" );
-        // this.editors[this.currentEditor].iframe.focus();
+        this.editors[this.currentEditor].iframe.focus();
     },
     saveHTML: function( resetChanged ) {
         if ( !this.editor_ids )
@@ -179,7 +183,8 @@ MT.App = new Class( MT.App, {
         }
         return event.stop();
     },
-
+    // override
+    eventSubmit: function( event ){}
 } );
 
 

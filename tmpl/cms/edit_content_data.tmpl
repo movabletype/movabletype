@@ -652,7 +652,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   });
 
 
-  jQuery('#edit-content-type-data-form').submit( function(event) {
+  jQuery('#edit-content-type-data-form').on('submit', function(event) {
     var $form = jQuery(this);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
@@ -673,7 +673,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:if>
         $form.get(0).submit();
       }
-    })
+    });
+    event.stopPropagation();
     return false;
   });
 
