@@ -102,7 +102,8 @@ sub list_props {
                     $desc = $obj->description;
                 }
                 $desc = $desc->() if ref $desc eq 'CODE';
-                $desc = ''        if $msg eq $desc;
+                $desc = '' unless defined $desc;
+                $desc = '' if $msg eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
                 my $id = $obj->id;
@@ -407,7 +408,7 @@ sub metadata_object {
     my $log   = shift;
     my $class = $log->metadata_class;
     return undef unless $class;
-    my $id = int( $log->metadata );
+    my $id = int( $log->metadata || 0 );
     return undef unless $id;
     eval "require $class;" or return undef;
     $class->load($id);
@@ -526,14 +527,14 @@ sub class_label { MT->translate("TrackBacks") }
 
 sub description {
     my $log  = shift;
-    my $id   = int( $log->metadata );
+    my $id   = int( $log->metadata || 0 );
     my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
         $msg = $ping->to_hash->{'tbping.excerpt_html'};
     }
-    else {
-        $msg = MT->translate( "TrackBack # [_1] not found.", $log->metadata );
+    elsif ($id) {
+        $msg = MT->translate( "TrackBack # [_1] not found.", $id );
     }
     $msg;
 }
