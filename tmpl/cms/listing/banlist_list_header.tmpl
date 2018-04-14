@@ -25,32 +25,35 @@
 
 <mt:setvarblock name="content_header" append="1">
 <mt:setvar name="ip_info" value="1">
-<form id="create-inline-ipban" class="create-inline" style="display: none;">
-    <mtapp:newsetting
+<form id="create-inline-ipban" class="create-inline" method="post" action="<$mt:var name="script_url"$>" style="display: none;">
+  <input type="hidden" name="__mode" value="save">
+  <input type="hidden" name="_type" value="banlist">
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">">
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">">
+    <mtapp:setting
        id="ip-address"
        required="1"
        label="<__trans phrase="IP Address">">
-      <input type="text" name="ip-address" id="ip-address" class="text med ipaddress" value="<mt:var name="ip" escape="html">" />
-    </mtapp:newsetting>
+      <input type="text" name="ip" id="ip-address" class="form-control text ipaddress" value="<mt:var name="ip" escape="html">" />
+    </mtapp:setting>
     <div class="actions-bar settings-actions-bar">
         <button
            type="submit"
-           id="submit-ipban"
-           class="button action primary">
+           id="submit-new-contact"
+           class="btn btn-default">
           <__trans phrase="Add">
         </button>
         <button
            type="button"
-           class="button action mt-cancel-action">
+           class="btn btn-default mt-cancel-action">
           <__trans phrase="Cancel">
         </button>
     </div>
 </form>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
-
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery.mtValidateRules['.ipaddress'] = function( $e ){
         return /^(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])\.(\d|[01]?\d\d|2[0-4]\d|25[0-5])$/.test($e.val()) };
     jQuery.mtValidateMessages['.ipaddress'] = '<__trans phrase="Invalid IP address.">';
@@ -69,25 +72,6 @@
         current_edit = 0;
     }
 
-    jQuery('#create-inline-ipban').submit(function() {
-        // If input has focus, jQuery.wrap() throws exception...
-        // Change focus before validate.
-        jQuery('#submit-ipban').focus();
-        if ( !jQuery('#ip-address').mtValidate('simple') ) {
-            jQuery('#ip-address').focus();
-            return false;
-        }
-        renderList({
-            __mode: 'save',
-            _type: 'banlist',
-            ip: jQuery('#ip-address').val(),
-            forward_list: 1,
-            magic_token: 1
-        });
-        closeCreateMode();
-        return false;
-    });
-
     jQuery('#create-inline-ipban button.mt-cancel-action').click(function() {
         jQuery('#ip-address').mtUnvalidate();
         closeCreateMode();
@@ -98,6 +82,4 @@
         openCreateMode();
         return false;
     });
-
-</script>
 </mt:setvarblock>

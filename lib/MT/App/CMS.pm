@@ -787,6 +787,7 @@ sub core_content_actions {
                 id            => 'action-ban-ip',
                 order         => 100,
                 permit_action => 'save_banlist',
+                icon          => 'ic_add',
                 condition     => sub {
                     MT->app && MT->app->param('blog_id');
                 },
@@ -1968,6 +1969,40 @@ sub core_menus {
             mode       => "cfg_rebuild_trigger",
             permission => "administer_site",
             view       => [ "system", "blog", 'website' ],
+        },
+        'settings:ip_info' => {
+            label     => "IP Banning",
+            order     => 900,
+            mode      => 'list',
+            args      => { _type => 'banlist' },
+            condition => sub {
+                return 0 unless $app->config->ShowIPInformation;
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids
+                    = !$blog         ? undef
+                    : $blog->is_blog ? [ $blog->id ]
+                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {   author_id => $app->user->id,
+                        (   $blog_ids
+                            ? ( blog_id => $blog_ids )
+                            : ( blog_id => { not => 0 } )
+                        ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('manage_feedback');
+                }
+                return $cond ? 1 : 0;
+            },
+            view => [qw( system website blog )],
         },
 
         'settings:system' => {
