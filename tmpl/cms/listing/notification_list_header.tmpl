@@ -31,7 +31,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header" append="1">
-<form class="create-inline" id="create-inline-notification" style="display: none;">
+<form class="create-inline" id="create-inline-notification" method="post" action="<$mt:var name="script_url"$>" style="display: none;">
   <input type="hidden" name="__mode" value="save">
   <input type="hidden" name="_type" value="notification">
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
