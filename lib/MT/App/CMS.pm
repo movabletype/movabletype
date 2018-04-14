@@ -799,6 +799,7 @@ sub core_content_actions {
                 id         => 'action-create-contact',
                 order      => 100,
                 permission => 'edit_notifications',
+                icon       => 'ic_add',
                 condition  => sub {
                     MT->app && MT->app->param('blog_id');
                 },
@@ -810,6 +811,7 @@ sub core_content_actions {
                 mode        => 'export_notification',
                 return_args => 1,
                 permission  => 'export_addressbook',
+                icon        => 'ic_download',
                 condition   => sub {
                     MT->app && MT->app->param('blog_id');
                 }
@@ -2090,6 +2092,40 @@ sub core_menus {
             mode          => 'export_theme',
             permit_action => 'use_tools:themeexport_menu',
             view          => [ 'blog', 'website' ],
+        },
+        'tools:notification' => {
+            label     => "Address Book",
+            order     => 600,
+            mode      => 'list',
+            args      => { _type => 'notification' },
+            condition => sub {
+                return 0 unless $app->config->EnableAddressBook;
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids
+                    = !$blog         ? undef
+                    : $blog->is_blog ? [ $blog->id ]
+                    :   [ $blog->id, map { $_->id } @{ $blog->blogs } ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {   author_id => $app->user->id,
+                        (   $blog_ids
+                            ? ( blog_id => $blog_ids )
+                            : ( blog_id => { not => 0 } )
+                        ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('edit_notifications');
+                }
+                return $cond ? 1 : 0;
+            },
+            view => [qw( system website blog )],
         },
 
         'category_set:manage' => {

@@ -21,7 +21,7 @@
     <ul id="content-actions" class="list-inline action-link-list">
     <mt:loop name="content_actions">
       <li class="list-inline-item">
-        <a href="<mt:var name="url">"
+        <a href="<mt:var name="url" default="javascript:void(0)">"
           class="icon-left d-inline-block<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
           <mt:if name="dialog">data-mt-modal-large</mt:if>
           <mt:if name="id"> id="<mt:var name="id">"</mt:if>
@@ -30,6 +30,8 @@
         <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
         <mt:if name="icon">
           <mtapp:svgicon id="$icon" size="sm" title="$escaped_label">
+        <mt:else>
+          <mtapp:svgicon id="ic_setting" size="sm" title="$escaped_label">
         </mt:if>
           <mt:var name="escaped_label">
         </a>
