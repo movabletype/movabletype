@@ -67,10 +67,10 @@ sub options_validation_handler {
 
     for my $value (@$values) {
         return $app->translate("A label for each value is required.")
-            unless $value->{label};
+            unless defined $value->{label};
 
         return $app->translate("A value for each label is required.")
-            unless $value->{value};
+            unless defined $value->{value};
     }
 
     my $min = $options->{min};

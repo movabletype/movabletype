@@ -48,10 +48,10 @@ sub options_validation_handler {
 
     for my $value (@$values) {
         return $app->translate("A label of values is required.")
-            unless $value->{label};
+            unless defined $value->{label};
 
         return $app->translate("A value of values is required.")
-            unless $value->{value};
+            unless defined $value->{value};
     }
 
     return;
