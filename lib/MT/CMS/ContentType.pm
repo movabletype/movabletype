@@ -132,6 +132,7 @@ sub edit {
 
     # Content Field Types
     my @type_array;
+    my @unavailable_fields;
     for my $key ( keys %$content_field_types ) {
         my $label = $content_field_types->{$key}{label};
         $label = $label->()
@@ -144,17 +145,9 @@ sub edit {
             = $content_field_types->{$key}{field_type_validation_handler} )
         {
             $validation = MT->handler_to_coderef($validation);
-            if (   $validation
-                && ref $validation eq 'CODE'
-                && ( $warning
-                    = $validation->( $app, $key,
-                        $content_field_types->{$key} ) )
-                )
-            {
-                $warning
-                    = $app->translate( '[_1] field cannot be saved: [_2]',
-                    $label, $warning );
-            }
+            $warning
+                = $validation->( $app, $key, $content_field_types->{$key} )
+                if $validation && ref $validation eq 'CODE';
         }
 
         # field type icon
@@ -179,19 +172,27 @@ sub edit {
         my $can_data_label
             = $content_field_types->{$key}->{can_data_label_field} ? 1 : 0;
 
-        push @type_array,
-            {
+        my $values = {
             type       => $type,
             label      => $label,
             order      => $content_field_types->{$key}{order},
-            warning    => $warning,
             icon       => $icon,
             data_label => $can_data_label,
-            };
+        };
+
+        if ($warning) {
+            $values->{warning} = $warning;
+            push @unavailable_fields, $values;
+        }
+        else {
+            push @type_array, $values;
+        }
     }
     @type_array = sort { $a->{order} <=> $b->{order} } @type_array;
-    $param->{content_field_types}      = \@type_array;
-    $param->{content_field_types_json} = JSON::to_json( \@type_array );
+    $param->{content_field_types}             = \@type_array;
+    $param->{content_field_types_json}        = JSON::to_json( \@type_array );
+    $param->{unavailable_content_field_types} = \@unavailable_fields
+        if @unavailable_fields;
 
     foreach my $name (qw( saved err_msg id name )) {
         $param->{$name} = $app->param($name) if $app->param($name);
@@ -372,7 +373,7 @@ sub save {
     if ($exists) {
         my %param = ();
         $param{error}
-            = $app->translate( "Name \"[_1]\" is already used.", $name );
+            = $app->translate( 'Name \'[_1]\' is already used.', $name );
         $app->mode('view');
         return $app->forward( "view", \%param );
     }
@@ -857,9 +858,11 @@ sub _make_content_data_listing_screens {
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
-            primary             => 'id',
-            default_sort_key    => 'modified_on',
-            screen_label        => 'Manage ' . $ct->name,
+            primary          => 'id',
+            default_sort_key => 'modified_on',
+            screen_label     => sub {
+                MT->translate( 'Manage [_1]', $ct->name );
+            },
             object_label        => $ct->name,
             object_label_plural => $ct->name,
             object_type         => 'content_data',
