@@ -1,14 +1,16 @@
 ; (function ($) {
-
     var BEF = MT.BlockEditorField;
     BEF.Text = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Text, {
         label: trans('text'),
-        icon_class: 'ic_textcolor',
+        icon_url: StaticURI + 'images/sprite.svg#ic_textcolor',
         type: 'text',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#' + this.icon_class + '"></use></svg>' + this.label + '</button>');
+            return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
+        get_icon: function(){
+            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+        }
     });
     $.extend(BEF.Text.prototype, BEF.prototype, {
         get_id: function(){
@@ -20,8 +22,8 @@
         get_type: function () {
             return BEF.Text.type;
         },
-        get_svg_name: function() {
-            return BEF.Text.icon_class;
+        get_icon: function() {
+            return BEF.Text.get_icon();
         },
         create: function (id, data) {
             var self = this;

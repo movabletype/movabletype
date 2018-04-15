@@ -1,15 +1,17 @@
 ; (function ($) {
     var BEF = MT.BlockEditorField;
-    var label = trans('horizon');
-
     BEF.Horizon = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Horizon, {
         label: trans('horizon'),
         icon_class: 'ic_hr',
+        icon_url: StaticURI + 'images/sprite.svg#ic_hr',
         type: 'horizon',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_hr"></use></svg>' + label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
+        get_icon: function(){
+            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+        }
     });
     $.extend(BEF.Horizon.prototype, BEF.prototype, {
         id: '',
@@ -25,8 +27,8 @@
         get_type: function () {
             return BEF.Horizon.type;
         },
-        get_svg_name: function() {
-          return BEF.Horizon.icon_class;
+        get_icon: function() {
+          return BEF.Horizon.get_icon();
         },
         create: function () {
             this.view_field = $('<div class="form-group"></div>');

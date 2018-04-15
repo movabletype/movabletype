@@ -30,6 +30,7 @@ applications:
       blockeditor_dialog_list_asset: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_list_asset
       blockeditor_dialog_insert_options: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_insert_options
       blockeditor_dialog_insert_asset: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::dialog_insert_asset
+      blockeditor_delete_asset: $BlockEditor::BlockEditor::BlockEditorFieldType::Image::delete
 
     callbacks:
       template_param.edit_content_data: $BlockEditor::BlockEditor::App::template_param_edit_content_data

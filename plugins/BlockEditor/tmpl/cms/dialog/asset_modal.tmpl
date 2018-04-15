@@ -243,6 +243,9 @@
   loadAssetList(0);
 </script>
 <style>
+#blockeditor-list-asset-panel .asset-col {
+  cursor: pointer;
+}
 #blockeditor-list-asset-panel .img-overlay {
     position: absolute;
     top: 0;
@@ -252,6 +255,7 @@
     width: 25px;
     height: 25px;
     text-align: center;
+    box-sizing: border-box;
 }
 #blockeditor-list-asset-panel .img-preview {
   width: 120px;
@@ -261,6 +265,7 @@
   display:table-cell;
   vertical-align:middle;
   text-align: center;
+  box-sizing: border-box;
 }
 #blockeditor-list-asset-panel .img-preview image {
   padding: 0.25rem;
@@ -268,6 +273,16 @@
   max-width: 100%;
   height: auto;
   vertical-align:middle;
+  box-sizing: border-box;
+}
+
+#blockeditor-list-asset-panel .img-label {
+  width: 120px;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
 }
 </style>
 </mt:unless>
@@ -285,7 +300,7 @@
         <label class="sr-only" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
       </div>
-      <div class="form-group">
+      <div class="form-group ml-3">
         <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
           <mtapp:svgicon id="ic_search" title="Search">
         </a>
@@ -329,21 +344,19 @@
             <div class="col">
                 <div class="img-preview">
                   <a href="#" class="upload_asset">
-                  <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" >
+                  <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" title="<__trans phrase="Upload new image">">
                   </a>
                 </div>
-                <p class="img-label pt-3 m-0">
-                <__trans phrase="Upload new image">
-                </p>
+                <p class="img-label pt-3 m-0" title="<__trans phrase="Upload new image">"></p>
             </div>
           </mt:if>
 
           <div id="asset-<mt:var name="id" escape="html">-card" class="col">
             <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-            <label>
+            <label class="asset-col">
               <div class="img-preview">
                 <mt:if name="id">
-                <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto">
+                <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
                 <div class="img-overlay">
                   <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
                   <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
@@ -352,7 +365,7 @@
               </div>
 
               <mt:if name="id">
-              <p class="img-label pt-3 m-0">
+              <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
                 <$mt:var name="label" escape="html"$>
               </p>
               </mt:if>
@@ -380,25 +393,18 @@
             <div class="img-preview">
               <mt:if name="first" eq="1">
               <a href="#" class="upload_asset">
-              <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" >
+              <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" title="<__trans phrase="Upload new image">">
               </a>
               </mt:if>
             </div>
             <mt:if name="first" eq="1">
-            <p class="img-label pt-3 m-0">
-            <__trans phrase="Upload new image">
-            </p>
+            <p class="img-label pt-3 m-0" title="<__trans phrase="Upload new image">"></p>
             </mt:if>
         </div>
         <mt:setvar name="first" value="0">
         </mt:for>
       </div>
       </mt:for>
-      <!-- <div>
-        <div class="fullwidth-row" colspan="3">
-          <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
-        </div>
-      </div> -->
   </mt:if>
   <mt:unless name="json">
 </div>
@@ -478,10 +484,9 @@
 
 <script>
 jQuery(function(){
-jQuery(document).on('complete_list_asset', step1);
+jQuery(document).off('complete_list_asset').on('complete_list_asset', step1);
 
 function step1(){
-
   jQuery('.modal-blockeditor .actions-bar').hide();
   jQuery('.modal-blockeditor .actions-bar.step1').remove();
   var cancel_button = jQuery('<a data-dismiss="modal" class="modal-cancel">' + trans('Cancel') + '</a>');
@@ -490,14 +495,20 @@ function step1(){
   actions_bar.append(cancel_button);
   actions_bar.append(next_button);
   jQuery('.modal-blockeditor .actions-bar').after(actions_bar);
-  jQuery('.step1 [name="asset-img-id"]').on('change', function(){
-    jQuery('.step1 .submit').prop('disabled', false).removeClass('disabled');
-    jQuery('[name=asset_id]').val(jQuery(this).val());
-  })<mt:if name="edit">.change()</mt:if>;
-  
-  jQuery('[name=asset_id]').on('change', function(){
-    next_button.prop('disabled', false).removeClass('disabled');
+  jQuery('.step1 [name="asset-img-id"]').off('change').on('change', function(){
+    if(jQuery(this).prop('checked')){
+      jQuery('.step1 .submit').prop('disabled', false).removeClass('disabled');
+      jQuery('[name=asset_id]').val(jQuery(this).val());
+    }
   });
+
+  jQuery('[name=asset_id]').off('change').on('change', function(){
+    if(jQuery(this).val() != ''){
+      next_button.prop('disabled', false).removeClass('disabled');
+    } else {
+      next_button.prop('disabled', true).addClass('disabled');
+    }
+  })<mt:if name="asset_id">.change()</mt:if>;
   next_button.on('click',function(){
     if(jQuery(this).is(':disabled')) return false;
     var asset_id = jQuery('[name=asset_id]').val();

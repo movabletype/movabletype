@@ -1,16 +1,16 @@
 ; (function ($) {
-
     var BEF = MT.BlockEditorField;
-    var label = trans('embed');
-
     BEF.Embed = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Embed, {
         label: trans('embed'),
-        icon_class: 'ic_code',
+        icon_url: StaticURI + 'images/sprite.svg#ic_code',
         type: 'embed',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_code"></use></svg>' + label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
+        get_icon: function(){
+            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+        }
     });
     $.extend(BEF.Embed.prototype, BEF.prototype, {
         options: {},
@@ -23,8 +23,8 @@
         get_type: function () {
             return BEF.Embed.type;
         },
-        get_svg_name: function() {
-            return BEF.Embed.icon_class;
+        get_icon: function() {
+            return BEF.Embed.get_icon();
         },
         create: function (id, data) {
             var self = this;

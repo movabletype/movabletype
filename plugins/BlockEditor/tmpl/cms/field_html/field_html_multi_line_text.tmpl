@@ -119,7 +119,11 @@
   var block_editor_data_json = '<mt:var name="block_editor_data" encode_js="1">';
   var blockeditor_data  = {};
   <mt:if name="block_editor_data">if(block_editor_data_json){
-    blockeditor_data = JSON.parse(block_editor_data_json);
+    try {
+      blockeditor_data = JSON.parse(block_editor_data_json);
+    } catch(e){
+      console.error(e.message);
+    }
   }</mt:if>
 
 
