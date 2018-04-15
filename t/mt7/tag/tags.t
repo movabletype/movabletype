@@ -79,17 +79,13 @@ $test_env->prepare_fixture(
             blog_id         => $ct1->blog_id,
             content_type_id => $ct1->id,
             author_id       => 1,
-            data            => {
-                $cf_tag1->id      => [ $tag2->id,      $tag1->id ],
-            },
+            data            => { $cf_tag1->id => [ $tag2->id, $tag1->id ], },
         );
         my $cd02 = MT::Test::Permission->make_content_data(
             blog_id         => $ct1->blog_id,
             content_type_id => $ct1->id,
             author_id       => 1,
-            data            => {
-                $cf_tag1->id      => [ $tag2->id ],
-            },
+            data            => { $cf_tag1->id => [ $tag2->id ], },
         );
 
         my $ct2 = MT::Test::Permission->make_content_type(
@@ -124,17 +120,13 @@ $test_env->prepare_fixture(
             blog_id         => $ct2->blog_id,
             content_type_id => $ct2->id,
             author_id       => 1,
-            data            => {
-                $cf_tag2->id      => [ $tag4->id,      $tag3->id ],
-            },
+            data            => { $cf_tag2->id => [ $tag4->id, $tag3->id ], },
         );
         my $cd04 = MT::Test::Permission->make_content_data(
             blog_id         => $ct2->blog_id,
             content_type_id => $ct2->id,
             author_id       => 1,
-            data            => {
-                $cf_tag2->id      => [ $tag4->id ],
-            },
+            data            => { $cf_tag2->id => [ $tag4->id ], },
         );
     }
 );
@@ -172,4 +164,17 @@ tag2:2,tag1:1
 --- template
 <mt:Tags top="20" type="content_type" content_type="aaa" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
 --- error
+No Content Type could be found.
+
+=== mt:Tags with wrong type
+--- template
+<mt:Tags type="entry" content_type="[% ct_uid %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
+--- error
+content_type modifier cannot be used with type "entry".
+
+=== mt:Tags without type
+--- template
+<mt:Tags content_type="[% ct_uid %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
+--- expected
+tag1:1,tag2:2
 

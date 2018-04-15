@@ -217,7 +217,22 @@ sub _hdlr_tags {
     require MT::Tag;
     require MT::ObjectTag;
     require MT::Entry;
-    my $type = $args->{type} || MT::Entry->datasource;
+
+    if (   $args->{content_type}
+        && $args->{type}
+        && $args->{type} ne 'content_type' )
+    {
+        return $ctx->error(
+            MT->translate(
+                'content_type modifier cannot be used with type "[_1]".',
+                $args->{type}
+            )
+        );
+    }
+    my $type
+        = $args->{type}         ? $args->{type}
+        : $args->{content_type} ? 'content_type'
+        :                         MT::Entry->datasource;
 
     # Include/exclude_sites modifier
     if ( $args->{include_sites} ) {
