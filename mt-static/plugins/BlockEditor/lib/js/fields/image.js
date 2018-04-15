@@ -1,15 +1,17 @@
 ; (function ($) {
     var BEF = MT.BlockEditorField;
-    var label = trans('image');
-
     BEF.Image = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Image, {
         label: trans('image'),
-        icon_class: 'ic_image',
+        icon_url: StaticURI + 'images/sprite.svg#ic_image',
+        icon: '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>',
         type: 'image',
         create_button: function () {
-          return $('<button type="button" class="btn btn-contentblock"><svg title="' + label + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_image"></use></svg>' + label + '</button>');
+          return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
+        get_icon: function(){
+            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+        }
     });
     $.extend(BEF.Image.prototype, BEF.prototype, {
         id: '',
@@ -25,8 +27,8 @@
         get_type: function () {
             return BEF.Image.type;
         },
-        get_svg_name: function() {
-            return BEF.Image.icon_class;
+        get_icon: function() {
+            return BEF.Image.get_icon();
         },
         create: function (id, data) {
             var self = this;

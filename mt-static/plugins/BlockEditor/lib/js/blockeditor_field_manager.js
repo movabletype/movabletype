@@ -36,10 +36,6 @@
             fields.forEach(function(field, index){
                 var button = $(field.create_button());
                 button.attr('data-blockeditor-type',field.type);
-                // button.on('click', function(){
-                //     var field_class = field;
-                //     callback(self.editor_id, self.create_field.call(self, field_class, id, data));
-                // });
                 button = button.wrapAll('<div class="col col-6 button-col"></div>').parent();
                 buttons.push(button);
             });
@@ -102,16 +98,12 @@
                 var field = self.field_instances[field_id];
                 if(mode == 'sort'){
                     $('#contentblock-' + field_id + '-wrapper').hide();
-                    var svg_name = field.get_svg_name();
+                    var icon = field.get_icon();
                     var label = field.get_label();
                     var sorter = $('<div id="draggable-' + field_id + '" class="mt-draggable sort-enabled" draggable="true" aria-grabbed="false">');
                     sorter.append('<div class="col-auto mt-ic_move"><svg title="' + trans('Move') + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_move" /></svg></div>');
-                    sorter.append('<div class="col"><svg title="" role="img" class="mt-icon--secondary"><use xlink:href="' + StaticURI + '/images/sprite.svg#' + svg_name + '" /></svg>' + label + '</div></div>');
+                    sorter.append('<div class="col">' + icon + label + '</div></div>');
                     sorter.append('<div class="block-field"></div>');
-                    // var preview_field = $('<div class="block-field-preview"></div>');
-                    // var html = $(field.get_html());
-                    // preview_field.text(html.prop("outerHTML"));
-                    // sorter.append(preview_field);
                     $('#contentblock-' + field_id + '-wrapper').before(sorter);
                     sorter.find('.block-field').append($('#contentblock-' + field_id + '-wrapper'));
                     $('#contentblock-' + field_id + '-wrapper').hide()
