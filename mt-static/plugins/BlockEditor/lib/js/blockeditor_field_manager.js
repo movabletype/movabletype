@@ -45,6 +45,7 @@
           var self = this;
           var fields = self.get_field_classes();
           var id = self._generate_unique_id();
+          if(!fields[field_type]) return;
           var field_instance = new fields[field_type](id);
           var view_field = $(field_instance.create_field(field_instance,id,{}));
           var option_view = $(field_instance.get_edit_field());
@@ -64,6 +65,7 @@
                 id = field_instance.id;
             } else {
                 var field_class = fields[field_type];
+                if(!field_class) return;
                 field_instance = new field_class(id, data);
             }
             var order = data.order ? data.order : self.field_instances.length;
