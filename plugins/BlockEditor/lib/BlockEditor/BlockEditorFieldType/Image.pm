@@ -214,6 +214,7 @@ sub dialog_asset_modal {
 
     # Set directory separator
     $param{dir_separator} = MT::Util::dir_separator;
+    $param{can_delete_files} = $app->can_do('delete_asset_file') ? 1 : 0;
 
     MT::CMS::Asset::_set_start_upload_params( $app, \%param );
     my $asset_upload_panel
@@ -407,4 +408,14 @@ sub _insert_options {
 
     return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }
+
+sub delete {
+  my $app = MT->instance;
+
+  $app->param('xhr', 1);
+  my $return_arg = MT::CMS::Common::delete($app);
+  return $app->json_result($return_arg);
+
+}
+
 1;

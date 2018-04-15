@@ -57,7 +57,7 @@
     color: #0076BF;
 }
 
-.edit-asset {
+.delete-asset {
     margin-right: 0.25em;
     text-align: right;
     line-height: 50px;
@@ -429,9 +429,9 @@ function createUploadBlock () {
 
   this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
 <mt:unless name="filter" eq="userpic">
-  this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
+  this.deleteAsset    = jQuery('<div class="delete-asset"></div>').appendTo(this.rightPanel);
 
-  this.editAsset.hide();
+  this.deleteAsset.hide();
 </mt:unless>
   this.progressbar.find('.progress-bar').css('width', '0')
                                         .attr('aria-valuenow', '0');
@@ -492,8 +492,7 @@ function createUploadBlock () {
   }
   this.setAssetID = function(asset) {
     var id = asset.id;
-    jQuery('#select_asset input[name="asset_id"]').val(id).change();;
-    
+    jQuery('#select_asset input[name="asset_id"]').val(id).change();
   }
 
   this.setError = function(err) {
@@ -512,6 +511,38 @@ function createUploadBlock () {
     jQuery('<p class="text-warning msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
+  <mt:if name="can_delete_files">
+  this.enableDeleteAsset = function(Asset) {
+    var deleteLink = jQuery('<a>')
+      .attr('href', 'javascript:void(0);')
+      .attr('class', 'd-inline-block')
+      .append('<mtapp:svgicon id="ic_trash" title="Delete" size="sm" strip_linefeeds="1">')
+      .append('<span class="ml-2"><__trans phrase="Delete"><span>')
+      .appendTo(this.deleteAsset);
+    deleteLink.on('click', function(){
+      var self = this;
+      jQuery.ajax({
+        url: "<mt:var name="script_url">",
+        type: "POST",
+        cache: false,
+        data: {
+          '__mode': 'blockeditor_delete_asset',
+          'blog_id': Asset.blog_id,
+          'id': Asset.id,
+          '_type': 'asset',
+          'magic_token': '<mt:var name="magic_token">',
+        }
+      }).done( function(data){
+        if(!data.error)
+          var upload_status_block = jQuery(self).parents('.upload-status-block');
+          upload_status_block.find('.upload-status-block-left-panel').text('<__trans phrase="You have successfully deleted the asset(s).">');
+          upload_status_block.find('.upload-status-block-right-panel').hide();
+          jQuery('#select_asset input[name="asset_id"]').val('').change();
+      });
+    });
+    this.deleteAsset.show();
+  }
+  </mt:if>
 }
 
 var queue = [];
@@ -540,7 +571,7 @@ function uploadFiles(files, items) {
       return;
     }
   }
-  
+
   </mt:if>
 </mt:unless>
 
@@ -630,6 +661,9 @@ function uploadFile( formData, uploadBlock ) {
       uploadBlock.setAssetID(data.result.asset);
 
       uploadBlock.progressbar.hide();
+      <mt:if name="can_delete_files">
+      uploadBlock.enableDeleteAsset(data.result.asset);
+      </mt:if>
 
 <mt:if name="dialog">
     jQuery('#select_asset input[name="id"]').val(data.result.asset.id);
