@@ -43,6 +43,7 @@ print <<"HEADER";
 # \$Id\$
 
 use strict;
+use warnings;
 use $parent_class;
 use vars qw( \@ISA \%Lexicon );
 \@ISA = qw( $parent_class );
