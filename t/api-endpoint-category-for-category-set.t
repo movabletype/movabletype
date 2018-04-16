@@ -29,7 +29,8 @@ $user->save;
 $app->user($user);
 
 # manage_content_types permission remove.
-my $system_perm = MT::Permission->load({author_id => $user->id, blog_id => 0});
+my $system_perm
+    = MT::Permission->load( { author_id => $user->id, blog_id => 0 } );
 my $permissions = $system_perm->permissions();
 $permissions =~ s/'manage_content_types',?//;
 $system_perm->permissions($permissions);
@@ -49,14 +50,14 @@ my $other_category_set = MT::Test::Permission->make_category_set(
 ok($other_category_set);
 my $other_category_set_id = $other_category_set->id;
 
-my $parent_category = MT::Test::Permission->make_category(
+my $parent_category = MT::Test::Permission->make_category_set_category(
     blog_id         => $site_id,
     category_set_id => $category_set_id,
 );
 ok($parent_category);
 my $parent_category_id = $parent_category->id;
 
-my $category = MT::Test::Permission->make_category(
+my $category = MT::Test::Permission->make_category_set_category(
     blog_id         => $site_id,
     category_set_id => $category_set->id,
     parent          => $parent_category->id,
@@ -65,7 +66,7 @@ ok($category);
 ok( $category->parent );
 my $category_id = $category->id;
 
-my $sibling_category = MT::Test::Permission->make_category(
+my $sibling_category = MT::Test::Permission->make_category_set_category(
     blog_id         => $site_id,
     category_set_id => $category_set_id,
     parent          => $parent_category->id,
@@ -105,8 +106,9 @@ sub normal_tests_for_create_category {
         {   note => 'non superuser',
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
-            method    => 'POST',
-            params    => { category => { label => 'create-category', }, },
+            method => 'POST',
+            params =>
+                { category_set_category => { label => 'create-category', }, },
             callbacks => [
 
                 # category_sets
@@ -117,21 +119,24 @@ sub normal_tests_for_create_category {
 
                 # category
                 {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.category',
+                        'MT::App::DataAPI::data_api_save_permission_filter.category_set_category',
                     count => 1,
                 },
-                {   name => 'MT::App::DataAPI::data_api_save_filter.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.category_set_category',
                     count => 1,
                 },
             ],
             result => sub {
-                MT->model('category')->load(
+                MT->model('category_set_category')->load(
                     {   category_set_id => $category_set_id,
                         label           => 'create-category',
                     }
@@ -145,7 +150,9 @@ sub normal_tests_for_create_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             is_superuser => 1,
-            params    => { category => { label => 'create-category-2', }, },
+            params       => {
+                category_set_category => { label => 'create-category-2', },
+            },
             callbacks => [
 
                 # category_sets
@@ -156,21 +163,24 @@ sub normal_tests_for_create_category {
 
                 # category
                 {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.category',
+                        'MT::App::DataAPI::data_api_save_permission_filter.category_set_category',
                     count => 0,
                 },
-                {   name => 'MT::App::DataAPI::data_api_save_filter.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.category_set_category',
                     count => 1,
                 },
             ],
             result => sub {
-                MT->model('category')->load(
+                MT->model('category_set_category')->load(
                     {   category_set_id => $category_set_id,
                         label           => 'create-category-2',
                     }
@@ -187,33 +197,40 @@ sub irregular_tests_for_create_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method    => 'POST',
             author_id => 0,
-            params    => { category => { label => 'create-category-3', }, },
-            code      => 401,
+            params    => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 401,
         }
     );
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/categorySets/$category_set_id/categories",
+            path => "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'POST',
-            params => { category => { label => 'create-category-3', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 404,
         }
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
             path   => "/v4/sites/$site_id/categorySets/1000/categories",
             method => 'POST',
-            params => { category => { label => 'create-category-3', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 404,
         }
     );
     test_data_api(
         {   note   => 'other site',
             path   => "/v4/sites/2/categorySets/$category_set_id/categories",
             method => 'POST',
-            params => { category => { label => 'create-category-3', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -222,8 +239,10 @@ sub irregular_tests_for_create_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             restrictions => { $site_id => ['save_category_set'], },
-            params => { category => { label => 'create-category-3', }, },
-            code   => 403,
+            params       => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 403,
         }
     );
     test_data_api(
@@ -232,8 +251,10 @@ sub irregular_tests_for_create_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method       => 'POST',
             restrictions => { $site_id => ['save_catefory_set_category'], },
-            params => { category => { label => 'create-category-3', }, },
-            code   => 403,
+            params       => {
+                category_set_category => { label => 'create-category-3', },
+            },
+            code => 403,
         }
     );
 }
@@ -293,7 +314,7 @@ sub normal_tests_for_get_category {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => 1,
                 },
             ],
@@ -311,7 +332,7 @@ sub normal_tests_for_get_category {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => 1,
                 },
             ],
@@ -330,7 +351,7 @@ sub normal_tests_for_get_category {
                     count => 0,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => 0,
                 },
             ],
@@ -346,8 +367,10 @@ sub irregular_tests_for_update_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method    => 'PUT',
             author_id => 0,
-            params    => { category => { label => 'update-category-2', }, },
-            code      => 401,
+            params    => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 401,
         }
     );
     test_data_api(
@@ -355,8 +378,10 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/1000/categorySets/$category_set_id/categories/$category_id",
             method => 'PUT',
-            params => { category => { label => 'update-category-2', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -364,8 +389,10 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/$site_id/categorySets/1000/categories/$category_id",
             method => 'PUT',
-            params => { category => { label => 'update-category-2', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -373,8 +400,10 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/1000",
             method => 'PUT',
-            params => { category => { label => 'update-category-2', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -382,8 +411,10 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/2/categorySets/$category_set_id/categories/$category_id",
             method => 'PUT',
-            params => { category => { label => 'update-category-2', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -391,8 +422,10 @@ sub irregular_tests_for_update_category {
             path =>
                 "/v4/sites/$site_id/categorySets/$other_category_set_id/categories/$category_id",
             method => 'PUT',
-            params => { category => { label => 'update-category-2', }, },
-            code   => 404,
+            params => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 404,
         }
     );
     test_data_api(
@@ -401,8 +434,10 @@ sub irregular_tests_for_update_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             restrictions => { $site_id => ['save_category_set'], },
-            params => { category => { label => 'update-category-2', }, },
-            code   => 403,
+            params       => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 403,
         }
     );
     test_data_api(
@@ -411,8 +446,10 @@ sub irregular_tests_for_update_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             restrictions => { $site_id => ['save_catefory_set_category'], },
-            params => { category => { label => 'update-category-2', }, },
-            code   => 403,
+            params       => {
+                category_set_category => { label => 'update-category-2', },
+            },
+            code => 403,
         }
     );
 }
@@ -422,8 +459,9 @@ sub normal_tests_for_update_category {
         {   note => 'non superuser',
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
-            method    => 'PUT',
-            params    => { category => { label => 'update-category', }, },
+            method => 'PUT',
+            params =>
+                { category_set_category => { label => 'update-category', }, },
             callbacks => [
 
                 # category_set
@@ -434,16 +472,19 @@ sub normal_tests_for_update_category {
 
                 # category
                 {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.category',
+                        'MT::App::DataAPI::data_api_save_permission_filter.category_set_category',
                     count => 1,
                 },
-                {   name => 'MT::App::DataAPI::data_api_save_filter.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.category_set_category',
                     count => 1,
                 },
             ],
@@ -458,7 +499,9 @@ sub normal_tests_for_update_category {
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'PUT',
             is_superuser => 1,
-            params    => { category => { label => 'update-category-2', }, },
+            params       => {
+                category_set_category => { label => 'update-category-2', },
+            },
             callbacks => [
 
                 # category_set
@@ -469,16 +512,19 @@ sub normal_tests_for_update_category {
 
                 # category
                 {   name =>
-                        'MT::App::DataAPI::data_api_save_permission_filter.category',
+                        'MT::App::DataAPI::data_api_save_permission_filter.category_set_category',
                     count => 0,
                 },
-                {   name => 'MT::App::DataAPI::data_api_save_filter.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_filter.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_pre_save.category_set_category',
                     count => 1,
                 },
-                {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_save.category_set_category',
                     count => 1,
                 },
             ],
@@ -609,7 +655,7 @@ sub normal_tests_for_permutate_categories {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_post_bulk_save.category',
+                        'MT::App::DataAPI::data_api_post_bulk_save.category_set_category',
                     count => 1,
                 },
             ],
@@ -642,7 +688,7 @@ sub normal_tests_for_permutate_categories {
                     count => 0,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_post_bulk_save.category',
+                        'MT::App::DataAPI::data_api_post_bulk_save.category_set_category',
                     count => 1,
                 },
             ],
@@ -663,8 +709,7 @@ sub normal_tests_for_permutate_categories {
 sub irregular_tests_for_list_categories {
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/categorySets/$category_set_id/categories",
+            path => "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'GET',
             code   => 404,
         }
@@ -691,12 +736,13 @@ sub normal_tests_for_list_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 1,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
             result => sub {
-                my @cats = MT->model('category')->load(
+                my @cats = MT->model('category_set_category')->load(
                     { category_set_id => $category_set_id },
                     { sort            => 'id', direction => 'descend' },
                 );
@@ -720,12 +766,13 @@ sub normal_tests_for_list_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 1,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
             result => sub {
-                my @cats = MT->model('category')->load(
+                my @cats = MT->model('category_set_category')->load(
                     { category_set_id => $category_set_id },
                     { sort            => 'id', direction => 'ascend' },
                 );
@@ -752,7 +799,8 @@ sub normal_tests_for_list_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 0,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
@@ -826,7 +874,7 @@ sub normal_tests_for_list_parent_categories {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => scalar @cats,
                 },
             ],
@@ -848,7 +896,7 @@ sub normal_tests_for_list_parent_categories {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => scalar @cats,
                 },
             ],
@@ -872,7 +920,7 @@ sub normal_tests_for_list_parent_categories {
                     count => 0,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_view_permission_filter.category',
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set_category',
                     count => 0,
                 },
             ],
@@ -941,7 +989,8 @@ sub normal_tests_for_list_sibling_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 1,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
@@ -967,7 +1016,8 @@ sub normal_tests_for_list_sibling_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 1,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
@@ -994,7 +1044,8 @@ sub normal_tests_for_list_sibling_categories {
                         'MT::App::DataAPI::data_api_view_permission_filter.category_set',
                     count => 0,
                 },
-                {   name  => 'data_api_pre_load_filtered_list.category',
+                {   name =>
+                        'data_api_pre_load_filtered_list.category_set_category',
                     count => 2,
                 },
             ],
@@ -1184,7 +1235,7 @@ sub irregular_tests_for_delete_category {
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories/$category_id",
             method       => 'DELETE',
-            restrictions => { $site_id => ['delete_category'], },
+            restrictions => { $site_id => ['delete_category_set_category'], },
             code         => 403,
         }
     );
@@ -1202,10 +1253,11 @@ sub normal_tests_for_delete_category {
                     count => 1,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_delete_permission_filter.category',
+                        'MT::App::DataAPI::data_api_delete_permission_filter.category_set_category',
                     count => 1,
                 },
-                {   name => 'MT::App::DataAPI::data_api_post_delete.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_delete.category_set_category',
                     count => 1,
                 },
             ],
@@ -1216,7 +1268,7 @@ sub normal_tests_for_delete_category {
         }
     );
 
-    my $cat = MT->model('category')
+    my $cat = MT->model('category_set_category')
         ->load( { category_set_id => $category_set_id } );
     ok($cat);
 
@@ -1233,10 +1285,11 @@ sub normal_tests_for_delete_category {
                     count => 0,
                 },
                 {   name =>
-                        'MT::App::DataAPI::data_api_delete_permission_filter.category',
+                        'MT::App::DataAPI::data_api_delete_permission_filter.category_set_category',
                     count => 0,
                 },
-                {   name => 'MT::App::DataAPI::data_api_post_delete.category',
+                {   name =>
+                        'MT::App::DataAPI::data_api_post_delete.category_set_category',
                     count => 1,
                 },
             ],

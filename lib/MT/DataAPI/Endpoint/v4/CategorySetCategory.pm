@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::v4::Category;
+package MT::DataAPI::Endpoint::v4::CategorySetCategory;
 use strict;
 use warnings;
 
@@ -12,7 +12,7 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Endpoint::v2::Category;
 use MT::DataAPI::Resource;
 
-sub list_for_category_set {
+sub list {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set ) = context_objects(@_) or return;
@@ -24,7 +24,7 @@ sub list_for_category_set {
     my $res = filtered_list(
         $app,
         $endpoint,
-        'category',
+        'category_set_category',
         {   blog_id         => $category_set->blog_id,
             category_set_id => $category_set->id,
         }
@@ -36,7 +36,7 @@ sub list_for_category_set {
     };
 }
 
-sub list_parents_for_category_set {
+sub list_parents {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $category ) = context_objects(@_) or return;
@@ -52,7 +52,8 @@ sub list_parents_for_category_set {
 
     for my $parent_cat (@parent_cats) {
         run_permission_filter( $app, 'data_api_view_permission_filter',
-            'category', $parent_cat->id, obj_promise($parent_cat) )
+            'category_set_category', $parent_cat->id,
+            obj_promise($parent_cat) )
             or return;
     }
 
@@ -66,7 +67,7 @@ sub list_parents_for_category_set {
     };
 }
 
-sub list_siblings_for_category_set {
+sub list_siblings {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $category ) = context_objects(@_) or return;
@@ -81,7 +82,9 @@ sub list_siblings_for_category_set {
         parent          => $category->parent,
         category_set_id => $category->category_set_id,
     );
-    my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
+    my $res
+        = filtered_list( $app, $endpoint, 'category_set_category', \%terms )
+        or return;
 
     +{  totalResults => $res->{count} || 0,
         items =>
@@ -89,7 +92,7 @@ sub list_siblings_for_category_set {
     };
 }
 
-sub list_children_for_category_set {
+sub list_children {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $category ) = context_objects(@_) or return;
@@ -105,7 +108,7 @@ sub list_children_for_category_set {
 
     for my $child_cat (@child_cats) {
         run_permission_filter( $app, 'data_api_view_permission_filter',
-            'category', $child_cat->id, obj_promise($child_cat) )
+            'category_set_category', $child_cat->id, obj_promise($child_cat) )
             or return;
     }
 
@@ -118,7 +121,7 @@ sub list_children_for_category_set {
     };
 }
 
-sub create_for_category_set {
+sub create {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set ) = context_objects(@_) or return;
@@ -127,20 +130,21 @@ sub create_for_category_set {
         'category_set', $category_set->id )
         or return;
 
-    my $orig_category = $app->model('category')->new(
+    my $orig_category = $app->model('category_set_category')->new(
         blog_id         => $category_set->blog_id,
         category_set_id => $category_set->id,
     );
 
-    my $new_category = $app->resource_object( 'category', $orig_category )
+    my $new_category
+        = $app->resource_object( 'category_set_category', $orig_category )
         or return;
 
-    save_object( $app, 'category', $new_category ) or return;
+    save_object( $app, 'category_set_category', $new_category ) or return;
 
     $new_category;
 }
 
-sub get_for_category_set {
+sub get {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $category ) = context_objects(@_) or return;
@@ -150,13 +154,13 @@ sub get_for_category_set {
         or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
-        'category', $category->id, obj_promise($category) )
+        'category_set_category', $category->id, obj_promise($category) )
         or return;
 
     $category;
 }
 
-sub update_for_category_set {
+sub update {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $orig_category ) = context_objects(@_)
@@ -166,14 +170,15 @@ sub update_for_category_set {
         'category_set', $category_set->id )
         or return;
 
-    my $new_category = $app->resource_object( 'category', $orig_category );
+    my $new_category
+        = $app->resource_object( 'category_set_category', $orig_category );
 
-    save_object( $app, 'category', $new_category ) or return;
+    save_object( $app, 'category_set_category', $new_category ) or return;
 
     $new_category;
 }
 
-sub delete_for_category_set {
+sub delete {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set, $category ) = context_objects(@_) or return;
@@ -183,7 +188,7 @@ sub delete_for_category_set {
         or return;
 
     run_permission_filter( $app, 'data_api_delete_permission_filter',
-        'category', $category )
+        'category_set_category', $category )
         or return;
 
     $category->remove
@@ -195,12 +200,13 @@ sub delete_for_category_set {
         500,
         );
 
-    $app->run_callbacks( 'data_api_post_delete.category', $app, $category );
+    $app->run_callbacks( 'data_api_post_delete.category_set_category',
+        $app, $category );
 
     $category;
 }
 
-sub permutate_for_category_set {
+sub permutate {
     my ( $app, $endpoint ) = @_;
 
     my ( $site, $category_set ) = context_objects(@_) or return;
@@ -214,7 +220,7 @@ sub permutate_for_category_set {
     }
 
     MT::DataAPI::Endpoint::v2::Category::permutate_common( $app, $endpoint,
-        $site, 'category', $category_set->id );
+        $site, 'category_set_category', $category_set->id );
 }
 
 1;

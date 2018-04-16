@@ -71,12 +71,12 @@ my $cf_category = MT::Test::Permission->make_content_field(
     type               => 'categories',
     related_cat_set_id => $category_set->id,
 );
-my $category1 = MT::Test::Permission->make_category(
+my $category1 = MT::Test::Permission->make_category_set_category(
     blog_id         => $blog_id,
     category_set_id => $category_set->id,
     label           => 'category1',
 );
-my $category2 = MT::Test::Permission->make_category(
+my $category2 = MT::Test::Permission->make_category_set_category(
     blog_id         => $blog_id,
     category_set_id => $category_set->id,
     label           => 'category2',

@@ -7,7 +7,6 @@ package MT::ContentFieldType::Categories;
 use strict;
 use warnings;
 
-use MT::Category;
 use MT::CategorySet;
 use MT::ContentField;
 use MT::ContentFieldType::Common
@@ -72,7 +71,7 @@ sub _build_category_list {
         blog_id    => $blog_id,
         cat_set_id => $field_data->{options}{category_set},
         markers    => 1,
-        type       => 'category',
+        type       => 'category_set_category',
     );
 
     my $cat_tree = [];
@@ -107,8 +106,9 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $iter
-        = MT::Category->load_iter(
-        { id => $data, category_set_id => $options->{category_set} },
+        = MT->model('category_set_category')
+        ->load_iter(
+        { id        => $data, category_set_id => $options->{category_set} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -178,8 +178,8 @@ sub terms {
         my $field  = MT::ContentField->load( $prop->content_field_id );
 
         my @cat_ids;
-        my $iter = MT::Category->load_iter(
-            {   label => { like => "%${string}%" },
+        my $iter = MT->model('category_set_category')->load_iter(
+            {   label           => { like => "%${string}%" },
                 category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },
@@ -235,7 +235,8 @@ sub tag_handler {
 
     my $lastn = $args->{lastn};
 
-    my $iter = MT::Category->load_iter( $cat_terms, $cat_args );
+    my $iter = MT->model('category_set_category')
+        ->load_iter( $cat_terms, $cat_args );
     my %categories;
     my @ordered_categories;
     if ( $args->{sort} ) {
@@ -411,7 +412,7 @@ sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
     my @categories
-        = MT->model('category')
+        = MT->model('category_set_category')
         ->load( { id => $values },
         { fetchonly => { id => 1, label => 1 } }, );
     my %label_hash = map { $_->id => $_->label } @categories;
@@ -448,7 +449,7 @@ sub preview_handler {
     return '' unless @$values;
 
     my @categories
-        = MT->model('category')
+        = MT->model('category_set_category')
         ->load( { id => $values },
         { fetchonly => { id => 1, label => 1 } }, );
     my %label_hash = map { $_->id => $_->label } @categories;
@@ -490,7 +491,9 @@ sub site_data_import_handler {
     my @old_category_ids
         = ref $field_value eq 'ARRAY' ? @$field_value : ($field_value);
     my @new_category_ids = map { $_->id }
-        grep {$_} map { $all_objects->{"MT::Category#$_"} } @old_category_ids;
+        grep {$_}
+        map  { $all_objects->{"MT::CategorySetCategory#$_"} }
+        @old_category_ids;
     @new_category_ids ? \@new_category_ids : undef;
 }
 

@@ -10,10 +10,8 @@ use base qw( MT::Object );
 
 use MT;
 use MT::Blog;
-use MT::Category;
 use MT::ContentField;
 use MT::ContentType;
-use MT::ObjectCategory;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -31,7 +29,7 @@ __PACKAGE__->install_properties(
         defaults => { name => '', cat_count => 0, ct_count => 0 },
         child_of      => [ 'MT::Blog', 'MT::Website' ],
         audit         => 1,
-        child_classes => ['MT::Category'],
+        child_classes => ['MT::CategorySetCategory'],
         datasource    => 'category_set',
         primary_key   => 'id',
     }
@@ -154,7 +152,7 @@ sub _category_label_terms {
 
     if ( $option eq 'not_contains' ) {
         my $string   = $args->{string};
-        my $cat_join = MT::Category->join_on(
+        my $cat_join = MT->model('category_set_category')->join_on(
             'category_set_id',
             { label  => { like => "%${string}%" } },
             { unique => 1 },
@@ -170,8 +168,8 @@ sub _category_label_terms {
     }
     else {
         my $query    = $prop->super(@_);
-        my $cat_join = MT::Category->join_on( 'category_set_id', $query,
-            { unique => 1 } );
+        my $cat_join = MT->model('category_set_category')
+            ->join_on( 'category_set_id', $query, { unique => 1 } );
         $db_args->{joins} ||= [];
         push @{ $db_args->{joins} }, $cat_join;
         return;
@@ -194,7 +192,7 @@ sub _content_type_name_terms {
         );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type               => 'category',
+            {   type               => 'categories',
                 related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },
@@ -213,7 +211,7 @@ sub _content_type_name_terms {
             [ $query, { id => \'= cf_content_type_id' } ] );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type               => 'category',
+            {   type               => 'categories',
                 related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },
@@ -265,7 +263,8 @@ sub exist_same_name_in_site {
 sub _calculate_cat_count {
     my $self = shift;
     return unless $self->id;
-    my $count = MT::Category->count( { category_set_id => $self->id } );
+    my $count = MT->model('category_set_category')
+        ->count( { category_set_id => $self->id } );
     $self->cat_count($count);
 }
 
@@ -307,7 +306,7 @@ sub categories {
         'categories',
         sub {
             my @cats;
-            my $iter = MT->model('category')
+            my $iter = MT->model('category_set_category')
                 ->load_iter( { category_set_id => $self->id } );
             while ( my $c = $iter->() ) {
                 push @cats, $c;

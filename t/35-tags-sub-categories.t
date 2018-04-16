@@ -61,23 +61,23 @@ $test_env->prepare_fixture(sub {
         die 'category_set->id is ' . ( $category_set->id || 'not set' );
     }
 
-    my $abc = MT::Test::Permission->make_category(
+    my $abc = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'abc',
     );
-    my $def = MT::Test::Permission->make_category(
+    my $def = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'def',
     );
-    my $ghi = MT::Test::Permission->make_category(
+    my $ghi = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'ghi',
     );
 
-    my $c456 = MT::Test::Permission->make_category(
+    my $c456 = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set_id,
         parent          => $ghi->id,

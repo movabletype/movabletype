@@ -26,8 +26,7 @@ sub start_import {
 
     # FIXME: This should build a category hierarchy!
     my $cat_class = $app->model('category');
-    my $iter      = $cat_class->load_iter(
-        { blog_id => $blog_id, category_set_id => 0 } );
+    my $iter = $cat_class->load_iter( { blog_id => $blog_id } );
     my @data;
     while ( my $cat = $iter->() ) {
         push @data,

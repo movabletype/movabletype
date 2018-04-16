@@ -95,7 +95,7 @@ $test_env->prepare_fixture(
         my @cats;
         my @cat_labels = ( 'a', 'b', 'c' );
         for my $cat_id ( 1 .. 3 ) {
-            my $cat = MT::Test::Permission->make_category(
+            my $cat = MT::Test::Permission->make_category_set_category(
                 blog_id         => $category_set->blog_id,
                 category_set_id => $category_set->id,
                 label           => $cat_labels[ $cat_id - 1 ],

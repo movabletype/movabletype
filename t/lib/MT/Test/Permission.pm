@@ -981,6 +981,37 @@ sub make_category_set {
     $cs;
 }
 
+sub make_category_set_category {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id     => 2,
+        label       => 'foo',
+        description => 'foo',
+        author_id   => 1,
+        parent      => 0,
+    };
+
+    if (%params) {
+        foreach my $key ( keys %params ) {
+            $values->{$key} = $params{$key};
+        }
+    }
+
+    require MT::CategorySetCategory;
+    my $cat = MT::CategorySetCategory->new();
+
+    foreach my $k ( keys %$values ) {
+        $cat->$k( $values->{$k} );
+    }
+    $cat->save() or die "Couldn't save category record: " . $cat->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+    return $cat;
+}
+
 my $content_type_name_index = 0;
 
 sub make_content_type {
@@ -1066,7 +1097,9 @@ sub make_content_data {
         $mock_permission->mock(
             'perms_from_registry',
             sub {
-                my %perms = %{ $mock_permission->original('perms_from_registry')->() };
+                my %perms
+                    = %{ $mock_permission->original('perms_from_registry')->()
+                    };
                 my $content_type_perm
                     = MT->app->model('content_type')->all_permissions;
                 foreach my $k ( keys %$content_type_perm ) {

@@ -1416,10 +1416,9 @@ sub field_categories {
         sub {
             my $category_ids = $self->data->{$content_field_id} || [];
             return unless @$category_ids;
-            return MT::Category->load(
-                {   id              => $category_ids,
-                    blog_id         => $self->blog_id,
-                    category_set_id => { not => 0 },
+            return MT->model('category_set_category')->load(
+                {   id      => $category_ids,
+                    blog_id => $self->blog_id,
                 },
             );
         }

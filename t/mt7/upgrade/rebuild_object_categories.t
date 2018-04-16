@@ -25,7 +25,7 @@ $test_env->prepare_fixture(sub {
         = MT::Test::Permission->make_category_set( blog_id => $blog_id );
     my @categories;
     for ( 1 .. 3 ) {
-        my $cat = MT::Test::Permission->make_category(
+        my $cat = MT::Test::Permission->make_category_set_category(
             blog_id         => $blog_id,
             category_set_id => $category_set->id,
         );
@@ -61,7 +61,7 @@ $test_env->prepare_fixture(sub {
 });
 
 my $category_set = MT::CategorySet->load( { blog_id => $blog_id } );
-my @categories = sort { $a->id <=> $b->id } MT::Category->load(
+my @categories = sort { $a->id <=> $b->id } MT->model('category_set_category')->load(
     {
         blog_id         => $blog_id,
         category_set_id => $category_set->id,

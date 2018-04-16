@@ -42,14 +42,13 @@ sub apply {
         $cs->save or die $cs->errstr;
 
         my $categories = $cs_value->{categories} || {};
-        add_categories( $theme, $blog, $categories, 'category', $cs->id );
+        add_categories( $theme, $blog, $categories, 'category_set_category',
+            $cs->id );
 
         my $order = generate_order(
             {   basenames => $cs_value->{categories}{':order'},
-                terms     => {
-                    class           => 'category',
-                    category_set_id => $cs->id,
-                },
+                class     => 'category_set_category',
+                terms     => { category_set_id => $cs->id },
             }
         );
         $cs->order($order) if $order;

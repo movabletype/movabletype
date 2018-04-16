@@ -152,7 +152,8 @@ sub core_resources {
                 updatable_fields => "${pkg}v4::CategorySet::updatable_fields",
             },
         ],
-        'content_type' => [
+        'category_set_category' => 'category',
+        'content_type'          => [
             {   version          => 4,
                 fields           => "${pkg}v4::ContentType::fields",
                 updatable_fields => "${pkg}v4::ContentType::updatable_fields",

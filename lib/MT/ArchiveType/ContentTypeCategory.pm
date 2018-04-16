@@ -119,7 +119,8 @@ sub _get_this_cat {
                 }
             );
             foreach my $obj_cat (@obj_cats) {
-                my ($category) = MT::Category->load( $obj_cat->category_id );
+                my ($category)
+                    = MT->model('category')->load( $obj_cat->category_id );
                 push @$cat, $category;
             }
         }
@@ -137,8 +138,9 @@ sub archive_group_iter {
     my ( $ctx, $args ) = @_;
 
     my $blog_id = $ctx->stash('blog')->id;
-    require MT::Category;
-    my $iter = MT::Category->load_iter( { blog_id => $blog_id },
+    my $iter
+        = MT->model('category_set_category')
+        ->load_iter( { blog_id => $blog_id },
         { 'sort' => 'label', direction => 'ascend' } );
 
     my $map = $ctx->stash('template_map');

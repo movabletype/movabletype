@@ -61,14 +61,6 @@ sub basename_prefix {
     "folder";
 }
 
-sub category_set_id {0}
-
-sub save {
-    my $self = shift;
-    $self->column( 'category_set_id', 0 );
-    $self->SUPER::save(@_);
-}
-
 sub remove {
     my $folder                  = shift;
     my $delete_files_at_rebuild = MT->config('DeleteFilesAtRebuild');

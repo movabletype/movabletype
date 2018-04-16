@@ -21,7 +21,11 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         $cat or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
         $needs_entries = $args['entries'];
-        $class = 'category';
+        if ($cat->category_category_set_id) {
+            $class = 'category_set_category';
+        } else {
+            $class = 'category';
+        }
         if (isset($args['class'])) {
             $class = $args['class'];
         }

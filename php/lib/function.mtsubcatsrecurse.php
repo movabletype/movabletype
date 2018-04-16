@@ -30,7 +30,11 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $sort_by or $sort_by = 'user_custom';
 
     # Get the class info
-    $class = 'category';
+    if ($cat->category_category_set_id) {
+        $class = 'category_set_category';
+    } else {
+        $class = 'category';
+    }
     if (isset($args['class'])) {
         $class = $args['class'];
     }

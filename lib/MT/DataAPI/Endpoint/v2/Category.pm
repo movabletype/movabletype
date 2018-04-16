@@ -21,7 +21,7 @@ sub list {
 sub list_common {
     my ( $app, $endpoint, $class ) = @_;
 
-    my %terms = ( category_set_id => 0 );
+    my %terms;
     if ( $app->param('top') ) {
         %terms = ( parent => 0 );
     }
@@ -113,10 +113,9 @@ sub list_siblings_common {
     my $cat = get_common( $app, $endpoint, $class ) or return;
 
     my %terms = (
-        id              => { not => $cat->id },
-        blog_id         => $cat->blog_id,
-        parent          => $cat->parent,
-        category_set_id => 0,
+        id      => { not => $cat->id },
+        blog_id => $cat->blog_id,
+        parent  => $cat->parent,
     );
     my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
@@ -311,10 +310,7 @@ sub list_for_entry {
             = ( ( grep { $_->[1] } @$rows ), ( grep { !$_->[1] } @$rows ) );
     }
 
-    my %terms = (
-        id => @$rows ? [ map { $_->[0] } @$rows ] : 0,
-        category_set_id => 0,
-    );
+    my %terms = ( id => @$rows ? [ map { $_->[0] } @$rows ] : 0, );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
     +{  totalResults => $res->{count},
@@ -342,7 +338,7 @@ sub permutate_common {
     my ( $app, $endpoint, $site, $class, $category_set_id ) = @_;
 
     $category_set_id ||= 0;
-    my $class_plural = ( $class eq 'category' ) ? 'categories' : 'folders';
+    my $class_plural = ( $class eq 'folder' ) ? 'folders' : 'categories';
 
     my $categories_json = $app->param($class_plural)
         or return $app->error(
@@ -374,7 +370,7 @@ sub permutate_common {
         my $cat = $app->model($class)->load(
             {   id              => $c->{id},
                 class           => $class,
-                category_set_id => $category_set_id
+                category_set_id => $category_set_id,
             }
         ) or return $invalid_error->();
 
@@ -388,7 +384,9 @@ sub permutate_common {
         sort    { $a <=> $b }
             map { $_->id } (
             $app->model($class)->load(
-                { blog_id => $site->id, category_set_id => $category_set_id }
+                {   blog_id         => $site->id,
+                    category_set_id => $category_set_id,
+                }
             )
             )
     );

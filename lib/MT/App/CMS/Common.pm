@@ -163,6 +163,11 @@ sub init_core_callbacks {
             $pkg . 'post_save.folder'   => "${pfx}Folder::post_save",
             $pkg . 'save_filter.folder' => "${pfx}Folder::save_filter",
             $pkg . 'post_delete.folder' => "${pfx}Folder::post_delete",
+            'list_template_param.folder' =>
+                "${pfx}Category::template_param_list",
+            $pkg
+                . 'filtered_list_param.folder' =>
+                "${pfx}Category::filtered_list_param",
 
             # category callbacks
             $pkg . 'edit.category' => "${pfx}Category::edit",
@@ -180,17 +185,37 @@ sub init_core_callbacks {
             $pkg
                 . 'filtered_list_param.category' =>
                 "${pfx}Category::filtered_list_param",
-            'list_template_param.folder' =>
-                "${pfx}Category::template_param_list",
-            $pkg
-                . 'filtered_list_param.folder' =>
-                "${pfx}Category::filtered_list_param",
 
             # category_set callbacks
             "${pkg}save_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_save",
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
+
+            # category_set_category
+            $pkg
+                . 'edit.category_set_category' =>
+                "${pfx}CategorySetCategory::edit",
+            $pkg
+                . 'save_permission_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::can_save",
+            $pkg
+                . 'delete_permission_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::can_delete",
+            $pkg
+                . 'pre_save.category_set_category' =>
+                "${pfx}CategorySetCategory::pre_save",
+            $pkg
+                . 'post_save.category_set_category' =>
+                "${pfx}CategorySetCategory::post_save",
+            $pkg
+                . 'post_delete.category_set_category:' =>
+                "${pfx}CategorySetCategory::post_delete",
+            'list_template_param.category_set_category' =>
+                "${pfx}CategorySetCategory::template_param_list",
+            $pkg
+                . 'filtered_list_param.category_set_category' =>
+                "${pfx}CategorySetCategory::filtered_list_param",
 
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",

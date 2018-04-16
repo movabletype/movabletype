@@ -275,9 +275,8 @@ sub _create_category {
         }
         elsif ( 'wp_category_parent' eq $key ) {
             my $parent = MT::Category->load(
-                {   label           => $value,
-                    blog_id         => $self->{blog}->id,
-                    category_set_id => 0,
+                {   label   => $value,
+                    blog_id => $self->{blog}->id,
                 }
             );
             $cat->parent( $parent->id ) if defined $parent;
@@ -292,9 +291,8 @@ sub _create_category {
         }
         elsif ( 'wp_cat_name' eq $key ) {
             my $exist = MT::Category->load(
-                {   label           => $value,
-                    blog_id         => $self->{blog}->id,
-                    category_set_id => 0,
+                {   label   => $value,
+                    blog_id => $self->{blog}->id,
                 }
             );
             return if $exist;
@@ -666,9 +664,8 @@ sub _create_post {
                     $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
                         if !$value;
                     my $cat = $cat_class->load(
-                        {   label           => $value,
-                            blog_id         => $self->{blog}->id,
-                            category_set_id => 0,
+                        {   label   => $value,
+                            blog_id => $self->{blog}->id,
                         }
                     );
                     if ( defined $cat ) {
@@ -683,9 +680,8 @@ sub _create_post {
                 my $cat_class = MT->model(
                     $class_type eq 'entry' ? 'category' : 'folder' );
                 my $cat = $cat_class->load(
-                    {   label           => $value,
-                        blog_id         => $self->{blog}->id,
-                        category_set_id => 0,
+                    {   label   => $value,
+                        blog_id => $self->{blog}->id,
                     }
                 );
                 if ( defined $cat ) {

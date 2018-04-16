@@ -175,9 +175,8 @@ sub import_contents {
                                 my $cat;
                                 unless ( $cat = $categories{$val} ) {
                                     $cat = MT::Category->load(
-                                        {   label           => $val,
-                                            blog_id         => $blog_id,
-                                            category_set_id => 0,
+                                        {   label   => $val,
+                                            blog_id => $blog_id,
                                         }
                                     );
                                 }

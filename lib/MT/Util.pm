@@ -1249,7 +1249,10 @@ sub make_unique_category_basename {
         if $base eq '';    #FIXME when does this happen?
 
     my $cat_class = ref $cat;
-    my $terms = { category_set_id => $cat->category_set_id || 0 };
+    my $terms
+        = { $cat->category_set_id
+        ? ( category_set_id => $cat->category_set_id )
+        : () };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 

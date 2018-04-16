@@ -896,7 +896,7 @@ sub cb_restore_objects {
             my $old_order    = $category_set->order or next;
             my $new_order    = join ',', map { $_->id }
                 grep { defined $_ }
-                map  { $all_objects->{"MT::Category#$_"} }
+                map  { $all_objects->{"MT::CategorySetCategory#$_"} }
                 split ',', $old_order;
             $category_set->order($new_order);
             $category_set->save;
@@ -1630,8 +1630,11 @@ package MT::Category;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'),     MT->model('website') ],
-        parent  => [ MT->model('category'), MT->model('folder') ],
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        parent  => [
+            MT->model('category'), MT->model('folder'),
+            MT->model('category_set_category'),
+        ],
         category_set_id =>
             { class => MT->model('category_set'), optional => 1 },
     };
@@ -1655,7 +1658,7 @@ package MT::ContentField;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
         content_type_id => [ MT->model('content_type') ],
         related_content_type_id =>
             { class => MT->model('content_type'), optional => 1 },
@@ -1711,8 +1714,11 @@ sub parents {
             { class => MT->model('templatemap'), optional => 1 },
         template_id => { class => MT->model('template'), optional => 1 },
         category_id => {
-            class    => [ MT->model('category'), MT->model('folder') ],
-            optional => 1
+            class => [
+                MT->model('category'), MT->model('folder'),
+                MT->model('category_set_category'),
+            ],
+            optional => 1,
         },
         author_id => { class => MT->model('author'), optional => 1 },
     };
@@ -1793,7 +1799,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1963,10 +1969,11 @@ sub parents {
         cf_id     => MT->model('content_field'),
         object_id => {
             relations => {
-                key         => 'object_ds',
-                entry_id    => [ MT->model('entry'), MT->model('page') ],
-                category_id => [ MT->model('category'), MT->model('folder') ],
-                blog_id     => [ MT->model('blog'), MT->model('website') ],
+                key      => 'object_ds',
+                entry_id => [ MT->model('entry'), MT->model('page') ],
+                category_id =>
+                    [ MT->model('category'), MT->model('folder'), ],
+                blog_id => [ MT->model('blog'), MT->model('website') ],
                 content_data_id => [ MT->model('content_data') ],
             }
         }
@@ -1995,6 +2002,11 @@ sub restore_parent_ids {
         = $objects->{ $category_class . '#' . $data->{category_id} };
     if ( !$new_category ) {
         $category_class = MT->model('folder');
+        $new_category
+            = $objects->{ $category_class . '#' . $data->{category_id} };
+    }
+    if ( !$new_category ) {
+        $category_class = MT->model('category_set_category');
         $new_category
             = $objects->{ $category_class . '#' . $data->{category_id} };
     }
@@ -2030,10 +2042,13 @@ sub restore_parent_ids {
 
 sub parents {
     my $obj = shift;
-    {   blog_id     => [ MT->model('blog'),     MT->model('website') ],
-        category_id => [ MT->model('category'), MT->model('folder') ],
-        cf_id       => MT->model('content_field'),
-        object_id   => {
+    {   blog_id     => [ MT->model('blog'), MT->model('website') ],
+        category_id => [
+            MT->model('category'), MT->model('folder'),
+            MT->model('category_set_category'),
+        ],
+        cf_id     => MT->model('content_field'),
+        object_id => {
             relations => {
                 key             => 'object_ds',
                 entry_id        => [ MT->model('entry'), MT->model('page') ],

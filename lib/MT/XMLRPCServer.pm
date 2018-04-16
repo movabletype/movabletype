@@ -254,10 +254,9 @@ sub _save_placements {
             require MT::Folder;
             for my $basename (@$folders) {
                 $folder = MT::Folder->load(
-                    {   blog_id         => $entry->blog_id,
-                        parent          => $parent_id,
-                        basename        => $basename,
-                        category_set_id => 0,
+                    {   blog_id  => $entry->blog_id,
+                        parent   => $parent_id,
+                        basename => $basename,
                     }
                 );
 
@@ -290,9 +289,8 @@ sub _save_placements {
 
             # The spec says to ignore invalid category names.
             @categories = grep {defined} $cat_class->search(
-                {   blog_id         => $entry->blog_id,
-                    label           => $cats,
-                    category_set_id => 0,
+                {   blog_id => $entry->blog_id,
+                    label   => $cats,
                 }
             );
         }
@@ -1228,8 +1226,7 @@ sub getCategoryList {
         && ( !$perms
         || !$perms->can_do('get_category_list_via_xmlrpc_server') );
     require MT::Category;
-    my $iter = MT::Category->load_iter(
-        { blog_id => $blog_id, category_set_id => 0 } );
+    my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
     my @data;
 
     while ( my $cat = $iter->() ) {
@@ -1256,8 +1253,7 @@ sub getCategories {
         && ( !$perms
         || !$perms->can_do('get_categories_via_xmlrpc_server') );
     require MT::Category;
-    my $iter = MT::Category->load_iter(
-        { blog_id => $blog_id, category_set_id => 0 } );
+    my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
     my @data;
     my $blog = MT::Blog->load($blog_id);
     require File::Spec;

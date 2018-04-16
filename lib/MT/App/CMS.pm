@@ -597,6 +597,14 @@ sub init_plugins {
                 "${pfx}ContentData::cms_pre_load_filtered_list",
             "${pkg}list_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_list",
+            $pkg . 'view_permission_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::can_view",
+            $pkg
+                . 'save_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::save_filter",
+            $pkg
+                . 'pre_load_filtered_list.category_set_category' =>
+                "${pfx}CategorySetCategory::pre_load_filtered_list",
         }
     );
 
@@ -2325,7 +2333,12 @@ sub core_enable_object_methods {
             edit   => sub { $app->param('id') ? 1 : 0 },
             save   => sub { $app->param('id') ? 1 : 0 },
         },
-        category_set => { delete => 1 },
+        category_set          => { delete => 1 },
+        category_set_category => {
+            delete => 1,
+            edit   => sub { $app->param('id') ? 1 : 0 },
+            save   => sub { $app->param('id') ? 1 : 0 },
+        },
         content_type => { delete => 1, },
         entry        => { edit   => 1 },
         page         => {
@@ -3073,13 +3086,12 @@ sub build_menus {
                     && $mode eq 'view'
                     && !$app->param('is_category_set') )
                 {
-                    my $is_category_set = $app->model('category')->exist(
-                        {   id => $app->param('id') || 0,
-                            category_set_id => { not => 0 }
-                        }
-                    );
+                    my $category = $app->model('category')
+                        ->load( $app->param('id') || 0 );
                     $param->{screen_group}
-                        = $is_category_set ? 'category_set' : 'entry';
+                        = ( $category && $category->category_set )
+                        ? 'category_set'
+                        : 'entry';
                 }
             }
             else {
@@ -4449,10 +4461,7 @@ sub _build_category_list {
     my $new_cat_id      = $param{new_cat_id};
     my $include_markers = $param{markers};
     my $type            = $param{type};
-    my $cat_set_id;
-    if ( $type eq 'category' ) {
-        $cat_set_id = $param{cat_set_id};
-    }
+    my $cat_set_id      = $param{cat_set_id} || 0;
 
     my @data;
     my $class = $app->model($type) or return;
@@ -4481,9 +4490,9 @@ sub _build_category_list {
     }
 
     my @cats = $class->load(
-        {   blog_id         => $blog_id,
-            category_set_id => $cat_set_id || [ \'IS NULL', 0 ],
-        }
+        $cat_set_id
+        ? { category_set_id => $cat_set_id }
+        : { blog_id => $blog_id },
     );
     @cats = MT::Category::_sort_by_id_list(
         $id_ord,

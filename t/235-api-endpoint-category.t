@@ -23,7 +23,7 @@ use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 my $category_set = MT::Test::Permission->make_category_set( blog_id => 1 );
-my $category_set_category = MT::Test::Permission->make_category(
+my $category_set_category = MT::Test::Permission->make_category_set_category(
     blog_id         => $category_set->blog_id,
     category_set_id => $category_set->id,
 );
@@ -123,8 +123,8 @@ sub suite {
                 +{  totalResults => 3,
                     items        => MT::DataAPI::Resource->from_object(
                         [   MT->model('category')->load(
-                                { blog_id => 1, category_set_id => 0 },
-                                { sort => 'created_by' },
+                                { blog_id => 1 },
+                                { sort    => 'created_by' },
                             )
                         ]
                     ),
@@ -259,9 +259,8 @@ sub suite {
             ],
             result => sub {
                 MT->model('category')->load(
-                    {   label           => 'test-create-category-with-parent',
-                        parent          => 1,
-                        category_set_id => 0,
+                    {   label  => 'test-create-category-with-parent',
+                        parent => 1,
                     }
                 );
             },
@@ -434,11 +433,9 @@ sub suite {
                 },
             ],
             result => sub {
-                MT->model('category')->load(
-                    {   label => 'update-test-api-permission-category',
-                        category_set_id => 0,
-                    }
-                );
+                MT->model('category')
+                    ->load(
+                    { label => 'update-test-api-permission-category' } );
             },
         },
         {   path      => '/v2/sites/1/categories/1',
@@ -661,10 +658,9 @@ sub suite {
 
                 my $cat  = $app->model('category')->load(2);
                 my @cats = $app->model('category')->load(
-                    {   id              => { not => $cat->id },
-                        blog_id         => 1,
-                        category_set_id => 0,
-                        parent          => $cat->parent,
+                    {   id      => { not => $cat->id },
+                        blog_id => 1,
+                        parent  => $cat->parent,
                     }
                 );
 
@@ -757,10 +753,8 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load(
-                    { blog_id => 1,    category_set_id => 0 },
-                    { sort    => 'id', direction       => 'descend' }
-                );
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 pop @cat_ids;
                 { categories => \@cat_ids };
@@ -778,10 +772,8 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load(
-                    { blog_id => 1,    category_set_id => 0 },
-                    { sort    => 'id', direction       => 'descend' }
-                );
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },
@@ -793,10 +785,8 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load(
-                    { blog_id => 1,    category_set_id => 0 },
-                    { sort    => 'id', direction       => 'descend' }
-                );
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },
@@ -823,10 +813,8 @@ sub suite {
         {   path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load(
-                    { blog_id => 1,    category_set_id => 0 },
-                    { sort    => 'id', direction       => 'descend' }
-                );
+                my @cats = $app->model('category')->load( { blog_id => 1 },
+                    { sort => 'id', direction => 'descend' } );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },

@@ -89,14 +89,14 @@ sub generate_order {
     my ($args) = @_;
 
     my $basenames = $args->{basenames};
+    my $class     = $args->{class};
     my $terms     = $args->{terms};
 
     return unless ref $basenames eq 'ARRAY' && @$basenames;
 
     my %cat_basename_hash;
     my $iter
-        = MT->model('category')
-        ->load_iter( { %$terms, basename => $basenames } );
+        = MT->model($class)->load_iter( { %$terms, basename => $basenames } );
     while ( my $c = $iter->() ) {
         $cat_basename_hash{ $c->basename } = $c;
     }

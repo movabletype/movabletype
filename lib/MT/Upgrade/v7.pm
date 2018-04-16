@@ -143,6 +143,24 @@ sub upgrade_functions {
             version_limit => 7.0040,
             priority      => 3.2,
         },
+        'v7_migrate_category_set_categories' => {
+            version_limit => 7.0041,
+            priority      => 3.6,
+            updater       => {
+                type      => 'category',
+                condition => sub {
+                    $_[0]->class eq 'category' && $_[0]->category_set_id > 0;
+                },
+                code  => sub { $_[0]->class('category_set_category') },
+                label => 'Migrating category records for category set...',
+                sql   => <<__SQL__,
+UPDATE mt_category
+SET    category_class = 'category_set_category'
+WHERE  category_class = 'category'
+  AND  category_category_set_id > 0;
+__SQL__
+            },
+        },
     };
 }
 
