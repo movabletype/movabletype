@@ -2008,7 +2008,6 @@ sub rebuild_deleted_content_data {
                 }
                 else {
                     if ( $app->config('RebuildAtDelete') ) {
-                        $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
                         if ( $archiver->date_based ) {
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'Start'} = $start;
@@ -2016,6 +2015,9 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'End'} = $end;
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'Timestamp'} = $target_dt;
+                        }
+                        else {
+                            $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
                         }
                     }
                 }
