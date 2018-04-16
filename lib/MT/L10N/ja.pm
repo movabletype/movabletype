@@ -476,6 +476,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App.pm
 	'Invalid request' => '不正な要求です。',
 	'Problem with this request: corrupt character data for character set [_1]' => '不正な要求です。文字コード[_1]に含まれない文字データを送信しています。',
+	'Cannot load blog #[_1]' => 'ブログ(ID:[_1])をロードできません。',
 	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
 	'The login could not be confirmed because of a database error ([_1])' => 'データベースのエラーが発生したため、サインインできません。: [_1]',
 	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
@@ -508,6 +509,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while trying to process signup: [_1]' => '登録に失敗しました: [_1]',
 	'New Comment Added to \'[_1]\'' => '\'[_1]\'にコメントがありました',
 	'System Email Address is not configured.' => 'システムで利用するメールアドレスが設定されていません。',
+	'Unknown error occurred.' => '不明なエラーが発生しました。',
 	'Close' => '閉じる',
 	'Back' => '戻る',
 	'Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive \'[_1]\': [_2]' => 'IISFastCGIMonitoringFilePath で指定されたモニタリングファイル ([_1]) が開けません: [_2]',
@@ -544,6 +546,7 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'Failed login attempt by user who does not have sign in permission. \'[_1]\' (ID:[_2])' => 'サインイン権限を有しないユーザー \'[_1]\' (ID:[_2])がサインインを試みましたが失敗しました。',
+	'Cannot load blog (ID:[_1])' => 'ブログ(ID:[_1])をロードできません',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'Invalid parameter' => '不正なパラメータです。',
 	'Edit Template' => 'テンプレートの編集',
@@ -1244,6 +1247,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_5]が[_1] \'[_5]\' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_3]が[_1] \'[4]\' (ID][_2])を変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_3]が[_1] \'[_1]\' (ID:[_2])を削除しました',
+	'Create new [_1]' => '[_1]を作成',
 	'Cannot load template.' => 'テンプレートをロードできませんでした。',
 	'Publish error: [_1]' => '再構築エラー: [_1]',
 	'Unable to create preview files in this location: [_1]' => 'プレビュー用のファイルをこの場所に作成できませんでした: [_1]',
@@ -1257,7 +1261,6 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish Contents' => 'コンテンツデータの公開を取り消し',
 
 ## lib/MT/CMS/ContentType.pm
-	'[_1] field cannot be saved: [_2]' => 'フィールド \'[_1]\'を保存できません: [_2]',
 	'Create Content Type' => 'コンテンツタイプの作成',
 	'Cannot load content type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'The content type name is required.' => 'コンテンツタイプ名は必須です。',
@@ -1449,6 +1452,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'ブログが不正です。',
 	'Global' => 'グローバル',
 	'You must specify a template type when creating a template' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
+	'contnt type' => 'コンテンツタイプ',
 	'Content Type Archive' => 'コンテンツタイプ アーカイブ',
 	'Create Widget' => 'ウィジェットを作成',
 	'Create Template' => 'テンプレートの作成',
@@ -1582,7 +1586,6 @@ use vars qw( @ISA %Lexicon );
 	'Successfully imported objects to Movable Type system by user \'[_1]\'' => '\'[_1]\'がMovable Typeシステムにデータをインポートしました。',
 	'Invalid password recovery attempt; cannot recover password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Cannot recover password in this configuration' => 'この構成ではパスワードの再設定はできません。',
-
 	'User \'[_1]\' (user #[_2]) does not have email address' => 'ユーザー\'[_1]\'(ID:[_2])はメールアドレスがありません',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'パスワード再設定用のリンクがユーザー\'[_1]\'(ID:[_2])のメールアドレス([_3])あてに通知されました。',
 	'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細はログを参照してください。',
@@ -1623,7 +1626,6 @@ use vars qw( @ISA %Lexicon );
 	'Selected System Administrator' => '選択されたシステム管理者',
 	'System Administrator' => 'システム管理者',
 	'(newly created user)' => '(新規ユーザー)',
-	'Select Site' => 'サイトを選択',
 	'Sites Selected' => '選択されたサイト',
 	'Select Users' => 'ユーザーを選択',
 	'Users Selected' => '選択されたユーザー',
@@ -1649,6 +1651,7 @@ use vars qw( @ISA %Lexicon );
 	'Selected Site' => '選択されたサイト',
 	'Type a website name to filter the choices below.' => '以下の選択によって抽出されたウェブサイト名を入力',
 	'This action cannot move a top-level site.' => 'このアクションでは親サイトの移動はできません。',
+	'Type a site name to filter the choices below.' => '以下の選択によって抽出されたサイト名を入力',
 	'Cannot load website #[_1].' => 'ウェブサイト(ID:[_1])はロードできませんでした。',
 	'Blog \'[_1]\' (ID:[_2]) moved from \'[_3]\' to \'[_4]\' by \'[_5]\'' => 'ブログ「[_1]」(ID:[_2])を[_3]から[_4]に移しました',
 
@@ -1664,6 +1667,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Count' => 'カテゴリ数',
 	'Content Type Count' => 'コンテンツタイプ数',
 	'Category Label' => 'カテゴリ名',
+	'Content Type Name' => 'コンテンツタイプ名',
 
 ## lib/MT/Comment.pm
 	'Loading entry \'[_1]\' failed: [_2]' => '記事\'[_1]\'をロードできませんでした: [_1]',
@@ -1703,8 +1707,8 @@ use vars qw( @ISA %Lexicon );
 	'(No label)' => '(ラベルなし)',
 	'Identifier' => '識別子',
 	'Publish Date' => '公開日',
-	'Link' => 'リンク',
 	'Unpublish Date' => '公開終了日',
+	'Link' => 'リンク',
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'コンテンツフィールド',
@@ -1734,8 +1738,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => '[_1]件のアセットをすべて見る',
 	'You must select or upload correct assets for field \'[_1]\' that has asset type \'[_2]\'.' => '\'[_1]\'フィールドの[_2]を選択するか、アップロードしてください。',
-	'A minimum selection number for \'[_1]\' ([_2]) must be a positive integer greater than or equal to 0.' => '\'\'[_1]\'フィールド ([_2]) の最小選択数は0以上の整数である必要があります。',
-	'A maximum selection number for \'[_1]\' ([_2]) must be a positive integer greater than or equal to 1.' => '\'\'[_1]\'フィールド ([_2]) の最大選択数は1以上の整数である必要があります。',
+	'A minimum selection number for \'[_1]\' ([_2]) must be a positive integer greater than or equal to 0.' => '\'[_1]\'フィールド ([_2]) の最小選択数は0以上の整数である必要があります。',
+	'A maximum selection number for \'[_1]\' ([_2]) must be a positive integer greater than or equal to 1.' => '\'[_1]\'フィールド ([_2]) の最大選択数は1以上の整数である必要があります。',
 	'A maximum selection number for \'[_1]\' ([_2]) must be a positive integer greater than or equal to the minimum selection number.' => '\'[_1]\'フィールド ([_2]) の最大選択数は最小選択数以上の整数である必要があります。',
 
 ## lib/MT/ContentFieldType/Categories.pm
@@ -1743,7 +1747,7 @@ use vars qw( @ISA %Lexicon );
 	'No category_set setting in content field type.' => 'コンテンっつフィールドにカテゴリセットが設定されていません。',
 	'You must select a source category set.' => 'カテゴリセットが選択されていません。',
 	'The source category set is not found in this site.' => 'カテゴリセットが見つかりません。',
-'There is no category set that can be selected. Please create a category set if you use the Categories field type.' => 'カテゴリセットが存在しないため、カテゴリセットフィールドは利用できません。',
+	'There is no category set that can be selected. Please create a category set if you use the Categories field type.' => 'カテゴリセットが存在しないため、カテゴリセットフィールドは利用できません。',
 
 ## lib/MT/ContentFieldType/Checkboxes.pm
 	'You must enter at least one label-value pair.' => '一組以上のラベルと値の組み合わせを入力してください。',
@@ -2597,6 +2601,7 @@ use vars qw( @ISA %Lexicon );
 	'Specified WidgetSet \'[_1]\' not found.' => 'ウィジェットセット「[_1]」が見つかりません。',
 
 ## lib/MT/Template/Tags/Tag.pm
+	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',
 
 ## lib/MT/Template/Tags/Website.pm
 	'MTSites tags cannot be nested.' => 'MTSites タグは入れ子で利用できません。',
@@ -2975,6 +2980,7 @@ use vars qw( @ISA %Lexicon );
 	'A configuration value is required.' => '設定値は必須です。',
 	'The HASH type configuration directive should be in the format of "key=value"' => 'ハッシュ型の環境変数の設定値は、"key=value"の形式で入力してください。',
 	'[_1] for [_2] already exists.' => '[_2]はすでに[_1]の設定値として存在します。',
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.jp/documentation/[_1]',
 	'Are you sure you want to remove [_1]?' => '[_1]を削除してもよろしいですか?',
 	'configuration directive' => '環境変数',
 
@@ -2983,10 +2989,6 @@ use vars qw( @ISA %Lexicon );
 	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
 
 ## mt-static/addons/Sync.pack/js/cms.js
-
-## mt-static/chart-api/mtchart.js
-
-## mt-static/chart-api/mtchart.min.js
 
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => '入力された値が正しくありません',
@@ -3026,6 +3028,9 @@ use vars qw( @ISA %Lexicon );
 	'close' => '閉じる',
 	'Drag and drop area' => 'ドラッグ・アンド・ドロップ領域',
 	'Please add a content field.' => 'コンテンツフィールドを追加します',
+
+## mt-static/js/dialog.js
+	'(None)' => '(なし)',
 
 ## mt-static/js/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
@@ -3115,11 +3120,10 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
-	'embed' => '埋め込み',
+	'Embed Code' => '埋め込みコード',
 	'Please enter the embed code here.' => '埋め込みコードを入力してください',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/header.js
-	'heading' => '見出し',
 	'Heading' => '見出し',
 	'Heading Level' => '見出し',
 
@@ -3190,6 +3194,50 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
+
+## search_templates/comments.tmpl
+	'Search for new comments from:' => 'コメントを検索:',
+	'the beginning' => '最初から',
+	'one week ago' => '1週間前',
+	'two weeks ago' => '2週間前',
+	'one month ago' => '1か月前',
+	'two months ago' => '2か月前',
+	'three months ago' => '3か月前',
+	'four months ago' => '4か月前',
+	'five months ago' => '5か月前',
+	'six months ago' => '6か月前',
+	'one year ago' => '1年前',
+	'Find new comments' => '新しいコメントを検索',
+	'Posted in [_1] on [_2]' => '[_2]の[_1]に投稿されたコメント',
+	'No results found' => 'ありません',
+	'No new comments were found in the specified interval.' => '指定された期間にコメントはありません。',
+	q{Select the time interval that you'd like to search in, then click 'Find new comments'} => q{検索したい期間を選択して、コメントを検索をクリックしてください。},
+
+## search_templates/content_data_default.tmpl
+	'SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED' => '検索結果のフィードのAuto Discoveryリンクは検索が実行されたときのみ表示されます。',
+	'Site Search Results' => 'サイトの検索結果',
+	'Site search' => 'サイトの検索',
+	'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM' => '通常の検索では検索クエリ用のフォームを返す',
+	'Search this site' => 'このブログを検索',
+	'SEARCH RESULTS DISPLAY' => '検索結果表示',
+	'Matching content data from [_1]' => 'サイト[_1]での検索結果',
+	'Posted <MTIfNonEmpty tag="ContentAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => 'Posted <MTIfNonEmpty tag="ContentAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]',
+	'Showing the first [_1] results.' => '最初の[_1]件の結果を表示',
+	'NO RESULTS FOUND MESSAGE' => '検索結果がないときのメッセージ',
+	q{Content Data matching '[_1]'} => q{'[_1]で検索されたコンテンツ'},
+	q{Content Data tagged with '[_1]'} => q{'[_1]'タグのコンテンツ},
+	q{No pages were found containing '[_1]'.} => q{'[_1]'が含まれるページはありません。},
+	'END OF ALPHA SEARCH RESULTS DIV' => '検索結果のDIV(ALPHA)ここまで',
+	'BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION' => 'ここから検索情報を表示するBETA SIDEBAR',
+	'SET VARIABLES FOR SEARCH vs TAG information' => '検索またはタグ情報を変数に代入',
+	q{If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'.} => q{RSSリーダーを使うと、'[_1]'タグのすべてのコンテンツのフィードを購読することができます。},
+	q{If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべてのコンテンツのフィードを購読することができます。},
+	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
+	'Feed Subscription' => '購読',
+	'http://www.sixapart.com/about/feeds' => 'http://www.sixapart.jp/about/feeds.html',
+	'What is this?' => 'フィードとは',
+	'END OF PAGE BODY' => 'ページ本体ここまで',
+	'END OF CONTAINER' => 'コンテナここまで',
 
 ## search_templates/content_data_results_feed.tmpl
 	'Search Results for [_1]' => '[_1]の検索結果',
@@ -3518,6 +3566,7 @@ use vars qw( @ISA %Lexicon );
 	'You have not defined any rebuild triggers.' => '再構築トリガーを設定していません。',
 	'When' => ' ',
 	'Site/Child Site' => 'サイト',
+	'Data' => 'データ',
 	'Trigger' => 'トリガー',
 	'Action' => 'アクション',
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
@@ -3629,7 +3678,6 @@ use vars qw( @ISA %Lexicon );
 	'(Separate URLs with a carriage return.)' => '(URLは改行で区切ってください)',
 
 ## tmpl/cms/content_data/select_edit.tmpl
-	'Select Content Type' => 'コンテンツタイプを選択',
 
 ## tmpl/cms/content_data/select_list.tmpl
 	'Select List Content Type' => 'コンテンツタイプを選択',
@@ -3664,8 +3712,9 @@ use vars qw( @ISA %Lexicon );
 	'add' => '追加',
 
 ## tmpl/cms/content_field_type_options/content_type.tmpl
+	'Allow users to select multiple values?' => '複数選択できる',
 	'Source Content Type' => 'コンテンツタイプ',
-
+	'There is no content type that can be selected. Please create a content type if you use the Content Type field type.' => 'コンテンツタイプが存在しないため利用できません。コンテンツタイプを作成する必要があります。',
 
 ## tmpl/cms/content_field_type_options/date.tmpl
 	'Initial Value' => '初期値',
@@ -4116,6 +4165,7 @@ use vars qw( @ISA %Lexicon );
 	'You must configure this blog before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
 	'Publish On' => '公開する',
 	'Published Time' => '公開時刻',
+	'Unpublished Date' => '公開取り消し日',
 	'Unpublished Time' => '公開取り消し時刻',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
@@ -4151,6 +4201,8 @@ use vars qw( @ISA %Lexicon );
 	'Contents type settings has been saved.' => 'コンテンツタイプの設定を保存しました',
 	'Some content fields were not deleted. You need to delete archive mapping for the content field first.' => 'いくつかのコンテンツフィールドが削除できませんでした。先にアーカイブマッピングを削除する必要があります。',
 	'Available Content Fields' => '利用可能なフィールド',
+	'Unavailable Content Fields' => '利用できないフィールド',
+	'Reason' => '理由',
 	'1 or more label-value pairs are required' => '1つ以上の値トラベルの組み合わせが必要です。',
 	'This field must be unique in this content type' => 'フィールド名はコンテンツタイプ内でユニークである必要があります。',
 
@@ -4649,7 +4701,6 @@ use vars qw( @ISA %Lexicon );
 	'https://forums.movabletype.org/' => 'https://communities.movabletype.jp/',
 	'Forums' => 'ユーザーコミュニティ',
 	'Send Us Feedback' => 'フィードバックはこちらへ',
-	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'with' => 'with',
 
@@ -5089,8 +5140,8 @@ use vars qw( @ISA %Lexicon );
 	'Return to templates' => 'テンプレートに戻る',
 
 ## tmpl/cms/restore.tmpl
-	'Import from Exported' => 'エクスポートファイルからのインポート',
-	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'バックアップと復元をするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
+	'Import from Exported file' => 'エクスポートファイルからインポートする',
+	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'インポートとエクスポートをするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
 	'Exported File' => 'エクスポートファイル',
 	'Overwrite global templates.' => 'グローバルテンプレートを上書きする',
 	'Import (i)' => 'インポート (i)',
@@ -5302,7 +5353,6 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'データベース接続に必要な情報を入力してください。',
 	'Database Type' => 'データベースの種類',
 	'Select One...' => '選択してください',
-	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.jp/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => '<a href="[_1]" target="_blank">Movable Type システムチェック</a>を実行して、必要なモジュールを確認してください。',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'モジュールをインストールしたら<a href="javascript:void(0)" onclick="[_1]">ここをクリック</a>して表示を更新してください。',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => '詳しくは<a href="[_1]" target="_blank">こちら</a>を参照してください。',
@@ -5416,6 +5466,7 @@ use vars qw( @ISA %Lexicon );
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
 	'Entry Listing' => '記事一覧',
+	'Header' => 'ヘッダー',
 	'Footer' => 'フッター',
 	'Entry Detail' => '記事の詳細',
 	'Entry Metadata' => '記事のメタデータ',
@@ -5709,10 +5760,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/BlockEditor/config.yaml
 	'Block Editor.' => 'ブロックエディタ',
 	'Block Editor' => 'ブロックエディタ',
-	'Text Block' => 'テキスト',
-	'Embed' => '埋め込み',
-	'Horizon' => '水辺線',
-	'Gallery' => 'ギャラリー',
 
 ## plugins/BlockEditor/lib/BlockEditor/App.pm
 
@@ -5916,6 +5963,7 @@ use vars qw( @ISA %Lexicon );
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
 
 ## plugins/Comments/php/function.mtcommentreplytolink.php
+
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Facebookコネクトを利用したコメント投稿者の登録機能を提供します。',
@@ -6143,6 +6191,8 @@ _4]\'から削除しました。',
 
 ## plugins/Trackback/lib/Trackback.pm
 	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">[_2] - [_3]からのトラックバック</a>',
+	'Not spam' => 'スパムではない',
+	'Reported as spam' => 'スパム',
 	'Trackbacks on [_1]: [_2]' => '[_1] \'[_2]\'のトラックバック',
 	'__PING_COUNT' => 'トラックバック数',
 	'Trackback Text' => 'トラックバックの本文',
@@ -6294,7 +6344,5 @@ _4]\'から削除しました。',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 5163
 
 1;

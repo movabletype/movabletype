@@ -14,8 +14,11 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
+## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
+	'Embed Code' => '埋め込みコード',
+	'Please enter the embed code here.' => '埋め込みコードを入力してください',
+
 ## mt-static/plugins/BlockEditor/lib/js/fields/header.js
-	'heading' => '見出し',
 	'Heading' => '見出し',
 	'Heading Level' => '見出し',
 

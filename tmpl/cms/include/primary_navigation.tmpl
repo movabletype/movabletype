@@ -101,7 +101,7 @@ function stopPropagation(e) {
     <div class="mt-primaryNavigation__control">
     <mt:loop name="menu_actions">
       <mt:setvarblock name="menu_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
-      <mt:setvarblock name="escaped_menu_action_label"><__trans phrase="<mt:var name="label">" escape="html"></mt:setvarblock>
+      <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
 
       <a href="<mt:var name="menu_action_href">" class="btn btn-default <mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
         <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
