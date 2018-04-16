@@ -2154,6 +2154,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Resource/v4/ContentData.pm
 
 ## lib/MT/DefaultTemplates.pm
+	'Comment Form' => 'コメント入力フォーム',
+	'Navigation' => 'ナビゲーション',
+	'Blog Index' => 'ブログ・インデックス',
 	'Archive Index' => 'アーカイブインデックス',
 	'Stylesheet' => 'スタイルシート',
 	'JavaScript' => 'JavaScript',

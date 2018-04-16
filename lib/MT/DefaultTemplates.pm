@@ -377,6 +377,10 @@ sub _template_sort {
     return $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key};
 }
 
+#trans('Comment Form')
+#trans('Navigation')
+#trans('Blog Index')
+
 1;
 __END__
 
