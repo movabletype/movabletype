@@ -650,9 +650,9 @@ Editor.Iframe = new Class( Component, {
                 var m = html.match(/^(<.*(?:src|href)=")(.[^"]*)(".*>)$/) || null;
                 if ( m ) html = m[1]+'####'+m[3];
                 if(document.selection){
-                  this.document.body.innerHTML += html;
-                } else {
                   this.document.execCommand( "insertHTML", false, html );
+                } else {
+                  this.document.body.innerHTML += html;
                 }
                 if ( m ) { // FireFox sets the relative path to innerHTML, so replace it to original path.
                     var html = this.document.body.innerHTML;
