@@ -162,4 +162,19 @@ sub default_archive_templates {
     ];
 }
 
+sub target_dt {
+    my $archiver = shift;
+    my ( $content_data, $map ) = @_;
+
+    my $target_dt;
+    my $dt_field_id = $map->dt_field_id;
+    if ($dt_field_id) {
+        my $data = $content_data->data;
+        $target_dt = $data->{$dt_field_id};
+    }
+    $target_dt = $content_data->authored_on unless $target_dt;
+
+    return $target_dt;
+}
+
 1;
