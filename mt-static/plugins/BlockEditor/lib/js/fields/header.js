@@ -2,9 +2,9 @@
     var BEF = MT.BlockEditorField;
     BEF.Header = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Header, {
-        label: trans('header'),
+        label: trans('Heading'),
         icon_url: StaticURI + 'images/sprite.svg#ic_header',
-        type: 'header',
+        type: 'heading',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
@@ -30,7 +30,7 @@
             self.id = id;
             self.data = data;
             if(!self.data.value){
-              self.data.value = trans('Header');
+              self.data.value = trans('Heading');
             }
             if(!self.data.options){
               self.data.options["elm"] = 'h1';
@@ -43,9 +43,9 @@
         get_edit_field: function(){
             var self = this;
             self.options_field = $('<div class="edit_field form-group"></div>');
-            var elm_select = $('<div class="form-group"><label class="form-control-label" for="' + self.id + '-element">' + trans('a rank') + '</label><select class="custom-select form-control w-100" name="' + self.id + '-element"  mt:watch-change="1"></select></div>');
+            var elm_select = $('<div class="form-group"><label class="form-control-label" for="' + self.id + '-element">' + trans('Heading Level') + '</label><select class="custom-select form-control w-100" name="' + self.id + '-element"  mt:watch-change="1"></select></div>');
 
-            var elms = ['h1','h2','h3'];
+            var elms = ['h1','h2','h3','h4','h5','h6'];
             elms.forEach(function(elm){
                 var option = $('<option></optiion>');
                 option.val(elm);
@@ -97,6 +97,6 @@
         }
     });
 
-    MT.BlockEditorFieldManager.register('header', BEF.Header);
+    MT.BlockEditorFieldManager.register('heading', BEF.Header);
 
 })(jQuery);

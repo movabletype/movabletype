@@ -38,20 +38,12 @@ applications:
 
 blockeditor_fields:
   header:
-    label: Header
     order: 10
   text:
-    label: Text Block
     order: 20
   embed:
-    label: Embed
     order: 30
   image:
-    label: Image
     order: 40
   horizon:
-    label: Horizon
     order: 50
-  # gallery:
-  #   label: 'Gallery'
-  #   order: 50

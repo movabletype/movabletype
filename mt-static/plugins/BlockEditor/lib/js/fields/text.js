@@ -2,7 +2,7 @@
     var BEF = MT.BlockEditorField;
     BEF.Text = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Text, {
-        label: trans('text'),
+        label: trans('__TEXT_BLOCK__'),
         icon_url: StaticURI + 'images/sprite.svg#ic_textcolor',
         type: 'text',
         create_button: function () {

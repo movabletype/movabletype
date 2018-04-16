@@ -316,7 +316,7 @@ sub post_restore {
             if ($new_target_obj) {
                 $callback->(
                     MT->translate(
-                        'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                        'Restoring rebuild trigger for blog #[_1]...',
                         $target_id
                     )
                 );
@@ -334,7 +334,7 @@ sub post_restore {
                 if ($new_obj) {
                     $callback->(
                         MT->translate(
-                            'Restoring MultiBlog rebuild trigger for blog #[_1]...',
+                            'Restoring rebuild trigger for blog #[_1]...',
                             $id
                         )
                     );

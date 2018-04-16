@@ -2,7 +2,7 @@
     var BEF = MT.BlockEditorField;
     BEF.Horizon = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Horizon, {
-        label: trans('horizon'),
+        label: trans('Horizontal Rule'),
         icon_class: 'ic_hr',
         icon_url: StaticURI + 'images/sprite.svg#ic_hr',
         type: 'horizon',

@@ -1496,7 +1496,7 @@ sub core_user_actions {
         },
         documentation => {
             href => sub {
-                $app->translate('https://movabletype.org/documentation/');
+                $app->translate('https://www.movabletype.org/documentation/');
             },
             label  => 'Documentation',
             order  => 200,

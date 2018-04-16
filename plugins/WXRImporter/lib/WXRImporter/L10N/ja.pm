@@ -20,22 +20,27 @@ use vars qw( %Lexicon );
 	'"Download WP attachments via HTTP."' => 'WordPressのAttachmentをHTTP経由でダウンロードします。',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
+	'No Site' => 'サイトがありません',
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'WXRフォーマットではありません。',
 	'Creating new tag (\'[_1]\')...' => 'タグ(\'[_1]\')を作成しています...',
 	'Saving tag failed: [_1]' => 'タグを保存できませんでした: [_1]',
-	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アイテム「[_1]」は既にインポートされているのでスキップします。',
-	'Saving asset (\'[_1]\')...' => 'アイテム(\'[_1]\')を保存しています...',
-	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
+	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アセット「[_1]」は既にインポートされているのでスキップします。',
+	'Saving asset (\'[_1]\')...' => 'アセット(\'[_1]\')を保存しています...',
+	' and asset will be tagged (\'[_1]\')...' => 'アセットにタグ([_1])を付けています...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => '記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
+	'Creating new comment (from \'[_1]\')...' => '\'[_1]\'からのコメントをインポートしています...',
+	'Saving comment failed: [_1]' => 'コメントを保存できませんでした: [_1]',
 	'Entry has no MT::Trackback object!' => '記事にトラックバックの設定がありません',
+	'Creating new ping (\'[_1]\')...' => '\'[_1]\'のトラックバックをインポートしています...',
+	'Saving ping failed: [_1]' => 'トラックバックを保存できませんでした: [_1]',
 	'Assigning permissions for new user...' => '新しいユーザーに権限を追加しています...',
 	'Saving permission failed: [_1]' => '権限の保存中にエラーが発生しました: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>ブログ公開パスを設定</a>してください。},
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{WordPressからMovable Typeへインポートする前に、まず<a href='[_1]'>サイトパスを設定</a>してください。},
 	'Upload path for this WordPress blog' => 'メディアのアップロードパス',
 	'Replace with' => '置き換えるパス',
 	'Download attachments' => 'Attachmentのダウンロード',

@@ -1503,7 +1503,7 @@ sub dialog_select_weblog {
                 dialog_title  => $app->translate("Select Child Site"),
                 items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
-                    "Type a site name to filter the choices below."),
+                    "Enter a site name to filter the choices below."),
                 panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',

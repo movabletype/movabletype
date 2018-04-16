@@ -28,7 +28,7 @@ sub import_categories {
     if ($order) {
         $obj_to_apply->category_order($order);
         $obj_to_apply->save
-            or die MT->translate( 'Failed to save category_order: ',
+            or die MT->translate( 'Failed to save category_order: [_1]',
             $obj_to_apply->errstr );
     }
 
@@ -53,7 +53,7 @@ sub import_folders {
     if ($order) {
         $obj_to_apply->folder_order($order);
         $obj_to_apply->save
-            or die MT->translate( 'Failed to save folder_order: ',
+            or die MT->translate( 'Failed to save folder_order: [_1]',
             $obj_to_apply->errstr );
     }
 

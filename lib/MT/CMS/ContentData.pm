@@ -909,7 +909,9 @@ sub make_content_actions {
         my $key = 'content_data.content_data_' . $ct->id;
         $content_actions->{$key} = {
             new => {
-                label => 'Create new ' . $ct->name,
+                label => sub {
+                    MT->translate( 'Create new [_1]', $ct->name );
+                },
                 icon  => 'ic_add',
                 order => 100,
                 mode  => 'view',

@@ -3,7 +3,7 @@
 
   <mtapp:ContentFieldOption
      id="categories-multiple"
-     label="<__trans phrase="Allow users to select multiple values?">">
+     label="<__trans phrase="Allow users to select multiple categories?">">
     <input ref="multiple" type="checkbox" class="mt-switch form-control" id="categories-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="categories-multiple"><__trans phrase="Allow users to select multiple categories?"></label>
   </mtapp:ContentFieldOption>
 
@@ -44,7 +44,7 @@
         class="warning"
         can_close="0"
       >
-        <__trans phrase="There is no category set that can be selected. Please create a category set if you use Categories field type.">
+        <__trans phrase="There is no content type that can be selected. Please create new content type if you use Content Type field type.">
       </mtapp:statusmsg>
     </mt:if>
   </mtapp:ContentFieldOption>

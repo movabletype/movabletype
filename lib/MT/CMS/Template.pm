@@ -716,7 +716,7 @@ sub edit {
         }
         elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
             $tab                           = 'ct';
-            $param->{template_group_trans} = $app->translate('ct');
+            $param->{template_group_trans} = $app->translate('contnt type');
             $param->{type_ct_archive}      = 1;
             my @types = (
                 {   key   => 'ct_archive',
@@ -2691,7 +2691,7 @@ BLOG: for my $blog_id (@id) {
             # FIXME Enumeration of types
             $terms->{type} = $val->{type};
             if ( $val->{type}
-                =~ m/^(archive|individual|page|category|index|custom|widget|widgetset)$/
+                =~ m/^(archive|individual|page|category|index|custom|widget|widgetset|ct|ct_archive)$/
                 )
             {
                 $terms->{name} = $val->{name};
@@ -2763,7 +2763,6 @@ BLOG: for my $blog_id (@id) {
                 $tmpl->save;
             }
             else {
-
                 # create this one...
                 my $tmpl = new MT::Template;
                 if (   ( 'widgetset' eq $val->{type} )

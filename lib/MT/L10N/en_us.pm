@@ -285,6 +285,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__CF_REQUIRED_VALUE__' => q{Value},
 
     '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
+
+    '__TEXT_BLOCK__' => 'Text',
 );
 
 1;

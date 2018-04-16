@@ -2,7 +2,7 @@
     var BEF = MT.BlockEditorField;
     BEF.Embed = function () { BEF.apply(this, arguments) };
     $.extend(BEF.Embed, {
-        label: trans('embed'),
+        label: trans('Embed Code'),
         icon_url: StaticURI + 'images/sprite.svg#ic_code',
         type: 'embed',
         create_button: function () {

@@ -360,7 +360,7 @@ sub _default_roles {
         },
         {   name        => MT->translate('Content Designer'),
             description => MT->translate(
-                'Can manage content types, content data, edit their own content types, content data.'
+                'Can manage content types, content data and category sets.'
             ),
             perms => [
                 'manage_content_types', 'manage_content_data',

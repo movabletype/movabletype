@@ -16,7 +16,22 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/advanced.js
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/autosave/plugin.js
+	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/autosave/plugin.min.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/compat3x/utils/editable_selects.js
+	'value' => 'value',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/insertdatetime/plugin.js
+	'%Y-%m-%d' => '%Y-%m-%d',
+	'%H:%M:%S' => '%H:%M:%S',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/insertdatetime/plugin.min.js
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
+	'Class Name' => 'クラス名',
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
 	'Underline (Ctrl+U)' => '下線 (Ctrl+U)',
@@ -37,43 +52,21 @@ use vars qw( %Lexicon );
 	'Align Right' => '右揃え',
 	'Indent' => '字下げを増やす',
 	'Outdent' => '字下げを減らす',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
-	'Class Name' => 'クラス名',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/insert_html.js
-	'Insert HTML' => 'HTMLの挿入',
-	'Source' => 'HTML',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
 	'Insert Link' => 'リンクの挿入',
+	'Insert HTML' => 'HTMLの挿入',
 	'Insert Image Asset' => '画像の挿入',
-	'Insert Asset Link' => 'アイテムの挿入',
+	'Insert Asset Link' => 'アセットの挿入',
 	'Toggle Fullscreen Mode' => '全画面表示の切り替え',
 	'Toggle HTML Edit Mode' => 'HTML編集モードの切り替え',
 	'Strong Emphasis' => '太字',
 	'Emphasis' => '斜体',
 	'List Item' => 'リスト要素',
 
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
+	'HTML' => 'HTML',
+
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
-	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky',
-	'paste.plaintext_mode' => 'paste.plaintext_mode',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin_src.js
-
-## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template.js
-	'advanced.path' => 'advanced.path',
-
-## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/editor_template_src.js
-
-## mt-static/plugins/TinyMCE/tiny_mce/themes/advanced/js/charmap.js
-	'advanced_dlg.charmap_usage' => 'advanced_dlg.charmap_usage',
-
-## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
-	'value' => 'value',
 
 ## plugins/TinyMCE/config.yaml
 	'Default WYSIWYG editor.' => '既定のWYSIWYGエディタ',

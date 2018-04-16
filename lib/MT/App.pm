@@ -1343,7 +1343,7 @@ sub permissions {
             my $blog_id = $app->param('blog_id');
             if ($blog_id) {
                 my $blog = MT->model('blog')->load($blog_id)
-                    or return $app->errtrans( 'Cannot load blog (ID:[_1])',
+                    or return $app->errtrans( 'Cannot load blog #[_1]',
                     $blog_id );
             }
 
@@ -2885,7 +2885,7 @@ sub show_error {
         $param = { error => $param };
     }
 
-    my $error = $param->{error} || $app->translate('Unknown error');
+    my $error = $param->{error} || $app->translate('Unknown error occurred.');
 
     if ($MT::DebugMode) {
         if ($@) {

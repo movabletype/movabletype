@@ -62,7 +62,6 @@ __PACKAGE__->install_properties(
             },
             'data' => {
                 type       => 'blob',
-                label      => 'Data',
                 revisioned => 1,
             },
             'identifier' => {
@@ -78,7 +77,7 @@ __PACKAGE__->install_properties(
             },
             'unpublished_on' => {
                 type       => 'datetime',
-                label      => 'Unpublished Date',
+                label      => 'Unpublish Date',
                 revisioned => 1,
             },
             'revision'          => 'integer meta',

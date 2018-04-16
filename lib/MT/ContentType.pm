@@ -109,7 +109,12 @@ sub _cs_single_select_options {
     while ( my $cs = $iter->() ) {
         my $id   = $cs->id;
         my $name = $cs->name;
-        push @options, { label => "${name} (id:${id})", value => $id };
+        push @options, {
+            label => sub {
+                MT->translate('[_1] (ID:[_2])', $name, $id);
+            },
+            value => $id
+        };
     }
     \@options;
 }

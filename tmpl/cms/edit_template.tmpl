@@ -228,11 +228,11 @@
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:if name="scope_type" eq="system">global<mt:else><mt:var name="scope_type"></mt:if><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
   <mt:setvarblock name="template_status_icon">
     <mt:if name="include_scope_type" eq="global">
-      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm">
     <mt:elseif name="include_scope_type" eq="website">
-      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="success">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm" color="success">
     <mt:elseif name="include_scope_type" eq="blog">
-      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Template">" size="sm" color="primary">
+      <mtapp:svgicon id="ic_template" title="<__trans phrase="Included Templates">" size="sm" color="primary">
     </mt:if>
   </mt:setvarblock>
     <li>

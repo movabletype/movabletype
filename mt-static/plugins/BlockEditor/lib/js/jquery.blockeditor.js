@@ -34,7 +34,7 @@
 
       add_field.on('click', function() {
         var modal = new MT.ModalWindow();
-        modal.set_title(trans('Select add block'));
+        modal.set_title(trans('Select a block'));
         var buttons = manager.create_button.call(manager, _create_field);
 
         // var buttons = manager.create_button();

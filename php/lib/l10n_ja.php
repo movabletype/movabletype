@@ -43,6 +43,9 @@ $Lexicon_ja = array(
 
 ## php/lib/block.mtentries.php
 
+## php/lib/block.mthasplugin.php
+	'name is required.' => 'nameを指定してください。',
+
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
@@ -72,17 +75,6 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthor.php
-	'Anonymous' => '匿名',
-
-## php/lib/function.mtcommentauthorlink.php
-
-## php/lib/function.mtcommenternamethunk.php
-	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => '返信',
-
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => '記事',
 
@@ -106,9 +98,6 @@ $Lexicon_ja = array(
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
-## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'ブログでTypePad認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
-
 ## php/lib/function.mtsetvar.php
 
 ## php/lib/function.mttagsearchlink.php
@@ -123,6 +112,7 @@ $Lexicon_ja = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+
 
 );
 

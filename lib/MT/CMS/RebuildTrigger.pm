@@ -87,13 +87,13 @@ sub add {
 
     my $panel_info = {
         'blog' => {
-            panel_title       => $app->translate("Select Trigger Site"),
+            panel_title       => $app->translate("Select Site"),
             panel_label       => $app->translate("Site Name"),
             panel_description => $app->translate("Description"),
         },
         'content_type' => {
-            panel_title => $app->translate("Select Trigger Content Type"),
-            panel_label => $app->translate("Content Type Name"),
+            panel_title => $app->translate("Select Content Type"),
+            panel_label => $app->translate("Name"),
             panel_description => $app->translate("Description"),
         },
     };
