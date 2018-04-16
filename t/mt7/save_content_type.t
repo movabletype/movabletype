@@ -61,7 +61,7 @@ subtest 'cannot create content_type with duplicated name in same site' =>
     my $out = delete $app->{__test_output};
     ok( $out !~ /saved=1/ );
     ok( $out !~ /302 Found/ );
-    ok( $out =~ /Name "test_content_type" is already used\./ );
+    ok( $out =~ /Name 'test_content_type' is already used\./ );
 
     is( MT->model('content_type')
             ->count( { blog_id => $blog_id, name => 'test_content_type' } ),
