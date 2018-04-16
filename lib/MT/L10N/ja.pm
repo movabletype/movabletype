@@ -5089,7 +5089,7 @@ use vars qw( @ISA %Lexicon );
 	'Return to templates' => 'テンプレートに戻る',
 
 ## tmpl/cms/restore.tmpl
-	'Import from Exported エクスポートファイルからのインポート',
+	'Import from Exported' => 'エクスポートファイルからのインポート',
 	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'バックアップと復元をするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
 	'Exported File' => 'エクスポートファイル',
 	'Overwrite global templates.' => 'グローバルテンプレートを上書きする',
