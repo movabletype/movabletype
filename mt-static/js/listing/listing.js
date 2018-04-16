@@ -238,7 +238,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     this.createNewFilter = function(filterLabel) {
       this.currentFilter = {
         items: [],
-        label: trans( filterLabel || 'New Filter' )
+        label: filterLabel || trans('New Filter')
       }
     }.bind(this)
 

@@ -1459,7 +1459,7 @@ use vars qw( @ISA %Lexicon );
 	'No Name' => '名前なし',
 	'Index Templates' => 'インデックステンプレート',
 	'Archive Templates' => 'アーカイブテンプレート',
-	'Content Type Templates' => 'コンテンツタイプ nテンプレート',
+	'Content Type Templates' => 'コンテンツタイプテンプレート',
 	'Template Modules' => 'テンプレートモジュール',
 	'System Templates' => 'システムテンプレート',
 	'Email Templates' => 'メールテンプレート',
@@ -1702,12 +1702,12 @@ use vars qw( @ISA %Lexicon );
 	'Saving object category failed: [_1]' => 'コンテンツデータとカテゴリのリンクを作成できません: [_1]',
 	'Removing object categories failed: [_1]' => 'コンテンツデータとカテゴリのリンクを削除できません: [_1]',
 	'record does not exist.' => 'ブログがありません。',
+	'Publish Date' => '公開日',
+	'Unpublish Date' => '公開終了日',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'Contents by [_1]' => '[_1]のコンテンツデータ',
 	'(No label)' => '(ラベルなし)',
 	'Identifier' => '識別子',
-	'Publish Date' => '公開日',
-	'Unpublish Date' => '公開終了日',
 	'Link' => 'リンク',
 
 ## lib/MT/ContentField.pm
@@ -2990,6 +2990,10 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/addons/Sync.pack/js/cms.js
 
+## mt-static/chart-api/mtchart.js
+
+## mt-static/chart-api/mtchart.min.js
+
 ## mt-static/jquery/jquery.mt.js
 	'Invalid value' => '入力された値が正しくありません',
 	'You have an error in your input.' => '入力内容に誤りがあります。',
@@ -3194,6 +3198,298 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
+
+## themes/classic_blog/templates/about_this_page.mtml
+
+## themes/classic_blog/templates/archive_index.mtml
+
+## themes/classic_blog/templates/archive_widgets_group.mtml
+
+## themes/classic_blog/templates/author_archive_list.mtml
+
+## themes/classic_blog/templates/banner_footer.mtml
+
+## themes/classic_blog/templates/calendar.mtml
+
+## themes/classic_blog/templates/category_archive_list.mtml
+
+## themes/classic_blog/templates/category_entry_listing.mtml
+
+## themes/classic_blog/templates/comment_detail.mtml
+	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1]から<a href="[_2]">[_3]</a>への返信',
+
+## themes/classic_blog/templates/comment_listing.mtml
+	'Comment Detail' => 'コメント詳細',
+
+## themes/classic_blog/templates/comment_preview.mtml
+	'Previewing your Comment' => 'コメントのプレビュー',
+	'Leave a comment' => 'コメントする',
+	'Replying to comment from [_1]' => '[_1]からのコメントに返信',
+	'(You may use HTML tags for style)' => '(スタイル用のHTMLタグを使えます)',
+	'Submit' => '投稿',
+
+## themes/classic_blog/templates/comment_response.mtml
+	'Your comment has been submitted!' => 'コメントを投稿しました。',
+	'Your comment submission failed for the following reasons: [_1]' => 'コメントを投稿できませんでした。エラー: [_1]',
+
+## themes/classic_blog/templates/comments.mtml
+	'The data is modified by the paginate script' => 'ページネーションスクリプトによって変更されています。',
+	'Remember personal info?' => 'サインイン情報を記憶',
+
+## themes/classic_blog/templates/creative_commons.mtml
+
+## themes/classic_blog/templates/current_author_monthly_archive_list.mtml
+
+## themes/classic_blog/templates/current_category_monthly_archive_list.mtml
+
+## themes/classic_blog/templates/date_based_author_archives.mtml
+
+## themes/classic_blog/templates/date_based_category_archives.mtml
+
+## themes/classic_blog/templates/dynamic_error.mtml
+
+## themes/classic_blog/templates/entry.mtml
+
+## themes/classic_blog/templates/entry_summary.mtml
+
+## themes/classic_blog/templates/javascript.mtml
+
+## themes/classic_blog/templates/main_index.mtml
+
+## themes/classic_blog/templates/main_index_widgets_group.mtml
+
+## themes/classic_blog/templates/monthly_archive_dropdown.mtml
+
+## themes/classic_blog/templates/monthly_archive_list.mtml
+
+## themes/classic_blog/templates/monthly_entry_listing.mtml
+
+## themes/classic_blog/templates/openid.mtml
+
+## themes/classic_blog/templates/page.mtml
+
+## themes/classic_blog/templates/pages_list.mtml
+
+## themes/classic_blog/templates/powered_by.mtml
+
+## themes/classic_blog/templates/recent_assets.mtml
+
+## themes/classic_blog/templates/recent_comments.mtml
+	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1]:</strong> [_2] <a href="[_3]" title="[_4]へのコメント">続きを読む</a>',
+
+## themes/classic_blog/templates/recent_entries.mtml
+
+## themes/classic_blog/templates/search.mtml
+
+## themes/classic_blog/templates/search_results.mtml
+
+## themes/classic_blog/templates/sidebar.mtml
+
+## themes/classic_blog/templates/signin.mtml
+
+## themes/classic_blog/templates/syndication.mtml
+
+## themes/classic_blog/templates/tag_cloud.mtml
+
+## themes/classic_blog/templates/technorati_search.mtml
+
+## themes/classic_blog/templates/trackbacks.mtml
+	'TrackBack URL: [_1]' => 'トラックバックURL: [_1]',
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '[_3] - <a href="[_1]">[_2]</a> (<a href="[_4]">[_5]</a>)',
+	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">続きを読む</a>',
+
+## themes/classic_blog/theme.yaml
+	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
+	'Improved listing of comments.' => 'コメント表示を改善します。',
+	'Displays preview of comment.' => 'コメントのプレビューを表示します。',
+	'Displays error, pending or confirmation message for comments.' => 'コメントのエラー、保留、確認メッセージを表示します。',
+	'Displays results of a search for content data.' => '検索結果を表示します。',
+	'Search Results for Content Data' => 'コンテンツの検索結果',
+
+## themes/classic_website/templates/about_this_page.mtml
+	'<a href="[_1]">[_2]</a> was the previous entry in this website.' => 'ひとつ前の記事は「<a href="[_1]">[_2]</a>」です。',
+	'<a href="[_1]">[_2]</a> is the next entry in this website.' => '次の記事は「<a href="[_1]">[_2]</a>」です。',
+
+## themes/classic_website/templates/archive_index.mtml
+
+## themes/classic_website/templates/archive_widgets_group.mtml
+
+## themes/classic_website/templates/author_archive_list.mtml
+
+## themes/classic_website/templates/banner_footer.mtml
+
+## themes/classic_website/templates/blogs.mtml
+	'Blogs' => 'ブログ',
+
+## themes/classic_website/templates/calendar.mtml
+
+## themes/classic_website/templates/category_archive_list.mtml
+
+## themes/classic_website/templates/category_entry_listing.mtml
+
+## themes/classic_website/templates/comment_detail.mtml
+
+## themes/classic_website/templates/comment_listing.mtml
+
+## themes/classic_website/templates/comment_preview.mtml
+
+## themes/classic_website/templates/comment_response.mtml
+
+## themes/classic_website/templates/comments.mtml
+
+## themes/classic_website/templates/creative_commons.mtml
+
+## themes/classic_website/templates/current_author_monthly_archive_list.mtml
+
+## themes/classic_website/templates/current_category_monthly_archive_list.mtml
+
+## themes/classic_website/templates/date_based_author_archives.mtml
+
+## themes/classic_website/templates/date_based_category_archives.mtml
+
+## themes/classic_website/templates/dynamic_error.mtml
+
+## themes/classic_website/templates/entry.mtml
+
+## themes/classic_website/templates/entry_summary.mtml
+
+## themes/classic_website/templates/javascript.mtml
+
+## themes/classic_website/templates/main_index.mtml
+
+## themes/classic_website/templates/main_index_widgets_group.mtml
+
+## themes/classic_website/templates/monthly_archive_dropdown.mtml
+
+## themes/classic_website/templates/monthly_archive_list.mtml
+
+## themes/classic_website/templates/monthly_entry_listing.mtml
+
+## themes/classic_website/templates/openid.mtml
+
+## themes/classic_website/templates/page.mtml
+
+## themes/classic_website/templates/pages_list.mtml
+
+## themes/classic_website/templates/powered_by.mtml
+
+## themes/classic_website/templates/recent_assets.mtml
+
+## themes/classic_website/templates/recent_comments.mtml
+
+## themes/classic_website/templates/recent_entries.mtml
+
+## themes/classic_website/templates/search.mtml
+
+## themes/classic_website/templates/search_results.mtml
+
+## themes/classic_website/templates/sidebar.mtml
+
+## themes/classic_website/templates/signin.mtml
+
+## themes/classic_website/templates/syndication.mtml
+	q{Subscribe to this website's feed} => q{ウェブサイトを購読},
+
+## themes/classic_website/templates/tag_cloud.mtml
+
+## themes/classic_website/templates/technorati_search.mtml
+
+## themes/classic_website/templates/trackbacks.mtml
+
+## themes/classic_website/theme.yaml
+	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
+	'Classic Website' => 'クラシックウェブサイト',
+
+## themes/pico/templates/about_this_page.mtml
+
+## themes/pico/templates/archive_index.mtml
+	'Related Content' => '関連コンテンツ',
+
+## themes/pico/templates/archive_widgets_group.mtml
+
+## themes/pico/templates/author_archive_list.mtml
+
+## themes/pico/templates/banner_footer.mtml
+
+## themes/pico/templates/calendar.mtml
+
+## themes/pico/templates/category_archive_list.mtml
+
+## themes/pico/templates/category_entry_listing.mtml
+
+## themes/pico/templates/comment_detail.mtml
+
+## themes/pico/templates/comment_listing.mtml
+
+## themes/pico/templates/comment_preview.mtml
+	'Preview Comment' => 'コメントの確認',
+
+## themes/pico/templates/comment_response.mtml
+
+## themes/pico/templates/comments.mtml
+
+## themes/pico/templates/creative_commons.mtml
+
+## themes/pico/templates/current_author_monthly_archive_list.mtml
+
+## themes/pico/templates/current_category_monthly_archive_list.mtml
+
+## themes/pico/templates/date_based_author_archives.mtml
+
+## themes/pico/templates/date_based_category_archives.mtml
+
+## themes/pico/templates/dynamic_error.mtml
+
+## themes/pico/templates/entry.mtml
+
+## themes/pico/templates/entry_summary.mtml
+
+## themes/pico/templates/javascript.mtml
+
+## themes/pico/templates/main_index.mtml
+
+## themes/pico/templates/main_index_widgets_group.mtml
+
+## themes/pico/templates/monthly_archive_dropdown.mtml
+
+## themes/pico/templates/monthly_archive_list.mtml
+
+## themes/pico/templates/monthly_entry_listing.mtml
+
+## themes/pico/templates/navigation.mtml
+	'Subscribe' => '購読',
+
+## themes/pico/templates/openid.mtml
+
+## themes/pico/templates/page.mtml
+
+## themes/pico/templates/pages_list.mtml
+
+## themes/pico/templates/recent_assets.mtml
+
+## themes/pico/templates/recent_comments.mtml
+
+## themes/pico/templates/recent_entries.mtml
+
+## themes/pico/templates/search.mtml
+
+## themes/pico/templates/search_results.mtml
+
+## themes/pico/templates/signin.mtml
+
+## themes/pico/templates/syndication.mtml
+
+## themes/pico/templates/tag_cloud.mtml
+
+## themes/pico/templates/technorati_search.mtml
+
+## themes/pico/templates/trackbacks.mtml
+
+## themes/pico/theme.yaml
+	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。},
+	'Pico' => 'Pico',
+	'Pico Styles' => 'Picoスタイル',
+	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
 
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
@@ -5963,7 +6259,6 @@ use vars qw( @ISA %Lexicon );
 	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'テンプレートタグ \'[_1]\' は廃止されました。代わりに \'[_2]\'を使用してください。',
 
 ## plugins/Comments/php/function.mtcommentreplytolink.php
-
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Facebookコネクトを利用したコメント投稿者の登録機能を提供します。',

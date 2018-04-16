@@ -954,7 +954,9 @@ sub make_list_props {
                 display   => 'force',
                 order     => 110,
                 html      => \&_make_label_html,
-                label     => 'Data Label',
+                label     => sub {
+                    MT->translate('Data Label');
+                },
                 bulk_sort => sub {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
@@ -979,7 +981,9 @@ sub make_list_props {
             authored_on => {
                 auto       => 1,
                 display    => 'default',
-                label      => 'Publish Date',
+                label      => sub {
+                    MT->translate('Publish Date');
+                },
                 use_future => 1,
                 order      => $order + 100,
                 sort       => sub {
@@ -1005,7 +1009,9 @@ sub make_list_props {
             unpublished_on => {
                 auto    => 1,
                 display => 'optional',
-                label   => 'Unpublish Date',
+                label   => sub {
+                    MT->translate('Unpublish Date');
+                },
                 order   => $order + 400,
             },
             status    => { base => 'entry.status' },

@@ -77,7 +77,7 @@
     createNewFilter(filterLabel) {
       this.currentFilter = {
         items: [],
-        label: trans( filterLabel || 'New Filter' )
+        label: filterLabel || trans('New Filter')
       }
     }
 
