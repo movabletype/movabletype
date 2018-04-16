@@ -380,6 +380,7 @@ sub _template_sort {
 #trans('Comment Form')
 #trans('Navigation')
 #trans('Blog Index')
+#trans('Search Results for Content Data')
 
 1;
 __END__
