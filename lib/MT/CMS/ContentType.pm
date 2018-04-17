@@ -774,7 +774,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -869,7 +869,14 @@ sub _make_content_data_listing_screens {
             scope_mode          => 'this',
             use_filters         => 0,
             view                => [ 'website', 'blog' ],
-            permission          => sub {
+            condition           => sub {
+                my ($app) = @_;
+                my $blog_id = $app->blog ? $app->blog->id : 0;
+                return $app->trans_error('Invalid request.')
+                    unless $blog_id == $ct->blog_id;
+                1;
+            },
+            permission => sub {
                 return [
                     'access_to_content_data_list_' . $ct->unique_id,
                     'access_to_content_data_list',
