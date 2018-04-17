@@ -597,8 +597,6 @@ sub init_plugins {
                 "${pfx}ContentData::cms_pre_load_filtered_list",
             "${pkg}list_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_list",
-            "${pkg}view_permission_filter.category_set" =>
-                "${pfx}CategorySet::can_view",
         }
     );
 
@@ -2194,7 +2192,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2203,7 +2201,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
