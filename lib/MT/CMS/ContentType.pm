@@ -774,7 +774,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi   => $content_field->options->{multiple} ? 1 : 0,
+                can_multi => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -1064,11 +1064,6 @@ sub can_view {
     my ( $eh, $app, $id ) = @_;
     my $user = $app->user or return;
     return unless $app->blog;
-
-    my $content_type = MT->model('content_type')->load( $id || 0 );
-    return $app->trans_error('Invalid request.')
-        unless $content_type
-        && $content_type->blog_id == $app->blog->id;
 
     my $blog_perm = $user->permissions( $app->blog->id );
 
