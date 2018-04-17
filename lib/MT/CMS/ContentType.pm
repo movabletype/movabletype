@@ -52,6 +52,9 @@ sub edit {
             )
             );
 
+        return $app->trans_error('Invalid request.')
+            unless $obj->blog_id == $app->blog->id;
+
         $param->{name}             = $obj->name;
         $param->{description}      = $obj->description;
         $param->{unique_id}        = $obj->unique_id;
