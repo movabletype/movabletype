@@ -7,8 +7,6 @@ package MT::CMS::CategorySet;
 use strict;
 use warnings;
 
-use MT::CategorySet;
-
 sub view {
     my $app = shift;
 
@@ -19,9 +17,12 @@ sub view {
         if ( !$app->user->is_superuser()
         && !$perm->can_do('edit_category_set') );
     if ( my $set_id = $app->param('id') ) {
-        unless ( MT::CategorySet->exist($set_id) ) {
-            return $app->errtrans( 'Invalid category_set_id: [_1]', $set_id );
-        }
+        my $category_set = $app->model('category_set')->load($set_id);
+        return $app->errtrans( 'Invalid category_set_id: [_1]', $set_id )
+            unless $category_set;
+        my $blog_id = $app->blog ? $app->blog->id : 0;
+        return $app->errtrans('Invalid request.')
+            unless $category_set->blog_id == $blog_id;
     }
 
     $app->param( '_type',           'category' );
@@ -54,18 +55,6 @@ sub can_list {
         ->can_do('access_to_category_set_list');
 }
 
-sub can_view {
-    my ( $eh, $app, $id, $objp ) = @_;
-    return unless $id;
-
-    my $user = $app->user;
-    return unless $user;
-    return 1 if ( $user->is_superuser || $user->can_manage_content_types() );
-
-    my $obj = $objp->force or return 0;
-    $user->permissions( $obj->blog_id )->can_do('edit_category_set');
-}
-
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $user = $app->user;
@@ -83,7 +72,7 @@ sub can_delete {
         if ( $author->is_superuser() || $author->can_manage_content_types() );
 
     if ( $set && !ref $set ) {
-        $set = MT::CategorySet->load($set)
+        $set = MT->model('category_set')->load($set)
             or return;
     }
 
