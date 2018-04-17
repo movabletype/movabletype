@@ -52,6 +52,9 @@ sub edit {
             )
             );
 
+        return $app->trans_error('Invalid request.')
+            unless $obj->blog_id == $app->blog->id;
+
         $param->{name}             = $obj->name;
         $param->{description}      = $obj->description;
         $param->{unique_id}        = $obj->unique_id;
@@ -774,7 +777,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
