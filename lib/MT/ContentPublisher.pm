@@ -2086,15 +2086,11 @@ sub rebuild_deleted_content_data {
                         = $target_dt;
                 }
 
-                my $opt
-                    = $map && $map->dt_field_id
-                    ? { date_field => $map->dt_field_id }
-                    : 1;
-                if ( my $prev = $content_data->previous($opt) ) {
+                if ( my $prev = $content_data->previous(1) ) {
                     $rebuild_recipe{ContentType}{ $prev->id }{id}
                         = $prev->id;
                 }
-                if ( my $next = $content_data->next($opt) ) {
+                if ( my $next = $content_data->next(1) ) {
                     $rebuild_recipe{ContentType}{ $next->id }{id}
                         = $next->id;
                 }
