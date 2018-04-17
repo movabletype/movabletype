@@ -40,6 +40,8 @@ sub edit {
         = $app->param('type')
         || $app->param('_type')
         || MT::Category->class_type;
+    return $app->trans_error('Invalid request.')
+        unless $obj && $obj->class eq $type;
     my $entry_class;
     my $entry_type;
     if ( $type eq 'category' ) {
@@ -554,7 +556,6 @@ sub js_add_category {
 sub can_view {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
-    return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
@@ -581,7 +582,7 @@ sub can_save {
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    if ( $id ) {
+    if ($id) {
         if ( !ref $id ) {
             $obj ||= MT->model('category')->load($id)
                 or return;
