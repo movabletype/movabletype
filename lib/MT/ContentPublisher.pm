@@ -513,9 +513,8 @@ sub rebuild_content_data {
 
     my %cache_maps;
 
-    my $at
-        = $param{PreferredArchiveOnly}
-        ? $blog->archive_type_preferred
+    my $at = $param{PreferredArchiveOnly}
+        ? 'ContentType'    # TBD: MTC-25351 $blog->archive_type_preferred
         : $blog->archive_type;
     unless ( defined $at && $at ne '' ) {
         $at = 'ContentType';

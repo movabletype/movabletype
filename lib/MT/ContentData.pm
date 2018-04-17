@@ -737,9 +737,15 @@ sub previous {
 sub _nextprev {
     my $obj   = shift;
     my $class = ref($obj);
-    my ( $direction, $terms ) = @_;
+    my ( $direction, $source_terms ) = @_;
     return undef unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
+
+    # Deep copy
+    my $terms = {};
+    foreach my $key ( keys %$source_terms ) {
+        $terms->{$key} = $source_terms->{$key};
+    }
 
     $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
 
@@ -772,12 +778,28 @@ sub _nextprev {
             my ($df) = MT->model('cf')->load( { unique_id => $id } );
             $df = MT->model('cf')->load($id) unless $df;
             ($df) = MT->model('cf')->load( { name => $id } ) unless $df;
-            if ($df) {
-                $date_field_id = $df->id;
-                my $data = $obj->data;
-                $date_field_value = $data->{$date_field_id};
-            }
+            $date_field_id = $df->id if $df;
         }
+    }
+    else {
+        my ($map) = MT::TemplateMap->load(
+            {   blog_id      => $obj->blog_id,
+                archive_type => 'ContentType',
+                is_preferred => 1,
+            },
+            {   join => MT::Template->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $obj->content_type_id,
+                    },
+                ),
+            },
+        );
+        $date_field_id = $map->dt_field_id if $map;
+    }
+    if ($date_field_id) {
+        my $data = $obj->data;
+        $date_field_value = $data->{$date_field_id};
     }
 
     my $label = '__' . $direction;
@@ -950,11 +972,11 @@ sub make_list_props {
                 order   => 100,
             },
             label => {
-                base      => '__virtual.string',
-                display   => 'force',
-                order     => 110,
-                html      => \&_make_label_html,
-                label     => sub {
+                base    => '__virtual.string',
+                display => 'force',
+                order   => 110,
+                html    => \&_make_label_html,
+                label   => sub {
                     MT->translate('Data Label');
                 },
                 bulk_sort => sub {
@@ -979,9 +1001,9 @@ sub make_list_props {
                 order => $order,
             },
             authored_on => {
-                auto       => 1,
-                display    => 'default',
-                label      => sub {
+                auto    => 1,
+                display => 'default',
+                label   => sub {
                     MT->translate('Publish Date');
                 },
                 use_future => 1,
@@ -1012,7 +1034,7 @@ sub make_list_props {
                 label   => sub {
                     MT->translate('Unpublish Date');
                 },
-                order   => $order + 400,
+                order => $order + 400,
             },
             status    => { base => 'entry.status' },
             author_id => {
