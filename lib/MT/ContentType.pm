@@ -111,7 +111,7 @@ sub _cs_single_select_options {
         my $name = $cs->name;
         push @options, {
             label => sub {
-                MT->translate('[_1] (ID:[_2])', $name, $id);
+                MT->translate( '[_1] (ID:[_2])', $name, $id );
             },
             value => $id
         };
@@ -333,8 +333,8 @@ sub _manage_content_data_permission {
 
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group                  => $self->permission_group,
-            label                  => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Manage Content Data');
             },
             order                  => 100,
@@ -348,9 +348,9 @@ sub _create_content_data_permission {
     my $self            = shift;
     my $permission_name = 'blog.create_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
-                MT->translate('Create Content Data')
+            group => $self->permission_group,
+            label => sub {
+                MT->translate('Create Content Data');
             },
             order            => 200,
             permitted_action => {
@@ -375,8 +375,8 @@ sub _publish_content_data_permission {
 
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Publish Content Data');
             },
             order            => 300,
@@ -399,8 +399,8 @@ sub _edit_all_content_data_permission {
     my $self            = shift;
     my $permission_name = 'blog.edit_all_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Edit All Content Data');
             },
             order            => 400,

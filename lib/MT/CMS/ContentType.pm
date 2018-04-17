@@ -774,7 +774,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
