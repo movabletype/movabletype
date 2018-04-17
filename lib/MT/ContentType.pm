@@ -111,7 +111,7 @@ sub _cs_single_select_options {
         my $name = $cs->name;
         push @options, {
             label => sub {
-                MT->translate('[_1] (ID:[_2])', $name, $id);
+                MT->translate( '[_1] (ID:[_2])', $name, $id );
             },
             value => $id
         };
@@ -333,8 +333,8 @@ sub _manage_content_data_permission {
 
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group                  => $self->permission_group,
-            label                  => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Manage Content Data');
             },
             order                  => 100,
@@ -348,9 +348,9 @@ sub _create_content_data_permission {
     my $self            = shift;
     my $permission_name = 'blog.create_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
-                MT->translate('Create Content Data')
+            group => $self->permission_group,
+            label => sub {
+                MT->translate('Create Content Data');
             },
             order            => 200,
             permitted_action => {
@@ -375,8 +375,8 @@ sub _publish_content_data_permission {
 
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Publish Content Data');
             },
             order            => 300,
@@ -399,8 +399,8 @@ sub _edit_all_content_data_permission {
     my $self            = shift;
     my $permission_name = 'blog.edit_all_content_data:' . $self->unique_id;
     (   $permission_name => {
-            group            => $self->permission_group,
-            label            => sub {
+            group => $self->permission_group,
+            label => sub {
                 MT->translate('Edit All Content Data');
             },
             order            => 400,
@@ -462,33 +462,20 @@ sub blog {
 
 # class method
 sub permission_groups {
-    my $class         = shift;
-    my @content_types = __PACKAGE__->load(
-        undef,
-        {   sort => [
-                {   column => 'blog_id',
-                    desc   => 'ASC',
-                },
-                {   column => 'name',
-                    desc   => 'ASC',
-                },
-            ]
-        }
-    );
+    my $class  = shift;
     my @groups = map {
         +{  ct_perm_group_unique_id => $_->unique_id,
             ct_perm_group_label     => $_->permission_group,
             }
-    } grep { $_->blog } @content_types;
+    } grep { $_->blog } @{ $class->load_all };
     return \@groups;
 }
 
 # class method
 sub all_permissions {
     my $class = shift;
-    my $iter  = __PACKAGE__->load_iter();
     my @all_permissions;
-    while ( my $content_type = $iter->() ) {
+    for my $content_type ( @{ $class->load_all } ) {
         push( @all_permissions, $content_type->permissions )
             if $content_type->blog;
     }
@@ -631,6 +618,205 @@ sub has_multi_line_text_field {
     my $self = shift;
     ( grep { $_->{type} && $_->{type} eq 'multi_line_text' }
             @{ $self->fields } ) ? 1 : 0;
+}
+
+sub load_all {
+    my $class      = shift;
+    my $r          = MT->request;
+    my $cache_key  = 'MT::ContentType::load_all';
+    my $cache_data = $r->cache($cache_key);
+    return $cache_data if $cache_data;
+    $cache_data = [
+        $class->load(
+            undef,
+            {   sort => [
+                    {   column => 'blog_id',
+                        desc   => 'ASC',
+                    },
+                    {   column => 'name',
+                        desc   => 'ASC',
+                    },
+                ],
+            }
+        )
+    ];
+    $r->cache( $cache_key, $cache_data );
+}
+
+sub make_tag_list_props {
+    my $class      = shift;
+    my $order      = 500;
+    my $list_props = {};
+    for my $content_type ( @{ $class->load_all } ) {
+        next unless $content_type->_get_tag_field_ids;
+        $list_props = {
+            %$list_props,
+            %{ $content_type->_make_tag_list_prop_count($order) },
+            %{ $content_type->_make_tag_list_prop_filter },
+        };
+        $order += 100;
+    }
+    $list_props;
+}
+
+sub _make_tag_list_prop_count {
+    my $self           = shift;
+    my ($order)        = @_;
+    my $id             = $self->id;
+    my $blog_id        = $self->blog_id;
+    my $unique_id      = $self->unique_id;
+    my @tags_field_ids = @{ $self->_get_tag_field_ids || [] };
+    {   "site_${blog_id}_id_${id}_count" => {
+            label       => $self->name,
+            base        => '__virtual.integer',
+            display     => 'default',
+            order       => $order,
+            view        => [ 'website', 'blog' ],
+            view_filter => 'none',
+            condition   => sub {
+                my $blog = MT->app->blog or return;
+                $blog->id == $blog_id;
+            },
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $blog_id = MT->app->param('blog_id') || 0;
+                my $iter = MT->model('objecttag')->count_group_by(
+                    {   $blog_id ? ( blog_id => $blog_id ) : (),
+                        tag_id            => $obj->id,
+                        object_datasource => 'content_data',
+                        cf_id             => \@tags_field_ids,
+                    },
+                    {   sort      => 'cnt',
+                        direction => 'descend',
+                        group     => [ 'tag_id', 'object_id', 'cf_id' ],
+                    },
+                );
+                my ($count) = $iter->();
+                $count || 0;
+            },
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return
+                    unless $app->can_do(
+                    "access_to_content_data_list_$unique_id")
+                    || $app->can_do('access_to_content_data_list');
+                $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => 'content_data',
+                        type       => 'content_data_' . $self->id,
+                        blog_id    => $app->param('blog_id') || 0,
+                        filter     => 'tags_field',
+                        filter_val => $obj->name,
+                    },
+                );
+            },
+            bulk_sort => sub {
+                my $prp = shift;
+                my ( $objs, $options ) = @_;
+                my $iter = MT->model('objecttag')->count_group_by(
+                    {   $options->{blog_id}
+                        ? ( blog_id => $options->{blog_id} )
+                        : (),
+                        object_datasource => 'content_data',
+                        cf_id             => \@tags_field_ids,
+                    },
+                    {   sort      => 'cnt',
+                        direction => 'ascend',
+                        group     => [ 'tag_id', 'object_id', 'cf_id' ],
+                    },
+                );
+                my %counts;
+                while ( my ( $cnt, $id ) = $iter->() ) {
+                    $counts{$id} = $cnt;
+                }
+                return sort {
+                    ( $counts{ $a->id } || 0 ) <=> ( $counts{ $b->id } || 0 )
+                } @$objs;
+            },
+        },
+    };
+}
+
+sub _make_tag_list_prop_filter {
+    my $self           = shift;
+    my $id             = $self->id;
+    my $blog_id        = $self->blog_id;
+    my @tags_field_ids = @{ $self->_get_tag_field_ids || [] };
+    {   "for_site_${blog_id}_id_${id}" => {
+            base      => '__virtual.hidden',
+            label     => 'Tags with ' . $self->name,
+            display   => 'none',
+            view      => [ 'website', 'blog' ],
+            singleton => 1,
+            condition => sub {
+                my $blog = MT->app->blog or return;
+                $blog->id == $blog_id;
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args, $options ) = @_;
+                my $blog_id = $options->{blog_ids};
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model('objecttag')->join_on(
+                    'tag_id',
+                    {   object_datasource => 'content_data',
+                        cf_id             => \@tags_field_ids,
+                    },
+                    {   group  => ['tag_id'],
+                        unique => 1,
+                    },
+                    );
+                return;
+            },
+        },
+    };
+}
+
+sub make_tag_system_filters {
+    my $class          = shift;
+    my $order          = 400;
+    my $system_filters = {};
+    for my $content_type ( @{ $class->load_all } ) {
+        next unless $content_type->_get_tag_field_ids;
+        $system_filters = {
+            %$system_filters,
+            %{ $content_type->_make_tag_system_filter($order) },
+        };
+        $order += 100;
+    }
+    $system_filters;
+}
+
+sub _make_tag_system_filter {
+    my $self    = shift;
+    my ($order) = @_;
+    my $id      = $self->id;
+    my $blog_id = $self->blog_id;
+    {   "site_${blog_id}_id_${id}" => {
+            label     => 'Tags with ' . $self->name,
+            view      => [ 'website', 'blog' ],
+            items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
+            order     => $order,
+            condition => sub {
+                my $blog = MT->app->blog or return;
+                $blog->id == $blog_id;
+            },
+        }
+    };
+}
+
+sub _get_tag_field_ids {
+    my $self = shift;
+    $self->cache_property(
+        '_get_tag_field_ids',
+        sub {
+            my @ids = map { $_->{id} }
+                grep { $_->{type} eq 'tags' } @{ $self->fields };
+            @ids ? \@ids : undef;
+        },
+    );
 }
 
 1;

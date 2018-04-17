@@ -774,7 +774,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -848,6 +848,19 @@ sub init_content_type {
     my $content_data_list_props = MT::ContentData::make_list_props();
     for my $key ( keys %{$content_data_list_props} ) {
         $core_list_props->{$key} = $content_data_list_props->{$key};
+    }
+
+    my $core_tag_list_props = $core->registry( 'list_properties', 'tag' );
+    my $tag_list_props = MT->model('content_type')->make_tag_list_props;
+    for my $key ( keys %$tag_list_props ) {
+        $core_tag_list_props->{$key} = $tag_list_props->{$key};
+    }
+
+    my $core_tag_system_filters = $core->registry( 'system_filters', 'tag' );
+    my $tag_system_filters
+        = MT->model('content_type')->make_tag_system_filters;
+    for my $key ( keys %$tag_system_filters ) {
+        $core_tag_system_filters->{$key} = $tag_system_filters->{$key};
     }
 }
 
