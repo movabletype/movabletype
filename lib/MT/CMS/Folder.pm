@@ -16,7 +16,6 @@ sub edit {
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $author = $app->user;
-    return 1 if $author->is_superuser();
     return unless $id;
 
     my $obj = $objp->force();
