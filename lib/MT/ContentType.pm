@@ -334,7 +334,9 @@ sub _manage_content_data_permission {
     my $permission_name = 'blog.manage_content_data:' . $self->unique_id;
     (   $permission_name => {
             group                  => $self->permission_group,
-            label                  => 'Manage Content Data',
+            label                  => sub {
+                MT->translate('Manage Content Data');
+            },
             order                  => 100,
             content_type_unique_id => $self->unique_id,
             inherit_from           => \@perms,
@@ -347,7 +349,9 @@ sub _create_content_data_permission {
     my $permission_name = 'blog.create_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
-            label            => 'Create Content Data',
+            label            => sub {
+                MT->translate('Create Content Data')
+            },
             order            => 200,
             permitted_action => {
                 'access_to_content_data_list_' . $self->unique_id       => 1,
@@ -372,7 +376,9 @@ sub _publish_content_data_permission {
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
-            label            => 'Publish Content Data',
+            label            => sub {
+                MT->translate('Publish Content Data');
+            },
             order            => 300,
             permitted_action => {
                 'access_to_content_data_list_' . $self->unique_id     => 1,
@@ -394,7 +400,9 @@ sub _edit_all_content_data_permission {
     my $permission_name = 'blog.edit_all_content_data:' . $self->unique_id;
     (   $permission_name => {
             group            => $self->permission_group,
-            label            => 'Edit All Content Data',
+            label            => sub {
+                MT->translate('Edit All Content Data');
+            },
             order            => 400,
             permitted_action => {
                 'access_to_content_data_list_' . $self->unique_id       => 1,

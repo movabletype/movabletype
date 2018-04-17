@@ -1830,6 +1830,7 @@ use vars qw( @ISA %Lexicon );
 	'Parameter \'[_1]\' is required' => '\'[_1]\'をパラメータに指定してください。',
 	'Parameter \'[_1]\' is invalid' => '\'[_1]\'パラメータは不正です。',
 	'Load of blog \'[_1]\' failed' => 'サイト \'[_1]\'をロードできません',
+	'[_1] archive type requires [_2] parameter' => '[_1]アーカイブの再構築には[_2]パラメータが必要です',
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => '[_1]「[_2]」の再構築中にエラーが発生しました: [_3]',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => '日付アーカイブ「[_1]」の再構築中にエラーが発生しました: [_2]',
 	'Writing to \'[_1]\' failed: [_2]' => '\'[_1]\'に書き込めませんでした: [_2]',
@@ -1841,12 +1842,12 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => '公開終了日を過ぎたコンテンツデータの処理中にエラーが発生しました: [_1]',
 
 ## lib/MT/ContentType.pm
-	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" ([_2] ID: [_3])',
-	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Manage Content Data' => 'コンテンツデータの管理',
 	'Create Content Data' => 'コンテンツデータの作成',
 	'Publish Content Data' => 'コンテンツデータの公開',
 	'Edit All Content Data' => 'すべてのコンテンツデータの編集',
+	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" ([_2] ID: [_3])',
+	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 
 ## lib/MT/ContentType/UniqueID.pm
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',
@@ -2154,10 +2155,10 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Resource/v4/ContentData.pm
 
 ## lib/MT/DefaultTemplates.pm
-	'Search Results for Content Data' => 'コンテンツデータの検索結果',
 	'Comment Form' => 'コメント入力フォーム',
 	'Navigation' => 'ナビゲーション',
 	'Blog Index' => 'ブログ・インデックス',
+	'Search Results for Content Data' => 'コンテンツの検索結果',
 	'Archive Index' => 'アーカイブインデックス',
 	'Stylesheet' => 'スタイルシート',
 	'JavaScript' => 'JavaScript',
@@ -2994,6 +2995,8 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/addons/Sync.pack/js/cms.js
 
+## mt-static/chart-api/deps/raphael-min.js
+
 ## mt-static/chart-api/mtchart.js
 
 ## mt-static/chart-api/mtchart.min.js
@@ -3308,7 +3311,6 @@ use vars qw( @ISA %Lexicon );
 	'Displays preview of comment.' => 'コメントのプレビューを表示します。',
 	'Displays error, pending or confirmation message for comments.' => 'コメントのエラー、保留、確認メッセージを表示します。',
 	'Displays results of a search for content data.' => '検索結果を表示します。',
-	'Search Results for Content Data' => 'コンテンツの検索結果',
 
 ## themes/classic_website/templates/about_this_page.mtml
 	'<a href="[_1]">[_2]</a> was the previous entry in this website.' => 'ひとつ前の記事は「<a href="[_1]">[_2]</a>」です。',
@@ -4207,6 +4209,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Publishing Profile' => '公開プロファイル',
+	'child site' => '子サイト',
+	'site' => 'サイト',
 	'Choose the profile that best matches the requirements for this [_1].' => '[_1]の要件に最も近いプロファイルを選択してください。',
 	'Static Publishing' => 'スタティックパブリッシング',
 	'Immediately publish all templates statically.' => 'すべてのテンプレートをスタティックパブリッシングします。',
@@ -5216,6 +5220,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
 	'Your templates have been published.' => 'テンプレートを再構築しました。',
 	'Selected template(s) has been copied.' => '選択されたテンプレートをコピーしました。',
+	'Select template type' => 'テンプレートの種類を選択',
 	'Entry Archive' => '記事アーカイブ',
 	'Entry Listing Archive' => '記事リストアーカイブ',
 	'Page Archive' => 'ウェブページアーカイブ',
@@ -6643,5 +6648,7 @@ _4]\'から削除しました。',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 457
 
 1;

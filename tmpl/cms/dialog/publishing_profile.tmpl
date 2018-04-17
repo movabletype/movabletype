@@ -1,4 +1,5 @@
 <mt:var name="page_title" value="<__trans phrase="Publishing Profile">">
+<mt:setvarblock name="target"><mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if></mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
@@ -53,7 +54,7 @@ function init() {
         <div class="modal-body">
 
         <p>
-            <__trans phrase="Choose the profile that best matches the requirements for this [_1]." params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">
+            <__trans phrase="Choose the profile that best matches the requirements for this [_1]." params="<mt:var name="target">">
         </p>
 
         <mtapp:setting
