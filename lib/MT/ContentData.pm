@@ -951,8 +951,7 @@ sub list_props_for_data_api {
 sub make_list_props {
     my $props = {};
 
-    my $iter = MT::ContentType->load_iter;
-    while ( my $content_type = $iter->() ) {
+    for my $content_type ( @{ MT::ContentType->load_all } ) {
         my $key   = 'content_data.content_data_' . $content_type->id;
         my $order = 1000;
         my $field_list_props
@@ -1059,6 +1058,13 @@ sub make_list_props {
             current_context => { filter_editable => 0 },
             %{$field_list_props},
         };
+        if ( $content_type->_get_tag_field_ids ) {
+            $props->{$key}{tags_field} = {
+                base      => '__virtual.tag',
+                label     => 'Tags fields',
+                use_blank => 1,
+            };
+        }
     }
 
     return $props;
