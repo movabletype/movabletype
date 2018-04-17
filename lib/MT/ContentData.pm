@@ -737,9 +737,15 @@ sub previous {
 sub _nextprev {
     my $obj   = shift;
     my $class = ref($obj);
-    my ( $direction, $terms ) = @_;
+    my ( $direction, $source_terms ) = @_;
     return undef unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
+
+    # Deep copy
+    my $terms = {};
+    foreach my $key ( keys %$source_terms ) {
+        $terms->{$key} = $source_terms->{$key};
+    }
 
     $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
 
