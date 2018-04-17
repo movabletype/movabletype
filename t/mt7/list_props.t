@@ -56,6 +56,8 @@ $test_env->prepare_fixture(sub {
 
 my $content_type = MT::ContentType->load( { name => 'test content type' } );
 
+MT->request->reset;
+
 subtest 'make_list_props' => sub {
     my $props = MT::ContentData::make_list_props();
     ok( $props && ref $props eq 'HASH', 'make_list_properties returns hash' );
