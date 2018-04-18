@@ -745,7 +745,9 @@ sub _make_tag_list_prop_filter {
     my @tags_field_ids = @{ $self->_get_tag_field_ids || [] };
     {   "for_site_${blog_id}_id_${id}" => {
             base      => '__virtual.hidden',
-            label     => 'Tags with ' . $self->name,
+            label     => sub {
+                MT->translate('Tags with [_1]', $self->name );
+            },
             display   => 'none',
             view      => [ 'website', 'blog' ],
             singleton => 1,
@@ -795,7 +797,9 @@ sub _make_tag_system_filter {
     my $id      = $self->id;
     my $blog_id = $self->blog_id;
     {   "site_${blog_id}_id_${id}" => {
-            label     => 'Tags with ' . $self->name,
+            label     => sub {
+                MT->translate('Tags with [_1]', $self->name );
+            },
             view      => [ 'website', 'blog' ],
             items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
             order     => $order,

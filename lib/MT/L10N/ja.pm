@@ -2470,6 +2470,7 @@ use vars qw( @ISA %Lexicon );
 	'Tags with Entries' => '記事のタグ',
 	'Tags with Pages' => 'ウェブページのタグ',
 	'Tags with Assets' => 'アセットのタグ',
+	'Tags with [_1]' => '[_1]のタグ',
 
 ## lib/MT/TaskMgr.pm
 	'Unable to secure a lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.' => 'タスクを実行するために必要なロックを獲得できませんでした。TempDir([_1])に書き込みできるかどうか確認してください。',
