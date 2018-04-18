@@ -827,7 +827,8 @@ sub rebuild_file {
     if ( $archiver->category_based || $archiver->contenttype_category_based )
     {
         $category = $args{Category};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Category')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Category' )
             unless $args{Category};
         $category = MT::Category->load($category)
             unless ref $category;
@@ -841,7 +842,8 @@ sub rebuild_file {
     }
     if ( $archiver->entry_based ) {
         $entry = $args{Entry};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Entry')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
@@ -852,7 +854,8 @@ sub rebuild_file {
         # Date-based archive type
         $start = $args{StartDate};
         $end   = $args{EndDate};
-        die MT->translate("[_1] archive type requires [_2] parameter",  $archiver->archive_label, 'StartDate' )
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'StartDate' )
             unless $args{StartDate};
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_date_based;
@@ -861,7 +864,8 @@ sub rebuild_file {
 
         # author based archive type
         $author = $args{Author};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Author')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Author' )
             unless $args{Author};
         require MT::Author;
         $author = MT::Author->load($author)
@@ -872,7 +876,8 @@ sub rebuild_file {
     }
     if ( $archiver->contenttype_based ) {
         $content_data = $args{ContentData};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'ContentData')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'ContentData' )
             unless $content_data;
         require MT::ContentData;
         $content_data = MT::ContentData->load($content_data)
@@ -1724,13 +1729,18 @@ sub _rebuild_content_archive_type {
         }
         local $ctx->{__stash}{category}         = $cat if $cat;
         local $ctx->{__stash}{archive_category} = $cat if $cat;
-        $timestamp = $obj->authored_on() if $obj && !$timestamp;
-        local $ctx->{__stash}{entry} = $obj
+        local $ctx->{__stash}{entry}            = $obj
             if $obj && ( ref $obj eq 'MT::Entry' || ref $obj eq 'MT::Page' );
         local $ctx->{__stash}{content} = $obj
             if $obj && ref $obj eq 'MT::ContentData';
         local $ctx->{__stash}{author}
             = $author ? $author : $obj ? $obj->author : undef;
+        if ( $obj && !$timestamp ) {
+            $timestamp
+                = $at eq 'ContentType' && $map && $map->dt_field_id
+                ? $obj->data->{ $map->dt_field_id }
+                : $obj->authored_on();
+        }
 
         my %blog_at = map { $_ => 1 } split /,/, $blog->archive_type;
         return '' unless $blog_at{$at};
@@ -2016,7 +2026,8 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'Timestamp'} = $target_dt;
                         }
                         else {
-                            $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
+                            $rebuild_recipe{$at}{ $cat->id }{id}
+                                = $cat->id;
                         }
                     }
                 }
@@ -2047,7 +2058,8 @@ sub rebuild_deleted_content_data {
                         ? ( author_id => $content_data->author_id )
                         : ()
                     ),
-                    (   $archiver->date_based() ? ( StartDate => $start ) : ()
+                    (   $archiver->date_based() ? ( StartDate => $start )
+                        : ()
                     ),
                 );
 
