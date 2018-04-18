@@ -1942,7 +1942,7 @@ sub rebuild_deleted_content_data {
     my @at;
     if ( $at && $at ne 'None' ) {
         my @at_orig = split /,/, $at;
-        @at = grep { $_ =~ /^ContentType/ && $_ ne 'ContentType' } @at_orig;
+        @at = grep { $_ =~ /^ContentType/ } @at_orig;
     }
 
     # Remove Individual archive file.
@@ -2038,7 +2038,19 @@ sub rebuild_deleted_content_data {
             }
         }
         else {
-            if ($archiver->does_publish_file(
+            if ( $at eq 'ContentType' ) {
+                next unless $app->config('RebuildAtDelete');
+                if ( my $prev = $content_data->previous(1) ) {
+                    $rebuild_recipe{ContentType}{ $prev->id }{id}
+                        = $prev->id;
+                }
+                if ( my $next = $content_data->next(1) ) {
+                    $rebuild_recipe{ContentType}{ $next->id }{id}
+                        = $next->id;
+                }
+            }
+            elsif (
+                $archiver->does_publish_file(
                     {   Blog        => $blog,
                         ArchiveType => $at,
                         ContentData => $content_data,
