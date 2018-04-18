@@ -132,11 +132,22 @@ sub default_archive_templates {
             template        => '%y/%m/%d/%b/%i',
             required_fields => { date_and_time => 1 }
         },
-        {   label    => MT->translate('author/author-basename/index.html'),
-            template => 'author/%-a/%f',
+        {   label => MT->translate(
+                'author/author-basename/content-basename/index.html'),
+            template => 'author/%-a/%-b/%i',
             default  => 1
         },
-        {   label    => MT->translate('author/author_basename/index.html'),
+        {   label => MT->translate(
+                'author/author_basename/content_basename/index.html'),
+            template => 'author/%a/%b/%i'
+        },
+        {   label =>
+                MT->translate('author/author-basename/content-basename.html'),
+            template => 'author/%-a/%-f',
+            default  => 1
+        },
+        {   label =>
+                MT->translate('author/author_basename/content_basename.html'),
             template => 'author/%a/%f'
         },
         {   label =>
