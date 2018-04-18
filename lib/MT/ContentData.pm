@@ -102,7 +102,8 @@ __PACKAGE__->install_properties(
         primary_key     => 'id',
         audit           => 1,
         meta            => 1,
-        child_of        => ['MT::ContentType'],
+        child_classes   => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
+        child_of        => [ 'MT::Blog', 'MT::ContentType' ],
         class_type      => 'content_data',
     }
 );
@@ -137,6 +138,28 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Data");
+}
+
+sub remove {
+    my $self = shift;
+    my $ret = $self->SUPER::remove(@_) or return;
+    if ( ref $self && $self->id ) {
+        $self->remove_children;
+        MT->model('objectasset')
+            ->remove(
+            { object_ds => 'content_data', object_id => $self->id } )
+            or do { $MT::DebugMode && warn MT->model('objectasset')->errstr };
+        MT->model('objectcategory')
+            ->remove(
+            { object_ds => 'content_data', object_id => $self->id } )
+            or
+            do { $MT::DebugMode && warn MT->model('objectcategory')->errstr };
+        MT->model('objecttag')
+            ->remove(
+            { object_datasource => 'content_data', object_id => $self->id } )
+            or do { $MT::DebugMode && warn MT->model('objecttag')->errstr };
+    }
+    $ret;
 }
 
 sub to_hash {
