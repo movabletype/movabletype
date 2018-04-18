@@ -243,7 +243,7 @@ sub list_props {
             count_class         => 'content_type',
             count_col           => 'blog_id',
             filter_type         => 'blog_id',
-            list_permitt_action => 'access_to_content_type_list,
+            list_permitt_action => 'access_to_content_type_list',
         },
         content_count => {
             label        => 'Content Data',
