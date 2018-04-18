@@ -1034,6 +1034,8 @@ use vars qw( @ISA %Lexicon );
 	'authors' => 'ユーザー',
 
 ## lib/MT/Blog.pm
+	'Content Type Count' => 'コンテンツタイプ数',
+	'Content Data Count' => 'コンテンツデータ数',
 	'Child Site' => '子サイト',
 	'Child Sites' => '子サイト',
 	'*Site/Child Site deleted*' => '*削除されました*',

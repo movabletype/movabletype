@@ -233,19 +233,34 @@ sub list_props {
             count_args         => { no_class => 1 },
             list_permit_action => 'access_to_asset_list',
         },
-
-        # not in use in 5.1
-        # member_count => {
-        #     label              => 'Members',
-        #     order              => 700,
-        #     base               => '__virtual.object_count',
-        #     count_class        => 'permission',
-        #     count_col          => 'blog_id',
-        #     filter_type        => 'blog_id',
-        #     list_screen        => 'member',
-        #     count_terms        => { author_id => { not => 0 } },
-        #     list_permit_action => 'access_to_member_list',
-        # },
+        content_type_count => {
+            label        => 'Content Type',
+            filter_label => 'Content Type Count',
+            display      => 'default',
+            order        => 600,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_type',
+            count_col    => 'blog_id',
+            filter_type  => 'blog_id',
+        },
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data Count',
+            display      => 'default',
+            order        => 700,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'blog_id',
+            filter_type  => 'blog_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
+        },
         parent_website => {
             view            => ['website'],
             label           => 'Parent Site',

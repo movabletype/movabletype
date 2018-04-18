@@ -100,17 +100,12 @@ sub list_props {
                 return $html;
             },
         },
-
-        # not in use in 5.1
-        # member_count => {
-        #     base      => 'blog.member_count',
-        #     html_link => sub {
-        #         my $prop = shift;
-        #         my ( $obj, $app ) = @_;
-        #         my $link = $prop->super(@_);
-        #         $link . '&filter=current_context';
-        #     },
-        # },
+        content_type_count => {
+            base => 'blog.content_type_count',
+        },
+        content_count => {
+            base => 'blog.content_count',
+        },
         theme_id => {
             base                  => 'blog.theme_id',
             single_select_options => sub {
