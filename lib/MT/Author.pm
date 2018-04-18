@@ -423,7 +423,7 @@ sub member_list_props {
         },
         content_count => {
             label        => 'Content Data',
-            filter_label => 'Content Data',
+            filter_label => 'Content Data Count',
             display      => 'default',
             order        => 350,
             base         => '__virtual.object_count',
