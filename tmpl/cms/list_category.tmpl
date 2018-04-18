@@ -783,8 +783,10 @@ function renderItems(data) {
 
 function fixZeroStateMessage () {
   if ( jQuery('#root div.sortable-item').length <= 1 ) {
-    var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
-    jQuery('<p id="zero-state-message">'+message+'</p>').appendTo('#root');
+    if( !jQuery('#zero-state-message').length ) {
+      var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+      jQuery('<p id="zero-state-message">'+message+'</p>').insertBefore('#root');
+    }
   }
   else
     jQuery('#zero-state-message').remove();
