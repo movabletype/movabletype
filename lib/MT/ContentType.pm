@@ -82,6 +82,41 @@ sub list_props {
         },
         blog_name => { display => 'none', filter_editable => 0 },
         current_context => { filter_editable => 0 },
+        content_count   => {
+            label        => 'Content Data',
+            filter_label => 'Content Data',
+            display      => 'default',
+            order        => 500,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'content_type_id',
+            filter_type  => 'content_type_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                my $user  = $app->user;
+                my $perm  = $user->permissions( $obj->blog_id );
+
+                return $count
+                    unless $perm->can_do('access_to_content_data_list')
+                    || $perm->can_do(
+                    'access_to_content_data_list_' . $obj->unique_id );
+
+                my $args;
+                $args = {
+                    _type   => 'content_data',
+                    type    => 'content_data_' . $obj->id,
+                    blog_id => $obj->blog_id,
+                };
+                my $uri = $app->uri(
+                    mode => 'list',
+                    args => $args,
+                );
+                return qq{<a href="$uri">$count</a>};
+            },
+        },
     };
 }
 
@@ -744,9 +779,9 @@ sub _make_tag_list_prop_filter {
     my $blog_id        = $self->blog_id;
     my @tags_field_ids = @{ $self->_get_tag_field_ids || [] };
     {   "for_site_${blog_id}_id_${id}" => {
-            base      => '__virtual.hidden',
-            label     => sub {
-                MT->translate('Tags with [_1]', $self->name );
+            base  => '__virtual.hidden',
+            label => sub {
+                MT->translate( 'Tags with [_1]', $self->name );
             },
             display   => 'none',
             view      => [ 'website', 'blog' ],
@@ -797,10 +832,10 @@ sub _make_tag_system_filter {
     my $id      = $self->id;
     my $blog_id = $self->blog_id;
     {   "site_${blog_id}_id_${id}" => {
-            label     => sub {
-                MT->translate('Tags with [_1]', $self->name );
+            label => sub {
+                MT->translate( 'Tags with [_1]', $self->name );
             },
-            view      => [ 'website', 'blog' ],
+            view => [ 'website', 'blog' ],
             items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
             order     => $order,
             condition => sub {
