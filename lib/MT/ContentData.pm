@@ -1192,6 +1192,7 @@ sub _make_field_list_props {
                     $label =~ s/^([a-z])/\u$1/g;
                     $label =~ s/_([a-z])/ \u$1/g;
                 }
+                $label = MT->translate($label);
                 $label = $field_data->{options}{label} . " ${label}";
             }
             if ($parent_field_data) {

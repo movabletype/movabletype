@@ -290,7 +290,7 @@ sub list_props {
             use_blank => 1,
         },
         image_width => {
-            label     => 'Pixel width',
+            label     => 'Pixel Width',
             base      => '__virtual.integer',
             display   => 'none',
             meta_type => 'image_width',
@@ -318,7 +318,7 @@ sub list_props {
         },
         image_height => {
             base      => 'asset.image_width',
-            label     => 'Pixel height',
+            label     => 'Pixel Height',
             meta_type => 'image_height',
         },
         tag => {
