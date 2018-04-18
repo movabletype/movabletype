@@ -1465,19 +1465,32 @@ sub remove_children {
     return 1 unless @classes;
 
     $param ||= {};
-    my $key = $param->{key} || $obj->datasource . '_id';
+    my @keys;
+    if ( defined $param->{key} && $param->{key} ne '' ) {
+        @keys = ( $param->{key} );
+    }
+    else {
+        @keys = $obj->child_keys;
+    }
     my $obj_id = $obj->id;
     for my $class (@classes) {
         eval "# line " . __LINE__ . " " . __FILE__
             . "\nno warnings 'all';require $class;";
-        $class->remove_children_multi( { $key => $obj_id } );
+        for my $key (@keys) {
+            $class->remove_children_multi( { $key => $obj_id } );
+        }
     }
     1;
 }
 
-sub child_key {
+sub child_keys {
     my $class = shift;
-    $class->datasource . '_id';
+    if ( $class->long_datasource ne $class->datasource ) {
+        ( $class->datasource . '_id', $class->long_datasource . '_id', );
+    }
+    else {
+        ( $class->datasource . '_id' );
+    }
 }
 
 sub remove_children_multi {
@@ -1495,8 +1508,9 @@ sub remove_children_multi {
         for my $child (@classes) {
             eval "# line " . __LINE__ . " " . __FILE__
                 . "\nno warnings 'all';require $child;";
-            $child->remove_children_multi( { $class->child_key() => \@ids } )
-                if @ids;
+            for my $key ( $class->child_keys ) {
+                $child->remove_children_multi( { $key => \@ids } );
+            }
         }
 
         return $class->remove($terms);
