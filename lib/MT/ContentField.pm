@@ -38,7 +38,11 @@ __PACKAGE__->install_properties(
         long_datasource => 'content_field',
         primary_key     => 'id',
         audit           => 1,
-        child_of        => ['MT::ContentType'],
+        child_classes   => [
+            'MT::ContentFieldIndex', 'MT::ObjectAsset',
+            'MT::ObjectCategory',    'MT::ObjectTag'
+        ],
+        child_of => [ 'MT::Blog', 'MT::ContentType' ],
     }
 );
 
@@ -160,13 +164,13 @@ sub remove {
             }
             $content_field->remove();
         }
-
     }
-    if ( ref $self ) {
-        $self->SUPER::remove(@_);
+    else {
+        my $ret = $self->SUPER::remove(@_);
+        $self->remove_children if $self->id;
+        MT->app->reboot;
+        return $ret;
     }
-
-    MT->app->reboot;
 
     1;
 }

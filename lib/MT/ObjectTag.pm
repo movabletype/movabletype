@@ -52,6 +52,28 @@ sub class_label_plural {
     MT->translate("Tag Placements");
 }
 
+sub remove {
+    my $self = shift;
+    if ( ref $self && $self->id && $self->cf_id ) {
+        MT->model('content_field_index')->remove(
+            {   content_field_id => $self->cf_id,
+                content_data_id  => $self->object_id,
+            }
+            );
+        my $content_data
+            = MT->model('content_data')->load( $self->object_id );
+        if ($content_data) {
+            my $data           = $content_data->data;
+            my $field_data     = $data->{ $self->cf_id } || [];
+            my $new_field_data = [ grep { $_ != $self->tag_id } @$field_data ];
+            $data->{ $self->cf_id } = $new_field_data;
+            $content_data->data($data);
+            $content_data->save;
+        }
+    }
+    $self->SUPER::remove(@_);
+}
+
 1;
 __END__
 

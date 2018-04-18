@@ -36,9 +36,7 @@ __PACKAGE__->install_properties(
         primary_key   => 'id',
         audit         => 1,
         child_of      => [ 'MT::Blog', 'MT::Website' ],
-        child_classes => [
-            'MT::ContentData', 'MT::ContentField', 'MT::ContentFieldIndex'
-        ],
+        child_classes => [ 'MT::ContentData', 'MT::ContentField' ],
     }
 );
 
