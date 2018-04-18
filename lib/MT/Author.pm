@@ -151,6 +151,12 @@ sub list_props {
             count_class  => 'entry',
             count_col    => 'author_id',
             filter_type  => 'author_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
         },
         author_name => {
             base        => '__virtual.author_name',
