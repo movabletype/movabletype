@@ -1031,7 +1031,7 @@ sub archive_file {
             last;
         }
     }
-    my $file = archive_file_for( $entry, $blog, $at );
+    my $file = archive_file_for( $entry, $blog, $at ) or return;
     $file = '' unless defined $file;
     $file;
 }
@@ -1039,15 +1039,15 @@ sub archive_file {
 sub archive_url {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
+    my $file  = $entry->archive_file(@_) or return;
     my $url   = $blog->archive_url || "";
-    $url .= '/' unless $url =~ m!/$!;
-    $url . $entry->archive_file(@_);
+    MT::Util::caturl( $url, $file );
 }
 
 sub permalink {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
-    my $url   = $entry->archive_url( $_[0] );
+    my $url   = $entry->archive_url( $_[0] ) or return;
     my $effective_archive_type
         = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
     $url

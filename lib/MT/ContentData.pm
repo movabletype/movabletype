@@ -102,9 +102,9 @@ __PACKAGE__->install_properties(
         primary_key     => 'id',
         audit           => 1,
         meta            => 1,
-        child_classes   => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
-        child_of        => [ 'MT::Blog', 'MT::ContentType' ],
-        class_type      => 'content_data',
+        child_classes => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
+        child_of      => [ 'MT::Blog',              'MT::ContentType' ],
+        class_type    => 'content_data',
     }
 );
 
@@ -1389,15 +1389,15 @@ sub archive_file {
 sub archive_url {
     my $self = shift;
     my $blog = $self->blog or return;
+    my $file = $self->archive_file(@_) or return;
     my $url  = $blog->archive_url || '';
-    $url .= '/' unless $url =~ m!/$!;
-    $url . $self->archive_file(@_);
+    MT::Util::caturl( $url, $file );
 }
 
 sub permalink {
     my $self                   = shift;
     my $blog                   = $self->blog or return;
-    my $url                    = $self->archive_url( $_[0] );
+    my $url                    = $self->archive_url( $_[0] ) or return;
     my $effective_archive_type = ( $_[0] || 'ContentType' );
     $url
         .= '#'

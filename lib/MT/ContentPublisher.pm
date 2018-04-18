@@ -1703,6 +1703,10 @@ sub _rebuild_content_archive_type {
                 $cache_map->{$cache_map_key} = $map if $map;
             }
         }
+
+        # No archive mappings cloud be found, then return.
+        return '' unless $map;
+
         my $file_tmpl;
         $file_tmpl = $map->file_template if $map;
         unless ($file_tmpl) {
