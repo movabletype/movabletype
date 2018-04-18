@@ -123,6 +123,26 @@ sub upgrade_functions {
             version_limit => 7.0039,
             priority      => 3.2,
         },
+        'v7_cleanup_content_field_indexes' => {
+            code          => \&_v7_cleanup_content_field_indexes,
+            version_limit => 7.0040,
+            priority      => 3.2,
+        },
+        'v7_cleanup_object_assets_for_content_data' => {
+            code          => \&_v7_cleanup_object_assets_for_content_data,
+            version_limit => 7.0040,
+            priority      => 3.2,
+        },
+        'v7_cleanup_object_categories_for_content_data' => {
+            code          => \&_v7_cleanup_object_categories_for_content_data,
+            version_limit => 7.0040,
+            priority      => 3.2,
+        },
+        'v7_cleanup_object_tags_for_content_data' => {
+            code          => \&_v7_cleanup_object_tags_for_content_data,
+            version_limit => 7.0040,
+            priority      => 3.2,
+        },
     };
 }
 
@@ -1222,4 +1242,78 @@ sub _v7_rebuild_permissions {
         $perm->rebuild;
     }
 }
+
+sub _v7_cleanup_content_field_indexes {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape('Cleaning up content field indexes...') );
+
+    my $iter = MT->model('content_field_index')->load_iter;
+    while ( my $cf_idx = $iter->() ) {
+        next
+            if MT->model('content_type')->exist( $cf_idx->content_type_id )
+            && MT->model('content_field')->exist( $cf_idx->content_field_id )
+            && MT->model('content_data')->exist( $cf_idx->content_data_id );
+        $cf_idx->remove;
+    }
+}
+
+sub _v7_cleanup_object_assets_for_content_data {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Cleaning up objectasset records for content data...')
+    );
+
+    my $iter = MT->model('objectasset')
+        ->load_iter( { object_ds => 'content_data' } );
+    while ( my $oa = $iter->() ) {
+        next
+            if MT->model('asset')->exist( $oa->asset_id )
+            && MT->model('content_field')->exist( $oa->cf_id )
+            && MT->model('content_data')->exist( $oa->object_id );
+        $oa->remove;
+    }
+}
+
+sub _v7_cleanup_object_categories_for_content_data {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Cleaning up objectcategory records for content data...')
+    );
+
+    my $iter = MT->model('objectcategory')
+        ->load_iter( { object_ds => 'content_data' } );
+    while ( my $oc = $iter->() ) {
+        next
+            if MT->model('category')->exist( $oc->category_id )
+            && MT->model('content_field')->exist( $oc->cf_id )
+            && MT->model('content_data')->exist( $oc->object_id );
+        $oc->remove;
+    }
+}
+
+sub _v7_cleanup_object_tags_for_content_data {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Cleaning up objecttag records for content data...')
+    );
+
+    my $iter = MT->model('objecttag')
+        ->load_iter( { object_datasource => 'content_data' } );
+    while ( my $ot = $iter->() ) {
+        next
+            if MT->model('tag')->exist( $ot->tag_id )
+            && MT->model('content_field')->exist( $ot->cf_id )
+            && MT->model('content_data')->exist( $ot->object_id );
+        $ot->remove;
+    }
+}
+
 1;
