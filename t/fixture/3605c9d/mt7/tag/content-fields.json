@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "6c97451fb5ca76a85ed986de1bb4db022a2d67c8",
+            "9281a1f50f0278e1838691118694f027b5f83a42",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u0005test1\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u0005test2",
             "1",
-            "8c7ffff2b529824317e12ae7e8f6752a32c5e711",
+            "931872ffb34706efcbc324891a135fa1f10588de",
             null,
             null,
             "__NOW__",
             "2",
-            "8c7ffff2b529824317e12ae7e8f6752a32c5e711",
+            "931872ffb34706efcbc324891a135fa1f10588de",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -397,7 +397,7 @@
             null,
             null,
             "single_line_text",
-            "46cec792760277c5841624fa7ef06d4b679dfc14"
+            "634cc7fadd7130c1952e62749b45389ee93c3e8b"
          ],
          [
             "1",
@@ -414,7 +414,7 @@
             null,
             null,
             "single_line_text",
-            "f6dc6e45f58927a6cb568d0c904dbbc648b9be55"
+            "b464751c35981c34a236daabc9d36027ddfd7800"
          ]
       ]
    },
@@ -480,7 +480,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0039\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0040\n",
             "1"
          ]
       ]
@@ -508,12 +508,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single1\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(46cec792760277c5841624fa7ef06d4b679dfc14H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single2\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(f6dc6e45f58927a6cb568d0c904dbbc648b9be55",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single1\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(634cc7fadd7130c1952e62749b45389ee93c3e8bH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007single2\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(b464751c35981c34a236daabc9d36027ddfd7800",
             "1",
             null,
             "__NOW__",
             "test content data",
-            "6c97451fb5ca76a85ed986de1bb4db022a2d67c8",
+            "9281a1f50f0278e1838691118694f027b5f83a42",
             null,
             null
          ]
@@ -681,7 +681,7 @@
          [
             null,
             "__NOW__",
-            "Can manage content types, content data, edit their own content types, content data.",
+            "Can manage content types, content data and category sets.",
             "7",
             "0",
             null,
@@ -847,5 +847,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0039; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0040; formattedtext 1.00"
 }

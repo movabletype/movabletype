@@ -494,16 +494,16 @@
             "1",
             null,
             "__NOW__",
-            "479c33df51a3bacc4134931210568981b9ba26fc",
+            "da4230b5a763990287aa6b47a56aceba5c8573a3",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\ttest text",
             "1",
-            "b597e33bd0af9b3df7b40e51f1f116090930f4ba",
+            "551b99ed0d4966d8df8d9211d395f1e340e966ab",
             null,
             null,
             "__NOW__",
             "2",
-            "b597e33bd0af9b3df7b40e51f1f116090930f4ba",
+            "551b99ed0d4966d8df8d9211d395f1e340e966ab",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -543,7 +543,7 @@
             null,
             null,
             "single_line_text",
-            "df54667b7cfe82e70fe1a7af2b66fbee38418f12"
+            "b4bc97c62612c43e9cee1aef071efb1efed5f5fd"
          ]
       ]
    },
@@ -592,7 +592,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0039\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0040\n",
             "1"
          ]
       ]
@@ -620,12 +620,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(df54667b7cfe82e70fe1a7af2b66fbee38418f12",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0006\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\u000bsingle text\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(b4bc97c62612c43e9cee1aef071efb1efed5f5fd",
             "1",
             null,
             "__NOW__",
             "test content type",
-            "479c33df51a3bacc4134931210568981b9ba26fc",
+            "da4230b5a763990287aa6b47a56aceba5c8573a3",
             null,
             null
          ]
@@ -793,7 +793,7 @@
          [
             null,
             "__NOW__",
-            "Can manage content types, content data, edit their own content types, content data.",
+            "Can manage content types, content data and category sets.",
             "7",
             "0",
             null,
@@ -3483,5 +3483,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0039; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0040; formattedtext 1.00"
 }

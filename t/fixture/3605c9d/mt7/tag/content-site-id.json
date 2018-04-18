@@ -348,16 +348,16 @@
             "1",
             null,
             "__NOW__",
-            "da3da5bfed4809a6d010e269bc4c726282302ae9",
+            "e24485ac7c7fe5ee2c3c872e054e4b7edb657451",
             "0",
             null,
             "1",
-            "a72b9cf6f9a279d0187deb74819456e893a78bfb",
+            "00d1fe0495c2eb726cd21d4e72e8944922054caa",
             null,
             null,
             "__NOW__",
             "2",
-            "a72b9cf6f9a279d0187deb74819456e893a78bfb",
+            "00d1fe0495c2eb726cd21d4e72e8944922054caa",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -370,7 +370,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0039\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0040\n",
             "1"
          ]
       ]
@@ -403,7 +403,7 @@
             null,
             "__NOW__",
             "test content data",
-            "da3da5bfed4809a6d010e269bc4c726282302ae9",
+            "e24485ac7c7fe5ee2c3c872e054e4b7edb657451",
             null,
             null
          ]
@@ -571,7 +571,7 @@
          [
             null,
             "__NOW__",
-            "Can manage content types, content data, edit their own content types, content data.",
+            "Can manage content types, content data and category sets.",
             "7",
             "0",
             null,
@@ -737,5 +737,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0039; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; core 7.0040; formattedtext 1.00"
 }
