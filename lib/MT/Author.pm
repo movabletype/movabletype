@@ -158,6 +158,23 @@ sub list_props {
                 return $count;
             },
         },
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data',
+            display      => 'default',
+            order        => 250,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
+        },
         author_name => {
             base        => '__virtual.author_name',
             label       => 'Created by',
@@ -403,6 +420,23 @@ sub member_list_props {
             },
             count_args => { unique => 1, },
             order      => 400,
+        },
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data',
+            display      => 'default',
+            order        => 350,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
         },
         type => {
             label     => 'Type',
