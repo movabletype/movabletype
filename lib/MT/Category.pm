@@ -218,7 +218,11 @@ sub publish_path {
     # parent category basenames are changed.
     $orig->{__path} = $result;
 }
-*category_path = \&publish_path;
+
+{
+    no warnings 'once';
+    *category_path = \&publish_path;
+}
 
 sub category_label_path {
     my $cat = shift;
