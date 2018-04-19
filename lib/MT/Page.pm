@@ -247,9 +247,9 @@ sub archive_url {
     my $blog = $page->blog()
         || return $page->error(
         MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
+    my $file = $page->archive_file(@_) or return;
     my $url = $blog->site_url || "";
-    $url .= '/' unless $url =~ m!/$!;
-    return $url . $page->archive_file(@_);
+    MT::Util::caturl( $url, $file );
 }
 
 sub permalink {
