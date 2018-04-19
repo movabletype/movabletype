@@ -439,7 +439,7 @@ sub _hdlr_archive_prev_next {
     return '' unless $arctype;
 
     my ( $prev_method, $next_method )
-        = $at->contenttype_based
+        = $arctype->contenttype_based
         ? ( 'previous_archive_content_data', 'next_archive_content_data' )
         : ( 'previous_archive_entry', 'next_archive_entry' );
 
@@ -519,23 +519,29 @@ sub _hdlr_archive_prev_next {
         my $stash_key = $arctype->contenttype_based ? 'contents' : 'entries';
         local $ctx->{__stash}->{$stash_key} = [$obj];
 
-        my ($map) = MT::TemplateMap->load(
-            {   blog_id      => $obj->blog_id,
-                archive_type => $at,
-                is_preferred => 1,
-            },
-            {   join => MT::Template->join_on(
-                    undef,
-                    {   id              => \'= templatemap_template_id',
-                        content_type_id => $obj->content_type_id,
-                    },
-                ),
-            },
-        );
-        my $date_field_data
-            = $map && $map->dt_field_id
-            ? $obj->data->{ $map->dt_field_id }
-            : $obj->authored_on;
+        my $date_field_data;
+        if ( $arctype->contenttype_based ) {
+            my ($map) = MT::TemplateMap->load(
+                {   blog_id      => $obj->blog_id,
+                    archive_type => $at,
+                    is_preferred => 1,
+                },
+                {   join => MT::Template->join_on(
+                        undef,
+                        {   id              => \'= templatemap_template_id',
+                            content_type_id => $obj->content_type_id,
+                        },
+                    ),
+                },
+            );
+            $date_field_data
+                = $map && $map->dt_field_id
+                ? $obj->data->{ $map->dt_field_id }
+                : $obj->authored_on;
+        }
+        else {
+            $date_field_data = $obj->authored_on;
+        }
 
         if ( my ( $start, $end ) = $arctype->date_range($date_field_data) ) {
             local $ctx->{current_timestamp}     = $start;
