@@ -52,13 +52,13 @@ $author->api_password($password);
 $author->save or die $author->errstr;
 
 my $category_set1 = MT::Test::Permission->make_category_set( blog_id => 1 );
-MT::Test::Permission->make_category(
+MT::Test::Permission->make_category_set_category(
     blog_id         => 1,
     category_set_id => $category_set1->id
 );
 
 my $category_set2 = MT::Test::Permission->make_category_set( blog_id => 2 );
-MT::Test::Permission->make_category(
+MT::Test::Permission->make_category_set_category(
     blog_id         => 2,
     category_set_id => $category_set2->id
 );

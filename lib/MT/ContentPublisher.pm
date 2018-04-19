@@ -434,7 +434,8 @@ sub rebuild_content_categories {
     my @caegory_set = MT::CategorySet->load( { blog_id => $blog->id } );
     my @category_set_id = map { $_->id } @caegory_set;
     my $cat_iter
-        = MT::Category->load_iter(
+        = MT->model('category_set_category')
+        ->load_iter(
         { blog_id => $blog->id, category_set_id => \@category_set_id },
         \%arg );
     my $fcb = $param{FilterCallback};
@@ -1306,7 +1307,6 @@ sub rebuild_from_fileinfo {
     require MT::Blog;
     require MT::ContentData;
     require MT::ContentStatus;
-    require MT::Category;
     require MT::Template;
     require MT::TemplateMap;
     require MT::Template::Context;

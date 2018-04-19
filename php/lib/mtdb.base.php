@@ -1805,6 +1805,8 @@ abstract class MTDatabase {
 
         if (isset($args['class'])) {
             $class = $this->escape($args['class']);
+        } else if (isset($args['category_set_id'])) {
+            $class = "category_set_category";
         } else {
             $class = "category";
         }
@@ -1845,8 +1847,13 @@ abstract class MTDatabase {
             }
             $list = implode(",", $ids);
 
-            require_once('class.mt_category.php');
-            $category = new Category;
+            if ($args['class'] == 'category_set_category') {
+                require_once('class.mt_category_set_category.php');
+                $category = new CategorySetCategory;
+            } else {
+                require_once('class.mt_category.php');
+                $category = new Category;
+            }
             $base_sort = 'user_custom' == $sort_by ? 'category_label' : $sort_by;
             $where = "category_id in ($list)
                       order by $base_sort $sort_order";

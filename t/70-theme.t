@@ -2,14 +2,15 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env       = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-    $ENV{MT_APP} = 'MT::App::CMS';
+    $ENV{MT_APP}    = 'MT::App::CMS';
 }
 
 use MT::Test;
@@ -54,6 +55,26 @@ ok( $theme->apply($blog), 'apply theme' );
 ## prefs was changed by theme.
 is( $blog->allow_comment_html, 0 );
 is( $blog->allow_pings,        0 );
+
+subtest 'default_categories element' => sub {
+    my @foo = MT->model('category')
+        ->load( { blog_id => $blog->id, basename => 'foo' } );
+    is( @foo,           1 );
+    is( $foo[0]->label, 'foo' );
+
+    my @xxx = MT->model('category')
+        ->load( { blog_id => $blog->id, basename => 'xxx' } );
+    is( @xxx,                 1 );
+    is( $xxx[0]->label,       'moge' );
+    is( $xxx[0]->description, 'category description.' );
+
+    my @yyy = MT->model('category')
+        ->load( { blog_id => $blog->id, basename => 'yyy' } );
+    is( @yyy,                 1 );
+    is( $yyy[0]->label,       'foobar' );
+    is( $yyy[0]->description, 'some other category.' );
+    is( $yyy[0]->parent,      $xxx[0]->id );
+};
 
 subtest 'template_set element' => sub {
     ## only applied template set has this.
@@ -347,18 +368,18 @@ subtest 'default_category_sets element' => sub {
     my $category_set = MT->model('category_set')
         ->load( { blog_id => $blog->id, name => 'test_category_set' } );
     ok($category_set);
-    is( MT->model('category')->count(
+    is( MT->model('category_set_category')->count(
             { blog_id => $blog->id, category_set_id => $category_set->id }
         ),
         3
     );
-    my $category_a = MT->model('category')->load(
+    my $category_a = MT->model('category_set_category')->load(
         {   blog_id         => $blog->id,
             category_set_id => $category_set->id,
             label           => 'a'
         }
     );
-    my $category_b = MT->model('category')->load(
+    my $category_b = MT->model('category_set_category')->load(
         {   blog_id         => $blog->id,
             category_set_id => $category_set->id,
             label           => 'b'
@@ -367,7 +388,7 @@ subtest 'default_category_sets element' => sub {
     ok($category_a);
     ok($category_b);
     is( $category_a->parent, $category_b->id );
-    ok( MT->model('category')->exist(
+    ok( MT->model('category_set_category')->exist(
             {   blog_id         => $blog->id,
                 category_set_id => $category_set->id,
                 label           => 'c'

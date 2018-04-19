@@ -2018,7 +2018,7 @@ sub core_endpoints {
                 '/sites/:site_id/categorySets/:category_set_id/categories',
             verb           => 'GET',
             version        => 4,
-            handler        => "${pkg}v4::Category::list_for_category_set",
+            handler        => "${pkg}v4::CategorySetCategory::list",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2034,10 +2034,10 @@ sub core_endpoints {
         },
         {   id => 'list_parent_categories_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/parents',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_parents_for_category_set",
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id/parents',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySetCategory::list_parents",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested categories for category set.',
@@ -2046,10 +2046,10 @@ sub core_endpoints {
         },
         {   id => 'list_sibling_categories_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/siblings',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_siblings_for_category_set",
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id/siblings',
+            verb           => 'GET',
+            version        => 4,
+            handler        => "${pkg}v4::CategorySetCategory::list_siblings",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2065,10 +2065,10 @@ sub core_endpoints {
         },
         {   id => 'list_child_categories_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/children',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_children_for_category_set",
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id/children',
+            verb        => 'GET',
+            version     => 4,
+            handler     => "${pkg}v4::CategorySetCategory::list_children",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested categories for category set.',
@@ -2081,7 +2081,7 @@ sub core_endpoints {
             resources   => ['category'],
             verb        => 'POST',
             version     => 4,
-            handler     => "${pkg}v4::Category::create_for_category_set",
+            handler     => "${pkg}v4::CategorySetCategory::create",
             error_codes => {
                 403 =>
                     'Do not have permission to create a category for category set.',
@@ -2089,10 +2089,10 @@ sub core_endpoints {
         },
         {   id => 'get_category_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id',
             verb        => 'GET',
             version     => 4,
-            handler     => "${pkg}v4::Category::get_for_category_set",
+            handler     => "${pkg}v4::CategorySetCategory::get",
             error_codes => {
                 403 =>
                     'Do not have permission to retrieve the requested category for category set.',
@@ -2101,11 +2101,11 @@ sub core_endpoints {
         },
         {   id => 'update_category_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id',
             resources   => ['category'],
             verb        => 'PUT',
             version     => 4,
-            handler     => "${pkg}v4::Category::update_for_category_set",
+            handler     => "${pkg}v4::CategorySetCategory::update",
             error_codes => {
                 403 =>
                     'Do not have permission to update a category for category set.',
@@ -2113,10 +2113,10 @@ sub core_endpoints {
         },
         {   id => 'delete_category_for_category_set',
             route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+                '/sites/:site_id/categorySets/:category_set_id/categories/:category_set_category_id',
             verb        => 'DELETE',
             version     => 4,
-            handler     => "${pkg}v4::Category::delete_for_category_set",
+            handler     => "${pkg}v4::CategorySetCategory::delete",
             error_codes => {
                 403 =>
                     'Do not have permission to delete a category for category set.',
@@ -2127,7 +2127,7 @@ sub core_endpoints {
                 '/sites/:site_id/categorySets/:category_set_id/categories/permutate',
             verb        => 'POST',
             version     => 4,
-            handler     => "${pkg}v4::Category::permutate_for_category_set",
+            handler     => "${pkg}v4::CategorySetCategory::permutate",
             error_codes => {
                 403 =>
                     'Do not have permission to permutate categories for category set.',
@@ -2523,6 +2523,17 @@ sub init_plugins {
             $pkg
                 . 'save_filter.category_set' =>
                 "${pfx}CategorySet::save_filter",
+
+            # category_set_category callbacks
+            $pkg
+                . 'view_permission_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::can_view",
+            $pkg
+                . 'save_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::save_filter",
+            $pkg
+                . 'save_permission_filter.category_set_category' =>
+                "${pfx}CategorySetCategory::can_save",
 
             # content_type callbacks
             $pkg

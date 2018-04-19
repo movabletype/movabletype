@@ -73,6 +73,10 @@ class Category extends BaseObject
     }
 
     public function content_data_count($terms = array()) {
+        if ($this->class != 'category_set_category') {
+            return 0;
+        }
+
         $blog_id = $this->blog_id;
         $cat_id = $this->id;
 

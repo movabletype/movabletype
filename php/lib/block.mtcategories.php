@@ -18,8 +18,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
 
         if ($ctx->stash('category_set')) {
             $args['category_set_id'] = $ctx->stash('category_set')->id;
-        } elseif (!isset($args['category_set_id'])) {
-            $args['category_set_id'] = 0;
+            $args['class'] = 'category_set_category';
         }
         $args['sort_by'] = 'label';
         $args['sort_order'] = 'ascend';

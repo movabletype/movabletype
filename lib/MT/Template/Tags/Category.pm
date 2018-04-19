@@ -29,7 +29,7 @@ sub _load_sibling_categories {
     my @cats  = $class->load(
         {   blog_id         => $blog_id,
             parent          => $cat->parent,
-            category_set_id => $cat->category_set_id,
+            category_set_id => $cat->category_set_id || 0,
         },
         { 'sort' => 'label', direction => 'ascend' },
     );
@@ -247,16 +247,22 @@ sub _hdlr_categories {
     $args{'sort'} = 'label';
     $args{'direction'}
         = lc( $args->{sort_order} || '' ) eq 'descend' ? 'descend' : 'ascend';
-
-    my $class_type = $args->{class_type} || 'category';
+    my $category_set_id
+        = defined $args->{category_set_id} ? $args->{category_set_id}
+        : $ctx->stash('category_set')      ? $ctx->stash('category_set')->id
+        :                                    0;
+    my $class_type = $args->{class_type}
+        || ( $category_set_id ? 'category_set_category' : 'category' );
     my $class = MT->model($class_type);
     my $entry_class
-        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
+        = MT->model( $class_type eq 'category' ? 'entry'
+        : $class_type eq 'folder' ? 'page'
+        :                           '' );
     my %counts;
     my $count_tag
-        = $class_type eq 'category'
-        ? 'CategoryCount'
-        : 'FolderCount';
+        = $class_type eq 'folder'
+        ? 'FolderCount'
+        : 'CategoryCount';
     my $uncompiled = $ctx->stash('uncompiled') || '';
     my $count_all = 0;
 
@@ -272,7 +278,7 @@ sub _hdlr_categories {
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
     my $counts_fetched   = 0;
-    my $content_count_of = !$args->{category_set_id}
+    my $content_count_of = !$category_set_id
         ? sub {
         my $cat = shift;
         return delay( sub { $cat->entry_count } )
@@ -342,10 +348,6 @@ sub _hdlr_categories {
         );
         };
 
-    my $category_set_id
-        = defined $args->{category_set_id} ? $args->{category_set_id}
-        : $ctx->stash('category_set')      ? $ctx->stash('category_set')->id
-        :                                    0;
     my $iter
         = $class->load_iter( { %terms, category_set_id => $category_set_id },
         \%args );
@@ -496,14 +498,16 @@ counted and displayed.
 
 sub _hdlr_category_prevnext {
     my ( $ctx, $args, $cond ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $class      = MT->model($class_type);
-    my $e          = $ctx->stash('entry');
-    my $tag        = $ctx->stash('tag');
-    my $step       = $tag =~ m/Next/i ? 1 : -1;
+    my $e    = $ctx->stash('entry');
+    my $tag  = $ctx->stash('tag');
+    my $step = $tag =~ m/Next/i ? 1 : -1;
     defined( my $cat = _get_category_context($ctx) )
         or return $ctx->error( $ctx->errstr );
     return '' if ( $cat eq '' );
+
+    my $class_type = $args->{class_type}
+        || ( $cat->category_set_id ? 'category_set_category' : 'category' );
+    my $class = MT->model($class_type);
 
     require MT::Placement;
     my $needs_entries;
@@ -511,7 +515,9 @@ sub _hdlr_category_prevnext {
     $needs_entries
         = $class_type eq 'category'
         ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
-        : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 );
+        : $class_type eq 'folder'
+        ? ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 )
+        : 0;
     my $blog_id = $cat->blog_id;
     my $cats = _load_sibling_categories( $ctx, $cat, $class_type );
 
@@ -656,10 +662,14 @@ category attribute with square brackets:
 sub _hdlr_sub_categories {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $class_type = $args->{class_type} || 'category';
+    my $category_set_id
+        = $ctx->stash('category_set')
+        ? $ctx->stash('category_set')->id
+        : $args->{category_set_id} || 0;
+    my $class_type = $args->{class_type}
+        || ( $category_set_id ? 'category_set_category' : 'category' );
     my $class = MT->model($class_type);
-    my $entry_class
-        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
+    my $entry_class = MT->model( $class_type eq 'folder' ? 'page' : 'entry' );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
@@ -684,23 +694,17 @@ sub _hdlr_sub_categories {
     ) if ( $sort_method && $sort_by );
     $sort_by = 'user_custom' if !$sort_by || !$class->has_column($sort_by);
 
-    my $category_set_id
-        = $ctx->stash('category_set')
-        ? $ctx->stash('category_set')->id
-        : $args->{category_set_id} || 0;
-
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
         @cats = $class->load(
-            {   blog_id         => $ctx->stash('blog_id'),
-                parent          => '0',
-                category_set_id => $category_set_id,
+            {   parent => '0',
+                $category_set_id ? ( category_set_id => $category_set_id )
+                : ( blog_id => $ctx->stash('blog_id') ),
             },
-            {   (     ( 'user_custom' eq $sort_by )
-                    ? ( sort => 'label' )
+            {   (     ( 'user_custom' eq $sort_by ) ? ( sort => 'label' )
                     : ( sort => $sort_by )
                 ),
                 direction => $sort_order,
@@ -1295,7 +1299,7 @@ sub _hdlr_is_ancestor {
 
     # Get the possible child category
     my $blog_id = $ctx->stash('blog_id');
-    my $iter    = MT::Category->load_iter(
+    my $iter    = MT->model( $cat->class )->load_iter(
         {   blog_id => $blog_id,
             label   => $args->{'child'}
         }
@@ -1348,7 +1352,7 @@ sub _hdlr_is_descendant {
 
     # Get the possible parent category
     my $blog_id = $ctx->stash('blog_id');
-    my $iter    = MT::Category->load_iter(
+    my $iter    = MT->model( $cat->class )->load_iter(
         {   blog_id => $blog_id,
             label   => $args->{'parent'}
         }
@@ -1784,10 +1788,10 @@ Or more simply:
 
 sub _hdlr_sub_cats_recurse {
     my ( $ctx, $args ) = @_;
-    my $class_type = $args->{class_type} || 'category';
-    my $class = MT->model($class_type);
-    my $entry_class
-        = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
+    my $cat         = $ctx->stash('category');
+    my $class_type  = $args->{class_type} || $cat->class || 'category';
+    my $class       = MT->model($class_type);
+    my $entry_class = MT->model( $class_type eq 'folder' ? 'page' : 'entry' );
 
     # Make sure were in the right context
     # mostly to see if we have anything to actually build
@@ -1795,14 +1799,12 @@ sub _hdlr_sub_cats_recurse {
         or return $ctx->error(
         MT->translate(
             "[_1] used outside of [_2]",
-            $class_type eq 'category'
-            ? (qw(MTSubCatRecurse MTSubCategories))
-            : (qw(MTSubFolderRecurse MTSubFolders))
+            $class_type ne 'folder'
+            ? (qw(MTSubFolderRecurse MTSubFolders))
+            : (qw(MTSubCatRecurse MTSubCategories))
         )
         );
     my $builder = $ctx->stash('builder');
-
-    my $cat = $ctx->stash('category');
 
     # Get the depth info
     my $max_depth = $args->{max_depth};

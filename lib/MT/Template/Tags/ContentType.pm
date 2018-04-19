@@ -70,7 +70,7 @@ sub _hdlr_contents {
 
     my $class_type     = $args->{class_type} || 'content_data';
     my $class          = MT->model($class_type);
-    my $cat_class_type = 'category';
+    my $cat_class_type = 'category_set_category';
     my $cat_class      = MT->model($cat_class_type);
 
     my %fields;
@@ -431,24 +431,17 @@ sub _hdlr_contents {
                         $cexpr = $ctx->compile_category_filter(
                             undef, $cats,
                             {   'and'    => $is_and,
-                                children => $cat_class_type eq 'category'
-                                ? ( $args->{include_subcategories}
+                                children => (
+                                    $args->{include_subcategories}
                                     ? 1
                                     : 0
-                                    )
-                                : ( $args->{include_subfolders} ? 1 : 0 )
+                                ),
                             }
                         );
                     }
                     else {
-                        if (( $category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i )
-                            && ((   $cat_class_type eq 'category'
-                                    && !$args->{include_subcategories}
-                                )
-                                || ( $cat_class_type ne 'category'
-                                    && !$args->{include_subfolders} )
-                            )
-                            )
+                        if ( $category_arg !~ m/\b(AND|OR|NOT)\b|[\(|&]/i
+                            && !$args->{include_subcategories} )
                         {
                             my @cats
                                 = $ctx->cat_path_to_category( $category_arg,
@@ -470,12 +463,8 @@ sub _hdlr_contents {
                             $cexpr = $ctx->compile_category_filter(
                                 $category_arg,
                                 $cats,
-                                {   children => $cat_class_type eq 'category'
-                                    ? ( $args->{include_subcategories}
-                                        ? 1
-                                        : 0
-                                        )
-                                    : ( $args->{include_subfolders}
+                                {   children => (
+                                        $args->{include_subcategories}
                                         ? 1
                                         : 0
                                     )
@@ -1485,7 +1474,7 @@ sub _hdlr_content_calendar {
     }
     if ( defined $args->{category} ) {
         $cat_name = $args->{category};
-        $cat      = MT::Category->load(
+        $cat      = MT->model('category_set_category')->load(
             {   label   => $cat_name,
                 blog_id => $blog_id,
                 $category_set_id

@@ -28,9 +28,6 @@ sub can_view {
 
 sub can_save {
     my ( $eh, $app, $obj ) = @_;
-    my $author = $app->user;
-    return 1 if $author->is_superuser();
-
     if ( $obj && !ref $obj ) {
         $obj = MT->model('folder')->load($obj)
             or return;
@@ -38,6 +35,9 @@ sub can_save {
     if ($obj) {
         return unless $obj->isa('MT::Folder');
     }
+
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('save_folder');
@@ -45,9 +45,6 @@ sub can_save {
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    my $author = $app->user;
-    return 1 if $author->is_superuser();
-
     if ( $obj && !ref $obj ) {
         $obj = MT->model('folder')->load($obj)
             or return;
@@ -55,6 +52,9 @@ sub can_delete {
     if ($obj) {
         return unless $obj->isa('MT::Folder');
     }
+
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_folder');
@@ -65,14 +65,7 @@ sub pre_save {
     my ( $app, $obj ) = @_;
     return 1 unless defined $obj->basename;
 
-    my $pkg      = $app->model('folder');
-    my @siblings = $pkg->load(
-        {   parent  => $obj->parent,
-            blog_id => $obj->blog_id
-        }
-    );
-    foreach (@siblings) {
-        next if $obj->id && ( $_->id == $obj->id );
+    foreach ( @{ $obj->siblings } ) {
         return $eh->error(
             $app->translate(
                 "The folder '[_1]' conflicts with another folder. Folders with the same parent must have unique basenames.",
@@ -117,12 +110,8 @@ sub post_save {
 }
 
 sub save_filter {
-    my $eh    = shift;
-    my ($app) = @_;
-    my $label = $app->param('label') or return 1;
-    return $app->errtrans( "The name '[_1]' is too long!", $label )
-        if ( length($label) > 100 );
-    return 1;
+    require MT::CMS::Category;
+    MT::CMS::Category::save_filter(@_);
 }
 
 sub post_delete {

@@ -49,17 +49,17 @@ $test_env->prepare_fixture(sub {
         die 'category_set->id is ' . ( $category_set->id || 'not set' );
     }
 
-    MT::Test::Permission->make_category(
+    MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'abc',
     );
-    MT::Test::Permission->make_category(
+    MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'def',
     );
-    MT::Test::Permission->make_category(
+    MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $category_set->id,
         label           => 'ghi',

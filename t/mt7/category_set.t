@@ -13,7 +13,6 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 
-use MT::Category;
 use MT::CategorySet;
 
 MT::Test->init_app;
@@ -37,14 +36,14 @@ subtest 'cat_count' => sub {
         name    => 'test cat_count',
     );
 
-    my $cat1 = MT::Test::Permission->make_category(
+    my $cat1 = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $cat_set->id,
     );
     $cat_set->save or die $cat_set->errstr;
     is( $cat_set->cat_count, 1, 'cat_count is 1' );
 
-    my $cat2 = MT::Test::Permission->make_category(
+    my $cat2 = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $cat_set->id,
     );
@@ -95,13 +94,13 @@ subtest 'remove' => sub {
         name    => 'test remove',
     );
 
-    my $cat = MT::Test::Permission->make_category(
+    my $cat = MT::Test::Permission->make_category_set_category(
         blog_id         => $blog_id,
         category_set_id => $cat_set->id,
     );
 
     my $count = sub {
-        MT::Category->count(
+        MT->model('category_set_category')->count(
             {   blog_id         => $blog_id,
                 category_set_id => $cat_set->id,
             }

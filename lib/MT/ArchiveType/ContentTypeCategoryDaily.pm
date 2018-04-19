@@ -154,13 +154,10 @@ sub archive_group_iter {
         $loop_sub->($cat);
     }
     else {
-        require MT::Category;
-        my $iter = MT::Category->load_iter(
-            {   blog_id => $blog->id,
-                (   $args->{category_set_id}
-                    ? ( category_set_id => $args->{category_set_id} )
-                    : ( category_set_id => { op => '!=', value => 0 } )
-                )
+        my $iter = MT->model('category_set_category')->load_iter(
+            {   $args->{category_set_id}
+                ? ( category_set_id => $args->{category_set_id} )
+                : (),
             },
             { 'sort' => 'label', direction => $cat_order }
         );

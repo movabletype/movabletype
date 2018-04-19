@@ -25,8 +25,7 @@ sub view {
             unless $category_set->blog_id == $blog_id;
     }
 
-    $app->param( '_type',           'category' );
-    $app->param( 'is_category_set', 1 );
+    $app->param( '_type', 'category_set_category' );
     $app->forward('list');
 }
 

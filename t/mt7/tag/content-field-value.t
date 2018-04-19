@@ -135,12 +135,12 @@ $test_env->prepare_fixture(
             blog_id => $ct->blog_id,
             name    => 'test category set',
         );
-        my $category1 = MT::Test::Permission->make_category(
+        my $category1 = MT::Test::Permission->make_category_set_category(
             blog_id         => $category_set->blog_id,
             category_set_id => $category_set->id,
             label           => 'category1',
         );
-        my $category2 = MT::Test::Permission->make_category(
+        my $category2 = MT::Test::Permission->make_category_set_category(
             blog_id         => $category_set->blog_id,
             category_set_id => $category_set->id,
             label           => 'category2',

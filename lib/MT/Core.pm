@@ -170,16 +170,19 @@ BEGIN {
             'accesstoken'     => 'MT::AccessToken',
 
             # MT7
-            'category_set'        => 'MT::CategorySet',
-            'cd'                  => 'MT::ContentData',
-            'content_data'        => 'MT::ContentData',
-            'cf'                  => 'MT::ContentField',
-            'content_field'       => 'MT::ContentField',
-            'cf_idx'              => 'MT::ContentFieldIndex',
-            'content_field_index' => 'MT::ContentFieldIndex',
-            'content_type'        => 'MT::ContentType',
-            'objectcategory'      => 'MT::ObjectCategory',
-            'rebuild_trigger'     => 'MT::RebuildTrigger',
+            'category_set'                   => 'MT::CategorySet',
+            'category_set_category'          => 'MT::CategorySetCategory',
+            'category_set_category'          => 'MT::CategorySetCategory',
+            'category.category_set_category' => 'MT::CategorySetCategory',
+            'cd'                             => 'MT::ContentData',
+            'content_data'                   => 'MT::ContentData',
+            'cf'                             => 'MT::ContentField',
+            'content_field'                  => 'MT::ContentField',
+            'cf_idx'                         => 'MT::ContentFieldIndex',
+            'content_field_index'            => 'MT::ContentFieldIndex',
+            'content_type'                   => 'MT::ContentType',
+            'objectcategory'                 => 'MT::ObjectCategory',
+            'rebuild_trigger'                => 'MT::RebuildTrigger',
 
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
@@ -1280,26 +1283,28 @@ BEGIN {
                     },
                 },
             },
-            website       => '$Core::MT::Website::list_props',
-            blog          => '$Core::MT::Blog::list_props',
-            entry         => '$Core::MT::Entry::list_props',
-            page          => '$Core::MT::Page::list_props',
-            asset         => '$Core::MT::Asset::list_props',
-            category      => '$Core::MT::Category::list_props',
-            folder        => '$Core::MT::Folder::list_props',
-            author        => '$Core::MT::Author::list_props',
-            member        => '$Core::MT::Author::member_list_props',
-            tag           => '$Core::MT::Tag::list_props',
-            banlist       => '$Core::MT::IPBanList::list_props',
-            association   => '$Core::MT::Association::list_props',
-            role          => '$Core::MT::Role::list_props',
-            notification  => '$Core::MT::Notification::list_props',
-            log           => '$Core::MT::Log::list_props',
-            filter        => '$Core::MT::Filter::list_props',
-            permission    => '$Core::MT::Permission::list_props',
-            template      => '$Core::MT::Template::list_props',
-            templatemap   => '$Core::MT::TemplateMap::list_props',
-            category_set  => '$Core::MT::CategorySet::list_props',
+            website      => '$Core::MT::Website::list_props',
+            blog         => '$Core::MT::Blog::list_props',
+            entry        => '$Core::MT::Entry::list_props',
+            page         => '$Core::MT::Page::list_props',
+            asset        => '$Core::MT::Asset::list_props',
+            category     => '$Core::MT::Category::list_props',
+            folder       => '$Core::MT::Folder::list_props',
+            author       => '$Core::MT::Author::list_props',
+            member       => '$Core::MT::Author::member_list_props',
+            tag          => '$Core::MT::Tag::list_props',
+            banlist      => '$Core::MT::IPBanList::list_props',
+            association  => '$Core::MT::Association::list_props',
+            role         => '$Core::MT::Role::list_props',
+            notification => '$Core::MT::Notification::list_props',
+            log          => '$Core::MT::Log::list_props',
+            filter       => '$Core::MT::Filter::list_props',
+            permission   => '$Core::MT::Permission::list_props',
+            template     => '$Core::MT::Template::list_props',
+            templatemap  => '$Core::MT::TemplateMap::list_props',
+            category_set => '$Core::MT::CategorySet::list_props',
+            category_set_category =>
+                '$Core::MT::CategorySetCategory::list_props',
             content_type  => '$Core::MT::ContentType::list_props',
             content_field => '$Core::MT::ContentField::list_props',
             content_data => '$Core::MT::ContentData::list_props_for_data_api',
@@ -1635,6 +1640,22 @@ BEGIN {
                 data_api_permission => undef,
                 scope_mode          => 'this',
                 permission          => 'access_to_category_set_list',
+            },
+            category_set_category => {
+                object_label => 'Category for Category Set',
+                primary      => 'label',
+                template     => 'list_category.tmpl',
+                permission   => {
+                    permit_action => 'access_to_category_list',
+                    inherit       => 0,
+                },
+                data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
+                scope_mode          => 'this',
+                condition           => sub {
+                    my $app = shift;
+                    ( $app->param('_type') || '' ) ne 'filter';
+                },
             },
             content_type => {
                 screen_label        => 'Manage Content Type',
@@ -2046,7 +2067,7 @@ BEGIN {
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
-            'DefaultSiteURL'          => undef,    ## DEPRECATED
+            'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
@@ -2620,7 +2641,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
@@ -3164,6 +3185,7 @@ sub load_core_permissions {
                 'access_to_category_set_list'            => 1,
                 'delete_category_set'                    => 1,
                 'manage_category_set'                    => 1,
+                'delete_category_set_category'           => 1,
                 'open_category_set_category_edit_screen' => 1,
                 'save_catefory_set_category'             => 1,
             }

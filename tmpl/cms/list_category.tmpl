@@ -885,7 +885,7 @@ function bulkUpdateCategories() {
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: {
-      __mode: 'bulk_update_<mt:var name="object_type">',
+      __mode: 'bulk_update_<mt:if name="object_type" eq="folder">folder<mt:else>category</mt:if>',
       datasource: '<mt:var name="list_type">',
   <mt:if name="is_category_set">
       is_category_set: 1,

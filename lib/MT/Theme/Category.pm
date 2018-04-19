@@ -18,11 +18,8 @@ sub import_categories {
 
     my $order = generate_order(
         {   basenames => $element->{data}{':order'},
-            terms     => {
-                blog_id         => $obj_to_apply->id,
-                class           => 'category',
-                category_set_id => 0,
-            },
+            class     => 'category',
+            terms     => { blog_id => $obj_to_apply->id },
         }
     );
     if ($order) {
@@ -43,11 +40,8 @@ sub import_folders {
 
     my $order = generate_order(
         {   basenames => $element->{data}{':order'},
-            terms     => {
-                blog_id         => $obj_to_apply->id,
-                class           => 'folder',
-                category_set_id => 0,
-            },
+            class     => 'folder',
+            terms     => { blog_id => $obj_to_apply->id },
         }
     );
     if ($order) {
@@ -104,8 +98,7 @@ sub category_condition {
     my ($blog) = @_;
     my $cat
         = MT->model('category')
-        ->load( { blog_id => $blog->id, category_set_id => 0 },
-        { limit => 1 } );
+        ->load( { blog_id => $blog->id }, { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
@@ -113,8 +106,7 @@ sub folder_condition {
     my ($blog) = @_;
     my $cat
         = MT->model('folder')
-        ->load( { blog_id => $blog->id, category_set_id => 0 },
-        { limit => 1 } );
+        ->load( { blog_id => $blog->id }, { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
@@ -164,12 +156,10 @@ sub export_category {
     my @cats;
     if ( defined $settings ) {
         my @ids = $settings->{default_category_export_ids};
-        @cats = MT->model('category')
-            ->load( { id => \@ids, category_set_id => 0 } );
+        @cats = MT->model('category')->load( { id => \@ids } );
     }
     else {
-        @cats = MT->model('category')
-            ->load( { blog_id => $blog->id, category_set_id => 0 } );
+        @cats = MT->model('category')->load( { blog_id => $blog->id } );
     }
 
     my $data = {};
@@ -192,12 +182,10 @@ sub export_folder {
     my @folders;
     if ( defined $settings ) {
         my @ids = $settings->{default_folder_export_ids};
-        @folders = MT->model('folder')
-            ->load( { id => \@ids, category_set_id => 0 } );
+        @folders = MT->model('folder')->load( { id => \@ids } );
     }
     else {
-        @folders = MT->model('folder')
-            ->load( { blog_id => $blog->id, category_set_id => 0 } );
+        @folders = MT->model('folder')->load( { blog_id => $blog->id } );
     }
 
     my $data = {};

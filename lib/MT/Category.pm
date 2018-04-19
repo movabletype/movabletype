@@ -30,11 +30,15 @@ __PACKAGE__->install_properties(
             'show_fields' => 'text meta',
         },
         indexes => {
-            blog_id       => 1,
-            label         => 1,
-            parent        => 1,
-            blog_basename => { columns => [ 'blog_id', 'basename' ], },
-            blog_class    => { columns => [ 'blog_id', 'class' ], },
+            blog_id         => 1,
+            category_set_id => 1,
+            label           => 1,
+            parent          => 1,
+            blog_basename   => { columns => [ 'blog_id', 'basename' ], },
+            blog_class      => { columns => [ 'blog_id', 'class' ], },
+            siblings => { columns => [ 'class', 'parent', 'blog_id' ] },
+            siblings_cs =>
+                { columns => [ 'class', 'parent', 'category_set_id' ] },
         },
         defaults => {
             parent          => 0,
@@ -120,19 +124,10 @@ sub list_props {
                 require MT::Category;
                 require MT::Blog;
                 my $rep = $objs->[0] or return;
-                my $text;
-                if ( $rep->category_set_id ) {
-                    my $set
-                        = MT->model('category_set')
-                        ->load( $rep->category_set_id );
-                    $text = $set->order || '';
-                }
-                else {
-                    my $blog = MT::Blog->load( { id => $rep->blog_id },
-                        { no_class => 1 } );
-                    my $meta = $prop->class . '_order';
-                    $text = $blog->$meta || '';
-                }
+                my $blog = MT::Blog->load( { id => $rep->blog_id },
+                    { no_class => 1 } );
+                my $meta = $prop->class . '_order';
+                my $text = $blog->$meta || '';
                 my @cats = _sort_by_id_list(
                     $text,
                     $objs,
@@ -165,10 +160,6 @@ sub list_props {
             display         => 'none',
             filter_editable => 0,
         },
-        category_set_id => {
-            auto    => 1,
-            display => 'none',
-        },
     };
 }
 
@@ -197,6 +188,8 @@ sub basename_prefix {
     }
     $prefix;
 }
+
+sub category_set_id {0}
 
 sub ping_url_list {
     my $cat = shift;
@@ -321,6 +314,10 @@ sub save {
             return $cat->error( MT->translate("Category loop detected") )
                 if ( $cat->id && $cat->is_ancestor($parent) );
         }
+    }
+
+    if ( $cat->class eq 'category' || $cat->class eq 'folder' ) {
+        $cat->column( 'category_set_id', 0 );
     }
 
     $cat->SUPER::save(@_) or return;
@@ -706,13 +703,23 @@ sub is_category {
     return $class->class eq 'category';
 }
 
-sub category_set {
+sub category_set { }
+
+sub siblings {
     my $self = shift;
     $self->cache_property(
-        'cateogry_list',
+        'siblings',
         sub {
-            require MT::CategorySet;
-            MT::CategorySet->load( $self->category_set_id || 0 );
+            my $pkg      = ref $self;
+            my @siblings = $pkg->load(
+                {   blog_id => $self->blog_id,
+                    parent  => $self->parent,
+                }
+            );
+            if ( $self->id ) {
+                @siblings = grep { $_->id != $self->id } @siblings;
+            }
+            \@siblings;
         },
     );
 }

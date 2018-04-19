@@ -8,6 +8,14 @@ package MT::CMS::Category;
 use strict;
 use warnings;
 
+sub _is_valid_type {
+    my ( $type, $obj ) = @_;
+    return 0 unless $type eq 'category' || $type eq 'folder';
+    !$obj
+        || ( $type eq 'category' && $obj->is_category )
+        || ( $type eq 'folder'   && !$obj->is_category );
+}
+
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
@@ -41,7 +49,7 @@ sub edit {
         || $app->param('_type')
         || MT::Category->class_type;
     return $app->trans_error('Invalid request.')
-        unless $obj && $obj->class eq $type;
+        unless _is_valid_type( $type, $obj );
     my $entry_class;
     my $entry_type;
     if ( $type eq 'category' ) {
@@ -60,41 +68,16 @@ sub edit {
     ## author_id parameter of the author currently logged in.
     delete $param->{'author_id'};
 
-    if ( $obj->category_set_id ) {
-        $app->add_breadcrumb(
-            $app->model('category_set')->class_label_plural,
-            $app->uri(
-                mode => 'list',
-                args => {
-                    _type   => 'category_set',
-                    blog_id => $blog->id,
-                },
-            ),
-        );
-        $app->add_breadcrumb(
-            $obj->category_set->name,
-            $app->uri(
-                mode => 'view',
-                args => {
-                    _type   => 'category_set',
-                    blog_id => $blog->id,
-                    id      => $obj->category_set_id,
-                },
-            ),
-        );
-    }
-    else {
-        $app->add_breadcrumb(
-            $app->model($type)->class_label_plural,
-            $app->uri(
-                mode => 'list',
-                args => {
-                    _type   => $type,
-                    blog_id => $blog->id,
-                },
-            ),
-        );
-    }
+    $app->add_breadcrumb(
+        $app->model($type)->class_label_plural,
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => $type,
+                blog_id => $blog->id,
+            },
+        ),
+    );
     $app->add_breadcrumb( $obj->label );
 
     1;
@@ -175,20 +158,17 @@ sub bulk_update {
     $app->validate_magic or return;
 
     my $is_category_set = $app->param('is_category_set');
-    my $set_id          = $app->param('set_id');
+    my $set_id          = $app->param('set_id') || 0;
     my $model           = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
-        if ($is_category_set) {
-            return $app->json_error( $app->translate('Permission denied.') )
-                unless ( $app->user->can_manage_content_types
-                || $app->can_do('save_category_set') );
-        }
-        else {
-            $app->can_do('edit_categories')
-                or return $app->json_error(
-                $app->translate("Permission denied.") );
-        }
-
+        $app->can_do('edit_categories')
+            or
+            return $app->json_error( $app->translate("Permission denied.") );
+    }
+    elsif ( 'category_set_category' eq $model ) {
+        return $app->json_error( $app->translate('Permission denied.') )
+            unless ( $app->user->can_manage_content_types
+            || $app->can_do('save_category_set') );
     }
     elsif ( 'folder' eq $model ) {
         $app->can_do('save_folder')
@@ -240,18 +220,10 @@ sub bulk_update {
         }
     }
 
-    my $old_objects_terms;
-    if ($set_id) {
-        $old_objects_terms
-            = { blog_id => $blog_id, category_set_id => $set_id };
-    }
-    elsif ($is_category_set) {
-        $old_objects_terms = { id => 0 };    # no data
-    }
-    else {
-        $old_objects_terms
-            = { blog_id => $blog_id, category_set_id => [ \'IS NULL', 0 ] };
-    }
+    my $old_objects_terms = {
+        blog_id         => $blog_id,
+        category_set_id => $set_id,
+    };
     my @old_objects = $class->load($old_objects_terms);
 
     # Test CheckSum
@@ -445,14 +417,13 @@ sub js_add_category {
     }
     my $user            = $app->user;
     my $blog_id         = $app->param('blog_id');
-    my $type            = $app->param('_type') || 'category';
-    my $category_set_id = 0;
-    if ( $type eq 'category' ) {
-        $category_set_id = $app->param('category_set_id') || 0;
-    }
+    my $category_set_id = $app->param('category_set_id') || 0;
+    my $type            = $app->param('_type')
+        || ( $category_set_id ? 'category_set_category' : 'category' );
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )
-        or ( $type eq 'folder' );
+        or ( $type eq 'folder' )
+        or ( $type eq 'category_set_category' );
     my $class = $app->model($type);
 
     if ( !$class ) {
@@ -476,7 +447,7 @@ sub js_add_category {
             $parent = $class->load(
                 {   id              => $parent_id,
                     blog_id         => $blog_id,
-                    category_set_id => $category_set_id || [ \'IS NULL', 0 ],
+                    category_set_id => $category_set_id,
                 }
             );
             if ( !$parent ) {
@@ -567,20 +538,12 @@ sub can_view {
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
-    if ( $obj && $obj->category_set ) {
-        return $author->permissions($blog_id)
-            ->can_do('open_category_set_category_edit_screen');
-    }
-    else {
-        return $author->permissions($blog_id)
-            ->can_do('open_category_edit_screen');
-    }
+    return $author->permissions($blog_id)
+        ->can_do('open_category_edit_screen');
 }
 
 sub can_save {
     my ( $eh, $app, $id, $obj, $origin ) = @_;
-    my $author = $app->user;
-    return 1 if $author->is_superuser();
 
     if ($id) {
         if ( !ref $id ) {
@@ -595,21 +558,16 @@ sub can_save {
         return unless $obj->is_category;
     }
 
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
 
-    if ( $obj && $obj->category_set ) {
-        return $author->permissions($blog_id)
-            ->can_do('save_catefory_set_category');
-    }
-    else {
-        return $author->permissions($blog_id)->can_do('save_category');
-    }
+    $author->permissions($blog_id)->can_do('save_category');
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    my $author = $app->user;
-    return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
@@ -619,6 +577,9 @@ sub can_delete {
         return unless $obj->is_category;
     }
 
+    my $author = $app->user;
+    return 1 if $author->is_superuser();
+
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_category');
 }
@@ -626,18 +587,12 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
-    my $pkg = $app->model('category');
-    if ( defined( my $pass = $app->param('tb_passphrase') ) ) {
+    if ( $obj->is_category
+        && defined( my $pass = $app->param('tb_passphrase') ) )
+    {
         $obj->{__tb_passphrase} = $pass;
     }
-    my @siblings = $pkg->load(
-        {   parent          => $obj->parent,
-            blog_id         => $obj->blog_id,
-            category_set_id => $obj->category_set_id || [ \'IS NULL', 0 ],
-        }
-    );
-    foreach (@siblings) {
-        next if $obj->id && ( $_->id == $obj->id );
+    foreach ( @{ $obj->siblings } ) {
         return $eh->error(
             $app->translate(
                 "The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.",
@@ -696,7 +651,7 @@ sub save_filter {
     my ($app) = @_;
     return $app->errtrans( "The name '[_1]' is too long!",
         $app->param('label') )
-        if ( length( $app->param('label') ) > 100 );
+        if ( ( length( $app->param('label') ) || 0 ) > 100 );
     return 1;
 }
 
@@ -758,7 +713,7 @@ sub post_delete {
                 $obj->label, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'category',
+            class    => $obj->class,
             category => 'delete'
         }
     );
@@ -824,52 +779,13 @@ sub move_category {
 
 sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
-
-    if ( $param->{is_category_set} = $app->param('is_category_set') ) {
-        my $set_id = $app->param('id');
-        my $set = MT->model('category_set')->load( $set_id || 0 );
-
-        if ($set) {
-            $param->{id}       = $set->id;
-            $param->{set_name} = $set->name;
-        }
-
-        my $object_label = $app->translate('Category Set');
-        $param->{page_title}
-            = $set
-            ? $app->translate( "Edit [_1]",   $object_label )
-            : $app->translate( "Create [_1]", $object_label );
-    }
-    else {
-        $param->{page_title}
-            = $app->translate( 'Manage [_1]', $param->{object_label_plural} );
-    }
-
+    $param->{page_title}
+        = $app->translate( 'Manage [_1]', $param->{object_label_plural} );
     my $blog = $app->blog or return;
     $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
     my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
-
-    if ( $param->{is_category_set} ) {
-        $app->{breadcrumbs} = [];
-        $app->add_breadcrumb(
-            $app->translate('Category Sets'),
-            $app->uri(
-                mode => 'list',
-                args => {
-                    _type   => 'category_set',
-                    blog_id => $app->blog->id,
-                },
-            ),
-        );
-        if ( $param->{id} ) {
-            $app->add_breadcrumb( $param->{set_name} );
-        }
-        else {
-            $app->add_breadcrumb( $app->translate('Create Category Set') );
-        }
-    }
 }
 
 sub pre_load_filtered_list {
@@ -879,46 +795,17 @@ sub pre_load_filtered_list {
     delete $opts->{sort_order};
     $opts->{sort_by} = 'custom_sort';
     @$cols = qw( id parent label basename entry_count );
-
-    if ( my $set_id = $app->param('set_id') ) {
-        $opts->{terms} ||= {};
-        $opts->{terms}{category_set_id} = $set_id;
-    }
-    elsif ( $app->param('is_category_set') ) {
-        $opts->{terms} ||= {};
-        $opts->{terms}{id} = 0;    # return no data
-    }
-    else {
-        my $set_id_terms = { category_set_id => [ \'IS NULL', 0 ] };
-        if ( $opts->{terms} ) {
-            $opts->{terms} = [ $opts->{terms}, $set_id_terms ];
-        }
-        else {
-            $opts->{terms} = $set_id_terms;
-        }
-    }
 }
 
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
-
-    my $sort_order = '';
-    if ( $app->param('is_category_set') ) {
-        if ( my $set_id = $app->param('set_id') ) {
-            my $set = $app->model('category_set')->load($set_id);
-            $sort_order = $set->order || '';
-            $param->{category_set_id} = $set_id;
-        }
-    }
-    else {
-        my $type = $app->param('datasource');
-        my $meta = $type . '_order';
-        $sort_order = $app->blog->$meta || '';
-    }
-
+    my $type            = $app->param('datasource');
+    my $meta            = $type . '_order';
+    my $blog_meta_value = $app->blog->$meta;
+    $blog_meta_value = '' unless defined($blog_meta_value);
     my $text = join(
         ':',
-        $sort_order,
+        $blog_meta_value,
         map {
             join( ':', $_->id, $_->parent, Encode::encode_utf8( $_->label ), )
             }

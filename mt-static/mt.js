@@ -2668,7 +2668,7 @@ MT.App.CategorySelector = new Class( Component, {
         this.list.addObserver( this );
 
         if ( element.match( /category/ ) ) {
-            this.type = "category";
+            this.type = this.categorySetId ? "category_set_category" : "category";
             this.list.setOption( "singleSelect", false );
             this.list.setOption( "toggleSelect", true );
         } else {
@@ -2839,7 +2839,7 @@ MT.App.CategorySelector = new Class( Component, {
             blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
             category_set_id: this.categorySetId,
             parent: parseInt( this.parentID ),
-            _type: this.categorySetId ? 'category' : this.type
+            _type: this.type
         };
         args.label = name;
 
