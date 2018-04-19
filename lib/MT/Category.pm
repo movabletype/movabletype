@@ -401,11 +401,6 @@ sub remove {
     $cat->SUPER::remove(@_);
 }
 
-sub remove_all {
-    my $class = shift;
-    $class->_proxy( 'direct_remove', { category_set_id => '*' } );
-}
-
 sub _flattened_category_hierarchy {
 
     # Either the class name or a MT::Category object

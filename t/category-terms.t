@@ -176,7 +176,7 @@ subtest
     ok($category_for_category_set_exists);
     };
 
-subtest 'remove_all method removes all categories' => sub {
+subtest 'remove_all method does not remove category for category set' => sub {
     MT::Test::Permission->make_category( blog_id => $blog_id );
     my $removed = MT->model('category')->remove_all;
 
@@ -188,7 +188,7 @@ subtest 'remove_all method removes all categories' => sub {
         = MT->model('category')
         ->exist(
         { blog_id => $blog_id, category_set_id => $category_set->id } );
-    ok( !$category_for_category_set_exists );
+    ok($category_for_category_set_exists);
 };
 
 done_testing;
