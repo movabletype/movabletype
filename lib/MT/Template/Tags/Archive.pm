@@ -438,17 +438,22 @@ sub _hdlr_archive_prev_next {
     my $arctype = MT->publisher->archiver($at);
     return '' unless $arctype;
 
-    my $entry;
+    my ( $prev_method, $next_method )
+        = $at->contenttype_based
+        ? ( 'previous_archive_content_data', 'next_archive_content_data' )
+        : ( 'previous_archive_entry', 'next_archive_entry' );
+
+    my $obj;
     if ( $arctype->date_based && $arctype->category_based ) {
         my $param = {
             ts       => $ctx->{current_timestamp},
             blog_id  => $ctx->stash('blog_id'),
             category => $ctx->stash('archive_category'),
         };
-        $entry
+        $obj
             = $is_prev
-            ? $arctype->previous_archive_entry($param)
-            : $arctype->next_archive_entry($param);
+            ? $arctype->$prev_method($param)
+            : $arctype->$next_method($param);
     }
     elsif ( $arctype->date_based && $arctype->author_based ) {
         my $param = {
@@ -456,10 +461,10 @@ sub _hdlr_archive_prev_next {
             blog_id => $ctx->stash('blog_id'),
             author  => $ctx->stash('author'),
         };
-        $entry
+        $obj
             = $is_prev
-            ? $arctype->previous_archive_entry($param)
-            : $arctype->next_archive_entry($param);
+            ? $arctype->$prev_method($param)
+            : $arctype->$next_method($param);
     }
     elsif ( $arctype->category_based ) {
         return $is_prev
@@ -476,13 +481,14 @@ sub _hdlr_archive_prev_next {
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
     }
-    elsif ( $arctype->entry_based ) {
-        my $e = $ctx->stash('entry');
+    elsif ( $arctype->entry_based || $arctype->contenttype_based ) {
+        my $obj_key = $arctype->contenttype_based ? 'content' : 'entry';
+        my $o = $ctx->stash($obj_key);
         if ($is_prev) {
-            $entry = $e->previous(1);
+            $obj = $o->previous(1);
         }
         else {
-            $entry = $e->next(1);
+            $obj = $o->next(1);
         }
     }
     else {
@@ -503,17 +509,35 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
-        $entry
+        $obj
             = $is_prev
-            ? $arctype->previous_archive_entry($param)
-            : $arctype->next_archive_entry($param);
+            ? $arctype->$prev_method($param)
+            : $arctype->$next_method($param);
     }
-    if ($entry) {
+    if ($obj) {
         my $builder = $ctx->stash('builder');
-        local $ctx->{__stash}->{entries} = [$entry];
-        if ( my ( $start, $end )
-            = $arctype->date_range( $entry->authored_on ) )
-        {
+        my $stash_key = $arctype->contenttype_based ? 'contents' : 'entries';
+        local $ctx->{__stash}->{$stash_key} = [$obj];
+
+        my ($map) = MT::TemplateMap->load(
+            {   blog_id      => $obj->blog_id,
+                archive_type => $at,
+                is_preferred => 1,
+            },
+            {   join => MT::Template->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $obj->content_type_id,
+                    },
+                ),
+            },
+        );
+        my $date_field_data
+            = $map && $map->dt_field_id
+            ? $obj->data->{ $map->dt_field_id }
+            : $obj->authored_on;
+
+        if ( my ( $start, $end ) = $arctype->date_range($date_field_data) ) {
             local $ctx->{current_timestamp}     = $start;
             local $ctx->{current_timestamp_end} = $end;
             defined( my $out
@@ -522,8 +546,8 @@ sub _hdlr_archive_prev_next {
             $res .= $out;
         }
         else {
-            local $ctx->{current_timestamp}     = $entry->authored_on;
-            local $ctx->{current_timestamp_end} = $entry->authored_on;
+            local $ctx->{current_timestamp}     = $date_field_data;
+            local $ctx->{current_timestamp_end} = $date_field_data;
             defined( my $out
                     = $builder->build( $ctx, $ctx->stash('tokens'), $cond ) )
                 or return $ctx->error( $builder->errstr );
