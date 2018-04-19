@@ -58,16 +58,19 @@ sub _set_category_set_id_if_needed {
     my ( $terms, $args ) = @_;
     my $no_category_set_id = 0;
     if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
-        delete $args->{not_category_set_id};
+        delete $args->{no_category_set_id};
         $no_category_set_id = 1;
     }
     if ( ref $terms eq 'HASH' ) {
-        if ( exists $terms->{category_set_id} ) {
-            if ( $terms->{category_set_id} eq '*' || $no_category_set_id ) {
-                delete $terms->{category_set_id};
-            }
+        if ( ( $terms->{category_set_id} || '' ) eq '*'
+            || $no_category_set_id )
+        {
+            delete $terms->{category_set_id};
         }
-        elsif ( !exists $terms->{id} && !$terms->{parent} ) {
+        elsif (!exists $terms->{category_set_id}
+            && !exists $terms->{id}
+            && !$terms->{parent} )
+        {
             $terms->{category_set_id} = 0;
         }
     }
@@ -396,6 +399,11 @@ sub remove {
         }
     }
     $cat->SUPER::remove(@_);
+}
+
+sub remove_all {
+    my $class = shift;
+    $class->_proxy( 'direct_remove', { category_set_id => '*' } );
 }
 
 sub _flattened_category_hierarchy {
