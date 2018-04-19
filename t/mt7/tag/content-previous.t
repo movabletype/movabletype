@@ -151,8 +151,10 @@ my $ct = MT::ContentType->load( { name => 'test content type' } );
 my $cat_cf  = MT::ContentField->load( { name => 'categories' } );
 my $date_cf = MT::ContentField->load( { name => 'date and time' } );
 
-my $category1 = MT::Category->load( { label => 'category1' } );
-my $category2 = MT::Category->load( { label => 'category2' } );
+my $category1 = MT::Category->load(
+    { label => 'category1', category_set_id => \'> 0' } );
+my $category2 = MT::Category->load(
+    { label => 'category2', category_set_id => \'> 0' } );
 
 $vars->{cat1_id} = $category1->id;
 $vars->{cat2_id} = $category2->id;

@@ -1135,8 +1135,8 @@ sub nofollowfy_on {
 sub cat_path_to_category {
     ## for backward compatibility.
     shift if UNIVERSAL::isa( $_[0], 'MT::Template::Context' );
-    my ( $path, $blog_id, $class_type ) = @_;
-
+    my ( $path, $blog_id, $class_type, $category_set_id ) = @_;
+    $category_set_id ||= 0;
     my $class = MT->model($class_type);
 
   # The argument version always takes precedence
@@ -1158,8 +1158,9 @@ sub cat_path_to_category {
 
     my $top  = shift @cat_path;
     my @cats = $class->load(
-        {   label  => $top,
-            parent => 0,
+        {   label           => $top,
+            parent          => 0,
+            category_set_id => $category_set_id,
             %blog_terms
         },
         \%blog_args
@@ -1168,8 +1169,9 @@ sub cat_path_to_category {
         for my $label (@cat_path) {
             my @parents = map { $_->id } @cats;
             @cats = $class->load(
-                {   label  => $label,
-                    parent => \@parents,
+                {   label           => $label,
+                    parent          => \@parents,
+                    category_set_id => $category_set_id,
                     %blog_terms
                 },
                 \%blog_args
@@ -1179,7 +1181,8 @@ sub cat_path_to_category {
     if ( !@cats && $path ) {
         @cats = (
             $class->load(
-                {   label => $path,
+                {   label           => $path,
+                    category_set_id => $category_set_id,
                     %blog_terms,
                 },
                 \%blog_args

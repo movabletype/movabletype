@@ -39,7 +39,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         if (!$top) {
             if ($args['category']) {
                 require_once("MTUtil.php");
-                $current_cat = cat_path_to_category($args['category'], $blog_id);
+                $current_cat = cat_path_to_category($args['category'], $blog_id, $class, $category_set_id);
                 if ( is_array( $current_cat ) )
                     $current_cat = $current_cat[0];
             }

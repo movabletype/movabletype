@@ -67,7 +67,7 @@ sub _set_category_set_id_if_needed {
                 delete $terms->{category_set_id};
             }
         }
-        elsif ( !exists $terms->{id} ) {
+        elsif ( !exists $terms->{id} && !$terms->{parent} ) {
             $terms->{category_set_id} = 0;
         }
     }

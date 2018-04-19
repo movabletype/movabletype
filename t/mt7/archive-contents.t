@@ -169,7 +169,8 @@ my $cf_category = MT::ContentField->load( { name => 'categories' } );
 
 my $ct = MT::ContentType->load( { name => 'test content type' } );
 
-my $category = MT::Category->load( { label => 'category' } );
+my $category = MT::Category->load(
+    { label => 'category', category_set_id => \'> 0' } );
 
 my $cd = MT::ContentData->load(
     {   blog_id         => $blog->id,

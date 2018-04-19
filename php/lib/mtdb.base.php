@@ -1814,7 +1814,9 @@ abstract class MTDatabase {
             if ($args['category_set_id'] !== '*') {
                 $category_set_id = intval($args['category_set_id']);
             }
-        } else if (!isset($args['category_id'])) {
+        } else if (!isset($args['category_id'])
+            && (!isset($args['parent']) || !$args['parent']))
+        {
             $category_set_id = 0;
         }
         if (isset($category_set_id)) {
