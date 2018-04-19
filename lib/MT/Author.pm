@@ -406,14 +406,15 @@ sub member_list_props {
             },
         },
         entry_count => {
-            base        => '__virtual.object_count',
-            view        => [ 'blog', 'website' ],
-            label       => 'Entries',
-            count_class => 'entry',
-            count_col   => 'author_id',
-            filter_type => 'author_id',
-            list_screen => 'entry',
-            count_terms => sub {
+            base         => '__virtual.object_count',
+            view         => [ 'blog', 'website' ],
+            label        => 'Entries',
+            filter_label => '__ENTRY_COUNT',
+            count_class  => 'entry',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            list_screen  => 'entry',
+            count_terms  => sub {
                 my $prop = shift;
                 my ($opts) = @_;
                 return { blog_id => $opts->{blog_ids} };
