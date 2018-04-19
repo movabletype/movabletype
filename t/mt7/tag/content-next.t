@@ -146,8 +146,10 @@ $test_env->prepare_fixture(
 
 my $author2 = MT::Author->load( { name => 'test user2' } );
 
-my $category1 = MT::Category->load( { label => 'category1' } );
-my $category2 = MT::Category->load( { label => 'category2' } );
+my $category1 = MT::Category->load(
+    { label => 'category1', category_set_id => \'> 0' } );
+my $category2 = MT::Category->load(
+    { label => 'category2', category_set_id => \'> 0' } );
 
 my $ct = MT::ContentType->load( { name => 'test content type' } );
 

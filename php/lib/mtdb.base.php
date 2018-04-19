@@ -1811,9 +1811,16 @@ abstract class MTDatabase {
         $class_filter = " and category_class='$class'";
 
         if (isset($args['category_set_id'])) {
-            $category_set_filter = 'and category_category_set_id = ' . intval($args['category_set_id']);
-        } else {
-            $category_set_filter = '';
+            if ($args['category_set_id'] !== '*') {
+                $category_set_id = intval($args['category_set_id']);
+            }
+        } else if (!isset($args['category_id'])
+            && (!isset($args['parent']) || !$args['parent']))
+        {
+            $category_set_id = 0;
+        }
+        if (isset($category_set_id)) {
+            $category_set_filter = "and category_category_set_id = $category_set_id";
         }
 
         $sql = "
@@ -1854,8 +1861,8 @@ abstract class MTDatabase {
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
                 try {
-                    if (isset($args['category_set_id']) && $args['category_set_id']) {
-                        $category_set = $mt->db()->fetch_category_set($args['category_set_id']);
+                    if (isset($category_set_id) && $category_set_id) {
+                        $category_set = $mt->db()->fetch_category_set($category_set_id);
                         $custom_order = $category_set->order;
                     } else {
                         $ctx = $mt->context();

@@ -51,6 +51,36 @@ __PACKAGE__->install_properties(
     }
 );
 
+__PACKAGE__->add_trigger( pre_search => \&_set_category_set_id_if_needed );
+
+sub _set_category_set_id_if_needed {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
+    my $no_category_set_id = 0;
+    if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
+        delete $args->{no_category_set_id};
+        $no_category_set_id = 1;
+    }
+    if ( ref $terms eq 'HASH' ) {
+        if ( ( $terms->{category_set_id} || '' ) eq '*'
+            || $no_category_set_id )
+        {
+            delete $terms->{category_set_id};
+        }
+        elsif (!exists $terms->{category_set_id}
+            && !exists $terms->{id}
+            && !$terms->{parent} )
+        {
+            $terms->{category_set_id} = 0;
+        }
+    }
+    elsif ( ref $terms eq 'ARRAY' ) {
+        for my $term (@$terms) {
+            $class->_set_category_set_id_if_needed( $term, $args );
+        }
+    }
+}
+
 sub list_props {
     return {
         label    => { base => '__virtual.label' },
@@ -218,7 +248,11 @@ sub publish_path {
     # parent category basenames are changed.
     $orig->{__path} = $result;
 }
-*category_path = \&publish_path;
+
+{
+    no warnings 'once';
+    *category_path = \&publish_path;
+}
 
 sub category_label_path {
     my $cat = shift;

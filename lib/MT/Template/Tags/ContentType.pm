@@ -441,6 +441,7 @@ sub _hdlr_contents {
                         );
                     }
                     else {
+                        my $category_set_id = \'> 0';
                         if (( $category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i )
                             && ((   $cat_class_type eq 'category'
                                     && !$args->{include_subcategories}
@@ -453,7 +454,7 @@ sub _hdlr_contents {
                             my @cats
                                 = $ctx->cat_path_to_category( $category_arg,
                                 [ \%blog_terms, \%blog_args ],
-                                $cat_class_type );
+                                $cat_class_type, $category_set_id );
                             if (@cats) {
                                 $cats = \@cats;
                             }
@@ -462,8 +463,12 @@ sub _hdlr_contents {
                                 $category_arg, $cats );
                         }
                         else {
-                            my @cats = $cat_class->load( \%blog_terms,
-                                \%blog_args );
+                            my @cats = $cat_class->load(
+                                {   %blog_terms,
+                                    category_set_id => $category_set_id,
+                                },
+                                \%blog_args,
+                            );
                             if (@cats) {
                                 $cats = \@cats;
                             }

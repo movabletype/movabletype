@@ -138,8 +138,10 @@ sub archive_group_iter {
 
     my $blog_id = $ctx->stash('blog')->id;
     require MT::Category;
-    my $iter = MT::Category->load_iter( { blog_id => $blog_id },
-        { 'sort' => 'label', direction => 'ascend' } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog_id, category_set_id => \'> 0' },
+        { 'sort'  => 'label',  direction       => 'ascend' },
+    );
 
     my $map = $ctx->stash('template_map');
     my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';

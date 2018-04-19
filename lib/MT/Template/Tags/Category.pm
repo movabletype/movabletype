@@ -713,9 +713,10 @@ sub _hdlr_sub_categories {
         if ( $args->{category} ) {
 
             # user specified category; list from this category down
-            ($current_cat)
-                = $ctx->cat_path_to_category( $args->{category},
-                $ctx->stash('blog_id'), $class_type );
+            ($current_cat) = $ctx->cat_path_to_category(
+                $args->{category}, $ctx->stash('blog_id'),
+                $class_type,       $category_set_id
+            );
         }
         else {
             $current_cat = $ctx->stash('category')
