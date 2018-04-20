@@ -1049,7 +1049,6 @@ sub has_archive_type {
 
     my $r     = MT->request;
     my $cache = $r->cache($cache_key);
-    use Data::Dumper;
     if (!$cache
         || ($cache
             && (!$cache->{$type}
