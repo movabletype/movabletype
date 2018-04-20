@@ -578,7 +578,22 @@ sub _hdlr_if_archive_type {
     my $cat = $ctx->{current_archive_type} || $ctx->{archive_type} || '';
     my $at = $args->{type} || $args->{archive_type} || '';
     return 0 unless $at && $cat;
-    return lc $at eq lc $cat;
+    return 0 if lc $at ne lc $cat;
+
+    if ( $at =~ /ContentType/ ) {
+        if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+            my $content_type = $ctx->stash('content_type');
+            if (defined $content_type
+                && (   $args->{content_type} eq $content_type->unique_id
+                    || $args->{content_type} eq $content_type->id
+                    || $args->{content_type} eq $content_type->name )
+                )
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 ###########################################################################
@@ -615,9 +630,10 @@ B<Example:>
 
 sub _hdlr_archive_type_enabled {
     my ( $ctx, $args ) = @_;
-    my $blog = $ctx->stash('blog');
-    my $at = ( $args->{type} || $args->{archive_type} );
-    return $blog->has_archive_type($at);
+    my $blog         = $ctx->stash('blog');
+    my $at           = ( $args->{type} || $args->{archive_type} );
+    my $content_type = $at =~ /ContentType/ ? ( $args->{content_type} ) : '';
+    return $blog->has_archive_type( $at, $content_type );
 }
 
 ###########################################################################
