@@ -161,10 +161,8 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
         self.update({
           isEmpty: false
         })
-        if ( e.target.classList.contains('mt-draggable__area') )
-          self.recalcHeight(e.target)
-        else
-          self.recalcHeight(e.target.parentNode)
+
+        self.recalcHeight(document.getElementsByClassName('mt-draggable__area')[0])
       }
       self.rebuildLabelFields()
 
