@@ -1628,6 +1628,27 @@ sub restore_parent_ids {
 
 package MT::Category;
 
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => {
+                blog_id         => $blog_ids,
+                category_set_id => '*',
+            },
+            args => undef,
+        };
+    }
+    else {
+        return {
+            terms => { category_set_id => '*' },
+            args  => undef,
+        };
+    }
+}
+
 sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'),     MT->model('website') ],
@@ -1655,7 +1676,7 @@ package MT::ContentField;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
         content_type_id => [ MT->model('content_type') ],
         related_content_type_id =>
             { class => MT->model('content_type'), optional => 1 },
@@ -1793,7 +1814,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
