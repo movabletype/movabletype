@@ -516,7 +516,7 @@ sub list_props {
                     : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
-                if ( 'not_contains' eq $option ) {
+                if ( 'not_contains' eq $option || 'blank' eq $option ) {
                     my $query = $args->{string};
                     my $label_terms
                         = { $prop->col => { like => "%$query%" } };
@@ -526,11 +526,10 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                [   $label_terms,
-                                    '-and',
+                                [     ( 'blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
                                     {   id => \'= placement_category_id',
-                                        (   $blog_id
-                                            ? ( blog_id => $blog_id )
+                                        (   $blog_id ? ( blog_id => $blog_id )
                                             : ()
                                         ),
                                     },
@@ -545,6 +544,10 @@ sub list_props {
                     @hash{@entry_ids} = ();
                     @entry_ids = keys %hash;
                     $db_terms->{id} = { not => \@entry_ids };
+                    $db_terms->{class}
+                        = $prop->category_class eq 'folder'
+                        ? 'page'
+                        : 'entry';
                 }
                 else {
                     my $label_terms = $prop->super(@_);
@@ -558,11 +561,10 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                [   $label_terms,
-                                    '-and',
+                                [     ( 'not_blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
                                     {   id => \'= placement_category_id',
-                                        (   $blog_id
-                                            ? ( blog_id => $blog_id )
+                                        (   $blog_id ? ( blog_id => $blog_id )
                                             : ()
                                         ),
                                     },
