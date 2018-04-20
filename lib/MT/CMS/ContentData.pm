@@ -938,6 +938,7 @@ sub make_list_actions {
             condition  => sub {
                 return 0 if MT->app->mode eq 'view';
                 _check_permission(
+                    'publish_all_content_data',
                     'publish_content_data_via_list_',
                     'publish_all_content_data_',
                 );
@@ -956,7 +957,10 @@ sub make_list_actions {
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
             condition => sub {
                 return 0 if MT->app->mode eq 'view';
-                return _check_permission('set_content_data_draft_via_list_');
+                return _check_permission(
+                    'set_content_data_draft_via_list',
+                    'set_content_data_draft_via_list_',
+                );
             },
         },
     };
@@ -994,8 +998,13 @@ sub _check_permission {
     my $iter = MT->model('permission')->load_iter($terms);
     while ( my $p = $iter->() ) {
         for my $act (@actions) {
-            if ( $p->can_do( $act . $ct->unique_id ) ) {
-                return 1;
+            if ( $act =~ /.*_$/ ) {
+                return 1
+                    if $p->can_do( $act . $ct->unique_id );
+            }
+            else {
+                return 1
+                    if $p->can_do($act);
             }
         }
     }
