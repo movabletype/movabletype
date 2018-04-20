@@ -545,6 +545,10 @@ sub list_props {
                     @hash{@entry_ids} = ();
                     @entry_ids = keys %hash;
                     $db_terms->{id} = { not => \@entry_ids };
+                    $db_terms->{class}
+                        = $prop->category_class eq 'folder'
+                        ? 'page'
+                        : 'entry';
                 }
                 else {
                     my $label_terms = $prop->super(@_);
