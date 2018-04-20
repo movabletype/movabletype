@@ -562,11 +562,10 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                [   $label_terms,
-                                    '-and',
+                                [     ( 'not_blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
                                     {   id => \'= placement_category_id',
-                                        (   $blog_id
-                                            ? ( blog_id => $blog_id )
+                                        (   $blog_id ? ( blog_id => $blog_id )
                                             : ()
                                         ),
                                     },
