@@ -553,7 +553,7 @@ function initMoving() {
       $item.attr('aria-grabbed', true);
       original_class = $item.attr('class');
       var id = $item.attr('id').slice(4);
-      var count = jQuery('.pcat-'+id).hide().length;
+      var count = jQuery('.pcat-'+id).css('cssText', 'display: none !important').length;
       if (count) {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
@@ -569,7 +569,7 @@ function initMoving() {
       $item.attr('aria-grabbed', false);
       if (!place) place = 0;
       if (catid == place) {
-        jQuery('.pcat-'+catid).show();
+        jQuery('.pcat-'+catid).css('display', '');
         return;
       }
       function _stop() {
