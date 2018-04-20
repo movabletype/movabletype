@@ -333,23 +333,17 @@ sub bulk_update {
     }
     my %TEMP_MAP;
     my ( $creates, $updates, $deletes ) = ( 0, 0, 0 );
-    for my $create (@creates) {
-        if ( $create->parent =~ /^x(\d+)/ ) {
-            my $tmp_id = $1;
-            $create->parent( $TEMP_MAP{$tmp_id} );
+    my ( @updated_with_parent, @updated_without_parent );
+    for my $cat (@updated) {
+        if ( $cat->parent =~ /^x\d+/ ) {
+            push @updated_without_parent, $cat;
         }
-        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
-        $app->run_callbacks( 'cms_pre_save.' . $model,
-            $app, $create, $original )
-            or return $app->json_error( $app->errstr() );
-        $create->save;
-        $app->run_callbacks( 'cms_post_save.' . $model,
-            $app, $create, $original )
-            or return $app->json_error( $app->errstr() );
-        $creates++;
-        $TEMP_MAP{ $create->{tmp_id} } = $create->id;
+        else {
+            push @updated_with_parent, $cat;
+        }
     }
-    for my $updated (@updated) {
+    my $save_for_updated = sub {
+        my ($updated) = @_;
         if ( $updated->parent =~ /^x(\d+)/ ) {
             my $tmp_id = $1;
             $updated->parent( $TEMP_MAP{$tmp_id} );
@@ -368,6 +362,28 @@ sub bulk_update {
             $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
         $updates++;
+    };
+    for my $updated (@updated_with_parent) {
+        $save_for_updated->($updated);
+    }
+    for my $create (@creates) {
+        if ( $create->parent =~ /^x(\d+)/ ) {
+            my $tmp_id = $1;
+            $create->parent( $TEMP_MAP{$tmp_id} );
+        }
+        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
+        $app->run_callbacks( 'cms_pre_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
+        $create->save;
+        $app->run_callbacks( 'cms_post_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
+        $creates++;
+        $TEMP_MAP{ $create->{tmp_id} } = $create->id;
+    }
+    for my $updated (@updated_without_parent) {
+        $save_for_updated->($updated);
     }
 
     for my $obj ( values %old_objects ) {
@@ -633,7 +649,7 @@ sub pre_save {
     my @siblings = $pkg->load(
         {   parent          => $obj->parent,
             blog_id         => $obj->blog_id,
-            category_set_id => $obj->category_set_id || [ \'IS NULL', 0 ],
+            category_set_id => $obj->category_set_id || 0,
         }
     );
     foreach (@siblings) {
