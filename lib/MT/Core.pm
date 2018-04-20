@@ -1345,6 +1345,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => "access_to_entry_list",
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
@@ -1377,6 +1378,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => 'access_to_page_list',
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
