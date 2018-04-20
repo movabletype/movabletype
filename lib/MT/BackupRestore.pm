@@ -1655,7 +1655,7 @@ package MT::ContentField;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
         content_type_id => [ MT->model('content_type') ],
         related_content_type_id =>
             { class => MT->model('content_type'), optional => 1 },
@@ -1793,7 +1793,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
