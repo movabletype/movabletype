@@ -425,23 +425,6 @@ SKIP: {
             '"Website/Blog Name" column\'s format in website scope is correct'
         );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'filtered_list',
-                datasource       => 'entry',
-                blog_id          => 0,
-                columns          => 'blog_name',
-                fid              => '_allpass',
-            },
-        );
-        $out = delete $app->{__test_output};
-
-        like( $out, qr/$blog_name/,
-            '"Website/Blog Name" column\'s format in system scope is correct'
-        );
-
         done_testing();
     };
 
