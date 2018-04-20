@@ -411,6 +411,7 @@ sub list_props {
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
+            col              => 'label',
             view_filter      => [ 'website', 'blog', 'system' ],
             category_class   => 'category',
             zero_state_label => '-',
@@ -502,7 +503,8 @@ sub list_props {
             #     ];
             # },
             terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
                 my $blog = MT->app->blog;
                 my $blog_id
                     = $blog
@@ -514,23 +516,10 @@ sub list_props {
                     : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
-                my $query  = $args->{string};
-                $query = { like => "%$query%" }
-                    if ( 'contains' eq $option
-                    || 'not_contains' eq $option
-                    || 'beginning' eq $option
-                    || 'end' eq $option );
-
-                my $label_terms;
-                if ( 'blank' eq $option ) {
-                    $label_terms
-                        = [ { label => '' }, '-or', { label => \'IS NULL' } ];
-                }
-                else {
-                    $label_terms = { label => $query };
-                }
-
                 if ( 'not_contains' eq $option ) {
+                    my $query = $args->{string};
+                    my $label_terms
+                        = { $prop->col => { like => "%$query%" } };
                     my @placements = MT->model('placement')->load(
                         ( $blog_id ? { blog_id => $blog_id } : undef ),
                         {   unique => 1,
@@ -551,12 +540,14 @@ sub list_props {
                         },
                     );
                     my @entry_ids = map { $_->entry_id } @placements;
+                    return unless @entry_ids;
                     my %hash;
                     @hash{@entry_ids} = ();
                     @entry_ids = keys %hash;
                     $db_terms->{id} = { not => \@entry_ids };
                 }
                 else {
+                    my $label_terms = $prop->super(@_);
                     push @{ $db_args->{joins} },
                         MT->model('placement')->join_on(
                         undef,
@@ -881,7 +872,7 @@ sub _nextprev {
         direction => $direction,
         terms => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args  => $args,
-        by => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
+        by    => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
     );
     weaken( $obj->{$label} = $o ) if $o;
     return $o;
