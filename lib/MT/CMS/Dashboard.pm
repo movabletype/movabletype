@@ -718,6 +718,7 @@ sub activity_log_widget {
     my $terms;
     my $args;
     if ($blog_id) {
+        $param->{site_view} = 1;
         $terms->{blog_id} = $blog_id;
         if ( !$user->permissions($blog_id)->can_do('view_blog_log') ) {
             $terms->{author_id} = $user->id;
