@@ -1628,6 +1628,27 @@ sub restore_parent_ids {
 
 package MT::Category;
 
+sub backup_terms_args {
+    my $class = shift;
+    my ($blog_ids) = @_;
+
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return {
+            terms => {
+                blog_id         => $blog_ids,
+                category_set_id => '*',
+            },
+            args => undef,
+        };
+    }
+    else {
+        return {
+            terms => { category_set_id => '*' },
+            args  => undef,
+        };
+    }
+}
+
 sub parents {
     my $obj = shift;
     {   blog_id => [ MT->model('blog'),     MT->model('website') ],
