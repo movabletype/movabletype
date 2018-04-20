@@ -45,6 +45,7 @@ sub apply {
 
         my $order = 1;
         my @fields;
+        my $data_label_field_uid;
         for my $cf_value ( @{ $ct_value->{fields} || [] } ) {
             next
                 unless defined $content_field_types->{ $cf_value->{type} }
@@ -62,6 +63,9 @@ sub apply {
             MT->set_language($current_lang);
 
             $cf->save or die $cf->errstr;
+
+            $data_label_field_uid = $cf->unique_id
+                if $cf_value->{data_label};
 
             my $field = {
                 id        => $cf->id,
@@ -106,6 +110,8 @@ sub apply {
         }
 
         $ct->fields( \@fields );
+        $ct->data_label($data_label_field_uid)
+            if $data_label_field_uid;
         $ct->save or die $ct->errstr;
     }
 
@@ -217,8 +223,15 @@ sub export {
                     $hdlr->( $app, $blog, $settings, $ct, $f );
                 }
             }
-
-            push @fields, +{ %{$f}, %{ $f->{options} } };
+            push @fields,
+                +{
+                %{$f},
+                %{ $f->{options} },
+                (   ( $ct->data_label && $ct->data_label eq $f->{unique_id} )
+                    ? ( data_label => 1 )
+                    : ()
+                ),
+                };
             delete $fields[-1]{$_} for @remove_fields;
         }
         push @data,
