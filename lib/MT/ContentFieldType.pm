@@ -629,12 +629,6 @@ sub _asset_registry {
                 display => 'none',
                 terms   => '$Core::MT::ContentFieldType::Asset::terms_text',
             },
-            missing_file => {
-                base    => 'asset.missing_file',
-                display => 'none',
-                terms =>
-                    '$Core::MT::ContentFieldType::Asset::terms_missing_file',
-            },
             tag => {
                 base      => '__virtual.string',
                 col       => 'name',
@@ -751,12 +745,6 @@ sub _audio_registry {
                 display => 'none',
                 terms   => '$Core::MT::ContentFieldType::Asset::terms_text',
             },
-            missing_file => {
-                base    => 'asset.missing_file',
-                display => 'none',
-                terms =>
-                    '$Core::MT::ContentFieldType::Asset::terms_missing_file',
-            },
             tag => {
                 base      => '__virtual.string',
                 col       => 'name',
@@ -871,12 +859,6 @@ sub _video_registry {
                 col     => 'label',
                 display => 'none',
                 terms   => '$Core::MT::ContentFieldType::Asset::terms_text',
-            },
-            missing_file => {
-                base    => 'asset.missing_file',
-                display => 'none',
-                terms =>
-                    '$Core::MT::ContentFieldType::Asset::terms_missing_file',
             },
             tag => {
                 base      => '__virtual.string',
@@ -993,12 +975,6 @@ sub _image_registry {
                 col     => 'label',
                 display => 'none',
                 terms   => '$Core::MT::ContentFieldType::Asset::terms_text',
-            },
-            missing_file => {
-                base    => 'asset.missing_file',
-                display => 'none',
-                terms =>
-                    '$Core::MT::ContentFieldType::Asset::terms_missing_file',
             },
             pixel_height => {
                 base    => 'asset.image_height',
