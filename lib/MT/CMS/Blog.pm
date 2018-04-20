@@ -1769,15 +1769,17 @@ sub pre_save {
        #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
     }
 
+    # Set parent site ID
+    my $blog_id = $app->param('blog_id');
+    if ( !$obj->id and $obj->class eq 'blog' ) {
+        $obj->parent_id($blog_id);
+    }
+
     # assumation: if the it is a blog and its site path is relative, then
     # it is probably writeable.
-    my $blog_id = $app->param('blog_id');
     if (    ( !$obj->id or $screen eq 'cfg_prefs' )
         and ( $obj->class ne 'blog' or $obj->is_site_path_absolute() ) )
     {
-        if ( !$obj->id and $obj->class eq 'blog' ) {
-            $obj->parent_id($blog_id);
-        }
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
         unless ( $fmgr->exists($site_path) ) {
@@ -1943,11 +1945,12 @@ sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    my $perms = $app->permissions;
+    my $perms = $app->permissions
+        or return 1;
     return 1
         unless $app->user->is_superuser
-        || $app->user->can_do('create_site')
-        || ( $perms && $perms->can_edit_config );
+        || $perms->can_do('create_site')
+        || $perms->can_edit_config;
 
     # check to see what changed and add a flag to meta_messages
     my @meta_messages = ();
