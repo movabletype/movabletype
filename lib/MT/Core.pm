@@ -2990,7 +2990,6 @@ sub load_core_permissions {
                 'manage_content_types'        => 1,
                 'save_multiple_content_type'  => 1,
                 'access_to_content_type_list' => 1,
-                'edit_category_set'           => 1,
             }
         },
         'blog.manage_content_data' => {
