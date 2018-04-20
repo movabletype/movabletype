@@ -30,7 +30,7 @@
             self.id = id;
             self.data = data;
             if(!self.data.value){
-              self.data.value = trans('Heading');
+              self.data.value = '';
             }
             if(!self.data.options){
               self.data.options["elm"] = 'h1';
@@ -57,6 +57,7 @@
             })
             self.options_field.append(elm_select);
             self.options_field.append('<div class="form-group"><textarea name="header-text" class="form-control w-100"></textarea></div>');
+            self.options_field.find('textarea').prop('placeholder', trans('Please enter the Header Text here.'));
             self.options_field.find('textarea').val(self.data.value);
             return self.options_field;
         },
