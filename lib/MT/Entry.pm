@@ -516,7 +516,7 @@ sub list_props {
                     : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
-                if ( 'not_contains' eq $option ) {
+                if ( 'not_contains' eq $option || 'blank' eq $option ) {
                     my $query = $args->{string};
                     my $label_terms
                         = { $prop->col => { like => "%$query%" } };
@@ -526,11 +526,10 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                [   $label_terms,
-                                    '-and',
+                                [     ( 'blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
                                     {   id => \'= placement_category_id',
-                                        (   $blog_id
-                                            ? ( blog_id => $blog_id )
+                                        (   $blog_id ? ( blog_id => $blog_id )
                                             : ()
                                         ),
                                     },
