@@ -403,7 +403,6 @@ ListingPanel = new Class(Panel, {
                         TC.removeClassName(self.closeButton, "disabled");
                     self.closeButton.disabled = items.length == 0;
                 }
-                event.preventDefault();
             };
         }
     }
