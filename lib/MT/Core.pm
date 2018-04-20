@@ -1345,6 +1345,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => "access_to_entry_list",
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
@@ -1377,6 +1378,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => 'access_to_page_list',
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
@@ -2046,7 +2048,7 @@ BEGIN {
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
-            'DefaultSiteURL'          => undef,    ## DEPRECATED
+            'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
@@ -2620,7 +2622,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {

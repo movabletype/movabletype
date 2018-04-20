@@ -97,6 +97,12 @@ sub list_props {
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
+                return
+                    if !$obj->blog_id
+                    && ( $obj->object_ds eq 'entry'
+                    || $obj->object_ds eq 'page'
+                    || $obj->object_ds eq 'comment'
+                    || $obj->object_ds eq 'ping' );
                 my $class = MT->model( $obj->object_ds );
                 if ($class) {
                     return $app->uri(
