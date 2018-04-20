@@ -1040,16 +1040,25 @@ sub flush_has_archive_type_cache {
 }
 
 sub has_archive_type {
-    my $blog   = shift;
-    my ($type) = @_;
-    my %at     = map { lc $_ => 1 } split( /,/, $blog->archive_type );
+    my $blog = shift;
+    my ( $type, $content_type ) = @_;
+    my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
     my $r     = MT->request;
     my $cache = $r->cache($cache_key);
-    if ( !$cache || ( $cache && !$cache->{$type} ) ) {
+    if (!$cache
+        || ($cache
+            && (!$cache->{$type}
+                || (   defined $content_type
+                    && $content_type ne ''
+                    && !$cache->{$type}->{$content_type} )
+            )
+        )
+        )
+    {
         require MT::PublishOption;
         require MT::TemplateMap;
         my $count = MT::TemplateMap->count(
@@ -1058,10 +1067,42 @@ sub has_archive_type {
                 build_type   => { not => MT::PublishOption::DISABLED() },
             }
         );
-        $cache->{$type} = $count;
+        if ( defined $content_type && $content_type ne '' && $count ) {
+            my $content_type_obj = MT::ContentType->load(
+                [   { unique_id => $content_type },
+                    -or => { name => $content_type },
+                    -or => { id   => $content_type }
+                ]
+            );
+            if ($content_type_obj) {
+                $count = MT::TemplateMap->count(
+                    {   blog_id      => $blog->id,
+                        archive_type => $type,
+                        build_type =>
+                            { not => MT::PublishOption::DISABLED() },
+                    },
+                    {   join => MT->model('template')->join_on(
+                            undef,
+                            {   id => \'= templatemap_template_id',
+                                content_type_id => $content_type_obj->id,
+                            },
+                        )
+                    }
+                );
+                $cache->{$type}->{$content_type} = $count;
+            }
+        }
+        else {
+            $cache->{$type} = $count;
+        }
         $r->cache( $cache_key, $cache );
     }
-    return $cache->{$type};
+    if ( defined $content_type && $content_type ne '' ) {
+        return $cache->{$type}->{$content_type};
+    }
+    else {
+        return $cache->{$type};
+    }
 }
 
 sub accepts_registered_comments {
