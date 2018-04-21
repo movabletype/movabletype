@@ -3990,8 +3990,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/asset.tmpl
 	'Allow users to select multiple assets?' => '複数アセットの選択を許可する',
-	'Minimum number of selections' => '選択できる最大件数',
-	'Maximum number of selections' => '選択できる最小件数',
+	'Minimum number of selections' => '選択できる最小件数',
+	'Maximum number of selections' => '選択できる最大件数',
 	'Allow users to upload a new asset?' => 'ファイルのアップロードを許可する',
 
 ## tmpl/cms/content_field_type_options/asset_audio.tmpl
