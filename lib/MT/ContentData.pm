@@ -1005,7 +1005,7 @@ sub make_list_props {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
                     return
-                        sort { $a->label || '' cmp $b->label || ''; } @$objs;
+                        sort { ( $a->label || '' ) cmp ( $b->label || '' ) } @$objs;
                 },
                 sub_fields => [
                     {   class   => 'status',
