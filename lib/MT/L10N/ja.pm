@@ -4449,6 +4449,7 @@ use vars qw( @ISA %Lexicon );
 	'Authenticated' => '認証済み',
 
 ## tmpl/cms/edit_content_data.tmpl
+	'<a href="[_1]" >Create another [_2]?</a>' => '続けて<a href="[_1]">[_2]を作成</a>しますか？',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを保存しました。',
 	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'コンテンツデータは自動保存されています([_2])。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
 	'An error occurred while trying to recover your saved content data.' => 'コンテンツデータを元に戻す際にエラーが発生しました。',

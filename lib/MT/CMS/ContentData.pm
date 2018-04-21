@@ -53,11 +53,17 @@ sub edit {
             unless $perm->can_do('create_new_content_data')
             || $perm->can_do(
             'create_new_content_data_' . $content_type->unique_id );
+        $param->{can_create_this} = 1;
     }
     else {
         return $app->permission_denied()
             unless $perm->can_edit_content_data( $content_data_id, $user );
     }
+
+    $param->{can_create_this} = 1
+        if $perm->can_do('create_new_content_data')
+        || $perm->can_do(
+        'create_new_content_data_' . $content_type->unique_id );
 
     if ( $content_type->blog_id != $blog->id ) {
         return $app->return_to_dashboard( redirect => 1 );
