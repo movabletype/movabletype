@@ -37,6 +37,14 @@ sub ss_validator {
     my $min_length = $options->{min_length};
     my $field_label = $options->{label};
 
+    print STDERR "min_length: $min_length\n";
+    print STDERR "max_length: $max_length\n";
+    if ( defined $min_length && $min_length > $max_length ) {
+        return $app->translate(
+            '"[_1]" field value must be less than or equal to [_2].',
+            $field_label, $max_length );
+    }
+
     if ( $max_length && length $data > $max_length ) {
         return $app->translate( '"[_1]" field is too long.', $field_label );
     }
@@ -50,6 +58,7 @@ sub ss_validator {
 sub options_validation_handler {
     my ( $app, $type, $label, $field_label, $options ) = @_;
 
+    my $valid_min;
     my $min_length = $options->{min_length};
     if ( defined $min_length and $min_length ne '' ) {
         if (   $min_length !~ /^\d+$/
@@ -61,8 +70,12 @@ sub options_validation_handler {
                 $label, $field_label
             );
         }
+        else {
+            $valid_min = $min_length;
+        }
     }
 
+    my $valid_max;
     my $max_length = $options->{max_length};
     if ( defined $max_length and $max_length ne '' ) {
         if (   $max_length !~ /^\d+$/
@@ -74,6 +87,15 @@ sub options_validation_handler {
                 $label, $field_label
             );
         }
+        else {
+            $valid_max = $max_length;
+        }
+    }
+
+    if ( $valid_min and $valid_max and $valid_min > $valid_max ) {
+        return $app->translate(
+            '"[_1]" field value must be less than or equal to [_2].',
+            $label, $valid_max );
     }
 
     my $initial_value = $options->{initial_value};

@@ -108,6 +108,7 @@ sub options_validation_handler {
         ) if $decimal_places > $cfg_decimal_places;
     }
 
+    my $valid_min;
     my $min_value = $options->{min_value};
     if ($min_value) {
         $min_value =~ /^[+\-]?\d+(\.\d+)?$/;
@@ -120,8 +121,11 @@ sub options_validation_handler {
             "A minimum value must be an integer and between [_1] and [_2]",
             $cfg_min_value, $cfg_max_value )
             if $min_value < $cfg_min_value || $min_value > $cfg_max_value;
+
+        $valid_min = $min_value;
     }
 
+    my $valid_max;
     my $max_value = $options->{max_value};
     if ($max_value) {
         $max_value =~ /^[+\-]?\d+(\.\d+)?$/;
@@ -134,6 +138,14 @@ sub options_validation_handler {
             "A maximum value must be an integer and between [_1] and [_2]",
             $cfg_min_value, $cfg_max_value )
             if $max_value < $cfg_min_value || $max_value > $cfg_max_value;
+
+        $valid_max = $max_value;
+    }
+
+    if ( $valid_min and $valid_max and $valid_min > $valid_max ) {
+        return $app->translate(
+            '"[_1]" field value must be less than or equal to [_2].',
+            $label, $valid_max );
     }
 
     my $initial_value = $options->{initial_value};
