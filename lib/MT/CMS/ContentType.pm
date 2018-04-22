@@ -45,12 +45,14 @@ sub edit {
     my $field_data;
     if ( $param->{error} ) {
         $field_data = delete $param->{data};
-        if ( $field_data =~ /^".*"$/ ) {
-            $field_data =~ s/^"//;
-            $field_data =~ s/"$//;
-            $field_data = MT::Util::decode_js($field_data);
+        if ( $field_data ) {
+            if ( $field_data =~ /^".*"$/ ) {
+            	$field_data =~ s/^"//;
+                $field_data =~ s/"$//;
+                $field_data = MT::Util::decode_js($field_data);
+            }
+            $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
-        $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
     }
     else {
         if ($id) {
