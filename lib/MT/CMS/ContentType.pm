@@ -43,54 +43,57 @@ sub edit {
 
     # Content Type
     my $field_data;
-    if ($id) {
-        my $obj = $class->load($id)
-            or return $app->error(
-            $app->translate(
-                "Load failed: [_1]",
-                $class->errstr || $app->translate("(no reason given)")
-            )
-            );
-
-        return $app->trans_error('Invalid request.')
-            unless $obj->blog_id == $app->blog->id;
-
-        $param->{name}             = $obj->name;
-        $param->{description}      = $obj->description;
-        $param->{unique_id}        = $obj->unique_id;
-        $param->{user_disp_option} = $obj->user_disp_option;
-        $param->{label_field}      = $obj->data_label;
-
-        $field_data = $obj->fields;
-    }
-    else {
-        $param->{new_object} = 1;
-        $param->{name}       = '';
-    }
-
-    if ( $app->param('error') ) {
-        for my $col (qw{ name description user_disp_option }) {
-            $param->{$col} = $app->param($col);
-        }
-
-        $field_data = $app->param('data');
+    if ( $param->{error} ) {
+        $field_data = delete $param->{data};
         if ( $field_data =~ /^".*"$/ ) {
             $field_data =~ s/^"//;
             $field_data =~ s/"$//;
             $field_data = MT::Util::decode_js($field_data);
         }
         $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
+    }
+    else {
+        if ($id) {
+            my $obj = $class->load($id)
+                or return $app->error(
+                $app->translate(
+                    "Load failed: [_1]",
+                    $class->errstr || $app->translate("(no reason given)")
+                )
+                );
 
+            return $app->trans_error('Invalid request.')
+                unless $obj->blog_id == $app->blog->id;
+
+            $param->{name}             = $obj->name;
+            $param->{description}      = $obj->description;
+            $param->{unique_id}        = $obj->unique_id;
+            $param->{user_disp_option} = $obj->user_disp_option;
+            $param->{label_field}      = $obj->data_label;
+
+            $field_data = $obj->fields;
+        }
+        else {
+            $param->{new_object} = 1;
+            $param->{name}       = '';
+        }
     }
 
     # Content Field
+    my $random_id = sub {
+        my $id;
+        my @pool = ( 'a' .. 'z', 0 .. 9 );
+        for ( 1 .. 5 ) { $id .= $pool[ rand @pool ] }
+        return $id;
+    };
+
     my @fields;
     my $content_field_types = $app->registry('content_field_types');
     for my $f (@$field_data) {
         my $type = $f->{type};
-        $type =~ s/_/-/g;
+        $type =~ s/-/_/g;
 
-        my $typeLabel = $content_field_types->{ $f->{type} }->{label};
+        my $typeLabel = $content_field_types->{$type}->{label};
         $typeLabel = $typeLabel->()
             if 'CODE' eq ref $typeLabel;
 
@@ -103,7 +106,7 @@ sub edit {
         }
 
         my $pre_load_handler
-            = $content_field_types->{ $f->{type} }{options_pre_load_handler};
+            = $content_field_types->{$type}{options_pre_load_handler};
         if ($pre_load_handler) {
             if ( !ref $pre_load_handler ) {
                 $pre_load_handler = MT->handler_to_coderef($pre_load_handler);
@@ -115,16 +118,19 @@ sub edit {
 
         # Can be used as a data label?
         my $can_data_label
-            = $content_field_types->{ $f->{type} }->{can_data_label_field}
-            && $options->{required} ? 1 : 0;
+            = $content_field_types->{$type}->{can_data_label_field} || 0;
 
+        $type =~ s/_/-/g;
         my $field = {
             type      => $type,
             typeLabel => $typeLabel,
             label     => $f->{options}->{label},
-            id        => $f->{id},
-            order     => $f->{order},
-            options   => $options,
+            (     ( defined $f->{id} )
+                ? ( id => $f->{id} )
+                : ( id => $random_id->() )
+            ),
+            order   => $f->{order},
+            options => $options,
             ( $f->{unique_id} ? ( unique_id => $f->{unique_id} ) : () ),
             canDataLabel => $can_data_label,
         };
@@ -311,8 +317,12 @@ sub tmpl_param_edit_role {
 sub save {
     my ($app) = @_;
     my $cfg   = $app->config;
-    my $param = {};
     my $user  = $app->user;
+
+    my %param = ();
+    for my $col (qw{ name description user_disp_option label_field data }) {
+        $param{$col} = $app->param($col);
+    }
 
     # Permission Check
     $app->validate_magic
@@ -352,13 +362,11 @@ sub save {
     my $name = $app->param('name');
 
     if ( !$name ) {
-        my %param = ();
         $param{error} = $app->translate("The content type name is required.");
         $app->mode('view');
         return $app->forward( "view", \%param );
     }
     elsif ( length $name > 255 ) {
-        my %param = ();
         $param{error} = $app->translate(
             "The content type name must be shorter than 255 characters.");
         $app->mode('view');
@@ -374,7 +382,6 @@ sub save {
         { ( $content_type_id ? ( not => { id => 1 } ) : () ) }
     );
     if ($exists) {
-        my %param = ();
         $param{error}
             = $app->translate( 'Name \'[_1]\' is already used.', $name );
         $app->mode('view');
@@ -414,7 +421,6 @@ sub save {
         if ( my $err_msg
             = _validate_content_field_type_options( $app, $field ) )
         {
-            my %param = ();
             $param{error} = $err_msg;
             $app->mode('view');
             return $app->forward( "view", \%param );
@@ -777,7 +783,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi   => $content_field->options->{multiple} ? 1 : 0,
+                can_multi => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
