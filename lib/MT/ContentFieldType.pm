@@ -180,7 +180,7 @@ sub _number_registry {
     {   label                => 'Number',
         data_type            => 'double',
         order                => 40,
-        can_data_label_field => 1,
+        can_data_label_field => 0,
         field_html           => 'field_html/field_html_number.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Number::field_html_params',
@@ -248,7 +248,7 @@ sub _date_time_registry {
     {   label                => 'Date and Time',
         data_type            => 'datetime',
         order                => 60,
-        can_data_label_field => 1,
+        can_data_label_field => 0,
         field_html           => 'field_html/field_html_datetime.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::DateTime::field_html_params',
@@ -297,7 +297,7 @@ sub _date_registry {
         data_type            => 'datetime',
         order                => 70,
         icon_class           => 'ic_date',
-        can_data_label_field => 1,
+        can_data_label_field => 0,
         field_html           => 'field_html/field_html_date.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Date::field_html_params',
@@ -346,7 +346,7 @@ sub _time_registry {
         data_type            => 'datetime',
         order                => 80,
         icon_class           => 'ic_time',
-        can_data_label_field => 1,
+        can_data_label_field => 0,
         field_html           => 'field_html/field_html_time.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::Time::field_html_params',
