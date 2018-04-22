@@ -205,6 +205,10 @@ sub build_log_table {
             blog_id     => $log->blog_id
         };
         if ( my $ts = $log->created_on ) {
+            ## All Log records are saved with GMT, so do trick here.
+            my $epoch = ts2epoch( undef, $ts, 1 );
+            $epoch = offset_time( $epoch, ( $blog || undef ) );
+            $ts = epoch2ts( ( $blog || undef ), $epoch, 1 );
             if ($blog_view) {
                 $row->{created_on_formatted} = format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
