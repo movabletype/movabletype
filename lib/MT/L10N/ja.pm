@@ -163,7 +163,7 @@ use vars qw( @ISA %Lexicon );
 	'Digest::SHA is required in order to provide enhanced protection of user passwords.' => 'Digest::SHAはパスワードの高度な保護のために必要です。',
 	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
-	'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.' => 'HTML::Entitiesのインストールは必須ではありません。特殊な文字をエンコードするときに必要になりますが、構成ファイルにNoHTMLEntitiesを設定すればこの機能を無効化できます。',
+	'HTML::Entities is required by CGI.pm' => 'HTML::Entitiesは、CGI.pm の動作に必要です。',
 	'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parserのインストールは必須ではありません。トラックバック機能や更新通知機能を利用する場合に必要となります。',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Liteのインストールは必須ではありません。XML-RPC による作業を行う場合に必要となります。',
 	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Tempのインストールは必須ではありません。ファイルのアップロードを行う際に上書きを行う場合は必要となります。',

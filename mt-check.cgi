@@ -477,6 +477,13 @@ my @CORE_REQ = (
         )
     ],
 
+    [   'HTML::Entities',
+        3.6.9, 1,
+        translate(
+            'HTML::Entities is required by CGI.pm'
+        )
+    ],
+
 );
 
 my @CORE_DATA = (
@@ -546,13 +553,6 @@ my @CORE_OPT = (
         0, 0,
         translate(
             'This module and its dependencies are required to run Movable Type under psgi.'
-        )
-    ],
-
-    [   'HTML::Entities',
-        0, 0,
-        translate(
-            'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.'
         )
     ],
 

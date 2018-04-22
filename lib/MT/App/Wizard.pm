@@ -191,11 +191,6 @@ sub init_core_registry {
                 label =>
                     'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
             },
-            'HTML::Entities' => {
-                link => 'http://search.cpan.org/dist/HTML-Entities',
-                label =>
-                    'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.',
-            },
             'HTML::Parser' => {
                 link => 'http://search.cpan.org/dist/HTML-Parser',
                 label =>
@@ -391,6 +386,11 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Scalar-List-Utils',
                 label =>
                     'Scalar::Util is required for initializing Movable Type application.',
+            },
+            'HTML::Entities' => {
+                link => 'http://search.cpan.org/dist/HTML-Entities',
+                version => 3.69,
+                label => 'HTML::Entities is required by CGI.pm',
             },
         },
         database_options => {
