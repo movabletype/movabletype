@@ -27,16 +27,16 @@ sub _get_author {
         = $content_type
         ? MT->model('content_data')->join_on(
         'author_id',
-        {   status  => MT::ContentStatus::RELEASE(),
-            blog_id => $blog_id,
+        {   status          => MT::ContentStatus::RELEASE(),
+            blog_id         => $blog_id,
+            content_type_id => $content_type->id,
         },
         { unique => 1 }
         )
         : MT->model('entry')->join_on(
         'author_id',
-        {   status          => MT::Entry::RELEASE(),
-            blog_id         => $blog_id,
-            content_type_id => $content_type->id,
+        {   status  => MT::Entry::RELEASE(),
+            blog_id => $blog_id,
         },
         { unique => 1 }
         );
