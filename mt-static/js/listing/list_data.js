@@ -241,6 +241,13 @@
 
     this.checkedAllRows = false;
     this.checkedAllRowsOnPage = false;
+
+    // Debug console
+    if ( jQuery('#djDebugCommonListingPanel').find('#listing-debug-block').length ) {
+      jQuery('#djDebugCommonListingPanel')
+        .find('#listing-debug-block')
+        .text(result.debug);
+    }
   };
 
   ListData.prototype.setSaveFilterResult = function (result) {
