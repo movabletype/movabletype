@@ -3467,10 +3467,7 @@ sub cms_pre_load_filtered_list {
         || $user->permissions(0)->can_do('access_to_blog_list')
         || $user->permissions(0)->can_do('edit_templates') )
     {
-        if ( $terms->{class} eq 'blog' ) {
-            my $parent_site_terms = { id => $app->blog->website->id };
-            $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
-        }
+        $load_options->{terms} = $terms;
         return;
     }
 
@@ -3504,13 +3501,7 @@ sub cms_pre_load_filtered_list {
         $terms->{id} = 0;
     }
 
-    if ( $terms->{class} eq 'blog' ) {
-        my $parent_site_terms = { id => $app->blog->website->id };
-        $load_options->{terms} = [ $terms, '-or', $parent_site_terms ];
-    }
-    else {
-        $load_options->{terms} = $terms;
-    }
+    $load_options->{terms} = $terms;
 }
 
 sub can_view_blog_list {
