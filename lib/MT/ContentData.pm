@@ -996,6 +996,7 @@ sub make_list_props {
             label => {
                 base    => '__virtual.string',
                 display => 'force',
+                col     => 'label',
                 order   => 110,
                 html    => \&_make_label_html,
                 label   => sub {
@@ -1005,7 +1006,80 @@ sub make_list_props {
                     my $prop = shift;
                     my ( $objs, $app, $opts ) = @_;
                     return
-                        sort { ( $a->label || '' ) cmp ( $b->label || '' ) } @$objs;
+                        sort { ( $a->label || '' ) cmp( $b->label || '' ) }
+                        @$objs;
+                },
+                terms => sub {
+                    my $prop = shift;
+                    my ( $args, $db_terms, $db_args ) = @_;
+
+                    my $ct
+                        = MT->model('content_type')
+                        ->load( $db_terms->{content_type_id} )
+                        or die MT->translate(
+                        'Cannot load content type #[_1]',
+                        $db_terms->{content_type_id}
+                        );
+                    if ( !$ct->data_label ) {
+
+                        # Use __virtual.string based filtering
+                        my $code
+                            = MT->handler_to_coderef( $prop->base->{terms} );
+                        return $code->( $prop, @_ );
+                    }
+                    else {
+                        # Filter by field value
+                        my $option = $args->{option};
+                        my $query  = $args->{string};
+
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query
+                                = [ { not_like => "%$query%" }, \'IS NULL' ];
+                        }
+                        elsif ( 'beginning' eq $option ) {
+                            $query = { like => "$query%" };
+                        }
+                        elsif ( 'end' eq $option ) {
+                            $query = { like => "%$query" };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = [ \'IS NULL', '' ];
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query
+                                = [ '-and', \'IS NOT NULL', { not => '' } ];
+                        }
+
+                        my $cf
+                            = MT->model('content_field')
+                            ->load( { unique_id => $ct->data_label, } )
+                            or die MT->translate(
+                            'Cannot load content field #[_1]',
+                            $ct->data_label );
+
+                        $db_args->{joins} ||= [];
+                        push @{ $db_args->{joins} },
+                            MT->model('content_field_index')->join_on(
+                            undef,
+                            [   { content_data_id => \'= cd_id' },
+                                [   { value_varchar => $query },
+                                    '-or',
+                                    { value_text => $query },
+                                ],
+                            ],
+                            {   join => MT->model('content_field')->join_on(
+                                    undef,
+                                    {   id => \'= cf_idx_content_field_id',
+                                        unique_id => $ct->data_label,
+                                    },
+                                ),
+                                unique => 1,
+                            },
+                            );
+                    }
                 },
                 sub_fields => [
                     {   class   => 'status',
