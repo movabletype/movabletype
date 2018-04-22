@@ -438,6 +438,11 @@ sub _hdlr_archive_prev_next {
     my $arctype = MT->publisher->archiver($at);
     return '' unless $arctype;
 
+    # Set context of content type
+    local $ctx->{__stash}{content_type}
+        = $ctx->get_content_type_context( $args, $cond )
+        if $args->{content_type};
+
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based
         ? ( 'previous_archive_content_data', 'next_archive_content_data' )
@@ -509,6 +514,23 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
+        if ( $arctype->contenttype_date_based ) {
+            my $content_type = $ctx->stash('content_type');
+            my ($map) = MT::TemplateMap->load(
+                {   blog_id      => $param->{blog_id},
+                    archive_type => $at,
+                    is_preferred => 1,
+                },
+                {   join => MT::Template->join_on(
+                        undef,
+                        {   id              => \'= templatemap_template_id',
+                            content_type_id => $content_type->id,
+                        },
+                    ),
+                },
+            );
+            $param->{datetime_field_id} = $map->dt_field_id if $map;
+        }
         $obj
             = $is_prev
             ? $arctype->$prev_method($param)

@@ -499,6 +499,7 @@ sub _hdlr_category_prevnext {
     my $class_type = $args->{class_type} || 'category';
     my $class      = MT->model($class_type);
     my $e          = $ctx->stash('entry');
+    my $c          = $ctx->stash('content');
     my $tag        = $ctx->stash('tag');
     my $step       = $tag =~ m/Next/i ? 1 : -1;
     defined( my $cat = _get_category_context($ctx) )
@@ -512,8 +513,9 @@ sub _hdlr_category_prevnext {
         = $class_type eq 'category'
         ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
         : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 );
-    my $blog_id = $cat->blog_id;
-    my $cats = _load_sibling_categories( $ctx, $cat, $class_type );
+    my $needs_contents = ( $uncompiled =~ /<MT:?Contents/i ) ? 1 : 0;
+    my $blog_id        = $cat->blog_id;
+    my $cats           = _load_sibling_categories( $ctx, $cat, $class_type );
 
     # Get the sorting info
     my $sort_method = $args->{sort_method}
@@ -578,16 +580,46 @@ sub _hdlr_category_prevnext {
                 $cats->[$pos]->{_entries}         = \@entries;
                 $cats->[$pos]->{_placement_count} = scalar @entries;
             }
+            elsif ($needs_contents) {
+                my $content_type    = $ctx->stash('content_type');
+                my $content_type_id = $content_type ? $content_type->id : '';
+                my @contents        = MT->model('content_data')->load(
+                    {   blog_id         => $blog_id,
+                        status          => MT::ContentStatus::RELEASE(),
+                        content_type_id => $content_type_id,
+                    },
+                    {   join => [
+                            'MT::ObjectCategory',
+                            'object_id',
+                            {   object_ds   => 'content_data',
+                                category_id => $cat->id,
+                            },
+                        ],
+                        'sort'    => 'authored_on',
+                        direction => 'descend',
+                    },
+                );
+                $cats->[$pos]->{_contents}        = \@contents;
+                $cats->[$pos]->{_placement_count} = scalar @contents;
+            }
             else {
-                $cats->[$pos]->{_placement_count} = MT::Placement->count(
+                $cats->[$pos]->{_placement_count}
+                    = $cats->[$pos]->category_set_id
+                    ? MT::ObjectCategory->count(
+                    { category_id => $cats->[$pos]->id } )
+                    : MT::Placement->count(
                     { category_id => $cats->[$pos]->id } );
             }
         }
         $pos += $step, next
-            unless $cats->[$pos]->{_placement_count} || $args->{show_empty};
+            unless $cats->[$pos]->{_placement_count}
+            || $args->{show_empty};
         local $ctx->{__stash}{category} = $cats->[$pos];
         local $ctx->{__stash}{entries}  = $cats->[$pos]->{_entries}
             if $needs_entries;
+
+        local $ctx->{__stash}{contents} = $cats->[$pos]->{_contents}
+            if $needs_contents;
         local $ctx->{__stash}{category_count}
             = $cats->[$pos]->{_placement_count};
         local $ctx->{__stash}{'subCatsSortOrder'}  = $sort_order;
@@ -682,7 +714,8 @@ sub _hdlr_sub_categories {
             $ctx->stash('tag'),
         )
     ) if ( $sort_method && $sort_by );
-    $sort_by = 'user_custom' if !$sort_by || !$class->has_column($sort_by);
+    $sort_by = 'user_custom'
+        if !$sort_by || !$class->has_column($sort_by);
 
     my $category_set_id
         = $ctx->stash('category_set')
@@ -940,7 +973,8 @@ sub _hdlr_parent_categories {
         if ( $args->{sub_cats_path_hack} && $out !~ /\w/ ) {
             $out = 'cat-' . $c->id;
         }
-        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $glue
+            if defined $glue && length($res) && length($out);
         $res .= $out if length($out);
     }
     $res;
@@ -1032,7 +1066,8 @@ sub _hdlr_entries_with_sub_categories {
     my $saved_stash_entries;
 
     if ( defined $cat ) {
-        $saved_stash_entries = $ctx->{__stash}{entries} if $save_entries;
+        $saved_stash_entries = $ctx->{__stash}{entries}
+            if $save_entries;
         delete $ctx->{__stash}{entries};
     }
 
@@ -1114,7 +1149,8 @@ sub _hdlr_if_category {
     my $cat
         = $entry_context
         ? $e->category
-        : ( $ctx->stash('category') || $ctx->stash('archive_category') );
+        : (    $ctx->stash('category')
+            || $ctx->stash('archive_category') );
 
     if ( !$cat && $e && !$entry_context ) {
         $cat           = $e->category;
@@ -1406,7 +1442,8 @@ sub _hdlr_entry_categories {
         local $ctx->{__stash}->{category} = $cat;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $glue
+            if defined $glue && length($res) && length($out);
         $res .= $out;
     }
     $res;
@@ -1464,11 +1501,13 @@ sub _hdlr_entry_additional_categories {
     my $res     = '';
     my $glue    = $args->{glue};
     for my $cat (@$cats) {
-        next if $e->category && ( $cat->label eq $e->category->label );
+        next
+            if $e->category && ( $cat->label eq $e->category->label );
         local $ctx->{__stash}->{category} = $cat;
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
-        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $glue
+            if defined $glue && length($res) && length($out);
         $res .= $out if length($out);
     }
     $res;
@@ -1676,13 +1715,16 @@ sub _hdlr_category_archive {
     }
 
     my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+        = $ctx->stash('content_type')
+        ? $ctx->stash('content_type')->id
+        : '';
     my $arch = $blog->archive_url;
     $arch .= '/' unless $arch =~ m!/$!;
     $arch = $arch
         . archive_file_for( undef, $blog, $cat_at_label, $cat, '', '', '',
         $content_type_id );
-    $arch = MT::Util::strip_index( $arch, $blog ) unless $args->{with_index};
+    $arch = MT::Util::strip_index( $arch, $blog )
+        unless $args->{with_index};
     $arch;
 }
 
@@ -1715,7 +1757,9 @@ sub _hdlr_category_count {
     }
     else {
         my $terms = {};
-        if ( $args->{content_field_id} || $ctx->stash('content_field') ) {
+        if (   $args->{content_field_id}
+            || $ctx->stash('content_field') )
+        {
             $terms->{content_field_id} = $args->{content_field_id}
                 || $ctx->stash('content_field')->id;
         }
@@ -1723,7 +1767,9 @@ sub _hdlr_category_count {
             if ( my $cf_name = $args->{content_field_name} ) {
                 $terms->{content_field_name} = $cf_name;
             }
-            if ( $args->{content_type_id} || $ctx->stash('content_type') ) {
+            if (   $args->{content_type_id}
+                || $ctx->stash('content_type') )
+            {
                 $terms->{content_type_id} = $args->{content_type_id}
                     || $ctx->stash('content_type')->id;
             }

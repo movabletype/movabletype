@@ -12,7 +12,7 @@ use MT;
 use MT::Util qw( spam_protect );
 
 sub _get_author {
-    my ( $author_name, $blog_id, $order ) = @_;
+    my ( $author_name, $blog_id, $order, $content_type ) = @_;
 
     if ( $order eq 'previous' ) {
         $order = 'descend';
@@ -22,19 +22,30 @@ sub _get_author {
     }
     require MT::Entry;
     require MT::Author;
+    require MT::ContentStatus;
+    my $join
+        = $content_type
+        ? MT->model('content_data')->join_on(
+        'author_id',
+        {   status  => MT::ContentStatus::RELEASE(),
+            blog_id => $blog_id,
+        },
+        { unique => 1 }
+        )
+        : MT->model('entry')->join_on(
+        'author_id',
+        {   status          => MT::Entry::RELEASE(),
+            blog_id         => $blog_id,
+            content_type_id => $content_type->id,
+        },
+        { unique => 1 }
+        );
     my $author = MT::Author->load(
         undef,
         {   'sort'    => 'name',
             direction => $order,
             start_val => $author_name,
-            'join'    => [
-                'MT::Entry',
-                'author_id',
-                {   status  => MT::Entry::RELEASE(),
-                    blog_id => $blog_id
-                },
-                { unique => 1 }
-            ]
+            'join'    => $join,
         }
     );
     $author;
@@ -587,9 +598,14 @@ sub _hdlr_author_next_prev {
             "You used an [_1] without a author context set up.", "<MT$tag>"
         )
         );
-    my $blog = $ctx->stash('blog');
-    my @args = ( $author->name, $blog->id, $is_prev ? 'previous' : 'next' );
-    my $res  = '';
+    my $blog         = $ctx->stash('blog');
+    my $content_type = $ctx->stash('content_type');
+    my @args         = (
+        $author->name, $blog->id, $is_prev ? 'previous' : 'next',
+        $content_type
+    );
+    my $res = '';
+
     if ( my $next = _get_author(@args) ) {
         my $builder = $ctx->stash('builder');
         local $ctx->{__stash}->{author} = $next;
