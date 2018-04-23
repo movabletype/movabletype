@@ -3892,7 +3892,7 @@ tbody.collapse.show {
   content: "";
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 70% 70%;
+  background-size: 60% 60%;
 }
 
 .custom-checkbox .custom-control-label::before {
@@ -3932,7 +3932,7 @@ tbody.collapse.show {
 }
 
 .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-3.5 -3.5 8 8'%3E%3Ccircle r='3' fill='%23FFFFFF'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3E%3Ccircle r='3' fill='%23FFFFFF'/%3E%3C/svg%3E");
 }
 
 .custom-radio .custom-control-input:disabled:checked ~ .custom-control-label::before {
