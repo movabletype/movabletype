@@ -308,7 +308,7 @@ sub save {
                 }
                 else {
                     my %legacy_perms
-                        = { create_website => 1, create_blog => 1 };
+                        = ( create_website => 1, create_blog => 1 );
                     foreach (@$sys_perms) {
                         next if $legacy_perms{ $_->[0] };
 
