@@ -7,6 +7,9 @@ package MT::Upgrade::v7;
 use strict;
 use warnings;
 
+MT->add_callback( 'MT::Upgrade::upgrade_begin', 5, undef,
+    \&_v7_truncate_value_varchar );
+
 sub upgrade_functions {
     return {
         'v7_reset_default_widget' => {
@@ -142,6 +145,11 @@ sub upgrade_functions {
             code          => \&_v7_cleanup_object_tags_for_content_data,
             version_limit => 7.0040,
             priority      => 3.2,
+        },
+        'v7_migrate_max_length_option_of_single_line_text' => {
+            code => \&_v7_migrate_max_length_option_of_single_line_text,
+            version_limit => 7.0042,
+            priority      => 3,
         },
     };
 }
@@ -1313,6 +1321,65 @@ sub _v7_cleanup_object_tags_for_content_data {
             && MT->model('content_field')->exist( $ot->cf_id )
             && MT->model('content_data')->exist( $ot->object_id );
         $ot->remove;
+    }
+}
+
+sub _v7_truncate_value_varchar {
+    my ( $cb, $self, %param ) = @_;
+
+    my $from          = $param{from};
+    my $version_limit = '7.0041';
+    return 1 unless defined $from && $from < $version_limit;
+
+    $self->progress(
+        $self->translate_escape(
+            'Truncating values of value_varchar column...')
+    );
+
+    eval {
+        my $iter = MT->model('content_field_index')->load_iter;
+        while ( my $cf_idx = $iter->() ) {
+            next
+                unless defined $cf_idx->value_varchar
+                && length( $cf_idx->value_varchar ) > 255;
+            my $truncated = substr $cf_idx->value_varchar, 0, 255;
+            $cf_idx->value_varchar($truncated);
+            $cf_idx->save;
+        }
+    };
+
+    1;
+}
+
+sub _v7_migrate_max_length_option_of_single_line_text {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Migrating Max Length option of Single Line Text fields...')
+    );
+
+    my $iter = MT->model('content_type')->load_iter(
+        undef,
+        {   join => MT->model('content_field')
+                ->join_on( 'content_type_id', { type => 'single_line_text' },
+                ),
+        }
+    );
+    while ( my $ct = $iter->() ) {
+        my $changed;
+        my $fields = $ct->fields;
+        for my $f (@$fields) {
+            next if ( $f->{type} || '' ) ne 'single_line_text';
+            $f->{options} ||= {};
+            my $max_length = $f->{options}{max_length};
+            next if defined $max_length && $max_length <= 255;
+            $f->{options}{max_length} = 255;
+            $changed = 1;
+        }
+        next unless $changed;
+        $ct->fields($fields);
+        $ct->save;
     }
 }
 

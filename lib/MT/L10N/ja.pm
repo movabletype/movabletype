@@ -1805,8 +1805,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ContentFieldType/SingleLineText.pm
 	'"[_1]" field is too long.' => '"[_1]"フィールドの値は長すぎます。',
 	'"[_1]" field is too short.' => '"[_1]"フィールドの値は短すぎます。',
-	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and 1024.' => '\'[_1]\'フィールド ([_2]) の最小文字数は0以上、1024以下の整数である必要があります。',
-	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and 1024.' => '\'[_1]\'フィールド ([_2]) の最大文字数は1以上、1024以下の整数である必要があります。',
+	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and [_3].' => '\'[_1]\'フィールド ([_2]) の最小文字数は0以上、[_3]以下の整数である必要があります。',
+	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and [_3].' => '\'[_1]\'フィールド ([_2]) の最大文字数は1以上、[_3]以下の整数である必要があります。',
 	'An initial value for \'[_1]\' ([_2]) must be shorter than [_3] characters' => '\'[_1]\'フィールド ([_2]) の初期値は短すぎます。',
 
 ## lib/MT/ContentFieldType/Table.pm

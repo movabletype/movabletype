@@ -9,10 +9,12 @@ use warnings;
 
 use MT::I18N qw( first_n_text const );
 
+my $varchar_size = 255;
+
 sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $required = $field_data->{options}{required} ? 'required' : '';
-    my $max_length = $field_data->{options}{max_length} ||= 1024;
+    my $max_length = $field_data->{options}{max_length} ||= $varchar_size;
     $max_length = qq{maxlength="${max_length}"};
     my $min_length_class = '';
     my $min_length_data  = '';
@@ -33,7 +35,7 @@ sub ss_validator {
     $data = '' unless defined $data && $data ne '';
 
     my $options    = $field_data->{options} || {};
-    my $max_length = $options->{max_length} || 1024;
+    my $max_length = $options->{max_length} || $varchar_size;
     my $min_length = $options->{min_length};
     my $field_label = $options->{label};
 
@@ -61,12 +63,11 @@ sub options_validation_handler {
     if ( defined $min_length and $min_length ne '' ) {
         if (   $min_length !~ /^\d+$/
             or $min_length < 0
-            or $min_length > 1024 )
+            or $min_length > $varchar_size )
         {
             return $app->translate(
-                "A minimum length number for '[_1]' ([_2]) must be a positive integer between 0 and 1024.",
-                $label, $field_label
-            );
+                "A minimum length number for '[_1]' ([_2]) must be a positive integer between 0 and [_3].",
+                $label, $field_label, $varchar_size );
         }
         else {
             $valid_min = $min_length;
@@ -78,12 +79,11 @@ sub options_validation_handler {
     if ( defined $max_length and $max_length ne '' ) {
         if (   $max_length !~ /^\d+$/
             or $max_length < 1
-            or $max_length > 1024 )
+            or $max_length > $varchar_size )
         {
             return $app->translate(
-                "A maximum length number for '[_1]' ([_2]) must be a positive integer between 1 and 1024.",
-                $label, $field_label
-            );
+                "A maximum length number for '[_1]' ([_2]) must be a positive integer between 1 and [_3].",
+                $label, $field_label, $varchar_size );
         }
         else {
             $valid_max = $max_length;
@@ -98,7 +98,7 @@ sub options_validation_handler {
 
     my $initial_value = $options->{initial_value};
     if ($initial_value) {
-        my $max = '' ne $max_length ? $max_length : 1024;
+        my $max = '' ne $max_length ? $max_length : $varchar_size;
         if ( length($initial_value) > $max ) {
             return $app->translate(
                 "An initial value for '[_1]' ([_2]) must be shorter than [_3] characters",
