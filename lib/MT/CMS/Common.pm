@@ -290,7 +290,7 @@ sub save {
         delete $values{$_} for @cols;
 
         delete $values{'status'}
-            if ( $author->id == $obj->id )
+            if ( ( $author->id || 0 ) == ( $obj->id || 0 ) )
             || ( !$author->is_superuser && $obj->is_superuser );
 
         if ( !$id
