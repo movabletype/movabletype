@@ -146,6 +146,11 @@ sub upgrade_functions {
             version_limit => 7.0040,
             priority      => 3.2,
         },
+        'v7_migrate_max_length_option_of_single_line_text' => {
+            code => \&_v7_migrate_max_length_option_of_single_line_text,
+            version_limit => 7.0042,
+            priority      => 3,
+        },
     };
 }
 
@@ -1344,6 +1349,38 @@ sub _v7_truncate_value_varchar {
     };
 
     1;
+}
+
+sub _v7_migrate_max_length_option_of_single_line_text {
+    my $self = shift;
+
+    $self->progress(
+        $self->translate_escape(
+            'Migrating Max Length option of Single Line Text fields...')
+    );
+
+    my $iter = MT->model('content_type')->load_iter(
+        undef,
+        {   join => MT->model('content_field')
+                ->join_on( 'content_type_id', { type => 'single_line_text' },
+                ),
+        }
+    );
+    while ( my $ct = $iter->() ) {
+        my $changed;
+        my $fields = $ct->fields;
+        for my $f (@$fields) {
+            next if ( $f->{type} || '' ) ne 'single_line_text';
+            $f->{options} ||= {};
+            my $max_length = $f->{options}{max_length};
+            next if defined $max_length && $max_length <= 255;
+            $f->{options}{max_length} = 255;
+            $changed = 1;
+        }
+        next unless $changed;
+        $ct->fields($fields);
+        $ct->save;
+    }
 }
 
 1;
