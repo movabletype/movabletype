@@ -1956,7 +1956,7 @@ Outputs the label of the current content data in context.
 sub _hdlr_content_label {
     my ( $ctx, $args ) = @_;
     my $content_data = $ctx->stash('content')
-        or return $ctx->no_content_error;
+        or return $ctx->_no_content_error;
     defined $content_data->label ? $content_data->label : '';
 }
 
@@ -1969,7 +1969,7 @@ Returns the description of the current content type in context.
 sub _hdlr_content_type_description {
     my ( $ctx, $args ) = @_;
     my $content_type = $ctx->stash('content_type')
-        or return $ctx->no_content_type_error;
+        or return $ctx->_no_content_error;
     defined $content_type->description
         ? $content_type->description
         : '';
@@ -1984,7 +1984,7 @@ Outputs the name of the current content type in context.
 sub _hdlr_content_type_name {
     my ( $ctx, $args ) = @_;
     my $content_type = $ctx->stash('content_type')
-        or return $ctx->no_content_type_error;
+        or return $ctx->_no_content_error;
     $content_type->name;
 }
 
