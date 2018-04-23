@@ -421,20 +421,34 @@
       }
     }
 
-   _validateFields() {
-     var requiredFieldsAreValid    = jQuery('.html5-form')
-                                        .mtValidate('simple')
-     var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
-                                        .mtValidate('simple');
-     var tableIsValid              = jQuery('.values-option-table')
-                                        .mtValidate('selection-field-values-option')
-     var contentFieldBlockIsValid  = jQuery('.content-field-block')
-                                        .mtValidate('content-field-block')
-     var uniqueFieldsAreValid      = jQuery('input[data-mt-content-field-unique]')
-                                        .mtValidate('simple')
+    _validateFields() {
+      var requiredFieldsAreValid    = jQuery('.html5-form')
+                                         .mtValidate('simple')
+      var textFieldsInTableAreValid = jQuery('.values-option-table input[type=text]')
+                                         .mtValidate('simple');
+      var tableIsValid              = jQuery('.values-option-table')
+                                         .mtValidate('selection-field-values-option')
+      var contentFieldBlockIsValid  = jQuery('.content-field-block')
+                                         .mtValidate('content-field-block')
+      var uniqueFieldsAreValid      = jQuery('input[data-mt-content-field-unique]')
+                                         .mtValidate('simple')
 
-     return requiredFieldsAreValid && textFieldsInTableAreValid
-         && tableIsValid && contentFieldBlockIsValid && uniqueFieldsAreValid
+      var res = requiredFieldsAreValid
+                && textFieldsInTableAreValid
+                && tableIsValid
+                && contentFieldBlockIsValid
+                && uniqueFieldsAreValid
+
+      if ( !res ) {
+        jQuery('.mt-contentfield').each(function(i, fld) {
+          var $fld = jQuery(fld)
+          if ($fld.find('.form-control.is-invalid').length > 0) {
+            $fld.find('.collapse').collapse('show')
+          }
+        })
+      }
+
+      return res
     }
 
   </script>
