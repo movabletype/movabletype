@@ -1157,9 +1157,13 @@ sub make_list_props {
         };
         if ( $content_type->_get_tag_field_ids ) {
             $props->{$key}{tags_field} = {
-                base      => '__virtual.tag',
-                label     => 'Tags fields',
-                use_blank => 1,
+                base            => '__virtual.tag',
+                label           => sub {
+                    MT->translate('Tags fields');
+                },
+                display         => 'none',
+                filter_editable => 0,
+                use_blank       => 1,
             };
         }
     }

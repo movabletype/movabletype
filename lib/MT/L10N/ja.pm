@@ -1261,6 +1261,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] (ID:[_2]) status changed from [_3] to [_4]' => '[_1] (ID:[_2])の公開状態を[_3]から[_4]に変更しました',
 	'(No Label)' => '(ラベルなし)',
 	'Unpublish Contents' => 'コンテンツデータの公開を取り消し',
+	'Tags fields' => 'いずれかのタグのフィールド',
 
 ## lib/MT/CMS/ContentType.pm
 	'Create Content Type' => 'コンテンツタイプの作成',
