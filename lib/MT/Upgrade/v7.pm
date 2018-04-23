@@ -7,6 +7,9 @@ package MT::Upgrade::v7;
 use strict;
 use warnings;
 
+MT->add_callback( 'MT::Upgrade::upgrade_begin', 5, undef,
+    \&_v7_truncate_value_varchar );
+
 sub upgrade_functions {
     return {
         'v7_reset_default_widget' => {
@@ -1314,6 +1317,33 @@ sub _v7_cleanup_object_tags_for_content_data {
             && MT->model('content_data')->exist( $ot->object_id );
         $ot->remove;
     }
+}
+
+sub _v7_truncate_value_varchar {
+    my ( $cb, $self, %param ) = @_;
+
+    my $from          = $param{from};
+    my $version_limit = '7.0041';
+    return 1 unless defined $from && $from < $version_limit;
+
+    $self->progress(
+        $self->translate_escape(
+            'Truncating values of value_varchar column...')
+    );
+
+    eval {
+        my $iter = MT->model('content_field_index')->load_iter;
+        while ( my $cf_idx = $iter->() ) {
+            next
+                unless defined $cf_idx->value_varchar
+                && length( $cf_idx->value_varchar ) > 255;
+            my $truncated = substr $cf_idx->value_varchar, 0, 255;
+            $cf_idx->value_varchar($truncated);
+            $cf_idx->save;
+        }
+    };
+
+    1;
 }
 
 1;
