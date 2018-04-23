@@ -445,6 +445,9 @@ sub _hdlr_archive_prev_next {
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based
+        || $arctype->contenttype_category_based
+        || $arctype->contenttype_author_based
+        || $arctype->contenttype_date_based
         ? ( 'previous_archive_content_data', 'next_archive_content_data' )
         : ( 'previous_archive_entry', 'next_archive_entry' );
 
@@ -516,20 +519,24 @@ sub _hdlr_archive_prev_next {
         };
         if ( $arctype->contenttype_date_based ) {
             my $content_type = $ctx->stash('content_type');
-            my ($map) = MT::TemplateMap->load(
-                {   blog_id      => $param->{blog_id},
-                    archive_type => $at,
-                    is_preferred => 1,
-                },
-                {   join => MT::Template->join_on(
-                        undef,
-                        {   id              => \'= templatemap_template_id',
-                            content_type_id => $content_type->id,
-                        },
-                    ),
-                },
-            );
-            $param->{datetime_field_id} = $map->dt_field_id if $map;
+            my $content_data = $ctx->stash('content');
+            if ( $content_type && $content_data ) {
+                $param->{content_data} = $content_data;
+                my ($map) = MT::TemplateMap->load(
+                    {   blog_id      => $param->{blog_id},
+                        archive_type => $at,
+                        is_preferred => 1,
+                    },
+                    {   join => MT::Template->join_on(
+                            undef,
+                            {   id => \'= templatemap_template_id',
+                                content_type_id => $content_type->id,
+                            },
+                        ),
+                    },
+                );
+                $param->{datetime_field_id} = $map->dt_field_id if $map;
+            }
         }
         $obj
             = $is_prev
@@ -538,11 +545,19 @@ sub _hdlr_archive_prev_next {
     }
     if ($obj) {
         my $builder = $ctx->stash('builder');
-        my $stash_key = $arctype->contenttype_based ? 'contents' : 'entries';
+        my $stash_key
+            = $arctype->contenttype_based
+            || $arctype->contenttype_category_based
+            || $arctype->contenttype_author_based
+            || $arctype->contenttype_date_based ? 'contents' : 'entries';
         local $ctx->{__stash}->{$stash_key} = [$obj];
 
         my $date_field_data;
-        if ( $arctype->contenttype_based ) {
+        if (   $arctype->contenttype_based
+            || $arctype->contenttype_category_based
+            || $arctype->contenttype_author_based
+            || $arctype->contenttype_date_based )
+        {
             my ($map) = MT::TemplateMap->load(
                 {   blog_id      => $obj->blog_id,
                     archive_type => $at,

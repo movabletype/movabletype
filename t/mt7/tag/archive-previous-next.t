@@ -59,7 +59,7 @@ $test_env->prepare_fixture(
             name      => 'test blog 01',
         );
         $blog->archive_type(
-            'ContentType-Category,ContentType-Author,ContentType-Monthly' );
+            'ContentType-Category,ContentType-Author,ContentType-Monthly');
         $blog->save;
 
         my $category_set = MT::Test::Permission->make_category_set(
@@ -132,7 +132,7 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             data            => {
                 $cat_cf->id  => [ $category2->id ],
-                $date_cf->id => '20180307180500',
+                $date_cf->id => '20180407180500',
             },
         );
         my $cd3 = MT::Test::Permission->make_content_data(
@@ -141,7 +141,7 @@ $test_env->prepare_fixture(
             author_id       => $author2->id,
             data            => {
                 $cat_cf->id  => [ $category3->id ],
-                $date_cf->id => '20180306180500',
+                $date_cf->id => '20180506180500',
             },
         );
 
@@ -193,13 +193,15 @@ __END__
 
 === MT:ArchiveNext with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:If></mt:Archives>
+<mt:Contents content_type="[% content_type_unique_id %]" glue=","><mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:If></mt:Archives></mt:Contents>
 --- expected
+May 2018,April 2018
 
 === MT:ArchivePrevious with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:If></mt:Archives>
+<mt:Contents content_type="[% content_type_unique_id %]" glue=","><mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:If></mt:Archives></mt:Contents>
 --- expected
+April 2018,March 2018
 
 === MT:ArchiveNext with Author
 --- template
