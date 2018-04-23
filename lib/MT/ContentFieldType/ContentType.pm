@@ -79,6 +79,7 @@ sub html {
                 blog_id         => 1,
                 content_type_id => 1,
                 data            => 1,
+                label           => 1,
             }
         },
     );
