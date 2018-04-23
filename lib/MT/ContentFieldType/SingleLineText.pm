@@ -37,8 +37,6 @@ sub ss_validator {
     my $min_length = $options->{min_length};
     my $field_label = $options->{label};
 
-    print STDERR "min_length: $min_length\n";
-    print STDERR "max_length: $max_length\n";
     if ( defined $min_length && $min_length > $max_length ) {
         return $app->translate(
             '"[_1]" field value must be less than or equal to [_2].',
