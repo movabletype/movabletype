@@ -1245,7 +1245,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => '公開終了日は、公開日より未来の日時を指定してください。',
 	'Cannot load content_type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
-	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => '[_4]が新しい[_1] \'[_4]\' (ID[_2])を追加しました',
+	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => '[_3]が新しい[_1] \'[_4]\' (ID[_2])を追加しました',
 	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_5]が[_1] \'[_5]\' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_3]が[_1] \'[4]\' (ID][_2])を変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_3]が[_1] \'[_1]\' (ID:[_2])を削除しました',
