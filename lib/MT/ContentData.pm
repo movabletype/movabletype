@@ -1467,8 +1467,10 @@ sub archive_file {
             is_primary => 1
         }
     );
-    my $cat_id = $obj_category ? $obj_category->category_id           : '';
-    my $cat    = $cat_id       ? MT->model('category')->load($cat_id) : '';
+    my $cat
+        = $obj_category
+        ? MT->model('category')->load( $obj_category->category_id )
+        : '';
 
     my $file = MT::Util::archive_file_for( $self, $blog, $at, $cat );
     $file = '' unless defined $file;
