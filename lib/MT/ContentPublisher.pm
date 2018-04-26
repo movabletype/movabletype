@@ -567,6 +567,22 @@ sub rebuild_content_data {
             }
             else {
                 for my $map (@maps) {
+
+                    # If necessary, category is loaded.
+                    my $cat;
+                    if ( $map->cat_field_id ) {
+                        my $obj_category = MT->model('objectcategory')->load(
+                            {   object_ds  => 'content_data',
+                                object_id  => $content_data->id,
+                                is_primary => 1
+                            }
+                        );
+                        $cat
+                            = $obj_category
+                            ? MT->model('category')
+                            ->load( $obj_category->category_id )
+                            : '';
+                    }
                     $mt->_rebuild_content_archive_type(
                         ContentData => $content_data,
                         Blog        => $blog,
@@ -575,6 +591,7 @@ sub rebuild_content_data {
                         NoStatic    => $param{NoStatic},
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Author      => $content_data->author,
+                        ( $cat ? ( Category => $cat ) : () ),
                     ) or return;
                 }
             }
