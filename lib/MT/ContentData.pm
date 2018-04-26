@@ -1157,8 +1157,8 @@ sub make_list_props {
         };
         if ( $content_type->_get_tag_field_ids ) {
             $props->{$key}{tags_field} = {
-                base            => '__virtual.tag',
-                label           => sub {
+                base  => '__virtual.tag',
+                label => sub {
                     MT->translate('Tags fields');
                 },
                 display         => 'none',
@@ -1459,7 +1459,18 @@ sub archive_file {
     my ($at) = @_;
     my $blog = $self->blog or return '';
     $at ||= 'ContentType';    # should check $blog->archive_type here
-    my $file = MT::Util::archive_file_for( $self, $blog, $at );
+
+    # Load category
+    my $obj_category = MT->model('objectcategory')->load(
+        {   object_ds  => 'content_data',
+            object_id  => $self->id,
+            is_primary => 1
+        }
+    );
+    my $cat_id = $obj_category ? $obj_category->category_id           : '';
+    my $cat    = $cat_id       ? MT->model('category')->load($cat_id) : '';
+
+    my $file = MT::Util::archive_file_for( $self, $blog, $at, $cat );
     $file = '' unless defined $file;
     return $file;
 }
