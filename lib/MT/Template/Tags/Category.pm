@@ -1758,22 +1758,30 @@ sub _hdlr_category_count {
     }
     else {
         my $terms = {};
-        if (   $args->{content_field_id}
-            || $ctx->stash('content_field') )
-        {
-            $terms->{content_field_id} = $args->{content_field_id}
-                || $ctx->stash('content_field')->id;
+
+        if ( my $cf_arg = $args->{content_field} ) {
+            if ( $cf_arg =~ /^\d+$/ ) {
+                $terms->{content_field_id} = $cf_arg;
+            }
+            else {
+                my ($cf)
+                    = MT->model('content_field')
+                    ->load( { unique_id => $cf_arg } );
+                if ($cf) {
+                    $terms->{content_field_id} = $cf->id;
+                }
+                else {
+                    $terms->{content_field_name} = $cf_arg;
+                }
+            }
         }
-        else {
-            if ( my $cf_name = $args->{content_field_name} ) {
-                $terms->{content_field_name} = $cf_name;
-            }
-            if (   $args->{content_type_id}
-                || $ctx->stash('content_type') )
-            {
-                $terms->{content_type_id} = $args->{content_type_id}
-                    || $ctx->stash('content_type')->id;
-            }
+        elsif ( my $cf_stash = $ctx->stash('content_field') ) {
+            $terms->{content_field_id}->$cf_stash->id;
+        }
+
+        if ( $terms->{content_field_name} ) {
+            my $content_type = $ctx->get_content_type_context( $args, $cond );
+            $terms->{content_type_id} = $content_type->id;
         }
         $count = $cat->content_data_count($terms);
     }
