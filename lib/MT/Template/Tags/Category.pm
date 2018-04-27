@@ -1776,7 +1776,7 @@ sub _hdlr_category_count {
             }
         }
         elsif ( my $cf_stash = $ctx->stash('content_field') ) {
-            $terms->{content_field_id}->$cf_stash->id;
+            $terms->{content_field_id} = $cf_stash->id;
         }
 
         if ( my $ct_arg = $args->{content_type} ) {
@@ -1791,7 +1791,7 @@ sub _hdlr_category_count {
             }
         }
         elsif ( my $ct_stash = $ctx->stash('content_type') ) {
-            $terms->{content_type_id}->$ct_stash->id;
+            $terms->{content_type_id} = $ct_stash->id;
         }
 
         $count = $cat->content_data_count($terms);
