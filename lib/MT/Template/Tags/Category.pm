@@ -1758,23 +1758,42 @@ sub _hdlr_category_count {
     }
     else {
         my $terms = {};
-        if (   $args->{content_field_id}
-            || $ctx->stash('content_field') )
-        {
-            $terms->{content_field_id} = $args->{content_field_id}
-                || $ctx->stash('content_field')->id;
-        }
-        else {
-            if ( my $cf_name = $args->{content_field_name} ) {
-                $terms->{content_field_name} = $cf_name;
+
+        if ( my $cf_arg = $args->{content_field} ) {
+            if ( $cf_arg =~ /^\d+$/ ) {
+                $terms->{content_field_id} = $cf_arg;
             }
-            if (   $args->{content_type_id}
-                || $ctx->stash('content_type') )
-            {
-                $terms->{content_type_id} = $args->{content_type_id}
-                    || $ctx->stash('content_type')->id;
+            else {
+                my ($cf)
+                    = MT->model('content_field')
+                    ->load( { unique_id => $cf_arg } );
+                if ($cf) {
+                    $terms->{content_field_id} = $cf->id;
+                }
+                else {
+                    $terms->{content_field_name} = $cf_arg;
+                }
             }
         }
+        elsif ( my $cf_stash = $ctx->stash('content_field') ) {
+            $terms->{content_field_id} = $cf_stash->id;
+        }
+
+        if ( my $ct_arg = $args->{content_type} ) {
+            if ( $ct_arg =~ /^\d+$/ ) {
+                $terms->{content_type_id} = $ct_arg;
+            }
+            else {
+                my $content_type
+                    = $ctx->get_content_type_context( $args, $cond );
+                $terms->{content_type_id} = $content_type->id
+                    if $content_type;
+            }
+        }
+        elsif ( my $ct_stash = $ctx->stash('content_type') ) {
+            $terms->{content_type_id} = $ct_stash->id;
+        }
+
         $count = $cat->content_data_count($terms);
     }
 

@@ -199,27 +199,27 @@ a: 4
 b: 2
 c: 0
 
-=== MTCategoryCount content_type_id="1"
+=== MTCategoryCount content_type="id"
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_type_id="1">
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_type="1">
 </MTCategories>
 --- expected
 a: 2
 b: 1
 c: 0
 
-=== MTCategoryCount content_field_id="1"
+=== MTCategoryCount content_field="id"
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field_id="1">
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field="1">
 </MTCategories>
 --- expected
 a: 1
 b: 1
 c: 0
 
-=== MTCategoryCount content_field_name="field1"
+=== MTCategoryCount content_field_name="name"
 --- template
-<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field_name="field1">
+<MTCategories category_set_id="1" show_empty="1" sort="label"><MTCategoryLabel>: <MTCategoryCount content_field="field1">
 </MTCategories>
 --- expected
 a: 1
