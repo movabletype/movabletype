@@ -1779,10 +1779,21 @@ sub _hdlr_category_count {
             $terms->{content_field_id}->$cf_stash->id;
         }
 
-        if ( $terms->{content_field_name} ) {
-            my $content_type = $ctx->get_content_type_context( $args, $cond );
-            $terms->{content_type_id} = $content_type->id;
+        if ( my $ct_arg = $args->{content_type} ) {
+            if ( $ct_arg =~ /^\d+$/ ) {
+                $terms->{content_type_id} = $ct_arg;
+            }
+            else {
+                my $content_type
+                    = $ctx->get_content_type_context( $args, $cond );
+                $terms->{content_type_id} = $content_type->id
+                    if $content_type;
+            }
         }
+        elsif ( my $ct_stash = $ctx->stash('content_type') ) {
+            $terms->{content_type_id}->$ct_stash->id;
+        }
+
         $count = $cat->content_data_count($terms);
     }
 
