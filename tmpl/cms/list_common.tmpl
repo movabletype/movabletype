@@ -140,6 +140,7 @@ jQuery.event.special.listReady = {
   </mt:if>
 
   var objectType = '<mt:var name="object_type" escape="js">';
+  var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
 
   var listClient = new ListClient({
     url: '<mt:var name="script_url">',
@@ -319,6 +320,7 @@ jQuery.event.special.listReady = {
       localeCalendarHeader: localeCalendarHeader,
       objectLabel: objectLabel,
       objectType: objectType,
+      objectTypeForTableClass: objectTypeForTableClass,
       disableUserDispOption: disableUserDispOption
     });
   });
