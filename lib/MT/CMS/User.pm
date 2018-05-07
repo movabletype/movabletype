@@ -690,7 +690,7 @@ sub cfg_system_users {
 
     my @readonly_configs
         = qw( CommenterRegistration DefaultTimeZone DefaultUserLanguage DefaultUserTagDelimiter
-        NewUserBlogTheme NewUserDefaultWebsiteId UserPasswordValidation UserPasswordMinLength );
+        UserPasswordValidation UserPasswordMinLength );
 
     my @config_warnings;
     for my $config_directive (@readonly_configs) {
@@ -754,7 +754,6 @@ sub save_cfg_system_users {
     my $cfg              = $app->config;
     my $tz               = $app->param('default_time_zone');
     my $default_language = $app->param('default_language');
-    my $personal_weblog  = $app->param('personal_weblog');
     my $default_user_tag_delimiter
         = $app->param('default_user_tag_delimiter');
     $app->config( 'DefaultTimezone',         $tz,                         1 );
@@ -799,24 +798,10 @@ sub save_cfg_system_users {
 
     $cfg->save_config();
 
-    my $args = ();
-
-    if ( $personal_weblog
-        && !$app->config('NewUserDefaultWebsiteId') )
-    {
-        $args->{error}
-            = $app->translate(
-            'If personal blog is set, the personal blog location are required.'
-            );
-    }
-    else {
-        $args->{saved} = 1;
-    }
-
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_users',
-            args   => $args
+            args   => { saved => 1 },
         )
     );
 }
@@ -1330,7 +1315,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args => { sort => 'name' },
+                {   args         => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
