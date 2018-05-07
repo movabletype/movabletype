@@ -6,6 +6,9 @@
       // modal
       jQuery('.mt-modal-open').mtModal();
       jQuery('[data-mt-modal-close]').mtModalClose();
+<mt:if name="insert_script">
+      parent.jQuery.fn.mtModal.close();
+</mt:if>
   });
   /* ]]> */
   </script>
