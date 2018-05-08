@@ -1911,7 +1911,7 @@ MT.App = new Class( App, {
 
         if ( defined( this.autoSaveTimer ) )
             return this.autoSaveTimer.reset();
-        if ( !this.form.submitted ) {
+        if ( this.form && !this.form.submitted ) {
             this.autoSaveTimer = new Timer( this.getIndirectMethod( "autoSave" ), autoSaveDelay, 1 );
         }
     },
