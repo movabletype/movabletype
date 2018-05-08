@@ -13,7 +13,7 @@
         </virtual>
         <table data-is="list-table"
           id="{ opts.objectType }-table"
-          class="table mt-table list-{ opts.objectType }"
+          class="table mt-table { tableClass() }"
         >
         </table>
       </div>
@@ -69,6 +69,11 @@
           }
         })
       })
+    }
+
+    tableClass() {
+      var objectType = opts.objectTypeForTableClass || opts.objectType
+      return 'list-' + objectType
     }
   </script>
 </list-top>

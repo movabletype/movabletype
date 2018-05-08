@@ -296,7 +296,6 @@ sub core_methods {
         'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
         'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
         'dialog_select_website'    => "${pkg}Website::dialog_select_website",
-        'dialog_select_theme'      => "${pkg}Theme::dialog_select_theme",
         'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
         'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
