@@ -68,9 +68,6 @@ would iterate over only the child sites with IDs 1, 12, 19, 37 and 112.
 sub _hdlr_blogs {
     my ( $ctx, $args, $cond ) = @_;
 
-    return $ctx->error( MT->translate('MTChildSites tags cannot be nested.') )
-        if $ctx->stash('sites_context');
-
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
