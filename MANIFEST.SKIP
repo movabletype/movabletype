@@ -177,6 +177,9 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^tools/migrate-mssql
 #?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTCLOUD ^addons/AWS.pack
+#?package=MTCLOUD ^mt-cp.cgi
+#?package=MTCLOUD ^addons/Community.pack
+#?package=MTCLOUD ^mt-static/addons/Community.pack
 
 #?language=ja ^plugins/zemanta
 
