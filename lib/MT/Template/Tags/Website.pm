@@ -90,9 +90,6 @@ This tag is an alias for the Sites tag
 sub _hdlr_websites {
     my ( $ctx, $args, $cond ) = @_;
 
-    return $ctx->error( MT->translate('MTSites tags cannot be nested.') )
-        if $ctx->stash('sites_context');
-
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 

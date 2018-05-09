@@ -9,16 +9,9 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_blogs', '_blogs_counter', 'blog', 'blog_id'), common_loop_vars());
 
     if (!isset($content)) {
-        # Check for nested MTMultiBlog tags
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $tag = $ctx->this_tag();
-	if ( ( $tag === 'mtsites' && $ctx->stash('sites_context' ) ) ||
-             ( $tag === 'mtchildsites' && $ctx->stash('childsites_context' ) ) ||
-             ( $tag === 'mtmultiblog' && $ctx->stash('multiblog_context' ) ) ) {
-            $repeat = false;
-            return '';
-        }
 
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
