@@ -67,8 +67,6 @@ themes/broken_blog_theme
 #?package=MT ^addons/Community.pack
 #?package=MT ^mt-static/addons/Community.pack
 
-#?package=MT ^plugins/FacebookCommenters
-#?pacakge=MT ^mt-static/plugins/FacebookCommenters
 #?pacakge=MT ^plugins/mixiComment
 #?pacakge=MT ^mt-static/plugins/mixiComment
 #?package=MT ^plugins/P-M-SizeLimit
