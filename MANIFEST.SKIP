@@ -67,8 +67,6 @@ themes/broken_blog_theme
 #?package=MT ^addons/Community.pack
 #?package=MT ^mt-static/addons/Community.pack
 
-#?package=MT ^plugins/FacebookCommenters
-#?pacakge=MT ^mt-static/plugins/FacebookCommenters
 #?pacakge=MT ^plugins/mixiComment
 #?pacakge=MT ^mt-static/plugins/mixiComment
 #?package=MT ^plugins/P-M-SizeLimit
@@ -87,6 +85,9 @@ themes/broken_blog_theme
 #?package=MTAWS ^addons/Sync.pack
 #?package=MTAWS ^mt-static/addons/Sync.pack
 #?package=MTAWS ^plugins/P-M-SizeLimit
+#?package=MTAWS ^mt-cp.cgi
+#?package=MTAWS ^addons/Community.pack
+#?package=MTAWS ^mt-static/addons/Community.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
@@ -176,6 +177,9 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^tools/migrate-mssql
 #?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTCLOUD ^addons/AWS.pack
+#?package=MTCLOUD ^mt-cp.cgi
+#?package=MTCLOUD ^addons/Community.pack
+#?package=MTCLOUD ^mt-static/addons/Community.pack
 
 #?language=ja ^plugins/zemanta
 
