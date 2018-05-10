@@ -42,6 +42,9 @@ sub wanted {
     elsif ( @dirs >= 3 && $dirs[1] eq 'tag' ) {
         ok( 1, $File::Find::name );    # like t/tag/35-tags.t
     }
+    elsif ( @dirs >= 3 && $dirs[1] eq 'util' ) {
+        ok( 1, $File::Find::name );    # like t/util/08-util.t
+    }
     elsif ( @dirs >= 3 && $dirs[1] eq 'xt' ) {
         ok( 1, $File::Find::name );    # like t/xt/check-travis-ci.t
     }

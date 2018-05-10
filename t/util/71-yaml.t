@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -24,7 +24,7 @@ for my $class ( @classes ) {
         eval { MT::Util::YAML::_find_module($class) };
         skip "$class isn't installed.", 8 if $@;
         my $data;
-        ok(($data) = MT::Util::YAML::LoadFile('t/71-yaml.yaml'), "$class: Loadfile");
+        ok(($data) = MT::Util::YAML::LoadFile('t/util/71-yaml.yaml'), "$class: Loadfile");
         ok( 'HASH' eq ref $data, "$class: returns HASHREF");
         ok( defined $data->{TITANS}, "$class: exists key 'TITANS'" ) and
         is( scalar @{ $data->{TITANS} }, 2, "$class: number of array" );
