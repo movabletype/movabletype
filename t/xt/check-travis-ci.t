@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -41,6 +41,9 @@ sub wanted {
     }
     elsif ( @dirs >= 3 && $dirs[1] eq 'tag' ) {
         ok( 1, $File::Find::name );    # like t/tag/35-tags.t
+    }
+    elsif ( @dirs >= 3 && $dirs[1] eq 'xt' ) {
+        ok( 1, $File::Find::name );    # like t/xt/check-travis-ci.t
     }
     else {
         ok( 0, $File::Find::name . ' may not be tested on Travis CI' );
