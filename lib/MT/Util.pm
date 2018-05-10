@@ -2908,7 +2908,7 @@ sub build_upload_destination {
 
 sub asset_from_url {
     my ($image_url) = @_;
-    my $ua = MT->new_ua( { paranoid => 1 } ) or return;
+    my $ua = MT->new_ua( { paranoid => 1, timeout => 10 } ) or return;
     my $resp = $ua->get($image_url);
     return undef unless $resp->is_success;
     my $image = $resp->content;
