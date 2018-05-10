@@ -33,6 +33,9 @@ sub wanted {
     elsif ( @dirs >= 3 && $dirs[1] eq 'mt7' ) {
         ok( 1, $File::Find::name );    # like t/mt7/archive_type.t
     }
+    elsif ( @dirs >= 3 && $dirs[1] eq 'tag' ) {
+        ok( 1, $File::Find::name );    # like t/tag/35-tags.t
+    }
     else {
         ok( 0, $File::Find::name . ' may not be tested on Travis CI' );
     }

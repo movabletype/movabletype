@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
@@ -50,7 +50,7 @@ my $request = MT::Request->instance;
 $request->{__stash} = {};
 
 local $/ = undef;
-open F, "<t/35-tags.dat";
+open F, "<t/tag/35-tags.dat";
 my $test_json = <F>;
 close F;
 
@@ -227,7 +227,7 @@ function run(&$ctx, $suite) {
 }
 
 function load_tests() {
-    $suite = cleanup(file_get_contents('t/35-tags.dat'));
+    $suite = cleanup(file_get_contents('t/tag/35-tags.dat'));
     $json = new JSON();
     global $const;
     foreach ($const as $c => $r) {

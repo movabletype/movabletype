@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -52,11 +52,11 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== MTFolderPrevious
+=== MTFolderNext
 --- template
-<MTSubFolders top="1"><MTFolderPrevious show_empty="1"><MTFolderLabel>
-</MTFolderPrevious></MTSubFolders>
+<MTSubFolders top="1"><MTFolderNext show_empty="1"><MTFolderLabel>
+</MTFolderNext></MTSubFolders>
 --- expected
-foo
 bar
+baz
 

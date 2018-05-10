@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -71,28 +71,28 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== MTTopLevelCategories
+=== MTCategories
 --- template
-<MTTopLevelCategories><MTCategoryLabel>
-</MTTopLevelCategories>
+<MTCategories show_empty="1"><MTCategoryLabel>
+</MTCategories>
 --- expected
 bar
 baz
 foo
 
-=== MTTopLevelCategories category_set_id="1"
+=== MTCategories category_set_id="1"
 --- template
-<MTTopLevelCategories category_set_id="1"><MTCategoryLabel>
-</MTTopLevelCategories>
+<MTCategories category_set_id="1" show_empty="1"><MTCategoryLabel>
+</MTCategories>
 --- expected
 abc
 def
 ghi
 
-=== MTTopLevelCategories with category_set context
+=== MTCategories with category_set context
 --- template
-<MTCategorySets id="1"><MTTopLevelCategories><MTCategoryLabel>
-</MTTopLevelCategories></MTCategorySets>
+<MTCategorySets id="1"><MTCategories show_empty="1"><MTCategoryLabel>
+</MTCategories></MTCategorySets>
 --- expected
 abc
 def
