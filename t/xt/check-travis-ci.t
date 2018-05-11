@@ -27,6 +27,7 @@ my @allowed_sub_dirs = qw(
     mt_object
     object_driver
     tag
+    template
     util
     xt
 );
