@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -15,7 +15,7 @@ use MT::Test;
 use JSON;
 use MT::Tag;
 
-my $file = '<t/49-tagsplit.dat';
+my $file = '<t/model/49-tagsplit.dat';
 open TEST, $file or die "Can't open $file: $!";
 local $/ = undef;
 my $test_data = <TEST>;
