@@ -18,6 +18,15 @@ use File::Find ();
 use File::Spec;
 
 my $search_dir = 't';
+my @allowed_sub_dirs = qw(
+    cms_permission
+    data_api
+    mt7
+    object_driver
+    tag
+    util
+    xt
+);
 
 File::Find::find( \&wanted, $search_dir );
 
@@ -30,23 +39,8 @@ sub wanted {
     if ( @dirs == 2 ) {
         ok( 1, $File::Find::name );    # like t/00-compile.t
     }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'mt7' ) {
-        ok( 1, $File::Find::name );    # like t/mt7/archive_type.t
-    }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'cms_permission' ) {
-        ok( 1, $File::Find::name );    # like t/cms_permission/110-cms-permission.t
-    }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'data_api' ) {
-        ok( 1, $File::Find::name );    # like t/data_api/230-api-endpoint-entry.t
-    }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'tag' ) {
-        ok( 1, $File::Find::name );    # like t/tag/35-tags.t
-    }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'util' ) {
-        ok( 1, $File::Find::name );    # like t/util/08-util.t
-    }
-    elsif ( @dirs >= 3 && $dirs[1] eq 'xt' ) {
-        ok( 1, $File::Find::name );    # like t/xt/check-travis-ci.t
+    elsif ( @dirs >= 3 && grep { $_ eq $dirs[1] } @allowed_sub_dirs ) {
+        ok( 1, $File::Find::name );
     }
     else {
         ok( 0, $File::Find::name . ' may not be tested on Travis CI' );

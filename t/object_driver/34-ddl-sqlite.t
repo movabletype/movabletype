@@ -4,12 +4,12 @@
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
-# $Id: driver-tests.pl 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
@@ -28,6 +28,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test::Driver;
+use MT::Test::DDL;
 
 Test::Class->runtests;
