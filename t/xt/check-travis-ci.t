@@ -22,6 +22,7 @@ my @allowed_sub_dirs = qw(
     cms_permission
     data_api
     mt7
+    mt_object
     object_driver
     tag
     util
