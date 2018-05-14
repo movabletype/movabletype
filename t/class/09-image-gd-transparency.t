@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
@@ -22,8 +22,7 @@ use File::Spec;
 use MT::Test;
 use MT::Image;
 
-my $dir = dirname( dirname( File::Spec->rel2abs(__FILE__) ) );
-my $file = File::Spec->catfile( $dir, qw/ t images test.png / );
+my $file = File::Spec->catfile( $ENV{MT_HOME}, qw/ t images test.png / );
 
 my $cfg = MT->config;
 $cfg->ImageDriver('GD');

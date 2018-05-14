@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -20,9 +20,6 @@ use MT::Image;
 
 MT->instance;
 
-my $file   = File::Spec->rel2abs(__FILE__);
-my $mt_dir = dirname( dirname($file) );
-
 my $cfg = MT::ConfigMgr->instance;
 
 for my $d (qw/ ImageMagick GD Imager NetPBM /) {
@@ -37,7 +34,7 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
             }
 
             my $png_file
-                = File::Spec->catfile( $mt_dir, 't', 'images', 'test.png' );
+                = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.png' );
             my @blob_size;
             for my $q ( 0 .. 9 ) {
                 $cfg->ImageQualityPng($q);
@@ -68,7 +65,7 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
         # JPEG
         subtest 'JPEG' => sub {
             my $jpg_file
-                = File::Spec->catfile( $mt_dir, 't', 'images', 'test.jpg' );
+                = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
             my @blob_size;
             for my $q ( reverse 0 .. 100 ) {
                 $cfg->ImageQualityJpeg($q);

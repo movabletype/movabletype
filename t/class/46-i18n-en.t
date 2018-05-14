@@ -20,7 +20,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 BEGIN { plan skip_all => 'MT::I18N functions were deprecated'; }
 

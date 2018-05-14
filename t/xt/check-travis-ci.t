@@ -20,6 +20,7 @@ use File::Spec;
 my $search_dir = 't';
 my @allowed_sub_dirs = qw(
     app
+    class
     cms
     cms_permission
     data_api

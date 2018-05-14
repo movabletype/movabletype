@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -34,10 +34,8 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, qq{ImageDriver is "$driver".} );
 
-        my $file   = File::Spec->rel2abs(__FILE__);
-        my $mt_dir = dirname( dirname($file) );
         my $jpg_file
-            = File::Spec->catfile( $mt_dir, 't', 'images', 'test.jpg' );
+            = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
 
         # Copy JPEG file.
         my ( $fh, $tempfile ) = tempfile( SUFFIX => '.jpg' );

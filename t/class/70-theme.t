@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -24,7 +24,7 @@ $test_env->prepare_fixture('db_data');
 
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );
-$mt->config->ThemesDirectory('t/themes');
+$mt->config->ThemesDirectory('../t/themes');
 use_ok( 'MT::Theme', 'use MT::Theme' );
 
 ## building test themes.
@@ -750,7 +750,7 @@ my $theme2;
 ok( $theme2 = MT::Theme->_load_from_themes_directory('other_theme'),
     'Load from themes directory' );
 is( File::Spec->rel2abs( $theme2->path ),
-    File::Spec->catdir( $Bin, 'themes/other_theme' ) );
+    File::Spec->catdir( $ENV{MT_HOME}, 't/themes/other_theme' ) );
 $theme2->apply($blog);
 my $atom = MT->model('template')->load(
     {   blog_id => $blog->id,
