@@ -24,7 +24,7 @@ $test_env->prepare_fixture('db_data');
 
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );
-$mt->config->ThemesDirectory('../t/themes');
+$mt->config->ThemesDirectory(File::Spec->catdir( $ENV{MT_HOME}, 't', 'themes'));
 use_ok( 'MT::Theme', 'use MT::Theme' );
 
 ## building test themes.
