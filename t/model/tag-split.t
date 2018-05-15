@@ -15,7 +15,7 @@ use MT::Test;
 use JSON;
 use MT::Tag;
 
-my $file = '<t/model/49-tagsplit.dat';
+my $file = '<t/model/tag-split.dat';
 open TEST, $file or die "Can't open $file: $!";
 local $/ = undef;
 my $test_data = <TEST>;
