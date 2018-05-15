@@ -64,3 +64,27 @@ There are test files in ./t and ./plugins/**/t directories.
   * author tests
 * t/*.t
   * tests other than the above
+
+## CI services
+
+### [Travis CI](https://travis-ci.org/movabletype/movabletype)
+
+Test on the following environments.
+
+* all branches
+  * Perl 5.18, PHP 5.5, MySQL 5.5
+* master/develop branch
+  * Perl 5.10, PHP 5.3, MySQL 5.1
+  * Perl 5.24, PHP 7.0, MariaDB 10.1
+  
+Setting file is .travis.yml.
+
+### [Shippable](https://app.shippable.com/github/movabletype/movabletype/dashboard)
+
+Test on the following environment.
+
+* Perl 5.18, PHP 5.5, MySQL 5.5
+
+Test without fixture to check whether fixture is broken or not. (MT_TEST_IGNORE_FIXTURE=0)
+
+Setting file is shippable.yml.
