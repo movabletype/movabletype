@@ -48,9 +48,21 @@ $test_env->prepare_fixture(
             parent_id => 0,
             name      => 'test blog 01',
         );
-        $blog_01->archive_type(
-            'ContentType-Category,ContentType-Author,ContentType-Category-Monthly'
-        );
+        my @archive_types;
+        foreach my $key1 ( ( '', 'ContentType' ) ) {
+            foreach my $key2 ( ( '', 'Author', 'Category' ) ) {
+                foreach my $key3 (
+                    ( '', 'Daily', 'Weekly', 'Monthly', 'Yearly' ) )
+                {
+                    my $at = join '-', ( $key1 || () ), ( $key2 || () ),
+                        ( $key3 || () );
+                    $at ||= 'Individual,Page';
+                    push @archive_types, $at;
+                }
+            }
+        }
+        my $archive_types = join ',', @archive_types;
+        $blog_01->archive_type($archive_types);
         $blog_01->save;
 
         my $blog_02 = MT::Test::Permission->make_blog(
@@ -153,8 +165,177 @@ MT::Test::Tag->run_perl_tests( $blog_01->id );
 
 __END__
 
-=== mt:Archives label="No ID"
+=== mt:Archives template_params="archive_template"
+--- template
+<mt:Archives><mt:if name="template_params" key="archive_template"><mt:var name="template_params" key="archive_template"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+=== mt:Archives template_params="archive_listing"
+--- template
+<mt:Archives><mt:if name="template_params" key="archive_listing"><mt:var name="template_params" key="archive_listing"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+=== mt:Archives template_params="datebased_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:var name="template_params" key="datebased_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1
+
+=== mt:Archives template_params="entry_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="entry_archive"><mt:var name="template_params" key="entry_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="entry_template"
+--- template
+<mt:Archives><mt:if name="template_params" key="entry_template"><mt:var name="template_params" key="entry_template"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="page_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="page_archive"><mt:var name="template_params" key="page_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="page_template"
+--- template
+<mt:Archives><mt:if name="template_params" key="page_template"><mt:var name="template_params" key="page_template"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="feedback_template"
+--- template
+<mt:Archives><mt:if name="template_params" key="feedback_template"><mt:var name="template_params" key="feedback_template"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="datebased_only_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_only_archive"><mt:var name="template_params" key="datebased_only_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="datebased_daily_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_daily_archive"><mt:var name="template_params" key="datebased_daily_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="datebased_weekly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_weekly_archive"><mt:var name="template_params" key="datebased_weekly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="datebased_monthly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_monthly_archive"><mt:var name="template_params" key="datebased_monthly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="datebased_yearly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="datebased_yearly_archive"><mt:var name="template_params" key="datebased_yearly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="author_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_archive"><mt:var name="template_params" key="author_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="author_based_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:var name="template_params" key="author_based_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0
+
+=== mt:Archives template_params="author_daily_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_daily_archive"><mt:var name="template_params" key="author_daily_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="author_weekly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_weekly_archive"><mt:var name="template_params" key="author_weekly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="author_monthly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_monthly_archive"><mt:var name="template_params" key="author_monthly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+
+=== mt:Archives template_params="author_yearly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="author_yearly_archive"><mt:var name="template_params" key="author_yearly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0
+
+=== mt:Archives template_params="category_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_archive"><mt:var name="template_params" key="category_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0
+
+=== mt:Archives template_params="category_based_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_based_archive"><mt:var name="template_params" key="category_based_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1
+
+=== mt:Archives template_params="category_set_based_archive"
 --- template
 <mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:var name="template_params" key="category_set_based_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
 --- expected
-1,0,1
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1
+
+=== mt:Archives template_params="category_daily_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_daily_archive"><mt:var name="template_params" key="category_daily_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+
+=== mt:Archives template_params="category_weekly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_weekly_archive"><mt:var name="template_params" key="category_weekly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+
+=== mt:Archives template_params="category_monthly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_monthly_archive"><mt:var name="template_params" key="category_monthly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+
+=== mt:Archives template_params="category_yearly_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="category_yearly_archive"><mt:var name="template_params" key="category_yearly_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+
+=== mt:Archives template_params="contenttype_archive"
+--- template
+<mt:Archives><mt:if name="template_params" key="contenttype_archive"><mt:var name="template_params" key="contenttype_archive"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+=== mt:Archives template_params="contenttype_archive_listing"
+--- template
+<mt:Archives><mt:if name="template_params" key="contenttype_archive_listing"><mt:var name="template_params" key="contenttype_archive_listing"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+
+=== mt:Archives template_params="archive_class"
+--- template
+<mt:Archives><mt:if name="template_params" key="archive_class"><mt:var name="template_params" key="archive_class"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
+--- expected
+entry-archive,page-archive,datebased-daily-archive,datebased-weekly-archive,datebased-monthly-archive,datebased-yearly-archive,author-archive,author-daily-archive,author-weekly-archive,author-monthly-archive,author-yearly-archive,category-archive,category-daily-archive,category-weekly-archive,category-monthly-archive,category-yearly-archive,contenttype-archive,contenttype-datebased-daily-archive,contenttype-datebased-weekly-archive,contenttype-datebased-monthly-archive,contenttype-datebased-yearly-archive,contenttype-author-archive,contenttype-author-daily-archive,contenttype-author-weekly-archive,contenttype-author-monthly-archive,contenttype-author-yearly-archive,contenttype-category-archive,contenttype-category-daily-archive,contenttype-category-weekly-archive,contenttype-category-monthly-archive,contenttype-category-yearly-archive
+
