@@ -1,7 +1,39 @@
 # MT test documentation
 
+## Test commands
+
+### default
+
+```sh
+$ prove ./t ./plugins/**/t
+```
+
+### parallel test
+
+Run tests in parallel. This command needs [App::Prove::Plugin::MySQLPool](https://metacpan.org/pod/App::Prove::Plugin::MySQLPool).
+
+```sh
+$ prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
+```
+
+### update fixture
+
+```sh
+$ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+
+### ignore fixture
+
+```sh
+$ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+
 ## Test files
 
+There are test files in ./t and ./plugins/**/t directories.
+
+* plugins/**/t
+  * tests for each plugin
 * t/app/*.t
   * tests for MT::App::*
 * t/class/*.t
