@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib",    # t/lib
-    "$FindBin::Bin/..";         # $ENV{MT_HOME}
+    "$FindBin::Bin/../..";         # $ENV{MT_HOME}
 use Test::More;
 use MT::Test::Env;
 our $test_env;
