@@ -197,7 +197,7 @@ PRE
             foreach my $suffix (
                 ( '', '-Daily', '-Weekly', '-Monthly', '-Yearly' ) )
             {
-                my $at  = $prefix . $suffix;
+                my $at = $prefix . $suffix;
                 MT::Test::Permission->make_templatemap(
                     template_id => (
                           $at eq 'ContentType'
@@ -220,6 +220,8 @@ my $content_type_01
     = MT::ContentType->load( { name => 'test content type 01' } );
 
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
+$vars->{content_type_01_name}      = $content_type_01->name;
+$vars->{content_type_01_id}        = $content_type_01->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 
@@ -313,6 +315,18 @@ enabled
 === mt:IfArchiveTypeEnabled type="ContentType-Category-Yearly"
 --- template
 <mt:CategorySets><mt:IfArchiveTypeEnabled type="ContentType-Category-Yearly" content_type="[% content_type_01_unique_id %]">enabled</mt:IfArchiveTypeEnabled></mt:CategorySets>
+--- expected
+enabled
+
+=== mt:IfArchiveTypeEnabled content_type="name"
+--- template
+<mt:IfArchiveTypeEnabled type="ContentType" content_type="[% content_type_01_name %]">enabled</mt:IfArchiveTypeEnabled>
+--- expected
+enabled
+
+=== mt:IfArchiveTypeEnabled content_type="id"
+--- template
+<mt:IfArchiveTypeEnabled type="ContentType" content_type="[% content_type_01_id %]">enabled</mt:IfArchiveTypeEnabled>
 --- expected
 enabled
 
