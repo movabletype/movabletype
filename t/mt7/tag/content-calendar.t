@@ -118,10 +118,17 @@ my $cd3 = MT::Test::Permission->make_content_data(
     authored_on     => $next_month . '15000000',
     data            => { $cf_datetime->id => $this_month . '03180500', },
 );
+my $cd4 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => '20170615000000',
+    data => { $cf_category->id => [ $category1->id ], },
+);
 
-$vars->{ct_uid}  = $ct->unique_id;
-$vars->{ct_name} = $ct->name;
-$vars->{ct_id}   = $ct->id;
+$vars->{ct_uid}    = $ct->unique_id;
+$vars->{ct_name}   = $ct->name;
+$vars->{ct_id}     = $ct->id;
+$vars->{cat_label} = $category2->label;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -148,7 +155,7 @@ __END__
 12
 13
 14
-15
+
 16
 17
 18
@@ -184,7 +191,7 @@ __END__
 12
 13
 14
-15
+
 16
 17
 18
@@ -220,7 +227,7 @@ __END__
 12
 13
 14
-15
+
 16
 17
 18
@@ -256,6 +263,43 @@ __END__
 === MT::ContentCalendar with category_set
 --- template
 <mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
+
+
+=== MT::ContentCalendar with category_set and category
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set" category="[% cat_label %]">
 <mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
 --- expected
 1
