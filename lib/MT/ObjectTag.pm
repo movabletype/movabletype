@@ -7,6 +7,7 @@
 package MT::ObjectTag;
 
 use strict;
+use warnings;
 
 use MT::Blog;
 use base qw( MT::Object );
@@ -18,6 +19,7 @@ __PACKAGE__->install_properties(
             'object_id'         => 'integer not null',
             'object_datasource' => 'string(50) not null',
             'tag_id'            => 'integer not null',
+            'cf_id'             => 'integer not null',
         },
         indexes => {
             object_id         => 1,
@@ -38,6 +40,7 @@ __PACKAGE__->install_properties(
         datasource  => 'objecttag',
         primary_key => 'id',
         cacheable   => 0,
+        defaults    => { cf_id => 0, },
     }
 );
 
@@ -47,6 +50,28 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Tag Placements");
+}
+
+sub remove {
+    my $self = shift;
+    if ( ref $self && $self->id && $self->cf_id ) {
+        MT->model('content_field_index')->remove(
+            {   content_field_id => $self->cf_id,
+                content_data_id  => $self->object_id,
+            }
+            );
+        my $content_data
+            = MT->model('content_data')->load( $self->object_id );
+        if ($content_data) {
+            my $data           = $content_data->data;
+            my $field_data     = $data->{ $self->cf_id } || [];
+            my $new_field_data = [ grep { $_ != $self->tag_id } @$field_data ];
+            $data->{ $self->cf_id } = $new_field_data;
+            $content_data->data($data);
+            $content_data->save;
+        }
+    }
+    $self->SUPER::remove(@_);
 }
 
 1;

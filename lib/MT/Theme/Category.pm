@@ -5,99 +5,59 @@
 # $Id$
 package MT::Theme::Category;
 use strict;
+use warnings;
 use MT;
+use MT::Theme::Common
+    qw( add_categories build_category_tree generate_order get_ordered_basenames );
 
 sub import_categories {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
-    _add_categories( $theme, $obj_to_apply, $cats, 'category' )
+    add_categories( $theme, $obj_to_apply, $cats, 'category' )
         or die "Failed to create theme default categories";
+
+    my $order = generate_order(
+        {   basenames => $element->{data}{':order'},
+            terms     => {
+                blog_id         => $obj_to_apply->id,
+                class           => 'category',
+                category_set_id => 0,
+            },
+        }
+    );
+    if ($order) {
+        $obj_to_apply->category_order($order);
+        $obj_to_apply->save
+            or die MT->translate( 'Failed to save category_order: [_1]',
+            $obj_to_apply->errstr );
+    }
+
     return 1;
 }
 
 sub import_folders {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $cats = $element->{data};
-    _add_categories( $theme, $obj_to_apply, $cats, 'folder' )
+    add_categories( $theme, $obj_to_apply, $cats, 'folder' )
         or die "Failed to create theme default folders";
+
+    my $order = generate_order(
+        {   basenames => $element->{data}{':order'},
+            terms     => {
+                blog_id         => $obj_to_apply->id,
+                class           => 'folder',
+                category_set_id => 0,
+            },
+        }
+    );
+    if ($order) {
+        $obj_to_apply->folder_order($order);
+        $obj_to_apply->save
+            or die MT->translate( 'Failed to save folder_order: [_1]',
+            $obj_to_apply->errstr );
+    }
+
     return 1;
-}
-
-sub _add_categories {
-    my ( $theme, $blog, $cat_data, $class, $parent ) = @_;
-
-    my $author_id;
-    if ( my $app = MT->instance ) {
-        if ( $app->isa('MT::App') ) {
-            my $author = $app->user;
-            $author_id = $author->id if defined $author;
-        }
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 1: created_by from this blog.
-        $author_id = $blog->created_by if defined $blog->created_by;
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 2: One of this blog's administrator
-        my $search_string
-            = $blog->is_blog
-            ? '%\'administer_blog\'%'
-            : '%\'administer_website\'%';
-        my $perm = MT->model('permission')->load(
-            {   blog_id     => $blog->id,
-                permissions => { like => $search_string },
-            }
-        );
-        $author_id = $perm->author_id if $perm;
-    }
-    unless ( defined $author_id ) {
-
-        # Fallback 3: One of system administrator
-        my $perm = MT->model('permission')->load(
-            {   blog_id     => 0,
-                permissions => { like => '%administer%' },
-            }
-        );
-        $author_id = $perm->author_id if $perm;
-    }
-    die "Failed to create theme default pages"
-        unless defined $author_id;
-
-    for my $basename ( keys %$cat_data ) {
-        my $datum = $cat_data->{$basename};
-        my $cat   = MT->model($class)->load(
-            {   blog_id  => $blog->id,
-                basename => $basename,
-                parent   => $parent ? $parent->id : 0
-            }
-        );
-        unless ($cat) {
-            $cat = MT->model($class)->new;
-            $cat->blog_id( $blog->id );
-            $cat->basename($basename);
-            for my $key (qw{ label description }) {
-                my $val = $datum->{$key};
-                if ( ref $val eq 'CODE' ) {
-                    $val = $val->();
-                }
-                else {
-                    $val = $theme->translate($val) if $val;
-                }
-                $cat->$key($val);
-            }
-            $cat->allow_pings( $datum->{allow_pings} || 0 );
-            $cat->author_id($author_id);
-            $cat->parent( $parent->id )
-                if defined $parent;
-            $cat->save;
-        }
-        if ( my $children = $datum->{children} ) {
-            _add_categories( $theme, $blog, $children, $class, $cat );
-        }
-    }
-    1;
 }
 
 sub info_categories {
@@ -105,6 +65,7 @@ sub info_categories {
     my $data = $element->{data};
     my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
+        next unless ref $parent eq 'HASH';
         $parents++;
         $children += _count_descendant_categories( $parent, 0 );
     }
@@ -119,6 +80,7 @@ sub info_folders {
     my $data = $element->{data};
     my ( $parents, $children ) = ( 0, 0 );
     for my $parent ( values %$data ) {
+        next unless ref $parent eq 'HASH';
         $parents++;
         $children += _count_descendant_categories( $parent, 0 );
     }
@@ -140,15 +102,19 @@ sub _count_descendant_categories {
 
 sub category_condition {
     my ($blog) = @_;
-    my $cat = MT->model('category')
-        ->load( { blog_id => $blog->id }, { limit => 1 } );
+    my $cat
+        = MT->model('category')
+        ->load( { blog_id => $blog->id, category_set_id => 0 },
+        { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
 sub folder_condition {
     my ($blog) = @_;
-    my $cat = MT->model('folder')
-        ->load( { blog_id => $blog->id }, { limit => 1 } );
+    my $cat
+        = MT->model('folder')
+        ->load( { blog_id => $blog->id, category_set_id => 0 },
+        { limit => 1 } );
     return defined $cat ? 1 : 0;
 }
 
@@ -198,16 +164,26 @@ sub export_category {
     my @cats;
     if ( defined $settings ) {
         my @ids = $settings->{default_category_export_ids};
-        @cats = MT->model('category')->load( { id => \@ids } );
+        @cats = MT->model('category')
+            ->load( { id => \@ids, category_set_id => 0 } );
     }
     else {
-        @cats = MT->model('category')->load( { blog_id => $blog->id } );
+        @cats = MT->model('category')
+            ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
-    my @tops = grep { !$_->parent } @cats;
+
     my $data = {};
-    for my $top (@tops) {
-        $data->{ $top->basename } = _build_tree( \@cats, $top );
+
+    if (@cats) {
+        $data->{':order'}
+            = get_ordered_basenames( \@cats, $blog->category_order );
     }
+
+    my @tops = grep { !$_->parent } @cats;
+    for my $top (@tops) {
+        $data->{ $top->basename } = build_category_tree( \@cats, $top );
+    }
+
     return %$data ? $data : undef;
 }
 
@@ -216,32 +192,27 @@ sub export_folder {
     my @folders;
     if ( defined $settings ) {
         my @ids = $settings->{default_folder_export_ids};
-        @folders = MT->model('folder')->load( { id => \@ids } );
+        @folders = MT->model('folder')
+            ->load( { id => \@ids, category_set_id => 0 } );
     }
     else {
-        @folders = MT->model('folder')->load( { blog_id => $blog->id } );
+        @folders = MT->model('folder')
+            ->load( { blog_id => $blog->id, category_set_id => 0 } );
     }
-    my @tops = grep { !$_->parent } @folders;
-    my $data = {};
-    for my $top (@tops) {
-        $data->{ $top->basename } = _build_tree( \@folders, $top );
-    }
-    return %$data ? $data : undef;
-}
 
-sub _build_tree {
-    my ( $cats, $cat ) = @_;
-    my $hash = { label => $cat->label, };
-    $hash->{description} = $cat->description if $cat->description;
-    my @children = grep { $_->parent == $cat->id } @$cats;
-    if ( scalar @children ) {
-        $hash->{children} = {};
-        for my $child (@children) {
-            $hash->{children}{ $child->basename }
-                = _build_tree( $cats, $child );
-        }
+    my $data = {};
+
+    if (@folders) {
+        $data->{':order'}
+            = get_ordered_basenames( \@folders, $blog->folder_order );
     }
-    return $hash;
+
+    my @tops = grep { !$_->parent } @folders;
+    for my $top (@tops) {
+        $data->{ $top->basename } = build_category_tree( \@folders, $top );
+    }
+
+    return %$data ? $data : undef;
 }
 
 1;

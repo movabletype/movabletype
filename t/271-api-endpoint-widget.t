@@ -2,12 +2,24 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-use Test::MockModule;
+use MT::Test::Env;
+BEGIN {
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -100,9 +112,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -128,9 +137,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -151,9 +157,6 @@ sub suite {
                     ->load( { blog_id => 0, type => 'widget' } );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,
@@ -186,9 +189,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -221,9 +221,6 @@ sub suite {
                 my @widgets = $app->model('template')->load(@terms_args);
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => $total_results,
@@ -291,9 +288,6 @@ sub suite {
 #                my @widgets = $app->model('template')->load(@terms_args);
 #
 #                $app->user($author);
-#                no warnings 'redefine';
-#                local *boolean::true  = sub {'true'};
-#                local *boolean::false = sub {'false'};
 #                return +{
 #                    totalResults => $total_results,
 #                    items => MT::DataAPI::Resource->from_object( \@widgets ),
@@ -340,9 +334,6 @@ sub suite {
                 @widget = sort { $a->name cmp $b->name } @widget;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @widget,
                     items => MT::DataAPI::Resource->from_object( \@widget ),
@@ -793,8 +784,8 @@ sub suite {
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/refresh',
             method => 'POST',
             restrictions => {
-                1 => [qw/ edit_templates administer_blog /],
-                0 => [qw/ edit_templates administer_blog /],
+                1 => [qw/ edit_templates administer_site /],
+                0 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to refresh a widget.',
@@ -852,8 +843,8 @@ sub suite {
             path   => '/v2/sites/1/widgets/' . $blog_widget->id . '/clone',
             method => 'POST',
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to clone a widget.',

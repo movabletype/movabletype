@@ -2,40 +2,51 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website( name => 'my website' );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, name => 'my blog' );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    require MT::Role;
+    my $site_admin
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $site_admin => $blog );
+});
 
 my $admin = MT::Author->load(1);
-
-# Role
-require MT::Role;
-my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
-
-require MT::Association;
-MT::Association->link( $aikawa => $blog_admin => $blog );
+my $blog = MT::Blog->load( {name => 'my blog' } );
+my $aikawa = MT::Author->load( { name => 'aikawa' } );
 
 # Run
 my ( $app, $out );
@@ -52,7 +63,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                       "Request: list" );
     ok( $out =~ m!Unknown Action!i, "list by admin" );
 
     $os = MT::Test::Permission->make_objectasset( blog_id => $blog->id );
@@ -66,7 +77,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
+    ok( $out,                       "Request: list" );
     ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
 };
 
@@ -84,7 +95,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
@@ -101,7 +112,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
+    ok( $out,                        "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 };
 
@@ -118,7 +129,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $os = MT::Test::Permission->make_objectasset( blog_id => $blog->id );
@@ -133,7 +144,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
+    ok( $out,                        "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 };
 
@@ -150,7 +161,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                        "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     $os = MT::Test::Permission->make_objectasset( blog_id => $blog->id );
@@ -165,7 +176,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
+    ok( $out,                        "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
 };
 

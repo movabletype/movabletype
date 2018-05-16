@@ -11,12 +11,11 @@ use MT::Util;
 
 sub save {
     my $app       = shift;
-    my $q         = $app->param;
-    my $fid       = $q->param('fid');
+    my $fid       = $app->param('fid');
     my $author_id = $app->user->id;
-    my $blog_id   = $q->param('blog_id') || 0;
-    my $label     = $q->param('label');
-    my $ds        = $q->param('datasource');
+    my $blog_id   = $app->param('blog_id') || 0;
+    my $label     = $app->param('label');
+    my $ds        = $app->param('datasource');
 
     $app->validate_magic
         or return $app->json_error( $app->translate('Invalid request') );
@@ -26,7 +25,7 @@ sub save {
             $app->translate('Failed to save filter: Label is required.') );
     }
     my $items;
-    if ( my $items_json = $q->param('items') ) {
+    if ( my $items_json = $app->param('items') ) {
         if ( $items_json =~ /^".*"$/ ) {
             $items_json =~ s/^"//;
             $items_json =~ s/"$//;
@@ -96,7 +95,7 @@ sub save {
         or return $app->json_error(
         $app->translate( 'Failed to save filter: [_1]', $filter->errstr ) );
 
-    my $list = $q->param('list');
+    my $list = $app->param('list');
     if ( defined $list && !$list ) {
         my %res;
         my $filters = filters( $app, $ds, encode_html => 1 );
@@ -121,13 +120,12 @@ sub delete {
     my $app = shift;
     $app->validate_magic
         or return $app->json_error( $app->translate('Invalid request') );
-    my $q            = $app->param;
-    my $id           = $q->param('id');
+    my $id           = $app->param('id');
     my $filter_class = MT->model('filter');
     my $filter       = $filter_class->load($id)
         or return $app->json_error( $app->translate('No such filter') );
-    my $blog_id = $q->param('blog_id') || 0;
-    my $ds      = $q->param('datasource');
+    my $blog_id = $app->param('blog_id') || 0;
+    my $ds      = $app->param('datasource');
     my $user    = $app->user;
 
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
@@ -165,7 +163,7 @@ sub delete_filters {
 
     $app->setup_filtered_ids
         if $app->param('all_selected');
-    my @ids = $app->param('id');
+    my @ids = $app->multi_param('id');
 
     # handling either AJAX request and normal request
     @ids = split ',', join ',', @ids;

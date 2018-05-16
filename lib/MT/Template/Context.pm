@@ -7,6 +7,7 @@
 package MT::Template::Context;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 use constant FALSE => -99999;
@@ -355,9 +356,13 @@ sub set_blog_load_context {
     my $blog_id = $ctx->stash('blog_id');
     $col ||= 'blog_id';
 
+    # Preprocess from MultiBlog
+    MT::Template::Context::_preprocess_multiblog(@_);
+
     # Grab specified blog IDs
     my $blog_ids
-        = $attr->{blog_ids}
+        = $attr->{include_sites}
+        || $attr->{blog_ids}
         || $attr->{include_blogs}
         || $attr->{site_ids}
         || $attr->{include_websites};
@@ -416,7 +421,8 @@ sub set_blog_load_context {
         my ( @blogs, $blog_ids );
         @blogs = MT->model('blog')->load( { parent_id => $website->id } );
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
-        push @$blog_ids, $website->id if $attr->{include_with_website};
+        push @$blog_ids, $website->id
+            if $attr->{include_parent_site} || $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
             ; # We should use non-existing blog id when calculated blog_ids is empty
@@ -452,11 +458,14 @@ sub set_blog_load_context {
 
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
-    if (   $attr->{exclude_blogs}
+    if (   $attr->{exclude_sites}
+        || $attr->{exclude_blogs}
         || $attr->{exclude_websites}
         || $attr->{deny_blogs} )
     {
-        my $exclude_ids = $attr->{exclude_blogs}
+        my $exclude_ids
+            = $attr->{exclude_sites}
+            || $attr->{exclude_blogs}
             || $attr->{exclude_websites};
         return $ctx->error(
             MT->translate(
@@ -510,6 +519,52 @@ sub set_blog_load_context {
     }
 
     1;
+}
+
+sub set_content_type_load_context {
+    my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
+    if ( my $arg = $args->{content_type} ) {
+        my $class = MT->model('content_type');
+        my $ct;
+        $ct = $class->load($arg) if ( $arg =~ /^\d+$/ );
+        $ct = $class->load( { unique_id => $arg } ) unless $ct;
+        $ct = $class->load( { name      => $arg } ) unless $ct;
+        return $ctx->_no_content_type_error unless $ct;
+        $cd_terms->{content_type_id} = $ct->id;
+    }
+    1;
+}
+
+sub get_content_type_context {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $blog         = $ctx->stash('blog');
+    my $content_type = $ctx->stash('content_type');
+    my $blog_id      = $args->{blog_id} || $blog->id || '';
+
+    if ( my $str = $args->{content_type} ) {
+        if (!$content_type
+            || (   $content_type
+                && $content_type->unique_id != $str
+                && ($content_type->blog_id != $blog_id
+                    || (   $content_type->blog_id == $blog_id
+                        && $content_type->name ne $str )
+                )
+            )
+            )
+        {
+            ($content_type)
+                = MT->model('content_type')->load( { unique_id => $str } );
+            unless ($content_type) {
+                ($content_type)
+                    = MT->model('content_type')
+                    ->load( { blog_id => $blog_id, name => $str } )
+                    or return $ctx->_no_content_type_error();
+            }
+        }
+    }
+
+    return $content_type;
 }
 
 sub compile_category_filter {
@@ -821,6 +876,97 @@ sub count_format {
     return $phrase;
 }
 
+sub _preprocess_multiblog {
+    my ( $ctx, $args, $cond ) = @_;
+    my $tag = lc $ctx->stash('tag');
+
+    # If we're running under MT-Search, set the context based on the search
+    # parameters available.
+    unless ( $args->{blog_id}
+        || $args->{include_sites}
+        || $args->{exclude_sites}
+        || $args->{blog_ids}
+        || $args->{site_ids}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs}
+        || $args->{include_websites}
+        || $args->{exclude_websites} )
+    {
+        my $app = MT->instance;
+        if ( $app->isa('MT::App::Search') && !$ctx->stash('inside_blogs') ) {
+            if ( my $excl = $app->{searchparam}{ExcludeBlogs} ) {
+                $args->{exclude_blogs} ||= join ',', @$excl;
+            }
+            elsif ( my $incl = $app->{searchparam}{IncludeBlogs} ) {
+                $args->{include_blogs} = join ',', @$incl;
+            }
+
+            if ( ( $args->{include_blogs} || $args->{exclude_blogs} )
+                && $args->{blog_id} )
+            {
+                delete $args->{blog_id};
+            }
+        }
+    }
+
+    # Load sites access control list
+    my $incl
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{include_websites}
+        || $args->{blog_id}
+        || $args->{blog_ids}
+        || grep( $_ eq $tag, 'blogs', 'websites' );
+    my $excl
+        = $args->{exclude_sites}
+        || $args->{exclude_blogs}
+        || $args->{exclude_websites};
+    for ( $incl, $excl ) {
+        next unless $_;
+        s{\s+}{}g;    # Remove spaces
+    }
+    if ( $incl or $excl ) {
+        require MT::RebuildTrigger;
+        my %acl = MT::RebuildTrigger->load_sites_acl($ctx);
+        $args->{ $acl{mode} } = $acl{acl};
+    }
+
+    # Explicity set blog_id for MTInclude if not specified
+    # so that it never gets sites context from MTSites
+    if ( $tag eq 'include' and !exists $args->{blog_id} ) {
+        if ( $ctx->stash('sites_context') ) {
+            if ( !$args->{local} && !$args->{global} && !$args->{parent} ) {
+                $args->{blog_id} = $ctx->stash('blog_id');
+            }
+            elsif ( $args->{local} ) {
+                my $local_blog_id = $ctx->stash('local_blog_id');
+                if ( defined $local_blog_id ) {
+                    $args->{blog_id} = $ctx->stash('local_blog_id');
+                }
+            }
+        }
+        else {
+            my $local_blog_id = $ctx->stash('local_blog_id');
+            if ( defined $local_blog_id ) {
+                $args->{blog_id} = $ctx->stash('local_blog_id');
+            }
+        }
+    }
+
+    # If no include_blogs/exclude_blogs specified look for a
+    # previously set MTSites context
+    elsif ( $ctx->stash('sites_context') ) {
+        $args->{include_blogs} = $ctx->stash('sites_include_blog_ids')
+            if $ctx->stash('sites_include_blog_ids');
+        $args->{exclude_blogs} = $ctx->stash('sites_exclude_blog_ids')
+            if $ctx->stash('sites_exclude_blog_ids');
+    }
+
+    # Remove local blog ID from MTTags since it is cross-blog
+    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.
+    local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
+}
+
 sub _no_author_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
@@ -845,6 +991,29 @@ sub _no_entry_error {
             $tag_name
         )
     );
+}
+
+sub _no_content_type_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Content Type could be found.') );
+}
+
+sub _no_content_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of a content; "
+                . "Perhaps you mistakenly placed it outside of an 'MTContents' container tag?",
+            $tag_name
+        )
+    );
+}
+
+sub _no_content_field_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Content Field could be found.') );
 }
 
 sub _no_website_error {
@@ -939,6 +1108,11 @@ sub _no_page_error {
             $tag_name
         )
     );
+}
+
+sub _no_category_set_error {
+    my ($ctx) = @_;
+    $ctx->error( MT->translate('No Category Set could be found.') );
 }
 
 # overridden in other contexts

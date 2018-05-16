@@ -7,6 +7,7 @@
 package MT::ArchiveType::Daily;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Date );
 use MT::Util qw( start_end_day );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("DAILY_ADV");
+}
+
+sub order {
+    return 30;
 }
 
 sub dynamic_template {

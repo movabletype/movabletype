@@ -2,20 +2,25 @@
 
 use strict;
 use warnings;
-
-use lib 'extlib';
-use lib 'lib';
-use lib 't/lib';
-
-use Test::More qw(no_plan);
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT;
 use MT::Blog;
 use MT::Entry;
 use MT::Template;
 use MT::Template::Context;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Util qw(offset_time_list);
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 
@@ -67,7 +72,9 @@ $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5] + 1900, $ts[4] + 1,
     @ts[ 3, 2, 1, 0 ];
 $tmpl->modified_on($ts);
 $tmpl->save;
-$mt->rebuild( BlogId => $blog->id, Force => 1 ) || print "Rebuild error: ",
+$mt->rebuild( BlogID => $blog->id, Force => 1 ) || print "Rebuild error: ",
     $mt->errstr;
 my $out3 = $tmpl->build( $ctx, {} );
 ok( $out3 eq "hello yay", "Test template should be different" );
+
+done_testing;

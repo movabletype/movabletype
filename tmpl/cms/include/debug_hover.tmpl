@@ -6,13 +6,12 @@
     <mt:SetVar name="subtitle" value="$mt_version_id">
     <mt:SetVar name="no_content" value="1">
 </mt:SetHashVar>
-<mt:if name="mt_svn_revision">
-    <mt:SetHashVar name="subversion_panel">
-        <mt:SetVar name="name" value="Subversion">
+<mt:if name="mt_vcs_revision">
+    <mt:SetHashVar name="vcs_panel">
+        <mt:SetVar name="name" value="VCS">
         <mt:SetVar name="title" value="Version Control">
         <mt:SetVar name="nav_title" value="Version Control">
-        <mt:SetVarBlock name="subtitle"><mt:Var name="mt_svn_revision{branch}"> at rev <mt:Var name="mt_svn_revision{revision}"></mt:SetVarBlock>
-        <mt:SetVar name="no_content" value="1">
+        <mt:SetVar name="onclick" value="loadVcsRevision();">
     </mt:SetHashVar>
 </mt:if>
 <mt:SetHashVar name="sql_panel">
@@ -37,76 +36,11 @@
     <mt:SetVar name="nav_title" value="HTTP Headers">
 </mt:SetHashVar>
 <mt:Var name="debug_panels" function="unshift" value="$version_panel">
-<mt:if name="mt_svn_revision"><mt:Var name="debug_panels" function="unshift" value="$subversion_panel"></mt:if>
+<mt:if name="mt_vcs_revision"><mt:Var name="debug_panels" function="unshift" value="$vcs_panel"></mt:if>
 <mt:Var name="debug_panels" function="push" value="$sql_panel">
 <mt:Var name="debug_panels" function="push" value="$cache_panel">
 <mt:Var name="debug_panels" function="push" value="$requestvars_panel">
 <mt:Var name="debug_panels" function="push" value="$headers_panel">
-<mt:Ignore>
-    [%-
-        debug_panels = [
-            {
-                name => 'Version',
-                title => lh.loc( 'TypePad Version' ),
-                nav_title => lh.loc( 'TypePad Version' ),
-                subtitle => tc.app_version,
-                no_content => 1,
-            },
-            {
-                name => 'Subversion',
-                title => lh.loc( 'Version Control' ),
-                nav_title => lh.loc( 'Version Control' ),
-                subtitle => lh.loc( '[_1] at rev [_2]', archetype.svn_branch, archetype.svn_revision ),
-                no_content => 1,
-            },
-        ];
-
-        IF reqtimer;
-            USE elapsed = String( reqtimer.total_elapsed );
-            debug_panels.push( {
-                name => 'Timer',
-                title => lh.loc( 'Time' ),
-                nav_title => lh.loc( 'Time' ),
-                subtitle => lh.loc( 'render time: [_1]', elapsed.format( "%.04fs" ) ),
-            } );
-        END;
-
-        IF tc.query_profiler;
-            queries_db = tc.query_profiler.queries_matching( "^(?!MEMCACHE)" );
-            queries_mc = tc.query_profiler.queries_matching( "^MEMCACHE" );
-            debug_panels.push( {
-                name => 'SQL',
-                title => lh.loc( 'SQL Queries' ),
-                nav_title => lh.loc( 'SQL' ),
-                subtitle => lh.loc( '[quant,_1,query,queries]', queries_db.size ),
-            },
-            {
-                name => 'Cache',
-                title => lh.loc( 'Memcache Queries' ),
-                nav_title => lh.loc( 'Memcache' ),
-                subtitle => lh.loc( '[quant,_1,query,queries]', queries_mc.size ),
-            } );
-        END;
-
-        debug_panels.push( {
-            name => 'Settings',
-            title => lh.loc( 'Application Settings' ),
-            nav_title => lh.loc( 'Application Settings' ),
-        },
-        {
-            name => 'RequestVars',
-            title => lh.loc( 'Request Vars' ),
-            nav_title => lh.loc( 'Request Vars' ),
-        },
-        {
-            name => 'Headers',
-            title => lh.loc( 'HTTP Headers' ),
-            nav_title => lh.loc( 'HTTP Headers' ),
-        } );
-    -%]
-</mt:Ignore>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/jquery.cookie.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/toolbar.js"></script>
 <style type="text/css">
     @import url(<$mt:var name="static_uri"$>debug_toolbar/toolbar.css);
 </style>
@@ -119,7 +53,7 @@
         <mt:If name="no_content">
                 <div class="contentless">
         <mt:Else>
-                <a href="#" title="<mt:Var name="title" escape="html">" class="djDebug<mt:Var name="name" escape="html">Panel">
+                <a href="#" title="<mt:Var name="title" escape="html">" class="djDebug<mt:Var name="name" escape="html">Panel" <mt:If name="onclick">onclick="<mt:var name="onclick" escape="html">"</mt:If>>
         </mt:If>
                 <mt:Var name="nav_title" escape="html">
         <mt:If name="subtitle">
@@ -159,4 +93,6 @@
     </mt:Loop>
     <div id="djDebugWindow" class="panelContent"></div>
 </div>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/jquery.cookie.js"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/toolbar.js"></script>
 </mt:If>

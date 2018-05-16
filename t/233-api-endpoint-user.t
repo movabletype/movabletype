@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -105,9 +113,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -130,9 +135,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -158,9 +160,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @users,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -186,9 +185,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$user] ),
@@ -230,9 +226,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( [$user] ),
@@ -258,9 +251,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( \@users ),
@@ -303,9 +293,6 @@ sub suite {
                 @users = grep { $_->locked_out } @users;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 0,
                     items        => [],
@@ -332,9 +319,6 @@ sub suite {
                 @users = grep { !$_->locked_out } @users;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 3,
@@ -628,6 +612,7 @@ sub suite {
         {    # No permissions.
             path   => '/v2/users',
             method => 'POST',
+            author_id => 4,
             params => {
                 user => {
                     name         => 'create-user',
@@ -755,7 +740,7 @@ sub suite {
             path   => '/v2/users/3',
             method => 'PUT',
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -763,8 +748,9 @@ sub suite {
         {    # No permissions.
             path   => '/v2/users/3',
             method => 'PUT',
+            author_id => 4,
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             code  => 403,
             error => 'Do not have permission to update the requested user.',
         },
@@ -775,7 +761,7 @@ sub suite {
             method       => 'PUT',
             is_superuser => 1,
             params =>
-                { user => { systemPermissions => [qw( create_website )], }, },
+                { user => { systemPermissions => [qw( create_site )], }, },
             result => sub {
                 $app->model('author')->load(3);
             },
@@ -818,6 +804,7 @@ sub suite {
             path   => '/v2/users/3/unlock',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             result => sub {
                 return +{
                     error => {
@@ -852,6 +839,7 @@ sub suite {
             path   => '/v2/users/3/recover_password',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             result => sub {
                 return +{
                     error => {
@@ -886,6 +874,7 @@ sub suite {
             path   => '/v2/users/3/recover_password',
             method => 'POST',
             code   => 403,
+            author_id => 4,
             error  => 'Do not have permission to recover password for user.',
         },
 
@@ -1034,6 +1023,7 @@ sub suite {
             method       => 'DELETE',
             is_superuser => 0,
             code         => 403,
+            author_id    => 4,
             error        => 'Do not have permission to delete a user.',
         },
 

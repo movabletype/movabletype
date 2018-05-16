@@ -1,54 +1,47 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
+    # An error occurs in save_community_prefs mode when Cloud.pack installed.
+    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
-# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
-# An error occurs in save_community_prefs mode when Cloud.pack installed.
-use File::Spec;
-use File::Copy;
-
-BEGIN {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config ) {
-        move( $cloudpack_config, $cloudpack_config_rename )
-            or plan skip_all => "$cloudpack_config cannot be moved.";
-    }
-}
-
-END {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config_rename ) {
-        move( $cloudpack_config_rename, $cloudpack_config );
-    }
-}
-
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
 
-# Author
+    # Author
+    my $admin = MT->model('author')->load(1);
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
 my $admin = MT->model('author')->load(1);
 
 # Run tests
@@ -57,8 +50,9 @@ my ( $app, $out );
 note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
-        my $type_ucfirst = ucfirst $type;
+        my $type_ucfirst = 'Site';    # ucfirst $type;
         my $test_blog = $type eq 'website' ? $website : $blog;
+        my $type_alias = $type eq 'website' ? 'site' : 'child site';
 
         note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
@@ -92,7 +86,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $description
                 = quotemeta(
-                "Used to generate URLs (permalinks) for this ${type}'s archived entries. Choose one of the archive types used in this ${type}'s archive templates."
+                "Used to generate URLs (permalinks) for this ${type_alias}'s archived entries. Choose one of the archive types used in this ${type_alias}'s archive templates."
                 );
             $description = qr/$description/;
             like( $out, qr/$description/,
@@ -101,8 +95,11 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $enable_archive_paths = quotemeta
                 "<label for=\"enable_archive_paths\">Publish archives outside of $type_ucfirst Root</label>";
-            like( $out, qr/$enable_archive_paths/,
-                'Has publish archives outside checkbox.' );
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$enable_archive_paths/,
+                    'Has publish archives outside checkbox.' );
+            }
 
             my $site_root_hint
                 = $type eq 'blog'
@@ -113,23 +110,30 @@ subtest 'Test cfg_prefs mode' => sub {
 
             my $archive_url = quotemeta
                 '<label id="archive_url-label" for="archive_url">Archive URL *</label>';
-            like( $out, qr/$archive_url/, 'Has "Archive URL" setting.' );
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$archive_url/, 'Has "Archive URL" setting.' );
+            }
 
             my $archive_url_hint
                 = $type eq 'blog'
-                ? "The URL of the archives section of your ${type}. Example: http://www.example.com/${type}/archives/"
-                : "The URL of the archives section of your ${type}. Example: http://www.example.com/archives/";
+                ? "The URL of the archives section of your ${type_alias}. Example: http://www.example.com/${type}/archives/"
+                : "The URL of the archives section of your ${type_alias}. Example: http://www.example.com/archives/";
             $archive_url_hint = quotemeta $archive_url_hint;
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all links in your ${type}.";
+                "Warning: Changing the archive URL can result in breaking all links in your ${type_alias}.";
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 
             my $archive_root = quotemeta
                 '<label id="archive_path-label" for="archive_path">Archive Root *</label>';
-            like( $out, qr/$archive_root/, 'Has "Archive Root" setting.' );
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$archive_root/,
+                    'Has "Archive Root" setting.' );
+            }
 
             my $archive_root_hint
                 = $type eq 'blog'
@@ -151,9 +155,13 @@ subtest 'Test cfg_prefs mode' => sub {
             $out = delete $app->{__test_output};
 
             my $is_checked = quotemeta
-                '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb" />';
-            like( $out, qr/$is_checked/,
-                'Parameter "enable_archive_paths" is checked.' );
+                '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb"';
+
+        SKIP: {
+                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                like( $out, qr/$is_checked/,
+                    'Parameter "enable_archive_paths" is checked.' );
+            }
 
             if ( $type eq 'website' ) {
                 my $archive_url  = 'http://localhost/archive/path/';
@@ -202,8 +210,11 @@ subtest 'Test cfg_prefs mode' => sub {
                 unlike( $out, qr/$site_root_hint_abs/,
                     'Has Site Root hint(absolute).' );
 
-                like( $out, qr/$archive_root_hint/,
-                    'Has Archive URL hint(relative).' );
+            SKIP: {
+                    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+                    like( $out, qr/$archive_root_hint/,
+                        'Has Archive URL hint(relative).' );
+                }
                 my $archive_root_hint_abs = quotemeta
                     "The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred. Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
                 unlike( $out, qr/$archive_root_hint_abs/,
@@ -268,8 +279,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input,
-            "$field setting in Entry Fields is not checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in Entry Fields is not checked." );
+        }
     }
 
     $app = _run_app(
@@ -289,8 +303,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input,
-            "$field setting in custom prefs is not checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in custom prefs is not checked." );
+        }
     }
 
     $app = _run_app(
@@ -326,7 +343,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input, "$field setting in Entry Fields is checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in Entry Fields is checked." );
+        }
     }
 
     $app = _run_app(
@@ -346,7 +367,11 @@ subtest 'Test cfg_entry mode' => sub {
             "<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />"
             );
         $input = qr/$input/;
-        like( $out, $input, "$field setting in custom prefs is checked." );
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $input,
+                "$field setting in custom prefs is checked." );
+        }
     }
 
     done_testing();
@@ -367,15 +392,24 @@ subtest 'Website listing screen' => sub {
 
     my $blogs = quotemeta
         '<th class="col head blog_count num"><a href="#blog_count" class="sort-link"><span class="col-label">Blogs</span><span class="sm"></span></a></th>';
-    like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$blogs/, 'Listing screen has "Blogs" column.' );
+    }
 
     my $entries = quotemeta
         '<th class="col head entry_count num"><a href="#entry_count" class="sort-link"><span class="col-label">Entries</span><span class="sm"></span></a></th>';
-    like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$entries/, 'Listing screen has "Entries" column.' );
+    }
 
     my $pages = quotemeta
         '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
-    like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
+SKIP: {
+        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+        like( $out, qr/$pages/, 'Listing screen has "Pages" column.' );
+    }
 
     my $classic_website = quotemeta
         '<option value="classic_website">Classic Website</option>';

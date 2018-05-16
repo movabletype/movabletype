@@ -66,6 +66,9 @@ MT.App.prototype = $.extend({}, MT.App.prototype, {
 
     insertHTML: function(html, field) {
         MT.EditorManager.insertContent(html, field);
+    },
+    reloadEditor: function(id){
+        MT.EditorManager.reloadEditor(id);
     }
 });
 

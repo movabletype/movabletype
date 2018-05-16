@@ -32,7 +32,7 @@ use vars qw($VERSION %leicaLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.90';
+$VERSION = '1.93';
 
 sub ProcessLeicaLEIC($$$);
 sub WhiteBalanceConv($;$$);
@@ -119,7 +119,7 @@ sub WhiteBalanceConv($;$$);
     '51 2' => 'Super-Elmar-M 14mm f/3.8 Asph', # ? (ref 16)
     52 => 'Super-Elmar-M 18mm f/3.8 ASPH.', # ? (ref PH/11)
     '53 2' => 'Apo-Telyt-M 135mm f/3.4', #16
-    '53 3' => 'Apo-Summicron-M 50mm f/2 (VI)', #LibRaw
+    '53 3' => 'Apo-Summicron-M 50mm f/2 (VI)', #LR
 );
 
 # M9 frame selector bits for each lens
@@ -525,6 +525,7 @@ my %shootingMode = (
                 # 0x08 - GX7 in DynamicMonochrome mode
                 0x0d => 'High Dynamic', #PH (FZ47 in ?)
                 # 0x13 - seen for LX100 (PH)
+                # 0x18 - seen for FZ2500 (PH)
                 # DMC-LC1 values:
                 0x100 => 'Low',
                 0x110 => 'Normal',
@@ -609,13 +610,15 @@ my %shootingMode = (
     0x2d => {
         Name => 'NoiseReduction',
         Writable => 'int16u',
+        Notes => 'the encoding for this value is not consistent between models',
         PrintConv => {
             0 => 'Standard',
             1 => 'Low (-1)',
             2 => 'High (+1)',
             3 => 'Lowest (-2)', #JD
             4 => 'Highest (+2)', #JD
-            # 65531 - seen for LX100 "NR1" test shots at imaging-resource (PH)
+            # 65531 - seen for LX100/FZ2500 "NR1" test shots at imaging-resource (PH)
+            #     0 - seen for FZ2500 "NR6D" test shots (PH)
         },
     },
     0x2e => { #4
@@ -626,6 +629,7 @@ my %shootingMode = (
             2 => '10 s',
             3 => '2 s',
             4 => '10 s / 3 pictures', #17
+            # 258 - seen for FZ2500,TZ90 (PH)
         },
     },
     # 0x2f - values: 1 (LZ6,FX10K)
@@ -1159,6 +1163,14 @@ my %shootingMode = (
         Writable => 'int16u',
         PrintConv => { 0 => 'Off', 1 => 'On' },
     },
+    0xaf => { #PH
+        Name => 'TimeStamp',
+        Writable => 'string',
+        Groups => { 2 => 'Time' },
+        Shift => 'Time',
+        PrintConv => '$self->ConvertDateTime($val)',
+        PrintConvInv => '$self->InverseDateTime($val)',
+    },
     0x0e00 => {
         Name => 'PrintIM',
         Description => 'Print Image Matching',
@@ -1619,6 +1631,16 @@ my %shootingMode = (
     # 0x0411 - int8u[4]: first number is FilmMode (1=Standard,2=Vivid,3=Natural,4=BW Natural,5=BW High Contrast)
     0x0412 => { Name => 'FilmMode',         Writable => 'string' },
     0x0413 => { Name => 'WB_RGBLevels',     Writable => 'rational64u', Count => 3 },
+    0x0500 => {
+        Name => 'InternalSerialNumber',
+        Writable => 'undef',
+        PrintConv => q{
+            return $val unless $val=~/^(.{3})(\d{2})(\d{2})(\d{2})(\d{4})/;
+            my $yr = $2 + ($2 < 70 ? 2000 : 1900);
+            return "($1) $yr:$3:$4 no. $5";
+        },
+        PrintConvInv => '$_=$val; tr/A-Z0-9//dc; s/(.{3})(19|20)/$1/; $_',
+    },
 );
 
 # Leica type5 ShotInfo (ref PH) (X2)
@@ -1647,6 +1669,7 @@ my %shootingMode = (
     },
     0x300 => {
         Name => 'PreviewImage',
+        Groups => { 2 => 'Preview' },
         Writable => 'undef',
         Notes => 'S2 and M (Typ 240)',
         DataTag => 'PreviewImage',
@@ -1673,6 +1696,14 @@ my %shootingMode = (
         ValueConvInv => '$val',
     },
     # 0x340 - same as 0x302
+);
+
+# Leica type9 maker notes (ref PH) (S)
+%Image::ExifTool::Panasonic::Leica9 = (
+    WRITE_PROC => \&Image::ExifTool::Exif::WriteExif,
+    CHECK_PROC => \&Image::ExifTool::Exif::CheckExif,
+    GROUPS => { 0 => 'MakerNotes', 1 => 'Leica', 2 => 'Camera' },
+    NOTES => 'This information is written by the Leica S (Typ 007).',
 );
 
 # Type 2 tags (ref PH)
@@ -1904,6 +1935,7 @@ my %shootingMode = (
     0x5c => {
         Name => 'ThumbnailImage',
         Condition => '$$self{ThumbType} == 1',
+        Groups => { 2 => 'Preview' },
         Format => 'undef[16384]',
         ValueConv => '$val=~s/\0*$//; \$val',   # remove trailing zeros
     },
@@ -1928,6 +1960,7 @@ my %shootingMode = (
     0x546 => { # (Leica X VARIO)
         Name => 'ThumbnailImage',
         Condition => '$$self{ThumbType} == 2',
+        Groups => { 2 => 'Preview' },
         Format => 'undef[$val{0x53e}]',
         Binary => 1,
     },
@@ -1950,6 +1983,7 @@ my %shootingMode = (
     0x55e => { # (Leica T)
         Name => 'ThumbnailImage',
         Condition => '$$self{ThumbType} == 3',
+        Groups => { 2 => 'Preview' },
         Format => 'undef[$val{0x556}]',
         Binary => 1,
     },
@@ -2054,6 +2088,7 @@ my %shootingMode = (
             '90 8' => 'Monochrome', #PH (GX7)
             '90 9' => 'Rough Monochrome', #PH (GX7)
             '90 10' => 'Silky Monochrome', #PH (GX7)
+            '92 1' => 'Handheld Night Shot', #Horst Wandres (FZ1000)
             # TZ40 Creative Control modes (ref 19)
             'DMC-TZ40 90 1' => 'Expressive',
             'DMC-TZ40 90 2' => 'Retro',
@@ -2325,7 +2360,7 @@ Panasonic and Leica maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

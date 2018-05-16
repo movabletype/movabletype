@@ -26,6 +26,7 @@ Requires installation of Time::HiRes and List::Util
 package MT::Util::ReqTimer;
 
 use strict;
+use warnings;
 use List::Util qw( sum );
 use Time::HiRes;
 

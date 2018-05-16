@@ -7,6 +7,7 @@
 package MT::ArchiveType::AuthorYearly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Yearly );
 use MT::Util qw( dirify start_end_year );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('AUTHOR-YEARLY_ADV');
+}
+
+sub order {
+    return 110;
 }
 
 sub default_archive_templates {
@@ -41,6 +46,7 @@ sub template_params {
         archive_template      => 1,
         archive_listing       => 1,
         datebased_archive     => 1,
+        author_based_archive  => 1,
     };
 }
 

@@ -7,6 +7,7 @@
 package MT::JunkFilter;
 
 use strict;
+use warnings;
 use MT;
 
 # constants that force an action or determination. these are all non-numeric

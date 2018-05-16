@@ -1335,3 +1335,23 @@ tfoot .col.head{
 .ui-selectable-helper {
     display: none ! important;
 }
+
+.table-field {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-field td {
+    border: 1px solid #cccccc;
+    height: 10px;
+    width; 10px;
+    word-break: break-all;
+}
+
+a.asset-field-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

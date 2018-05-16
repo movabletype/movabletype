@@ -2,262 +2,163 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website       = MT::Test::Permission->make_website();
-my $other_website = MT::Test::Permission->make_website();
+    # Website
+    my $website       = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
+    my $other_website = MT::Test::Permission->make_website(
+        name => 'other website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $other_blog
-    = MT::Test::Permission->make_blog( parent_id => $other_website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
+    my $other_blog = MT::Test::Permission->make_blog(
+        parent_id => $other_website->id,
+        name => 'other blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro Kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name      => 'kumekawa',
-    nicknamee => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name      => 'kumekawa',
+        nicknamee => 'Saburo Kumekawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $edit_categories = MT::Test::Permission->make_role(
+        name        => 'Edit Categories',
+        permissions => "'edit_categories'",
+    );
+
+    my $manage_pages = MT::Test::Permission->make_role(
+        name        => 'Manage Pages',
+        permissions => "'manage_pages'",
+    );
+
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $edit_categories => $blog );
+    MT::Association->link( $ukawa  => $designer        => $blog );
+    MT::Association->link( $egawa  => $manage_pages    => $blog );
+
+    MT::Association->link( $ichikawa => $edit_categories => $second_blog );
+    MT::Association->link( $ichikawa => $create_post     => $blog );
+
+    MT::Association->link( $ogawa,    $edit_categories, $website );
+    MT::Association->link( $kumekawa, $designer,        $website );
+
+    MT::Association->link( $kagawa,  $edit_categories, $other_website );
+    MT::Association->link( $kikkawa, $edit_categories, $other_blog );
+
+    # Category
+    my $cat = MT::Test::Permission->make_category(
+        blog_id   => $blog->id,
+        author_id => $aikawa->id,
+        label => 'my category',
+    );
+    my $website_cat = MT::Test::Permission->make_category(
+        blog_id   => $website->id,
+        author_id => $ogawa->id,
+        label => 'my website category',
+    );
+
+    # Folder
+    my $folder = MT::Test::Permission->make_folder(
+        blog_id   => $blog->id,
+        author_id => $egawa->id,
+        label => 'my folder',
+    );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
+my $kagawa   = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa  = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa = MT::Author->load( { name => 'kumekawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $edit_categories = MT::Test::Permission->make_role(
-    name        => 'Edit Categories',
-    permissions => "'edit_categories'",
-);
-
-my $manage_pages = MT::Test::Permission->make_role(
-    name        => 'Manage Pages',
-    permissions => "'manage_pages'",
-);
-
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa => $edit_categories => $blog );
-MT::Association->link( $ukawa  => $designer        => $blog );
-MT::Association->link( $egawa  => $manage_pages    => $blog );
-
-MT::Association->link( $ichikawa => $edit_categories => $second_blog );
-MT::Association->link( $ichikawa => $create_post     => $blog );
-
-MT::Association->link( $ogawa,    $edit_categories, $website );
-MT::Association->link( $kumekawa, $designer,        $website );
-
-MT::Association->link( $kagawa,  $edit_categories, $other_website );
-MT::Association->link( $kikkawa, $edit_categories, $other_blog );
-
-# Category
-my $cat = MT::Test::Permission->make_category(
-    blog_id   => $blog->id,
-    author_id => $aikawa->id,
-);
-my $website_cat = MT::Test::Permission->make_category(
-    blog_id   => $website->id,
-    author_id => $ogawa->id,
-);
-
-# Folder
-my $folder = MT::Test::Permission->make_folder(
-    blog_id   => $blog->id,
-    author_id => $egawa->id,
-);
+require MT::Folder;
+my $cat         = MT::Category->load( { label => 'my category' } );
+my $website_cat = MT::Category->load( { label => 'my website category' } );
+my $folder      = MT::Folder->load( { label => 'my folder' } );
 
 # Run
 my ( $app, $out );
-
-subtest 'mode = category_do_add' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $blog->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out !~ m!Permission denied!i, "category_do_add by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $blog->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out !~ m!Permission denied!i, "category_do_add by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $blog->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $blog->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i,
-        "category_do_add by other permission" );
-
-    done_testing();
-};
-
-subtest 'mode = category_do_add (website)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out !~ m!Permission denied!i, "category_do_add by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out !~ m!Permission denied!i, "category_do_add by permitted user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: category_do_add" );
-    ok( $out =~ m!permission=1!i, "category_do_add by other website" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i, "category_do_add by child blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kikkawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: category_do_add" );
-    ok( $out =~ m!permission=1!i, "category_do_add by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kumekawa,
-            __request_method => 'POST',
-            __mode           => 'category_do_add',
-            blog_id          => $website->id,
-            label            => 'New Label',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: category_do_add" );
-    ok( $out =~ m!Permission denied!i,
-        "category_do_add by other permission" );
-
-    done_testing();
-};
 
 subtest 'mode = js_add_category' => sub {
     $app = _run_app(
@@ -1466,7 +1367,7 @@ subtest 'mode = edit (edit, website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: edit" );
-    ok( $out =~ m!__mode=dashboard&redirect=1!i,
+    ok( $out =~ m!permission=1!i,
         "edit (edit) by child blog" );
 
     $app = _run_app(

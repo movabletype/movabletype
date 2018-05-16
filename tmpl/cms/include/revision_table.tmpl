@@ -8,12 +8,12 @@
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="col head datetime"><span class="col-label"><__trans phrase="_REVISION_DATE_"></span></th>
-      <th class="col head note primary"><span class="col-label"><__trans phrase="Note"></span></th>
-    <mt:if name="object_type" like="(entry|page)">
-      <th class="col head status"><span class="col-label"><__trans phrase="Status"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="_REVISION_DATE_"></span></th>
+      <th class="head note primary"><span class="col-label"><__trans phrase="Note"></span></th>
+    <mt:if name="object_type" like="(entry|page|cd)">
+      <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
     </mt:if>
-      <th class="col head created-by"><span class="col-label"><__trans phrase="Saved By"></span></th>
+      <th class="head created-by"><span class="col-label"><__trans phrase="Saved By"></span></th>
     <mt:loop name="more_column_headers">
       <mt:var name="__value__">
     </mt:loop>
@@ -22,16 +22,13 @@
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision highlight</mt:if>">
-      <td class="col datetime"><span class="revision-datetime"><a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a></span></td>
-      <td class="col note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
-    <mt:if name="object_type" like="(entry|page)">
-      <td class="col status">
+      <td class="datetime"><span class="revision-datetime"><a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a></span></td>
+      <td class="note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
+    <mt:if name="object_type" like="(entry|page|cd)">
+      <td class="status">
       <mt:if name="rev_status" eq="1">
         <span class="icon-left-wide icon-draft"><__trans phrase="Draft"></span>
       <mt:else name="rev_status" eq="3">
@@ -47,7 +44,7 @@
       </mt:if>
       </td>
     </mt:if>
-      <td class="col created-by"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
+      <td class="created-by"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
     <mt:loop name="more_columns">
       <mt:var name="__value__">
     </mt:loop>
@@ -57,6 +54,10 @@
 </mt:if>
 </mtapp:listing>
 
-<mt:include name="include/pagination.tmpl">
+<div class="row">
+  <div class="col-12">
+    <mt:include name="include/pagination.tmpl" pull_right_pagination="1">
+  </div>
+</div>
 
 </div>

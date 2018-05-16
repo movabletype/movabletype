@@ -7,6 +7,7 @@
 package MT::Template::Context;
 
 use strict;
+use warnings;
 
 use MT::Util qw( format_ts relative_date );
 use Time::Local qw( timelocal );
@@ -18,17 +19,17 @@ sub core_tags {
     my $tags = {
         help_url => sub {
             MT->translate(
-                'http://www.movabletype.org/documentation/appendices/tags/%t.html'
+                'https://www.movabletype.org/documentation/appendices/tags/%t.html'
             );
         },
         block => {
 
             ## Core
-            Ignore    => sub {''},
-            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore         => sub {''},
+            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -52,6 +53,27 @@ sub core_tags {
             'App:SettingGroup' =>
                 \&MT::Template::Tags::App::_hdlr_app_setting_group,
             'App:Form' => \&MT::Template::Tags::App::_hdlr_app_form,
+            'App:ContentFieldOptionGroup' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_group,
+            'App:ContentFieldOption' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option,
+            'App:ContentFieldOptionScript' =>
+                \&MT::Template::Tags::App::_hdlr_app_contentfield_option_script,
+
+            ## Site
+            Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            SiteParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
+            'SiteHasChildSite?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
+            'SiteIfCommentsOpen?' =>
+                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
+            'SitesLocalSite' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
+            'SitesIfLocalSite?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
+            'SiteIfCommentsOpen?' => sub {''},
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
@@ -80,18 +102,12 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Author::_hdlr_if_author',
 
             ## Commenter
-            'IfExternalUserManagement?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_if_external_user_management',
-            'IfCommenterRegistrationAllowed?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_if_commenter_registration_allowed',
-            'IfCommenterTrusted?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'CommenterIfTrusted?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_trusted',
-            'IfCommenterIsAuthor?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
-            'IfCommenterIsEntryAuthor?' =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_isauthor',
+            'IfExternalUserManagement?'       => sub {''},
+            'IfCommenterRegistrationAllowed?' => sub {''},
+            'IfCommenterTrusted?'             => sub {''},
+            'CommenterIfTrusted?'             => sub {''},
+            'IfCommenterIsAuthor?'            => sub {''},
+            'IfCommenterIsEntryAuthor?'       => sub {''},
 
             ## Archive
             Archives =>
@@ -126,70 +142,43 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_author_has_entry',
 
             ## Comment
-            'IfCommentsModerated?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comments_moderated',
-            'BlogIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            'WebsiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
-            Comments => '$Core::MT::Template::Tags::Comment::_hdlr_comments',
-            CommentsHeader => \&slurp,
-            CommentsFooter => \&slurp,
-            CommentEntry =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry',
-            'CommentIfModerated?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_if_moderated',
-            CommentParent =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent',
-            CommentReplies =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies',
-            'IfCommentParent?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_parent',
-            'IfCommentReplies?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comment_replies',
-            'IfRegistrationRequired?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_required',
-            'IfRegistrationNotRequired?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_not_required',
-            'IfRegistrationAllowed?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_reg_allowed',
-            'IfTypeKeyToken?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_typekey_token',
-            'IfAllowCommentHTML?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_allow_comment_html',
-            'IfCommentsAllowed?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_allowed',
-            'IfCommentsAccepted?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_accepted',
-            'IfCommentsActive?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_comments_active',
-            'IfNeedEmail?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'IfRequireCommentEmails?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_if_need_email',
-            'EntryIfAllowComments?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_allow_comments',
-            'EntryIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_if_comments_open',
+            'IfCommentsModerated?'       => sub {''},
+            'BlogIfCommentsOpen?'        => sub {''},
+            'WebsiteIfCommentsOpen?'     => sub {''},
+            Comments                     => sub {''},
+            CommentsHeader               => sub {''},
+            CommentsFooter               => sub {''},
+            CommentEntry                 => sub {''},
+            'CommentIfModerated?'        => sub {''},
+            CommentParent                => sub {''},
+            CommentReplies               => sub {''},
+            'IfCommentParent?'           => sub {''},
+            'IfCommentReplies?'          => sub {''},
+            'IfRegistrationRequired?'    => sub {''},
+            'IfRegistrationNotRequired?' => sub {''},
+            'IfRegistrationAllowed?'     => sub {''},
+            'IfTypeKeyToken?'            => sub {''},
+            'IfAllowCommentHTML?'        => sub {''},
+            'IfCommentsAllowed?'         => sub {''},
+            'IfCommentsAccepted?'        => sub {''},
+            'IfCommentsActive?'          => sub {''},
+            'IfNeedEmail?'               => sub {''},
+            'IfRequireCommentEmails?'    => sub {''},
+            'EntryIfAllowComments?'      => sub {''},
+            'EntryIfCommentsOpen?'       => sub {''},
 
             ## Ping
-            Pings       => '$Core::MT::Template::Tags::Ping::_hdlr_pings',
-            PingsHeader => \&slurp,
-            PingsFooter => \&slurp,
-            PingsSent => '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent',
-            PingEntry => '$Core::MT::Template::Tags::Ping::_hdlr_ping_entry',
-            'IfPingsAllowed?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_allowed',
-            'IfPingsAccepted?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_accepted',
-            'IfPingsActive?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_active',
-            'IfPingsModerated?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_if_pings_moderated',
-            'EntryIfAllowPings?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_if_allow_pings',
-            'CategoryIfAllowPings?' =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_allow_pings',
+            Pings                   => sub {''},
+            PingsHeader             => sub {''},
+            PingsFooter             => sub {''},
+            PingsSent               => sub {''},
+            PingEntry               => sub {''},
+            'IfPingsAllowed?'       => sub {''},
+            'IfPingsAccepted?'      => sub {''},
+            'IfPingsActive?'        => sub {''},
+            'IfPingsModerated?'     => sub {''},
+            'EntryIfAllowPings?'    => sub {''},
+            'CategoryIfAllowPings?' => sub {''},
 
             ## Category
             Categories =>
@@ -295,8 +284,7 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
             EntryAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
-            CommenterUserpicAsset =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_asset',
+            CommenterUserpicAsset => sub {''},
 
             ## Tag
             Tags      => '$Core::MT::Template::Tags::Tag::_hdlr_tags',
@@ -343,6 +331,46 @@ sub core_tags {
             ## Misc
             'IfImageSupport?' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_if_image_support',
+            'HasPlugin?' =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_has_plugin',
+
+            ## Content Type
+            'AuthorHasContent?' =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_author_has_content',
+            CalendarIfContents   => \&slurp,
+            CalendarIfNoContents => \&slurp,
+            ContentAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_asset',
+            ContentCalendar =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_calendar',
+            ContentField =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field',
+            ContentFields =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_fields',
+            ContentNext =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_next',
+            ContentPrevious =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_previous',
+            Contents =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_contents',
+            ContentsFooter      => \&slurp,
+            ContentsHeader      => \&slurp,
+            ContentFieldsFooter => \&slurp,
+            ContentFieldsHeader => \&slurp,
+            ContentFieldFooter  => \&slurp,
+            ContentFieldHeader  => \&slurp,
+
+            ## Category Set
+            CategorySets =>
+                '$Core::MT::Template::Tags::CategorySet::_hdlr_category_sets',
+
+            ## MultiBlog(alias)
+            MultiBlog => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            OtherBlog => '$Core::MT::Template::Tags::Website::_hdlr_websites',
+            MultiBlogLocalBlog =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
+            'MultiBlogIfLocalBlog?' =>
+                '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
         },
         function => {
 
@@ -403,14 +431,67 @@ sub core_tags {
                 \&MT::Template::Tags::System::_hdlr_password_validation_rules,
 
             ## App
-
             'App:PageActions' =>
                 \&MT::Template::Tags::App::_hdlr_app_page_actions,
             'App:ListFilters' =>
                 \&MT::Template::Tags::App::_hdlr_app_list_filters,
             'App:ActionBar' =>
                 \&MT::Template::Tags::App::_hdlr_app_action_bar,
-            'App:Link' => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:Link'    => \&MT::Template::Tags::App::_hdlr_app_link,
+            'App:SVGIcon' => \&MT::Template::Tags::App::_hdlr_app_svg_icon,
+
+            ## Site
+            SiteID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
+            SiteName => '$Core::MT::Template::Tags::Blog::_hdlr_blog_name',
+            SiteDescription =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_description',
+            SiteLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_language',
+            SiteDateLanguage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_date_language',
+            SiteURL => '$Core::MT::Template::Tags::Blog::_hdlr_blog_url',
+            SiteArchiveURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_archive_url',
+            SiteRelativeURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_relative_url',
+            SitePath =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_site_path',
+            SiteHost => '$Core::MT::Template::Tags::Blog::_hdlr_blog_host',
+            SiteTimezone =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
+            SiteCCLicenseURL =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+            SiteCCLicenseImage =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+            SiteFileExtension =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
+            SiteThemeID =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_theme_id',
+
+            EntrySiteID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_id',
+            EntrySiteName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_name',
+            EntrySiteDescription =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_description',
+            EntrySiteURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_blog_url',
+            SiteEntryCount =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
+
+            CommentSiteID    => sub {''},
+            SiteCommentCount => sub {''},
+            PingSiteName     => sub {''},
+            SitePingCount    => sub {''},
+
+            SiteCategoryCount =>
+                '$Core::MT::Template::Tags::Category::_hdlr_blog_category_count',
+
+            SitePageCount =>
+                '$Core::MT::Template::Tags::Page::_hdlr_blog_page_count',
+
+            AssetSiteID =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_asset_blog_id',
 
             ## Blog
             BlogID   => '$Core::MT::Template::Tags::Blog::_hdlr_blog_id',
@@ -490,38 +571,24 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
             AuthorBasename =>
                 '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
-            AuthorCommentCount =>
-                '$Core::MT::Summary::Author::_hdlr_author_comment_count',
+            AuthorCommentCount => sub {''},
             AuthorEntriesCount =>
                 '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 
             ## Commenter
-            CommenterNameThunk =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name_thunk',
-            CommenterUsername =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_username',
-            CommenterName =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_name',
-            CommenterEmail =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_email',
-            CommenterAuthType =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_type',
-            CommenterAuthIconURL =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_auth_icon_url',
-            CommenterID =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_id',
-            CommenterURL =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_commenter_url',
-            UserSessionState =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_state',
-            UserSessionCookieTimeout =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_timeout',
-            UserSessionCookieName =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_name',
-            UserSessionCookiePath =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_path',
-            UserSessionCookieDomain =>
-                '$Core::MT::Template::Tags::Commenter::_hdlr_user_session_cookie_domain',
+            CommenterNameThunk       => sub {''},
+            CommenterUsername        => sub {''},
+            CommenterName            => sub {''},
+            CommenterEmail           => sub {''},
+            CommenterAuthType        => sub {''},
+            CommenterAuthIconURL     => sub {''},
+            CommenterID              => sub {''},
+            CommenterURL             => sub {''},
+            UserSessionState         => sub {''},
+            UserSessionCookieTimeout => sub {''},
+            UserSessionCookieName    => sub {''},
+            UserSessionCookiePath    => sub {''},
+            UserSessionCookieDomain  => sub {''},
 
             ## Archive
             ArchiveLink =>
@@ -613,108 +680,61 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_blog_entry_count',
 
             ## Comment
-            CommentID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_id',
-            CommentBlogID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_blog_id',
-            CommentEntryID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_entry_id',
-            CommentName =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentIP =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentAuthor =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentAuthorLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentAuthorIdentity =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_identity',
-            CommentEmail =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_link',
-            CommentURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentBody =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentOrderNumber =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_order_num',
-            CommentDate =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_date',
-            CommentParentID =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_parent_id',
-            CommentReplyToLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_reply_link',
-            CommentPreviewAuthor =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author',
-            CommentPreviewIP =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_ip',
-            CommentPreviewAuthorLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_author_link',
-            CommentPreviewEmail =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_email',
-            CommentPreviewURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_url',
-            CommentPreviewBody =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_body',
-            CommentPreviewDate => \&build_date,
-            CommentPreviewState =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_state',
-            CommentPreviewIsStatic =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_prev_static',
-            CommentRepliesRecurse =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_replies_recurse',
-            BlogCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            WebsiteCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_comment_count',
-            EntryCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_entry_comments',
-            CategoryCommentCount =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_category_comment_count',
-            TypeKeyToken =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_typekey_token',
-            CommentFields =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_comment_fields',
-            RemoteSignOutLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_out_link',
-            RemoteSignInLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_remote_sign_in_link',
-            SignOutLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_sign_out_link',
-            SignInLink =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_sign_in_link',
-            SignOnURL =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_signon_url',
+            CommentID                => sub {''},
+            CommentBlogID            => sub {''},
+            CommentEntryID           => sub {''},
+            CommentName              => sub {''},
+            CommentIP                => sub {''},
+            CommentAuthor            => sub {''},
+            CommentAuthorLink        => sub {''},
+            CommentAuthorIdentity    => sub {''},
+            CommentEmail             => sub {''},
+            CommentLink              => sub {''},
+            CommentURL               => sub {''},
+            CommentBody              => sub {''},
+            CommentOrderNumber       => sub {''},
+            CommentDate              => sub {''},
+            CommentParentID          => sub {''},
+            CommentReplyToLink       => sub {''},
+            CommentPreviewAuthor     => sub {''},
+            CommentPreviewIP         => sub {''},
+            CommentPreviewAuthorLink => sub {''},
+            CommentPreviewEmail      => sub {''},
+            CommentPreviewURL        => sub {''},
+            CommentPreviewBody       => sub {''},
+            CommentPreviewDate       => sub {''},
+            CommentPreviewState      => sub {''},
+            CommentPreviewIsStatic   => sub {''},
+            CommentRepliesRecurse    => sub {''},
+            BlogCommentCount         => sub {''},
+            WebsiteCommentCount      => sub {''},
+            EntryCommentCount        => sub {''},
+            CategoryCommentCount     => sub {''},
+            TypeKeyToken             => sub {''},
+            CommentFields            => sub {''},
+            RemoteSignOutLink        => sub {''},
+            RemoteSignInLink         => sub {''},
+            SignOutLink              => sub {''},
+            SignInLink               => sub {''},
+            SignOnURL                => sub {''},
 
-            ## Ping', => {
-            PingsSentURL =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_pings_sent_url',
-            PingTitle => '$Core::MT::Template::Tags::Ping::_hdlr_ping_title',
-            PingID    => '$Core::MT::Template::Tags::Ping::_hdlr_ping_id',
-            PingURL   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_url',
-            PingExcerpt =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_excerpt',
-            PingBlogName =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_ping_blog_name',
-            PingIP   => '$Core::MT::Template::Tags::Ping::_hdlr_ping_ip',
-            PingDate => '$Core::MT::Template::Tags::Ping::_hdlr_ping_date',
-            BlogPingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            WebsitePingCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_blog_ping_count',
-            EntryTrackbackCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_ping_count',
-            EntryTrackbackLink =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_link',
-            EntryTrackbackData =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_data',
-            EntryTrackbackID =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_entry_tb_id',
-            CategoryTrackbackLink =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_link',
-            CategoryTrackbackCount =>
-                '$Core::MT::Template::Tags::Ping::_hdlr_category_tb_count',
+            ## Ping
+            PingsSentURL           => sub {''},
+            PingTitle              => sub {''},
+            PingID                 => sub {''},
+            PingURL                => sub {''},
+            PingExcerpt            => sub {''},
+            PingBlogName           => sub {''},
+            PingIP                 => sub {''},
+            PingDate               => sub {''},
+            BlogPingCount          => sub {''},
+            WebsitePingCount       => sub {''},
+            EntryTrackbackCount    => sub {''},
+            EntryTrackbackLink     => sub {''},
+            EntryTrackbackData     => sub {''},
+            EntryTrackbackID       => sub {''},
+            CategoryTrackbackLink  => sub {''},
+            CategoryTrackbackCount => sub {''},
 
             ## Category
             CategoryID =>
@@ -825,10 +845,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
             EntryAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
-            CommenterUserpic =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic',
-            CommenterUserpicURL =>
-                '$Core::MT::Template::Tags::Userpic::_hdlr_commenter_userpic_url',
+            CommenterUserpic    => sub {''},
+            CommenterUserpicURL => sub {''},
 
             ## Tag
             TagName  => '$Core::MT::Template::Tags::Tag::_hdlr_tag_name',
@@ -850,9 +868,8 @@ sub core_tags {
             # Rating related handlers
             EntryScore =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score',
-            CommentScore =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score',
-            PingScore => '$Core::MT::Template::Tags::Score::_hdlr_ping_score',
+            CommentScore => sub {''},
+            PingScore    => sub {''},
             AssetScore =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score',
             AuthorScore =>
@@ -860,10 +877,8 @@ sub core_tags {
 
             EntryScoreHigh =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_high',
-            CommentScoreHigh =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_high',
-            PingScoreHigh =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_high',
+            CommentScoreHigh => sub {''},
+            PingScoreHigh    => sub {''},
             AssetScoreHigh =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_high',
             AuthorScoreHigh =>
@@ -871,10 +886,8 @@ sub core_tags {
 
             EntryScoreLow =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_low',
-            CommentScoreLow =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_low',
-            PingScoreLow =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_low',
+            CommentScoreLow => sub {''},
+            PingScoreLow    => sub {''},
             AssetScoreLow =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_low',
             AuthorScoreLow =>
@@ -882,10 +895,8 @@ sub core_tags {
 
             EntryScoreAvg =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_avg',
-            CommentScoreAvg =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_avg',
-            PingScoreAvg =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_avg',
+            CommentScoreAvg => sub {''},
+            PingScoreAvg    => sub {''},
             AssetScoreAvg =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_avg',
             AuthorScoreAvg =>
@@ -893,19 +904,16 @@ sub core_tags {
 
             EntryScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_entry_score_count',
-            CommentScoreCount =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_score_count',
-            PingScoreCount =>
-                '$Core::MT::Template::Tags::Score::_hdlr_ping_score_count',
+            CommentScoreCount => sub {''},
+            PingScoreCount    => sub {''},
             AssetScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_asset_score_count',
             AuthorScoreCount =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_score_count',
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
-            CommentRank =>
-                '$Core::MT::Template::Tags::Score::_hdlr_comment_rank',
-            PingRank  => '$Core::MT::Template::Tags::Score::_hdlr_ping_rank',
+            CommentRank => sub {''},
+            PingRank    => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
@@ -928,6 +936,7 @@ sub core_tags {
             SearchMaxResults =>
                 '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
             SearchIncludeBlogs   => sub {''},
+            SearchContentTypes   => sub {''},
             SearchTemplateID     => sub {0},
             SearchTemplateBlogID => sub {0},
 
@@ -953,6 +962,77 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
             'StatsSnippet' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
+
+            # Content Type
+            AuthorContentCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_author_content_count',
+            ContentAuthorDisplayName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_display_name',
+            ContentAuthorEmail =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_email',
+            ContentAuthorID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_id',
+            ContentAuthorLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_link',
+            ContentAuthorURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_url',
+            ContentAuthorUsername =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_username',
+            ContentAuthorUserpic =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic',
+            ContentAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_url',
+            ContentCreatedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_created_date',
+            ContentDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_date',
+            ContentModifiedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_date',
+            ContentID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_id',
+            ContentIdentifier =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_identifier',
+            ContentLabel =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_label',
+            ContentPermalink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_permalink',
+            ContentSiteDescription =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_description',
+            ContentSiteID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_id',
+            ContentSiteName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_name',
+            ContentSiteURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_site_url',
+            ContentStatus =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_status',
+            ContentUniqueID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_unique_id',
+            ContentUnpublishedDate =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_unpublished_date',
+            ContentsCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_contents_count',
+            SiteContentCount =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_site_content_count',
+            ContentFieldValue =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_value',
+            ContentFieldLabel =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_label',
+            ContentFieldType =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_type',
+
+            ContentTypeDescription =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_description',
+            ContentTypeName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_name',
+            ContentTypeID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_id',
+            ContentTypeUniqueID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_unique_id',
+
+            ## Category Set
+            CategorySetName =>
+                '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',
@@ -1055,8 +1135,8 @@ sub nofollowfy_on {
 sub cat_path_to_category {
     ## for backward compatibility.
     shift if UNIVERSAL::isa( $_[0], 'MT::Template::Context' );
-    my ( $path, $blog_id, $class_type ) = @_;
-
+    my ( $path, $blog_id, $class_type, $category_set_id ) = @_;
+    $category_set_id ||= 0;
     my $class = MT->model($class_type);
 
   # The argument version always takes precedence
@@ -1067,7 +1147,6 @@ sub cat_path_to_category {
         =~ m@(\[[^]]+?\]|[^]/]+)@g;    # split on slashes, fields quoted by []
     @cat_path = map { $_ =~ s/^\[(.*)\]$/$1/; $_ } @cat_path;  # remove any []
     my $last_cat_id = 0;
-    my $cat;
     my ( %blog_terms, %blog_args );
     if ( ref $blog_id eq 'ARRAY' ) {
         %blog_terms = %{ $blog_id->[0] };
@@ -1079,8 +1158,9 @@ sub cat_path_to_category {
 
     my $top  = shift @cat_path;
     my @cats = $class->load(
-        {   label  => $top,
-            parent => 0,
+        {   label           => $top,
+            parent          => 0,
+            category_set_id => $category_set_id,
             %blog_terms
         },
         \%blog_args
@@ -1089,8 +1169,9 @@ sub cat_path_to_category {
         for my $label (@cat_path) {
             my @parents = map { $_->id } @cats;
             @cats = $class->load(
-                {   label  => $label,
-                    parent => \@parents,
+                {   label           => $label,
+                    parent          => \@parents,
+                    category_set_id => $category_set_id,
                     %blog_terms
                 },
                 \%blog_args
@@ -1100,7 +1181,8 @@ sub cat_path_to_category {
     if ( !@cats && $path ) {
         @cats = (
             $class->load(
-                {   label => $path,
+                {   label           => $path,
+                    category_set_id => $category_set_id,
                     %blog_terms,
                 },
                 \%blog_args
@@ -2948,6 +3030,10 @@ field is a required field or not.
 
 Supplies the label phrase for the setting.
 
+=item * label_for
+
+Supplies "for" property of the label.
+
 =item * show_label (optional; default "1")
 
 Controls whether the label portion of the setting is shown or not.
@@ -2963,28 +3049,19 @@ setting.
 Allows an additional CSS class to be applied to the label of the
 setting.
 
-=item * content_class (optional)
-
-Allows an addtional CSS class to be applied to the contents of the
-setting.
-
 =item * hint (optional)
 
 Supplies a "hint" phrase that provides inline instruction to the user.
 By default, this hint is hidden, unless the 'show_hint' attribute
 forces it to display.
 
+=item * hint_id (optional)
+
+Set hind_id which is added to form element.
+
 =item * show_hint (optional; default "0")
 
 Controls whether the inline help 'hint' label is shown or not.
-
-=item * warning
-
-Supplies a warning message to the user regarding the use of this setting.
-
-=item * show_warning
-
-Controls whether the warning message is shown or not.
 
 =item * help_page
 
@@ -2996,29 +3073,6 @@ Identifies a section name of the MT help documentation for this setting.
 
 =back
 
-B<Example:>
-
-    <mtapp:Setting
-        id="name"
-        required="1"
-        label="Username"
-        hint="The username used to login">
-            <input type="text" name="name" id="name" value="<$mt:Var name="name" escape="html"$>" />
-    </mtapp:setting>
-
-The basic structural output of a setting tag looks like this:
-
-    <div id="ID-field" class="field pkg">
-        <div class="field-inner">
-            <div class="field-header">
-                <label id="ID-label" for="ID">LABEL</label>
-            </div>
-            <div class="field-content">
-                (content of App:Setting tag)
-            </div>
-        </div>
-    </div>
-
 =for tags application
 
 =cut
@@ -3029,46 +3083,38 @@ sub _hdlr_app_setting {
     return $ctx->error("'id' attribute missing") unless $id;
 
     my $label       = $args->{label};
+    my $label_for   = $args->{label_for};
     my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
     my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
     my $label_class = $args->{label_class} || "";
-    my $content_class = $args->{content_class} || "";
-    my $hint          = $args->{hint} || "";
-    my $show_hint     = $args->{show_hint} || 0;
-    my $warning       = $args->{warning} || "";
-    my $show_warning  = $args->{show_warning} || 0;
-    my $indent        = $args->{indent};
-    my $help;
+    my $hint        = $args->{hint} || "";
+    my $hint_id     = $args->{hint_id} || "";
+    my $show_hint   = $args->{show_hint} || 0;
+    my $indent      = $args->{indent};
+    my $help        = "";
 
-    # Formatting for help link, placed at the end of the hint.
-    if ( $help = $args->{help_page} || "" ) {
-        my $section = $args->{help_section} || '';
-        $section = qq{, '$section'} if $section;
-        $help
-            = qq{ <a href="javascript:void(0)" onclick="return openManual('$help'$section)" class="help-link">?</a><br />};
-    }
     my $label_help = "";
     if ( $label && $show_label ) {
-
-        # do nothing;
+        if ( defined $label_for && $label_for ne '' ) {
+            $label_for = qq{ for="$label_for"};
+        }
+        else {
+            $label_for = '';
+        }
     }
     else {
-        $label = '';    # zero it out, because the user turned it off
+        $label     = '';    # zero it out, because the user turned it off
+        $label_for = '';
     }
     if ( $hint && $show_hint ) {
-        $hint = "\n<div class=\"hint\">$hint$help</div>";
+        if ( $hint_id ne "" ) {
+            $hint_id = " id=\"$hint_id\"";
+        }
+        $hint
+            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
     }
     else {
         $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    if ( $warning && $show_warning ) {
-        $warning
-            = qq{\n<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-<span class="alert-warning-inline">$warning</span></p>\n};
-    }
-    else {
-        $warning = ''
             ;  # hiding hint because it is either empty or should not be shown
     }
     unless ($label_class) {
@@ -3077,33 +3123,51 @@ sub _hdlr_app_setting {
     else {
         $label_class = 'field-' . $label_class;
     }
-    my $indent_css = "";
+
+    my $style = "";
     if ($indent) {
-        $indent_css = " style=\"padding-left: " . $indent . "px;\"";
+        if ( !$shown ) {
+            $style = qq{ style="padding-left: ${indent}px; display: none;"};
+        }
+        else {
+            $style = qq{ style="padding-left: ${indent}px;"};
+        }
+    }
+    elsif ( !$shown ) {
+        $style = ' style="display: none;"';
     }
 
     # 'Required' indicator plus CSS class
-    my $req       = $args->{required} ? " *"        : "";
+    my $req
+        = $args->{required}
+        ? qq{ <span class="badge badge-danger">}
+        . MT->translate('Required')
+        . qq{</span>}
+        : "";
     my $req_class = $args->{required} ? " required" : "";
 
     my $insides = $ctx->slurp( $args, $cond );
 
-    # $insides =~ s/^\s*(<textarea)\b/<div class="textarea-wrapper">$1/g;
-    # $insides =~ s/(<\/textarea>)\s*$/$1<\/div>/g;
-
     my $class = $args->{class} || "";
-    $class = ( $class eq '' ) ? 'hidden' : $class . ' hidden' unless $shown;
 
-    return $ctx->build(<<"EOT");
-<div id="$id-field" class="field$req_class $label_class $class"$indent_css>
-    <div class="field-header">
-      <label id="$id-label" for="$id">$label$req</label>
+    if ( $args->{field_header} ) {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
+        <div class="field-header">
+          <label$label_for>$label$req</label>
+        </div>
+        $insides$hint
     </div>
-    <div class="field-content $content_class">
-      $insides$hint$warning
-    </div>
-</div>
 EOT
+    }
+    else {
+        return $ctx->build(<<"EOT");
+    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
+        <label$label_for>$label$req</label>
+        $insides$hint
+    </div>
+EOT
+    }
 }
 
 ###########################################################################
@@ -3150,8 +3214,11 @@ Identifies whether widget may be closed or not.
 
 =item * tabbed (optional; default "0")
 
-If specified, the widget will be assigned an attribute that gives it
-a tabbed interface.
+Deprecated.
+
+=item * hidden (optional; default "0")
+
+Deprecated.
 
 =back
 
@@ -3176,61 +3243,48 @@ sub _hdlr_app_widget {
     my $label_onclick = $args->{label_onclick} || "";
     my $header_action = $args->{header_action} || "";
     my $closable      = $args->{can_close} ? 1 : 0;
+
+    # Close button support
     if ($closable) {
         $header_action
-            = qq{<a title="<__trans phrase="Remove this widget">" onclick="javascript:removeWidget('$id'); return false;" href="javascript:void(0);" class="widget-close-link"><span>close</span></a>};
+            = qq{<button type="button" class="close" aria-label="Close" onClick="javascript:removeWidget('${id}'); return false;"><span aria-hidden="true">&times;</span></button>};
     }
+
+    # Widget label
     my $widget_header = "";
     if ( $label_link && $label_onclick ) {
         $widget_header
-            = "\n<h2><a href=\"$label_link\" onclick=\"$label_onclick\"><span>$label</span></a></h2>";
+            = qq{<a href="$label_link" onclick="$label_onclick"><span>$label</span></a>};
     }
     elsif ($label_link) {
-        $widget_header
-            = "\n<h2><a href=\"$label_link\"><span>$label</span></a></h2>";
+        $widget_header = qq{<a href="$label_link"><span>$label</span></a>};
     }
-    else {
-        $widget_header = "\n<h2><span>$label</span></h2>";
+    elsif ( defined $label ) {
+        $widget_header = $label;
     }
+
+    # Make certain widget_id is set
     my $token    = $ctx->var('magic_token')     || '';
     my $scope    = $ctx->var('widget_scope')    || 'system';
     my $singular = $ctx->var('widget_singular') || '';
 
-    # Make certain widget_id is set
     my $vars = $ctx->{__stash}{vars};
-    local $vars->{widget_id}     = $id;
-    local $vars->{widget_header} = '';
-    local $vars->{widget_footer} = '';
-    my $app = MT->instance;
-    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
-    my $blog_field
-        = $blog
-        ? qq{<input type="hidden" name="blog_id" value="}
-        . $blog->id . q{" />}
-        : "";
-    local $vars->{blog_id} = $blog->id if $blog;
+    local $vars->{widget_id} = $id;
+    my $app        = MT->instance;
+    my $blog       = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    my $blog_field = "";
+    if ($blog) {
+        $blog_field = qq{<input type="hidden" name="blog_id" value="}
+            . $blog->id . q{" />};
+        local $vars->{blog_id} = $blog->id;
+    }
     my $insides = $ctx->slurp( $args, $cond );
-    my $widget_footer = ( $ctx->var('widget_footer') || '' );
-    my $var_header    = ( $ctx->var('widget_header') || '' );
-
-    if ( $var_header =~ m/<h2[ >]/i ) {
-        $widget_header = $var_header;
-    }
-    else {
-        $widget_header .= $var_header;
-    }
-    my $corners
-        = $args->{corners}
-        ? '<div class="corners"><b></b><u></u><s></s><i></i></div>'
-        : "";
-    my $tabbed       = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
-    my $header_class = $tabbed         ? 'widget-header-tabs'           : '';
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
     if ( $hosted_widget && ( !$insides !~ m/<form\s/i ) ) {
         $insides = <<"EOT";
-        <form id="$id-form" method="post" action="$cgi" onsubmit="updateWidget('$id'); return false">
+        <form id="$id-form" method="post" action="$cgi">
         <input type="hidden" name="__mode" value="update_widget_prefs" />
         <input type="hidden" name="widget_id" value="$id" />
         $blog_field
@@ -3243,18 +3297,29 @@ $insides
         </form>
 EOT
     }
-    return <<"EOT";
-<div id="$id" class="widget $class"$tabbed>
-  <div class="widget-header $header_class">
-    <div class="widget-action">$header_action</div>
-    <div class="widget-label">$widget_header</div>
-  </div>
-  <div class="widget-content">
+
+    # panel class
+    my $block = $ctx->var('widget_block') || 'main';
+    my $widget_class;
+    if ( 'main' eq $block ) {
+        $widget_class = "mt-widget";
+    }
+    else {
+        $widget_class = "mt-widget--panel";
+    }
+
+    my $widget = <<"EOT";
+<div id="$id" class="$widget_class $class">
+  <h2 class="mt-widget__title">
+    $widget_header
+    $header_action
+  </h2>
+  <div class="mt-widget__content">
     $insides
   </div>
-  <div class="widget-footer">$widget_footer</div>$corners
 </div>
 EOT
+    return $widget;
 }
 
 ###########################################################################
@@ -3285,9 +3350,16 @@ Accepted values: "all", "index".
 
 sub _hdlr_app_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
-    my $app     = MT->instance;
-    my $id      = $args->{id};
-    my $class   = $args->{class} || 'info';
+    my $app = MT->instance;
+    my $id  = $args->{id};
+
+    my $class = $args->{class} || 'info';
+    $class =~ s/\balert\b/warning/;
+    $class =~ s/\berror\b/danger/;
+
+    my $hidden = $args->{hidden};
+    my $style = $hidden ? ' style="display: none;"' : '';
+
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
     my $no_link = $args->{no_link} || '';
@@ -3296,11 +3368,11 @@ sub _hdlr_app_statusmsg {
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
+    if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
         my $link_l
             = $no_link
             ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">';
+            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
         my $link_r = $no_link ? '' : '</a>';
         my $obj_type
             = $rebuild eq 'blog'
@@ -3320,24 +3392,29 @@ sub _hdlr_app_statusmsg {
     {
         $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'all';
         $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">}
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'index';
     }
     else {
         $rebuild = '';
     }
+    $id    = defined $id    ? qq{ id="$id"}          : "";
+    $class = defined $class ? qq{alert alert-$class} : "alert alert-info";
     my $close = '';
     if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
+        $class .= ' alert-dismissable';
         $close
-            = qq{<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close"></span>};
+            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
     }
-    $id    = defined $id    ? qq{ id="$id"}      : "";
-    $class = defined $class ? qq{msg msg-$class} : "msg";
+    my $role = '';
+    if ( $class =~ /\bwarning|\bdanger/ ) {
+        $role = ' role="alert"';
+    }
     return $ctx->build(<<"EOT");
-    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
+    <div$id class="$class"$style$role>$close $msg $rebuild</div>
 EOT
 }
 
@@ -3405,8 +3482,6 @@ produces something like this:
                 (contents of tag are placed here)
 
             </table>
-            <$MTApp:ActionBar bar_position="bottom"
-                form_id="entry-listing-form"$>
         </form>
     </div>
 
@@ -3519,14 +3594,11 @@ sub _hdlr_app_listing {
     my $target
         = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
 
-    my $actions_top    = "";
-    my $actions_bottom = "";
-    my $form_id        = "$id-form";
+    my $actions_top = "";
+    my $form_id     = "$id-form";
     if ($show_actions) {
         $actions_top
             = qq{<\$MTApp:ActionBar bar_position="top" hide_pager="$hide_pager" form_id="$form_id"\$>};
-        $actions_bottom
-            = qq{<\$MTApp:ActionBar bar_position="bottom" hide_pager="$hide_pager" form_id="$form_id"\$>};
     }
     else {
         $listing_class .= " hide_actions";
@@ -3542,9 +3614,11 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="legacy listing-table $listing_class $id-table$view">
+        <div class="mt-table--outline">
+          <table id="$id-table" class="table mt-table $listing_class $id-table$view">
 $insides
-        </table>
+          </table>
+        </div>
 TABLE
 
     if ($show_actions) {
@@ -3566,7 +3640,6 @@ $blog_id
         <input type="hidden" name="magic_token" value="$token" />
         $actions_top
         <mt:var name="__contents__">
-        $actions_bottom
     </form>
 </div>
 EOT
@@ -3590,7 +3663,7 @@ B<Attributes:>
 
 =over 4
 
-=item * id (required)
+=item * id (optional)
 
 A unique identifier for this group of settings.
 
@@ -3601,7 +3674,12 @@ If specified, applies this CSS class to the C<fieldset> tag produced.
 =item * shown (optional; default "1")
 
 Controls whether the C<fieldset> is initially shown or not. If hidden,
-a CSS "hidden" class is applied to the C<fieldset> tag.
+a CSS "collapse" class is applied to the C<fieldset> tag.
+id attribute is required if you want to control show/hide.
+
+=item * legend (optional)
+
+If specified, displays the label of this field group.
 
 =back
 
@@ -3619,17 +3697,35 @@ B<Example:>
 
 sub _hdlr_app_setting_group {
     my ( $ctx, $args, $cond ) = @_;
-    my $id = $args->{id};
-    return $ctx->error("'id' attribute missing") unless $id;
 
-    my $class = $args->{class} || "";
-    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
-    $class .= ( $class ne '' ? " " : "" ) . "hidden" unless $shown;
-    $class = qq{ class="$class"} if $class ne '';
+    my $id = $args->{id} || '';
+    $id = qq{id="$id"} if $id ne '';
+
+    my $class = 'form-group';
+    $class .= ' ' . $args->{class}
+        if $args->{class};
+
+    if ( exists $args->{shown} ) {
+        return $ctx->error("'id' attribute missing") unless $id;
+
+        if ( $args->{shown} ) {
+            $class .= ' collapse show';
+        }
+        else {
+            $class .= ' collapse';
+        }
+    }
+    $class = qq{class="$class"};
+
+    my $legend = $args->{legend} || '';
+    $legend = qq{<legend class="h3">$legend</legend>}
+        if $legend;
 
     my $insides = $ctx->slurp( $args, $cond );
+
     return <<"EOT";
-<fieldset id="$id"$class>
+<fieldset $id $class>
+    $legend
     $insides
 </fieldset>
 EOT
@@ -3779,12 +3875,22 @@ sub _hdlr_app_page_actions {
     <mtapp:widget
         id="page_actions"
         label="<__trans phrase="Actions">">
-                <ul>
+                <ul class="list-unstyled">
         <mt:loop name="page_actions">
             <mt:if name="page">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <a href="<mt:var name="page" escape="html"><mt:if name="page_has_params">&amp;</mt:if>from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if> class="d-inline-block">
+                            <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
+                            <mt:var name="label">
+                        </a>
+                    </li>
             <mt:else><mt:if name="link">
-                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action"><a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog"</mt:if>><mt:var name="label"></a></li>
+                    <li class="icon-left-xwide icon<mt:unless name="core">-plugin</mt:unless>-action">
+                        <a href="<mt:var name="link" escape="html">&amp;from=$from<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>$mt&amp;return_args=<mt:var name="return_args" escape="url">"<mt:if name="continue_prompt"> onclick="return confirm('<mt:var name="continue_prompt" escape="js">');"</mt:if><mt:if name="dialog"> class="mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large</mt:if>>
+                            <mtapp:svgicon id="ic_setting" size="sm" title="\$label">
+                            <mt:var name="label">
+                        </a>
+                    </li>
             </mt:if></mt:if>
         </mt:loop>
                 </ul>
@@ -3875,15 +3981,17 @@ sub _hdlr_app_action_bar {
     my $buttons = $ctx->var('action_buttons') || '';
     my $buttons_html
         = $buttons =~ /\S/
-        ? qq{<div class="button-actions actions">$buttons</div>}
+        ? qq{<div class="float-left mr-3 button-actions actions">$buttons</div>}
         : '';
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
+  <div class="col">
     $pager
     $buttons_html
-<mt:include name="include/itemset_action_widget.tmpl">
+    <mt:include name="include/itemset_action_widget.tmpl">
+  </div>
 </div>
 EOT
 }
@@ -3952,6 +4060,352 @@ sub _hdlr_app_link {
         }
     }
     return $app->uri( mode => $mode, args => \%args );
+}
+
+###########################################################################
+
+=head2 App:SVGIcon
+
+Produces tags of svg image.
+
+B<Attributes:>
+
+=over 4
+
+=item * id
+
+=item * title
+
+=item * color
+
+=item * size
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_svg_icon {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $id    = $args->{id};
+    my $title = $args->{title};
+    my $color = $args->{color};
+    my $size  = $args->{size};
+
+    if ( !defined $id || $id eq '' ) {
+        return $ctx->error( MT->translate('id attribute is required') );
+    }
+
+    my $title_attr = '';
+    if ( defined $title && $title ne '' ) {
+        $title_attr = qq{ title="$title"};
+    }
+    my $color_class_suffix = '';
+    if ( defined $color && $color ne '' ) {
+        $color_class_suffix = "--$color";
+    }
+    my $size_class = '';
+    if ( defined $size && $size ne '' ) {
+        $size_class = " mt-icon--$size";
+    }
+
+    my $static_uri = MT->static_path;
+
+    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOptionGroup
+
+An application template tag used to wrap a number of
+L<App:ContentFieldOption> tags.
+
+B<Attributes:>
+
+=over 4
+
+=item * type
+
+A field option type that using as a custom tag name. All underscores
+are replaced by hyphens.
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option_group {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $type = $args->{type};
+    return $ctx->error('"type" attribute is required.')
+        unless $type;
+    $type =~ s/_/-/g;
+
+    # Build inside tags
+    my $insides = $ctx->slurp( $args, $cond );
+
+    my $vars = $ctx->{__stash}{vars} ||= {};
+    my $script = $ctx->var('option_script') || '';
+    $ctx->var( 'option_script', undef )
+        if $script;
+
+    return $ctx->build(<<EOT);
+<$type>
+
+  <input if={ !this.isNew } type="hidden" ref="id" name="id" id="$type-id" class="form-control" value={ fieldId } >
+  <input if={ this.isNew } type="hidden" ref="id" name="id" id="$type-id" class="form-control" value={ 'id:' + fieldId } >
+
+  <mtapp:ContentFieldOption
+     id="$type-label"
+     label="<__trans phrase="Label">"
+     required="1">
+    <input type="text" ref="label" name="label" id="$type-label" class="form-control html5-form" oninput={ inputLabel } value={ options.label } required data-mt-content-field-unique>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-description"
+     label="<__trans phrase="Description">"
+     show_hint="1"
+     hint="<__trans phrase="The entered message is displayed as a input field hint.">">
+    <input type="text" ref="description" name="description" id="$type-description" class="form-control" aria-describedby="$type-description-field-help" value={ options.description }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-required"
+     label="<__trans phrase="Is this field required?">">
+    <input ref="required" type="checkbox" class="mt-switch form-control" id="$type-required" name="required" checked={ options.required } onclick={ changeStateRequired }><label for="$type-required"><__trans phrase="Is this field required?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="$type-display"
+     label="<__trans phrase="Display Options">"
+     required="1"
+     show_hint="1"
+     hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
+    <select ref="display" name="display" id="$type-display" class="custom-select form-control">
+      <option value="force" selected={ options.displays.force }><__trans phrase="Force"></option>
+      <option value="default"  selected={ options.displays.default }><__trans phrase="Default"></option>
+      <option value="optional" selected={ options.displays.optional }><__trans phrase="Optional"></option>
+      <option value="none" selected={ options.displays.none }><__trans phrase="None"></option>
+    </select>
+  </mtapp:ContentFieldOption>
+
+  $insides
+
+  <div class="form-group-button">
+    <button type="button" class="btn btn-default" onclick={ closePanel }><__trans phrase="Close"></button>
+  </div>
+
+  // Initialize
+  this.options = opts.options
+  if ( !this.options )
+    this.options = {}
+
+  this.options.displays = {}
+  this.options.displays.force = ""
+  this.options.displays.default = ""
+  this.options.displays.optional = ""
+  this.options.displays.none = ""
+  if ( this.options.display )
+    this.options.displays[this.options.display] = "selected"
+  else
+    this.options.displays['default'] = "selected"
+  this.id = opts.id
+  this.fieldId = opts.fieldid
+  this.isNew = opts.isnew
+
+  this.on('mount', function() {
+    elms = this.root.querySelectorAll('*')
+    Array.prototype.slice.call(elms).forEach( function (v) {
+      if ( v.hasAttribute('id') ) {
+        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
+      }
+      if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
+        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
+      }
+    })
+  })
+
+  inputLabel(e) {
+    this.parent.label = e.target.value
+    this.parent.update()
+  }
+
+  gatheringData() {
+    data = {}
+    flds = this.refs
+    Object.keys(flds).forEach( function(k) {
+      f = flds[k]
+      if ( f.type == 'checkbox') {
+        val = f.checked ? 1 : 0
+        if ( f.name in data ) {
+          if ( Array.isArray(data[f.name]) ) {
+            data[f.name].push( val )
+          }
+          else {
+            array = [];
+            array.push( data[f.name] )
+            array.push( val )
+          }
+        }
+        else {
+          data[f.name] = val
+        }
+      }
+      else {
+        data[f.name] = f.value
+      }
+    })
+
+    if ( typeof this.gather == 'function' ) {
+      customData = this.gather()
+      jQuery.extend( data, customData);
+    }
+    return data
+  }
+
+  closePanel(e) {
+    className = this.root.className
+    this.root.className = className.replace(/\\s*show\\s*/,'')
+    var target = document.getElementsByClassName('mt-draggable__area')[0]
+    this.parent.parent.recalcHeight(target)
+
+    jQuery("a[aria-controls='field-options-" + this.fieldId + "']").attr('aria-expanded', false)
+  }
+
+  changeStateRequired(e) {
+    this.options.required = e.target.checked
+  }
+
+  $script
+</$type>
+EOT
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOption
+
+An application template tag used to display a content field option form field.
+
+B<Attributes:>
+
+=over 4
+
+=item * id (required)
+
+Each application setting tag requires a unique 'id' attribute. This id
+should not be re-used within the template.
+
+=item * required (optional; default "0")
+
+Controls whether the field is displayed with visual cues that the
+field is a required field or not.
+
+=item * label
+
+Supplies the label phrase for the setting.
+
+=item * show_label (optional; default "1")
+
+Controls whether the label portion of the setting is shown or not.
+
+=item * hint (optional)
+
+Supplies a "hint" phrase that provides inline instruction to the user.
+By default, this hint is hidden, unless the 'show_hint' attribute
+forces it to display.
+
+=item * show_hint (optional; default "0")
+
+Controls whether the inline help 'hint' label is shown or not.
+
+=item * attr (optional)
+You can supply additional attributes by this modifier.
+
+=back
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # id
+    my $id = $args->{id};
+    return $ctx->error("'id' attribute missing") unless $id;
+
+    # label
+    my $label      = $args->{label};
+    my $show_label = exists $args->{show_label} ? $args->{show_label} : 1;
+    my $label_for  = '';
+    if ( $label && $show_label ) {
+        $label_for = qq{ for="$id"};
+    }
+    else {
+        $label = '';
+    }
+
+    # hint
+    my $hint      = $args->{hint}      || "";
+    my $show_hint = $args->{show_hint} || 0;
+    if ( $hint && $show_hint ) {
+        my $hint_id = "$id-field-help";
+        $hint
+            = qq{\n<small id="$hint_id" class="form-text text-muted">$hint</small>};
+    }
+    else {
+        $hint = '';
+    }
+
+    # 'Required' indicator plus CSS class
+    my $req       = '';
+    my $req_class = '';
+    if ( $args->{required} ) {
+        $req
+            = qq{ <span class="badge badge-danger">}
+            . MT->translate('Required')
+            . qq{</span>};
+        $req_class = ' required';
+    }
+
+    my $attr = $args->{attr} || '';
+
+    # Build inside
+    my $insides = $ctx->slurp( $args, $cond );
+
+    return $ctx->build(<<"EOT");
+  <div id="${id}-field" class="form-group$req_class" $attr>
+    <label$label_for>$label$req</label>
+    $insides$hint
+  </div>
+EOT
+}
+
+###########################################################################
+
+=head2 App:ContentFieldOptionScript
+
+An application template tag used to insert script code for a content field option form field.
+
+=for tags application
+
+=cut
+
+sub _hdlr_app_contentfield_option_script {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # Build inside
+    my $insides = $ctx->slurp( $args, $cond );
+    $ctx->var( 'option_script', $insides );
+
+    return '';
 }
 
 package MT::Template::Tags::System;
@@ -4155,6 +4609,9 @@ B<Example:> Passing Parameters to a Template Module
     sub _hdlr_include {
         my ( $ctx, $arg, $cond ) = @_;
 
+        # Preprocess from MultiBlog
+        MT::Template::Context::_preprocess_multiblog(@_);
+
         # Pass through include arguments as variables to included template
         my $vars = $ctx->{__stash}{vars} ||= {};
         my @names = keys %$arg;
@@ -4195,6 +4652,7 @@ B<Example:> Passing Parameters to a Template Module
         my $_stash_blog = $ctx->stash('blog');
         my $blog_id
             = $arg->{global}             ? 0
+            : defined( $arg->{site_id} ) ? $arg->{site_id}
             : defined( $arg->{blog_id} ) ? $arg->{blog_id}
             : $_stash_blog               ? $_stash_blog->id
             :                              0;
@@ -4510,8 +4968,7 @@ B<Example:> Passing Parameters to a Template Module
             return $ctx->error(
                 MT->translate( "Cannot find included file '[_1]'", $file ) )
                 unless $path;
-            local *FH;
-            open FH,
+            open my $FH, "<",
                 $path
                 or return $ctx->error(
                 MT->translate(
@@ -4521,8 +4978,8 @@ B<Example:> Passing Parameters to a Template Module
                 );
             my $c;
             local $/;
-            $c = <FH>;
-            close FH;
+            $c = <$FH>;
+            close $FH;
             $tokens = $builder->compile( $ctx, $c );
             return $ctx->error( $builder->errstr ) unless defined $tokens;
             $req->stash( $stash_id, $tokens );
@@ -4569,7 +5026,9 @@ B<Example:> Passing Parameters to a Template Module
             return $out;
         }
         else {
-            return defined $arg->{default} ? $arg->{default} : '';
+            return $arg->{default} if defined $arg->{default};
+            warn "Template not found: $app_file" if $MT::DebugMode;
+            return '';
         }
     }
 }
@@ -4662,7 +5121,7 @@ sub _hdlr_section {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     # make cache id
-    my $cache_id = $args->{cache_prefix} || undef;
+    my $cache_id = $args->{cache_prefix} || '';
 
     my $tmpl = $ctx->{__stash}{template};
     $cache_id .= ':' . $tmpl->id if $tmpl && $tmpl->id;
@@ -4760,11 +5219,11 @@ name, identifier, or outfile.
 
 =item * entry_id
 
-The numeric system ID of the entry. This attribute can not use with blog_id.
+The numeric system ID of the entry. This attribute cannot use with blog_id.
 
 =item * blog_id
 
-The numeric system ID of the blog/website. This attribute can not use with entry_id.
+The numeric system ID of the blog/website. This attribute cannot use with entry_id.
 
 =item * with_index (optional; default "0")
 
@@ -5142,8 +5601,9 @@ sub _hdlr_trackback_script {
 
 =head2 SearchScript
 
-Returns the value of the C<SearchScript> configuration setting. The
-default for this setting if unassigned is "mt-search.cgi".
+Returns the value of the C<SearchScript> or C<ContentDataSearchScript>
+configuration setting. The default for this setting if unassigned is
+"mt-search.cgi" or "mt-cdsearch.cgi".
 
 =for tags configuration
 
@@ -5151,7 +5611,9 @@ default for this setting if unassigned is "mt-search.cgi".
 
 sub _hdlr_search_script {
     my ($ctx) = @_;
-    return $ctx->{config}->SearchScript;
+    return MT->instance->isa('MT::App::Search::ContentData')
+        ? $ctx->{config}->ContentDataSearchScript
+        : $ctx->{config}->SearchScript;
 }
 
 ###########################################################################
@@ -5590,7 +6052,7 @@ B<Example:>
 sub _hdlr_http_content_type {
     my ( $ctx, $args ) = @_;
     my $type = $args->{type};
-    $ctx->stash( 'content_type', $type );
+    $ctx->stash( 'http_content_type', $type );
     return qq{};
 }
 

@@ -110,8 +110,9 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.3.7';
+    $version = '7.0';
 }
+my $release_version = 'r.4207';
 
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -403,7 +404,7 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<div class="msg msg-info">
+<div class="bg-info msg msg-info">
 <p class="msg-text"><__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
 </div>
 </div>
@@ -416,7 +417,7 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<div class="msg msg-info">
+<div class="bg-info msg msg-info">
 <p class="meg-text"><__trans phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
 </div>
 </div>
@@ -429,7 +430,7 @@ HTML
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
-<div class="msg msg-info">
+<div class="bg-info msg msg-info">
 <p class="msg-text"><__trans phrase="The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
 </div>
 HTML
@@ -473,6 +474,13 @@ my @CORE_REQ = (
         0, 1,
         translate(
             'Scalar::Util is required for initializing Movable Type application.'
+        )
+    ],
+
+    [   'HTML::Entities',
+        3.6.9, 1,
+        translate(
+            'HTML::Entities is required by CGI.pm'
         )
     ],
 
@@ -545,13 +553,6 @@ my @CORE_OPT = (
         0, 0,
         translate(
             'This module and its dependencies are required to run Movable Type under psgi.'
-        )
-    ],
-
-    [   'HTML::Entities',
-        0, 0,
-        translate(
-            'HTML::Entities is needed to encode some characters, but this feature can be turned off using the NoHTMLEntities option in the configuration file.'
         )
     ],
 
@@ -817,7 +818,7 @@ my $ver
 my $perl_ver_check = '';
 if ( $] < 5.008001 ) {    # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p></div>
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p></div>
 EOT
 }
 
@@ -833,13 +834,13 @@ if ($version) {
     $version =~ s/[^a-zA-Z0-9\-\.]//g;
     $version = $cgi->escapeHTML($version);
     print_encode( trans_templ(<<INFO) );
-<ul class="version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
+<ul class="list-unstyled version">
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version ($version)</code></li>
 </ul>
 INFO
 }
 print_encode( trans_templ(<<INFO) );
-<ul id="path-info">
+<ul id="path-info" class="list-unstyled">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
 	<li><strong><__trans phrase="Operating system:"></strong> $^O</li>
@@ -954,7 +955,7 @@ for my $list ( \@REQ, \@DATA, \@OPT ) {
     if ( !$req && !$data ) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide."></p>
+    <p class="bg-info msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide."></p>
 
 MSG
         }
@@ -962,7 +963,7 @@ MSG
     if ($data) {
         if ( !$view ) {
             print_encode( trans_templ(<<MSG) );
-        <p class="msg msg-info"><__trans phrase="The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly."></p>
+        <p class="bg-info msg msg-info"><__trans phrase="The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly."></p>
 
 MSG
         }
@@ -989,10 +990,10 @@ MSG
             my $msg
                 = $ver
                 ? trans_templ(
-                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }
+                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }
                 )
                 : trans_templ(
-                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> }
+                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> }
                 );
             print_encode($desc);
             print_encode($msg);
@@ -1021,7 +1022,7 @@ MSG
                     if ( $DBD::mysql::VERSION == 3.0000 ) {
                         print_encode(
                             trans_templ(
-                                qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
+                                qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available."></p></div>}
                             )
                         );
                     }
@@ -1029,7 +1030,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
                         )
                     );
                 }
@@ -1055,7 +1056,7 @@ MSG
 if ($is_good) {
     if ( !$view ) {
         print_encode( trans_templ(<<HTML) );
-    <div class="msg msg-success">
+    <div class="bg-success msg msg-success">
         <h2><__trans phrase="Movable Type System Check Successful"></h2>
         <p><strong><__trans phrase="You're ready to go!"></strong> <__trans phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions."></p>
     </div>

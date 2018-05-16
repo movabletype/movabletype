@@ -2,20 +2,22 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw(lib extlib t/lib);
+use MT::Test;
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test qw(:app);"
-    : "use MT::Test qw(:app :db :data);"
-);
+MT::Test->init_app;
 
-use Test::More;
+$test_env->prepare_fixture('db_data');
+
 use File::Basename;
 use MT::WeblogPublisher;
 

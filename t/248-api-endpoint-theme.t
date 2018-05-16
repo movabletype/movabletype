@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -137,11 +145,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -154,11 +157,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -169,11 +167,6 @@ sub suite {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_blog');
 
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return $theme->to_resource();
             },
         },
@@ -182,11 +175,6 @@ sub suite {
             result => sub {
                 require MT::Theme;
                 my $theme = MT::Theme->load('classic_website');
-
-                require boolean;
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return $theme->to_resource();
             },

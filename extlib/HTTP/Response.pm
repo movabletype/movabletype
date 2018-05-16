@@ -1,12 +1,13 @@
 package HTTP::Response;
 
-require HTTP::Message;
-@ISA = qw(HTTP::Message);
-$VERSION = "5.824";
-
 use strict;
-use HTTP::Status ();
+use warnings;
 
+our $VERSION = '6.14';
+
+use base 'HTTP::Message';
+
+use HTTP::Status ();
 
 
 sub new
@@ -22,8 +23,9 @@ sub new
 sub parse
 {
     my($class, $str) = @_;
+    Carp::carp('Undefined argument to parse()') if $^W && ! defined $str;
     my $status_line;
-    if ($str =~ s/^(.*)\n//) {
+    if (defined $str && $str =~ s/^(.*)\n//) {
 	$status_line = $1;
     }
     else {
@@ -31,17 +33,21 @@ sub parse
 	$str = "";
     }
 
+    $status_line =~ s/\r\z// if defined $status_line;
+
     my $self = $class->SUPER::parse($str);
-    my($protocol, $code, $message);
-    if ($status_line =~ /^\d{3} /) {
-       # Looks like a response created by HTTP::Response->new
-       ($code, $message) = split(' ', $status_line, 2);
-    } else {
-       ($protocol, $code, $message) = split(' ', $status_line, 3);
+    if (defined $status_line) {
+        my($protocol, $code, $message);
+        if ($status_line =~ /^\d{3} /) {
+           # Looks like a response created by HTTP::Response->new
+           ($code, $message) = split(' ', $status_line, 2);
+        } else {
+           ($protocol, $code, $message) = split(' ', $status_line, 3);
+        }
+        $self->protocol($protocol) if $protocol;
+        $self->code($code) if defined($code);
+        $self->message($message) if defined($message);
     }
-    $self->protocol($protocol) if $protocol;
-    $self->code($code) if defined($code);
-    $self->message($message) if defined($message);
     $self;
 }
 
@@ -76,9 +82,11 @@ sub status_line
 sub base
 {
     my $self = shift;
-    my $base = $self->header('Content-Base')     ||  # used to be HTTP/1.1
-               $self->header('Content-Location') ||  # HTTP/1.1
-               $self->header('Base');                # HTTP/1.0
+    my $base = (
+	$self->header('Content-Base'),        # used to be HTTP/1.1
+	$self->header('Content-Location'),    # HTTP/1.1
+	$self->header('Base'),                # HTTP/1.0
+    )[0];
     if ($base && $base =~ /^$URI::scheme_re:/o) {
 	# already absolute
 	return $HTTP::URI_CLASS->new($base);
@@ -141,12 +149,8 @@ sub filename
 			}
 
 			require Encode;
-			require encoding;
-			# This is ugly use of non-public API, but is there
-			# a better way to accomplish what we want (locally
-			# as-is usable filename string)?
-			my $locale_charset = encoding::_get_locale_encoding();
-			Encode::from_to($encfile, $charset, $locale_charset);
+			require Encode::Locale;
+			Encode::from_to($encfile, $charset, "locale_fs");
 		    };
 
 		    $file = $encfile unless $@;
@@ -155,8 +159,8 @@ sub filename
 	}
     }
 
-    my $uri;
     unless (defined($file) && length($file)) {
+	my $uri;
 	if (my $cl = $self->header('Content-Location')) {
 	    $uri = URI->new($cl);
 	}
@@ -183,7 +187,6 @@ sub filename
 
 sub as_string
 {
-    require HTTP::Status;
     my $self = shift;
     my($eol) = @_;
     $eol = "\n" unless defined $eol;
@@ -215,14 +218,17 @@ sub is_info     { HTTP::Status::is_info     (shift->{'_rc'}); }
 sub is_success  { HTTP::Status::is_success  (shift->{'_rc'}); }
 sub is_redirect { HTTP::Status::is_redirect (shift->{'_rc'}); }
 sub is_error    { HTTP::Status::is_error    (shift->{'_rc'}); }
+sub is_client_error { HTTP::Status::is_client_error (shift->{'_rc'}); }
+sub is_server_error { HTTP::Status::is_server_error (shift->{'_rc'}); }
 
 
 sub error_as_HTML
 {
-    require HTML::Entities;
     my $self = shift;
     my $title = 'An Error Occurred';
-    my $body  = HTML::Entities::encode($self->status_line);
+    my $body  = $self->status_line;
+    $body =~ s/&/&amp;/g;
+    $body =~ s/</&lt;/g;
     return <<EOM;
 <html>
 <head><title>$title</title></head>
@@ -335,21 +341,26 @@ sub fresh_until
 
 1;
 
+=pod
 
-__END__
+=encoding UTF-8
 
 =head1 NAME
 
 HTTP::Response - HTTP style response message
+
+=head1 VERSION
+
+version 6.14
 
 =head1 SYNOPSIS
 
 Response objects are returned by the request() method of the C<LWP::UserAgent>:
 
     # ...
-    $response = $ua->request($request)
+    $response = $ua->request($request);
     if ($response->is_success) {
-        print $response->content;
+        print $response->decoded_content;
     }
     else {
         print STDERR $response->status_line, "\n";
@@ -381,7 +392,7 @@ Constructs a new C<HTTP::Response> object describing a response with
 response code $code and optional message $msg.  The optional $header
 argument should be a reference to an C<HTTP::Headers> object or a
 plain array reference of key/value pairs.  The optional $content
-argument should be a string of bytes.  The meaning these arguments are
+argument should be a string of bytes.  The meanings of these arguments are
 described below.
 
 =item $r = HTTP::Response->parse( $str )
@@ -393,7 +404,7 @@ This constructs a new response object by parsing the given string.
 =item $r->code( $code )
 
 This is used to get/set the code attribute.  The code is a 3 digit
-number that encode the overall outcome of a HTTP response.  The
+number that encode the overall outcome of an HTTP response.  The
 C<HTTP::Status> module provide constants that provide mnemonic names
 for the code attribute.
 
@@ -431,7 +442,7 @@ charsets have been decoded.  See L<HTTP::Message> for details.
 =item $r->request( $request )
 
 This is used to get/set the request attribute.  The request attribute
-is a reference to the the request that caused this response.  It does
+is a reference to the request that caused this response.  It does
 not have to be the same request passed to the $ua->request() method,
 because there might have been redirects and authorization retries in
 between.
@@ -486,10 +497,10 @@ received some redirect responses first.
 
 If none of these sources provide an absolute URI, undef is returned.
 
-When the LWP protocol modules produce the HTTP::Response object, then
-any base URI embedded in the document (step 1) will already have
-initialized the "Content-Base:" header. This means that this method
-only performs the last 2 steps (the content is not always available
+When the LWP protocol modules produce the HTTP::Response object, then any base
+URI embedded in the document (step 1) will already have initialized the
+"Content-Base:" header. (See L<LWP::UserAgent/parse_head>).  This means that
+this method only performs the last 2 steps (the content is not always available
 either).
 
 =item $r->filename
@@ -540,6 +551,10 @@ Returns a textual representation of the response.
 =item $r->is_redirect
 
 =item $r->is_error
+
+=item $r->is_client_error
+
+=item $r->is_server_error
 
 These methods indicate if the response was informational, successful, a
 redirection, or an error.  See L<HTTP::Status> for the meaning of these.
@@ -630,10 +645,21 @@ description of freshness_lifetime().
 
 L<HTTP::Headers>, L<HTTP::Message>, L<HTTP::Status>, L<HTTP::Request>
 
-=head1 COPYRIGHT
+=head1 AUTHOR
 
-Copyright 1995-2004 Gisle Aas.
+Gisle Aas <gisle@activestate.com>
 
-This library is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 1994-2017 by Gisle Aas.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+__END__
+
+
+#ABSTRACT: HTTP style response message
 

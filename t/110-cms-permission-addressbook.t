@@ -2,15 +2,20 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
 MT->instance;
@@ -18,61 +23,90 @@ my $config = MT->config;
 $config->EnableAddressBook( 1, 1 );
 $config->save_config;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Website
+    my $website = MT::Test::Permission->make_website( name => 'my website' );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
+
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $send_notification = MT::Test::Permission->make_role(
+        name        => 'Send Notification',
+        permissions => "'create_post','send_notifications'",
+    );
+
+    my $edit_notification = MT::Test::Permission->make_role(
+        name        => 'Edit Notification',
+        permissions => "'edit_notifications'",
+    );
+
+    my $designer_role = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $ukawa    => $send_notification => $blog );
+    MT::Association->link( $egawa    => $edit_notification => $blog );
+    MT::Association->link( $aikawa   => $send_notification => $second_blog );
+    MT::Association->link( $ichikawa => $designer_role     => $blog );
+
+    # Entry
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $admin->id,
+        title     => 'my entry',
+    );
+
+    # Notification
+    my $addr = MT::Test::Permission->make_notification(
+        blog_id => $blog->id,
+        name => 'my notification',
+    );
+});
+
+my $website     = MT::Website->load( { name => 'my website' } );
+my $blog        = MT::Blog->load( { name => 'my blog' } );
+my $second_blog = MT::Blog->load( { name => 'second blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $send_notification = MT::Test::Permission->make_role(
-    name        => 'Send Notification',
-    permissions => "'create_post','send_notifications'",
-);
+my $entry = MT::Entry->load( { title => 'my entry' } );
 
-my $edit_notification = MT::Test::Permission->make_role(
-    name        => 'Edit Notification',
-    permissions => "'edit_notifications'",
-);
-
-my $designer_role = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $ukawa    => $send_notification => $blog );
-MT::Association->link( $egawa    => $edit_notification => $blog );
-MT::Association->link( $aikawa   => $send_notification => $second_blog );
-MT::Association->link( $ichikawa => $designer_role     => $blog );
-
-# Entry
-my $entry = MT::Test::Permission->make_entry(
-    blog_id   => $blog->id,
-    author_id => $admin->id,
-);
-
-# Notification
-my $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
+require MT::Notification;
+my $addr = MT::Notification->load( { name => 'my notification' } );
 
 # Run
 my ( $app, $out );

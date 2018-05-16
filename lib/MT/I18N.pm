@@ -7,6 +7,7 @@
 package MT::I18N;
 
 use strict;
+use warnings;
 use Encode;
 use MT::I18N::default;
 use Exporter;

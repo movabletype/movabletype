@@ -6,6 +6,7 @@
 package MT::CMS::AddressBook;
 
 use strict;
+use warnings;
 use MT::Util qw( is_valid_email is_url dirify );
 use MT::I18N qw( wrap_text );
 
@@ -31,8 +32,8 @@ sub entry_notify {
 sub send_notify {
     my $app = shift;
     $app->validate_magic() or return;
-    my $q        = $app->param;
-    my $entry_id = $q->param('entry_id')
+
+    my $entry_id = $app->param('entry_id')
         or return $app->error( $app->translate("No entry ID was provided") );
     require MT::Entry;
     require MT::Blog;
@@ -55,11 +56,13 @@ sub send_notify {
     $params{entry}        = $entry;
     $params{entry_author} = $author ? 1 : 0;
 
-    if ( $q->param('send_excerpt') ) {
+    if ( $app->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    $params{message} = wrap_text( $q->param('message'), $cols, '', '' );
-    if ( $q->param('send_body') ) {
+    my $message = $app->param('message');
+    $params{message}
+        = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
+    if ( $app->param('send_body') ) {
         $params{send_body} = 1;
     }
 
@@ -78,7 +81,7 @@ sub send_notify {
     $params{entry_editurl} = $entry_editurl;
 
     my $addrs;
-    if ( $q->param('send_notify_list') ) {
+    if ( $app->param('send_notify_list') ) {
         require MT::Notification;
         my $iter = MT::Notification->load_iter( { blog_id => $blog->id } );
         while ( my $note = $iter->() ) {
@@ -87,8 +90,8 @@ sub send_notify {
         }
     }
 
-    if ( $q->param('send_notify_emails') ) {
-        my @addr = split /[\n\r,]+/, $q->param('send_notify_emails');
+    if ( my $send_notify_emails = $app->param('send_notify_emails') ) {
+        my @addr = split /[\n\r,]+/, $send_notify_emails;
         for my $a (@addr) {
             next unless is_valid_email($a);
             $addrs->{$a} = 1;
@@ -101,7 +104,7 @@ sub send_notify {
             "No valid recipients were found for the entry notification.")
         );
     my $address;
-    if ($author) {
+    if ( $author and $author->email ) {
         $address
             = defined $author->nickname
             ? $author->nickname . ' <' . $author->email . '>'
@@ -240,7 +243,7 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-    my $email = lc $app->param('email');
+    my $email = lc( $app->param('email') || '' );
     $email =~ s/(^\s+|\s+$)//gs;
     my $blog_id = $app->param('blog_id');
     if ( !is_valid_email($email) ) {
@@ -259,9 +262,10 @@ sub save_filter {
     # duplicate check
     my $notification_iter
         = MT::Notification->load_iter( { blog_id => $blog_id } );
+    my $id = $app->param('id') || 0;
     while ( my $obj = $notification_iter->() ) {
         if (   ( lc( $obj->email ) eq $email )
-            && ( $obj->id ne $app->param('id') ) )
+            && ( $obj->id ne $id ) )
         {
             return $eh->error(
                 $app->translate(
@@ -295,8 +299,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     require MT::Permission;
-    my $options_blog_ids = $load_options->{blog_ids} || undef;
-    my $iter = MT::Permission->load_iter(
+    my $options_blog_ids = $load_options->{blog_ids};
+    my $iter             = MT::Permission->load_iter(
         {   author_id => $user->id,
             (   $options_blog_ids
                 ? ( blog_id => $options_blog_ids )

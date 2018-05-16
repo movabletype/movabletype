@@ -6,6 +6,7 @@
 
 package MT::Trackback;
 use strict;
+use warnings;
 
 use MT::Object;
 @MT::Trackback::ISA = qw( MT::Object );
@@ -54,9 +55,9 @@ sub remove {
     $tb->SUPER::remove(@_);
 }
 
-sub child_key {
+sub child_keys {
     my $class = shift;
-    return 'tb_id';
+    return ('tb_id');
 }
 
 sub entry {

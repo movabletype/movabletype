@@ -239,6 +239,9 @@ sub type2db {
     elsif ( $type eq 'float' ) {
         return 'float';
     }
+    elsif ( $type eq 'double' ) {
+        return 'float';
+    }
     Carp::croak( "undefined type: " . $type );
 }
 
@@ -281,7 +284,7 @@ sub add_column_sql {
             $default_value
                 = $dbh->quote( $driver->dbd->ts2db($default_value) );
         }
-        elsif ( $def->{type} !~ m/int|float|boolean/ ) {
+        elsif ( $def->{type} !~ m/int|float|double|boolean/ ) {
             $default_value = $dbh->quote($default_value);
         }
         push @stmt,

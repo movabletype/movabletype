@@ -5,33 +5,42 @@
   <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 </mt:setvarblock>
 
-<mt:include name="dialog/header.tmpl">
-
+<mt:setvarblock name="form_header">
 <form name="detail" id="detail" method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="save_theme_detail">
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
   <input type="hidden" name="exporter_id" value="<mt:var name="exporter_id">">
   <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+</mt:setvarblock>
 
+<mt:setvarblock name="modal_body">
   <mt:var name="template" mteval="1">
+</mt:setvarblock>
 
+<mt:setvarblock name="modal_footer">
   <div class="actions-bar actions-bar-bottom">
     <button
        type="submit"
        id="submit-button"
        title="<__trans phrase="Continue (s)">"
-       class="save action button primary">
+       class="save action button primary btn btn-primary">
       <__trans phrase="Continue"></button>
     <button
        type="submit"
        accesskey="s"
        title="<__trans phrase="Cancel (x)">"
-       class="cancel action button mt-close-dialog">
+       data-mt-modal-close
+       class="cancel action button mt-close-dialog btn btn-default">
       <__trans phrase="Cancel"></button>
   </div>
-</form>
+</mt:setvarblock>
 
+<mt:setvarblock name="form_footer">
+  </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function dialog_closed(ok) {
@@ -45,5 +54,7 @@ function dialog_closed(ok) {
 }
 /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

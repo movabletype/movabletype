@@ -1,10 +1,10 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="page_content">
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
-     class="error"
+     class="danger"
      can_close="0">
     <mt:var name="error">
   </mtapp:statusmsg>
@@ -12,7 +12,7 @@
 <mt:If name="message">
     <mt:App:StatusMsg
         id="message"
-        class="alert"
+        class="warning"
         can_close="0">
         <$mt:Var name="message"$>
     </mt:App:StatusMsg>
@@ -22,18 +22,18 @@
 <mtapp:setting
    id="nickname"
    label="<__trans phrase="Display Name">"
+   label_for="nickname"
    label_class="top-label"
-   required="1"
-   hint="<__trans phrase="The name appears on your comment.">">
-  <input type="text" name="nickname" id="nickname" class="text full" value="<mt:var name="nickname" escape="html">" />
+   required="1">
+  <input type="text" name="nickname" id="nickname" class="form-control text full" value="<mt:var name="nickname" escape="html">" />
 </mtapp:setting>
 <mtapp:setting
    id="email"
    label="<__trans phrase="Email Address">"
+   label_for="email"
    label_class="top-label"
-   required="1"
-   hint="<__trans phrase="Your email address.">">
-  <input type="text" name="email" id="email" class="text full" value="<mt:var name="email" escape="html">" />
+   required="1">
+  <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 </mt:setvarblock>
 
@@ -47,10 +47,10 @@
   <mtapp:setting
      id="username"
      label="<__trans phrase="Username">"
+     label_for="username"
      label_class="top-label"
-     required="1"
-     hint="<__trans phrase="Your login name.">">
-    <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
+     required="1">
+    <input type="text" name="username" id="username" class="form-control text full" value="<mt:var name="username" escape="html">" />
   </mtapp:setting>
 
   <$mt:var name="common_fields"$>
@@ -58,11 +58,13 @@
   <mtapp:setting
      id="password"
      label="<__trans phrase="Initial Password">"
+     label_for="password"
      label_class="top-label"
      required="1"
      hint="<__trans phrase="Select a password for yourself."> (<$mt:PasswordValidationRule$>)"
+     hint_id="initialPassword"
      show_hint="1">
-    <input type="password" name="password" id="password" class="text password" value="" />
+    <input type="password" name="password" id="password" class="form-control text password" value="" aria-describedby="initialPassword" />
   </mtapp:setting>
   <script type="text/javascript">
   /* <![CDATA[ */
@@ -72,17 +74,17 @@
   <mtapp:setting
      id="pass_verify"
      label="<__trans phrase="Password Confirm">"
+     label_for="pass_verify"
      label_class="top-label"
-     required="1"
-     hint="<__trans phrase="Repeat the password for confirmation.">">
-    <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
+     required="1">
+    <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
   </mtapp:setting>
   <mtapp:setting
      id="url"
      label="<__trans phrase="Website URL">"
-     label_class="top-label"
-     hint="<__trans phrase="The URL of your website. (Optional)">">
-    <input type="text" name="url" id="url" class="text password" value="<mt:var name="url" escape="html">" />
+     label_for="url"
+     label_class="top-label">
+    <input type="text" name="url" id="url" class="form-control text password" value="<mt:var name="url" escape="html">" />
   </mtapp:setting>
   <mt:if name="captcha_fields">
     <div class="setting">
@@ -95,10 +97,10 @@
   <mtapp:setting
      id="external_username"
      label="<__trans phrase="Username">"
+     label_for="username"
      label_class="top-label"
-     required="1"
-     hint="<__trans phrase="Your login name.">">
-    <input type="text" name="username" id="username" class="text full" value="<mt:var name="username" escape="html">" />
+     required="1">
+    <input type="text" name="username" id="username" class="form-control text full" value="<mt:var name="username" escape="html">" />
   </mtapp:setting>
 
     <$mt:var name="common_fields"$>
@@ -123,17 +125,19 @@
 <!-- end-customfield_<$mt:Var name="basename"$> -->
 </mt:loop>
 
-  <div class="actions-bar">
+  <div class="actions-bar text-right">
     <button
        type="submit"
        accesskey="s"
-       class="action primary button">
+       class="action primary button btn btn-primary">
       <__trans phrase="Register">
     </button>
   </div>
 </form>
+</mt:setvarblock>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:setvarblock name="js_include" append="1">
+<script>
     function isContainsMultiByte ( val ) {
         var i = 0;
         while (i < val.length) {
@@ -169,6 +173,8 @@
         if ( !jQuery("#password").mtValidate('simple') ) return false;
         if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
     });
+</script>
 </mt:setvarblock>
 
-<mt:include name="include/chromeless_footer.tmpl">
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

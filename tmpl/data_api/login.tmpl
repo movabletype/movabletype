@@ -1,4 +1,5 @@
 <mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="no_page_header" value="1">
 <mt:setvar name="complete" value="1">
 <mt:setvar name="screen_id" value="sign-in">
 <mt:setvar name="screen_class" value="sign-in">
@@ -7,15 +8,13 @@
 </mt:setvarblock>
 
 <mt:SetVarBlock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">data-api/v1/js/mt-data-api.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js-cookie-2.1.4/js.cookie.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 (function() {
 
 function redirectWithCookie(jsonText) {
-    Cookie.bake(MT.DataAPI.accessTokenKey, jsonText, undefined, '/');
+    Cookies.set(MT.DataAPI.accessTokenKey, jsonText);
     var url = '<mt:var name="redirect_url" encode_js="1" />#_login';
     location.href = url;
 }
@@ -89,8 +88,7 @@ jQuery(function($) {
 </script>
 </mt:SetVarBlock>
 
-<mt:include name="include/chromeless_header.tmpl">
-
+<mt:setvarblock name="page_content">
 <input type="hidden" name="redirectUrl" id="redirect_url" value="<mt:var name="redirect_url" escape="html">" />
 
 <form method="post" action="<mt:var name="script_url">/v<mt:var name="api_version" />/authentication" id="login_form">
@@ -102,6 +100,9 @@ jQuery(function($) {
   <input type="hidden" name="redirect_type" value="<mt:var name="redirect_type" escape="html">" />
 
   <div id="msg-block"></div>
+
+  <div class="row">
+    <div class="col-12">
 
 <mt:if name="logged_out">
   <mt:if name="delegate_auth">
@@ -131,7 +132,7 @@ jQuery(function($) {
     <mt:if name="error">
       <mtapp:statusmsg
          id="generic-error"
-         class="error"
+         class="danger"
          can_close="0">
         <mt:var name="error">
       </mtapp:statusmsg>
@@ -140,29 +141,39 @@ jQuery(function($) {
 </mt:if>
 <mtapp:statusmsg
    id="login-error"
-   class="error hidden"
+   class="danger hidden"
    can_close="0">
      <__trans phrase="Invalid login.">
 </mtapp:statusmsg>
 
+  </div>
+</div>
+
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
-  <div class="actions-bar actions-bar-login">
-    <button
-       type="submit"
-       id="sign-in-button"
-       accesskey="s"
-       title="<__trans phrase="Sign In (s)">"
-       class="sign-in action primary button">
-      <__trans phrase="Sign In">
-    </button>
+  <div class="row align-items-center actions-bar actions-bar-login">
+    <div id="forget-password" class="col-8">
     <mt:if name="can_recover_password">
-      <div id="forget-password">
-        <a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a>
-      </div>
+      <a href="<mt:var name="mt_url">?__mode=start_recover">
+        <__trans phrase="Forgot your password?">
+      </a>
     </mt:if>
+    </div>
+    <div class="col-4 text-right">
+      <button
+         type="submit"
+         id="sign-in-button"
+         accesskey="s"
+         title="<__trans phrase="Sign In (s)">"
+         class="sign-in action primary button btn btn-primary">
+        <__trans phrase="Sign In">
+      </button>
+    </div>
   </div>
 
 </mt:unless>
 </form>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

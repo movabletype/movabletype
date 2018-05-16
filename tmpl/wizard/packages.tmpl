@@ -1,5 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Requirements Check"></mt:setvarblock> 
-<mt:include name="include/chromeless_header.tmpl">
+
+<mt:setvarblock name="page_content">
 <form method="post">
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="start" />
@@ -12,12 +13,12 @@
      id="missing-db"
      class="error"
      can_close="0">
-    <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
+    <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your data of sites and child sites.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
   <p class="intro">
-    <span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type.">
+    <span class="text-success ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type.">
   </p>
   <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 </mt:if>
@@ -74,7 +75,7 @@
 </dl>
 
 <mt:if name="optional">
-  <p><a target="cpan" href="<__trans phrase="http://www.movabletype.org/documentation/installation/perl-modules.html">"><__trans phrase="Learn more about installing Perl modules."></a></p>
+  <p><a target="cpan" href="<__trans phrase="https://www.movabletype.org/documentation/installation/perl-modules.html">"><__trans phrase="Learn more about installing Perl modules."></a></p>
 </div>
 </mt:if>
 
@@ -85,14 +86,14 @@
   </div>
 </mt:if>
 
-  <div class="actions-bar">
+  <div class="actions-bar text-right">
   <mt:if name="missing_db_or_optional">
     <mt:if name="missing_db">
     <button
        name="retry"
        type="submit"
        onclick="go('retry');"
-       class="retry action button">
+       class="retry action button btn btn-default">
       <__trans phrase="Retry">
     </button>
     <mt:else>
@@ -101,7 +102,7 @@
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
     <button
@@ -110,7 +111,7 @@
        onclick="go('retry');"
        id="retry-btn"
        style="display: none;"
-       class="retry action button">
+       class="retry action button btn btn-default">
       <__trans phrase="Retry">
     </button>
       <mt:else>
@@ -118,7 +119,7 @@
        name="retry"
        type="submit"
        value="<__trans phrase="Retry">"
-       class="retry action button">
+       class="retry action button btn btn-default">
       <__trans phrase="Retry">
     </button>
       </mt:if>
@@ -129,7 +130,7 @@
        name="retry"
        type="submit"
        value="<__trans phrase="Retry">"
-       class="retry action button">
+       class="retry action button btn btn-default">
       <__trans phrase="Retry">
     </button>
     </mt:if>
@@ -140,7 +141,7 @@
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
   </mt:if>
@@ -148,13 +149,15 @@
        name="back"
        type="submit"
        onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
 
   </div>
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function go(mode) {
@@ -184,4 +187,8 @@ function toggleList() {
 }
 /* ]]> */
 </script>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

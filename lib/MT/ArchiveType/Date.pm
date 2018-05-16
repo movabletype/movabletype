@@ -5,6 +5,8 @@
 # $Id$
 package MT::ArchiveType::Date;
 
+use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 sub group_based {
@@ -99,7 +101,7 @@ sub get_entry {
     my $archiver = shift;
     my ( $ts, $blog_id, $order ) = @_;
     my ( $start, $end ) = $archiver->date_range($ts);
-    if ( $order eq 'previous' ) {
+    if ( $order and $order eq 'previous' ) {
         $order = 'descend';
         $ts    = $start;
     }

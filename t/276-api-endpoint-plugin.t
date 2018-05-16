@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -25,8 +33,7 @@ my $app = MT::App::DataAPI->new;
     $website_entry->save or die $website_entry->errstr;
 
     my $website = $app->model('website')->load(2) or die;
-    my $role
-        = $app->model('role')->load( { name => 'Website Administrator' } )
+    my $role = $app->model('role')->load( { name => 'Site Administrator' } )
         or die;
 
     require MT::Association;
@@ -142,7 +149,7 @@ sub suite {
             },
         },
         {    # By id.
-            path   => '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4',
+            path   => '/v2/plugins/df1714c9040393a3132f8153bcb113d1a3f33e66',
             method => 'GET',
             result => sub {
 
@@ -153,7 +160,7 @@ sub suite {
                     scope => 'system'
                 );
 
-                my $plugin_id = 'MultiBlog/multiblog.pl';
+                my $plugin_id = 'WidgetManager/WidgetManager.pl';
 
                 my @plugin_loop
                     = grep { $_->{plugin_sig} eq $plugin_id }
@@ -215,18 +222,18 @@ sub suite {
         },
         {    # By id.
             path =>
-                '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4/enable',
+                '/v2/plugins/df1714c9040393a3132f8153bcb113d1a3f33e66/enable',
             method => 'POST',
             result => sub {
                 return +{ status => 'success', };
             },
             complete => sub {
                 my $plugin_switch = $app->config->PluginSwitch;
-                ok( exists $plugin_switch->{'MultiBlog/multiblog.pl'},
-                    'MultiBlog/multiblog.pl exists in PluginSwitch.'
+                ok( exists $plugin_switch->{'WidgetManager/WidgetManager.pl'},
+                    'WidgetManager/WidgetManager.pl exists in PluginSwitch.'
                 );
-                is( $plugin_switch->{'MultiBlog/multiblog.pl'},
-                    1, 'PluginSwitch of MultiBlog/multiblog.pl is 1.' );
+                is( $plugin_switch->{'WidgetManager/WidgetManager.pl'},
+                    1, 'PluginSwitch of WidgetManager/WidgetManager.pl is 1.' );
             },
         },
 
@@ -281,20 +288,20 @@ sub suite {
         },
         {    # By id.
             path =>
-                '/v2/plugins/64ec5077d1e64b9c18495913e02ba95915a280a4/disable',
+                '/v2/plugins/df1714c9040393a3132f8153bcb113d1a3f33e66/disable',
             method => 'POST',
             result => sub {
                 return +{ status => 'success', };
             },
             complete => sub {
                 my $plugin_switch = $app->config->PluginSwitch;
-                ok( exists $plugin_switch->{'MultiBlog/multiblog.pl'},
-                    'MultiBlog/multiblog.pl exists in PluginSwitch.'
+                ok( exists $plugin_switch->{'WidgetManager/WidgetManager.pl'},
+                    'WidgetManager/WidgetManager.pl exists in PluginSwitch.'
                 );
-                is( $plugin_switch->{'MultiBlog/multiblog.pl'},
-                    0, 'PluginSwitch of MultiBlog/multiblog.pl is 0.' );
+                is( $plugin_switch->{'WidgetManager/WidgetManager.pl'},
+                    0, 'PluginSwitch of WidgetManager/WidgetManager.pl is 0.' );
 
-                $plugin_switch->{'MultiBlog/multiblog.pl'} = 1;
+                $plugin_switch->{'WidgetManager/WidgetManager.pl'} = 1;
                 $app->config->PluginSwitch( $plugin_switch, 1 );
                 $app->config->save_config;
             },

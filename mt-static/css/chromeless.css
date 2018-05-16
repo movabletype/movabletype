@@ -1,377 +1,48 @@
-/* #Chromeless.css
-
-chromeless.css is used in the screen doesn't have standard header and footer, like login, error, upgrade screen.
-
-```
-<div class="chromeless">
-  <div id="container" style="min-width:0" style="color: #2b2b2b; background-color: #f3f3f3; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px;">
-    <div id="brand">
-      <img alt="Movable Type" src="../../mt-static/images/chromeless/mt_logo.png">
-    </div>
-    <div id="nav">
-      <div class="step"></div>
-      <div class="step_active"></div>
-      <div class="step"></div>
-    </div>
-
-    <h1 id="page-title">Lorem ipsum dolor sit amet</h1>
-    <div class="upgrade">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-      <form>
-        <div class="actions-bar first-child last-child">
-          <button type="submit" class="action primary button first-child last-child">
-            Button
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-```
-(top div emulates body element)
-
-<h3>ready</h3>
-
-```
-<div class="ready">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-```
-
-<h3>note</h3>
-
-```
-<div class="note">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-```
-
-<h3>hint</h3>
-
-```
-<div class="hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</div>
-```
-
-<h3>input hint</h3>
-
-```
-<input type="text">
-<p class="input-hint">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-```
-
-<h3>Navigation steps</h3>
-
-```
-<div id="nav">
-  <div class="step"></div>
-  <div class="step_active"></div>
-  <div class="step"></div>
-</div>
-```
-
-<h3>upgrade process</h3>
-
-```
-<div class="upgrade">
-  <div id="upgrade-container" class="upgrade-process">
-    <ul id="upgrade-progress">
-      <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
-    </ul>
-  </div>
-</div>
-```
-
-<h3>progressbar</h3>
-
-```
-<div class="progressbar indeterminate ui-progressbar"><div class="ui-progressbar-value" style="width:50%"></div></div>
-```
-
-<h3>Packages List</h3>
-
-.packages-list class is used in install wizard to list the perl modules
-
-```
-<dl id="packages-list">
-  <dt><span class="module-name"><a target="cpan">Lorem::Ipsum</a></span></dt>
-  <dd>
-    <p class="module-description">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </p>
-  </dd>
-</dl>
-```
-
-<h3>Action Bar</h3>
-
-```
-<div class="actions-bar">
-  <button name="continue" type="submit" class="continue action primary button">
-    Continue
-  </button>
-  <button name="retry" type="submit" id="retry-btn" style="display: inline;" class="retry action button">
-    Retry
-  </button>
-  <button name="back" type="submit" class="goback action button">
-    Back
-  </button>
-</div>
-```
-
-*/
-
 body {
-    color: #2b2b2b;
-    background-color: #f3f3f3;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 13px;
-}
-.chromeless-wide {
-    background-color: #ffffff;
+  color: #2b2b2b;
+  background-color: #f3f3f3;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13px;
 }
 
-a {
-    color: #507ea4;
-    outline: 0;
-}
-a:hover,
-a:active {
-    color: #839b5c;
-    text-decoration: none;
-}
-
-ul li {
-    list-style-type: disc;
-    margin-left: 15px;
-}
-fieldset {
-    margin: 0;
+.container {
+  background-color: #fff;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  margin: 45px auto 30px;
+  padding: 30px 30px 25px;
+  border: 1px solid #c0c6c9;
+  width: 600px;
 }
 
-#page-title {
-    margin-bottom: 10px;
-    font-size: 18px;
-    font-weight: normal;
-}
-h2 {
-    font-weight: bold;
-}
-h3 {
-    text-shadow: #fff 0 1px 0;
-    margin-bottom: 20px;
+.sign-in.container,
+.reset-password.container,
+.change-password.container
+{
+  width: 400px;
 }
 
-.ready {
-    font-weight: bold;
-    color: #31b176;
-}
-.note {
-    clear: both;
-    padding: 10px 0 10px 0;
-}
-.hint {
-    margin-top: 3px;
-    color: #a3a3a2;
-    font-size: 95%;
-    font-style: Italic;
-}
-.input-hint {
-    color:#a9a9a9;
-}
-
-.action-buttons {
-    margin: 20px 0 15px;
-}
-.actions-bar {
-    margin: 25px 0 0;
-}
-#container.show-actions-bar-top .actions-bar-top {
-    display: block;
-}
-#container.show-actions-bar-bottom .actions-bar-bottom {
-    display: block;
-}
-
-#container {
-    position: relative;
-    margin: 45px auto 30px;
-    padding: 30px 30px 25px;
-    border: 1px solid #c0c6c9;
-    background-color: #fff;
-    border-radius: 5px;
-}
-
-.chromeless #container {
-    width: 550px;
-}
-
-.sign-in #container {
-    width: 320px;
-}
-
-.chromeless-wide #container {
-    min-width: 360px;
-    width: auto;
-    margin: 20px;
-    padding: 0;
-    border: 0;
-    background-color: transparent;
-}
-
-#header {
-    background: transparent #fff;
-}
-#header .comment_signin_title {
-    margin-left: 20px;
+label {
+  font-weight:normal;
 }
 
 #brand {
-    width: 238px;
-    height: 52px;
-    margin: 0 0 20px;
-    font-size: 26px;
-    background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
-}
-#brand img,
-#brand span {
-    display: none;
-}
-#nav {
-    position: absolute;
-    top: 30px;
-    right: 20px;
-}
-#nav .step {
-    float: left;
-    background: url('../images/chromeless/nav_off.png');
-    height: 15px;
-    width: 14px;
-}
-#nav .step_active {
-    float: left;
-    width: 14px;
-    height: 15px;
-    background: url('../images/chromeless/nav_on.png');
+  margin: 0 0 20px;
 }
 
-#sign-in #page-title {
-    display: none;
-}
-#sign-in .text {
-    font-size: 22px;
-}
-#sign-in .has-auth-icon input {
-    padding-left: 22px;
-    background-repeat: no-repeat;
-    background-position: 3px center;
-}
-#forget-password {
-    float: right;
-    margin: 0 0 3px;
-}
-#sign-up {
-    clear: both;
-    margin: 20px 0 0;
-    text-align: right;
-}
-.auth-option-info {
+@media (max-width: 992px) {
+  img {
+    max-width: 100%;
+  }
+
+  .container {
     margin-top: 20px;
-    font-size: 90%;
+    width: 90%;
+  }
 }
 
-#reset-password #container,
-#change-password #container {
-    width: 320px;
-}
-
-.upgrade .upgrade-process {
+div.warning#version-warning {
     position: relative;
-    overflow: auto;
-    margin: 10px 0;
-    border: 1px solid #c0c6c9;
-    padding: 10px;
-    background-color: #fbfbfb;
-    height: 200px;
-    border-radius: 3px;
-}
-.upgrade #progressbar {
-    margin: 25px 0 0;
-}
-
-ul#profile-data li {
-    margin-left: 0;
-    padding-left: 0;
-    list-style: none;
-}
-#profile_userpic-field .field-content label {
-    display: block;
-    margin-top: 5px;
-}
-#userpic-preview {
-    margin-bottom: 10px;
-}
-.mt-profile-edit form {
-    margin-bottom: 0.75em;
-}
-.custom-field-radio-list {
-    margin-bottom: 0.25em;
-}
-.custom-field-radio-list li {
-    list-style: none;
-    margin-left: 0;
-}
-
-.mt-config-file-path {
-    overflow: auto;
-    overflow-x: auto;
-    overflow-y: hidden;
-    height: 2.75em;
-    font-weight:bold;
-}
-
-#packages-list dt {
-    margin-bottom: 5px;
-}
-#packages-list dd {
-    margin-bottom: 15px;
-    color: #7B7C7D;
-}
-.module-name {
-    font-weight: bold;
-}
-.module-name a {
-    color: black;
-    text-decoration: none;
-}
-.module-name a:hover {
-    text-decoration: underline;
-}
-.module-description {
-    margin-bottom: 5px;
-}
-
-#db_hint {
-    margin-top: -10px;
-    margin-bottom: 10px;
-}
-#db_hint p {
-    margin-bottom: 3px;
-}
-
-#config_settings {
-    margin-bottom: 10px;
-}
-
-.progressbar {
-    height: 25px;
-    border: 1px solid #c0c6c9;
-    background: #fff;
-    border-radius: 3px;
-}
-.progressbar.indeterminate {
-    background: #c0c6c9 url(../images/progress-bar-indeterminate.gif) repeat;
-}
-.ui-progressbar .ui-progressbar-value {
-    height:100%;
-    background-color: #0076BF;
-    background-image: -webkit-linear-gradient(#008ee5, #0076BF);
-    background-image: -moz-linear-gradient(#008ee5, #0076BF);
-    background-image: linear-gradient(#008ee5, #0076BF);
-    border-radius: 3px 0 0 3px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    padding: 1em;
 }
 

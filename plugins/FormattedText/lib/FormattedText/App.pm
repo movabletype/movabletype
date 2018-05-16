@@ -133,6 +133,23 @@ sub cms_edit_formatted_text {
     $param->{output} = File::Spec->catfile( plugin()->{full_path},
         'tmpl', 'cms', 'edit_formatted_text.tmpl' );
     set_params_for_formatted_text( $cb, $app, $param );
+
+    $app->add_breadcrumb(
+        $app->translate('Boilerplates'),
+        $app->uri(
+            mode => 'list',
+            args => {
+                _type   => 'formatted_text',
+                blog_id => $app->blog->id,
+            },
+        ),
+    );
+    if ($id) {
+        $app->add_breadcrumb( $obj->label );
+    }
+    else {
+        $app->add_breadcrumb( $app->translate('Create Boilerplate') );
+    }
 }
 
 sub cms_pre_load_filtered_list {
@@ -259,6 +276,7 @@ sub content_actions {
             mode      => 'view',
             args      => { _type => 'formatted_text', },
             class     => 'icon-create',
+            icon      => 'ic_add',
             label     => 'Create New',
             order     => 100,
             condition => sub { MT->instance->blog },

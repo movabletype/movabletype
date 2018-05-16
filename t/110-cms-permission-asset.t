@@ -2,150 +2,184 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-my $kemikawa = MT::Test::Permission->make_author(
-    name     => 'kemikawa',
-    nickname => 'Shiro Kemikawa',
-);
+    my $kemikawa = MT::Test::Permission->make_author(
+        name     => 'kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Asset
+    my $pic = MT::Test::Permission->make_asset(
+        class   => 'image',
+        blog_id => 0,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
+        image_height => 480,
+        mime_type    => 'image/jpeg',
+        label        => 'Userpic A',
+        description  => 'Userpic A',
+    );
+    $pic->tags('@userpic');
+    $pic->save;
+
+    my $pic2 = MT::Test::Permission->make_asset(
+        class   => 'image',
+        blog_id => $blog->id,
+        url     => 'http://narnia.na/nana/images/test.jpg',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        file_name    => 'test.jpg',
+        file_ext     => 'jpg',
+        image_width  => 640,
+        image_height => 480,
+        mime_type    => 'image/jpeg',
+        label        => 'Sample Image',
+        description  => 'Sample Image',
+    );
+
+    my $file1 = MT::Test::Permission->make_asset(
+        class   => 'file',
+        blog_id => $blog->id,
+        url     => 'http://narnia.na/nana/files/test.pdf',
+        file_path =>
+            File::Spec->catfile( $ENV{MT_HOME}, "t", 'files', 'test.pdf' ),
+        file_name    => 'test.pdf',
+        file_ext     => 'pdf',
+        mime_type    => 'application/pdf',
+        label        => 'Sample File',
+        description  => 'Sample PDF File',
+    );
+
+    # Role
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    my $manage_pages = MT::Test::Permission->make_role(
+        name        => 'Manage Pages',
+        permissions => "'manage_pages'",
+    );
+
+    my $edit_assets = MT::Test::Permission->make_role(
+        name        => 'Edit Assets',
+        permissions => "'edit_assets', 'upload'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $create_post  => $blog );
+    MT::Association->link( $ichikawa => $manage_pages => $blog );
+    MT::Association->link( $ukawa    => $create_post  => $second_blog );
+    MT::Association->link( $egawa    => $manage_pages => $second_blog );
+    MT::Association->link( $ogawa    => $designer     => $blog );
+    MT::Association->link( $kagawa   => $edit_assets  => $blog );
+    MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
+    MT::Association->link( $kumekawa => $edit_assets  => $blog );
+    MT::Association->link( $kumekawa => $create_post  => $blog );
+    MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
+    MT::Association->link( $kemikawa => $create_post  => $second_blog );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
+my $kagawa   = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa  = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa = MT::Author->load( { name => 'kumekawa' } );
+my $kemikawa = MT::Author->load( { name => 'kemikawa' } );
 
 my $admin = MT::Author->load(1);
 
-# Asset
-my $pic = MT::Test::Permission->make_asset(
-    class   => 'image',
-    blog_id => 0,
-    url     => 'http://narnia.na/nana/images/test.jpg',
-    file_path =>
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name    => 'test.jpg',
-    file_ext     => 'jpg',
-    image_width  => 640,
-    image_height => 480,
-    mime_type    => 'image/jpeg',
-    label        => 'Userpic A',
-    description  => 'Userpic A',
-);
-$pic->tags('@userpic');
-$pic->save;
-
-my $pic2 = MT::Test::Permission->make_asset(
-    class   => 'image',
-    blog_id => $blog->id,
-    url     => 'http://narnia.na/nana/images/test.jpg',
-    file_path =>
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-    file_name    => 'test.jpg',
-    file_ext     => 'jpg',
-    image_width  => 640,
-    image_height => 480,
-    mime_type    => 'image/jpeg',
-    label        => 'Sample Image',
-    description  => 'Sample photo',
-);
-
-my $file1 = MT::Test::Permission->make_asset(
-    class   => 'file',
-    blog_id => $blog->id,
-    url     => 'http://narnia.na/nana/files/test.pdf',
-    file_path =>
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'files', 'test.pdf' ),
-    file_name    => 'test.pdf',
-    file_ext     => 'pdf',
-    mime_type    => 'application/pdf',
-    label        => 'Sample File',
-    description  => 'Sample PDF File',
-);
-
-# Role
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
-
-my $manage_pages = MT::Test::Permission->make_role(
-    name        => 'Manage Pages',
-    permissions => "'manage_pages'",
-);
-
-my $edit_assets = MT::Test::Permission->make_role(
-    name        => 'Edit Assets',
-    permissions => "'edit_assets', 'upload'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa   => $create_post  => $blog );
-MT::Association->link( $ichikawa => $manage_pages => $blog );
-MT::Association->link( $ukawa    => $create_post  => $second_blog );
-MT::Association->link( $egawa    => $manage_pages => $second_blog );
-MT::Association->link( $ogawa    => $designer     => $blog );
-MT::Association->link( $kagawa   => $edit_assets  => $blog );
-MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
-MT::Association->link( $kumekawa => $edit_assets  => $blog );
-MT::Association->link( $kumekawa => $create_post  => $blog );
-MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
-MT::Association->link( $kemikawa => $create_post  => $second_blog );
+my $pic  = MT::Asset::Image->load( { label => 'Userpic A' } );
+my $pic2 = MT::Asset::Image->load( { label => 'Sample Image' } );
+my $file1 = MT::Asset->load({ label => 'Sample File' } );
 
 # Run
 my ( $app, $out );
@@ -283,6 +317,7 @@ subtest 'mode = asset_userpic' => sub {
 subtest 'mode = complete_upload' => sub {
 
     # By admim
+
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -359,7 +394,7 @@ subtest 'mode = dialog_asset_modal' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_asset_modal by admin" );
 
     # By Permitted user
@@ -375,7 +410,7 @@ subtest 'mode = dialog_asset_modal' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_asset_modal by permitted user"
     );
 
@@ -425,7 +460,7 @@ subtest 'mode = dialog_list_asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_list_asset by admin" );
 
     # By Permitted user
@@ -441,7 +476,7 @@ subtest 'mode = dialog_list_asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
-    ok( $out =~ m!<div id="content-body-left">!i,
+    ok( $out =~ m!<div id="content-body-left"!i,
         "dialog_list_asset by permitted user"
     );
 
@@ -627,7 +662,7 @@ subtest 'mode = list' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: list" );
-    ok( $out =~ m!Permission=1!i, "list by other permission" );
+    ok( $out !~ m!Permission=1!i, "list by other permission" );
 };
 
 subtest 'mode = start_upload' => sub {
@@ -840,7 +875,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out !~ m!Permission=1!i, "save by admin" );
+    ok( $out !~ m!Permission=1!i, "view by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -855,7 +890,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out !~ m!Permission=1!i, "save by permitted user" );
+    ok( $out !~ m!Permission=1!i, "view by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -870,7 +905,7 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save by other blog" );
+    ok( $out =~ m!Permission=1!i, "view by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -886,10 +921,10 @@ subtest 'mode = view' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                     "Request: save" );
-    ok( $out =~ m!Permission=1!i, "save by other permission" );
+    ok( $out =~ m!Permission=1!i, "view by other permission" );
 };
 
-subtest 'mode = save (type is file)' => sub {
+subtest 'mode = view (type is file)' => sub {
 
     # By admim
     $app = _run_app(
@@ -903,8 +938,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid Request!i, "view file by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -918,8 +953,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid Request!i, "view file by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -933,8 +968,8 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view" );
+    ok( $out =~ m!permission=1!i, "view file by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -949,11 +984,11 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view file" );
+    ok( $out =~ m!Invalid request!i, "view file by other permission" );
 };
 
-subtest 'mode = save (type is image)' => sub {
+subtest 'mode = view (type is image)' => sub {
 
     # By admim
     $app = _run_app(
@@ -967,8 +1002,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid Request!i, "view image by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -982,8 +1017,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid Request!i, "view image by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -997,8 +1032,8 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!permission=1!i, "view image by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1013,11 +1048,11 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view image" );
+    ok( $out =~ m!Invalid request!i, "view image by other permission" );
 };
 
-subtest 'mode = save (type is audio)' => sub {
+subtest 'mode = view (type is audio)' => sub {
 
     # By admim
     $app = _run_app(
@@ -1031,8 +1066,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid Request!i, "view audio by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -1046,8 +1081,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid Request!i, "view audio by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1061,8 +1096,8 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!permission=1!i, "view audio by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1077,11 +1112,11 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view audio" );
+    ok( $out =~ m!Invalid request!i, "view audio by other permission" );
 };
 
-subtest 'mode = save (type is video)' => sub {
+subtest 'mode = view (type is video)' => sub {
 
     # By admim
     $app = _run_app(
@@ -1095,8 +1130,9 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid request!i, "view video by admin" );
 
     # By Permitted user
     $app = _run_app(
@@ -1110,8 +1146,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by permitted user" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid Request!i, "view video by permitted user" );
 
     # By non Permitted user
     $app = _run_app(
@@ -1125,8 +1161,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!permission=1!i, "view video by other blog" );
 
     # By other permission
     $app = _run_app(
@@ -1141,8 +1177,8 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save by other permission" );
+    ok( $out,                     "Request: view video" );
+    ok( $out =~ m!Invalid request!i, "view video by other permission" );
 };
 
 subtest 'mode = save' => sub {

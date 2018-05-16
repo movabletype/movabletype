@@ -7,6 +7,7 @@
 package MT::ArchiveType::Page;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Individual );
 
 sub name {
@@ -15,6 +16,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("PAGE_ADV");
+}
+
+sub order {
+    return 20;
 }
 
 # archive_title proved by MT::ArchiveType::Individual

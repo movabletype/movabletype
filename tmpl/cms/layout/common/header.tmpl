@@ -1,0 +1,72 @@
+<mt:setvarblock name="scope"><mt:if name="is_blog">blog<mt:else>site</mt:if></mt:setvarblock>
+<mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
+<mt:if name="author_name"><mt:unless name="is_full_screen"><mt:if name="top_nav_loop"><mt:setvar name="has_menu" value="1"></mt:if></mt:unless></mt:if>
+<!DOCTYPE html>
+<html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
+<head>
+  <meta charset="<mt:var name="language_encoding">"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+
+  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+
+  <mt:unless name="optimize_ui">
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:else>
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  </mt:unless>
+
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/selector.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/caret.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/datepicker.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:var name="css_include">
+
+  <mt:include name="include/libjs.tmpl">
+
+  <script type="text/javascript">
+  /* <![CDATA[ */
+  __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+  CMSScriptURI = '<$mt:var name="mt_url"$>';
+  ScriptURI = '<$mt:var name="script_url" escape="js"$>';
+  ScriptBaseURI = '<$mt:var name="script_base_url"$>';
+  StaticURI = '<$mt:var name="static_uri"$>';
+  HelpBaseURI = '<$mt:var name="help_url"$>';
+<mt:unless name="open_dialog">
+  if (window.top && (window.top.location != window.location)) {
+    window.top.location.href = window.location;
+  }
+</mt:unless>
+  /* ]]> */
+  </script>
+
+  <mt:var name="html_head">
+
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:if name="local_lang_id" ne="en-us">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  </mt:if>
+  <mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  </mt:unless>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+  <mt:var name="js_include">
+</head>
+<body>
+  <div class="<mt:var name="container_class" _default="container-fluid"> body">
+<mt:if name="mt_alpha_or_beta">
+    <div class="row">
+      <div class="col mt-develperPreview">
+  <mt:if name="mt_alpha">
+        Developer Preview
+  <mt:elseif name="mt_beta">
+        Beta
+  </mt:if>
+      </div>
+    </div>
+</mt:if>
+

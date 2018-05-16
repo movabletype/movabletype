@@ -9,6 +9,7 @@
 package MT::Scorable;
 
 use strict;
+use warnings;
 use MT::ObjectScore;
 use MT::Memcached;
 

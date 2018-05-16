@@ -2,16 +2,23 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
 use JSON;
-use Test::More;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog  = MT->model('blog')->load(1);
 my $entry = MT->model('entry')->load(
@@ -59,7 +66,7 @@ for my $data (@suite) {
     # We should run the fresh instance.
     local %MT::mt_inst;
 
-    my $params_str = JSON::to_json( $data->{params} );
+    my $params_str = JSON::to_json( $data->{params}, { canonical => 1 } );
 
     my $app = _run_app(
         'MT::App::Search',
@@ -89,7 +96,7 @@ for my $data (@suite) {
     );
     my $out = delete $app->{__test_output};
 
-    ok( $out, 'Request ' . JSON::to_json( \%params ) );
+    ok( $out, 'Request ' . JSON::to_json( \%params, { canonical => 1 } ) );
     unlike(
         $out,
         qr/Cannot load blog/,

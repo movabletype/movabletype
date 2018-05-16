@@ -7,6 +7,7 @@
 package MT::Util::LogProcessor;
 
 use strict;
+use warnings;
 use base qw( Class::Accessor::Fast );
 
 use Carp qw( croak );
@@ -80,7 +81,8 @@ sub process_log_files {
             $fh->gzclose;
         }
         else {
-            open my $fh, $log_file or croak "Couldn't open $log_file: $!";
+            open my $fh, "<", $log_file
+                or croak "Couldn't open $log_file: $!";
             while ( my $line = <$fh> ) {
                 last unless $process_line->( \$line );
             }

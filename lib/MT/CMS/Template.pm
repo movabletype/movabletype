@@ -7,18 +7,18 @@
 package MT::CMS::Template;
 
 use strict;
+use warnings;
 use MT::Util qw( format_ts );
 
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     # FIXME: enumeration of types
     unless ($blog_id) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
+        my $type = $app->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -32,14 +32,14 @@ sub edit {
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $cfg   = $app->config;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
-    if ( $q->param('reedit') ) {
-        $param->{'revision-note'} = $q->param('revision-note');
-        if ( $q->param('save_revision') ) {
+    if ( $app->param('reedit') ) {
+        $param->{'revision-note'} = $app->param('revision-note');
+        if ( $app->param('save_revision') ) {
             $param->{'save_revision'} = 1;
         }
         else {
@@ -65,7 +65,7 @@ sub edit {
 
     if ($id) {
         if ( $blog && $blog->use_revision ) {
-            my $rn = $q->param('r') || 0;
+            my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
@@ -79,7 +79,7 @@ sub edit {
                 $param->{rev_date}   = format_ts( "%Y-%m-%d %H:%M:%S",
                     $obj->modified_on, $blog,
                     $app->user ? $app->user->preferred_language : undef );
-                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
         }
         $param->{nav_templates} = 1;
@@ -116,6 +116,10 @@ sub edit {
             $tab = 'backup';
             $param->{template_group_trans} = $app->translate('backup');
         }
+        elsif ( $obj->type eq 'ct' || $obj->type eq 'ct_archive' ) {
+            $tab = 'ct';
+            $param->{template_group_trans} = $app->translate('Content Type');
+        }
         else {
             $tab = 'system';
             $param->{template_group_trans} = $app->translate('system');
@@ -131,12 +135,13 @@ sub edit {
             || $obj->type eq 'archive'
             || $obj->type eq 'category'
             || $obj->type eq 'page'
-            || $obj->type eq 'individual';
+            || $obj->type eq 'individual'
+            || $obj->type eq 'ct'
+            || $obj->type eq 'ct_archive';
         if ( !$param->{has_name} ) {
             $param->{ 'type_' . $obj->type } = 1;
             $param->{name} = $obj->name;
         }
-        $app->add_breadcrumb( $param->{name} );
         $param->{has_outfile} = $obj->type eq 'index';
         $param->{has_rebuild}
             = (    ( $obj->type eq 'index' )
@@ -159,7 +164,7 @@ sub edit {
         $param->{object_type}  = 'template';
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
-        $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        $param->{saved_rebuild} = 1 if $app->param('saved_rebuild');
         require MT::PublishOption;
         $param->{static_maps}
             = (    $obj->build_type != MT::PublishOption::DYNAMIC()
@@ -486,10 +491,27 @@ sub edit {
             || $obj_type eq 'page'
             || $obj_type eq 'author'
             || $obj_type eq 'category'
-            || $obj_type eq 'archive' )
+            || $obj_type eq 'archive'
+            || $obj_type eq 'ct'
+            || $obj_type eq 'ct_archive' )
         {
-            my @at = $app->publisher->archive_types;
+            my @at            = $app->publisher->archive_types;
+            my $has_cat_field = MT::ContentField->count(
+                {   content_type_id => $obj->content_type_id,
+                    type            => 'categories',
+                }
+            );
+            if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
+                @at = grep { $_ =~ /^ContentType/ } @at;
+                @at = grep { $_ !~ /^ContentType-Category/ } @at
+                    unless $has_cat_field;
+            }
+            else {
+                @at = grep { $_ !~ /^ContentType/ } @at;
+            }
             my @archive_types;
+            my %default_archive_templates;
+            my %required_fields;
             for my $at (@at) {
                 my $archiver      = $app->publisher->archiver($at);
                 my $archive_label = $archiver->archive_label;
@@ -516,6 +538,16 @@ sub edit {
                     next unless $archiver->entry_based;
                     next if $archiver->entry_class eq 'page';
                 }
+                elsif ( $obj_type eq 'ct_archive' ) {
+
+                  # only include if it is NOT a contenttype-based archive type
+                    next if $archiver->contenttype_based;
+                }
+                elsif ( $obj_type eq 'ct' ) {
+
+                    # only include if it is a contenttype-based archive type
+                    next unless $archiver->contenttype_based;
+                }
                 push @archive_types,
                     {
                     archive_type_translated => $archive_label,
@@ -524,13 +556,40 @@ sub edit {
                 @archive_types
                     = sort { MT::App::CMS::archive_type_sorter( $a, $b ) }
                     @archive_types;
+
+                # Default Archive Templates
+                my $index = $app->config('IndexBasename');
+                my $ext = $blog->file_extension || '';
+                $ext = '.' . $ext if $ext ne '';
+                my $tmpls     = $archiver->default_archive_templates;
+                my $tmpl_loop = [];
+                foreach (@$tmpls) {
+                    next
+                        if !$has_cat_field && $_->{required_fields}{category};
+                    my $name = $_->{label};
+                    $name =~ s/\.html$/$ext/;
+                    $name =~ s/index$ext$/$index$ext/;
+                    push @$tmpl_loop,
+                        {
+                        name    => $name,
+                        value   => $_->{template},
+                        default => ( $_->{default} || 0 ),
+                        };
+                    $required_fields{ $_->{template} }
+                        = $_->{required_fields};
+                }
+                $default_archive_templates{$at} = $tmpl_loop;
             }
             $param->{archive_types} = \@archive_types;
+            $param->{default_archive_templates}
+                = MT::Util::to_json( \%default_archive_templates );
+            $param->{required_fields}
+                = MT::Util::to_json( \%required_fields );
 
             # Populate template maps for this template
             my $maps = _populate_archive_loop( $app, $blog, $obj );
             if (@$maps) {
-                $param->{object_loop} = $param->{template_map_loop} = $maps
+                $param->{template_map_loop} = $maps
                     if @$maps;
                 my %at;
                 foreach my $map (@$maps) {
@@ -546,6 +605,32 @@ sub edit {
             else {
                 $param->{can_rebuild} = 0;
             }
+
+            # Content Fields
+            my $blog_id   = $app->param('blog_id');
+            my $at        = $app->param('archive_type');
+            my $ct_id     = $app->param('content_type_id');
+            my $cat_field = $app->param('cat_field');
+            my $dt_field  = $app->param('dt_field');
+
+            my $ct = MT::ContentType->load( $obj->content_type_id );
+            my $fields = $ct ? $ct->fields : [];
+
+            my $content_fields = {
+                categories => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                    grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map { { id => $_->{id}, label => $_->{options}{label} } }
+                        grep {
+                        (          $_->{type} eq 'date_and_time'
+                                || $_->{type} eq 'date_only' )
+                            && $_->{options}{required}
+                        } @$fields
+                ],
+            };
+            $param->{content_fields} = MT::Util::to_json($content_fields);
         }
 
         # publish options
@@ -556,9 +641,17 @@ sub edit {
         #$param->{ 'schedule_period_' . $period } = 1;
         #$param->{schedule_interval} = $interval;
         $param->{type} = 'custom' if $param->{type} eq 'module';
+
+        # Content Type
+        if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
+            my $content_type = MT::ContentType->load( $obj->content_type_id );
+            $param->{content_type_name} = $content_type->name
+                if $content_type;
+            $param->{content_type_id} = $content_type->id if $content_type;
+        }
     }
     else {
-        my $new_tmpl = $q->param('create_new_template');
+        my $new_tmpl = $app->param('create_new_template');
         my $template_type;
         if ($new_tmpl) {
             if ( $new_tmpl =~ m/^blank:(.+)/ ) {
@@ -588,7 +681,7 @@ sub edit {
             }
         }
         else {
-            $template_type = $q->param('type');
+            $template_type = $app->param('type');
             $template_type = 'custom' if 'module' eq $template_type;
             $param->{type} = $template_type;
         }
@@ -621,6 +714,20 @@ sub edit {
             );
             $param->{new_archive_types} = \@types;
         }
+        elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
+            $tab                           = 'ct';
+            $param->{template_group_trans} = $app->translate('contnt type');
+            $param->{type_ct_archive}      = 1;
+            my @types = (
+                {   key   => 'ct_archive',
+                    label => $app->translate('Content Type Archive')
+                },
+                {   key   => 'ct',
+                    label => $app->translate('Content Type')
+                },
+            );
+            $param->{new_archive_types} = \@types;
+        }
         elsif ( $template_type eq 'custom' ) {
             $tab = 'module';
             $param->{template_group_trans} = $app->translate('module');
@@ -635,7 +742,6 @@ sub edit {
         }
         $param->{template_group} = $tab;
         $app->translate($tab);
-        $app->add_breadcrumb( $app->translate('New Template') );
 
         # FIXME: enumeration of types
         $param->{has_name}
@@ -645,7 +751,9 @@ sub edit {
             || $template_type eq 'archive'
             || $template_type eq 'category'
             || $template_type eq 'page'
-            || $template_type eq 'individual';
+            || $template_type eq 'individual'
+            || $template_type eq 'ct'
+            || $template_type eq 'ct_archive';
         $param->{has_outfile} = $template_type eq 'index';
         $param->{has_rebuild} = ( ( $template_type eq 'index' )
                 && ( ( $blog->custom_dynamic_templates || "" ) ne 'all' ) );
@@ -668,6 +776,14 @@ sub edit {
             && $param->{type} ne 'widget'
             && !$param->{is_special};
         $param->{name} = $app->param('name') if $app->param('name');
+
+        # Content Type
+        if ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
+            my $iter = MT::ContentType->load_iter( { blog_id => $blog_id } );
+            while ( my $ct = $iter->() ) {
+                push @{ $param->{content_types} }, $ct;
+            }
+        }
     }
     $param->{publish_queue_available}
         = eval 'require List::Util; require Scalar::Util; 1;';
@@ -797,6 +913,23 @@ sub edit {
             foreach my $name (@events) {
                 $param->{ 'cache_expire_event_' . $name } = 1;
             }
+
+            if ($blog) {
+                my @ct_list;
+                my $ct_iter = $app->model('content_type')
+                    ->load_iter( { blog_id => $blog->id, } );
+                while ( my $ct = $ct_iter->() ) {
+                    my $key  = 'content_data_' . $ct->unique_id;
+                    my $item = {
+                        label => $ct->name,
+                        type  => $key,
+                    };
+                    $item->{enabled} = 1
+                        if $param->{ 'cache_expire_event_' . $key };
+                    push @ct_list, $item;
+                }
+                $param->{cache_expire_event_ct_loop} = \@ct_list;
+            }
         }
     }
 
@@ -834,6 +967,80 @@ sub edit {
  #    { show_actions => 0, hide_pager => 1 }
  #);
     }
+
+    # Content Type Selector
+    my @content_types
+        = MT->model('content_type')->load( { blog_id => $blog_id } );
+
+    my @ct_selects = ();
+    my $ct_data    = {};
+    my $cf_selects = {};
+    my $cf_data    = {};
+    foreach my $ct (@content_types) {
+
+        # Content Type
+        push @ct_selects,
+            {
+            id       => $ct->id,
+            label    => $ct->name,
+            selected => (
+                       $obj
+                    && $obj->content_type_id
+                    && $obj->content_type_id == $ct->id ? 1 : 0
+            )
+            };
+        $ct_data->{ $ct->id } = {
+            id        => $ct->id,
+            label     => $ct->name,
+            unique_id => $ct->unique_id,
+        };
+
+        # Content Field
+        my $fields = $ct->fields;
+        my @cfs = MT::ContentField->load( { content_type_id => $ct->id } );
+        foreach my $cf (@cfs) {
+            my ($field) = grep { $_->{id} == $cf->id } @{$fields};
+            my $label = $field->{options}{label};
+            push @{ $cf_selects->{ $ct->id } },
+                { id => $cf->id, label => $cf->name };
+            my $content_field_types = $app->registry('content_field_types');
+            my $type_label = $content_field_types->{ $cf->type }->{label};
+            $type_label = $type_label->()
+                if 'CODE' eq ref $type_label;
+            $cf_data->{ $cf->id } = {
+                id        => $cf->id,
+                label     => $label,
+                unique_id => $cf->unique_id,
+                type      => $type_label,
+            };
+        }
+    }
+    $param->{ct_selects}                  = \@ct_selects;
+    $param->{ct_data}                     = MT::Util::to_json($ct_data);
+    $param->{cf_selects}                  = MT::Util::to_json($cf_selects);
+    $param->{cf_data}                     = MT::Util::to_json($cf_data);
+    $param->{can_create_new_content_type} = 1
+        if $perms->can_do('create_new_content_type');
+
+    $app->add_breadcrumb(
+        $app->translate('Templates'),
+        $app->uri(
+            mode => 'list_template',
+            args => { blog_id => $blog_id },
+        ),
+    );
+    if ( $param->{id} ) {
+        $app->add_breadcrumb( $param->{name} );
+    }
+    else {
+        if ( $param->{type} && $param->{type} eq 'widget' ) {
+            $app->add_breadcrumb( $app->translate('Create Widget') );
+        }
+        else {
+            $app->add_breadcrumb( $app->translate('Create Template') );
+        }
+    }
+
     1;
 }
 
@@ -843,9 +1050,14 @@ sub list {
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->return_to_dashboard( redirect => 1 )
         unless $perms || $app->user->is_superuser;
-    if ( $perms && !$perms->can_edit_templates ) {
-        return $app->permission_denied();
-    }
+    return $app->permission_denied()
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site() )
+        );
     my $blog = $app->blog;
 
     require MT::Template;
@@ -882,6 +1094,15 @@ sub list {
         }
         elsif ( $type eq 'backup' ) {
             $template_type = 'backup';
+        }
+        elsif ( $type eq 'ct' || $type eq 'ct_archive' ) {
+            $template_type = 'ct';
+
+            # populate context with templatemap loop
+            if ($tblog) {
+                $row->{archive_types}
+                    = _populate_archive_loop( $app, $tblog, $obj );
+            }
         }
         else {
             $template_type = 'system';
@@ -923,6 +1144,10 @@ sub list {
     $params->{saved_deleted} = $app->param('saved_deleted');
     $params->{saved}         = $app->param('saved');
 
+    # Existence confirmation of content type
+    $params->{content_type_exists} = 1
+        if MT->model('content_type')->count;
+
     # determine list of system template types:
     my $scope;
     my $set;
@@ -963,15 +1188,20 @@ sub list {
                     type  => [ 'archive', 'individual', 'page', 'category' ],
                     order => 200,
                 },
+                'ct' => {
+                    label => $app->translate("Content Type Templates"),
+                    type  => [ 'ct', 'ct_archive' ],
+                    order => 300,
+                },
                 'module' => {
                     label => $app->translate("Template Modules"),
                     type  => 'custom',
-                    order => 300,
+                    order => 400,
                 },
                 'system' => {
                     label => $app->translate("System Templates"),
                     type  => [ keys %$sys_tmpl ],
-                    order => 400,
+                    order => 500,
                 },
             );
         }
@@ -1033,6 +1263,9 @@ sub list {
         elsif ( $tmpl_type eq 'backup' ) {
             $app->param( 'filter_key', 'backup_templates' );
         }
+        elsif ( $tmpl_type eq 'ct' ) {
+            $app->param( 'filter_key', 'contenttype_templates' );
+        }
         my $tmpl_param = {};
         unless ( exists( $types{$tmpl_type}->{type} )
             && 'ARRAY' eq ref( $types{$tmpl_type}->{type} )
@@ -1070,17 +1303,104 @@ sub list {
     $params->{template_type_loop} = \@tmpl_loop;
     $params->{screen_id}          = "list-template";
 
-    return $app->load_tmpl( 'list_template.tmpl', $params );
+    $app->add_breadcrumb( $app->translate('Templates') );
+
+    my $widget_params = _generate_list_widget_params( $app, $blog_id );
+    my %merged_params = %$params;
+    for my $key ( keys %$widget_params ) {
+        if ( $key eq 'page_actions' ) {
+            next unless $widget_params->{$key};
+            push @{ $merged_params{$key} ||= [] },
+                @{ $widget_params->{$key} };
+        }
+        else {
+            $merged_params{$key} = $widget_params->{$key};
+        }
+    }
+
+    return $app->load_tmpl( 'list_template.tmpl', \%merged_params );
+}
+
+sub _generate_list_widget_params {
+    my ( $app, $blog_id ) = @_;
+
+    my $widget_loop = &build_template_table(
+        $app,
+        load_args => [
+            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
+            { sort => 'name', direction => 'ascend' }
+        ],
+    );
+
+    my $iter
+        = $app->model('template')
+        ->load_iter(
+        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
+        { sort => 'name', direction => 'ascend' } );
+    my @widgetmanagers;
+    while ( my $widgetset = $iter->() ) {
+        next unless $widgetset;
+        my $ws_name = $widgetset->name;
+        $ws_name = '' if !defined $ws_name;
+        $ws_name =~ s/^\s+|\s+$//g;
+        $ws_name = "(" . $app->translate("No Name") . ")"
+            if $ws_name eq '';
+        my $ws = {
+            id            => $widgetset->id,
+            widgetmanager => $ws_name,
+        };
+        if ( my $modulesets = $widgetset->modulesets ) {
+            $ws->{widgets} = $modulesets;
+            my @names;
+            foreach my $module ( split ',', $modulesets ) {
+                my ($widget) = grep { $_->{id} eq $module } @$widget_loop;
+                push @names, $widget->{name} if $widget;
+            }
+            $ws->{names} = join( ', ', @names ) if @names;
+        }
+        push @widgetmanagers, $ws;
+    }
+
+    my @widget_loop;
+    if ($blog_id) {
+
+        # Remove system level widgets from the listing
+        @widget_loop = grep { $_->{blog_id} == $blog_id } @$widget_loop;
+    }
+    else {
+        @widget_loop = @$widget_loop;
+    }
+
+    my $param = {
+        @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
+        @widget_loop    ? ( widget_table => \@widget_loop )    : (),
+        search_type         => "template",
+        object_label        => $app->translate('Widget Template'),
+        object_label_plural => $app->translate('Widget Templates'),
+        template_type_label => $app->translate('Widget Templates'),
+    };
+
+    my $widget_actions = {};
+    $app->load_list_actions( 'template', $widget_actions );
+    $param->{ 'widget_' . $_ } = $widget_actions->{$_}
+        for keys %$widget_actions;
+
+    $param->{page_actions} = $app->page_actions('list_widget');
+
+    $param;
 }
 
 sub preview {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $id      = $q->param('id');
+    my $id      = $app->param('id');
     my $tmpl;
     my $user_id = $app->user->id;
+
+    if ( $app->config('PreviewInNewWindow') ) {
+        $app->{hide_goback_button} = 1;
+    }
 
     return unless $app->validate_magic;
 
@@ -1108,7 +1428,7 @@ sub preview {
 
     my $names = $tmpl->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
-    delete $values{'id'} unless $q->param('id');
+    delete $values{'id'} unless $id;
 
     ## Strip linefeed characters.
     for my $col (qw( text )) {
@@ -1237,8 +1557,10 @@ sub preview {
 
     # Default case; works for index templates (other template types should
     # have defined $archive_file by now).
-    my $outfile = $preview_tmpl->outfile;
+    my $outfile
+        = defined $preview_tmpl->outfile ? $preview_tmpl->outfile : '';
     my ($path_in_outfile) = $outfile =~ m/^(.*\/)/;
+    $path_in_outfile ||= '';
     $archive_file = File::Spec->catfile( $blog_path, $outfile )
         unless defined $archive_file;
 
@@ -1359,26 +1681,28 @@ sub preview {
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
     if ( $type ne 'index' ) {
-        $q->param( 'build_dynamic', $tmpl->build_dynamic );
-        $q->param( 'build_type',    $tmpl->build_type );
+        $app->param( 'build_dynamic', $tmpl->build_dynamic );
+        $app->param( 'build_type',    $tmpl->build_type );
     }
     my $cols = $tmpl->column_names;
     for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
+        my $value = $app->param($col);
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $q->param($col)
+            data_value => $value
             };
     }
 
     # Set selected archive mapping
-    my @p = $q->param;
+    my @p = $app->multi_param;
     for my $p (@p) {
         if ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
+            my $value = $app->param($p);
             push @data,
                 {
                 data_name  => 'archive_file_tmpl_' . $1,
-                data_value => scalar $q->param($p)
+                data_value => $value
                 };
         }
     }
@@ -1446,111 +1770,19 @@ sub create_preview_content {
     return @obj;
 }
 
-## Unused?
-sub reset_blog_templates {
-    my $app   = shift;
-    my $q     = $app->param;
-    my $perms = $app->permissions
-        or return $app->error( $app->translate("No permissions") );
-    return $app->permission_denied()
-        unless $perms->can_do('reset_blog_templates');
-    $app->validate_magic() or return;
-    my $blog = MT::Blog->load( $perms->blog_id )
-        or return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $perms->blog_id ) );
-    require MT::Template;
-    my @tmpl = MT::Template->load( { blog_id => $blog->id } );
-
-    for my $tmpl (@tmpl) {
-        $tmpl->remove or return $app->error( $tmpl->errstr );
-    }
-    my $set = $blog ? $blog->template_set : undef;
-    require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates($set) || [];
-    my @arch_tmpl;
-    for my $val (@$tmpl_list) {
-        $val->{text} = $app->translate_templatized( $val->{text} );
-        my $tmpl = MT::Template->new;
-        if (   ( 'widgetset' eq $val->{type} )
-            && ( exists $val->{modulesets} ) )
-        {
-            my $modulesets = delete $val->{modulesets};
-            $tmpl->modulesets( join ',', @$modulesets );
-        }
-        $tmpl->set_values($val);
-        $tmpl->build_dynamic(0);
-        $tmpl->blog_id( $blog->id );
-        $tmpl->save
-            or return $app->error(
-            $app->translate(
-                "Populating blog with default templates failed: [_1]",
-                $tmpl->errstr
-            )
-            );
-
-        # FIXME: enumeration of types
-        if (   $val->{type} eq 'archive'
-            || $val->{type} eq 'category'
-            || $val->{type} eq 'page'
-            || $val->{type} eq 'individual' )
-        {
-            push @arch_tmpl, $tmpl;
-        }
-    }
-
-    ## Set up mappings from new templates to archive types.
-    for my $tmpl (@arch_tmpl) {
-        my (@at);
-
-        # FIXME: enumeration of types
-        if ( $tmpl->type eq 'archive' ) {
-            @at = qw( Daily Weekly Monthly Category );
-        }
-        elsif ( $tmpl->type eq 'page' ) {
-            @at = qw( Page );
-        }
-        elsif ( $tmpl->type eq 'individual' ) {
-            @at = qw( Individual );
-        }
-        require MT::TemplateMap;
-        for my $at (@at) {
-            my $map = MT::TemplateMap->new;
-            $map->archive_type($at);
-            $map->is_preferred(1);
-            $map->template_id( $tmpl->id );
-            $map->blog_id( $tmpl->blog_id );
-            $map->save
-                or return $app->error(
-                $app->translate(
-                    "Setting up mappings failed: [_1]",
-                    $map->errstr
-                )
-                );
-        }
-    }
-    $app->redirect(
-        $app->uri(
-            'mode' => 'list',
-            args =>
-                { '_type' => 'template', blog_id => $blog->id, 'reset' => 1 }
-        )
-    );
-}
-
 sub _generate_map_table {
     my $app = shift;
-    my ( $blog_id, $template_id ) = @_;
+    my ( $blog_id, $template_id, $new_map_id ) = @_;
 
     require MT::Template;
     require MT::Blog;
     my $blog     = MT::Blog->load($blog_id);
     my $template = MT::Template->load($template_id);
     my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
-    my $maps     = _populate_archive_loop( $app, $blog, $template );
-    $tmpl->param( object_type => 'templatemap' );
+    my $maps = _populate_archive_loop( $app, $blog, $template, $new_map_id );
     $tmpl->param( publish_queue_available => eval
             'require List::Util; require Scalar::Util; 1;' );
-    $tmpl->param( object_loop => $maps ) if @$maps;
+    $tmpl->param( template_map_loop => $maps ) if @$maps;
     my $html = $tmpl->output();
 
     if ( $html =~ m/<__trans / ) {
@@ -1561,8 +1793,13 @@ sub _generate_map_table {
 
 sub _populate_archive_loop {
     my $app = shift;
-    my $q   = $app->param;
-    my ( $blog, $obj ) = @_;
+    my ( $blog, $obj, $new_map_id ) = @_;
+
+    my $has_cat_field = MT::ContentField->count(
+        {   content_type_id => $obj->content_type_id,
+            type            => 'categories',
+        }
+    );
 
     my $index = $app->config('IndexBasename');
     my $ext = $blog->file_extension || '';
@@ -1572,6 +1809,7 @@ sub _populate_archive_loop {
     my @tmpl_maps = MT::TemplateMap->load( { template_id => $obj->id } );
     my @maps;
     my %types;
+    my $new_map;
     foreach my $map_obj (@tmpl_maps) {
         my $map = {};
         $map->{map_id}           = $map_obj->id;
@@ -1592,7 +1830,7 @@ sub _populate_archive_loop {
             = 1
             if $blog->archive_type_preferred;
         my $selected_file_template
-            = $q->param( 'archive_file_tmpl_' . $map->{map_id} );
+            = $app->param( 'archive_file_tmpl_' . $map->{map_id} );
         $map->{file_template}
             = $selected_file_template ? $selected_file_template
             : $map_obj->file_template ? $map_obj->file_template
@@ -1600,22 +1838,27 @@ sub _populate_archive_loop {
 
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
-        $map->{archive_label} = $archiver->archive_label;
+        $map->{archive_label}
+            = $archiver->archive_short_label || $archiver->archive_label;
         my $tmpls     = $archiver->default_archive_templates;
         my $tmpl_loop = [];
         foreach (@$tmpls) {
+            next
+                if !$has_cat_field && $_->{required_fields}{category};
             my $name = $_->{label};
             $name =~ s/\.html$/$ext/;
             $name =~ s/index$ext$/$index$ext/;
             push @$tmpl_loop,
                 {
-                name    => $name,
-                value   => $_->{template},
-                default => ( $_->{default} || 0 ),
+                name            => $name,
+                value           => $_->{template},
+                default         => ( $_->{default} || 0 ),
+                required_fields => $_->{required_fields},
                 };
         }
 
         my $custom = 1;
+        my $required_fields;
 
         foreach (@$tmpl_loop) {
             if (   ( !$map->{file_template} && $_->{default} )
@@ -1625,29 +1868,95 @@ sub _populate_archive_loop {
                 $custom               = 0;
                 $map->{file_template} = $_->{value}
                     if !$map->{file_template};
+                $required_fields = $_->{required_fields};
+            }
+            else {
             }
         }
         if ($custom) {
+            $custom = $map->{file_template};
             unshift @$tmpl_loop,
                 {
                 name     => $map->{file_template},
                 value    => $map->{file_template},
+                custom   => 1,
                 selected => 1,
                 };
         }
 
         $map->{archive_tmpl_loop} = $tmpl_loop;
+        my $args
+            = $at =~ /^ContentType/
+            ? {
+            join => MT::Template->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $obj->content_type_id,
+                },
+            ),
+            }
+            : {};
         if (1 < MT::TemplateMap->count(
-                { archive_type => $at, blog_id => $obj->blog_id }
+                { archive_type => $at, blog_id => $obj->blog_id }, $args,
             )
             )
         {
             $map->{has_multiple_archives} = 1;
         }
 
-        push @maps, $map;
+        # Content Fields
+        if ( $at =~ /^ContentType/ ) {
+            my $tmpl         = MT::Template->load( $obj->id );
+            my $ct_id        = $tmpl->content_type_id;
+            my $ct           = MT::ContentType->load( $obj->content_type_id );
+            my $fields       = $ct->fields;
+            my $cat_field_id = $map_obj->cat_field_id;
+            my $dt_field_id  = $map_obj->dt_field_id || 0;
+            my $content_fields = {
+                categories => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $cat_field_id ? 1 : 0
+                        }
+                        }
+                        grep { $_->{type} eq 'categories' } @$fields
+                ],
+                date_and_times => [
+                    map {
+                        {   id       => $_->{id},
+                            label    => $_->{options}{label},
+                            selected => $_->{id} eq $dt_field_id ? 1 : 0
+                        }
+                        }
+                        grep {
+                        (          $_->{type} eq 'date_and_time'
+                                || $_->{type} eq 'date_only' )
+                            && $_->{options}{required}
+                        } @$fields
+                ],
+            };
+            $map->{cat_fields} = $content_fields->{categories};
+            $map->{dt_fields}  = $content_fields->{date_and_times};
+            unshift @{ $content_fields->{date_and_times} },
+                { id => 0, label => $app->translate('Published Date') };
+            $map->{show_cat_field} = 1
+                if $required_fields->{category} || $custom;
+            $map->{show_dt_field} = 1
+                if $required_fields->{date_and_time} || $custom;
+        }
+
+        $map->{custom_path} = $custom if $custom;
+        if ( $new_map_id && $new_map_id == $map_obj->id ) {
+            $map->{show} = 1;
+            $new_map = $map;
+        }
+        else {
+            push @maps, $map;
+        }
     }
     @maps = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @maps;
+    push @maps, $new_map if $new_map;
     return \@maps;
 }
 
@@ -1658,15 +1967,14 @@ sub delete_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q           = $app->param;
-    my $id          = $q->param('id');
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
+    my $id          = $app->param('id');
+    my $blog_id     = $app->param('blog_id');
+    my $template_id = $app->param('template_id');
 
     $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
-        or
-        return $app->errtrans( 'Cannot load template #[_1].', $template_id );
+        or return $app->errtrans( 'Cannot load template #[_1].',
+        $template_id || '(undef)' );
 
     require MT::TemplateMap;
     my $map = MT::TemplateMap->load( { id => $id, blog_id => $blog_id } )
@@ -1689,28 +1997,46 @@ sub add_map {
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
 
-    my $q = $app->param;
-
     require MT::TemplateMap;
-    my $blog_id     = $q->param('blog_id');
-    my $template_id = $q->param('template_id');
-    my $at          = $q->param('new_archive_type');
-    my $exist       = MT::TemplateMap->exist(
-        {   blog_id      => $blog_id,
-            archive_type => $at
-        }
-    );
+    my $blog_id       = $app->param('blog_id');
+    my $template_id   = $app->param('template_id');
+    my $at            = $app->param('new_archive_type');
+    my $file_template = $app->param('file_template');
+    my $cat_field_id  = $app->param('cat_field_id');
+    my $dt_field_id   = $app->param('dt_field_id');
 
-    $app->model('template')
+    my $template
+        = $app->model('template')
         ->load( { id => $template_id, blog_id => $blog_id } )
         or
         return $app->errtrans( 'Cannot load template #[_1].', $template_id );
+
+    my $args
+        = $at =~ /^ContentType/
+        ? {
+        join => MT::Template->join_on(
+            undef,
+            {   id              => \'= templatemap_template_id',
+                content_type_id => $template->content_type_id,
+            },
+        ),
+        }
+        : {};
+    my $exist = MT::TemplateMap->exist(
+        {   blog_id      => $blog_id,
+            archive_type => $at
+        },
+        $args,
+    );
 
     my $map = MT::TemplateMap->new;
     $map->is_preferred( $exist ? 0 : 1 );
     $map->template_id($template_id);
     $map->blog_id($blog_id);
     $map->archive_type($at);
+    $map->file_template($file_template);
+    $map->cat_field_id($cat_field_id) if $cat_field_id;
+    $map->dt_field_id($dt_field_id)   if defined $dt_field_id;
     $map->save
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
@@ -1718,7 +2044,7 @@ sub add_map {
     my $blog = MT->model('blog')->load($blog_id);
     $blog->flush_has_archive_type_cache();
 
-    my $html = _generate_map_table( $app, $blog_id, $template_id );
+    my $html = _generate_map_table( $app, $blog_id, $template_id, $map->id );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
     $app->print_encode($html);
@@ -1770,13 +2096,15 @@ sub pre_save {
     my ( $app, $obj ) = @_;
 
     ## Strip linefeed characters.
-    ( my $text = $obj->column('text') ) =~ tr/\r//d;
+    if ( my $text = $obj->column('text') ) {
+        $text =~ tr/\r//d;
 
-    if ( $text =~ m/<(MT|_)_trans/i ) {
-        $text = $app->translate_templatized($text);
+        if ( $text =~ m/<(MT|_)_trans/i ) {
+            $text = $app->translate_templatized($text);
+        }
+
+        $obj->text($text);
     }
-
-    $obj->text($text);
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
 
@@ -1804,29 +2132,26 @@ sub pre_save {
     }
 
     # module caching
-    $obj->include_with_ssi( $app->param('include_with_ssi') ? 1 : 0 );
-    $obj->cache_path( $app->param('cache_path') );
-    my $cache_expire_type
-        = defined $app->param('cache_expire_type')
-        ? $app->param('cache_expire_type')
-        : '0';
-    $obj->cache_expire_type($cache_expire_type);
-    my $period   = $app->param('cache_expire_period');
-    my $interval = $app->param('cache_expire_interval');
-    my $sec      = _get_interval( $period, $interval );
-    $obj->cache_expire_interval($sec) if defined $sec;
-    my $q = $app->param;
-    my @events;
+    my $include_with_ssi  = $app->param('include_with_ssi');
+    my $cache_path        = $app->param('cache_path');
+    my $cache_expire_type = $app->param('cache_expire_type') || 0;
+    my $period            = $app->param('cache_expire_period');
+    my $interval          = $app->param('cache_expire_interval') || 0;
+    my $sec               = _get_interval( $period, $interval );
 
-    foreach my $name ( $q->param('cache_expire_event') ) {
-        push @events, $name;
-    }
-    $obj->cache_expire_event( join ',', @events ) if $#events >= 0;
+    $obj->include_with_ssi( $include_with_ssi ? 1 : 0 );
+    $obj->cache_path($cache_path);
+    $obj->cache_expire_type($cache_expire_type);
+    $obj->cache_expire_interval($sec) if defined $sec;
+
+    my @events = $app->multi_param('cache_expire_event');
+
+    $obj->cache_expire_event( join ',', @events ) if @events;
     if ( $cache_expire_type == 1 ) {
         return $eh->error(
             $app->translate(
                 "You should not be able to enter zero (0) as the time.")
-        ) if $interval == 0;
+        ) if !$interval;
     }
     elsif ( $cache_expire_type == 2 ) {
         return $eh->error(
@@ -1863,8 +2188,7 @@ sub post_save {
     }
 
     my $dynamic = 0;
-    my $q       = $app->param;
-    my $type    = $q->param('type');
+    my $type = $app->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
@@ -1878,7 +2202,7 @@ sub post_save {
 
         # archive template specific post_save tasks
         require MT::TemplateMap;
-        my @p = $q->param;
+        my @p = $app->multi_param;
         my %static_maps;
         for my $p (@p) {
             my $map;
@@ -1887,14 +2211,15 @@ sub post_save {
                 my $map_id = $2;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                $map->prefer( $q->param($p) ); # prefer method saves in itself
+                my $preferred = $app->param($p);
+                $map->prefer($preferred);    # prefer method saves in itself
             }
             elsif ( $p =~ /^archive_file_tmpl_(\d+)$/ ) {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $file_template = $q->param($p);
-                my $build_type_1  = $q->param("map_build_type_$map_id");
+                my $file_template = $app->param($p);
+                my $build_type_1  = $app->param("map_build_type_$map_id");
 
                 # Populate maps whose build type is dynamic
                 # and file template are changed
@@ -1908,7 +2233,7 @@ sub post_save {
                 my $map_id = $1;
                 $map = MT::TemplateMap->load($map_id)
                     or next;
-                my $build_type = $q->param($p);
+                my $build_type = $app->param($p);
                 require MT::PublishOption;
 
                 # Populate maps that are changed from static to dynamic
@@ -1919,13 +2244,33 @@ sub post_save {
                 $map->build_type($build_type);
                 if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                     my $period
-                        = $q->param( 'map_schedule_period_' . $map_id );
+                        = $app->param( 'map_schedule_period_' . $map_id );
                     my $interval
-                        = $q->param( 'map_schedule_interval_' . $map_id );
+                        = $app->param( 'map_schedule_interval_' . $map_id );
                     my $sec = _get_interval( $period, $interval );
                     $map->build_interval($sec);
                 }
                 $map->save;
+            }
+            elsif ( $p =~ /^cat_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $cat_field_id = $app->param("cat_field_id_$map_id");
+                if ( $map->cat_field_id != $cat_field_id ) {
+                    $map->cat_field_id($cat_field_id);
+                    $map->save;
+                }
+            }
+            elsif ( $p =~ /^dt_field_id_(\d+)$/ ) {
+                my $map_id = $1;
+                $map = MT::TemplateMap->load($map_id)
+                    or next;
+                my $dt_field_id = $app->param("dt_field_id_$map_id");
+                if ( $map->dt_field_id != $dt_field_id ) {
+                    $map->dt_field_id($dt_field_id);
+                    $map->save;
+                }
             }
             if (  !$dynamic
                 && $map
@@ -2026,8 +2371,8 @@ sub build_template_table {
     my $i;
     my %blogs;
     while ( my $tmpl = $iter->() ) {
-        my $blog = $blogs{ $tmpl->blog_id }
-            ||= MT::Blog->load( $tmpl->blog_id )
+        my $blog;
+        $blog = $blogs{ $tmpl->blog_id } ||= MT::Blog->load( $tmpl->blog_id )
             if $tmpl->blog_id;
 
         my $row = $tmpl->get_values;
@@ -2084,7 +2429,13 @@ sub dialog_publishing_profile {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms && $perms->can_edit_templates;
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site() )
+        );
 
     my $param = {};
     $param->{dynamicity}  = $blog->custom_dynamic_templates || 'none';
@@ -2101,8 +2452,14 @@ sub dialog_refresh_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_do('refresh_templates');
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site()
+            || $perms->can_do('refresh_templates') )
+        );
 
     my $param = {};
     if ( my $blog = $app->blog ) {
@@ -2142,26 +2499,25 @@ sub refresh_all_templates {
         # refresh templates dialog uses a 'backup' field
         $backup = 1;
     }
-    my $template_set;
     my $refresh_type = $app->param('refresh_type') || 'refresh';
     my $t = time;
 
     my @id;
-    if ( $app->param('blog_id') ) {
-        if ( 'refresh_blog_templates' eq $app->param('plugin_action_selector')
-            )
+    if ( my $blog_id = $app->param('blog_id') ) {
+        if ( 'refresh_blog_templates' eq
+            ( $app->param('plugin_action_selector') || '' ) )
         {
             ## called from website wide blog listing screen.
-            @id = $app->param('id');
+            @id = $app->multi_param('id');
         }
         else {
             ## called from template listing screen of each website/blog.
-            @id = ( scalar $app->param('blog_id') );
+            @id = ($blog_id);
         }
     }
     else {
         ## if no blog_id, called from system-wide listing screen
-        @id = $app->param('id');
+        @id = $app->multi_param('id');
         if ( !@id ) {
 
             # refresh global templates
@@ -2204,7 +2560,7 @@ BLOG: for my $blog_id (@id) {
             my $can_refresh_blog
                 = !$perms                             ? 0
                 : $perms->can_edit_templates()        ? 1
-                : $perms->can_administer_blog()       ? 1
+                : $perms->can_administer_site()       ? 1
                 : $perms->can_do('refresh_templates') ? 1
                 :                                       0;
             if ( !$can_refresh_blog ) {
@@ -2335,7 +2691,7 @@ BLOG: for my $blog_id (@id) {
             # FIXME Enumeration of types
             $terms->{type} = $val->{type};
             if ( $val->{type}
-                =~ m/^(archive|individual|page|category|index|custom|widget|widgetset)$/
+                =~ m/^(archive|individual|page|category|index|custom|widget|widgetset|ct|ct_archive)$/
                 )
             {
                 $terms->{name} = $val->{name};
@@ -2407,7 +2763,6 @@ BLOG: for my $blog_id (@id) {
                 $tmpl->save;
             }
             else {
-
                 # create this one...
                 my $tmpl = new MT::Template;
                 if (   ( 'widgetset' eq $val->{type} )
@@ -2447,7 +2802,7 @@ BLOG: for my $blog_id (@id) {
                     || $tmpl->type eq 'individual' )
                 {
                     my $mappings = $val->{mappings};
-                    foreach my $map_key ( keys %$mappings ) {
+                    foreach my $map_key ( sort keys %$mappings ) {
                         my $m  = $mappings->{$map_key};
                         my $at = $m->{archive_type};
 
@@ -2500,8 +2855,13 @@ sub refresh_individual_templates {
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_edit_templates;
+        unless $user->is_superuser()
+        || $user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site )
+        );
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -2514,7 +2874,7 @@ sub refresh_individual_templates {
 
     # force saving the revision when indiv. templates are refreshed.
     $app->param( 'save_revision', 1 );
-    $app->param( 'revision-note', $app->translate('Template Referesh') );
+    $app->param( 'revision-note', $app->translate('Template Refresh') );
 
     require MT::DefaultTemplates;
     my $tmpl_list;
@@ -2563,7 +2923,7 @@ sub refresh_individual_templates {
     my $t = time;
 
     my @msg;
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
         my $tmpl = MT::Template->load($tmpl_id);
@@ -2659,10 +3019,15 @@ sub clone_templates {
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_edit_templates();
+        unless $user->is_superuser()
+        || $user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site )
+        );
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
     require MT::Template;
     foreach my $tmpl_id (@id) {
         my $tmpl = MT::Template->load($tmpl_id);
@@ -2703,7 +3068,7 @@ sub publish_templates_from_search {
     require MT::Blog;
 
     my $templates
-        = MT->model('template')->lookup_multi( [ $app->param('id') ] );
+        = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
     my @at_ids;
     $app->param( 'from_search', 1 );
 TEMPLATE: for my $tmpl (@$templates) {
@@ -2722,7 +3087,7 @@ TEMPLATE: for my $tmpl (@$templates) {
     }
 
     if ( scalar(@at_ids) > 0 ) {
-        $app->param( 'id', @at_ids );
+        $app->multi_param( 'id', @at_ids );
         publish_archive_templates($app) if ( scalar(@at_ids) > 0 );
     }
     else {
@@ -2737,14 +3102,20 @@ sub publish_index_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_rebuild;
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site
+            || $perms->can_rebuild )
+        );
 
     my $blog = $app->blog;
 
     require MT::Blog;
     my $templates
-        = MT->model('template')->lookup_multi( [ $app->param('id') ] );
+        = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
 TEMPLATE: for my $tmpl (@$templates) {
         return $app->errtrans("Cannot publish a global template.")
             if ( $tmpl->blog_id == 0 );
@@ -2772,10 +3143,16 @@ sub publish_archive_templates {
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_rebuild;
+        unless $app->user->is_superuser()
+        || $app->user->can_edit_templates()
+        || (
+        $perms
+        && (   $perms->can_edit_templates()
+            || $perms->can_administer_site()
+            || $perms->can_rebuild )
+        );
 
-    my @ids = $app->param('id');
+    my @ids = $app->multi_param('id');
     if ( scalar @ids == 1 ) {
 
         # we also support a list of comma-delimited ids like this
@@ -2801,7 +3178,9 @@ sub publish_archive_templates {
 
     require MT::CMS::Blog;
     my $return_args;
-    my $reedit = $app->param('reedit');
+    my $reedit      = $app->param('reedit');
+    my $blog_id     = $app->param('blog_id');
+    my $from_search = $app->param('from_search');
     if (@ids) {
 
         # we have more to do after this, so save the list
@@ -2810,11 +3189,10 @@ sub publish_archive_templates {
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id     => scalar $app->param('blog_id'),
+                blog_id     => $blog_id,
                 id          => join( ",", @ids ),
                 reedit      => $reedit,
-                (   $app->param('from_search')
-                    ? ( from_search => $app->param('from_search') )
+                (   $from_search ? ( from_search => $from_search )
                     : ()
                 ),
                 (   $app->return_args ? ( return_args => $app->return_args )
@@ -2824,7 +3202,7 @@ sub publish_archive_templates {
         );
     }
     else {
-        if ( $app->param('from_search') ) {
+        if ($from_search) {
             $return_args = $app->return_args;
         }
         else {
@@ -2833,7 +3211,7 @@ sub publish_archive_templates {
                 mode => $mode,
                 args => {
                     ( $reedit ? ( _type => 'template' ) : () ),
-                    blog_id   => scalar $app->param('blog_id'),
+                    blog_id   => $blog_id,
                     published => 1,
                     ( $reedit ? ( saved => 1 )       : () ),
                     ( $reedit ? ( id    => $reedit ) : () ),
@@ -2854,18 +3232,21 @@ sub publish_archive_templates {
 
 sub save_widget {
     my $app = shift;
-    my $q   = $app->param;
 
     $app->validate_magic() or return;
     my $author = $app->user;
 
-    my $id = $q->param('id');
+    my $id = $app->param('id');
 
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_save_permission_filter.template',
             $app, $id )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
     }
 
     my $filter_result
@@ -2889,10 +3270,13 @@ sub save_widget {
     }
 
     my $original = $obj->clone();
-    $obj->name( $q->param('name') );
+    my $name     = $app->param('name');
+    my $blog_id  = $app->param('blog_id') || 0;
+    my $modules  = $app->param('modules');
+    $obj->name($name);
     $obj->type('widgetset');
-    $obj->blog_id( $q->param('blog_id') || 0 );
-    $obj->modulesets( $q->param('modules') );
+    $obj->blog_id($blog_id);
+    $obj->modulesets($modules);
 
     unless (
         $app->run_callbacks( 'cms_pre_save.template', $app, $obj, $original )
@@ -2927,16 +3311,15 @@ sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
 
-    my $q       = $app->param();
-    my $id      = scalar( $q->param('id') ) || $opt{id};
-    my $name    = scalar( $q->param('name') );
-    my $blog_id = scalar $q->param('blog_id') || 0;
+    my $id      = $app->param('id') || $opt{id};
+    my $name    = $app->param('name');
+    my $blog_id = $app->param('blog_id') || 0;
 
     my $tmpl_class = $app->model('template');
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $tmpl_class->load($id) || undef;
+            return $tmpl_class->load($id);
         }
     );
 
@@ -2944,7 +3327,11 @@ sub edit_widget {
         $app->run_callbacks( 'cms_view_permission_filter.template',
             $app, $id, $obj_promise )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
     }
 
     my $param = {
@@ -3054,96 +3441,26 @@ sub edit_widget {
         return $app->error( $app->callback_errstr() );
     }
 
-    $app->load_tmpl( 'edit_widget.tmpl', $param );
-}
-
-sub list_widget {
-    my $app   = shift;
-    my (%opt) = @_;
-    my $q     = $app->param;
-
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->permission_denied()
-        unless $perms
-        && $perms->can_edit_templates;
-
-    my $blog_id = $q->param('blog_id') || 0;
-
-    my $widget_loop = &build_template_table(
-        $app,
-        load_args => [
-            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
-            { sort => 'name', direction => 'ascend' }
-        ],
+    $app->add_breadcrumb(
+        $app->translate('Templates'),
+        $app->uri(
+            mode => 'list_template',
+            args => { blog_id => $blog_id },
+        ),
     );
-
-    my $iter
-        = $app->model('template')
-        ->load_iter(
-        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
-        { sort => 'name', direction => 'ascend' } );
-    my @widgetmanagers;
-    while ( my $widgetset = $iter->() ) {
-        next unless $widgetset;
-        my $ws_name = $widgetset->name;
-        $ws_name = '' if !defined $ws_name;
-        $ws_name =~ s/^\s+|\s+$//g;
-        $ws_name = "(" . $app->translate("No Name") . ")"
-            if $ws_name eq '';
-        my $ws = {
-            id            => $widgetset->id,
-            widgetmanager => $ws_name,
-        };
-        if ( my $modulesets = $widgetset->modulesets ) {
-            $ws->{widgets} = $modulesets;
-            my @names;
-            foreach my $module ( split ',', $modulesets ) {
-                my ($widget) = grep { $_->{id} eq $module } @$widget_loop;
-                push @names, $widget->{name} if $widget;
-            }
-            $ws->{names} = join( ', ', @names ) if @names;
-        }
-        push @widgetmanagers, $ws;
-    }
-
-    my @widget_loop;
-    if ($blog_id) {
-
-        # Remove system level widgets from the listing
-        @widget_loop = grep { $_->{blog_id} == $blog_id } @$widget_loop;
+    if ($id) {
+        $app->add_breadcrumb( $param->{name} );
     }
     else {
-        @widget_loop = @$widget_loop;
+        $app->add_breadcrumb( $app->translate('Create Widget Set') );
     }
 
-    my $param = {
-        @widgetmanagers ? ( object_loop  => \@widgetmanagers ) : (),
-        @widget_loop    ? ( widget_table => \@widget_loop )    : (),
-        object_type         => "template",
-        search_type         => "template",
-        search_label        => MT::Template->class_label_plural,
-        listing_screen      => 1,
-        screen_id           => "list-widget-set",
-        object_label        => $app->translate('Widget Template'),
-        object_label_plural => $app->translate('Widget Templates'),
-        template_type_label => $app->translate('Widget Templates'),
-        blog_view           => 1,
-        exists( $opt{rebuild} ) ? ( rebuild => $opt{rebuild} ) : (),
-        exists( $opt{error} )   ? ( error   => $opt{error} )   : (),
-        exists( $opt{deleted} ) ? ( saved   => $opt{deleted} ) : ()
-    };
-    my $widget_actions = {};
-    $app->load_list_actions( 'template', $widget_actions );
-    $param->{ 'widget_' . $_ } = $widget_actions->{$_}
-        for keys %$widget_actions;
-    $param->{page_actions} = $app->page_actions('list_widget');
-    $app->load_tmpl( 'list_widget.tmpl', $param );
+    $app->load_tmpl( 'edit_widget.tmpl', $param );
 }
 
 sub delete_widget {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -3155,7 +3472,7 @@ sub delete_widget {
 
     my $tmpl_class = $app->model('template');
 
-    for my $id ( $q->param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
 
         my $obj = $tmpl_class->load($id);
@@ -3163,7 +3480,11 @@ sub delete_widget {
         $app->run_callbacks( 'cms_delete_permission_filter.template',
             $app, $obj )
             || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+            $app->translate(
+                "Permission denied: [_1]",
+                defined $app->errstr ? $app->errstr : ''
+            )
+            );
 
         $obj->remove
             or return $app->errtrans(

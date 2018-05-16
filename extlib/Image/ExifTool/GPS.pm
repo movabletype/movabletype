@@ -12,7 +12,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.42';
+$VERSION = '1.48';
 
 my %coordConv = (
     ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val)',
@@ -40,8 +40,8 @@ my %coordConv = (
         Writable => 'string',
         Notes => q{
             tags 0x0001-0x0006 used for camera location according to MWG 2.0. ExifTool
-            will also accept a number when writing GPSLatitude -- positive for north
-            latitudes, or negative for south
+            will also accept a number when writing GPSLatitudeRef, positive for north
+            latitudes or negative for south, or a string ending in N or S
         },
         Count => 2,
         PrintConv => {
@@ -69,8 +69,8 @@ my %coordConv = (
         Writable => 'string',
         Count => 2,
         Notes => q{
-            ExifTool will also accept a number when writing this tag -- positive for
-            east longitudes or negative for west
+            ExifTool will also accept a number when writing this tag, positive for east
+            longitudes or negative for west, or a string ending in E or W
         },
         PrintConv => {
             # extract E/W if written from Composite:GPSLongitude
@@ -124,8 +124,8 @@ my %coordConv = (
         Count => 3,
         Shift => 'Time',
         Notes => q{
-            when writing, date is stripped off if present, and time is adjusted to UTC
-            if it includes a timezone
+            UTC time of GPS fix.  When writing, date is stripped off if present, and
+            time is adjusted to UTC if it includes a timezone
         },
         ValueConv => 'Image::ExifTool::GPS::ConvertTimeStamp($val)',
         ValueConvInv => '$val=~tr/:/ /;$val',
@@ -133,7 +133,8 @@ my %coordConv = (
         # pull time out of any format date/time string
         # (converting to UTC if a timezone is given)
         PrintConvInv => sub {
-            my $v = shift;
+            my ($v, $et) = @_;
+            $v = $et->TimeNow() if lc($v) eq 'now';
             my @tz;
             if ($v =~ s/([-+])(.*)//s) {    # remove timezone
                 my $s = $1 eq '-' ? 1 : -1; # opposite sign to convert back to UTC
@@ -287,13 +288,13 @@ my %coordConv = (
         Name => 'GPSProcessingMethod',
         Writable => 'undef',
         Notes => 'values of "GPS", "CELLID", "WLAN" or "MANUAL" by the EXIF spec.',
-        RawConv => 'Image::ExifTool::Exif::ConvertExifText($self,$val,1)',
+        RawConv => 'Image::ExifTool::Exif::ConvertExifText($self,$val,1,$tag)',
         RawConvInv => 'Image::ExifTool::Exif::EncodeExifText($self,$val)',
     },
     0x001c => {
         Name => 'GPSAreaInformation',
         Writable => 'undef',
-        RawConv => 'Image::ExifTool::Exif::ConvertExifText($self,$val,1)',
+        RawConv => 'Image::ExifTool::Exif::ConvertExifText($self,$val,1,$tag)',
         RawConvInv => 'Image::ExifTool::Exif::EncodeExifText($self,$val)',
     },
     0x001d => {
@@ -307,12 +308,14 @@ my %coordConv = (
             when writing, time is stripped off if present, after adjusting date/time to
             UTC if time includes a timezone.  Format is YYYY:mm:dd
         },
+        RawConv => '$val =~ s/\0+$//; $val',
         ValueConv => 'Image::ExifTool::Exif::ExifDate($val)',
         ValueConvInv => '$val',
         # pull date out of any format date/time string
         # (and adjust to UTC if this is a full date/time/timezone value)
         PrintConvInv => q{
             my $secs;
+            $val = $self->TimeNow() if lc($val) eq 'now';
             if ($val =~ /[-+]/ and ($secs = Image::ExifTool::GetUnixTime($val, 1))) {
                 $val = Image::ExifTool::ConvertUnixTime($secs);
             }
@@ -385,7 +388,7 @@ my %coordConv = (
         ValueConv => q{
             my $alt = $val[0];
             $alt = $val[2] unless defined $alt;
-            return undef unless defined $alt;
+            return undef unless defined $alt and IsFloat($alt);
             return ($val[1] || $val[3]) ? -$alt : $alt;
         },
         PrintConv => q{
@@ -441,7 +444,7 @@ sub PrintTimeStamp($)
 sub ToDMS($$;$$)
 {
     my ($et, $val, $doPrintConv, $ref) = @_;
-    my ($fmt, $num, $sign);
+    my ($fmt, @fmt, $num, $sign);
 
     if ($ref) {
         if ($val < 0) {
@@ -470,22 +473,34 @@ sub ToDMS($$;$$)
         } else {
             $fmt = "%d,%.6f$ref";   # use XMP standard format
         }
-        # count the number of format specifiers
-        $num = ($fmt =~ tr/%/%/);
+        # count (and capture) the format specifiers (max 3)
+        while ($fmt =~ /(%(%|[^%]*?[diouxXDOUeEfFgGcs]))/g) {
+            next if $1 eq '%%';
+            push @fmt, $1;
+            last if @fmt >= 3;
+        }
+        $num = scalar @fmt;
     } else {
         $num = 3;
     }
-    my ($d, $m, $s);
-    $d = $val;
+    my @c;  # coordinates (D) or (D,M) or (D,M,S)
+    $c[0] = $val;
     if ($num > 1) {
-        $d = int($d);
-        $m = ($val - $d) * 60;
+        $c[0] = int($c[0]);
+        $c[1] = ($val - $c[0]) * 60;
         if ($num > 2) {
-            $m = int($m);
-            $s = ($val - $d - $m / 60) * 3600;
+            $c[1] = int($c[1]);
+            $c[2] = ($val - $c[0] - $c[1] / 60) * 3600;
+        }
+        # handle round-off errors to ensure minutes and seconds are
+        # less than 60 (eg. convert "72 59 60.00" to "73 0 0.00")
+        $c[-1] = $doPrintConv ? sprintf($fmt[-1], $c[-1]) : ($c[-1] . '');
+        if ($c[-1] >= 60) {
+            $c[-1] -= 60;
+            ($c[-2] += 1) >= 60 and $num > 2 and $c[-2] -= 60, $c[-3] += 1;
         }
     }
-    return $doPrintConv ? sprintf($fmt, $d, $m, $s) : "$d $m $s$ref";
+    return $doPrintConv ? sprintf($fmt, @c) : "@c$ref";
 }
 
 #------------------------------------------------------------------------------
@@ -524,7 +539,7 @@ GPS (Global Positioning System) meta information in EXIF data.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

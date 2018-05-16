@@ -7,6 +7,7 @@
 package MT::Memcached::ExpirableProxy;
 
 use strict;
+use warnings;
 use MT::Memcached;
 
 sub new {

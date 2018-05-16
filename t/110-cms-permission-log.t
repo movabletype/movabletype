@@ -2,78 +2,96 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
+
+    my $admin = MT::Author->load( 1 );
+
+    # Role
+    my $view_blog_log = MT::Test::Permission->make_role(
+       name  => 'View Blog Log',
+       permissions => "'view_blog_log'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $view_blog_log => $blog );
+    MT::Association->link( $ichikawa => $view_blog_log => $website );
+    MT::Association->link( $ukawa => $view_blog_log => $second_blog );
+    MT::Association->link( $egawa => $designer => $blog );
+
+    $ogawa->can_view_log(1);
+    $ogawa->save();
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
+my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $ogawa    = MT::Author->load( { name => 'ogawa' } );
 
 my $admin = MT::Author->load( 1 );
-
-# Role
-my $view_blog_log = MT::Test::Permission->make_role(
-   name  => 'View Blog Log',
-   permissions => "'view_blog_log'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
-
-require MT::Association;
-MT::Association->link( $aikawa => $view_blog_log => $blog );
-MT::Association->link( $ichikawa => $view_blog_log => $website );
-MT::Association->link( $ukawa => $view_blog_log => $second_blog );
-MT::Association->link( $egawa => $designer => $blog );
-
-require MT::Permission;
-my $p = MT::Permission->new();
-$p->blog_id( 0 );
-$p->author_id( $ogawa->id );
-$p->permissions("'view_log'");
-$p->save;
-
 
 # Run
 my ( $app, $out );

@@ -2,16 +2,21 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
 use YAML::Tiny;
+
+MT::Test->init_app;
 
 ### Make test data
 
@@ -24,17 +29,32 @@ my $data;
 MT->instance;
 MT->component('core')->registry->{themes} = $data;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+    # Website
+    my $website = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
 
-# Author
-my $admin = MT->model('author')->load(1);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+
+    # Author
+    my $admin = MT->model('author')->load(1);
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $admin   = MT->model('author')->load(1);
 
 # Run tests
 subtest 'Check visibility' => sub {
+    plan 'skip_all';
+
     my @suite = (
         {   scope   => 'System',
             blog_id => 0,

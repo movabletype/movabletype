@@ -3,14 +3,22 @@
 
 use strict;
 use warnings;
-use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use utf8;
 use File::Spec;
 
 use MT;
 use MT::FileMgr;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
     rich_text_transform html_text_transform encode_html decode_html
@@ -18,7 +26,7 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     archive_file_for format_ts dirify remove_html
     days_in wday_from_ts encode_js decode_js get_entry spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
-    decode_xml is_valid_url is_url discover_tb convert_high_ascii
+    decode_xml is_valid_url is_url convert_high_ascii
     mark_odd_rows dsa_verify perl_sha1_digest relative_date
     perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
     start_background_task launch_background_tasks substr_wref
@@ -30,11 +38,16 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
 
+$test_env->prepare_fixture('db_data');
+
 my $mt = MT->new;
+
+MT->set_instance($mt);
+
 $mt->config( 'NoHTMLEntities', 1 );
 
 if ( $^O eq 'MSWin32' ) {
-    $mt->config( 'TempDir', 'C:\Windows\Temp' );
+    $mt->config( 'TempDir', File::Spec->tmpdir );
 }
 
 ## Use done_testing()
@@ -132,7 +145,7 @@ my %xml_tests = (
         '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
 
-for my $test ( keys %xml_tests ) {
+for my $test ( sort keys %xml_tests ) {
     if ( ref( $xml_tests{$test} ) eq 'ARRAY' ) {
         is( encode_xml($test), $xml_tests{$test}[0] );    #65 #69 #73
         is( decode_xml( $xml_tests{$test}[0] ), $test );  #66 #70 #74
@@ -431,9 +444,10 @@ is( days_in( 2, 2000 ), '29', 'days_in() (leap year)' );
 my $script_tag = "<script>alert('test');alert(\"test\");</script>";
 my $script_tag_encoded
     = '\\<s\\cript\\>alert(\\\'test\\\');alert(\\"test\\");\\<\\/s\\cript\\>';
-is( encode_js($script_tag),         $script_tag_encoded, 'encode_js()' );
-is( decode_js($script_tag_encoded), $script_tag,         'decode_js()' );
-is( encode_php("\\\$\"\n\r\t"),     "\\\\\$\"\n\r\t",    'encode_php()' );
+is( encode_js($script_tag), $script_tag_encoded, 'encode_js()' );
+is( 'description',          'description',       "encode_js('description')" );
+is( decode_js($script_tag_encoded), $script_tag,      'decode_js()' );
+is( encode_php("\\\$\"\n\r\t", '' ),     "\\\\\$\"\n\r\t", 'encode_php()' );
 is( encode_php( "\\\$\"\n\r\t", 'qq' ),
     '\\\\\\$\\"\\n\\r\\t', 'encode_php() (qq)' );
 is( encode_php( "\\\$\"\n\r\t", 'here' ),
@@ -491,48 +505,6 @@ is( is_valid_ip('123.123.123.123/0'),  '0', 'is_valid_ip() invalid ip' );
 is( is_valid_ip('123.123.123.123/33'), '0', 'is_valid_ip() invalid ip' );
 
 ### other utilities
-my $tb_content = <<__HTML__;
-<html>
-<head>
-    <!--
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/">
-<rdf:Description
-    rdf:about="http://example.com/2002/12/24/1/index.html"
-    trackback:ping="http://example.com/mt/mt-tb.cgi/9999"
-    dc:title="Foo"
-    dc:identifier="http://example.com/2002/12/24/1/index.html"
-    dc:subject="Bar"
-    dc:description="Foo Bar Foo Bar ..."
-    dc:creator="Baz"
-    dc:date="2002-12-24T10:30:45Z" />
-</rdf:RDF>
--->
-</head>
-<body>
-</body>
-</html>
-__HTML__
-is_deeply(
-    discover_tb(
-        'http://example.com/2002/12/24/1/index.html',
-        undef, \$tb_content
-    ),
-    {   'permalink'      => 'http://example.com/2002/12/24/1/index.html',
-        'title'          => 'Foo',
-        'ping_url'       => 'http://example.com/mt/mt-tb.cgi/9999',
-        'dc:identifier'  => 'http://example.com/2002/12/24/1/index.html',
-        'dc:title'       => 'Foo',
-        'dc:date'        => '2002-12-24T10:30:45Z',
-        'dc:subject'     => 'Bar',
-        'dc:description' => 'Foo Bar Foo Bar ...',
-        'dc:creator'     => 'Baz',
-        'rdf:about'      => 'http://example.com/2002/12/24/1/index.html',
-        'trackback:ping' => 'http://example.com/mt/mt-tb.cgi/9999',
-    },
-    'discover_tb()'
-);
 
 my @list = ( { v => 1 }, { v => 2 }, { v => 3 }, { v => 4 }, );
 
@@ -552,7 +524,7 @@ is( xliterate_utf8('Ã'), 'A', 'xliterate_utf8()' );
 {
     require File::Temp;
     my ( $fh, $file )
-        = File::Temp::tempfile( undef, DIR => MT->config->TempDir );
+        = File::Temp::tempfile( DIR => MT->config->TempDir );
     close($fh);
     unlink($file);
 

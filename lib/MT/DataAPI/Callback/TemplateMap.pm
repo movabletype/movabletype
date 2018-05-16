@@ -139,12 +139,11 @@ sub post_save {
     if (   $obj->build_type == MT::PublishOption::DYNAMIC()
         && $obj->build_type != $original->build_type )
     {
-        my $q = $app->param;
-        $q->param( 'type',            $obj->archive_type );
-        $q->param( 'with_indexes',    1 );
-        $q->param( 'no_static',       1 );
-        $q->param( 'template_id',     $obj->template_id );
-        $q->param( 'single_template', 1 );
+        $app->param( 'type',            $obj->archive_type );
+        $app->param( 'with_indexes',    1 );
+        $app->param( 'no_static',       1 );
+        $app->param( 'template_id',     $obj->template_id );
+        $app->param( 'single_template', 1 );
         require MT::CMS::Blog;
         return MT::CMS::Blog::start_rebuild_pages($app);
     }

@@ -1,17 +1,25 @@
 # $Id: 45-datetime.t 1744 2008-04-03 08:14:20Z fumiakiy $
 use warnings;
 use strict;
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    use Test::More;
     my @modules = qw( DateTime DateTime::TimeZone );
     my $eval_string = join ';', map {"require $_"} @modules;
     eval $eval_string
         or plan skip_all => join( ' or ', @modules ) . ' is not installed';
 }
 
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT::DateTime;
 use Time::Local qw(timegm);
 use MT::Util qw(week2ymd);

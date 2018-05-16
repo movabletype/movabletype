@@ -4,11 +4,9 @@
 #
 
 package MT::Test::Permission;
-use base qw( Exporter );
-
-our @EXPORT = qw( make_base_data );
 
 use strict;
+use warnings;
 
 sub make_author {
     my $pkg    = shift;
@@ -42,6 +40,8 @@ sub make_author {
     my $author = MT::Author->new();
     $author->set_values($values);
     $author->set_password("pass");
+    $author->can_sign_in_cms(1);
+    $author->can_sign_in_data_api(1);
     $author->save()
         or die "Couldn't save author record: " . $author->errstr;
 
@@ -54,10 +54,11 @@ sub make_website {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name                     => 'Test site',
         site_url                 => 'http://narnia.na/',
-        site_path                => 't',
+        site_path                => $test_root,
         description              => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
         convert_paras            => 1,
@@ -87,11 +88,10 @@ sub make_website {
     my $website = MT::Website->new();
     $website->set_values($values);
     $website->class('website');
-    $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website: " . $website->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_website = MT::Theme->load('classic_website')
@@ -108,12 +108,13 @@ sub make_blog {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name         => 'none',
         site_url     => '/::/nana/',
         archive_url  => '/::/nana/archives/',
-        site_path    => 'site/',
-        archive_path => 'site/archives/',
+        site_path    => "$test_root/site/",
+        archive_path => "$test_root/site/archives/",
         archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred   => 'Individual',
         description              => "Narnia None Test Blog",
@@ -147,11 +148,10 @@ sub make_blog {
     my $blog = MT::Blog->new();
     $blog->set_values($values);
     $blog->class('blog');
-    $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_blog = MT::Theme->load('classic_blog')
@@ -299,15 +299,18 @@ sub make_comment {
     return $comment;
 }
 
+my $template_name_index = 0;
+
 sub make_template {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         blog_id => 1,
-        name    => 'blog-name',
+        name    => 'blog-name ' . $template_name_index++,
         text    => '<MTBlogName>',
         type    => 'custom',
+        outfile => 'blog.html',
     };
 
     if (%params) {
@@ -748,7 +751,7 @@ sub make_tag {
 
     my $values = {
         name       => 'Tag',
-        n8d_id     => 'tag',
+        n8d_id     => 0,
         is_private => 0,
     };
 
@@ -955,6 +958,125 @@ sub make_group {
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     return $grp;
+}
+
+sub make_category_set {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id => 2,
+        name    => 'Sample Category Set',
+        %params,
+    };
+
+    require MT::CategorySet;
+    my $cs = MT::CategorySet->new;
+
+    $cs->$_( $values->{$_} ) for keys %{$values};
+    $cs->save or die q{Couldn't save category set record: } . $cs->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $cs;
+}
+
+my $content_type_name_index = 0;
+
+sub make_content_type {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        name        => 'Sample Content Type ' . $content_type_name_index++,
+        description => 'This is a sample.',
+        blog_id     => 2,
+        %params,
+    };
+
+    require MT::ContentType;
+    my $ct = MT::ContentType->new;
+
+    $ct->$_( $values->{$_} ) for keys %{$values};
+    $ct->save or die q{Couldn't save content type record: } . $ct->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    _mock_perms_from_registry();
+
+    $ct;
+}
+
+sub make_content_field {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id     => 2,
+        type        => 'single_line_text',
+        name        => 'Sample Content Field',
+        description => 'This is a sample single_line_text field.',
+        %params,
+    };
+
+    require MT::ContentField;
+    my $cf = MT::ContentField->new;
+
+    $cf->$_( $values->{$_} ) for keys %{$values};
+    $cf->save or die q{Couldn't save content field record: } . $cf->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    _mock_perms_from_registry();
+
+    $cf;
+}
+
+sub make_content_data {
+    my $pkg    = shift;
+    my %params = @_;
+
+    require MT::ContentStatus;
+    my $values = {
+        blog_id        => 2,
+        status         => MT::ContentStatus::RELEASE(),
+        author_id      => 1,
+        authored_on    => '20170530163600',
+        unpublished_on => '20170531163600',
+        %params,
+    };
+
+    require MT::ContentData;
+    my $cd = MT::ContentData->new;
+
+    $cd->$_( $values->{$_} ) for keys %{$values};
+    $cd->save or die q{Couldn't save content data record: } . $cd->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    $cd;
+}
+
+{
+
+    my $mock_permission;
+
+    sub _mock_perms_from_registry {
+        eval { require Test::MockModule } or return;
+
+        $mock_permission = Test::MockModule->new('MT::Permission');
+        $mock_permission->mock(
+            'perms_from_registry',
+            sub {
+                my %perms = %{ $mock_permission->original('perms_from_registry')->() };
+                my $content_type_perm
+                    = MT->app->model('content_type')->all_permissions;
+                foreach my $k ( keys %$content_type_perm ) {
+                    next if exists $perms{$k};
+                    $perms{$k} = $content_type_perm->{$k};
+                }
+                \%perms;
+            }
+        ) if !$mock_permission->is_mocked('perms_from_registry');
+    }
 }
 
 1;

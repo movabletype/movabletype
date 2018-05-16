@@ -151,32 +151,23 @@ sub resource_objects {
 sub get_target_user {
     my ($app) = @_;
 
-    if ( $app->param('user_id') eq 'me' ) {
+    my $user_id = $app->param('user_id') || '';
+    if ( $user_id eq 'me' ) {
         my $user = $app->user;
-        $user->is_anonymous ? $app->error(401) : $user;
+        return $user->is_anonymous ? $app->error(401) : $user;
     }
     else {
         my ($user) = context_objects(@_);
 
-        my $active_user_or_error = sub {
-            ( $user && $user->status == MT::Author::ACTIVE() )
-                ? $user
-                : $app->error( $app->translate('User not found'), 404 );
-        };
-
-        if ( $app->current_api_version == 1 ) {
-            return $active_user_or_error->();
-        }
-        else {
+        if ( $app->current_api_version != 1 ) {
             my $login_user = $app->user;
 
             if ( $login_user->is_superuser || $login_user->id == $user->id ) {
                 return $user;
             }
-            else {
-                return $active_user_or_error->();
-            }
         }
+        return $user if $user && $user->status == MT::Author::ACTIVE();
+        return $app->error( $app->translate('User not found'), 404 );
     }
 }
 
@@ -227,10 +218,9 @@ sub filtered_list {
     $terms   ||= {};
     $args    ||= {};
     $options ||= {};
-    my $q         = $app->param;
-    my $blog_id   = $q->param('blog_id') || 0;
-    my $filter_id = $q->param('fid') || 0;
-    my $blog      = $blog_id ? $app->blog : undef;
+    my $blog_id   = $app->param('blog_id') || 0;
+    my $filter_id = $app->param('fid')     || 0;
+    my $blog = $blog_id ? $app->blog : undef;
     my $scope
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
@@ -317,7 +307,7 @@ sub filtered_list {
     my $class = $setting->{datasource} || MT->model($ds);
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
+    if ( my $items = $app->param('items') ) {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
@@ -364,7 +354,8 @@ sub filtered_list {
     my $props = MT::ListProperty->list_properties($ds) || {};
 
     for my $key ( split ',', ( $app->param('filterKeys') || '' ) ) {
-        if ( defined( $app->param($key) ) ) {
+        my $value = $app->param($key);
+        if ( defined $value ) {
             ( my $obj_key = $key ) =~ s/([A-Z])/_\l$1/g;
             $obj_key =~ s/s\z// unless exists $props->{$obj_key};
 
@@ -381,7 +372,7 @@ sub filtered_list {
                                     },
                                 };
                                 } grep {$_}
-                                split( ',', scalar( $app->param($key) ) )
+                                split( ',', $value )
                         ],
                     },
                 }
@@ -484,11 +475,12 @@ sub filtered_list {
         }
     }
 
-    my $limit  = $q->param('limit')  || 50;
-    my $offset = $q->param('offset') || 0;
+    my $limit  = $app->param('limit')  || 50;
+    my $offset = $app->param('offset') || 0;
 
     ## FIXME: take identifical column from column defs.
-    my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
@@ -543,8 +535,8 @@ sub filtered_list {
     my %load_options = (
         terms => { %$terms, @blog_id_term },
         args  => {%$args},
-        sort_by    => $q->param('sortBy')    || '',
-        sort_order => $q->param('sortOrder') || '',
+        sort_by    => $app->param('sortBy')    || '',
+        sort_order => $app->param('sortOrder') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
@@ -587,7 +579,7 @@ sub filtered_list {
 
     $load_options{total} = $count;
 
-    my ( $objs, @data );
+    my $objs;
     if ($count) {
         MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
             $app, $filter, \%load_options, \@cols );

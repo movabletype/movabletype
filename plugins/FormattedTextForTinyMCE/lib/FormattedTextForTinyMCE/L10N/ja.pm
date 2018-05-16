@@ -14,13 +14,6 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## mt-static/plugins/FormattedTextForTinyMCE/extension.js
-	'Insert Boilerplate' => '定型文の挿入',
-
-## mt-static/plugins/FormattedTextForTinyMCE/langs/template.js
-	'Boilerplate' => '定型文',
-	'Select Boilerplate' => '定型文を選択...',
-
 ## plugins/FormattedTextForTinyMCE/config.yaml
 	'Add the "Insert Boilerplate" button to the TinyMCE.' => 'TinyMCE に「定型文の挿入」ボタンを追加します。',
 
@@ -28,6 +21,7 @@ use vars qw( %Lexicon );
 	'Cannot load boilerplate.' => '定型文をロードできませんでした。',
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
+	'Boilerplate' => '定型文',
 	'Select a Boilerplate' => '定型文を選択...',
 
 );

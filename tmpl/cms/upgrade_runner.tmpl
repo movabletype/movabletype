@@ -5,20 +5,21 @@
 </mt:if>
 
 <mt:setvar name="complete" value="1">
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="page_content">
 <div class="upgrade">
 <mt:unless name="up_to_date">
-  <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <div id="upgrade-container" class="upgrade-process">
-    <ul id="upgrade-progress">
-    </ul>
+  <div class="card card-block bg-faded">
+    <pre id="upgrade-container" class="pre-scrollable upgrade-process">
+      <code>
+        <ul id="upgrade-progress">
+        </ul>
+      </code>
+    </pre>
   </div>
-  <div id="progressbar" class="progressbar indeterminate"></div>
+  <div id="progressbar" class="mt-progress mt-5"><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" role="progress" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div></div>
   <div id="error-message-div" class="msg msg-error" style="display: none">
-    <p class="msg-text">
+    <p class="msg-text alert alert-danger">
     <mt:if name="installing">
       <__trans phrase="Error during installation:">
     <mt:else>
@@ -31,12 +32,12 @@
   <mt:if name="installing">
     <input type="hidden" name="installed" value="1">
   </mt:if>
-    <div class="actions-bar">
+    <div class="actions-bar text-right mt-5">
       <button
          type="submit"
          accesskey="s"
          title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
-         class="action primary button">
+         class="action primary button btn btn-primary">
       <mt:if name="installing">
         <__trans phrase="Sign in to Movable Type">
       <mt:else>
@@ -48,18 +49,24 @@
 <mt:else>
   <p><__trans phrase="Your database is already current."></p>
   <form method="post" action="<mt:var name="mt_admin_url">">
-    <div class="actions-bar">
+    <div class="actions-bar text-right mt-5">
       <button
          type="submit"
          accesskey="s"
          title="<__trans phrase="Return to Movable Type (s)">"
-         class="action primary button">
+         class="action primary button btn btn-primary">
         <__trans phrase="Return to Movable Type">
       </button>
     </div>
   </form>
 </mt:unless>
 </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 <mt:unless name="up_to_date">
     <script type="text/javascript">
@@ -216,4 +223,8 @@
     /* ]]> */
     </script>
 </mt:unless>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

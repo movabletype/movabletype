@@ -6,34 +6,39 @@
 
 package MT::Auth::MT;
 use strict;
+use warnings;
 
 use base 'MT::ErrorHandler';
 use MT::Author qw( AUTHOR );
 
 sub sanity_check {
-    my $auth  = shift;
+    my $auth = shift;
     my ($app) = @_;
-    my $q     = $app->param;
-    my $id    = $q->param('id');
 
-    if ( ( $q->param('pass') || '' ) ne ( $q->param('pass_verify') || '' ) ) {
+    my $id          = $app->param('id');
+    my $pass        = $app->param('pass');
+    my $pass_verify = $app->param('pass_verify');
+    my $old_pass    = $app->param('old_pass');
+
+    $pass        = '' unless defined $pass;
+    $pass_verify = '' unless defined $pass_verify;
+
+    if ( $pass ne $pass_verify ) {
         return $app->translate('Passwords do not match.');
     }
-    if ( length( scalar $q->param('pass') )
-        && ( $id && $app->user->id == $id ) )
-    {
+
+    return '' unless length($pass);
+
+    if ( $id && $app->user->id == $id ) {
         my $author = MT::Author->load($id)
             or
             return $app->translate('Failed to verify the current password.');
-        if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
+        if ( !$auth->is_valid_password( $author, $old_pass ) ) {
             return $app->translate('Failed to verify the current password.');
         }
     }
-    if ( length( scalar $q->param('pass') ) ) {
-        my $pass = scalar $q->param('pass');
-        if ( $pass =~ /[^\x20-\x7E]/ ) {
-            return $app->translate('Password contains invalid character.');
-        }
+    if ( $pass =~ /[^\x20-\x7E]/ ) {
+        return $app->translate('Password contains invalid character.');
     }
     return '';
 }
@@ -85,17 +90,20 @@ sub login_credentials {
     my ($ctx) = @_;
 
     my $app = $ctx->{app} or return;
-    if (   length( $app->param('username') )
-        && length( scalar $app->param('password') ) )
-    {
+
+    my $username = $app->param('username');
+    my $password = $app->param('password');
+    my $remember = $app->param('remember') ? 1 : 0;
+
+    if ( length($username) && length($password) ) {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
         $pass     = $app->param('password');
         $remember = $app->param('remember') ? 1 : 0;
         return {
             %$ctx,
-            username  => $user,
-            password  => $pass,
+            username  => $username,
+            password  => $password,
             permanent => $remember,
             auth_type => 'MT'
         };
@@ -134,7 +142,14 @@ sub fetch_credentials {
 sub login_form {
     my $auth = shift;
     my ($app) = @_;
-    return $app->build_page('include/login_mt.tmpl');
+    return $app->build_page(
+        'include/login_mt.tmpl',
+        {   build_blog_selector => 0,
+            build_menus         => 0,
+            build_compose_menus => 0,
+            build_user_menus    => 0,
+        }
+    );
 }
 
 sub validate_credentials {
@@ -164,8 +179,7 @@ sub validate_credentials {
             if ( $ctx->{session_id} ) {
                 my $sess = $app->model('session')->load( $ctx->{session_id} );
 
-                my $sess_author_id = $sess->get('author_id')
-                    if $sess;
+                my $sess_author_id = $sess ? $sess->get('author_id') : undef;
                 if (   $sess
                     && $sess_author_id
                     && ( $sess_author_id == $author->id ) )

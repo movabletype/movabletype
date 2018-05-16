@@ -8,29 +8,32 @@ mt-static/css/main.css
 mt-static/css/simple.css
 mt-static/js/mt_core_compact.js
 mt-static/js/editor.js
+mt-static/jquery/jquery.mt.min.js
+mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
+mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
 mt-static/mt_de.js
 mt-static/mt_es.js
 mt-static/mt_fr.js
 mt-static/mt_ja.js
 mt-static/mt_nl.js
-mt-static/support/dashboard
-mt-static/support/logs
-mt-static/support/themes
-mt-static/support/assets_c
-mt-static/support/uploads
-mt-static/support/theme_thumbnails/
-mt-static/support/theme_static/
+mt-static/support
 mt-config.cgi
 
+mt-comments.cgi
 mt-cp.cgi
+mt-tb.cgi
 addons
 mt-static/addons
 mt-static/plugins/FacebookCommenters
+mt-static/plugins/OpenID
 mt-static/plugins/feeds-app-lite
 mt-static/plugins/mixiComment
 mt-static/themes/tristan-blue
 mt-static/themes/tristan-blue-4.2
+plugins/Comments
 plugins/FacebookCommenters
+plugins/OpenID
+plugins/Trackback
 plugins/feeds-app-lite
 plugins/mixiComment
 
@@ -45,4 +48,16 @@ t/db/mt.db
 t/archive/
 t/update/
 
+*.DS_Store
 *.swp
+*.swo
+/mt.pid
+
+/node_modules/
+yarn-error.log
+
+.perl-version
+perltidy.LOG
+
+cover_db/
+

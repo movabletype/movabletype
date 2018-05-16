@@ -3,82 +3,121 @@
 
 <mt:unless name="filter" eq="userpic">
 <div style="float: left; margin-right: 15px;">
-  <form action="" method="get" id="modal-type-filter">
+  <form action="" method="get" id="modal-type-filter" class="form-inline">
     <span><__trans phrase="Asset Type: "></span>
-    <select name="asset-class" id="asset-class">
-      <option value=""><__trans phrase="All Types"></option>
+    <select name="asset-class" id="asset-class" class="custom-select form-control">
+      <option value="">
+        <__trans phrase="All Types">
+      </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>><mt:var name="label"></option>
+      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
+        <mt:var name="label">
+      </option>
 </mt:loop>
     </select>
   </form>
 </div>
 <div>
-  <form action="" method="get" id="modal-search">
-    <input type="text" id="search" name="search" class="search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
-    <input type="image" id="search-button"class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+  <form action="" method="get" id="modal-search" class="form-inline">
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+    <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
+      <mtapp:svgicon id="ic_search" title="Search">
+    </a>
+    <button id="search-button" class="search-command search-submit" style="display: none;">
+      <span class="sr-only">
+        <__trans phrase="Search">
+      </span>
+    </button>
     <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
   </form>
 </div>
 </mt:unless>
 
 <mt:setvarblock name="list_actions">
-        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
-        <div class="pagination"></div>
+        <div class="indicator">
+          <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
+          <__trans phrase="Loading...">
+        </div>
+        <nav aria-label="Asset List">
+          <ul class="pagination"></ul>
+        </nav>
 </mt:setvarblock>
 
-<div id="listing" class="listing line has-filter">
+<div id="listing" class="listing line has-filter mt-3">
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <table id="asset-table" class="listing-table list-asset">
-        <thead>
-          <th class="col head cb">&nbsp;</th>
-          <th class="col head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-          <th class="col head label primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
-        </thead>
-        <tfoot>
-          <th class="col head cb">&nbsp;</th>
-          <th class="col head si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-          <th class="col head label primary string" style="table-cell;"><span class="col-label"><__trans phrase="label"></span></th>
-        </tfoot>
+      <div class="mt-table--outline">
+        <table id="asset-table" class="table mt-table listing-table">
+          <thead>
+            <th class="head cb mt-table__control">&nbsp;</th>
+            <th class="head si file-status" scope="col">
+              <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
+            </th>
+            <th class="head primary string" scope="col"><span class="col-label"><__trans phrase="label"></span></th>
+          </thead>
 </mt:unless>
-        <tbody>
+          <tbody>
 <mt:if name="object_loop">
   <mt:loop name="object_loop">
-          <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <tr id="asset-<mt:var name="id" escape="html">">
     <mt:if name="can_multi">
-            <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" /></td>
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
     <mt:else>
-            <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-select-<mt:var name="id" escape="html">" /></td>
+              <td class="cb">
+                <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control custom-radio">
+                  <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" />
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
     </mt:if>
-            <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
-               <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
-            </td>
-            <td class="col asset-label primary">
+              <td class="si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+    <mt:if name="file_is_missing">
+                <mtapp:svgicon id="ic_error" size="sm" color="warning">
+    <mt:else>
+                <mtapp:svgicon id="ic_checkbox" size="sm" color="success">
+    </mt:if>
+              </td>
+              <td class="asset-label primary">
     <mt:if name="has_thumbnail">
-              <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>"><$mt:var name="label" escape="html"$></a>
-              <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
+                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
+                  <$mt:var name="label" escape="html"$>
+                </a>
+                <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
     <mt:else>
-      <mt:var name="label" escape="html">
+                <mt:var name="label" escape="html">
     </mt:if>
-            </td>
-          </tr>
+              </td>
+            </tr>
   </mt:loop>
 <mt:else>
-          <tr class="odd">
-            <td class="col fullwidth-row" colspan="3"><__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>"></td>
-          </tr>
+            <tr class="odd">
+              <td class="fullwidth-row" colspan="3">
+                <__trans phrase="No [_1] could be found." params="<mt:if name="upload_mode" eq="upload_userpic"><__trans phrase="Userpic"><mt:else><__trans phrase="Assets"></mt:if>">
+              </td>
+            </tr>
 </mt:if>
-        </tbody>
+          </tbody>
 <mt:unless name="json">
-      </table>
+        </table>
+      </div>
     </div>
-    <div id="actions-bar" class="line">
+    <div id="actions-bar" class="float-right line">
   <mt:var name="list_actions">
     </div>
   </div>
 </div>
+
+<mt:setvarblock name="js_include" append="1">
+<script src="<mt:var name="static_uri">js/list_table.js"></script>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 isModal = getByID("list-assets-dialog");
@@ -88,7 +127,7 @@ var currentPage = 1;
 
 function loadAssetList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('div.pagination').hide();
+  jQuery('ul.pagination').hide();
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
@@ -152,7 +191,7 @@ function loadAssetList(offset) {
     complete: function() {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPaginate) {
-        jQuery('div.pagination').show();
+        jQuery('ul.pagination').show();
       }
       jQuery('#asset-class').removeAttr("disabled");
       jQuery('#search').removeAttr("disabled");
@@ -195,7 +234,7 @@ function renderPagination(pager) {
   var end;
   var page = parseInt(pager.offset / pager.limit) + 1;
   var maxPage = Math.ceil(pager.listTotal / pager.limit);
-  currentPage = page;  
+  currentPage = page;
 
   if ( page > 1 ) {
     usefirst = true;
@@ -221,23 +260,31 @@ function renderPagination(pager) {
 
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
 
-  if (usefirst) {
-    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First" escape="js"></a>')
-      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev" escape="js"></a>');
-  } else {
-    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First" escape="js"></span>')
-      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev" escape="js"></span>');
+  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+
+  if (page - 2 >= 1) {
+    $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+    $e.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
-  $e.append('<span class="current-rows">'+page_status+'</span>')
-
-  if (uselast) {
-    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next" escape="js"> &rsaquo;</a>')
-      .append('<a href="#" class="pagenav end"><__trans phrase="Last" escape="js"> &raquo;</a>');
-  } else {
-    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next" escape="js"> &rsaquo;</span>')
-      .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
+  if (page - 1 >= 1) {
+    var firstLastClass = page - 1 == 1 ? ' first-last' : '';
+    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
   }
+
+  $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+
+  if (page + 1 <= maxPage) {
+    var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
+    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+  }
+
+  if (page + 2 <= maxPage) {
+    $e.append('<li class="page-item" aria-hidden="true">...</li>');
+    $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+  }
+
+  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
 
   jQuery('a.start').click(function() {
     saveChecked(page);
@@ -245,11 +292,17 @@ function renderPagination(pager) {
     return false;
   });
   jQuery('a.to-start').click(function() {
+    if (!usefirst) {
+      return false;
+    }
     saveChecked(page);
     loadAssetList(prevPos);
     return false;
   });
   jQuery('a.to-end').click(function() {
+    if (!uselast) {
+      return false;
+    }
     saveChecked(page);
     loadAssetList(nextPos);
     return false;

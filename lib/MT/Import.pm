@@ -62,7 +62,7 @@ sub _get_stream_iterator {
     my $class = shift;
     my ( $stream, $cb ) = @_;
     my $iter;
-    if ( ref($stream) eq 'Fh' ) {
+    if ( UNIVERSAL::isa( $stream, 'Fh' ) ) {
         seek( $stream, 0, 0 )
             or return $class->error( MT->translate("Cannot rewind") );
         $iter = sub {
@@ -92,7 +92,7 @@ sub _get_stream_iterator {
     else {
         if ( -f $stream ) {
             my $fh = gensym();
-            open $fh, $stream
+            open $fh, "<", $stream
                 or return $class->error(
                 MT->translate( "Cannot open '[_1]': [_2]", $stream, $! ) );
             $stream = $fh;
@@ -138,11 +138,15 @@ sub _get_stream_iterator {
                         $file )
                         . "\n"
                 );
-                open $fh, "<$file"
+                open $fh, "<", $file
                     or return $class->error(
                     MT->translate( "Cannot open '[_1]': [_2]", $file, $! ) );
                 $stream = $fh;
             };
+        }
+        else {
+            return $class->error(
+                MT->translate( "File not found: [_1]", $stream ) );
         }
     }
     $iter;
@@ -232,7 +236,8 @@ sub get_options_html {
                 $options_param = MT->handler_to_coderef($options_param);
             }
         }
-        my $param = $options_param->($blog_id)
+        my $param;
+        $param = $options_param->($blog_id)
             if ref $options_param eq 'CODE';
 
         $param->{blog_id} = $blog_id;
@@ -242,9 +247,11 @@ sub get_options_html {
             ? 0
             : 1;
 
+        # XXX always true because of autovivification
         $tmpl->param($param) if $param;
     }
     my $html = $tmpl->output();
+    $html = '' unless defined $html;
     if ( $html =~ m/<(_|MT)_TRANS /i ) {
         if ( my $c = $importer->{plugin} ) {
             $html = $c->translate_templatized($html);
@@ -333,7 +340,7 @@ The subroutine referenced by the "options_param" key takes the following paramet
 
     blog_id: blog's id which is importing data.
 
-The subroutine should return a reference to a hash which contains paramters passed to
+The subroutine should return a reference to a hash which contains parameters passed to
 template upon building html.
 
 =head1 AUTHOR & COPYRIGHT

@@ -1,16 +1,27 @@
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib";    # t/lib
+use Test::More;
+use MT::Test::Env;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval { require LWP::UserAgent::Local }
+        or plan skip_all =>
+        'Some of the deps of LWP::UserAgent::Local are not installed';
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+our $test_env;
+
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
-use Test::More;
 use MIME::Base64;
 
 use MT::FileMgr;
@@ -18,6 +29,8 @@ my $fmgr = MT::FileMgr->new('Local');
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new() or die MT->errstr;
 
@@ -34,11 +47,26 @@ my $base_uri = '/mt-xmlrpc.cgi';
 my $username = 'Chuck D';
 my $password = 'seecret';
 
+my $author = MT->model('author')->load(2) or die MT->model('author')->errstr;
+$author->api_password($password);
+$author->save or die $author->errstr;
+
+my $category_set1 = MT::Test::Permission->make_category_set( blog_id => 1 );
+MT::Test::Permission->make_category(
+    blog_id         => 1,
+    category_set_id => $category_set1->id
+);
+
+my $category_set2 = MT::Test::Permission->make_category_set( blog_id => 2 );
+MT::Test::Permission->make_category(
+    blog_id         => 2,
+    category_set_id => $category_set2->id
+);
+
 use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
 my $deser = XMLRPC::Deserializer->new();
 
-require LWP::UserAgent::Local;
 my $ua = new LWP::UserAgent::Local( { ScriptAlias => '/' } );
 
 my $logo
@@ -63,7 +91,7 @@ my @apis = (
             is( $result->[1]->{blogid}, '2', 'blogid is correct' );
             is( $result->[1]->{blogName}, 'Test site',
                 'blogName is correct' );
-            }
+        }
     },
     {   api    => 'metaWeblog.getUsersBlogs',
         params => [ '', $username, $password ],
@@ -82,7 +110,7 @@ my @apis = (
             is( $result->[1]->{blogid}, '2', 'blogid is correct' );
             is( $result->[1]->{blogName}, 'Test site',
                 'blogName is correct' );
-            }
+        }
     },
     {   api    => 'blogger.getUserInfo',
         params => [ '', $username, $password ],
@@ -96,7 +124,7 @@ my @apis = (
             is( $result->{nickname}, $author->nickname || '' );
             is( $result->{email},    $author->email    || '' );
             is( $result->{url},      $author->url      || '' );
-            }
+        }
     },
     {   api    => 'blogger.getUsersBlogs',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -106,7 +134,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'metaWeblog.getUsersBlogs',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -116,7 +144,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'blogger.getUserInfo',
         params => [ '', 'Chuck D', 'wrong' ],
@@ -126,7 +154,7 @@ my @apis = (
             ok( $som->fault );
             is( $som->faultstring, 'Invalid login' );
             is( $som->faultcode,   1 );
-            }
+        }
     },
     {   api    => 'blogger.getRecentPosts',
         params => [ '', 1, $username, $password, 2 ],
@@ -574,14 +602,18 @@ my @apis = (
     {   api    => 'mt.getCategoryList',
         params => [ 2, $username, $password ],
         pre    => sub {
-            while ( MT::Category->count( { blog_id => 2 } ) < 2 ) {
+            while (
+                MT::Category->count( { blog_id => 2, category_set_id => 0 } )
+                < 2 )
+            {
                 MT::Test::Permission->make_category( blog_id => 2 );
             }
         },
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 2 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 2, category_set_id => 0 } );
             ok( scalar(@cats) );
             ok( scalar(@$result) );
             is( scalar(@cats), scalar(@$result) );
@@ -647,8 +679,10 @@ my @apis = (
             $username,
             $password,
             sub {
-                my $c = MT::Category->load( { blog_id => 2 },
-                    { sort => 'id', direction => 'descend' } );
+                my $c = MT::Category->load(
+                    { blog_id => 2,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 [ { categoryId => $c->id } ];
             },
         ],
@@ -663,8 +697,10 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my $cat1 = MT::Category->load( { blog_id => 2 },
-                { sort => 'id', direction => 'descend' } );
+            my $cat1 = MT::Category->load(
+                { blog_id => 2,    category_set_id => 0 },
+                { sort    => 'id', direction       => 'descend' }
+            );
             my $cats = $entry->categories;
             is( scalar @$cats,           1 );
             is( $cats->[0]->label,       $cat1->label );
@@ -710,7 +746,9 @@ my @apis = (
             $username,
             $password,
             sub {
-                my @c = MT::Category->load( { blog_id => 2 },
+                my @c
+                    = MT::Category->load(
+                    { blog_id => 2, category_set_id => 0 },
                     { sort => 'id', direction => 'descend', limit => 2 } );
                 [   { categoryId => $c[0]->id, isPrimary => 1 },
                     { categoryId => $c[1]->id, isPrimary => 0 }
@@ -732,8 +770,10 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my $cat1 = MT::Category->load( { blog_id => 2 },
-                { sort => 'id', direction => 'descend' } );
+            my $cat1 = MT::Category->load(
+                { blog_id => 2,    category_set_id => 0 },
+                { sort    => 'id', direction       => 'descend' }
+            );
             my $cats = $entry->categories;
             is( scalar @$cats,           2 );
             is( $entry->category->label, $cat1->label );
@@ -778,7 +818,9 @@ my @apis = (
             $username,
             $password,
             sub {
-                my @c = MT::Category->load( { blog_id => 2 },
+                my @c
+                    = MT::Category->load(
+                    { blog_id => 2, category_set_id => 0 },
                     { sort => 'id', direction => 'descend', limit => 2 } );
                 [   { categoryId => $c[0]->id, isPrimary => 0 },
                     { categoryId => $c[1]->id, isPrimary => 1 }
@@ -800,7 +842,8 @@ my @apis = (
             MT::Entry->driver->Disabled(0)
                 if MT::Entry->driver->isa(
                 'Data::ObjectDriver::Driver::BaseCache');
-            my @cat = MT::Category->load( { blog_id => 2 },
+            my @cat
+                = MT::Category->load( { blog_id => 2, category_set_id => 0 },
                 { sort => 'id', direction => 'descend', limit => 2 } );
             my $cats = $entry->categories;
             is( scalar @$cats,           2 );
@@ -1212,7 +1255,7 @@ my @apis = (
             my $asset = MT::Asset->load( { blog_id => 1 },
                 { sort => 'id', direction => 'descend', limit => 1 } );
             $asset->remove();
-            }
+        }
     },
     {   api    => 'metaWeblog.newMediaObject',
         params => [
@@ -1247,14 +1290,15 @@ my @apis = (
             my $asset = MT::Asset::Image->load( { blog_id => 2 },
                 { sort => 'id', direction => 'descend', limit => 1 } );
             $asset->remove();
-            }
+        }
     },
     {   api    => 'metaWeblog.getCategories',
         params => [ 1, $username, $password ],
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 1 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 1, category_set_id => 0 } );
             for ( my $i = 0; $i <= $#cats; ++$i ) {
                 is( $cats[$i]->id,          $result->[$i]->{categoryId} );
                 is( $cats[$i]->label,       $result->[$i]->{categoryName} );
@@ -1274,14 +1318,18 @@ my @apis = (
     {   api    => 'metaWeblog.getCategories',
         params => [ 2, $username, $password ],
         pre    => sub {
-            while ( MT::Category->count( { blog_id => 2 } ) < 2 ) {
+            while (
+                MT::Category->count( { blog_id => 2, category_set_id => 0 } )
+                < 2 )
+            {
                 MT::Test::Permission->make_category( blog_id => 2, );
             }
         },
         result => sub {
-            my ($som) = @_;
+            my ($som)  = @_;
             my $result = $som->result;
-            my @cats = MT::Category->load( { blog_id => 2 } );
+            my @cats   = MT::Category->load(
+                { blog_id => 2, category_set_id => 0 } );
             for ( my $i = 0; $i <= $#cats; ++$i ) {
                 is( $cats[$i]->id,          $result->[$i]->{categoryId} );
                 is( $cats[$i]->label,       $result->[$i]->{categoryName} );
@@ -1298,80 +1346,6 @@ my @apis = (
             ok( scalar(@cats) );
         },
     },
-    {   api    => 'mt.getTrackbackPings',
-        params => [ 1, $username, $password ],
-        result => sub {
-            my ($som)  = @_;
-            my $result = $som->result;
-            my @pings  = MT::TBPing->load(
-                undef,
-                {   'join' => MT::Trackback->join_on(
-                        undef,
-                        { id => \'= tbping_tb_id', },
-                        {   'join' => MT::Entry->join_on(
-                                undef,
-                                {   id    => \'= trackback_entry_id',
-                                    class => 'entry',
-                                }
-                            )
-                        }
-                    )
-                }
-            );
-            for ( my $i = 0; $i <= $#pings; ++$i ) {
-                is( $pings[$i]->ip,         $result->[$i]->{pingIP} );
-                is( $pings[$i]->source_url, $result->[$i]->{pingURL} );
-                is( $pings[$i]->title,      $result->[$i]->{pingTitle} );
-            }
-            is( scalar(@$result), scalar(@pings) );
-        },
-    },
-    {   api => 'mt.getTrackbackPings',
-        pre => sub {
-            my $e = MT::Entry->load( { blog_id => 2 },
-                { sort => 'id', direction => 'descend' } );
-            my $tb = MT::Trackback->load(
-                { blog_id => 2,    entry_id  => $e->id },
-                { sort    => 'id', direction => 'descend' }
-            );
-            MT::Test::Permission->make_ping( blog_id => 2, tb_id => $tb->id );
-        },
-        params => [
-            sub {
-                my $e = MT::Entry->load( { blog_id => 2 },
-                    { sort => 'id', direction => 'descend' } );
-                $e->id;
-            },
-            $username,
-            $password
-        ],
-        result => sub {
-            my ($som)  = @_;
-            my $result = $som->result;
-            my @pings  = MT::TBPing->load(
-                { blog_id => 2 },
-                {   'join' => MT::Trackback->join_on(
-                        undef,
-                        { id => \'= tbping_tb_id', },
-                        {   'join' => MT::Entry->join_on(
-                                undef,
-                                {   id    => \'= trackback_entry_id',
-                                    class => 'entry',
-                                }
-                            )
-                        }
-                    )
-                }
-            );
-            for ( my $i = 0; $i <= $#pings; ++$i ) {
-                is( $pings[$i]->ip,         $result->[$i]->{pingIP} );
-                is( $pings[$i]->source_url, $result->[$i]->{pingURL} );
-                is( $pings[$i]->title,      $result->[$i]->{pingTitle} );
-            }
-            is( scalar(@$result), scalar(@pings) );
-            ok( scalar(@pings) );
-        },
-    },
     {   api    => 'mt.supportedTextFilters',
         params => [ $username, $password ],
         result => sub {
@@ -1383,11 +1357,12 @@ my @apis = (
                 'markdown'                  => 1,
                 'markdown_with_smartypants' => 1,
                 'textile_2'                 => 1,
+                'blockeditor'               => 1,
             );
 
             # __sanitize__ may come from the community pack
             @$result = grep { $_->{key} ne '__sanitize__' } @$result;
-            foreach my $res (@$result) {
+            foreach my $res ( sort @$result ) {
                 is( 1, delete( $tf{ $res->{key} } ), $res->{key} );
             }
             ok( !%tf );
@@ -1712,7 +1687,7 @@ my @apis = (
                 my $p = MT::Page->load( { blog_id => 1 },
                     { sort => 'id', direction => 'descend' } );
                 $p->id;
-                }
+            }
         ],
         result => sub {
             my ( $som, $data ) = @_;
@@ -1739,7 +1714,7 @@ my @apis = (
                 my $p = MT::Page->load( { blog_id => 2 },
                     { sort => 'id', direction => 'descend' } );
                 $p->id;
-                }
+            }
         ],
         result => sub {
             my ( $som, $data ) = @_;

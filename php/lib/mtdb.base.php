@@ -35,6 +35,8 @@ abstract class MTDatabase {
     protected $_asset_tag_cache = array();
     protected $_blog_asset_tag_cache = array();
     protected $_author_id_cache = array();
+    protected $_category_set_id_cache = array();
+    protected $_rebuild_trigger_cache = array();
 
 
     // Construction
@@ -155,20 +157,23 @@ abstract class MTDatabase {
     }
 
     public function include_exclude_blogs(&$args) {
-        if ( empty( $args['include_with_website'] ) )
+        if ( empty( $args['include_parent_site'] ) && empty( $args['include_with_website'] ) )
             $include_with_website = false;
         else
             $include_with_website = true;
 
         $incl = null;
         $excl = null;
-        if ( isset($args['blog_ids'])
+        if ( isset($args['include_sites'])
+          || isset($args['blog_ids'])
           || isset($args['include_blogs'])
           || isset($args['site_ids'])
           || isset($args['include_websites']) )
         {
             // The following are aliased
-            if ($args['blog_ids'])
+            if ($args['include_sites'])
+                $incl = $args['include_sites'];
+            elseif ($args['blog_ids'])
                 $incl = $args['blog_ids'];
             elseif ($args['include_blogs'])
                 $incl = $args['include_blogs'];
@@ -177,16 +182,21 @@ abstract class MTDatabase {
             elseif ($args['include_websites'])
                 $incl = $args['include_websites'];
             $args['include_blogs'] = $incl;
+            unset($args['include_sites']);
             unset($args['blog_ids']);
             unset($args['site_ids']);
             unset($args['include_websites']);
+        }
+        else if (isset($args['site_id'])) {
+            $incl = $args['site_id'];
         }
         else if (isset($args['blog_id'])) {
             $incl = $args['blog_id'];
         }
 
-        if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
-            $excl = $args['exclude_blogs'];
+        if (isset($args['exclude_sites']) || isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
+            $excl = $args['exclude_sites'];
+            $excl or $excl = $args['exclude_blogs'];
             $excl or $excl = $args['exclude_websites'];
 
             if ( !isset( $args['include_blogs'] ) ) {
@@ -824,8 +834,9 @@ abstract class MTDatabase {
             $blog_ctx_arg = isset($args['include_blogs']) ?
                 array('include_blogs' => $args['include_blogs']) :
                 array('exclude_blogs' => $args['exclude_blogs']);
-            if (isset($args['include_blogs']) && isset($args['include_with_website'])) {
-                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $args['include_with_website']));
+            $include_with_website = $args['include_parent_site'] || $args['include_with_website'];
+            if (isset($args['include_blogs']) && isset($include_with_website)) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $include_with_website));
             }
         }
 
@@ -1799,6 +1810,19 @@ abstract class MTDatabase {
         }
         $class_filter = " and category_class='$class'";
 
+        if (isset($args['category_set_id'])) {
+            if ($args['category_set_id'] !== '*') {
+                $category_set_id = intval($args['category_set_id']);
+            }
+        } else if (!isset($args['category_id'])
+            && (!isset($args['parent']) || !$args['parent']))
+        {
+            $category_set_id = 0;
+        }
+        if (isset($category_set_id)) {
+            $category_set_filter = "and category_category_set_id = $category_set_id";
+        }
+
         $sql = "
             select category_id, count($count_column) as category_count
               from mt_category $join_clause
@@ -1808,6 +1832,7 @@ abstract class MTDatabase {
                    $blog_filter
                    $parent_filter
                    $class_filter
+                   $category_set_filter
              group by category_id
         ";
 
@@ -1835,11 +1860,16 @@ abstract class MTDatabase {
             $categories = $category->Find($where);
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
-                $ctx = $mt->context();
-                $blog = $ctx->stash('blog');
-                $meta = $class.'_order';
                 try {
-                    $custom_order = $blog->$meta;
+                    if (isset($category_set_id) && $category_set_id) {
+                        $category_set = $mt->db()->fetch_category_set($category_set_id);
+                        $custom_order = $category_set->order;
+                    } else {
+                        $ctx = $mt->context();
+                        $blog = $ctx->stash('blog');
+                        $meta = $class.'_order';
+                        $custom_order = $blog->$meta;
+                    }
                     if ( !empty($custom_order) ) {
                         $order_list = preg_split('/\s*,\s*/', $custom_order);
                         $cats = array();
@@ -3827,6 +3857,41 @@ abstract class MTDatabase {
         return $tmpl;
     }
 
+    public function fetch_category_set($category_set_id) {
+        if (!empty($this->_category_set_id_cache) && isset($this->_category_set_id_cache[$category_set_id])) {
+            return $this->_category_set_id_cache[$category_set_id];
+        }
+        require_once('class.mt_category_set.php');
+        $category_set = new CategorySet;
+        $category_set->Load("category_set_id = $category_set_id");
+        $this->_category_set_id_cache[$category_set_id] = $category_set;
+        return $category_set;
+    }
+
+    public function fetch_category_sets($args) {
+        if ($args['limit'] && $args['limit'] > 0) {
+            $limit = $args['limit'];
+        } else {
+            $limit = -1;
+        }
+        if ($args['blog_id'] && $args['blog_id'] > 0) {
+            $blog_filter = "and category_set_blog_id = " . $args['blog_id'];
+        } else {
+            $blog_filter = "";
+        }
+        if (isset($args['name']) && !empty($args['name'])) {
+            $name_filter = 'and category_set_name = "' . $args['name'] . '"';
+        } else {
+            $name_filter = "";
+        }
+        $where = "1 = 1
+                  $blog_filter
+                  $name_filter";
+        require_once('class.mt_category_set.php');
+        $category_set = new CategorySet;
+        return $category_set->Find($where, $limit);
+    }
+
     private function build_date_filter($args, $field) {
         $start = isset($args['current_timestamp'])
             ? $args['current_timestamp'] : null;
@@ -3846,6 +3911,17 @@ abstract class MTDatabase {
         } else {
             return '';
         }
+    }
+
+    public function fetch_rebuild_trigger($blog_id) {
+        if (!empty($this->_rebuild_trigger_cache) && isset($this->_rebuild_trigger_cache[$blog_id])) {
+            return $this->_rebuild_trigger_cache[$blog_id];
+        }
+        require_once('class.mt_rebuild_trigger.php');
+        $rebuild_trigger = new RebuildTrigger;
+        $rebuild_trigger->Load("rebuild_trigger_blog_id = $blog_id");
+        $this->_rebuild_trigger_cache[$blog_id] = $rebuild_trigger;
+        return $rebuild_trigger;
     }
 }
 ?>

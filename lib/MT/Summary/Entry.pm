@@ -16,7 +16,6 @@ use MT::Entry;
 sub summarize_all_assets {
     my $entry = shift;
     my ($terms) = @_;
-    my %args;
 
     require MT::ObjectAsset;
     my @assets = MT::Asset->load(

@@ -1,14 +1,20 @@
 #!/usr/bin/perl
 
 use strict;
-use lib qw( t/lib extlib lib ../lib ../extlib );
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib",    # t/lib
+    "$FindBin::Bin/..";         # $ENV{MT_HOME}
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-memcached-test.cfg';
+    $test_env = MT::Test::Env->new( MemcachedServers => '127.0.0.1:11211', );
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
-use Test::More;
 
 my $alive = eval {
     my $m = MT::Memcached->instance;
@@ -21,5 +27,5 @@ if ( !$alive ) {
 }
 else {
     ( my $filename = __FILE__ ) =~ s/-memcached\.t\z/.t/;
-    require($filename);
+    require($filename);    # t/64-objectmeta.t
 }

@@ -2,19 +2,24 @@
 
 use strict;
 use warnings;
-use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
+use utf8;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use MT;
 use MT::Filter;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 
@@ -66,7 +71,7 @@ my @count_specs = (
             args  => {
                 'join' => MT::Comment->join_on(
                     'entry_id',
-                    { junk_status => MT::Comment::JUNK },
+                    { junk_status => MT::Comment::JUNK() },
                     { unique      => 1 }
                 ),
             },

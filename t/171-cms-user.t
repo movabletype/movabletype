@@ -1,11 +1,14 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT;
@@ -13,10 +16,12 @@ use MT::Association;
 use MT::CMS::User;
 use MT::Role;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
 
-use Test::More;
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 MT->instance;
 my $admin = MT::Author->load(1);
@@ -186,7 +191,7 @@ subtest 'Manage Users screen' => sub {
         $out = delete $app->{__test_output};
         my $url_activity_log = $app->uri . '?__mode=list&_type=log&blog_id=0';
         $msg = quotemeta
-            "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log'>activity log</a> for more details.";
+            "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled one user.' );
 
@@ -201,7 +206,7 @@ subtest 'Manage Users screen' => sub {
         );
         $out = delete $app->{__test_output};
         $msg = quotemeta
-            "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log'>activity log</a> for more details.";
+            "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
         ok( $out =~ m/$msg/,
             'There is a system message: could not be re-enabled five user.' );
     };
@@ -277,7 +282,7 @@ subtest 'Manage Users screen' => sub {
 subtest 'Batch Edit Entries screen' => sub {
     my $website = MT->model('website')->load;
     MT::Test::Permission->make_entry( blog_id => $website->id );
-    my $role = MT::Role->load( { name => 'Website Administrator' } );
+    my $role = MT::Role->load( { name => 'Site Administrator' } );
     MT::Association->link( $admin, $role, $website );
 
     foreach my $blog_type (qw( blog website )) {

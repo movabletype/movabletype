@@ -1,14 +1,19 @@
 package CGI::Util;
+use base 'Exporter';
 require 5.008001;
 use strict;
-require Exporter;
-our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape 
-		expires ebcdic2ascii ascii2ebcdic);
+use if $] >= 5.019, 'deprecate';
+our @EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape
+        expires ebcdic2ascii ascii2ebcdic);
 
-our $VERSION = '3.53';
+our $VERSION = '4.38';
 
-use constant EBCDIC => "\t" ne "\011";
+our $_EBCDIC = "\t" ne "\011";
+
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
 
 # (ord('^') == 95) for codepage 1047 as on os390, vmesa
 our @A2E = (
@@ -28,7 +33,7 @@ our @A2E = (
  172,105,237,238,235,239,236,191,128,253,254,251,252,186,174, 89,
   68, 69, 66, 70, 67, 71,156, 72, 84, 81, 82, 83, 88, 85, 86, 87,
  140, 73,205,206,203,207,204,225,112,221,222,219,220,141,142,223
-	 );
+     );
 our @E2A = (
    0,  1,  2,  3,156,  9,134,127,151,141,142, 11, 12, 13, 14, 15,
   16, 17, 18, 19,157, 10,  8,135, 24, 25,146,143, 28, 29, 30, 31,
@@ -46,9 +51,9 @@ our @E2A = (
  125, 74, 75, 76, 77, 78, 79, 80, 81, 82,185,251,252,249,250,255,
   92,247, 83, 84, 85, 86, 87, 88, 89, 90,178,212,214,210,211,213,
   48, 49, 50, 51, 52, 53, 54, 55, 56, 57,179,219,220,217,218,159
-	 );
+     );
 
-if (EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
+if ($_EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
      $A2E[91] = 187;   $A2E[92] = 188;  $A2E[94] = 106;  $A2E[96] = 74;
      $A2E[123] = 251;  $A2E[125] = 253; $A2E[126] = 255; $A2E[159] = 95;
      $A2E[162] = 176;  $A2E[166] = 208; $A2E[168] = 121; $A2E[172] = 186;
@@ -61,7 +66,7 @@ if (EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
      $E2A[221] = 219; $E2A[224] = 217; $E2A[251] = 123; $E2A[253] = 125;
      $E2A[255] = 126;
    }
-elsif (EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
+elsif ($_EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
   $A2E[10] = 37;  $A2E[91] = 186;  $A2E[93] = 187; $A2E[94] = 176;
   $A2E[133] = 21; $A2E[168] = 189; $A2E[172] = 95; $A2E[221] = 173;
 
@@ -77,7 +82,7 @@ sub rearrange {
     my ($order,@param) = @_;
     my ($result, $leftover) = _rearrange_params( $order, @param );
     push @$result, make_attributes( $leftover, defined $CGI::Q ? $CGI::Q->{escape} : 1 ) 
-	if keys %$leftover;
+    if keys %$leftover;
     @$result;
 }
 
@@ -95,30 +100,43 @@ sub _rearrange_params {
     return [] unless @param;
 
     if (ref($param[0]) eq 'HASH') {
-	@param = %{$param[0]};
+    @param = %{$param[0]};
     } else {
-	return \@param 
-	    unless (defined($param[0]) && substr($param[0],0,1) eq '-');
+    return \@param 
+        unless (defined($param[0]) && substr($param[0],0,1) eq '-');
     }
 
     # map parameters into positional indices
     my ($i,%pos);
     $i = 0;
     foreach (@$order) {
-	foreach (ref($_) eq 'ARRAY' ? @$_ : $_) { $pos{lc($_)} = $i; }
-	$i++;
+    foreach (ref($_) eq 'ARRAY' ? @$_ : $_) { $pos{lc($_)} = $i; }
+    $i++;
     }
+
+    my %params_as_hash = ( @param );
 
     my (@result,%leftover);
     $#result = $#$order;  # preextend
-    while (@param) {
-	my $key = lc(shift(@param));
-	$key =~ s/^\-//;
-	if (exists $pos{$key}) {
-	    $result[$pos{$key}] = shift(@param);
-	} else {
-	    $leftover{$key} = shift(@param);
-	}
+
+    foreach my $k (
+        # sort keys alphabetically but favour certain keys before others
+        # specifically for the case where there could be several options
+        # for a param key, but one should be preferred (see GH #155)
+        sort {
+            if    ( $a =~ /content/i ) { return 1 }
+            elsif ( $b =~ /content/i ) { return -1 }
+            else  { $a cmp $b }
+        }
+        keys( %params_as_hash )
+    ) {
+    my $key = lc($k);
+    $key =~ s/^\-//;
+    if (exists $pos{$key}) {
+        $result[$pos{$key}] = $params_as_hash{$k};
+    } else {
+        $leftover{$key} = $params_as_hash{$k};
+    }
     }
 
     return \@result, \%leftover;
@@ -132,20 +150,21 @@ sub make_attributes {
 
     my $quote = $do_not_quote ? '' : '"';
 
+    my @attr_keys= sort keys %$attr;
     my(@att);
-    foreach (keys %{$attr}) {
-	my($key) = $_;
-	$key=~s/^\-//;     # get rid of initial - if present
+    foreach (@attr_keys) {
+    my($key) = $_;
+    $key=~s/^\-//;     # get rid of initial - if present
 
-	# old way: breaks EBCDIC!
-	# $key=~tr/A-Z_/a-z-/; # parameters are lower case, use dashes
+    # old way: breaks EBCDIC!
+    # $key=~tr/A-Z_/a-z-/; # parameters are lower case, use dashes
 
-	($key="\L$key") =~ tr/_/-/; # parameters are lower case, use dashes
+    ($key="\L$key") =~ tr/_/-/; # parameters are lower case, use dashes
 
-	my $value = $escape ? simple_escape($attr->{$_}) : $attr->{$_};
-	push(@att,defined($attr->{$_}) ? qq/$key=$quote$value$quote/ : qq/$key/);
+    my $value = $escape ? simple_escape($attr->{$_}) : $attr->{$_};
+    push(@att,defined($attr->{$_}) ? qq/$key=$quote$value$quote/ : qq/$key/);
     }
-    return @att;
+    return sort @att;
 }
 
 sub simple_escape {
@@ -173,22 +192,22 @@ sub unescape {
   my $todecode = shift;
   return undef unless defined($todecode);
   $todecode =~ tr/+/ /;       # pluses become spaces
-    if (EBCDIC) {
+    if ($_EBCDIC) {
       $todecode =~ s/%([0-9a-fA-F]{2})/chr $A2E[hex($1)]/ge;
     } else {
-	# handle surrogate pairs first -- dankogai. Ref: http://unicode.org/faq/utf_bom.html#utf16-2
-	$todecode =~ s{
-			%u([Dd][89a-bA-B][0-9a-fA-F]{2}) # hi
-		        %u([Dd][c-fC-F][0-9a-fA-F]{2})   # lo
-		      }{
-			  utf8_chr(
-				   0x10000 
-				   + (hex($1) - 0xD800) * 0x400 
-				   + (hex($2) - 0xDC00)
-				  )
-		      }gex;
+    # handle surrogate pairs first -- dankogai. Ref: http://unicode.org/faq/utf_bom.html#utf16-2
+    $todecode =~ s{
+            %u([Dd][89a-bA-B][0-9a-fA-F]{2}) # hi
+                %u([Dd][c-fC-F][0-9a-fA-F]{2})   # lo
+              }{
+              utf8_chr(
+                   0x10000 
+                   + (hex($1) - 0xD800) * 0x400 
+                   + (hex($2) - 0xDC00)
+                  )
+              }gex;
       $todecode =~ s/%(?:([0-9a-fA-F]{2})|u([0-9a-fA-F]{4}))/
-	defined($1)? chr hex($1) : utf8_chr(hex($2))/ge;
+    defined($1)? chr hex($1) : utf8_chr(hex($2))/ge;
     }
   return $todecode;
 }
@@ -202,7 +221,7 @@ sub unescape {
 # Byte strings were traditionally used directly as a sequence of octets.
 # This worked if they actually represented binary data (i.e. in CGI::Compress).
 # This also worked if these byte strings were actually utf-8 encoded; e.g.,
-# when the source file used utf-8 without the apropriate "use utf8;".
+# when the source file used utf-8 without the appropriate "use utf8;".
 # This fails if the byte string is actually a Latin 1 encoded string, but it
 # was always so and cannot be fixed without breaking the binary data case.
 # -- Stepan Kasal <skasal@redhat.com>
@@ -214,7 +233,7 @@ sub escape {
   my $toencode = shift;
   return undef unless defined($toencode);
   utf8::encode($toencode) if utf8::is_utf8($toencode);
-    if (EBCDIC) {
+    if ($_EBCDIC) {
       $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",$E2A[ord($1)])/eg;
     } else {
       $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",ord($1))/eg;
@@ -312,17 +331,18 @@ no public subroutines
 
 =head1 AUTHOR INFORMATION
 
-Copyright 1995-1998, Lincoln D. Stein.  All rights reserved.
+The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
+distributed under GPL and the Artistic License 2.0. It is currently
+maintained by Lee Johnson with help from many contributors.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
 
-Address bug reports and comments to: lstein@cshl.org.  When sending
-bug reports, please provide the version of CGI.pm, the version of
-Perl, the name and version of your Web server, and the name and
-version of the operating system you are using.  If the problem is even
-remotely browser dependent, please provide information about the
-affected browsers as well.
+The original bug tracker can be found at: https://rt.cpan.org/Public/Dist/Display.html?Queue=CGI.pm
+
+When sending bug reports, please provide the version of CGI.pm, the version of
+Perl, the name and version of your Web server, and the name and version of the
+operating system you are using.  If the problem is even remotely browser
+dependent, please provide information about the affected browsers as well.
 
 =head1 SEE ALSO
 

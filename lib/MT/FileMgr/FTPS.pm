@@ -6,6 +6,7 @@
 
 package MT::FileMgr::FTPS;
 use strict;
+use warnings;
 
 use MT::FileMgr::FTP;
 @MT::FileMgr::FTPS::ISA = qw( MT::FileMgr::FTP );

@@ -2,32 +2,37 @@
 
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib";    # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib', 'addons/Commercial.pack/lib',
-    'addons/Enterprise.pack/lib';
+use lib 'addons/Commercial.pack/lib', 'addons/Enterprise.pack/lib';
 
 use MT;
 use MT::Author;
 use MT::Blog;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+my $mt = MT->instance;
 
 # Make additional data
-my $mt = MT->instance;
-make_data();
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+        MT::Test->init_data;
 
-# Now, Ready to start test
-my $test_count = 142;
-$test_count += 4
-    if $mt->component('commercial');
-$test_count += 4
-    if $mt->component('enterprise');
-
-use Test::More;
-plan tests => $test_count;
+        make_data();
+    }
+);
 
 my ( $app, $out );
 my $blog  = MT::Blog->load(1);
@@ -36,6 +41,7 @@ my $other = MT::Author->load(998);    # ichikawa
 
 # Create a new Asset
 # __mode=save&_type=asset&blog_id=1
+
 $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $user,
@@ -46,14 +52,14 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new asset" );
-ok( $out =~ m!permission=1!i, "Create a new Asset: result" );
+ok( $out,                          "Create a new asset" );
+ok( $out =~ m/Invalid request\./i, "Create a new asset: result" );
 
 # Delete Asset
 # __mode=delete&_type=asset&blog_id=1&id=1
 $app = _run_app(
     'MT::App::CMS',
-    {   __test_user      => $user,
+    {   __test_user      => $other,
         __request_method => 'POST',
         __mode           => 'delete',
         _type            => 'asset',
@@ -62,8 +68,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete asset" );
-ok( $out =~ m/permission=1/i, "Delete asset: result" );
+ok( $out, "Delete asset" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update an asset: result"
+);
 
 # Update an asset
 # __mode=save&_type=asset&blog_id=1&id=1
@@ -78,8 +88,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update an asset" );
-ok( $out =~ m!permission=1!i, "Update an asset: result" );
+ok( $out, "Update an asset" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update an asset: result"
+);
 
 # Create a new Author
 # __mode=save&_type=author&name=new_author&type=1
@@ -94,8 +108,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new author" );
-ok( $out =~ m/permission=1/i, "Create a new Author: result" );
+ok( $out, "Create a new author" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Author: result"
+);
 
 # Delete Author
 # __mode=delete&_type=author&id=1
@@ -109,8 +127,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete author" );
-ok( $out =~ m/permission=1/i, "Delete author: result" );
+ok( $out, "Delete author" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete author: result"
+);
 
 # Create a new Association
 # __mode=save&_type=association&type=1
@@ -139,8 +161,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete association" );
-ok( $out =~ m/permission=1/i, "Delete association: result" );
+ok( $out, "Delete association" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete association: result"
+);
 
 # Create a new Blog
 # __mode=save&_type=blog&name=BlogName
@@ -154,8 +180,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new blog" );
-ok( $out =~ m/permission=1/i, "Create a new Blog: result" );
+ok( $out, "Create a new blog" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Blog: result"
+);
 
 # Delete Blog
 # __mode=delete&_type=blog&id=1
@@ -169,8 +199,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete blog" );
-ok( $out =~ m/permission=1/i, "Delete blog: result" );
+ok( $out, "Delete blog" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete blog: result"
+);
 
 # Create a new Website
 # __mode=save&_type=website&name=WebsiteName
@@ -184,8 +218,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new website" );
-ok( $out =~ m/permission=1/i, "Create a new Website: result" );
+ok( $out, "Create a new website" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Website: result"
+);
 
 # Delete Website
 # __mode=delete&_type=website&id=1
@@ -199,8 +237,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete website" );
-ok( $out =~ m/permission=1/i, "Delete website: result" );
+ok( $out, "Delete website" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete website: result"
+);
 
 # Create a new Category
 # __mode=save&_type=category&label=CategoryName&blog_id=1
@@ -231,8 +273,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete category" );
-ok( $out =~ m/permission=1/i, "Delete category: result" );
+ok( $out, "Delete category" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete category: result"
+);
 
 # Create a new Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -263,8 +309,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete folder" );
-ok( $out =~ m/permission=1/i, "Delete folder: result" );
+ok( $out, "Delete folder" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete folder: result"
+);
 
 # Update Folder
 # __mode=save&_type=folder&label=FolderName&blog_id=1
@@ -280,8 +330,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update a  folder" );
-ok( $out =~ m/permission=1/i, "Update a Folder: result" );
+ok( $out, "Update a  folder" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update a Folder: result"
+);
 
 # Create a new Comment
 # __mode=save&_type=comment&&blog_id=1&entry_id=1
@@ -301,6 +355,7 @@ ok( $out =~ m/Invalid request\./i, "Create a new Comment: result" );
 
 # Delete Comment
 # __mode=delete&_type=comment&id=1&blog_id=1
+
 $app = _run_app(
     'MT::App::CMS',
     {   __test_user      => $user,
@@ -312,8 +367,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete comment" );
-ok( $out =~ m/permission=1/i, "Delete comment: result" );
+ok( $out, "Delete comment" );
+if ( $app->has_plugin('Comments') ) {
+    ok( $out =~ m/permission=1/i, "Delete comment: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Delete comment: result" );
+}
 
 # Create a new Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1
@@ -329,8 +389,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new entry" );
-ok( $out =~ m/permission=1/i, "Create a new Entry: result" );
+ok( $out, "Create a new entry" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Entry: result"
+);
 
 # Delete Entry
 # __mode=delete&_type=entry&id=1&blog_id=1
@@ -345,8 +409,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete entry" );
-ok( $out =~ m/permission=1/i, "Delete entry: result" );
+ok( $out, "Delete entry" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete entry: result"
+);
 
 # Update an Entry
 # __mode=save&_type=entry&&blog_id=1&author_id=1&status=1&id=1
@@ -363,8 +431,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update an entry" );
-ok( $out =~ m/permission=1/i, "Update anEntry: result" );
+ok( $out, "Update an entry" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update anEntry: result"
+);
 
 # Create a new Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1
@@ -380,8 +452,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new page" );
-ok( $out =~ m/permission=1/i, "Create a new Page: result" );
+ok( $out, "Create a new page" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Page: result"
+);
 
 # Delete Page
 # __mode=delete&_type=page&id=20&blog_id=1
@@ -396,8 +472,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete page" );
-ok( $out =~ m/permission=1/i, "Delete page: result" );
+ok( $out, "Delete page" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete page: result"
+);
 
 # Update a Page
 # __mode=save&_type=page&&blog_id=1&author_id=1&status=1&id=20
@@ -414,8 +494,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update an page" );
-ok( $out =~ m/permission=1/i, "Update an Page: result" );
+ok( $out, "Update an page" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update an Page: result"
+);
 
 # Create a new Banlist
 # __mode=save&_type=banlist&&blog_id=1&ip=1.1.1.1
@@ -430,8 +514,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new banlist" );
-ok( $out =~ m/permission=1/i, "Create a new Banlist: result" );
+ok( $out, "Create a new banlist" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Banlist: result"
+);
 
 # Delete Banlist
 # __mode=delete&_type=banlist&id=1&blog_id=1
@@ -446,8 +534,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete banlist" );
-ok( $out =~ m/permission=1/i, "Delete banlist: result" );
+ok( $out, "Delete banlist" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete banlist: result"
+);
 
 # Create a new Notification
 # __mode=save&_type=notification&&blog_id=1
@@ -461,8 +553,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new notification" );
-ok( $out =~ m/permission=1/i, "Create a new Notification: result" );
+ok( $out, "Create a new notification" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Notification: result"
+);
 
 # Delete Notification
 # __mode=delete&_type=notification&id=1&blog_id=1
@@ -477,8 +573,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete notification" );
-ok( $out =~ m/permission=1/i, "Delete notification: result" );
+ok( $out, "Delete notification" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete notification: result"
+);
 
 # Create a new Role
 # __mode=save&_type=role&&blog_id=1&name=NewRole
@@ -492,8 +592,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new role" );
-ok( $out =~ m/permission=1/i, "Create a new Role: result" );
+ok( $out, "Create a new role" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Role: result"
+);
 
 # Delete Role
 # __mode=delete&_type=role&id=1
@@ -507,8 +611,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete role" );
-ok( $out =~ m/permission=1/i, "Delete role: result" );
+ok( $out, "Delete role" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete role: result"
+);
 
 # Create a new Config
 # __mode=save&_type=config
@@ -816,8 +924,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete tag" );
-ok( $out =~ m/permission=1/i, "Delete tag: result" );
+ok( $out, "Delete tag" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete tag: result"
+);
 
 # Create a new Ping
 # __mode=save&_type=ping&blog_id=1&ip=1.1.1.1&tb_id=1
@@ -833,8 +945,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new ping" );
-ok( $out =~ m/permission=1/i, "Create a new Ping: result" );
+ok( $out, "Create a new ping" );
+if ( $app->has_plugin('Trackback') ) {
+    ok( $out =~ m/permission=1/i, "Create a new Ping: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Create a new ping: result" );
+}
 
 # Delete Ping
 # __mode=delete&_type=ping&id=1
@@ -848,8 +965,13 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete ping" );
-ok( $out =~ m/permission=1/i, "Delete ping: result" );
+ok( $out, "Delete ping" );
+if ( $app->has_plugin('Trackback') ) {
+    ok( $out =~ m/permission=1/i, "Delete ping: result" );
+}
+else {
+    ok( $out =~ m/Invalid request\./i, "Delete ping: result" );
+}
 
 # Create a new Touch
 # __mode=save&_type=touch
@@ -925,8 +1047,12 @@ $app  = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Create a new template" );
-ok( $out =~ m/permission=1/i, "Create a new Template: result" );
+ok( $out, "Create a new template" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Create a new Template: result"
+);
 
 # Delete Template
 # __mode=delete&_type=template&id=1
@@ -940,8 +1066,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete template" );
-ok( $out =~ m/permission=1/i, "Delete template: result" );
+ok( $out, "Delete template" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete template: result"
+);
 
 # Create a new Templatemap
 # __mode=save&_type=templatemap&blog_id=1&archive_type=Author&template_id=1
@@ -994,8 +1124,12 @@ if ( $mt->component('commercial') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Create a new field" );
-    ok( $out =~ m/permission=1/i, "Create a new Field: result" );
+    ok( $out, "Create a new field" );
+    location_param_contains(
+        $out,
+        { __mode => 'dashboard', permission => 1 },
+        'Create a new Field: result'
+    );
 
     # Delete Field
     # __mode=delete&_type=field&id=1&blog_id=1
@@ -1010,8 +1144,12 @@ if ( $mt->component('commercial') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Delete field" );
-    ok( $out =~ m/permission=1/i, "Delete field: result" );
+    ok( $out, "Delete field" );
+    location_param_contains(
+        $out,
+        { __mode => 'dashboard', permission => 1 },
+        "Delete field: result"
+    );
 }
 
 if ( $mt->component('enterprise') ) {
@@ -1028,8 +1166,12 @@ if ( $mt->component('enterprise') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Create a new group" );
-    ok( $out =~ m/permission=1/i, "Create a new Group: result" );
+    ok( $out, "Create a new group" );
+    location_param_contains(
+        $out,
+        { __mode => 'dashboard', permission => 1 },
+        "Create a new Group: result"
+    );
 
     # Delete Group
     # __mode=delete&_type=group&id=1
@@ -1043,8 +1185,12 @@ if ( $mt->component('enterprise') ) {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Delete group" );
-    ok( $out =~ m/permission=1/i, "Delete group: result" );
+    ok( $out, "Delete group" );
+    location_param_contains(
+        $out,
+        { __mode => 'dashboard', permission => 1 },
+        "Delete group: result"
+    );
 }
 
 ### Other user
@@ -1081,8 +1227,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete website (different)" );
-ok( $out =~ m/permission=1/i, "Delete website (different): result" );
+ok( $out, "Delete website (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete website (different): result"
+);
 
 $user = MT::Author->load(996);    #egawa
 
@@ -1098,8 +1248,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete blog (different)" );
-ok( $out =~ m/permission=1/i, "Delete blog (different): result" );
+ok( $out, "Delete blog (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete blog (different): result"
+);
 
 $user = MT::Author->load(994);    #kagawa
 
@@ -1117,8 +1271,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update a category (different)" );
-ok( $out =~ m/permission=1/i, " Update a category (different): result" );
+ok( $out, "Update a category (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    " Update a category (different): result"
+);
 
 # Delete Category
 # __mode=delete&_type=category&id=20&blog_id=1
@@ -1133,8 +1291,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete category (different)" );
-ok( $out =~ m/permission=1/i, "Delete category (different): result" );
+ok( $out, "Delete category (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete category (different): result"
+);
 
 $user = MT::Author->load(995);    #ogawa
 
@@ -1152,8 +1314,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update a folder (different)" );
-ok( $out =~ m/permission=1/i, " Update a folder (different): result" );
+ok( $out, "Update a folder (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    " Update a folder (different): result"
+);
 
 # Delete Folder
 # __mode=delete&_type=folder&id=1&blog_id=1
@@ -1168,8 +1334,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete folfer (different)" );
-ok( $out =~ m/permission=1/i, "Delete folder (different): result" );
+ok( $out, "Delete folfer (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete folder (different): result"
+);
 
 $user = MT::Author->load(995);    #ogawa
 
@@ -1188,8 +1358,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update an page (different)" );
-ok( $out =~ m/permission=1/i, "Update an Page(different): result" );
+ok( $out, "Update an page (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update an Page(different): result"
+);
 
 # Delete Page
 # __mode=delete&_type=page&id=1&blog_id=1
@@ -1204,8 +1378,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete page (different)" );
-ok( $out =~ m/permission=1/i, "Delete page (different): result" );
+ok( $out, "Delete page (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete page (different): result"
+);
 
 $user = MT::Author->load(994);    #kagawa
 
@@ -1224,8 +1402,12 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Update an entry (different)" );
-ok( $out =~ m/permission=1/i, "Update an Entry(different): result" );
+ok( $out, "Update an entry (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Update an Entry(different): result"
+);
 
 # Delete Entry
 # __mode=delete&_type=entry&id=20&blog_id=1
@@ -1240,8 +1422,14 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                     "Delete entry (different)" );
-ok( $out =~ m/permission=1/i, "Delete entry (different): result" );
+ok( $out, "Delete entry (different)" );
+location_param_contains(
+    $out,
+    { __mode => 'dashboard', permission => 1 },
+    "Delete entry (different): result"
+);
+
+done_testing;
 
 sub make_data {
 
@@ -1261,6 +1449,7 @@ sub make_data {
     $aikawa->set_password("pass");
     $aikawa->type( MT::Author::AUTHOR() );
     $aikawa->id(999);
+    $aikawa->can_sign_in_cms(1);
     $aikawa->save()
         or die "Couldn't save author record 999: " . $aikawa->errstr;
 
@@ -1280,6 +1469,7 @@ sub make_data {
     $ichikawa->set_password("pass");
     $ichikawa->type( MT::Author::AUTHOR() );
     $ichikawa->id(998);
+    $ichikawa->can_sign_in_cms(1);
     $ichikawa->save()
         or die "Couldn't save author record 998: " . $ichikawa->errstr;
 
@@ -1299,6 +1489,7 @@ sub make_data {
     $ukawa->set_password("pass");
     $ukawa->type( MT::Author::AUTHOR() );
     $ukawa->id(997);
+    $ukawa->can_sign_in_cms(1);
     $ukawa->save()
         or die "Couldn't save author record 997: " . $ukawa->errstr;
 
@@ -1318,6 +1509,7 @@ sub make_data {
     $egawa->set_password("pass");
     $egawa->type( MT::Author::AUTHOR() );
     $egawa->id(996);
+    $egawa->can_sign_in_cms(1);
     $egawa->save()
         or die "Couldn't save author record 996: " . $egawa->errstr;
 
@@ -1337,6 +1529,7 @@ sub make_data {
     $ogawa->set_password("pass");
     $ogawa->type( MT::Author::AUTHOR() );
     $ogawa->id(995);
+    $ogawa->can_sign_in_cms(1);
     $ogawa->save()
         or die "Couldn't save author record 995: " . $ogawa->errstr;
 
@@ -1356,6 +1549,7 @@ sub make_data {
     $kagawa->set_password("pass");
     $kagawa->type( MT::Author::AUTHOR() );
     $kagawa->id(994);
+    $kagawa->can_sign_in_cms(1);
     $kagawa->save()
         or die "Couldn't save author record 994: " . $kagawa->errstr;
 
@@ -1380,8 +1574,7 @@ sub make_data {
     ### Association
     my $designer_role = MT::Role->load( { name => 'Designer' } );
     my $author_role   = MT::Role->load( { name => 'Author' } );
-    my $blog_role     = MT::Role->load( { name => 'Blog Administrator' } );
-    my $website_role  = MT::Role->load( { name => 'Website Administrator' } );
+    my $site_role     = MT::Role->load( { name => 'Site Administrator' } );
     my $page_role     = MT::Role->load( { name => 'Webmaster' } );
     my $editor_role   = MT::Role->load( { name => 'Entry Editor' } );
 
@@ -1406,7 +1599,7 @@ sub make_data {
     $assoc = MT::Association->new();
     $assoc->author_id( $ukawa->id );
     $assoc->blog_id(1);
-    $assoc->role_id( $blog_role->id );
+    $assoc->role_id( $site_role->id );
     $assoc->type(1);
     $assoc->save();
 
@@ -1415,7 +1608,7 @@ sub make_data {
     $assoc = MT::Association->new();
     $assoc->author_id( $egawa->id );
     $assoc->blog_id(2);
-    $assoc->role_id( $website_role->id );
+    $assoc->role_id( $site_role->id );
     $assoc->type(1);
     $assoc->save();
 
@@ -1535,4 +1728,3 @@ sub make_data {
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
 }
-

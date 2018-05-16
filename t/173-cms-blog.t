@@ -2,45 +2,23 @@
 
 use strict;
 use warnings;
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
-# An error occurs in save_community_prefs mode when Cloud.pack installed.
-use File::Spec;
-use File::Copy;
-
+our $test_env;
 BEGIN {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 
-    if ( -f $cloudpack_config ) {
-        move( $cloudpack_config, $cloudpack_config_rename )
-            or plan skip_all => "$cloudpack_config cannot be moved.";
-    }
-}
-
-END {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config_rename ) {
-        move( $cloudpack_config_rename, $cloudpack_config );
-    }
+    # Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
+    # An error occurs in save_community_prefs mode when Cloud.pack installed.
+    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
 use MT;
@@ -48,9 +26,11 @@ use MT::Association;
 use MT::CMS::User;
 use MT::Role;
 
-use MT::Test qw( :app :db :data );
+use MT::Test;
 
-use Test::More;
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 MT->instance;
 my $user        = MT::Author->load(1);
@@ -61,7 +41,7 @@ my $website = MT::Website->load(2);
 is( !!$website->is_blog, '', 'Is a website' );
 
 my $admin_role
-    = MT::Role->load( { permissions => { like => '%administer_website%' } } );
+    = MT::Role->load( { permissions => { like => '%administer_site%' } } );
 require MT::Association;
 MT::Association->link( $user, $admin_role, $website );
 
@@ -84,12 +64,6 @@ subtest 'Check callbacks for each config screens' => sub {
         },
         {   __mode => 'cfg_entry',
             name   => 'Compose Settings',
-        },
-        {   __mode => 'cfg_feedback',
-            name   => 'Feedback Settings',
-        },
-        {   __mode => 'cfg_registration',
-            name   => 'Registration Settings',
         },
         {   __mode => 'cfg_web_services',
             name   => 'Web Services Settings',

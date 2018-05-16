@@ -7,6 +7,7 @@
 package MT::Cache::Session;
 
 use strict;
+use warnings;
 use MT::Session;
 
 sub new {

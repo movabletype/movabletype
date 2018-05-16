@@ -1,6 +1,9 @@
-<mt:unless name="page_title">
-<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural">"></mt:setvarblock>
-</mt:unless>
+<mt:if name="page_title">
+<mt:setvarblock name="page_title"><mt:var name="page_title" escape="html"></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label_plural" escape="html">"></mt:setvarblock>
+</mt:if>
+<mt:setvar name="show_display_options_link" value="0">
 
 <mt:if name="build_user_menus">
 <mt:setvarblock name="related_content">
@@ -15,9 +18,24 @@
 <mt:if name="use_actions">
   <mt:if name="content_actions">
     <mt:setvarblock name="content_header">
-    <ul id="content-actions" class="action-link-list">
+    <ul id="content-actions" class="list-inline action-link-list">
     <mt:loop name="content_actions">
-      <li><a href="<mt:var name="url">" class="icon-left<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"<mt:if name="id"> id="<mt:var name="id">"</mt:if><mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>><mt:var name="label"></a></li>
+      <li class="list-inline-item">
+        <a href="<mt:var name="url" default="javascript:void(0)">"
+          class="icon-left d-inline-block<mt:if name="class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog mt-modal-open</mt:if>"
+          <mt:if name="dialog">data-mt-modal-large</mt:if>
+          <mt:if name="id"> id="<mt:var name="id">"</mt:if>
+          <mt:if name="confirm_msg"> onclick="return confirm('<mt:var name="confirm_msg" escape="js">')"</mt:if>
+        >
+        <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+        <mt:if name="icon">
+          <mtapp:svgicon id="$icon" size="sm" title="$escaped_label">
+        <mt:else>
+          <mtapp:svgicon id="ic_setting" size="sm" title="$escaped_label">
+        </mt:if>
+          <mt:var name="escaped_label">
+        </a>
+      </li>
     </mt:loop>
     </ul>
     </mt:setvarblock>
@@ -26,7 +44,16 @@
 
 <mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
   <mt:if name="object_type_feed">
-  <li class="footer-link-item"><a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>" target="_blank"><$mt:var name="object_type_feed"$></a></li>
+  <li class="footer-link-item list-group-item">
+    <a href="<$mt:var name="feed_url" escape="html"$>"
+      class="icon-feed icon-left d-inline-block"
+      title="<$mt:var name="feed_name" escape="html"$>"
+      target="_blank"
+    >
+      <mtapp:svgicon id="ic_rss" size="sm" color="warning" title="<__trans phrase="Feed">">
+      <$mt:var name="object_type_feed"$>
+    </a>
+  </li>
   </mt:if>
 </mt:if></mt:setvarblock>
 
@@ -40,248 +67,264 @@
 <div id="msg-block"></div>
 </mt:setvarblock>
 
-<mt:setvarblock name="display_options">
-<mt:setvar name="show_display_options_link" value="1">
-<div id="display-options-detail" class="display-options-detail detail">
-  <mtapp:setting
-     id="per_page"
-     label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
-     label_class="top-label">
-    <select id="row" name="limit">
-      <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
-      <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
-      <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
-      <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
-    </select>
-  </mtapp:setting>
-  <mtapp:setting
-     id="display_columns"
-     label="<__trans phrase="Column">"
-     label_class="top-label">
-    <ul id="disp_cols" class="multiple-selection">
-    <mt:loop name="list_columns">
-      <li class="<mt:if name="force_display"> hidden</mt:if>">
-        <input
-	       type="checkbox"
-	       value="<mt:var name="id" escape="html">"
-	       name="custom_prefs"
-           class="main<mt:if name="is_default"> show-default</mt:if>"
-	       id="custom-prefs-<$mt:var name="id" escape="html"$>"
-	       <mt:if name="display">checked="checked"</mt:if> />
-          <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label>
-      </li>
-      <mt:loop name="sub_fields">
-      <li class="sub-field">
-        <input
-	       type="checkbox"
-	       value="<mt:var name="class">"
-	       name="custom_prefs"
-           class="sub<mt:if name="is_default"> show-default</mt:if>"
-	       id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
-	       <mt:if name="display">checked="checked"</mt:if> />
-          <label for="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"><mt:var name="label"></label>
-      </li>
-      </mt:loop>
-    </mt:loop>
-    </ul>
-  </mtapp:setting>
-  <div class="actions-bar actions-bar-bottom">
-    <a href="#" id="reset-display-options"><__trans phrase="Reset defaults"></a>
-  </div>
-</div>
-</mt:setvarblock>
-
-
-<mt:if name="button_actions">
-    <mt:setvarblock name="jq_js_include" append="1">
-var messages = {};
-        <mt:loop name="button_actions">
-messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" escape="js">';
-        </mt:loop>
-    </mt:setvarblock>
-
-    <mt:setvarblock name="button_actions">
-        <mt:loop name="button_actions">
-  <a href="#<mt:var name="key">" class="button<mt:if name="xhr"> xhr</mt:if>"><mt:var name="label"></a>
-        </mt:loop>
-    </mt:setvarblock>
-</mt:if>
-
-<mt:setvarblock name="list_actions">
-<mt:if name="use_actions">
-  <mt:if name="button_actions">
-        <div class="button-actions actions"><mt:var name="button_actions"></div>
-  </mt:if>
-  <mt:if name="has_list_actions">
-    <mt:include name="include/itemset_action_widget.tmpl">
-  </mt:if>
-</mt:if>
-        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /> <__trans phrase="Loading..."></div>
-        <div class="pagination"></div>
-</mt:setvarblock>
-
-<mt:include name="include/header.tmpl" id="header_include">
 <mt:include name="include/basic_filter_forms.tmpl">
 
-<div id="listing" class="listing line has-filter">
-  <div class="unit size1of1">
-    <form id="<mt:var name="object_type">-listing-form" method="post" action="<mt:var name="script_url">">
-      <input type="hidden" name="__mode" value="" />
-      <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-      <input type="hidden" name="action_name" value="" />
-      <input type="hidden" name="itemset_action_input" value="" />
-      <input type="hidden" name="items" value="" />
-      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-      <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
-      <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
+<mt:setvarblock name="page_content">
 
-      <div id="actions-bar-top" class="actions-bar actions-bar-top line">
-        <mt:var name="list_actions">
-      </div>
-
-<mt:if name="use_filters">
-      <div id="filter" class="filter-block">
-        <div id="filter-header">
-          <input type="hidden" id="filter_name" value="" />
-          <input type="hidden" id="filter_id" value="" />
-          <div class="mod filter-header">
-            <__trans phrase="Filter:"> <a href="#" id="opener" class="open-dialog-link current-filter icon-right-wide"><__trans phrase="Select Filter..."></a>
-            <a href="#" id="allpass-filter">[ <__trans phrase="Remove Filter"> ]</a>
-            <a href="#" id="toggle-filter-detail" class="toggle-button detail-link">
-              <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
-            </a>
-          </div>
-        </div>
-
-        <div id="filter-detail" class="detail">
-          <div id="filter-panel" class="mod selectfilter">
-            <select id="item_list">
-              <option value=""><__trans phrase="Select Filter Item..."></option>
-            <mt:loop name="filter_types">
-              <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
-            </mt:loop>
-            </select>
-          </div>
-
-          <div id="filter-action" class="mod">
-            <button type="submit" id="apply" class="button action primary"><__trans phrase="Apply"></button>
-            <button type="button" id="save" class="button action"><__trans phrase="Save"></button>
-            <button type="button" id="saveas" class="button action"><__trans phrase="Save As"></button>
-          </div>
-        </div>
-      </div>
-</mt:if>
-
-      <div id="listing-table" class="listing-table-block">
-        <div id="listing-table-overlay" class="overlay"></div>
-        <table id="<mt:var name="object_type">-table" class="listing-table list-<mt:var name="object_type">">
-          <thead></thead>
-          <tfoot></tfoot>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div id="actions-bar-bottom" class="actions-bar actions-bar-bottom line">
-        <mt:var name="list_actions">
-      </div>
-
-    </form>
+  <div data-is="list-top"></div>
 
   <mt:if name="listing_footer_content">
-    <div id="listing-footer" class="footer-links mod">
-      <ul>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <ul id="listing-footer" class="footer-links mod list-group list-group-flush">
         <mt:var name="listing_footer_content">
-      </ul>
+        </ul>
+      </div>
     </div>
-  </mt:if>
-
   </div>
-</div>
+  </mt:if>
+</mt:setvarblock>
 
-<div id="dialog_save_filter" class="dialog">
-  <form method="post" action="<mt:var name="script_url">">
-    <div class="dialog-msg-block"></div>
-    <mtapp:setting
-       id="filter-label"
-       label="<__trans phrase="Filter Label">"
-       label_class="top-label">
-      <input type="hidden" name="filter_id" value="" />
-      <input type="text" class="text full required" name="filter_name" value="" />
-    </mtapp:setting>
-    <div class="dialog actions-bar">
-      <button
-         type="submit"
-         id="save-filter"
-         class="action primary button">
-        <__trans phrase="Save">
-      </button>
-      <button
-         type="button"
-         id="cancel-save-filter"
-         class="action button">
-        <__trans phrase="Cancel">
-      </button>
-    </div>
-  </form>
-</div>
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/list_common.css?v=<mt:var name="mt_version_id" escape="url">" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/msg-balloon.css?v=<mt:var name="mt_version_id" escape="url">" />
+</mt:setvarblock>
 
-<div id="dialog_filter">
-  <div class="dialog-msg-block"></div>
-  <div id="dialog_filter_content"></div>
-</div>
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
-<mt:setvarblock name="jq_js_include" append="1">
+<mt:if name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot-ss/riot.ss.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="riot/tag" src="<mt:var name="static_uri">riot-ss/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
+
+<script>
+var listStore;
 
 jQuery.event.special.listReady = {
-    setup:function( data, ns ) {
-        return false;
-    },
-    teardown:function( ns ) {
-        return false;
-    }
+  setup: function ( data, ns ) {
+    return false;
+  },
+  teardown: function ( ns ) {
+    return false;
+  }
 };
 
-jQuery(document).ajaxStart(function(){
-  jQuery('#msg-block .msg-error').remove();
-})
+(function () {
+  var listColumns = <mt:var name="list_columns_json">;
+  var listSortBy = '<mt:var name="default_sort_key">';
 
-var line = '<th class="col head cb"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" /></th>';
-var table = jQuery('table.listing-table')[0];
-var col_classes = {};
-<mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><mt:if name="sortable"><a href="#<mt:var name="id">" class="sort-link"><span class="col-label"><mt:var name="label" escape="js"></span><span class="sm"></span></a><mt:else><span class="col-label"><mt:var name="label" escape="js"></span></mt:if></th>';
-<mt:if name="default_sort_order" eq="descend">
-jQuery.data(table, '<mt:var name="id">', 'desc');
-<mt:else>
-jQuery.data(table, '<mt:var name="id">', 'asc');
-</mt:if>
-col_classes["<mt:var name="id">"] = "<mt:var name="col_class">";
-</mt:loop>
-jQuery('table.listing-table thead, table.listing-table tfoot').append('<tr>');
-jQuery(line).appendTo('table.listing-table thead tr, table.listing-table tfoot tr');
+  <mt:if name="limit_25">
+  var listLimit = 25;
+  <mt:elseif name="limit_50">
+  var listLimit = 50;
+  <mt:elseif name="limit_100">
+  var listLimit = 100;
+  <mt:elseif name="limit_200">
+  var listLimit = 200;
+  </mt:if>
 
-var filter_types = {};
-<mt:loop name="filter_types">
-filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless><mt:if name="base_type"> base-<mt:var name="base_type"></mt:if>"><div class="item-content"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><mt:unless name="singleton"><span class="item-ctrl"><span class="item-action plus clickable icon-plus icon16 action-icon"><__trans phrase="Add" escape="js"></span><span class="item-action minus clickable icon-minus icon16 action-icon"><__trans phrase="Remove" escape="js"></span></span></mt:unless></div></div>';
-</mt:loop>
+  var objectType = '<mt:var name="object_type" escape="js">';
 
-jQuery('#filter_types').hide();
-<mt:unless name="open_filter_panel">jQuery('#filter-detail').hide();</mt:unless>
-jQuery('.filter-block').mtToggleField(<mt:if name="open_filter_panel">{default_hide: false}</mt:if>);
+  var listClient = new ListClient({
+    url: '<mt:var name="script_url">',
+    siteId: '<mt:var name="blog_id">',
+    datasource: '<mt:var name="list_type" escape="js">',
+    objectType: objectType,
+    magicToken: '<mt:var name="magic_token">',
+    returnArgs: '<mt:var name="return_args">',
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
+  });
 
-var cols = [];
-var vals = [];
-var checked = [];
-var total = 0;
-var editable_total = 0;
-var editable_count_in_page;
+  var listActionClient = new ListActionClient({
+    url: listClient.url,
+    siteId: listClient.siteId,
+    datasource: listClient.datasource,
+    objectType: listClient.objectType,
+    magicToken: listClient.magicToken,
+    returnArgs: listClient.returnArgs,
+    subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
+  });
 
-var filters = <mt:var name="filters">;
-var initial_filter = <mt:var name="initial_filter">;
-var allpass_filter = <mt:var name="allpass_filter">;
-var current_id = initial_filter.id;
-var currentPage = 1;
-var inputCount = 0;
+  <mt:if name="zero_state">
+  var zeroStateLabel = '<mt:var name="zero_state" escape="js">';
+  <mt:else>
+  var zeroStateLabel = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  var buttonActions = {};
+  <mt:loop name="button_actions">
+  buttonActions['<mt:var name="key">'] = {
+    type:'core',
+    js_message: '<__trans phrase="<mt:var name="js_message">" escape="js">'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+  };
+  </mt:loop>
+
+  var listActions = {};
+  <mt:loop name="list_actions">
+  listActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+  };
+  </mt:loop>
+
+  var moreListActions = {};
+  <mt:loop name="more_list_actions">
+  moreListActions['<mt:var name="key">'] = {
+    type:'core'
+    <mt:if name="action_mode">,mode:'<mt:var name="action_mode">'</mt:if>
+    <mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if>
+    <mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if>
+    <mt:if name="no_prompt">,no_prompt:"<mt:var name="no_prompt" escape="js">"</mt:if>
+    <mt:if name="dialog">,dialog:1</mt:if>
+    <mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if>
+    <mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if>
+    <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
+    <mt:if name="xhr">, xhr:true</mt:if>
+    <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    };
+  </mt:loop>
+
+  <mt:if name="has_list_actions">
+  var hasListActions = true;
+  <mt:else>
+  var hasListActions = false;
+  </mt:if>
+
+  <mt:if name="has_pulldown_actions">
+  var hasPulldownActions = true;
+  <mt:else>
+  var hasPulldownActions = false;
+  </mt:if>
+
+  <mt:if name="use_actions">
+  var useActions = true;
+  <mt:else>
+  var useActions = false;
+  </mt:if>
+
+  <mt:if name="action_label">
+    var singular = '<mt:var name="action_label">';
+  <mt:else>
+    var singular = '<mt:var name="object_label" lower_case="1" escape="js">';
+  </mt:if>
+
+  <mt:if name="action_label_plural">
+  var plural = '<mt:var name="action_label_plural">';
+  <mt:else>
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  </mt:if>
+
+  var objectLabel = '<mt:var name="object_label" escape="js">';
+
+  var filterTypes = [];
+  <mt:loop name="filter_types">
+  filterTypes.push({
+    baseType: '<mt:var name="base_type">',
+    <mt:if name="editable">editable: true,</mt:if>
+    field: '<mt:var name="field" mteval="1" regex_replace="/\n*/g":"">',
+    label: '<mt:var name="label">',
+    <mt:if name="singleton">singleton: true,</mt:if>
+    type: '<mt:var name="type">'
+  });
+  </mt:loop>
+  var filters = <mt:var name="filters">;
+  var initialFilter = <mt:var name="initial_filter">;
+  var allpassFilter = <mt:var name="allpass_filter">;
+
+  var localeCalendarHeader = [ <__trans phrase="_LOCALE_CALENDAR_HEADER_"> ];
+
+  <mt:if name="disable_user_disp_option">
+  var disableUserDispOption = true;
+  <mt:else>
+  var disableUserDispOption = false;
+  </mt:if>
+
+  <mt:if name="use_filters">
+  var useFilters = true;
+  <mt:else>
+  var useFilters = false;
+  </mt:if>
+
+  listStore = new ListStore({
+    listClient: listClient,
+
+    columns: listColumns,
+    limit: listLimit,
+    page: 1,
+    sortBy: listSortBy,
+
+    allpassFilter: allpassFilter,
+    currentFilter: initialFilter,
+    filters: filters,
+
+    disableUserDispOption: disableUserDispOption
+  });
+
+  jQuery(function () {
+    riot.mount('list-top', {
+      listActionClient: listActionClient,
+
+      zeroStateLabel: zeroStateLabel,
+
+      buttonActions: buttonActions,
+      hasListActions: hasListActions,
+      hasPulldownActions: hasPulldownActions,
+      listActions: listActions,
+      moreListActions: moreListActions,
+      plural: plural,
+      useActions: useActions,
+      useFilters: useFilters,
+      singular: singular,
+      store: listStore,
+
+      allpassFilter: allpassFilter,
+      initialFilter: initialFilter,
+      filterTypes: filterTypes,
+
+      localeCalendarHeader: localeCalendarHeader,
+      objectLabel: objectLabel,
+      objectType: objectType,
+      disableUserDispOption: disableUserDispOption
+    });
+  });
+
+})();
+
 var initial_load = true;
 
 function handleMessages( data, additional_class ) {
@@ -309,35 +352,6 @@ function handleMessages( data, additional_class ) {
     showMessage(msg.msg, cls);
   }
   return true;
-}
-
-function showMessage( content, cls ){
-  var error_block;
-  if ( typeof content == 'object' ) {
-    jQuery('#msg-block').append(
-      error_block = jQuery('<div>')
-      .attr('class', 'msg msg-' + cls )
-      .append(
-        jQuery('<p />')
-          .attr('class', 'msg-text')
-          .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
-      )
-    );
-  }
-  else {
-    jQuery('#msg-block').append(
-      error_block = jQuery('<div />')
-      .attr('class', 'msg msg-' + cls )
-      .append(
-        jQuery('<p />')
-          .attr('class', 'msg-text')
-          .append(content)
-          .append('<span class="mt-close-msg close-link clickable icon-remove icon16 action-icon"><__trans phrase="Close" escape="js"></span>')
-      )
-    );
-  }
-  return error_block;
 }
 
 function loginAgain(fn) {
@@ -373,7 +387,7 @@ function loginAgain(fn) {
                     jQuery(this).attr('href', replace);
                   });
                 }
-                jQuery.fn.mtDialog.close();
+                jQuery.fn.mtModal.close();
                 fn(data);
                 return false;
               },
@@ -387,1358 +401,38 @@ function loginAgain(fn) {
             return false;
           });
     });
-  jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
+  jQuery.fn.mtModal.open(
+    '<mt:var name="script_url">?__mode=dashboard',
+    { large: true }
+  );
 }
 
-function renderFilterList() {
-  jQuery('#dialog_filter_content').empty();
-  var has_user_filter = 0;
-  var has_sys_filter = 0;
-  for (var i = 0, length = filters.length; i < length; i++) {
-    if ( parseInt(filters[i].can_save) )
-      has_user_filter++;
-    else
-      has_sys_filter++;
-  }
-
-  jQuery('<div class="filter-list-block">')
+function showMessage( content, cls ){
+  var error_block;
+  jQuery('#msg-block').append(
+    error_block = jQuery('<div />')
+    .attr('class', 'alert alert-dismissable alert-' + cls )
     .append(
-      jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="My Filters" escape="js">'))
-    .append(
-      jQuery('<ul id="user-filters" class="editable"><li class="filter line"><a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link"><__trans phrase="Create New" escape="js"></a></li></ul>'))
-    .appendTo('#dialog_filter_content');
-
-  if ( has_sys_filter ) {
-    jQuery('<div class="filter-list-block">')
-      .append(
-        jQuery('<h3 class="filter-list-label" />').text('<__trans phrase="Built in Filters" escape="js">'))
-      .append(
-        jQuery('<ul id="built-in-filters" />'))
-      .appendTo('#dialog_filter_content');
-  }
-
-  for (var i = 0, length = filters.length; i < length; i++) {
-    var filter = filters[i];
-    if ( parseInt(filter.can_save) ) {
-      var line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link '
-        + ( filter.can_save ? 'user-filter' : 'system-filter' )
-        + '">'+filter.label+'</a></span>'
-        + '<span class="item-ctrl unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
-      jQuery('<li class="filter line" />').append(line).prependTo('#user-filters');
-    }
-    else {
-      var line = '<span class="filter-label"><a href="#'+i+'" class="apply-link '
-        + ( filter.can_save ? 'user-filter' : 'system-filter' )
-        + '">'+filter.label+'</a></span>';
-      jQuery('<li class="filter line" />').append(line).appendTo('#built-in-filters');
-    }
-  }
-  jQuery('#new_filter').click(function() {
-    jQuery('#filter-detail').show().parent('#filter').addClass('active');
-    jQuery('#item_list').attr('selectedIndex', 0).val('');
-    resetFilterDetails();
-    jQuery('input[name=filter_name]').mtUnvalidate().val('<__trans phrase="New Filter" escape="js">');
-    jQuery('#opener').html('<__trans phrase="New Filter" escape="js">');
-    jQuery('#filter_id').val('');
-    jQuery('input[name=filter_id]').val('');
-    updateItemList();
-    jQuery('#dialog_filter').dialog('close');
-    updateFilterSaveButtons({
-      system:     0,
-      new_filter: 1,
-      allpass:    0
-    });
-  });
-  jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
-    jQuery('#dialog_filter').dialog('close');
-    jQuery(this).attr('href').match(/#(.*)/);
-    var index = RegExp.$1;
-    applyFilter(index);
-    updateFilterSaveButtons();
-    return false;
-  });
-  jQuery('#dialog_filter .delete-link').click(function() {
-    var $this = jQuery(this);
-    var label = $this.parents('.filter').find('.apply-link').text();
-    var message = trans("Are you sure you want to remove the filter '[_1]'?", label);
-    if (confirm(message)) {
-      $this.parents('.filter').addClass('edit-mode').find('.item-ctrl').hide();
-      $this.parents('.filter').find('.filter-label').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
-      removeFilter(this);
-    }
-    return false;
-  });
-  jQuery('#dialog_filter .rename-link').click(openFilterRenameField);
+      jQuery('<button class="close" data-dismiss="alert" aria-label="Close" />')
+        .append('<span aria-hidden="true">&times;</span>')
+    )
+    .append(content)
+  );
+  return error_block;
 }
-
-var editSysFilter = 0;
-var editNewFilter = 0;
-var allPass       = 0;
-
-jQuery.mtValidateRules['[name=filter_name], .rename-filter-input'] = function ($e) {
-  return validateFilterName($e.val()) ? true : this.raise(trans('Label "[_1]" is already in use.', $e.val() ));
-};
-
-function updateFilterSaveButtons ( opts ){
-  if ( opts ) {
-    if ( opts.allpass    != undefined ) allPass       = opts.allpass;
-    if ( opts.new_filter != undefined ) editNewFilter = opts.new_filter;
-    if ( opts.system     != undefined ) editSysFilter = opts.system;
-  }
-
-  if ( jQuery('#filter-detail div.filteritem').length > 0 ) {
-    jQuery('#apply').removeClass('disabled').removeAttr('disabled');
-
-    if ( editSysFilter )
-      jQuery('#save').addClass('disabled').attr('disabled', 'disabled');
-    else
-      jQuery('#save').removeClass('disabled').removeAttr('disabled');
-
-    if ( editNewFilter )
-      jQuery('#saveas').hide();
-    else
-      jQuery('#saveas').show();
-  }
-  else {
-    jQuery('#apply').addClass('disabled').attr('disabled','disabled');
-    jQuery('#save').addClass('disabled').attr('disabled', 'disabled');
-    jQuery('#saveas').hide();
-  }
-  if ( allPass ) {
-    jQuery('#allpass-filter').hide();
-  }
-  else {
-    jQuery('#allpass-filter').show();
-  }
-}
-
-function openFilterRenameField() {
-  cancelFilterRenameField();
-  var $this = jQuery(this);
-  $this.parents('.filter').addClass('edit-mode');
-  $this.attr('href').match(/#(.*)/);
-  var index = RegExp.$1;
-  var fid = filters[index].id;
-  var $label = $this.parents('.filter').children('.filter-label');
-  var $handle = $this.parents('.filter').children('.item-ctrl');
-  var text = $label.find('.apply-link').hide().text();
-  jQuery('<input type="text" id="filter_'+fid+'" class="text full rename-filter-input" />')
-    .val(text)
-    .appendTo($label);
-  $this.hide().next('.delete-link').hide();
-  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save" escape="js"></a>').bind('click', function() {
-    var name = jQuery('#filter_'+fid).val();
-    if (name == text) {
-        // Not modified.
-        $handle.find('.cancel').click();
-        return false;
-    }
-    if ( !jQuery('#filter_' + fid).mtValidate('simple') )
-        return false;
-    $this.parents('.filter').find('.item-ctrl').hide();
-    $this.parents('.filter').find('input').hide().after( jQuery('<span class="indicator"><img alt="<__trans phrase="Loading..." escape="js">" src="<mt:var name="static_uri">images/indicator.white.gif" /></span>') );
-    renameFilter(index, fid, name);
-    return false;
-  }).appendTo($handle);
-  jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel" escape="js"></a>')
-    .bind('click', cancelFilterRenameField )
-    .appendTo($handle);
-  return false;
-}
-
-function cancelFilterRenameField() {
-  jQuery('.rename-filter-input').mtUnvalidate();
-  jQuery('.filter').removeClass('edit-mode');
-  jQuery('.filter-label')
-    .find('.apply-link:hidden').show().end()
-    .find('input').remove();
-  jQuery('.item-ctrl')
-    .find('a.save, a.cancel').remove().end()
-    .find('a:hidden').css('display','inline-block')
-  return false;
-}
-
-function renameFilter(index, fid, name) {
-  jQuery.ajax({
-    type: 'POST',
-    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-    url: '<mt:var name="script_url">',
-    dataType: 'json',
-    data: {
-      __mode: 'save_filter',
-      datasource: '<mt:var name="list_type">',
-      blog_id: <mt:var name="blog_id">,
-      fid: fid,
-      label: name,
-      items: jQuery.toJSON(filters[index].items),
-      list: 0,
-      magic_token: jQuery('input[name="magic_token"]').val()
-    },
-    success: function(data) {
-      if ( !handleMessages(data) ) return;
-      filters = data.result.filters;
-    },
-    complete: function() {
-      if ( fid == current_id ) {
-          jQuery('#opener').text(name);
-          jQuery('#filter_name').val(name);
-      }
-      renderFilterList();
-    },
-    error: function(xhr, status, error) {
-      if ( xhr.status == 401 ) {
-        loginAgain(function(){
-          renameFilter(index, fid, name);
-        });
-      }
-      else {
-        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
-      }
-    }
-  });
-}
-
-function removeFilter(element) {
-  var $node = jQuery(element).parents('li');
-  jQuery(element).attr('href').match(/#(.*)/);
-  var index = RegExp.$1;
-  var remove_current = filters[index].id == current_id;
-
-  if ( remove_current ) {
-    updateFilterSaveButtons({ allpass: 1 });
-    doApplyFilter(allpass_filter, 1);
-    renderList({
-      mode: 'delete_filter',
-      id: filters[index].id,
-      magic_token: 1
-    });
-  }
-  else {
-    jQuery.ajax({
-      type: 'POST',
-      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-      url: '<mt:var name="script_url">',
-      dataType: 'json',
-      data: {
-        __mode: 'delete_filter',
-        id: filters[index].id,
-        datasource: '<mt:var name="list_type">',
-        blog_id: <mt:var name="blog_id">,
-        list: 0,
-        magic_token: jQuery('input[name="magic_token"]').val()
-      },
-      success: function(data) {
-        if ( !handleMessages(data) ) return;
-        filters = data.result.filters;
-      },
-      complete: function() {
-        renderFilterList();
-      },
-      error: function(xhr, status, error) {
-        if ( xhr.status == 401 ) {
-          loginAgain(function(){
-            removeFilter(element);
-          });
-        }
-        else {
-          alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
-        }
-      }
-    });
-  }
-}
-
-function renderColumns( col, chk ) {
-  cols = [];
-  jQuery('table.listing-table thead th, table.listing-table tfoot th').hide()<mt:if name="has_list_actions">.filter('.cb').show()</mt:if>;
-  jQuery('ul#disp_cols input:checked').each(function() {
-    jQuery(this).attr('id').match(/custom-prefs-(.*)/);
-    var id = RegExp.$1;
-    cols.push(id);
-  });
-  jQuery('ul#disp_cols input.main:checked').each(function() {
-    var id = jQuery(this).val();
-    jQuery('table.listing-table th.'+id).show();
-  });
-  if ( col && chk ) {
-    var header = jQuery('table.listing-table thead th.' + col);
-    var idx = jQuery('table.listing-table thead th:visible').index(header) - 1;
-    jQuery('table.listing-table tr').each( function() {
-      jQuery(this).find('td:eq(' + idx + ')').after( '<td class="col"> </td>' );
-    });
-  }
-  else if ( col && !chk ) {
-    jQuery('table.listing-table td.' + col).remove();
-  }
-  jQuery('table.listing-table thead, table.listing-table tfoot').each(function() {
-    jQuery(this)
-      .find('th')
-      .removeClass('first-visible-child')
-      .filter(':visible:first')
-      .addClass('first-visible-child');
-  });
-  // Re-render the table for IE.
-  if ( window.navigator.userAgent.match(/MSIE/) )
-    jQuery('table.listing-table').insertAfter('#listing-table-overlay');
-}
-
-function saveChecked(page) {
-  checked[page] = [];
-  jQuery('table.listing-table tbody tr input:checked').each(function() {
-    var id = jQuery(this).parents('tr').attr('id');
-    checked[page][id] = 1;
-  });
-}
-
-function renderPagination(count, limit, page, last, total) {
-  var $e = jQuery('.pagination').empty();
-  if (count == 0) {
-    return;
-  }
-  var usefirst = false;
-  var uselast = false;
-  var start;
-  if (page > 1) {
-    usefirst = true;
-    start = (page-1)*limit+1;
-  } else {
-    start = 1;
-  }
-  if (total / limit > 1) {
-    if (page + 1 <= last) {
-      uselast = true;
-    }
-  }
-  currentPage = page;
-
-  if (usefirst) {
-    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First" escape="js"></a>')
-      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev" escape="js"></a>');
-  } else {
-    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First" escape="js"></span>')
-      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev" escape="js"></span>');
-  }
-  var end = (page == last) ? total : start+limit-1;
-  var page_status = trans('[_1] - [_2] of [_3]', start, end, total);
-
-  $e.append('<span class="current-rows">'+page_status+'</span>')
-  if (uselast) {
-    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next" escape="js"> &rsaquo;</a>')
-      .append('<a href="#" class="pagenav end"><__trans phrase="Last" escape="js"> &raquo;</a>');
-  } else {
-    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next" escape="js"> &rsaquo;</span>')
-      .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
-  }
-  jQuery('a.start').click(function() {
-    saveChecked(page);
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-    return false;
-  });
-  jQuery('a.to-start').click(function() {
-    saveChecked(page);
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), page-1);
-    return false;
-  });
-  jQuery('a.to-end').click(function() {
-    saveChecked(page);
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), page+1);
-    return false;
-  });
-  jQuery('a.end').click(function() {
-    saveChecked(page);
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), last);
-    return false;
-  });
-}
-
-function saveListPrefs() {
-  cols = [];
-  jQuery('ul#disp_cols input:checked').each(function() {
-    jQuery(this).attr('id').match(/custom-prefs-(.*)/);
-    var id = RegExp.$1;
-    cols.push(id);
-  });
-
-  jQuery.ajax({
-    type: 'POST',
-    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-    url: '<mt:var name="script_url">',
-    dataType: 'json',
-    data: {
-      __mode: 'save_list_prefs',
-      datasource: '<mt:var name="list_type">',
-      blog_id: '<mt:var name="blog_id">',
-      columns: cols.join(','),
-      limit: jQuery('#row').val()
-    },
-    success: function(data) {
-      handleMessages(data);
-      return false;
-    },
-    error: function(xhr, status, error) {
-      if ( this_request != request_id ) {
-          return false;
-      }
-      if ( xhr.status == 401 ) {
-        loginAgain(function(){
-          renderList(mode, columns, values, limit, page);
-        });
-      }
-      else {
-        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
-      }
-    }
-  });
-}
-
-var request_id = 0;
-function renderList(mode, columns, values, limit, page ) {
-  var this_request = ++request_id;
-
-  // If the first arg is Object, it's Hash style call
-  var args = {};
-  if ( typeof mode == 'object' ) {
-    args = mode;
-    var defaults = {
-      mode: 'filtered_list',
-      columns: cols,
-      values:  vals,
-      limit: jQuery('#row').val(),
-      page: currentPage
-    };
-    mode    = ( 'mode' in args )    ? args['mode']    : defaults['mode'];
-    columns = ( 'columns' in args ) ? args['columns'] : defaults['columns'];
-    values  = ( 'values' in args )  ? args['values']  : defaults['values'];
-    limit   = ( 'limit' in args )   ? args['limit']   : defaults['limit'];
-    page    = ( 'page' in args )    ? args['page']    : defaults['page'];
-    delete args['mode'];
-    delete args['columns'];
-    delete args['values'];
-    delete args['limit'];
-    delete args['page'];
-  }
-  limit = parseInt(limit);
-  if ( args['magic_token'] ) {
-    args['magic_token'] = jQuery('input[name="magic_token"]').val();
-  }
-  var params = {
-    __mode: mode,
-    datasource: '<mt:var name="list_type">',
-    blog_id: <mt:var name="blog_id">,
-    columns: columns.join(','),
-    limit: limit,
-    page: page,
-    magic_token: jQuery('input[name="magic_token"]').val()
-  };
-  params = jQuery.extend( params, args );
-
-  if (values.length) {
-    params['items'] = jQuery.toJSON(values);
-  }
-  if (jQuery('table.listing-table th.sorted').length) {
-    jQuery('table.listing-table th.sorted').find('a').attr('href').match(/#(.*)/);
-    params['sort_by'] = RegExp.$1;
-    params['sort_order'] = jQuery('table.listing-table th.sorted').find('span').hasClass('desc') ? 'descend' : 'ascend';
-  }
-  if (jQuery('input[name=filter_id]').val()) {
-    params['fid'] = jQuery('input[name=filter_id]').val();
-  }
-  if (jQuery('input[name=filter_name]').val()) {
-    params['label'] = jQuery('input[name=filter_name]').val();
-  }
-
-  jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('div.pagination').hide();
-  jQuery('#msg-block div.msg-error.filtered-list-msg').remove()
-  // adding random bits to avoid cache in Android.
-  var script_url = '<mt:var name="script_url">?.r=' + Math.random(1);
-  jQuery.ajax({
-    type: 'POST',
-    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-    url: script_url,
-    dataType: 'json',
-    data: params,
-    success: function(data) {
-      if ( this_request != request_id ) {
-          return false;
-      }
-
-      if ( !handleMessages(data, 'filtered-list-msg' ) ) return;
-<mt:if name="config.debugmode">
-      if (data.result.debug) {
-        jQuery('#listing-debug-block').text(data.result.debug);
-      }
-</mt:if>
-      jQuery('table.listing-table tbody').empty();
-      jQuery('table.listing-table th :checkbox').prop('checked',false);
-      var objs = data.result.objects;
-      var count = objs.length;
-      var last = data.result.page_max;
-      total = parseInt(data.result.count);
-      editable_total = parseInt(data.result.editable_count);
-      var return_columns = data.result.columns.split(',');
-      var return_cols = jQuery.grep( return_columns, function( val, idx ){
-        return val.match(/\./);
-      }, true );
-      var main_cols = {};
-      jQuery('#disp_cols input.main.checkbox:checked').each(function() {
-        main_cols[ jQuery(this).val() ] = 1;
-      });
-      editable_count_in_page = 0;
-      for (var row = 0; row < count; row++) {
-        var id = objs[row][0];
-        var line = '';
-        if ( id ) {
-          editable_count_in_page++;
-          if (checked[page] && checked[page][id]) {
-            line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" checked="checked" name="id" value="'+id+'" /></td>';
-          } else {
-            line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>><input type="checkbox" name="id" value="'+id+'" /></td>';
-          }
-        }
-        else {
-          line = '<td class="cb col"<mt:unless name="has_list_actions"> style="display: none;"</mt:unless>></td>';
-        }
-        for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
-          var col_id = return_cols[ col - 1 ];
-          if ( main_cols[col_id] )
-              line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
-        }
-        jQuery('<tr id="'+id+'"' + ( id ? '' : ' class="no-action"' ) + '>'+line+'</tr>').appendTo('table.listing-table tbody');
-      }
-      jQuery('#resultstats').remove();
-      var n = columnLength();
-      if (count == 0) {
-        var message = trans('No [_1] could be found.', '<mt:if name="zero_state"><mt:var name="zero_state" escape="js"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>');
-        jQuery('<td class="col fullwidth-row" colspan="'+n+'">'+message+'</tr>').appendTo('table.listing-table tbody');
-      }
-      renderPagination(count, limit, page, last, total);
-      filters = data.result.filters;
-      if ( data.result.label ) {
-        jQuery('#opener').html(data.result.label);
-        jQuery('#filter_name').val(data.result.label);
-      }
-      if ( data.result.id ) {
-        jQuery('#filter_id').val(data.result.id);
-        current_id = data.result.id;
-      }
-    },
-    complete: function() {
-      if ( this_request != request_id ) {
-          return false;
-      }
-      jQuery('.indicator, #listing-table-overlay').hide();
-      jQuery('div.pagination').show();
-
-      jQuery('table.listing-table tbody tr:even').addClass('even');
-      jQuery('table.listing-table tbody tr:odd').addClass('odd');
-      var $checkboxes = jQuery('td :checkbox');
-      var $checked = jQuery('td :checked');
-      $checked.parents('tr').addClass('selected');
-      if ($checkboxes.length && $checkboxes.length == $checked.length) {
-        jQuery('table.listing-table th :checkbox').prop('checked', true);
-        addSelectAll($checkboxes);
-      }
-      if (mode == 'save_filter' || mode == 'delete_filter') {
-        renderFilterList();
-        updateFilterSaveButtons({
-          system:     0,
-          new_filter: 0
-        });
-      }
-
-      if (!jQuery('#msg-block .msg-error').length) {
-        jQuery('#dialog_save_filter').dialog('close');
-      } else {
-        if (jQuery('#dialog_save_filter:visible').length) {
-          jQuery('.msg-error').clone().appendTo('#dialog-msg-block');
-          jQuery('#msg-block').hide();
-        }
-      }
-      jQuery(window).trigger('listReady');
-    },
-    error: function(xhr, status, error) {
-      if ( this_request != request_id ) {
-          return false;
-      }
-      if ( xhr.status == 401 ) {
-        loginAgain(function(){
-          renderList(mode, columns, values, limit, page);
-        });
-      }
-      else if ( xhr.status == 0 ) {
-        // Maybe this is user abort. do nothing.
-      }
-      else {
-        alert( trans('Communication Error (HTTP status code: [_1]. Message: [_2])', xhr.status, error) );
-      }
-    }
-  });
-}
-
-jQuery.fn.mtRenderList = renderList;
-
-function itemValues() {
-  var $items = jQuery('#filter-detail .filteritem:not(.error)');
-  vals = [];
-  $items.each(function() {
-    var data = {};
-    var fields = [];
-    var $types = jQuery(this).find('.filtertype');
-    $types.each(function() {
-      jQuery(this).attr('class').match(/type-(\w+)/);
-      var type = RegExp.$1;
-      jQuery(this).find('.item-content').each(function() {
-        var args = {};
-        jQuery(this).find(':input').each(function() {
-          var re = new RegExp(type+'-(\\w+)');
-          jQuery(this).attr('class').match(re);
-          var key = RegExp.$1;
-          args[key] = jQuery(this).val();
-        });
-        fields.push({'type': type, 'args': args});
-      });
-    });
-    if (fields.length > 1 ) {
-      data['type'] = 'pack';
-      data['args'] = {
-        "op":"and",
-        "items":fields
-      };
-    } else {
-      data = fields.pop();
-    }
-    vals.push(data);
-  });
-}
-
-jQuery('ul#disp_cols .main:checkbox').click(function() {
-  var col = jQuery(this).val();
-  var checked = jQuery(this).is(':checked');
-  renderColumns(col, checked);
-  if (checked)
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
-  else
-    saveListPrefs();
-  var n = columnLength();
-  jQuery('td.fullwidth-row').attr('colspan', n);
-
-});
-
-jQuery('ul#disp_cols .sub:checkbox').click(function() {
-  toggleSubField(this);
-  var n = columnLength();
-  jQuery('td.fullwidth-row').attr('colspan', n);
-  saveListPrefs();
-});
-
-jQuery('#reset-display-options').click(function() {
-  jQuery('#disp_cols input[type=checkbox]').each(function() {
-    if ( jQuery(this).is('.show-default') ) {
-      jQuery(this).prop('checked', true);
-    }
-    else {
-      jQuery(this).prop('checked', false);
-    }
-  });
-  renderColumns();
-  renderList({});
-  var n = columnLength();
-  jQuery('td.fullwidth-row').attr('colspan', n);
-  return false;
-});
-
-function toggleSubField (obj) {
-  if ( jQuery(obj).prop('checked') )
-    jQuery( '#listing-table .' + jQuery(obj).val() ).show();
-  else
-    jQuery( '#listing-table .' + jQuery(obj).val() ).hide();
-}
-
-jQuery('#row').change(function() {
-  jQuery('table.listing-table tbody').empty();
-  checked = [];
-  renderColumns();
-  renderList('filtered_list', cols, vals, jQuery(this).val(), 1);
-});
-
-function addSelectAll($node) {
-  if (editable_count_in_page >= editable_total) {
-    return false;
-  }
-
-  var n = columnLength();
-  $node
-    .parents('tbody')
-    .append('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"></td></tr>')
-    .prepend('<tr class="select-all"><td class="col fullwidth-row" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
-  var select_text = trans('Select all [_1] items', editable_total);
-  var cancel_text = trans('All [_1] items are selected', editable_total);
-  jQuery('<a href="#"></a>')
-    .appendTo('.select-all td')
-    .text(select_text)
-    .bind('click', function() {
-      var $input = jQuery('input[name=all_selected]');
-      if ($input.val()) {
-        $input.val('');
-        jQuery('.select-all td').find('a').text(select_text);
-      } else {
-        $input.val('1');
-        jQuery('.select-all td').append(cancel_text).addClass('highlight').find('a').remove();
-      }
-      return false;
-    });
-}
-
-function removeSelectAll($node) {
-  $node
-    .parents('tbody')
-    .find('.select-all')
-    .remove();
-  jQuery('input[name=all_selected]').val('');
-}
-
-function columnLength () {
-  return jQuery('#disp_cols').find('input.main:checked').length<mt:if name="has_list_actions"> + 1</mt:if>;
-}
-
-<mt:if name="has_list_actions">
-jQuery('table.listing-table tbody').selectable({
-  filter: 'tr',
-  cancel: 'tr.no-action, a, .select-all, .text, .can-select, button, pre, :input:not([name=id])',
-  selected: function(event, ui) {
-    var $checkboxes = jQuery(ui.selected).find(':checkbox');
-    if ($checkboxes.prop('checked')) {
-      jQuery(ui.selected).removeClass('selected');
-      $checkboxes.prop('checked',false);
-    } else {
-      jQuery(ui.selected).addClass('selected');
-      $checkboxes.prop('checked', true);
-    }
-    if (jQuery('table.listing-table td :checkbox').length == jQuery('table.listing-table td :checked').length) {
-      jQuery('table.listing-table th :checkbox').prop('checked', true);
-      if (!jQuery('table.listing-table tr.select-all').length) {
-        addSelectAll($checkboxes);
-      }
-    } else {
-      jQuery('table.listing-table th :checkbox').prop('checked', false);
-      removeSelectAll($checkboxes);
-    }
-  }
-});
-</mt:if>
-
-jQuery('table.listing-table th :checkbox').click(function() {
-  var $checkboxes = jQuery('tr :checkbox');
-  if (this.checked) {
-    $checkboxes.prop('checked', true);
-    addSelectAll($checkboxes);
-    $checkboxes.parents('tr').addClass('selected');
-  } else {
-    $checkboxes.prop('checked', false);
-    removeSelectAll($checkboxes);
-    $checkboxes.parents('tr').removeClass('selected');
-  }
-});
-
-jQuery('table.listing-table thead a, tfoot a').click(function() {
-  var url = jQuery(this).attr('href');
-  var $th = jQuery('a[href=\''+url+'\']').parents('th');
-  if ($th.hasClass('sorted')) {
-    var $order = $th.find('span');
-    if ($order.hasClass('desc')) {
-      $order.removeClass('desc').addClass('asc');
-    } else {
-      $order.removeClass('asc').addClass('desc');
-    }
-  } else {
-    jQuery('table.listing-table thead th, tfoot th').removeClass('sorted').find('span.sm').removeClass('asc desc');
-    $th.addClass('sorted').find('span.sm').remove();
-    url.match(/#(.*)/);
-    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('.sort-link'));
-  }
-  checked = [];
-  renderColumns();
-  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-  return false;
-});
-
-function dateOption($node) {
-  var val = $node.val();
-  var type;
-  switch (val) {
-  case 'days':
-    type = 'days';
-    break;
-  case 'before':
-  case 'after':
-    type = 'date';
-    break;
-  case 'future':
-  case 'past':
-    type = 'none';
-    break;
-  default:
-    type = 'range';
-  }
-
-  $node.parent('.item-content').find('input').mtUnvalidate();
-  $node.parent('.item-content').find('.date-options span.date-option').hide();
-  $node.parent('.item-content').find('.date-option.'+type).show();
-}
-
-function filterItem(type, datepicker_off) {
-  var $item = jQuery(filter_types[type]);
-  if ( $item && $item.attr('class') && $item.attr('class').match(/no-edit/) ) {
-    $item.find('input').attr('disabled', 1);
-    $item.find('select').attr('disabled', 1);
-  }
-  if ( !datepicker_off ) {
-    $item
-      .find('.filter-date').each(function() {
-          dateOption(jQuery(this));
-      }).bind('change', function() {
-          dateOption(jQuery(this));
-      }).end()
-      .find('input.date').datepicker({
-        dateFormat: 'yy-mm-dd',
-        dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-        monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
-        showMonthAfterYear: true,
-        prevText: '&lt;',
-        nextText: '&gt;',
-        onSelect: function( dateText, inst ) {
-          inst.input.mtValid();
-        }
-      });
-  }
-  return $item;
-}
-
-jQuery('#item_list').change(function() {
-  var type = jQuery('#item_list').val();
-  if ( !type ) return false;
-  var $item = filterItem(type);
-  $item
-    .insertAfter('.selectfilter')
-    .wrap('<div class="filteritem" />')
-    .find('.minus').hide().end()
-    .find('input').each( function() {
-      var id = jQuery(this).attr('id') || jQuery(this).attr('name') || 'input-' + inputCount++;
-      jQuery(this)
-        .attr('id', id)
-        .attr('name', id);
-    });
-  jQuery('#item_list').attr('selectedIndex', 0);
-  jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
-    .insertAfter($item)
-    .bind('click', function() {
-      jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
-      updateItemList();
-      updateFilterSaveButtons();
-    });
-  if ( allPass ) {
-    jQuery('#filter_id').val('');
-    jQuery('#opener').text('<__trans phrase="Unknown Filter" escape="js">');
-    editNewFilter = 1;
-    editSysFilter = 0;
-    allPass       = 0;
-  }
-  updateItemList();
-  updateFilterSaveButtons({ allpass: false });
-  return false;
-});
-
-var validateErrorMessage;
-
-function validateFilterDetails () {
-  if ( validateErrorMessage ) {
-    validateErrorMessage.remove();
-  }
-  var errors = 0;
-  jQuery('div#filter-detail div.filteritem').each( function () {
-    if ( !jQuery(this).find('input:visible').mtValidate() ) {
-      errors++;
-      jQuery(this).addClass('highlight error');
-    }
-    else {
-      jQuery(this).removeClass('highlight error');
-    }
-  })
-  if ( errors ) {
-    validateErrorMessage = showMessage( trans('[_1] Filter Items have errors', errors ), 'error' );
-  }
-  return errors ? false : true;
-}
-
-function resetFilterDetails() {
-  if ( validateErrorMessage ) {
-    validateErrorMessage.remove();
-  }
-  validateErrorMessage = false;
-  jQuery('div#filter-detail div.filteritem')
-    .find('input, select')
-    .mtUnvalidate()
-    .end()
-    .remove();
-}
-
-jQuery('#apply').click(function() {
-  if (!validateFilterDetails()) return false;
-  jQuery('input[name=filter_id]').val('');
-  itemValues()
-  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-  return false;
-});
-
-jQuery('#<mt:var name="object_type">-listing-form').bind('submit.as_apply', function() {
-  jQuery('#apply').click();
-  return false;
-});
-
-jQuery('#save').click(function() {
-  if (!validateFilterDetails()) return false;
-  if (jQuery('#filter_id').val() && jQuery('#filter_id').val().match(/^[1-9][0-9]*$/) ) {
-    // Overwrite current filter.
-    jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
-    jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
-    itemValues()
-    renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
-  } else {
-    // Create new filter.
-    var temp_base = 1;
-    var temp;
-    while ( 1 ) {
-      temp = trans('[_1] - Filter [_2]', '<mt:var name="object_label">', temp_base++);
-      if ( 0 == jQuery.grep(filters, function(f){ return f.label == temp }).length )
-          break;
-    }
-    jQuery('input[name=filter_name]').mtUnvalidate().val(temp);
-    jQuery('input[name=filter_id]').val('');
-    jQuery('#dialog_save_filter').dialog({
-      title: trans('Save Filter'),
-      dialogClass: 'save',
-      width: 450,
-      modal: true,
-      resizable: false,
-      draggable: false,
-      closeOnEscape: false,
-      open: function(){
-        jQuery('input[name=filter_name]').focus();
-      }
-    }).dialog('open');
-  }
-  return false;
-});
-
-jQuery('#saveas').click(function() {
-  if (!validateFilterDetails()) return false;
-  jQuery('input[name=filter_name]').mtUnvalidate().val(jQuery('#opener').text());
-  jQuery('input[name=filter_id]').val('');
-  jQuery('#dialog_save_filter')
-    .dialog({
-      title: trans('Save As Filter'),
-      dialogClass: 'save',
-      width: 450,
-      modal: true,
-      resizable: false,
-      open: function () {
-        jQuery('input[name=filter_name]').focus();
-      }
-    }).dialog('open');
-  return false;
-});
-
-jQuery('#dialog_filter').dialog({
-    autoOpen: false,
-    title: trans('Select Filter'),
-    width: 380,
-    resizable: false
-});
-
-jQuery('#opener').click(function() {
-  jQuery('#dialog_filter').dialog('open');
-  return false;
-});
-
-jQuery('#dialog_save_filter').dialog({
-  autoOpen: false,
-  dialogClass: 'save',
-  width: 450,
-  minHeight: 100
-});
-
-// When the enter key is pressed, click the primary button instead of submitting.
-jQuery('#dialog_save_filter form').submit(function() {
-  jQuery('button.primary', this).click();
-  return false;
-});
-
-jQuery('#save-filter').click(function() {
-  if ( !jQuery('input[name=filter_name]').mtValidate('simple') )
-    return false;
-  var name = jQuery('input[name=filter_name]').val();
-  itemValues();
-  jQuery(window).one('listReady', function() {
-    updateFilterSaveButtons({ new_filter: 0 });
-  });
-  renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
-  return false;
-});
-
-jQuery('#cancel-save-filter').click(function() {
-  jQuery(this).parents('#dialog_save_filter').dialog('close');
-});
-
-function validateFilterName (name) {
-  var res = true;
-  jQuery('a.apply-link').each( function() {
-      if ( jQuery(this).text() == name )
-          res = false;
-  });
-  return res;
-}
-
-function addItems(items, op) {
-  var type;
-  var args;
-  if ( !items )
-      items = [];
-  for (var i = 0, length = items.length; i < length; i++) {
-    type = items[i].type;
-    if (type == 'pack') {
-      addItems(items[i].args.items, items[i].args.op);
-    }
-    var $filteritem = jQuery('.filteritem:first');
-    var $filtertype;
-    var prev_type;
-    if ($filteritem.length) {
-      $filtertype = $filteritem.children('.filtertype:last');
-      $filtertype.attr('class').match(/type-(\w+)/);
-      prev_type = RegExp.$1;
-    }
-    var $item = filterItem(type);
-    $item.find('input').each( function() {
-      var id = jQuery(this).attr('id') || jQuery(this).attr('name') || 'input-' + inputCount++;
-      jQuery(this)
-        .attr('id', id)
-        .attr('name', id);
-    });
-
-
-    if (op && type == prev_type) {
-      $item
-        .insertAfter($filtertype)
-        .find('.item-label').addClass('invisible');
-    } else {
-      var $div = jQuery('<div class="filteritem" />').addClass('itemtype-' . type);
-      $item
-        .insertAfter('.selectfilter')
-        .wrap($div)
-        .find('.minus').hide().end();
-      jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
-        .insertAfter($item)
-        .bind('click', function() {
-          jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
-          updateItemList();
-          updateFilterSaveButtons();
-        });
-    }
-    args = items[i].args;
-    for (var key in args) {
-      if ( typeof args[key] != 'string' && typeof args[key] != 'number' ) continue;
-      // A sort of hack to decode HTML entities using jQuery.
-      var decoded = jQuery('<div>').html( args[key] ).text();
-      $item.find('.'+type+'-'+key).each( function(){
-        if ( jQuery(this).is('input, select') )
-            jQuery(this).val( decoded );
-        else
-            jQuery(this).text( decoded );
-      });
-    }
-    var $node = $item.find('.filter-date');
-    if ($node) {
-      dateOption($node);
-    }
-  }
-  updateItemList();
-  updateFilterSaveButtons();
-}
-
-jQuery('#allpass-filter').click( function() {
-  allPass = 1;
-  jQuery('#filter-detail').hide();
-  jQuery('#filter').removeClass('active');
-  doApplyFilter(allpass_filter);
-  jQuery('#item_list').attr('selectedIndex', 0).val('');
-  var $retargs = jQuery('input[name=return_args]');
-  if ($retargs.length) {
-    var val = $retargs.val();
-    val = val.replace(/&filter(_val)?=[^&]*/g, "");
-    $retargs.val(val);
-  }
-  return false;
-});
-
-function applyFilter(index, no_render) {
-  if (index >= 0 && filters[index].items) {
-    var filter = filters[index];
-    doApplyFilter(filter, no_render);
-    allPass = 0;
-  }
-}
-
-function doApplyFilter(filter, no_render) {
-  jQuery('#filter_name').val('');
-  jQuery('#filter_id').val('');
-  resetFilterDetails();
-  var name = filter.label;
-  addItems(filter.items);
-  jQuery('#opener').html(name);
-  jQuery('#filter_name').val(name);
-  jQuery('#filter_id').val(filter.id);
-  current_id = filter.id;
-  if ( parseInt(filter.can_save) )
-    editSysFilter = 0;
-  else
-    editSysFilter = 1;
-  if ( filter.id == '_allpass' )
-    allPass = 1;
-  jQuery('input[name=filter_id]').val(filter.id);
-  itemValues();
-  if ( !no_render )
-    renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-
-  // Remove filter_key
-  var return_args = jQuery('input[name=return_args]').val();
-  if ( return_args.match(/&filter_key=[^&]*/) ) {
-    var new_return_args = return_args.replace( /&filter_key=[^&]*/, "" );
-    jQuery('input[name=return_args]').val(new_return_args);
-  }
-}
-
-jQuery('.action_selector').change(function() {
-  var selected = jQuery(this).val();
-  jQuery('.action_selector').val(selected);
-});
-
-function doForMarked(formid, action, singlar, plural, phrase, xhr) {
-  var $form = jQuery('#'+formid);
-  if (!$form.length) {
-    return;
-  }
-
-  var mode;
-  var params = {};
-  if ( action == 'itemset_action' ) {
-      var $selected = $form.find('option:selected');
-      action = $selected.val();
-  }
-
-  if (action == '' || action == '0') {
-    alert(trans('You must select an action.'));
-    return;
-  }
-  var opt = itemset_options[action];
-  if ( !opt )
-    return false;
-  var xhr = opt['xhr'];
-  var mode = opt['mode'] || 'itemset_action';
-  if ($form.find('input[name=itemset_action_input]').val()) {
-    $form.find('input[name=itemset_action_input]').val('');
-  }
-
-  var count = $form.find('input[name=id]').filter(':checked').length;
-  if ( jQuery('input[name=all_selected]').val() == 1 ) {
-      count = total;
-  }
-  if (!count) {
-    alert(trans('You did not select any [_1] to [_2].', plural, phrase));
-    return;
-  }
-  if (opt['min'] && (count < opt['min'])) {
-    alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
-    return false;
-  } else if (opt['max'] && (count > opt['max'])) {
-    alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
-    return false;
-  } else if (opt['input']) {
-    if (input = prompt(opt['input'])) {
-      $form.find('[name=itemset_action_input]').val(input);
-      params['itemset_action_input'] = input;
-    } else {
-      return false;
-    }
-  }
-
-  if (xhr) {
-    params['mode'] = mode;
-    params['xhr'] = 1;
-    params['all_selected'] = jQuery('input[name=all_selected]').val();
-    params['magic_token'] = 1;
-    params['id'] = $form
-        .find('input[name=id]:checked')
-        .map(function(){
-            return jQuery(this).val();
-        })
-        .get()
-        .join(",");
-    params['_type'] = '<mt:var name="object_type">';
-  } else {
-    jQuery('input[name=return_args]').val(jQuery('input[name=return_args]').val()+'&does_act=1');
-  }
-
-  if (action) {
-    $form.find('input[name=action_name]').val(action);
-      params['action_name'] = action;
-  } else {
-    $form.find('input[name=action_name]').val('');
-  }
-
-  if (vals.length) {
-    var items = jQuery.toJSON(vals);
-    $form.find('input[name=items]').val(items);
-    params['items'] = items;
-  }
-
-  if (opt['no_prompt']) {
-      // Do always.
-  }
-  else if (opt['continue_prompt']) {
-    if (!confirm(opt['continue_prompt'])) {
-      return false;
-    }
-  }
-  else if (phrase) {
-    var message = ( count == 1 )
-      ? trans('Are you sure you want to [_2] this [_1]?', singlar, phrase)
-      : trans('Are you sure you want to [_3] the [_1] selected [_2]?', count, plural, phrase);
-    if (!confirm(message)) {
-        return;
-    }
-  }
-
-  $form.find('input[name=__mode]').val(mode);
-  if ( xhr )
-    renderList(params);
-  else if ( opt['dialog'] )
-    jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
-  else {
-    $form.unbind('submit.as_apply').submit();
-  }
-}
-
-jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
-  var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
-  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
-  var phrase = '<__trans phrase="act upon" escape="js">';
-  doForMarked(id, 'itemset_action', singlar, plural, phrase);
-  return false;
-});
-
-jQuery('.actions-bar a.button').click(function() {
-  jQuery(this).attr('href').match(/#(.*)/);
-  var action = RegExp.$1;
-  var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:if name="action_label"><mt:var name="action_label"><mt:else><mt:var name="object_label" lower_case="1" escape="js"></mt:if>';
-  var plural = '<mt:if name="action_label_plural"><mt:var name="action_label_plural"><mt:else><mt:var name="object_label_plural" lower_case="1" escape="js"></mt:if>';
-  var phrase = messages[action];
-  doForMarked(id, action, singlar, plural, phrase);
-  return false;
-});
-
-jQuery('#filter-detail').on('click','.filtertype .minus',function(){
-  var $item = jQuery(this).parents('.filteritem');
-  jQuery(this).parents('.filtertype').find('input').mtUnvalidate().end().remove();
-  if ( $item.find('.filtertype').length == 1 ) {
-    $item.find('.minus').hide();
-  }
-});
-
-jQuery('#filter-detail').on('click','.filtertype .plus',function(){
-  var op = 'and';
-  jQuery(this).parents('.filteritem').addClass(op);
-  var $filtertype = jQuery(this).parents('.filtertype');
-  var $filteritem = jQuery(this).parents('.filteritem');
-  $filtertype.attr('class').match(/type-(\w+)/);
-  var type = RegExp.$1;
-  var $node = filterItem(type, true);
-  var $clone = $node.clone(true);
-  $clone.insertAfter($filtertype)
-    .find('.item-label').addClass('invisible');
-
-  $clone.find('.filter-date').each(function() {
-      dateOption(jQuery(this));
-  }).bind('change', function() {
-      dateOption(jQuery(this));
-  }).end()
-  .find('input.date').datepicker({
-      dateFormat: 'yy-mm-dd',
-      dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-      monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
-      showMonthAfterYear: true,
-      prevText: '&lt;',
-      nextText: '&gt;'
-  });
-  $filteritem.find('.minus').show();
-});
-
-jQuery(window).bind('listReady', function(){
-  jQuery('ul#disp_cols .sub:checkbox').each(function () {
-    toggleSubField(this);
-  });
-});
-
-jQuery(window).bind('listReady', function() {
-    jQuery('a.action-link.mt-open-dialog').mtDialog();
-})
-
-function updateItemList () {
-  var list = jQuery('#item_list');
-  list.find('option').removeAttr('disabled');
-  jQuery('#filter-detail').find('.filtertype').each( function() {
-    jQuery(this).attr('class').match(/type-(\w+)/);
-    var type = RegExp.$1;
-    list.find('option[value=' + type + ']').attr('disabled','disabled');
-  });
-}
-
-addItems(initial_filter.items);
-jQuery('#opener').html(initial_filter.label);
-jQuery('#filter_name').val(initial_filter.label);
-jQuery('#filter_id').val(initial_filter.id);
-jQuery('input[name=filter_id]').val(initial_filter.id);
-if ( initial_filter.id == '_allpass' )
-  allPass = 1;
-jQuery('input[name=filter_name]').val(initial_filter.label);
-
-editSysFilter = !parseInt(initial_filter.can_edit);
-
-if (jQuery('#disp_cols li:not(.hidden)').size() == 0)
-  jQuery('#display_columns-field, #reset-display-options').hide();
-
-itemValues()
-renderColumns();
-renderFilterList();
-<mt:if name="default_sort_key">
-var $initial_sort_button = jQuery('table.listing-table thead th.<mt:var name="default_sort_key"> a.sort-link');
-if ( $initial_sort_button.length )
-  $initial_sort_button.click();
-else
-  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-<mt:else>
-renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
-</mt:if>
-updateFilterSaveButtons();
 
 <mt:if name="system_messages">
-var system_messages = <mt:var name="system_messages">;
-for ( var i=0; i < system_messages.length; i++ ) {
-    var message = system_messages[i];
-    showMessage( message.msg, message.cls );
-}
+jQuery(document).ready(function () {
+  var system_messages = <mt:var name="system_messages">;
+  for ( var i=0; i < system_messages.length; i++ ) {
+      var message = system_messages[i];
+      showMessage( message.msg, message.cls );
+  }
+});
 </mt:if>
 
+</script>
 </mt:setvarblock>
-<mt:include name="include/footer.tmpl">
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

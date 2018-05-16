@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -40,18 +48,21 @@ sub suite {
                 totalResults => 2,
                 items        => [
                     {   permissions => [
-                            qw(administer create_blog create_website edit_templates
-                                manage_plugins view_log)
+                            qw(administer create_site edit_templates
+                                manage_content_data manage_content_types
+                                manage_plugins manage_users_groups
+                                sign_in_cms sign_in_data_api view_log)
                         ],
                         blog => undef
                     },
                     {   permissions => [
-                            qw(administer_blog administer_website comment create_post
-                                edit_all_posts edit_assets edit_categories edit_config
-                                edit_notifications edit_tags edit_templates manage_feedback
-                                manage_member_blogs manage_pages manage_themes manage_users
-                                publish_post rebuild save_image_defaults send_notifications
-                                set_publish_paths upload view_blog_log)
+                            qw( administer_blog administer_site administer_website comment create_post create_site
+                                edit_all_posts edit_assets
+                                edit_categories edit_config edit_notifications edit_tags edit_templates
+                                manage_category_set manage_content_data
+                                manage_content_types manage_feedback manage_member_blogs manage_pages
+                                manage_themes manage_users publish_post rebuild
+                                send_notifications set_publish_paths upload view_blog_log)
                         ],
                         blog => { id => 1 },
                     },
@@ -137,9 +148,6 @@ sub suite {
                 );
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => scalar @perms,
@@ -540,7 +548,7 @@ sub suite {
             method => 'POST',
             params => {
                 user_id => $author->id,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
@@ -649,7 +657,7 @@ sub suite {
             method => 'POST',
             params => {
                 site_id => 1,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
@@ -766,7 +774,7 @@ sub suite {
             method => 'POST',
             params => {
                 user_id => $author->id,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
@@ -876,7 +884,7 @@ sub suite {
             method => 'POST',
             params => {
                 site_id => 1,
-                role_id => 2,
+                role_id => 1,
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
@@ -911,4 +919,3 @@ sub suite {
         },
     ];
 }
-

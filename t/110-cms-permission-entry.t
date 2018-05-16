@@ -2,260 +2,330 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website       = MT::Test::Permission->make_website();
-my $other_website = MT::Test::Permission->make_website();
+    # Website
+    my $website       = MT::Test::Permission->make_website(
+        name => 'my website',
+    );
+    my $other_website = MT::Test::Permission->make_website(
+        name => 'other website',
+    );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $other_blog
-    = MT::Test::Permission->make_blog( parent_id => $other_website->id, );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
+    my $other_blog = MT::Test::Permission->make_blog(
+        parent_id => $other_website->id,
+        name => 'other blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name     => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name     => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name     => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-my $egawa = MT::Test::Permission->make_author(
-    name     => 'egawa',
-    nickname => 'Shiro Egawa',
-);
+    my $egawa = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-my $ogawa = MT::Test::Permission->make_author(
-    name     => 'ogawa',
-    nickname => 'Goro Ogawa',
-);
+    my $ogawa = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-my $kagawa = MT::Test::Permission->make_author(
-    name     => 'kagawa',
-    nickname => 'Ichiro Kagawa',
-);
+    my $kagawa = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-my $kikkawa = MT::Test::Permission->make_author(
-    name     => 'kikkawa',
-    nickname => 'Jiro Kikkawa',
-);
+    my $kikkawa = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-my $kumekawa = MT::Test::Permission->make_author(
-    name     => 'kumekawa',
-    nickname => 'Saburo Kumekawa',
-);
+    my $kumekawa = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-my $kemikawa = MT::Test::Permission->make_author(
-    name     => 'kemikawa',
-    nickname => 'Shiro Kemikawa',
-);
+    my $kemikawa = MT::Test::Permission->make_author(
+        name     => 'kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
 
-my $koishikawa = MT::Test::Permission->make_author(
-    name     => 'koishikawa',
-    nickname => 'Goro Koishikawa',
-);
+    my $koishikawa = MT::Test::Permission->make_author(
+        name     => 'koishikawa',
+        nickname => 'Goro Koishikawa',
+    );
 
-my $sagawa = MT::Test::Permission->make_author(
-    name     => 'sagawa',
-    nickname => 'Ichiro Sagawa',
-);
+    my $sagawa = MT::Test::Permission->make_author(
+        name     => 'sagawa',
+        nickname => 'Ichiro Sagawa',
+    );
 
-my $shimoda = MT::Test::Permission->make_author(
-    name     => 'shimoda',
-    nickname => 'Jiro Shimoda',
-);
+    my $shimoda = MT::Test::Permission->make_author(
+        name     => 'shimoda',
+        nickname => 'Jiro Shimoda',
+    );
 
-my $suda = MT::Test::Permission->make_author(
-    name     => 'suda',
-    nickname => 'Saburo Suda',
-);
+    my $suda = MT::Test::Permission->make_author(
+        name     => 'suda',
+        nickname => 'Saburo Suda',
+    );
 
-my $seta = MT::Test::Permission->make_author(
-    name     => 'seta',
-    nickname => 'Shiro Seta',
-);
+    my $seta = MT::Test::Permission->make_author(
+        name     => 'seta',
+        nickname => 'Shiro Seta',
+    );
 
-my $sorimachi = MT::Test::Permission->make_author(
-    name     => 'sorimachi',
-    nickname => 'Goro Sorimachi',
-);
+    my $sorimachi = MT::Test::Permission->make_author(
+        name     => 'sorimachi',
+        nickname => 'Goro Sorimachi',
+    );
 
-my $tada = MT::Test::Permission->make_author(
-    name     => 'tada',
-    nickname => 'Ichiro Tada',
-);
+    my $tada = MT::Test::Permission->make_author(
+        name     => 'tada',
+        nickname => 'Ichiro Tada',
+    );
 
-my $chiyoda = MT::Test::Permission->make_author(
-    name     => 'chiyoda',
-    nickname => 'Jiro Chiyoda',
-);
+    my $chiyoda = MT::Test::Permission->make_author(
+        name     => 'chiyoda',
+        nickname => 'Jiro Chiyoda',
+    );
 
-my $tsuneta = MT::Test::Permission->make_author(
-    name     => 'tsuneta',
-    nickname => 'Saburo Tsuneta',
-);
+    my $tsuneta = MT::Test::Permission->make_author(
+        name     => 'tsuneta',
+        nickname => 'Saburo Tsuneta',
+    );
 
-my $terada = MT::Test::Permission->make_author(
-    name     => 'terada',
-    nickname => 'Shiro Terada',
-);
+    my $terada = MT::Test::Permission->make_author(
+        name     => 'terada',
+        nickname => 'Shiro Terada',
+    );
 
-my $toda = MT::Test::Permission->make_author(
-    name     => 'toda',
-    nickname => 'Goro Toda',
-);
+    my $toda = MT::Test::Permission->make_author(
+        name     => 'toda',
+        nickname => 'Goro Toda',
+    );
 
-my $nashida = MT::Test::Permission->make_author(
-    name     => 'nashida',
-    nickname => 'Ichiro Nashida',
-);
+    my $nashida = MT::Test::Permission->make_author(
+        name     => 'nashida',
+        nickname => 'Ichiro Nashida',
+    );
 
-my $nishioka = MT::Test::Permission->make_author(
-    name     => 'nishioka',
-    nickname => 'Jiro Nishioka',
-);
+    my $nishioka = MT::Test::Permission->make_author(
+        name     => 'nishioka',
+        nickname => 'Jiro Nishioka',
+    );
 
-my $nukita = MT::Test::Permission->make_author(
-    name     => 'nukita',
-    nickname => 'Saburo Nukita',
-);
+    my $nukita = MT::Test::Permission->make_author(
+        name     => 'nukita',
+        nickname => 'Saburo Nukita',
+    );
 
-my $negishi = MT::Test::Permission->make_author(
-    name     => 'negishi',
-    nickname => 'Shiro Negishi',
-);
+    my $negishi = MT::Test::Permission->make_author(
+        name     => 'negishi',
+        nickname => 'Shiro Negishi',
+    );
 
-my $nonoda = MT::Test::Permission->make_author(
-    name     => 'nonoda',
-    nickname => 'Goro Nonoda',
-);
+    my $nonoda = MT::Test::Permission->make_author(
+        name     => 'nonoda',
+        nickname => 'Goro Nonoda',
+    );
 
-my $hakamada = MT::Test::Permission->make_author(
-    name     => 'hakamada',
-    nickname => 'Ichiro Hakamada',
-);
+    my $hakamada = MT::Test::Permission->make_author(
+        name     => 'hakamada',
+        nickname => 'Ichiro Hakamada',
+    );
 
-my $hikita = MT::Test::Permission->make_author(
-    name     => 'hikita',
-    nickname => 'Jiro Hikita',
-);
+    my $hikita = MT::Test::Permission->make_author(
+        name     => 'hikita',
+        nickname => 'Jiro Hikita',
+    );
 
-my $fukuda = MT::Test::Permission->make_author(
-    name     => 'fukuda',
-    nickname => 'Saburo Fukuda',
-);
+    my $fukuda = MT::Test::Permission->make_author(
+        name     => 'fukuda',
+        nickname => 'Saburo Fukuda',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $create_post = MT::Test::Permission->make_role(
+        name        => 'Create Post',
+        permissions => "'create_post'",
+    );
+
+    my $edit_all_posts = MT::Test::Permission->make_role(
+        name        => 'Edit All Posts',
+        permissions => "'edit_all_posts'",
+    );
+
+    my $manage_pages = MT::Test::Permission->make_role(
+        name        => 'Manage Pages',
+        permissions => "'manage_pages'",
+    );
+
+    my $publish_post = MT::Test::Permission->make_role(
+        name        => 'Publish Post',
+        permissions => "'publish_post'",
+    );
+
+    my $edit_config = MT::Test::Permission->make_role(
+        name        => 'Edit Config',
+        permissions => "'edit_config'",
+    );
+
+    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+
+    require MT::Association;
+    MT::Association->link( $aikawa   => $edit_config    => $blog );
+    MT::Association->link( $ichikawa => $create_post    => $blog );
+    MT::Association->link( $ukawa    => $edit_all_posts => $blog );
+    MT::Association->link( $egawa    => $manage_pages   => $blog );
+    MT::Association->link( $ogawa    => $create_post    => $blog );
+    MT::Association->link( $kagawa   => $designer       => $blog );
+    MT::Association->link( $shimoda  => $publish_post   => $blog );
+    MT::Association->link( $seta     => $publish_post   => $blog );
+
+    MT::Association->link( $kikkawa    => $edit_config    => $second_blog );
+    MT::Association->link( $kumekawa   => $create_post    => $second_blog );
+    MT::Association->link( $koishikawa => $edit_all_posts => $second_blog );
+    MT::Association->link( $kemikawa   => $manage_pages   => $second_blog );
+    MT::Association->link( $suda       => $publish_post   => $second_blog );
+
+    MT::Association->link( $sorimachi, $edit_config,    $website );
+    MT::Association->link( $tsuneta,   $create_post,    $website );
+    MT::Association->link( $terada,    $edit_all_posts, $website );
+    MT::Association->link( $nishioka,  $create_post,    $website );
+    MT::Association->link( $nukita,    $designer,       $website );
+    MT::Association->link( $negishi,   $manage_pages,   $website );
+    MT::Association->link( $hikita,    $publish_post,   $website );
+    MT::Association->link( $fukuda,    $publish_post,   $website );
+
+    MT::Association->link( $tada,   $edit_config,    $other_website );
+    MT::Association->link( $toda,   $create_post,    $other_website );
+    MT::Association->link( $nonoda, $edit_all_posts, $other_website );
+
+    MT::Association->link( $chiyoda,  $edit_config,    $other_blog );
+    MT::Association->link( $nashida,  $create_post,    $other_blog );
+    MT::Association->link( $hakamada, $edit_all_posts, $other_blog );
+
+    # Entry
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $ichikawa->id,
+        title     => 'my entry',
+    );
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $blog->id,
+        author_id => $shimoda->id,
+        title     => 'my entry2',
+    );
+    my $website_entry = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $tsuneta->id,
+        title     => 'my website entry',
+    );
+    my $other_website_entry = MT::Test::Permission->make_entry(
+        blog_id   => $other_website->id,
+        author_id => $toda->id,
+        title     => 'other website entry',
+    );
+
+    # Page
+    my $page = MT::Test::Permission->make_page(
+        blog_id   => $blog->id,
+        author_id => $egawa->id,
+        title     => 'my page',
+    );
+    my $website_page = MT::Test::Permission->make_page(
+        blog_id   => $website->id,
+        author_id => $negishi->id,
+        title     => 'my website page',
+    );
+});
+
+my $website       = MT::Website->load( { name => 'my website' } );
+my $other_website = MT::Website->load( { name => 'other website' } );
+
+my $blog = MT::Blog->load( { name => 'my blog' } );
+my $second_blog = MT::Blog->load( { name => 'second blog' } );
+my $other_blog = MT::Blog->load( { name => 'other blog' } );
+
+my $aikawa = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa = MT::Author->load( { name => 'ukawa' } );
+my $egawa = MT::Author->load( { name => 'egawa' } );
+my $ogawa = MT::Author->load( { name => 'ogawa' } );
+my $kagawa = MT::Author->load( { name => 'kagawa' } );
+my $kikkawa = MT::Author->load( { name => 'kikkawa' } );
+my $kumekawa = MT::Author->load( { name => 'kumekawa' } );
+my $kemikawa = MT::Author->load( { name => 'kemikawa' } );
+my $koishikawa = MT::Author->load( { name => 'koishikawa' } );
+my $sagawa = MT::Author->load( { name => 'sagawa' } );
+my $shimoda = MT::Author->load( { name => 'shimoda' } );
+my $suda = MT::Author->load( { name => 'suda' } );
+my $seta = MT::Author->load( { name => 'seta' } );
+my $sorimachi = MT::Author->load( { name => 'sorimachi' } );
+my $tada = MT::Author->load( { name => 'tada' } );
+my $chiyoda = MT::Author->load( { name => 'chiyoda' } );
+my $tsuneta = MT::Author->load( { name => 'tsuneta' } );
+my $terada = MT::Author->load( { name => 'terada' } );
+my $toda = MT::Author->load( { name => 'toda' } );
+my $nashida = MT::Author->load( { name => 'nashida' } );
+my $nishioka = MT::Author->load( { name => 'nishioka' } );
+my $nukita = MT::Author->load( { name => 'nukita' } );
+my $negishi = MT::Author->load( { name => 'negishi' } );
+my $nonoda = MT::Author->load( { name => 'nonoda' } );
+my $hakamada = MT::Author->load( { name => 'hakamada' } );
+my $hikita = MT::Author->load( { name => 'hikita' } );
+my $fukuda = MT::Author->load( { name => 'fukuda' } );
 
 my $admin = MT::Author->load(1);
 
-# Role
-my $create_post = MT::Test::Permission->make_role(
-    name        => 'Create Post',
-    permissions => "'create_post'",
-);
+my $entry         = MT::Entry->load( { title => 'my entry' } );
+my $entry2        = MT::Entry->load( { title => 'my entry2' } );
+my $website_entry = MT::Entry->load( { title => 'my website entry' } );
 
-my $edit_all_posts = MT::Test::Permission->make_role(
-    name        => 'Edit All Posts',
-    permissions => "'edit_all_posts'",
-);
-
-my $manage_pages = MT::Test::Permission->make_role(
-    name        => 'Manage Pages',
-    permissions => "'manage_pages'",
-);
-
-my $publish_post = MT::Test::Permission->make_role(
-    name        => 'Publish Post',
-    permissions => "'publish_post'",
-);
-
-my $edit_config = MT::Test::Permission->make_role(
-    name        => 'Edit Config',
-    permissions => "'edit_config'",
-);
-
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-
-require MT::Association;
-MT::Association->link( $aikawa   => $edit_config    => $blog );
-MT::Association->link( $ichikawa => $create_post    => $blog );
-MT::Association->link( $ukawa    => $edit_all_posts => $blog );
-MT::Association->link( $egawa    => $manage_pages   => $blog );
-MT::Association->link( $ogawa    => $create_post    => $blog );
-MT::Association->link( $kagawa   => $designer       => $blog );
-MT::Association->link( $shimoda  => $publish_post   => $blog );
-MT::Association->link( $seta     => $publish_post   => $blog );
-
-MT::Association->link( $kikkawa    => $edit_config    => $second_blog );
-MT::Association->link( $kumekawa   => $create_post    => $second_blog );
-MT::Association->link( $koishikawa => $edit_all_posts => $second_blog );
-MT::Association->link( $kemikawa   => $manage_pages   => $second_blog );
-MT::Association->link( $suda       => $publish_post   => $second_blog );
-
-MT::Association->link( $sorimachi, $edit_config,    $website );
-MT::Association->link( $tsuneta,   $create_post,    $website );
-MT::Association->link( $terada,    $edit_all_posts, $website );
-MT::Association->link( $nishioka,  $create_post,    $website );
-MT::Association->link( $nukita,    $designer,       $website );
-MT::Association->link( $negishi,   $manage_pages,   $website );
-MT::Association->link( $hikita,    $publish_post,   $website );
-MT::Association->link( $fukuda,    $publish_post,   $website );
-
-MT::Association->link( $tada,   $edit_config,    $other_website );
-MT::Association->link( $toda,   $create_post,    $other_website );
-MT::Association->link( $nonoda, $edit_all_posts, $other_website );
-
-MT::Association->link( $chiyoda,  $edit_config,    $other_blog );
-MT::Association->link( $nashida,  $create_post,    $other_blog );
-MT::Association->link( $hakamada, $edit_all_posts, $other_blog );
-
-# Entry
-my $entry = MT::Test::Permission->make_entry(
-    blog_id   => $blog->id,
-    author_id => $ichikawa->id,
-);
-my $entry2 = MT::Test::Permission->make_entry(
-    blog_id   => $blog->id,
-    author_id => $shimoda->id,
-);
-my $website_entry = MT::Test::Permission->make_entry(
-    blog_id   => $website->id,
-    author_id => $tsuneta->id,
-);
-my $other_website_entry = MT::Test::Permission->make_entry(
-    blog_id   => $other_website->id,
-    author_id => $toda->id,
-);
-
-# Page
-my $page = MT::Test::Permission->make_page(
-    blog_id   => $blog->id,
-    author_id => $egawa->id,
-);
-my $website_page = MT::Test::Permission->make_page(
-    blog_id   => $website->id,
-    author_id => $negishi->id,
-);
+my $page         = MT::Page->load( { title => 'my page' } );
+my $website_page = MT::Page->load( { title => 'my website page' } );
 
 # Run
 my ( $app, $out );
@@ -799,7 +869,7 @@ subtest 'mode = list (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: list" );
-    ok( $out !~ m!(redirect|permission)=1|An error occurr?ed!i,
+    ok( $out =~ m!(redirect|permission)=1|An error occurr?ed!i,
         "list by child blog" );
 
     $app = _run_app(
@@ -816,170 +886,6 @@ subtest 'mode = list (website)' => sub {
     ok( $out, "Request: list" );
     ok( $out =~ m!(redirect|permission)=1|An error occurr?ed!i,
         "list by other blog" );
-};
-
-subtest 'mode = list_entries' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $blog->id,
-            id               => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out !~ m!permission=1!i, "list_entries by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $blog->id,
-            id               => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_entries" );
-    ok( $out !~ m!permission=1!i,
-        "list_entries by permitted user (create_post)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $blog->id,
-            id               => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_entries" );
-    ok( $out !~ m!permission=1!i,
-        "list_entries by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $blog->id,
-            id               => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by other permission" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kumekawa,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $blog->id,
-            id               => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by other blog" );
-};
-
-subtest 'mode = list_entries (website)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out !~ m!permission=1!i, "list_entries by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $tsuneta,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_entries" );
-    ok( $out !~ m!permission=1!i,
-        "list_entries by permitted user (create_post)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $terada,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list_entries" );
-    ok( $out !~ m!permission=1!i,
-        "list_entries by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $nukita,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by other permission" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $toda,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by other website" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by child blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $nashida,
-            __request_method => 'POST',
-            __mode           => 'list_entries',
-            blog_id          => $website->id,
-            id               => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_entries" );
-    ok( $out =~ m!permission=1!i, "list_entries by other blog" );
 };
 
 subtest 'mode = pinged_urls' => sub {
@@ -2031,272 +1937,6 @@ subtest 'mode = save_entries (website)' => sub {
     ok( $out =~ m!permission=1!i, "save_entries by type mismatch" );
 };
 
-subtest 'mode = ping' => sub {
-    $entry = MT::Test::Permission->make_entry(
-        blog_id   => $blog->id,
-        author_id => $ichikawa->id,
-    );
-    $entry2 = MT::Test::Permission->make_entry(
-        blog_id   => $blog->id,
-        author_id => $shimoda->id,
-    );
-    $page = MT::Test::Permission->make_page(
-        blog_id   => $blog->id,
-        author_id => $egawa->id,
-    );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $shimoda,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry2->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by permitted user (publish_post)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kagawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other permission" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $kumekawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $second_blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by type mismatch (page)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $shimoda,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $page->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by type mismatch (entry)" );
-
-    done_testing();
-};
-
-subtest 'mode = ping (website)' => sub {
-    $website_entry = MT::Test::Permission->make_entry(
-        blog_id   => $website->id,
-        author_id => $tsuneta->id,
-    );
-    my $website_entry2 = MT::Test::Permission->make_entry(
-        blog_id   => $website->id,
-        author_id => $hikita->id,
-    );
-    $website_page = MT::Test::Permission->make_page(
-        blog_id   => $website->id,
-        author_id => $negishi->id,
-    );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $hikita,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry2->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by permitted user (publish_post)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $terada,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out !~ m!permission=1!i, "ping by permitted user (edit_all_posts)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $nishioka,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $nukita,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other permission" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $toda,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $other_website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other website" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $blog->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by child blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $nashida,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $other_blog->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $negishi,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by type mismatch (page)" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $hikita,
-            __request_method => 'POST',
-            __mode           => 'ping',
-            blog_id          => $website->id,
-            entry_id         => $website_page->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: ping" );
-    ok( $out =~ m!permission=1!i, "ping by type mismatch (entry)" );
-
-    done_testing();
-};
-
 subtest 'mode = edit' => sub {
     $app = _run_app(
         'MT::App::CMS',
@@ -2494,7 +2134,7 @@ subtest 'mode = edit (website)' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out,                   "Request: edit" );
-    ok( $out =~ m!redirect=1!i, "edit by child blog" );
+    ok( $out =~ m!permission=1!i, "edit by child blog" );
 
     $app = _run_app(
         'MT::App::CMS',

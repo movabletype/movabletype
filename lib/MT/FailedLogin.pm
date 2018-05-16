@@ -7,6 +7,7 @@
 package MT::FailedLogin;
 
 use strict;
+use warnings;
 
 use base qw( MT::Object );
 

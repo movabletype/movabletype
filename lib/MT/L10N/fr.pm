@@ -6,6 +6,7 @@
 
 package MT::L10N::fr;
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use MT::L10N::en_us;
@@ -257,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Motorisé par <a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Motorisé par <a href="https://www.movabletype.org/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Ce blog est publié sous licence <a href="[_1]">Creative Commons</a>.',
 
 ## default_templates/calendar.mtml
@@ -471,7 +472,7 @@ use vars qw( @ISA %Lexicon );
 	'Pages' => 'Pages',
 
 ## default_templates/powered_by.mtml
-	'_MTCOM_URL' => 'http://www.movabletype.com/',
+	'_MTCOM_URL' => 'https://www.movabletype.com/',
 
 ## default_templates/recent_assets.mtml
 
@@ -675,66 +676,6 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Site web',
 	'Profile' => 'Profil',
 
-## lib/MT/App/Comments.pm
-	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Erreur en assignant les droits de commenter à l\'utilisateur \'[_1] (ID:[_2])\' pour le blog \'[_3] (ID:[_4])\'. Aucun rôle de commentateur adéquat n\'a été trouvé.',
-	'Cannot load blog #[_1].' => 'Impossible de charger le blog #[_1].',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Tentative d\'identification échoué pour le commentateur [_1] sur le blog [_2] (ID:[_3]) qui n\'autorise pas l\'authentification native de Movable Type.',
-	'Invalid login.' => 'Identifiant invalide.',
-	'Invalid login' => 'Identifiant invalide',
-	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'Authentification réussie, mais l\'enregistrement est interdit. Veuillez contacter votre administrateur Movable Type.',
-	'You need to sign up first.' => 'Vous devez vous enregistrer d\'abord.',
-	'The login could not be confirmed because of a database error ([_1])' => 'L\'identifiant ne peut pas être confirmé en raison d\'une erreur de base de données ([_1])',
-	'Permission denied.' => 'Autorisation refusée.',
-	'Login failed: permission denied for user \'[_1]\'' => 'Identification échoué : accès interdit pour l\'utilisateur \'[_1]\'',
-	'Login failed: password was wrong for user \'[_1]\'' => 'Identification échoué : mot de passe incorrect pour l\'utilisateur \'[_1]\'',
-	'Failed login attempt by disabled user \'[_1]\'' => 'Échec de tentative  d\'identification par l\'utilisateur désactivé \'[_1]\' ',
-	'Failed login attempt by unknown user \'[_1]\'' => 'Échec de tentative d\'identification par l\'utilisateur inconnu \'[_1]\'',
-	'Signing up is not allowed.' => 'Enregistrement non autorisée.',
-	'Movable Type Account Confirmation' => 'Confirmation de compte Movable Type',
-	'Your confirmation has expired. Please register again.' => 'Votre confirmation a expirée. Veuillez vous enregistrer à nouveau.',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Retourner à la page initiale</a>',
-	'Your confirmation have expired. Please register again.' => 'Votre confirmation a expiré. Merci de vous inscrire à nouveau.',
-	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Le commentateur \'[_1]\' (ID:[_2]) a été enregistré avec succès.',
-	'Thanks for the confirmation.  Please sign in to comment.' => 'Merci pour la confirmation. Merci de vous identifier pour commenter.',
-	'[_1] registered to the blog \'[_2]\'' => '[_1] est enregistré sur le blog \'[_2]\'',
-	'No id' => 'Pas d\'id',
-	'No such comment' => 'Pas de tel commentaire',
-	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'l\'IP [_1] a été bannie car elle a envoyé plus de 8 commentaires en  [_2] seconds.',
-	'IP Banned Due to Excessive Comments' => 'IP bannie pour cause de commentaires excessifs',
-	'No entry_id' => 'Pas d\'entry_id',
-	'No such entry \'[_1]\'.' => 'Aucune note \'[_1]\'.',
-	'_THROTTLED_COMMENT' => 'Afin de réduire les abus, nous avons activé une fonction obligeant les auteurs de commentaire à attendre quelques instants avant de publier un autre commentaire. Veuillez attendre quelques instants avant de publier un autre commentaire. Merci.',
-	'Comments are not allowed on this entry.' => 'Les commentaires ne sont pas autorisés sur cette note.',
-	'Comment text is required.' => 'Le texte de commentaire est requis.',
-	'An error occurred: [_1]' => 'Une erreur s\'est produite : [_1]',
-	'Registration is required.' => 'L\'inscription est requise.',
-	'Name and E-mail address are required.' => 'Le nom et l\'adresse e-mail sont requis.',
-	'Invalid email address \'[_1]\'' => 'Adresse e-mail invalide \'[_1]\'',
-	'Invalid URL \'[_1]\'' => 'URL invalide \'[_1]\'',
-	'Text entered was wrong.  Try again.' => 'Le texte saisi est erroné.  Essayez à nouveau.',
-	'Comment save failed with [_1]' => 'La sauvegarde du commentaire a échoué [_1]',
-	'Comment on "[_1]" by [_2].' => 'Commentaire sur « [_1] » par [_2].',
-	'Publishing failed: [_1]' => 'La publication a échoué : [_1]',
-	'Cannot load template' => 'Impossible de charger le gabarit',
-	'Failed comment attempt by pending registrant \'[_1]\'' => 'Tentative de commentaire échoué par utilisateur  \'[_1]\' en cours d\'inscription',
-	'Registered User' => 'Utilisateur enregistré',
-	'The sign-in attempt was not successful; Please try again.' => 'La tentative d\'enregistrement a échoué. Veuillez réessayer.',
-	'Cannot load entry #[_1].' => 'Impossible de charger la note #[_1].',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'Vous tentez de rediriger vers une resource extérieure. Si vous faites confiance à ce site, cliquez sur ce lien : [_1]',
-	'No entry was specified; perhaps there is a template problem?' => 'Aucune note n\'a été spécifiée, peut-être y a-t-il un problème de gabarit ?',
-	'Somehow, the entry you tried to comment on does not exist' => 'Il semble que la note que vous souhaitez commenter n\'existe pas',
-	'Invalid entry ID provided' => 'ID de note fourni invalide',
-	'For improved security, please change your password' => 'Pour plus de sécurité, veuillez modifier votre mot de passe.',
-	'All required fields must be populated.' => 'Tous les champs requis doivent être renseignés.',
-	'[_1] contains an invalid character: [_2]' => '[_1] contient un caractère invalide : [_2]',
-	'Display Name' => 'Nom à afficher',
-	'Passwords do not match.' => 'Les mots de passe ne sont pas identiques.',
-	'Failed to verify the current password.' => 'Impossible de vérifier le mot de passe actuel.',
-	'Email Address is invalid.' => 'L\'adresse e-mail n\'est pas valide.',
-	'URL is invalid.' => 'L\'URL n\'est pas valide.',
-	'Commenter profile has successfully been updated.' => 'Le profil du commentateur a été modifié avec succès.',
-	'Commenter profile could not be updated: [_1]' => 'Le profil du commentateur n\'a pu être modifié : [_1]',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Requête erronée : jeu de caractères corrompu [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Erreur lors du chargement du site web #[_1] pour la création de l\'utilisateur. Vérifiez vos paramètres NewUserefaultWebsiteId.',
@@ -805,23 +746,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch fonctionne avec MT::App::Search.',
-
-## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => 'ID de note invalide \'[_1]\'',
-	'You must define a Ping template in order to display pings.' => 'Vous devez définir un gabarit d\'affichage Ping pour les afficher.',
-	'Trackback pings must use HTTP POST' => 'Les Pings TrackBack doivent utiliser HTTP POST',
-	'TrackBack ID (tb_id) is required.' => 'L\'ID de TrackBack (tb_id) est requis.',
-	'Invalid TrackBack ID \'[_1]\'' => 'L\'ID de TrackBack \'[_1]\' est invalide',
-	'You are not allowed to send TrackBack pings.' => 'You n\'êtes pas autorisé à envoyer des pings TrackBack.',
-	'You are sending TrackBack pings too quickly. Please try again later.' => 'Vous envoyez des pings TrackBack trop rapidement. Veuillez réessayer plus tard.',
-	'You need to provide a Source URL (url).' => 'Vous devez fournir une URL source (url).',
-	'This TrackBack item is disabled.' => 'Cet élément TrackBack est désactivé.',
-	'This TrackBack item is protected by a passphrase.' => 'Cet élément de TrackBack est protégé par un mot de passe.',
-	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack sur "[_1]" provenant de "[_2]".',
-	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack sur la catégorie \'[_1]\' (ID:[_2]).',
-	'Cannot create RSS feed \'[_1]\': ' => 'Impossible de créer le flux RSS \'[_1]\' : ',
-	'New TrackBack ping to \'[_1]\'' => 'Nouveau TrackBack vers \'[_1]\'',
-	'New TrackBack ping to category \'[_1]\'' => 'Nouveau TrackBack vers la catégorie \'[_1]\'',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => 'Ne peut pas s\'identifier en utilisant les identifiants communiqués : [_1].',
@@ -1038,14 +962,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Un module requis est manquant',
-
-## lib/MT/Auth/OpenID.pm
-	'Could not save the session' => 'Impossible de sauver la session',
-	'Could not load Net::OpenID::Consumer.' => 'Impossible de charger Net::OpenID::Consumer.',
-	'The address entered does not appear to be an OpenID endpoint.' => 'L\'adresse entrée ne semble pas être un service OpenID',
-	'The text entered does not appear to be a valid web address.' => 'Le texte entré ne semble pas être une adresse web valide.',
-	'Unable to connect to [_1]: [_2]' => 'Impossible de se connecter à [_1] : [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'La vérification de l\'OpenID entré a échoué : [_1]',
 
 ## lib/MT/Author.pm
 	'Users' => 'Utilisateurs',
@@ -1314,25 +1230,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) éditée par \'[_3]\'', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) supprimée par \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Le nom de catégorie \'[_1]\' est en conflit avec une autre catégorie. Les catégories racines et les sous-catégories qui ont le même parent doivent avoir un nom distinct.',
-
-## lib/MT/CMS/Comment.pm
-	'Edit Comment' => 'Éditer les commentaires',
-	'(untitled)' => '(sans titre)',
-	'No such commenter [_1].' => 'Aucun commentateur [_1].',
-	'User \'[_1]\' trusted commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\' a considéré comme fiable le commentateur \'[_2]\'.',
-	'User \'[_1]\' banned commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\' a banni le commentateur \'[_2]\'.',
-	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\' a retiré le statut Banni à le commentateur \'[_2]\'.',
-	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\' a retiré le statut Fiable à le commentateur \'[_2]\'.',
-	'The parent comment id was not specified.' => 'L\'ID du commentaire parent est manquante.',
-	'The parent comment was not found.' => 'Le commentaire parent est introuvable.',
-	'You cannot reply to unapproved comment.' => 'Vous ne pouvez répondre à un commentaire non approuvé.',
-	'You cannot create a comment for an unpublished entry.' => 'Vous ne pouvez pas créer un commentaire sur une note non publiée.',
-	'You cannot reply to unpublished comment.' => 'Vous ne pouvez pas répondre à un commentaire non publié.',
-	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Commentaire (ID:[_1]) de \'[_2]\' supprimé par \'[_3]\' de la note \'[_4]\'',
-	'You do not have permission to approve this trackback.' => 'Vous n\'avez pas la permission d\'approuver ce TrackBack.',
-	'The entry corresponding to this comment is missing.' => 'La note correspondante à ce commentaire est manquante.',
-	'You do not have permission to approve this comment.' => 'Vous n\'avez pas la permission d\'approuver ce commentaire.',
-	'Orphaned comment' => 'Commentaire orphelin',
 
 ## lib/MT/CMS/Common.pm
 	'Invalid type [_1]' => 'Type invalide [_1]',
@@ -1639,16 +1536,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'IP address lockout limit' => 'Limite de verrouillage pour les adresses IP',
 	'IP address lockout interval' => 'Intervalle de verrouillage pour les adresses IP',
 	'Lockout IP address whitelist' => 'Liste blanche de verrouillage pour les adresses IP',
-
-## lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(Catégorie sans description)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => 'Ping (ID:[_1]) de \'[_2]\' supprimé par \'[_3]\' de la catégorie \'[_4]\'',
-	'(Untitled entry)' => '(Note sans titre)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Ping (ID:[_1]) de \'[_2]\' supprimé par \'[_3]\' de la note \'[_4]\'',
-	'No Excerpt' => 'Pas d\'extrait',
-	'No Title' => 'Pas de titre',
-	'Orphaned TrackBack' => 'TrackBack orphelin',
-	'category' => 'catégorie',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Créer un utilisateur',
@@ -2291,7 +2178,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## lib/MT.pm
 	'Powered by [_1]' => 'Motorisé par [_1]',
 	'Version [_1]' => 'Version [_1]',
-	'http://www.movabletype.com/' => 'http://www.movabletype.com/',
+	'https://www.movabletype.com/' => 'https://www.movabletype.com/',
 	'Hello, world' => 'Bonjour tout le monde',
 	'Hello, [_1]' => 'Bonjour, [_1]',
 	'Message: [_1]' => 'Message : [_1]',
@@ -2312,7 +2199,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error while creating email: [_1]' => 'Erreur à la création de l\'e-mail : [_1]',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'Le module Perl nécessaire pour l\'authentification OpenID (Digest::SHA1) est manquant.',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Le module Perl nécessaire pour l\'authentification de commentateur par Google ID est manquant : [_1].',
-	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
+	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.org/documentation/',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
 	'Vox' => 'Vox',
@@ -2404,7 +2291,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '[_1]Publiez[_2] votre [_3] pour que ces changements soient appliqués.',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiez[_2] votre site pour que ces changements soient appliqués.',
 	'Actions' => 'Actions',
-	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
+	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'You used an [_1] tag without a date context set up.' => 'Vous utilisez une balise [_1] hors d\'un contexte de date.',
 	'Division by zero.' => 'Division par zéro.',
 	'[_1] is not a hash.' => '[_1] n\'est pas un hash',
@@ -2499,15 +2386,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Cannot use sort_by and sort_method together in [_1]' => 'Impossible d\'utiliser sort_by et sort_method ensemble dans ce [_1]',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] ne peut être utilisé sans la publication d\'archives par catégorie.',
 	'[_1] used outside of [_2]' => '[_1] utilisé en dehors de [_2]',
-
-## lib/MT/Template/Tags/Commenter.pm
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'La balise \'[_1]\' est obsolète. Veuillez utiliser \'[_2]\' à la place.',
-
-## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'La balise MTCommentFields n\'est plus disponible. Veuillez inclure le module de gabarit [_1] à la place.',
-	'Comment Form' => 'Formulaire de commentaire',
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'L\'authentification TypePad n\'est pas activée sur ce blog. MTRemoteSignInLink ne peut être utilisé.',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Pour activer l\'enregistrement pour les commentaires, vous devez ajouter le jeton TypePad à votre configuration de blog ou profil utilisateur.',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => 'Vous utilisez <$MTEntryFlag$> sans drapeau.',
@@ -3688,7 +3566,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Disable Plugins' => 'Désactiver les plugins',
 	'Enable plugin functionality' => 'Activer la prise en charge des plugins',
 	'Enable Plugins' => 'Activer les plugins',
-	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Plugins' => 'Trouver des plugins',
 	'Your plugin settings have been saved.' => 'Les paramètres de votre plugin ont été enregistrés.',
 	'Your plugin settings have been reset.' => 'Les paramètres de votre plugin on été réinitialisés.',
@@ -3870,7 +3748,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Send Test Mail' => 'Envoyer un e-mail de test',
 	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{Cette adresse e-mail est utilisée comme celle de l'expéditeur des e-mails envoyés par Movable Type pour la récupération des mots de passe, l'enregistrement des commentateurs, les notifications de commentaires et de TrackBacks, le blocage d'un utilisateur ou d'une adresse IP, et quelques autres événements mineurs.},
 	'Debug Mode' => 'Mode debug',
-	q{Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.} => q{Les valeurs autres que zéro fournissent des informations de diagnostique supplémentaires pour la résolution de problèmes avec votre installation Movable Type. Plus d'informations dans la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation du mode debug</a>.},
+	q{Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.} => q{Les valeurs autres que zéro fournissent des informations de diagnostique supplémentaires pour la résolution de problèmes avec votre installation Movable Type. Plus d'informations dans la <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation du mode debug</a>.},
 	'Performance Logging' => 'Journalisation des performances',
 	'Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.' => 'Activer la journalisation des performances, qui va reporter tout événement système prenant le nombre de secondes specifié par le seuil de journalisation.',
 	'Turn on performance logging' => 'Activer la journalisation des performances',
@@ -4010,25 +3888,12 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Insérer une image',
-	'Insert Asset' => 'Insérer un élément',
-	'Upload New File' => 'Envoyer un nouveau fichier',
-	'Upload New Image' => 'Envoyer une nouvelle image',
-	q{Asset Name} => q{Nom de l'élément},
-	'Size' => 'Taille',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliothèque',
 	'Next (s)' => 'Suivant (s)',
 	'Insert (s)' => 'Insérer (s)',
 	'Insert' => 'Insérer',
 	'Cancel (x)' => 'Annuler (x)',
-	q{No assets could be found.} => q{Aucun élément n'a été trouvé.},
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliothèque',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	q{Display image in entry/page} => q{Afficher l'image dans la note/page},
-	'Remember these settings' => 'Mémoriser ces paramètres',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Options fichier',
@@ -4230,7 +4095,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'External user ID' => 'ID utilisateur externe',
 	'The name displayed when content from this user is published.' => 'Le nom affiché lorsque le contenu de cet utilisateur est publié.',
 	q{The email address associated with this user.} => q{L'adresse e-mail associée à cet utilisateur.},
-	q{This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{Le site web de cet utilisateur. Si le site web et le nom affiché sont tous les deux remplis, Movable Type publiera par défaut les notes et commentaires avec un lien vers cette URL.},
+	q{This User's website (e.g. https://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{Le site web de cet utilisateur. Si le site web et le nom affiché sont tous les deux remplis, Movable Type publiera par défaut les notes et commentaires avec un lien vers cette URL.},
 	q{Userpic} => q{Image de l'utilisateur},
 	q{The image associated with this user.} => q{L'image associée à cet utilisateur.},
 	q{Select Userpic} => q{Sélectionner l'image de l'utilisateur},
@@ -4556,7 +4421,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Template Type' => 'Type de gabarit',
 	q{Custom Index Template} => q{Gabarit d'index personnalisé},
 	'Link to File' => 'Lien vers le fichier',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Apprennez en plus à propos des <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">paramètres de publication</a>',
+	'Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Apprennez en plus à propos des <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">paramètres de publication</a>',
 	'Create Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
 	'Statically (default)' => 'Statique (défaut)',
 	q{Via Publish Queue} => q{Via une publication en mode file d'attente},
@@ -4689,6 +4554,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Check Spelling} => q{Vérifier l'orthographe},
 	'WYSIWYG Mode' => 'Mode WYSIWYG',
 	'HTML Mode' => 'Mode HTML',
+	'Insert Image' => 'Insérer une image',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4705,6 +4571,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Created On' => 'Créé le',
 	'Asset Missing' => 'Élément manquant',
 	'No thumbnail image' => 'Pas de miniature',
+	'Size' => 'Taille',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Avant de pouvoir télécharger un fichier, vous devez publier votre [_1]. [_2]Configurez les chemins de publication[_3] de votre [_1] et republiez-le.},
@@ -4855,13 +4722,13 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/include/footer.tmpl
 	q{This is a beta version of Movable Type and is not recommended for production use.} => q{Ceci est une version beta de Movable Type et n'est pas recommandée pour une utilisation en production.},
-	'http://www.movabletype.org' => 'http://www.movabletype.org/',
+	'https://www.movabletype.org' => 'https://www.movabletype.org/',
 	'MovableType.org' => 'MovableType.org',
-	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org/',
-	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
+	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.org/',
+	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	'Wiki' => 'Wiki',
 	'Support' => 'Support',
-	'http://forums.movabletype.org/' => 'http://forums.movabletype.org/',
+	'https://forums.movabletype.org/' => 'https://forums.movabletype.org/',
 	'Forums' => 'Forums',
 	'Send Us Feedback' => 'Faites-nous part de vos remarques',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
@@ -5174,7 +5041,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => 'Thèmes [_1]',
 	'All Themes' => 'Tous les thèmes',
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Themes' => 'Trouver des thèmes',
 	'Theme [_1] has been uninstalled.' => 'Le thème [_1] a été désinstallé.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Le thème [_1] a été appliqué (<a href="[_2]">[quant,_3,alerte,alertes]</a>)',
@@ -5454,7 +5321,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'You can manage your blog by selecting an option from the menu located to the left of this message.' => 'Vous pouvez gérer votre blog en sélectionnant une option dans le menu situé à gauche de ce message.',
 	q{If you need assistance, try:} => q{Si vous avez besoin d'aide, vous pouvez consulter :},
 	q{Movable Type User Manual} => q{Mode d'emploi de Movable Type},
-	'http://www.sixapart.com/movabletype/support' => 'http://www.sixapart.com/movabletype/support',
+	'https://www.sixapart.com/movabletype/support' => 'https://www.sixapart.com/movabletype/support',
 	'Movable Type Technical Support' => 'Support technique Movable Type',
 	'Movable Type Community Forums' => 'Forums de la communauté Movable Type ',
 	'Change this message.' => 'Changer ce message.',
@@ -5520,7 +5387,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## tmpl/comment/auth_openid.tmpl
 	'OpenID URL' => 'URL OpenID',
 	q{Sign in with one of your existing third party OpenID accounts.} => q{Identifiez-vous avec l'une de vos identités OpenID tierce partie.},
-	'http://www.openid.net/' => 'http://www.openid.net/',
+	'https://www.openid.net/' => 'https://www.openid.net/',
 	'Learn more about OpenID.' => 'En savoir plus sur OpenID.',
 
 ## tmpl/comment/auth_typepad.tmpl
@@ -5649,7 +5516,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Please enter the parameters necessary for connecting to your database.' => 'Merci de saisir les paramètres nécessaires pour se connecter à votre base de données.',
 	'Database Type' => 'Type de base de données',
 	'Select One...' => 'Sélectionner...',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
 	q{Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.} => q{Votre base de données préférée n'est pas listée ? Regardez <a href="[_1]" target="_blank">Movable Type System Check</a> pour voir s'il y a des modules additionnels nécessaires pour permettre son utilisation.},
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Une fois installé, <a href="javascript:void(0)" onclick="[_1]">cliquez ici pour réactualiser cette page</a>.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Apprenez-en plus : <a href="[_1]" target="_blank">Configurez votre base de données</a>',
@@ -5707,7 +5574,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Missing Optional Modules' => 'Modules optionnels manquants',
 	'Missing Required Modules' => 'Modules nécessaires manquants',
 	'Minimal version requirement: [_1]' => 'Version minimale nécessaire : [_1]',
-	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
+	'https://www.movabletype.org/documentation/installation/perl-modules.html' => 'https://www.movabletype.org/documentation/installation/perl-modules.html',
 	q{Learn more about installing Perl modules.} => q{Plus d'informations sur l'installation de modules Perl.},
 	q{Your server has all of the required modules installed; you do not need to perform any additional module installations.} => q{Votre serveur possède tous les modules nécessaires, vous n'avez pas à procéder à des installations complémentaires de modules},
 
@@ -5731,7 +5598,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page} => q{Pour créer un nouveau fichier de configuration avec l'assistant, supprimez le fichier de configuration actuel puis rechargez cette page},
 
 ## addons/Commercial.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.movabletype.com/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Conçu pour les professionnels, bien structué et facilement adaptable, vous pouvez personnaliser les pages par défaut, le pied de page et la navigation facilement.',
 	q{_PWT_ABOUT_BODY} => q{
 <p><strong>Remplacez par vos propres informations. </strong></p>
@@ -6085,7 +5952,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	', or press the enter key to %toggle% it' => ', ou pressez la touche entrée pour la %toggle%',
 
 ## addons/Community.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.movabletype.com/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	q{Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.} => q{Accroître l'implication du lecteur - en ajoutant des fonctionnalités sur votre site web rendant facile pour vos lecteurs de s'impliquer sur le contenu et votre société.},
 	'Create forums where users can post topics and responses to topics.' => 'Créer des forums où les utilisateurs peuvent publier des sujets et des réponses aux sujets.',
 	'Users followed by [_1]' => 'Utilisateurs suivis par [_1]',
@@ -6505,7 +6372,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'This module is required in order to use the LDAP Authentication.' => 'Ce module est nécessaire pour utiliser l\'identification LDAP.',
 
 ## addons/Enterprise.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.movabletype.com/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Permissions of group: [_1]' => 'Permissions du groupe [_1]',
 	'Group' => 'Groupe',
 	'Groups associated with author: [_1]' => 'Groupes associés avec l\'auteur : [_1]',
@@ -6805,7 +6672,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'You successfully removed the users from this group.' => 'Vous avez retiré avec succès les utilisateurs de ce groupe.',
 
 ## addons/Sync.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.movabletype.com/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Migrated sync setting' => 'Paramètres de synchronisation migrés',
 	'Sync' => 'Synchronisation',
 	'Sync Name' => 'Nom de synchronisation',
@@ -6937,48 +6804,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Facebook Application Secret' => 'Secret Application Facebook',
 	q{The secret for the Facebook application associated with your blog.} => q{Le secret pour l'application Facebook associée à votre blog.},
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Une erreur s\'est produite en traitant [_1]. La version précédente du flux a été utilisée. Un statut HTTP de [_2] a été retourné.',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Une erreur s\'est produite en traitant [_1]. Une version précédente du flux n\'est pas disponible. Un statut HTTP de [_2] a été renvoyé.',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' est un argument nécessaire de [_2]',
-	'MT[_1] was not used in the proper context.' => 'Le [_1] MT n\'a pas été utilisé dans le bon contexte.',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite vous aide à republier les flux sur votre blog. Vous souhaitez en faire plus avec les flux dans Movable Type ? <a href="http://code.appnel.com/feeds-app" target="_blank">Évoluez vers Feeds.App</a>.',
-	'Create a Feed Widget' => 'Créer un widget à partir d\'un flux',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Créateur de widget de flux',
-	'Configure feed widget settings' => 'Configurer les paramètres du widget de flux',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Saisissez un titre pour votre widget. Il sera aussi utilisé comme titre pour le flux qui sera utilisé sur votre blog.',
-	'[_1] Feed Widget' => 'Widget de flux [_1]',
-	'Select the maximum number of entries to display.' => 'Sélectionnez le nombre maximum de notes que vous voulez afficher.',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Toutes',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	q{No feeds could be discovered using [_1]} => q{Aucun flux n'a pu être trouvé en utilisant [_1]},
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Une erreur s'est produite en traitant [_1]. Vérifiez <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ici</a> pour plus de détails et essayez à nouveau.},
-	'A widget named <strong>[_1]</strong> has been created.' => 'Un widget nommé <strong>[_1]</strong> a été créé.',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog('[_2]')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> ou la balise MTInclude suivante :},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{Vous pouvez maintenant <a href="javascript:void(0)" onclick="closeDialog('[_2]')">modifier &ldquo;[_1]&rdquo;</a> ou inclure le widget dans votre blog en utilisant la balise  MTInclude suivante :},
-	'Create Another' => 'En créer un autre',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Plusieurs flux ont été trouvés',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Sélectionnez le flux que vous voulez utiliser. <em>Feeds.App Lite supporte les flux texte uniquement en RSS 1.0, 2.0 et Atom.</em>',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	q{You must enter a feed or site URL to proceed} => q{Vous devez saisir l'URL d'un flux ou d'un site pour poursuivre},
-	q{Create a widget from a feed} => q{Créer un widget à partir d'un flux},
-	'Feed or Site URL' => 'URL du site ou du flux',
-	q{Enter the URL of a feed, or the URL of a site that has a feed.} => q{Saisissez l'adresse d'un flux ou l'adresse d'un site possédant un flux.},
-
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Gérer le texte formaté',
 
@@ -7101,14 +6926,14 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Social Media' => 'Média sociaux',
 	'https://twitter.com/movabletype' => 'https://twitter.com/movabletype',
 	'Contact Us' => 'Nous contacter',
-	'http://www.movabletype.org/' => 'http://www.movabletype.org/',
-	'http://plugins.movabletype.org' => 'http://plugins.movabletype.org',
+	'https://www.movabletype.org/' => 'https://www.movabletype.org/',
+	'https://plugins.movabletype.org' => 'https://plugins.movabletype.org',
 
 ## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
 	q{Loupe is ready for use!} => q{Loupe est prête à l'emploi !},
 
 ## plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl
-	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>} => q{Loupe est une console alternative de Movable Type conçue pour mobiles, permettant aux utilisateurs d'approuver notes et commentaires, charger des photos, et voir les statistiques des sites et des blogs. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">En savoir plus</a>.},
+	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="https://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>} => q{Loupe est une console alternative de Movable Type conçue pour mobiles, permettant aux utilisateurs d'approuver notes et commentaires, charger des photos, et voir les statistiques des sites et des blogs. <a href="https://www.movabletype.org/documentation/loupe/" target="_blank">En savoir plus</a>.},
 	'Loupe can be used without complex configuration, you can get started immediately.' => 'Loupe peut être utilisée sans configuration compliquée, vous pouvez démarrer immédiatement.',
 	'Configure Loupe' => 'Configurer Loupe',
 
@@ -7290,59 +7115,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Incoming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Les messages entrant peuvent être analysés pour détecter des mots-clés spécifiques, des noms de domaines et des modèles. Les messages correspondants peuvent être retenus pour modération ou marqués comme spam. De plus, les notes de spam pour ces messages peuvent être personnalisées.',
 	'Keywords to Moderate' => 'Mots-clés à modérer',
 	'Keywords to Junk' => 'Mots-clés à marquer comme spam',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher vous permet de parcourir facilement les styles et les appliquer ensuite à votre blog en quelques clics.',
-	'MT 4 Style Library' => 'Bibliothèque MT4',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Une gamme de styles compatibles avec les gabarits MT4 par défaut',
-	'Styles' => 'Habillages',
-	'Moving current style to blog_meta for website...' => 'Déplacement du style courant du site web vers blog_meta...',
-	'Moving current style to blog_meta for blog...' => 'Déplacement du style courant du blog vers blog_meta...',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Le répertoire mt-static n\'a pas pu être trouvé. Veuillez configurer le \'StaticFilePath\' pour continuer.',
-	'Permission Denied.' => 'Autorisation refusée.',
-	'Successfully applied new theme selection.' => 'Le nouveau thème sélectionné a été appliqué avec succès.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
-	'Invalid URL: [_1]' => 'URL invalide : [_1]',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Impossible de créer le dossier [_1] - Vérifiez que votre dossier \'themes\' et en mode webserveur/écriture.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
-	'Failed to load StyleCatcher Library: [_1]' => 'Impossible de charger la bibliothèque : [_1]',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
-	'(Untitled)' => '(Sans titre)',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => 'Sélectionner un style [_1]',
-	'3-Columns, Wide, Thin, Thin' => '3-colonnes, large, fin, fin',
-	'3-Columns, Thin, Wide, Thin' => '3-colonnes, fin, large, fin',
-	'3-Columns, Thin, Thin, Wide' => '3 colonnes (fin, fin, large)',
-	'2-Columns, Thin, Wide' => '2-colonnes, fin, large',
-	'2-Columns, Wide, Thin' => '2-colonnes, large, fin',
-	'2-Columns, Wide, Medium' => '2-Colonnes, Large, Moyen',
-	'2-Columns, Medium, Wide' => '2 colonnes (moyen, large)',
-	'1-Column, Wide, Bottom' => '1 colonne (large, pied)',
-	'None available' => 'Aucun disponible',
-	'Applying...' => 'Appliquer...',
-	q{Apply Design} => q{Appliquer l'habillage},
-	q{Error applying theme: } => q{Erreur en appliquant l'habillage :},
-	q{The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.} => q{L'habillage sélectionné a été appliqué. Vous devez republier votre blog afin d'appliquer la nouvelle mise en page.},
-	q{The selected theme has been applied!} => q{L'habillage sélectionné a été appliqué !},
-	'Error loading themes! -- [_1]' => 'Erreur lors du chargement des habillages ! -- [_1]',
-	'Stylesheet or Repository URL' => 'URL de la feuille de style ou du répertoire',
-	'Stylesheet or Repository URL:' => 'URL de la feuille de style ou du répertoire :',
-	'Download Styles' => 'Télécharger des habillages',
-	'Current theme for your weblog' => 'Thème actuel de votre weblog',
-	'Current Style' => 'Habillage actuel',
-	'Locally saved themes' => 'Thèmes enregistrés localement',
-	'Saved Styles' => 'Habillages enregistrés',
-	'Default Styles' => 'Habillages par défaut',
-	'Single themes from the web' => 'Thèmes uniques venant du web',
-	q{More Styles} => q{Plus d'habillages},
-	'Selected Design' => 'Habillage sélectionné',
-	'Layout' => 'Mise en page',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Générateur de texte convivial',

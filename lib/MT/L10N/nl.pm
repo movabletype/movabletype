@@ -6,6 +6,7 @@
 
 package MT::L10N::nl;
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use MT::L10N::en_us;
@@ -257,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Aangedreven  door<br /><a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Aangedreven  door<br /><a href="https://www.movabletype.org/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
 
 ## default_templates/calendar.mtml
@@ -471,7 +472,7 @@ use vars qw( @ISA %Lexicon );
 	q{Pages} => q{Pagina's},
 
 ## default_templates/powered_by.mtml
-	'_MTCOM_URL' => 'http://www.movabletype.com/',
+	'_MTCOM_URL' => 'https://www.movabletype.com/',
 
 ## default_templates/recent_assets.mtml
 
@@ -676,65 +677,6 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 	'Profile' => 'Profiel',
 
-## lib/MT/App/Comments.pm
-	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fout bij het toekennen van reactierechten aan gebruiker \'[_1] (ID: [_2])\' op weblog \'[_3] (ID: [_4])\'.  Er werd geen geschikte reageerder-rol gevonden.',
-	'Cannot load blog #[_1].' => 'Kan blog #[_1] niet laden',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ongeldige aanmeldpoging van een reageerder [_1] op blog [_2](ID: [_3]) waar geenMovable Type native authenticatie is toegelaten.',
-	'Invalid login.' => 'Ongeldige gebruikersnaam.',
-	'Invalid login' => 'Ongeldige gebruikersnaam',
-	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'U bent met succes aangemeld, maar registratie is niet toegestaan op dit moment.  Gelieve contact op te nemen met uw Movable Type systeembeheerder.',
-	'You need to sign up first.' => 'U moet zich eerst registreren',
-	'The login could not be confirmed because of a database error ([_1])' => 'Het aanmelden kon niet worden bevestigd wegens een databaseprobleem ([_1])',
-	'Permission denied.' => 'Toestemming geweigerd.',
-	'Login failed: permission denied for user \'[_1]\'' => 'Aanmelden mislukt: permissie geweigerd aan gebruiker \'[_1]\'',
-	'Login failed: password was wrong for user \'[_1]\'' => 'Aanmelden mislukt: fout in wachtwoord van gebruiker \'[_1]\'',
-	'Failed login attempt by disabled user \'[_1]\'' => 'Mislukte poging tot aanmelden door uitgeschakelde gebruiker \'[_1]\'',
-	'Failed login attempt by unknown user \'[_1]\'' => 'Mislukte poging tot aanmelden door onbekende gebruiker \'[_1]\'',
-	'Signing up is not allowed.' => 'Registreren is niet toegestaan.',
-	'Movable Type Account Confirmation' => 'Movable Type accountbevestiging',
-	'Your confirmation has expired. Please register again.' => 'Uw bevestigingsperiode is afgelopen.  Gelieve opnieuw te registreren.',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
-	'Your confirmation have expired. Please register again.' => 'Uw bevestiging is verlopen.  Gelieve opnieuw te registeren.',
-	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Reageerder \'[_1]\' (ID:[_2]) heeft zich met succes geregistreerd.',
-	'Thanks for the confirmation.  Please sign in to comment.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden om te reageren.',
-	'[_1] registered to the blog \'[_2]\'' => '[_1] registreerde zich op blog \'[_2]\'',
-	'No id' => 'Geen id',
-	'No such comment' => 'Reactie niet gevonden',
-	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'IP [_1] verbannen omdat aantal reacties hoger was dan 8 in [_2] seconden.',
-	'IP Banned Due to Excessive Comments' => 'IP verbannen wegens excessief achterlaten van reacties',
-	'No entry_id' => 'Geen entry_id',
-	'No such entry \'[_1]\'.' => 'Geen bericht \'[_1]\'.',
-	'_THROTTLED_COMMENT' => 'U heeft in een korte periode te veel reacties achtergelaten.  Gelieve over enige tijd opnieuw te proberen.',
-	'Comments are not allowed on this entry.' => 'Reacties op dit bericht zijn niet toegelaten.',
-	'Comment text is required.' => 'Tekst van de reactie is verplicht.',
-	'An error occurred: [_1]' => 'Er deed zich een probleem voor: [_1]',
-	'Registration is required.' => 'Registratie is verplicht.',
-	'Name and E-mail address are required.' => 'Naam en e-mail adres zijn vereist',
-	'Invalid email address \'[_1]\'' => 'Ongeldig e-mail adres \'[_1]\'',
-	'Invalid URL \'[_1]\'' => 'Ongeldige URL \'[_1]\'',
-	'Text entered was wrong.  Try again.' => 'De ingevoerde tekst was verkeerd.  Probeer opnieuw.',
-	'Comment save failed with [_1]' => 'Opslaan van reactie mislukt met [_1]',
-	'Comment on "[_1]" by [_2].' => 'Reactie op "[_1]" door [_2].',
-	'Publishing failed: [_1]' => 'Publicatie mislukt: [_1]',
-	'Cannot load template' => 'Kan sjabloon niet laden',
-	'Failed comment attempt by pending registrant \'[_1]\'' => 'Mislukte poging om een reactie achter te laten van op registratie wachtende gebruiker \'[_1]\'',
-	'Registered User' => 'Geregistreerde gebruiker',
-	'Cannot load entry #[_1].' => 'Kan bericht #[_1] niet laden.',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'U probeert om te leiden naar externe bronnen.  Als u de site vertrouwt, klik dan op de link: [_1]',
-	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
-	'Somehow, the entry you tried to comment on does not exist' => 'Het bericht waar u een reactie op probeerde achter te laten, bestaat niet',
-	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
-	'For improved security, please change your password' => 'Gelieve uw wachtwoord te veranderen voor verhoogde veiligheid',
-	'All required fields must be populated.' => 'Alle vereiste velden moeten worden ingevuld.',
-	'[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]',
-	'Display Name' => 'Getoonde naam',
-	'Passwords do not match.' => 'Wachtwoorden komen niet overeen.',
-	'Failed to verify the current password.' => 'Bevestigen huidig wachtwoord mislukt.',
-	'Email Address is invalid.' => 'E-mail adres is ongeldig.',
-	'URL is invalid.' => 'URL is ongeldig.',
-	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
-	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fout bij het laden van website #[_1]',
@@ -804,23 +746,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch werkt met MT::App::Search.',
-
-## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => 'Ongeldig bericht-ID \'[_1]\'',
-	'You must define a Ping template in order to display pings.' => 'U moet een pingsjabloon definiëren om pings te kunnen tonen.',
-	'Trackback pings must use HTTP POST' => 'Trackback pings moeten HTTP POST gebruiken',
-	'TrackBack ID (tb_id) is required.' => 'TrackBack ID (tb_id) is vereist.',
-	'Invalid TrackBack ID \'[_1]\'' => 'Ongeldig TrackBack-ID \'[_1]\'',
-	'You are not allowed to send TrackBack pings.' => 'U heeft geen toestemming om TrackBack pings te versturen.',
-	'You are sending TrackBack pings too quickly. Please try again later.' => 'U stuurt te veel TrackBack pings achter elkaar.  Gelieve later opnieuw te proberen.',
-	'You need to provide a Source URL (url).' => 'U moet een Source URL (url) opgeven.',
-	'This TrackBack item is disabled.' => 'Dit TrackBack item is uitgeschakeld.',
-	'This TrackBack item is protected by a passphrase.' => 'Dit TrackBack item is beschermd door een wachtwoord.',
-	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack op "[_1]" van "[_2]".',
-	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack op categorie \'[_1]\' (ID:[_2]).',
-	'Cannot create RSS feed \'[_1]\': ' => 'Kan RSS feed \'[_1]\' niet aanmaken: ',
-	'New TrackBack ping to \'[_1]\'' => 'Nieuwe TrackBack ping op \'[_1]\'',
-	'New TrackBack ping to category \'[_1]\'' => 'Nieuwe TrackBack ping op categorie \'[_1]\'',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => 'Kon niet aanmelden met de opgegeven gegevens: [_1].',
@@ -1037,14 +962,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Ontbrekende vereiste module',
-
-## lib/MT/Auth/OpenID.pm
-	'Could not save the session' => 'Kon de sessie niet opslaan',
-	'Could not load Net::OpenID::Consumer.' => 'Kon Net::OpenID::Consumer niet laden.',
-	'The address entered does not appear to be an OpenID endpoint.' => 'Het adres dat werd ingevuld lijkt geen OpenID endpoint te zijn.',
-	'The text entered does not appear to be a valid web address.' => 'De ingevulde tekst lijkt geen geldig webadres te zijn.',
-	'Unable to connect to [_1]: [_2]' => 'Kon niet verbinden met [_1]: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'Kon de opgegeven OpenID niet verifiëren: [_1]',
 
 ## lib/MT/Author.pm
 	'Users' => 'Gebruikers',
@@ -1312,25 +1229,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) bewerkt door \'[_3]\'', # Translate - New
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Categorienaam \'[_1]\' conflicteert met een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.',
-
-## lib/MT/CMS/Comment.pm
-	'Edit Comment' => 'Reactie bewerken',
-	'(untitled)' => '(geen titel)',
-	'No such commenter [_1].' => 'Geen reageerder [_1].',
-	'User \'[_1]\' trusted commenter \'[_2]\'.' => 'Gebruiker \'[_1]\' gaf reageerder \'[_2]\' de status VERTROUWD.',
-	'User \'[_1]\' banned commenter \'[_2]\'.' => 'Gebruiker \'[_1]\' verbande reageerder \'[_2]\'.',
-	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'Gebruiker \'[_1]\' maakte de verbanning van reageerder \'[_2]\' ongedaan.',
-	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Gebruiker \'[_1]\' gaf reageerder \'[_2]\' de status NIET VERTROUWD.',
-	'The parent comment id was not specified.' => 'Het ID van de ouder van de reactie werd niet opgegeven.',
-	'The parent comment was not found.' => 'De ouder-reactie werd niet gevonden.',
-	'You cannot reply to unapproved comment.' => 'U kunt niet antwoorden op een niet-gekeurde reactie.',
-	'You cannot create a comment for an unpublished entry.' => 'U kunt geen reactie aanmaken op een ongepubliceerd bericht.',
-	'You cannot reply to unpublished comment.' => 'U kunt niet reageren op een niet gepubliceerde reactie.',
-	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Reactie (ID:[_1]) door \'[_2]\' verwijderd door \'[_3]\' van bericht \'[_4]\'',
-	'You do not have permission to approve this trackback.' => 'U heeft geen permissie om deze trackback goed te keuren.',
-	'The entry corresponding to this comment is missing.' => 'Het bericht waarbij deze reactie hoort, ontbreekt.',
-	'You do not have permission to approve this comment.' => 'U heeft geen permissie om deze reactie goed te keuren.',
-	'Orphaned comment' => 'Verweesde reactie',
 
 ## lib/MT/CMS/Common.pm
 	'Invalid type [_1]' => 'Ongeldig type [_1]',
@@ -1637,16 +1535,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'IP address lockout limit' => 'Blokkeringslimiet IP adres',
 	'IP address lockout interval' => 'Blokkeringsinterval IP adres',
 	'Lockout IP address whitelist' => 'Niet blokkkeerbare IP adressen',
-
-## lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(Categorie zonder label)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => 'Ping (ID:[_1]) van \'[_2]\' verwijderd door \'[_3]\' van categorie \'[_4]\'',
-	'(Untitled entry)' => '(Bericht zonder titel)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Ping (ID:[_1]) van \'[_2]\' verwijderd door \'[_3]\' van bericht \'[_4]\'',
-	'No Excerpt' => 'Geen uittreksel',
-	'No Title' => 'Geen titel',
-	'Orphaned TrackBack' => 'Verweesde TrackBack',
-	'category' => 'categorie',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Gebruiker aanmaken',
@@ -2288,7 +2176,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## lib/MT.pm
 	'Powered by [_1]' => 'Aangedreven door [_1]',
 	'Version [_1]' => 'Versie [_1]',
-	'http://www.movabletype.com/' => 'http://www.movabletype.com',
+	'https://www.movabletype.com/' => 'https://www.movabletype.com',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => 'Hallo, [_1]',
 	'Message: [_1]' => 'Bericht: [_1]',
@@ -2309,7 +2197,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error while creating email: [_1]' => 'Fout bij het aanmaken van email: [_1]',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'De perl module die vereist is voor authenticatie van reageerders via OpenID (Digest::SHA1) ontbreekt.',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Een Perl module vereist voor authenticatie van reageerders via Google ID ontbreekt: [_1]',
-	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
+	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.org/documentation/',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
 	'Vox' => 'Vox',
@@ -2401,7 +2289,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '[_1]Publiceer[_2] uw [_3] om deze wijzigingen zichtbaar te maken.',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Publiceer[_2] uw site om deze wijzigingen zichtbaar te maken.',
 	'Actions' => 'Acties',
-	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
+	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'You used an [_1] tag without a date context set up.' => 'U gebruikte een [_1] tag zonder dat er een datumcontext ingesteld was.',
 	'Division by zero.' => 'Deling door nul.',
 	'[_1] is not a hash.' => '[_1] is geen hash.',
@@ -2496,15 +2384,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Cannot use sort_by and sort_method together in [_1]' => 'Kan sort_by en sort_method niet samen gebruiken in [_1]',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] kan niet gebruikt worden zonder dat er archieven per categorie worden gepubliceerd.',
 	'[_1] used outside of [_2]' => '[_1] gebruikt buiten [_2]',
-
-## lib/MT/Template/Tags/Commenter.pm
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Deze \'[_1]\' tag word niet meer gebruikt.  Gelieve \'[_2]\' te gebruiken.',
-
-## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'De MTCommentFields tag is niet langer beschikbaar.  Gelieve in de plaats de [_1] sjabloonmodule te includeren.',
-	'Comment Form' => 'Reactieformulier',
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'TypePad authenticatie is niet ingeschakeld op deze blog.  MTRemoteSignInLink kan niet gebruikt worden.',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Om registratie van reageerders mogelijk te maken, moet u een TypePad token in uw weblogconfiguratie of gebruikersprofiel invoeren.',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => 'U gebruikte <$MTEntryFlag$> zonder een vlag.',
@@ -3695,7 +3574,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Disable Plugins' => 'Plugins uitschakelen',
 	'Enable plugin functionality' => 'Plugin functionaliteit inschakelen',
 	'Enable Plugins' => 'Plugins inschakelen',
-	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Plugins' => 'Plugins vinden',
 	'Your plugin settings have been saved.' => 'Uw plugin-instellingen zijn opgeslagen.',
 	'Your plugin settings have been reset.' => 'Uw plugin-instellingen zijn teruggezet op de standaardwaarden.',
@@ -3873,7 +3752,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Send Test Mail' => 'Testmail versturen',
 	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{Dit email adres word gebruikt in de 'From:' header van elke email die door Movable Type wordt verzonden.  Email kan verstuurd worden om een wachtwoord terug te krijgen, een reageerder te registreren, notificaties te verzenden van reacties of TrackBacks, blokkeringen van gebruikers of IP adressen en in nog een paar andere gevallen.},
 	'Debug Mode' => 'Debug modus',
-	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Waardes buiten nul zorgen ervoor dat er bijkomende diagnostische informatie wordt weergegeven om problemen te helpen oplossen met uw Movable Type installatie.  Meer informatie is beschikbaar in de <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentatie van de debugmodus</a>.',
+	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Waardes buiten nul zorgen ervoor dat er bijkomende diagnostische informatie wordt weergegeven om problemen te helpen oplossen met uw Movable Type installatie.  Meer informatie is beschikbaar in de <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentatie van de debugmodus</a>.',
 	'Performance Logging' => 'Performantielogging',
 	'Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.' => 'Loggen van performantie inschakelen, dit zal alle gebeurtenissen in het systeem rapporteren die langer duren dan het aantal seconden ingesteld in de logdrempel.',
 	'Turn on performance logging' => 'Loggen van performantie inschakelen',
@@ -4014,25 +3893,12 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Afbeelding invoegen',
-	'Insert Asset' => 'Mediabestand invoegen',
-	'Upload New File' => 'Nieuw bestand opladen',
-	'Upload New Image' => 'Nieuwe afbeelding opladen',
-	'Asset Name' => 'Naam mediabestand',
-	'Size' => 'Grootte',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliotheek',
 	'Next (s)' => 'Volgende (s)',
 	'Insert (s)' => 'Invoegen (s)',
 	'Insert' => 'Invoegen',
 	'Cancel (x)' => 'Annuleren (x)',
-	'No assets could be found.' => 'Kon geen mediabestand vinden',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliotheek',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Afbeelding tonen in bericht/pagina',
-	'Remember these settings' => 'Deze instellingen onthouden',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Bestandsopties',
@@ -4232,7 +4098,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'External user ID' => 'Extern user ID',
 	'The name displayed when content from this user is published.' => 'De naam die getoond wordt wanneer inhoud van deze gebruiker wordt gepubliceerd.',
 	'The email address associated with this user.' => 'Het e-mail adres gekoppeld aan deze gebruiker',
-	q{This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{De website van deze gebruiker (m.a.w. http://www.mijnsite.com).  Als de website URL en getoonde naam velden allebei ingevuld zijn, dan zal Movable Type standaard berichten en reacties publiceren met onderschriften gelinkt naar deze URL.},
+	q{This User's website (e.g. https://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{De website van deze gebruiker (m.a.w. http://www.mijnsite.com).  Als de website URL en getoonde naam velden allebei ingevuld zijn, dan zal Movable Type standaard berichten en reacties publiceren met onderschriften gelinkt naar deze URL.},
 	'The image associated with this user.' => 'De afbeelding verbonden aan deze gebruiker',
 	'Select Userpic' => 'Selecteer foto gebruiker',
 	'Remove Userpic' => 'Verwijder foto gebruiker',
@@ -4557,7 +4423,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Link to File' => 'Koppelen aan bestand',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Meer lezen over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publicatie-instellingen</a>',
+	'Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Meer lezen over <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publicatie-instellingen</a>',
 	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Statically (default)' => 'Statisch (standaard)',
 	'Via Publish Queue' => 'Via publicatiewachtrij',
@@ -4690,6 +4556,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Check Spelling' => 'Spelling nakijken',
 	'WYSIWYG Mode' => 'WYSIWYG modus',
 	'HTML Mode' => 'HTML modus',
+	'Insert Image' => 'Afbeelding invoegen',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4706,6 +4573,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Created On' => 'Aangemaakt',
 	'Asset Missing' => 'Ontbrekend mediabestand',
 	'No thumbnail image' => 'Geen thumbnail',
+	'Size' => 'Grootte',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Voor u een bestand kunt uploaden, moet u eerst uw [_1] publiceren.  [_2]Configureer de publicatiepaden van uw [_1][_3] en herpubliceer uw [_1].},
@@ -4853,13 +4721,13 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## tmpl/cms/include/footer.tmpl
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'Dit is een betaversie van Movable Type, niet aangeraden voor productiegebruik.',
-	'http://www.movabletype.org' => 'http://www.movabletype.org',
+	'https://www.movabletype.org' => 'https://www.movabletype.org',
 	'MovableType.org' => 'MovableType.org',
-	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org',
-	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
+	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.org',
+	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	'Wiki' => 'Wiki',
 	'Support' => 'Ondersteuning',
-	'http://forums.movabletype.org/' => 'http://forums.movabletype.org/',
+	'https://forums.movabletype.org/' => 'https://forums.movabletype.org/',
 	'Forums' => 'Forums',
 	'Send Us Feedback' => 'Stuur ons feedback',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> versie [_2]',
@@ -5168,7 +5036,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 ## tmpl/cms/list_theme.tmpl
 	q{[_1] Themes} => q{[_1] thema's},
 	q{All Themes} => q{Alle thema's},
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	q{Find Themes} => q{Thema's zoeken},
 	'Theme [_1] has been uninstalled.' => 'Thema [_1] werd gedesinstalleerd.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Thema [_1] werd toegepast (<a href="[_2]">[quant,_3,waarschuwing,waarschuwingen]</a>).',
@@ -5444,7 +5312,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You can manage your blog by selecting an option from the menu located to the left of this message.' => 'U kunt uw blog beheren door een optie te selecteren uit het menu aan de linkerkant.',
 	'If you need assistance, try:' => 'Als u hulp nodig hebt, probeer:',
 	'Movable Type User Manual' => 'Gebruikershandleiding van Movable Type',
-	'http://www.sixapart.com/movabletype/support' => 'http://www.sixapart.com/movabletype/support',
+	'https://www.sixapart.com/movabletype/support' => 'https://www.sixapart.com/movabletype/support',
 	'Movable Type Technical Support' => 'Movable Type technische ondersteuning',
 	'Movable Type Community Forums' => 'Movable Type community forums',
 	'Change this message.' => 'Dit bericht wijzigen.',
@@ -5638,7 +5506,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Database Type' => 'Databasetype',
 	'Select One...' => 'Selecteer er één...',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Staat uw gewenste database er niet bij?  Kijk bij de <a href="[_1]" target="_blank">Movable Type systeemcontrole</a> of er bijkomende modules nodig zijn.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => '<a href="javascript:void(0)" onclick="[_1]">Klik hier om dit scherm te vernieuwen</a> zodra de installatie voltooid is.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Meer weten over: <a href="[_1]" target="_blank">Database instellen</a>',
@@ -5696,7 +5564,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Missing Optional Modules' => 'Ontbrekende optionele modules',
 	'Missing Required Modules' => 'Ontbrekende vereiste modules',
 	'Minimal version requirement: [_1]' => 'Minimale versievereisten: [_1]',
-	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
+	'https://www.movabletype.org/documentation/installation/perl-modules.html' => 'https://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Learn more about installing Perl modules.' => 'Meer weten over het installeren van Perl modules',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'Op uw server zijn alle vereiste modules geïnstalleerd; u hoeft geen bijkomende modules te installeren.',
 
@@ -5720,7 +5588,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Om een nieuw configuratiebestand aan te maken met de Wizard moet u het huidige configuratiebestand verwijderen en deze pagina vernieuwen.',
 
 ## addons/Commercial.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	q{Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.} => q{Professioneel ontworpen, goed gestructureerd en makkelijk aan te passen website.  U kunt de standaardpagina's, voettekst en navigatie makkelijk personaliseren.},
 	'_PWT_ABOUT_BODY' => '
 <p><strong>Vervang deze voorbeeldtekst door uw eigen inhoud.</strong></p>
@@ -6060,7 +5928,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	', or press the enter key to %toggle% it' => ', of druk op de enter-toets om het te %schakelen%',
 
 ## addons/Community.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'Verhoog de betrokkenheid van uw lezers - voeg opties toe aan uw website die het makkelijker maken voor uw lezers om betrokken te zijn bij uw inhoud en bedrijf.',
 	'Create forums where users can post topics and responses to topics.' => 'Maak forums aan waar gebruikers onderwerpen kunnen aanmaken en antwoorden kunnen publiceren.',
 	'Users followed by [_1]' => 'Gebruikers gevolgd door [_1]',
@@ -6478,7 +6346,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'This module is required in order to use the LDAP Authentication.' => 'Deze module is vereist als u LDAP authenticatie wenst te gebruiken.',
 
 ## addons/Enterprise.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	'Permissions of group: [_1]' => 'Permissies van groep: [_1]',
 	'Group' => 'Groep',
 	'Groups associated with author: [_1]' => 'Groepen geassocieerd met auteur: [_1]',
@@ -6777,7 +6645,7 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'You successfully removed the users from this group.' => 'U verwijderde met succes de gebruikers uit de groep.',
 
 ## addons/Sync.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	'Migrated sync setting' => 'Synchronisatie-instellingen gemigreerd',
 	'Sync' => 'Synchronisatie',
 	'Sync Name' => 'Synchronisatie naam',
@@ -6909,48 +6777,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Facebook Application Secret' => 'Facebook applicatiegeheim',
 	'The secret for the Facebook application associated with your blog.' => 'Het geheim voor de Facebook-applicatie geassocieerd met uw blog.',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' is een verplicht argument van [_2]',
-	'MT[_1] was not used in the proper context.' => 'MT[_1] werd niet gebruikt in de juiste context.',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite maakt het mogelijk feeds te herpubliceren op uw blog.  Meer doen met feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgraden naar Feeds.App</a>.',
-	'Create a Feed Widget' => 'Feedwidget aanmaken',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widgetmaker',
-	'Configure feed widget settings' => 'Feedwidget instellingen configureren',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vul een titel in voor uw widget.  Deze titel zal ook getoond worden als de titel van de feed wanneer die op uw gepubliceerde weblog verschijnt.',
-	'[_1] Feed Widget' => '[_1] feedwidget',
-	'Select the maximum number of entries to display.' => 'Selecteer het maximum aantal berichten om te tonen.',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Alle',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => 'Er werden geen feeds gevonden worden met [_1]',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Er deed zich een fout voor bij het verwerken van [_1]. Kijk dit <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">hier</a> na voor meer details en probeer opnieuw.},
-	'A widget named <strong>[_1]</strong> has been created.' => 'Een widget met de naam <strong>[_1]</strong> is aangemaakt',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{U kunt nu dit widget <a href="javascript:void(0)" onclick="closeDialog('[_2]')">&ldquo;[_1]&rdquo; bewerken</a> of includeren in uw blog met behulp van <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> of volgende MTInclude tag:},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{U kunt nu dit widget <a href="javascript:void(0)" onclick="closeDialog('[_2]')">&ldquo;[_1]&rdquo; bewerken</a> of includeren in uw weblog met behulp van volgende MTInclude tag:},
-	'Create Another' => 'Maak er nog één aan',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Meerdere feeds gevonden',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Selecteer de feed die u wenst te gebruiken. <em>Feeds.App Lite ondersteunt RSS 1.0, 2.0 en Atom feeds met uitsluitend tekst.</em>',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'U moet een feed of site-URL ingeven om verder te gaan',
-	'Create a widget from a feed' => 'Maak een widget van een feed',
-	'Feed or Site URL' => 'URL van feed of site',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Vul de URL in van een feed, of de URL van een site met een feed..',
-
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Standaardtekst beheren.',
 
@@ -7072,14 +6898,14 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Social Media' => 'Sociale Media',
 	'https://twitter.com/movabletype' => 'https://twitter.com/movabletype',
 	'Contact Us' => 'Contacteer ons',
-	'http://www.movabletype.org/' => 'http://www.movabletype.org/',
-	'http://plugins.movabletype.org' => 'http://plugins.movabletype.org',
+	'https://www.movabletype.org/' => 'https://www.movabletype.org/',
+	'https://plugins.movabletype.org' => 'https://plugins.movabletype.org',
 
 ## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
 	'Loupe is ready for use!' => 'Loupe is klaar voor gebruik!',
 
 ## plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl
-	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>} => q{Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto's kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="http://www.movabletype.org/documentation/loupe/" target="_blank">Meer details lezen.</a>},
+	q{Loupe is a mobile-friendly alternative console for Movable Type to let users approve pending entries and comments, upload photos, and view website and blog statistics. <a href="https://www.movabletype.org/documentation/loupe/" target="_blank">See more details.</a>} => q{Loupe is een mobiel-vriendelijke alternatieve console voor Movable Type waarmee gebruikers berichten en reacties kunnen goedkeuren, foto's kunnen uploaden en website- en blogstatistieken mee kunnen bekijken. <a href="https://www.movabletype.org/documentation/loupe/" target="_blank">Meer details lezen.</a>},
 	'Loupe can be used without complex configuration, you can get started immediately.' => 'Loupe kan gebruikt worden zonder complexe instellingen, u kunt onmiddelijk beginnen.',
 	'Configure Loupe' => 'Loupe configureren',
 
@@ -7261,59 +7087,6 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Incoming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Binnenkomende feedback kan onderzocht worden op specifieke sleutelwoorden, domeinnamen en patronen.  Feedback waar deze in gevonden worden kan worden tegengehouden voor moderatie of een spamscore krijgen.  Bovendien kunnen spamscores voor overeenkomsten gepersonaliseerd worden.',
 	'Keywords to Moderate' => 'Sleutelwoorden om te modereren',
 	'Keywords to Junk' => 'Sleutelwoorden om een spamscore toe te kennen',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher geeft u de optie om makkelijk stijlen te bekijken en daarna toe te passen op uw blog in een paar klikken. ',
-	'MT 4 Style Library' => 'MT 4 Stijlenbibliotheek',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 4.',
-	'Styles' => 'Stijlen',
-	'Moving current style to blog_meta for website...' => 'Bezig huidige stijl te verhuizen naar blog_meta voor website...',
-	'Moving current style to blog_meta for blog...' => 'Bezig huidige stijl te verhuizen naar blog_meta voor blog...',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.',
-	'Permission Denied.' => 'Toestemming geweigerd.',
-	'Successfully applied new theme selection.' => 'Nieuwe thema-selectie met succes toegepast.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
-	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
-	'Failed to load StyleCatcher Library: [_1]' => 'Laden van de StyleCatcher bibliotheem mislukt: [_1]',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
-	'(Untitled)' => '(geen titel)',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => 'Selecteer een [_1] stijl',
-	'3-Columns, Wide, Thin, Thin' => '3-kolommen, breed, smal, smal',
-	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
-	'3-Columns, Thin, Thin, Wide' => '3-kolommen, smal, smal, breed',
-	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
-	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
-	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium',
-	'2-Columns, Medium, Wide' => '2-kolommen, medium, breed',
-	'1-Column, Wide, Bottom' => '1 kolom, breed, onderschrift',
-	'None available' => 'Geen beschikbaar',
-	'Applying...' => 'Wordt toegepast...',
-	'Apply Design' => 'Design toepassen',
-	'Error applying theme: ' => 'Fout bij toepassen thema:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Het geselecteerde thema is toegepast, maar omdat u een andere lay-out heeft gekozen, moet u eerst uw weblog opnieuw publiceren om de nieuwe lay-out zichtbaar te maken.',
-	'The selected theme has been applied!' => 'Het geselecteerde thema is toegepast',
-	q{Error loading themes! -- [_1]} => q{Fout bij het laden van thema's! -- [_1]},
-	'Stylesheet or Repository URL' => 'Stylesheet of bibliotheek URL',
-	'Stylesheet or Repository URL:' => 'Stylesheet of bibliotheek URL:',
-	'Download Styles' => 'Stijlen downloaden',
-	'Current theme for your weblog' => 'Huidig thema van uw weblog',
-	'Current Style' => 'Huidige stijl',
-	q{Locally saved themes} => q{Lokaal opgeslagen thema's},
-	'Saved Styles' => 'Opgeslagen stijlen',
-	'Default Styles' => 'Standaard stijlen',
-	q{Single themes from the web} => q{Losse thema's van het web},
-	'More Styles' => 'Meer stijlen',
-	'Selected Design' => 'Geselecteerde designs',
-	'Layout' => 'Lay-out',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Een mensvriendelijke tekstgenerator',

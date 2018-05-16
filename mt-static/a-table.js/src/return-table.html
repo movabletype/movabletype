@@ -1,0 +1,14 @@
+<table class="{tableClass}">
+	<!-- BEGIN row:loop -->
+	<tr>
+		<!-- \BEGIN row.{i}.col:loop -->
+		<!-- \BEGIN type:touch#th -->
+		<th<!-- \BEGIN colspan:touchnot#1 --> colspan="\{colspan\}"<!-- \END colspan:touchnot#1 --><!-- \BEGIN rowspan:touchnot#1 --> rowspan="\{rowspan\}"<!-- \END rowspan:touchnot#1 --> class="<!-- \BEGIN align:exist -->\{align\}[getStyleByAlign]<!-- \END align:exist --><!-- \BEGIN cellClass:exist --> \{cellClass\}<!-- \END cellClass:exist -->">\{value\}</th>
+		<!-- \END type:touch#th -->
+		<!-- \BEGIN type:touch#td -->
+		<td<!-- \BEGIN colspan:touchnot#1 --> colspan="\{colspan\}"<!-- \END colspan:touchnot#1 --><!-- \BEGIN rowspan:touchnot#1 --> rowspan="\{rowspan\}"<!-- \END rowspan:touchnot#1 --> class="<!-- \BEGIN align:exist -->\{align\}[getStyleByAlign] <!-- \END align:exist --><!-- \BEGIN cellClass:exist -->\{cellClass\}<!-- \END cellClass:exist -->">\{value\}</td>
+		<!-- \END type:touch#td -->
+		<!-- \END row.{i}.col:loop -->
+	</tr>
+	<!-- END row:loop -->
+</table>

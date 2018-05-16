@@ -1,8 +1,8 @@
 # File    : Net::FTPSSL
 # Author  : cleach <cleach at cpan dot org>
 # Created : 01 March 2005
-# Version : 0.23
-# Revision: $Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 kral Exp $
+# Version : 0.39
+# Revision: -Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 cleach Exp -
 
 package Net::FTPSSL;
 
@@ -10,12 +10,16 @@ use strict;
 use warnings;
 
 # Enforce a minimum version of this module or Net::FTPSSL hangs!
-# If you plan on using ccc(), the minimum should be v1.18 instead!
-use IO::Socket::SSL 1.08;
+# v1.08 works, v1.18 added ccc() support.
+# Don't use v1.79 to v1.85 due to misleading warnings.
+use IO::Socket::SSL 1.26;
 
 use vars qw( $VERSION @EXPORT $ERRSTR );
 use base ( 'Exporter', 'IO::Socket::SSL' );
+
+# Only supports IPv4 (to also get IPv6 must use IO::Socket::IP instead. v0.20)
 use IO::Socket::INET;
+
 use Net::SSLeay::Handle;
 use File::Basename;
 use File::Copy;
@@ -24,12 +28,11 @@ use Sys::Hostname;
 use Carp qw( carp croak );
 use Errno qw/ EINTR /;
 
-$VERSION = "0.23";
-@EXPORT  = qw( IMP_CRYPT  EXP_CRYPT  CLR_CRYPT
-               DATA_PROT_CLEAR  DATA_PROT_PRIVATE
-               DATA_PROT_SAFE   DATA_PROT_CONFIDENTIAL
-               CMD_INFO  CMD_OK      CMD_MORE    CMD_REJECT
-               CMD_ERROR CMD_PROTECT CMD_PENDING );
+@EXPORT  = qw( IMP_CRYPT  EXP_CRYPT   CLR_CRYPT
+               DATA_PROT_CLEAR   DATA_PROT_PRIVATE
+               DATA_PROT_SAFE    DATA_PROT_CONFIDENTIAL
+               CMD_INFO   CMD_OK      CMD_MORE    CMD_REJECT
+               CMD_ERROR  CMD_PROTECT CMD_PENDING );
 $ERRSTR = "No Errors Detected Yet.";
 
 # Command Channel Protection Levels
@@ -52,7 +55,9 @@ use constant CMD_ERROR   => 5;
 use constant CMD_PROTECT => 6;
 use constant CMD_PENDING => 0;
 
-# File transfer modes
+# -------- Above Exported ---- Below don't bother to export --------
+
+# File transfer modes (the mixed modes have no code)
 use constant MODE_BINARY => "I";
 use constant MODE_ASCII  => "A";   # Default
 
@@ -67,11 +72,80 @@ use constant FTPS_EPRT_1 => 5;    # EPRT 1 - Internet Protocol Version 4
 use constant FTPS_EPRT_2 => 6;    # EPRT 2 - Internet Protocol Version 6
 
 # Misc constants
-use constant TRACE_MOD => 5;   # How many iterations between ".".  Must be >= 2.
+use constant TRACE_MOD => 10;  # How many iterations between ".".  Must be >= 5.
 
-# Primarily used while the call to new() is in scope!
+# Primarily used while the call to new() is still in scope!
 my $FTPS_ERROR;
 
+# Used to handle trapping all warnings accross class instances
+my %warn_list;
+
+# Tells if possible to use IPv6 in connections.
+my $ipv6;
+my $IOCLASS;
+my $family_key;     # Domain or Family
+my $debug_log_msg;  # Used if Debug is turned on
+
+
+BEGIN {
+    $VERSION = "0.39";              # The version of this module!
+
+    my $type = "IO::Socket::SSL";
+    $ipv6 = 0;                      # Assume IPv4 only ...
+    $IOCLASS = "IO::Socket::INET";  # Assume IPv4 only ...
+    $family_key = "Domain";         # Traditional ...
+    my $msg;
+
+    my $ioOrig = $IOCLASS;
+
+    # Can we use IPv6 vs IPv4?  Let IO::Socket::SSL make the decision for us!
+    # The logic gets real messy otherwise.
+    if ( ! $type->can ("can_ipv6") ) {
+       $msg = "No IPv6 support available.  You must 1st upgrade $type to support it!";
+
+    } elsif ( $type->can_ipv6 () ) {
+       $ipv6 = 1;                        # Yes!  IPv6 can be suporteed!
+       $IOCLASS = $type->can_ipv6 ();    # Get which IPv6 module SSL uses.
+       $family_key = "Family"   if ( $IOCLASS eq "IO::Socket::IP" );
+       my $ver = $IOCLASS->VERSION;
+       $msg = "IPv6 support available via $IOCLASS ($ver)  Key: ($family_key)";
+
+    } else {
+       $msg = "No IPv6 support available.  Missing required modules!";
+    }
+
+    # Now let's provide the logfile header information ...
+    # Done here so only have to generate this information one time!
+    my $pv = sprintf ("%s  [%vd]", $], $^V);   # The version of perl!
+
+    # Required info when opening a CPAN ticket against this module ...
+    $debug_log_msg = "\n"
+                   . "Net-FTPSSL Version: $VERSION\n";
+
+    # Print out versions of critical modules we depend on ...
+    foreach ( "IO-Socket-SSL",  "Net-SSLeay",
+              "IO-Socket-INET", "IO-Socket-INET6",
+              "IO-Socket-IP",   "IO",
+              "Socket" ) {
+       my $mod = $_;
+       $mod =~ s/-/::/g;
+       my $ver = $mod->VERSION;
+       if ( defined $ver ) {
+          $debug_log_msg .= "$_ Version: $ver\n";
+       } else {
+          $debug_log_msg .= "$_ might not be installed.\n";
+       }
+    }
+
+    $debug_log_msg .= "\n${msg}\n\n"
+                    . "Perl: $pv,  OS: $^O\n\n";
+
+    # Comment out/remove when ready to implement iIPv6 ...
+    $IOCLASS = $ioOrig;  $family_key = "Domain";
+    $debug_log_msg .= "***** IPv6 not yet supported in Net::FTPSSL! *****\n\n";
+}
+
+# ============================================================================
 
 sub new {
   my $self         = shift;
@@ -79,27 +153,62 @@ sub new {
   my $host         = shift;
   my $arg          = (ref ($_[0]) eq "HASH") ? $_[0] : {@_};
 
+
+  # Make sure to reset in case previous call to new generated an error!
+  $ERRSTR = "No Errors Detected Yet.";
+
+  # Used as a quick way to detect if the caller passed us SSL_* arguments ...
+  my $found_ssl_args = 0;
+
   # The hash to pass to start_ssl() ...
   my %ssl_args;
 
-  # The main purpose of this option is to allow users to specify
-  # client certificates when their FTPS server requires them.
-  # This hash applies to both the command & data channels.
-  # Tags specified here overrided normal options if any tags
-  # conflict.  Any other use of this option is unsupported.
-  # See IO::Socket::SSL for supported options.
+  # Depreciated in v0.18 (in 2011) and fatal in v0.26 (2015)
+  # Will remove this test sometime in 2017/2018!
+  if (ref ($arg->{SSL_Advanced}) eq "HASH") {
+     %ssl_args = %{$arg->{SSL_Advanced}};
+     $ERRSTR = "SSL_Advanced is no longer supported!  Using a separate hash is no longer required for adding SSL options!";
+     croak ("\n" . $ERRSTR . "\n");
+  }
+
+  # May depreciate in the near future in favor of the "grep" loop below!
+  # Debating the merrits of having two ways to do this.
   if (ref ($arg->{SSL_Client_Certificate}) eq "HASH") {
-     %ssl_args = %{$arg->{SSL_Client_Certificate}}
-  } elsif (ref ($arg->{SSL_Advanced}) eq "HASH") {
-     %ssl_args = %{$arg->{SSL_Advanced}};       # Depreciated in v0.18
-     print STDERR "SSL_Advanced has been depreciated, use SSL_Client_Certificate instead!\n";
-  } else {
+     # The main purpose of this option was to allow users to specify
+     # client certificates when their FTPS server requires them.
+     # This hash applies to both the command & data channels.
+     # Tags specified here overrided normal options if any tags
+     # conflict.
+     # See IO::Socket::SSL for supported options.
+     %ssl_args = %{$arg->{SSL_Client_Certificate}};
+     $found_ssl_args = 1;
+  }
+
+  # See IO::Socket::SSL for supported options.
+  # Provides a way to directly pass needed SSL_* arguments to this module.
+  # There is only one Net::FTPSSL option that starts with SSL_, so skipping it!
+  for (grep { m{^SSL_} } keys %{$arg}) {
+     next  if ( $_ eq "SSL_Client_Certificate" );   # The FTPSSL opt to skip!
+     $ssl_args{$_} = $arg->{$_};
+     $found_ssl_args = 1;
+  }
+
+  # Only add if not using certificates & the caller didn't provide a value ...
+  unless ( $ssl_args{SSL_use_cert} || $ssl_args{SSL_verify_mode} ) {
      # Stops the Man-In-The-Middle (MITM) security warning from start_ssl()
      # when it calls configure_SSL() in IO::Socket::SSL.
      # To plug that MITM security hole requires the use of certificates,
-     # all that's being done here is supressing the warning.
+     # so all that's being done here is supressing the warning.  The MITM
+     # security hole is still open!
+     # That warning is now a fatal error in newer versions of IO::Socket::SSL.
+     # warn "WARNING: Your connection is vunerable to the MITM attacks\n";
      $ssl_args{SSL_verify_mode} = Net::SSLeay::VERIFY_NONE();
   }
+
+  # --------------------------------------------------------------------------
+  # Will hold all the control options to this class
+  # Similar in use as _SSL_arguments ...
+  my %ftpssl_args;
 
   # Now onto processing the regular hash of arguments provided ...
   my $encrypt_mode = $arg->{Encryption} || EXP_CRYPT;
@@ -110,59 +219,90 @@ sub new {
   my $buf_size     = $arg->{Buffer} || 10240;
   my $data_prot    = ($encrypt_mode eq CLR_CRYPT) ? DATA_PROT_CLEAR
                                  : ($arg->{DataProtLevel} || DATA_PROT_PRIVATE);
-  my $use_ssl      = $arg->{useSSL} || 0;
   my $die          = $arg->{Croak}  || $arg->{Die};
   my $pres_ts      = $arg->{PreserveTimestamp} || 0;
-  my $use_logfile  = $debug && (defined $arg->{DebugLogFile} &&
-                                $arg->{DebugLogFile} ne "");
+  my $use_ssl      = $arg->{useSSL} || 0;       # Being depreciated.
+
+  my ($use_logfile, $use_glob) = (0, 0);
+  if ( $debug && defined $arg->{DebugLogFile} ) {
+     $use_logfile  = (ref ($arg->{DebugLogFile}) eq "" &&
+                      $arg->{DebugLogFile} ne "");
+     $use_glob     = _isa_glob (undef, $arg->{DebugLogFile});
+  }
   my $localaddr    = $ssl_args{LocalAddr} || $arg->{LocalAddr};
   my $pret         = $arg->{Pret} || 0;
+  my $domain       = $arg->{Domain} || $arg->{Family};
+  my $xWait        = $arg->{xWait} || 0;
+
+  my $reuseSession = $arg->{ReuseSession} || 0;
+
+  # Default to true unless you request to disable it or no encryption used ...
+  my $enableCtx    = ($arg->{DisableContext} || $encrypt_mode eq CLR_CRYPT) ? 0 : 1;
 
   # Used to work arround some FTPS servers behaving badly!
   my $pasvHost     = $arg->{OverridePASV};
   my $fixHelp      = $arg->{OverrideHELP};
 
-  # Used to emulate bug # 73115 (Expects an offset on where to insert "\n".
-  my $emulate_bug  = $arg->{EmulateBug} || 0;   # Undocumented feature.
+  # --------------------------------------------------------------------------
+  # if ( $debug && ! exists $arg->{DebugLogFile} ) {
+  #   # So will write any debug comments to STDERR ...
+  #   $IO::Socket::SSL::DEBUG = 3;
+  # }
 
+  # A special case used for further debugging the response!
+  # This special value is undocumented in the POD on purpose!
+  my $debug_extra = ($debug == 99) ? 1 : 0;
+
+  # Special case for eliminating listing help text during login!
+  my $no_login_help = ($debug == 90) ? 1 : 0;
+
+  my $f_exists = 0;
 
   # Determine where to write the Debug info to ...
-  my $pv = sprintf ("%s  [%vd]", $], $^V);   # The version of perl!
   if ( $use_logfile ) {
      my $open_mode = ( $debug == 2 ) ? ">>" : ">";
      my $f = $arg->{DebugLogFile};
      unlink ( $f )  if ( -f $f && $open_mode ne ">>" );
-     my $f_exists = (-f $f);
+     $f_exists = (-f $f);
+
+     # Always calls die on failure to open the requested log file ...
      open ( $FTPS_ERROR, "$open_mode $f" ) or
                _croak_or_return (undef, 1, 0,
                                  "Can't create debug logfile: $f ($!)");
+
+     $debug = 2;        # Save the file handle & later close it ...
+
+  } elsif ( $use_glob ) {
+     $FTPS_ERROR = $arg->{DebugLogFile};
+     $debug = 3;        # Save the file handle, but never close it ...
+  }
+
+  if ( $use_logfile || $use_glob ) {
      unless ( $f_exists ) {
-        print $FTPS_ERROR "\nNet-FTPSSL Version: $VERSION\n\n";
-        print $FTPS_ERROR "Perl: $pv,  OS: $^O\n\n";
+        print $FTPS_ERROR $debug_log_msg;
      } else {
         print $FTPS_ERROR "\n\n";
      }
-     $debug = 2;                  # Already know Debug is turned on ...
+
   } elsif ( $debug ) {
-     $debug = 1;                  # Force to a specific Debug value ...
+     $debug = 1;                  # No file handle to save ...
 
 #    open ( $FTPS_ERROR, ">&STDERR" ) or
 #              _croak_or_return (undef, 1, 0,
 #                             "Can't attach the debug logfile to STDERR. ($!)");
 #    $FTPS_ERROR->autoflush (1);
 
-     print STDERR "\nNet-FTPSSL Version: $VERSION\n\n";
-     print STDERR "Perl: $pv,  OS: $^O\n\n";
+     print STDERR $debug_log_msg;
   }
 
   if ( $debug ) {
      _print_LOG (undef, "Server (port): $host ($port)\n\n");
-     _print_LOG (undef, "Keys: (" . join ("), (", keys %${arg}) . ")\n");
-     _print_LOG (undef, "Values: (" . join ("), (", values %${arg}) . ")\n\n");
+     _print_LOG (undef, "Keys: (",   join ("), (", keys %${arg}),   ")\n");
+     _print_LOG (undef, "Values: (", join ("), (", values %${arg}), ")\n\n");
   }
 
   # Determines if we die if we will also need to write to the error log file ...
-  my $dbg_flg = $die ? ( $debug == 2 ? 1 : 0 ) : $debug;
+  my $dbg_flg = $die ? ( $debug >= 2 ? 1 : 0 ) : $debug;
 
   return _croak_or_return (undef, $die, $dbg_flg, "Host undefined")  unless $host;
 
@@ -177,6 +317,12 @@ sub new {
            $data_prot ne DATA_PROT_SAFE &&
            $data_prot ne DATA_PROT_CONFIDENTIAL &&
            $data_prot ne DATA_PROT_PRIVATE );
+
+  if ( $ipv6 && defined $domain ) {
+     my $fmly = (exists $arg->{Domain}) ? "Domain" : "Family";
+     $domain = _validate_domain ( $type, $fmly, $domain, $dbg_flg, $die );
+     return ( undef )  unless (defined $domain);
+  }
 
   # We start with a clear connection, because I don't know if the
   # connection will be implicit or explicit or remain clear after all.
@@ -202,28 +348,36 @@ sub new {
         return _croak_or_return (undef, $die, $dbg_flg,
                                  "Can't open HTTPTunnel proxy connection! ($pmsg) to ($host:$port)");
      }
-     ${*$socket}{myProxyArgs} = \%proxyArgs;
+     $ftpssl_args{myProxyArgs} = \%proxyArgs;
 
   } else {
      # Establishing a Direct Connection ...
-     my %socketArgs = (  PeerAddr => $host,
-                         PeerPort => $port,
-                         Proto    => 'tcp',
-                         Timeout  => $timeout
+     my %socketArgs = ( PeerAddr => $host,
+                        PeerPort => $port,
+                        Proto    => 'tcp',
+                        Timeout  => $timeout
                       );
      $socketArgs{LocalAddr} = $localaddr  if (defined $localaddr);
+     $socketArgs{$family_key} = $domain   if ($ipv6 && defined $domain);
 
-     $socket = IO::Socket::INET->new ( %socketArgs )
+     $socket = $IOCLASS->new ( %socketArgs )
+     # $socket = IO::Socket::INET->new ( %socketArgs )
                    or
             return _croak_or_return (undef, $die, $dbg_flg,
                                   "Can't open tcp connection! ($host:$port)");
-     ${*$socket}{mySocketOpts} = \%socketArgs;
+     $ftpssl_args{mySocketOpts} = \%socketArgs;
   }
 
   _my_autoflush ( $socket );
 
-  ${*$socket}{debug} = $debug;
-  ${*$socket}{Croak} = $die;
+  # Save so we can log socket activity if needed ...
+  $ftpssl_args{debug}   = $debug;
+  $ftpssl_args{debug_extra} = $debug_extra;
+  $ftpssl_args{Croak}   = $die;
+  $ftpssl_args{Timeout} = $timeout;
+
+  # Bug Id: 120341 says this will be removed from socket by start_SSL() call.
+  ${*$socket}{_FTPSSL_arguments} = \%ftpssl_args;
 
   my $obj;
 
@@ -234,26 +388,43 @@ sub new {
      # Leave the command channel clear for regular FTP.
      $obj = $socket;
      bless ( $obj, $type );
-     ${*$obj}{_SSL_opened} = 0;      # To get rid of warning on quit ...
+     ${*$obj}{_SSL_opened} = 0;      # To get rid of SSL warning on quit ...
 
   } else {
-     # Determine the SSL_version to use ...
-     my $mode = $use_ssl ? "SSLv23" : "TLSv1";
-
      # Determine the options to use in start_SSL() ...
      # ------------------------------------------------------------------------
-     # Only SSL_version & Timeout are supported.  All others are unsupported.
-     # Doing this merge as a courtesy, so the regular options can be overridden
-     # by the SSL_Client_Certificate functionality.
+     # Reset SSL_version & Timeout in %ssl_args so these options can be
+     # applied to the SSL_Client_Certificate functionality.
      # ------------------------------------------------------------------------
+     my $mode;
      if (defined $ssl_args{SSL_version}) {
-        $mode = $ssl_args{SSL_version};        # Mode was overridden.
-        $use_ssl = ( $mode !~ m/^TLSv1$/i );   # Reset in case it conflicts ...
+        $mode = $ssl_args{SSL_version};             # Mode was overridden.
+        # Reset use_ssl flag in case it conflicts ...
+        $use_ssl = ( $mode =~ m/^SSLv/i );          # Bug ID 115296
+     } elsif ( $use_ssl ) {
+        $mode = $ssl_args{SSL_version} = "SSLv23";  # SSL per override
+        warn ("Option useSSL has been depreciated.  Use option SSL_version instead.\n");
      } else {
-        $ssl_args{SSL_version} = $mode;        # Nothing overridden.
+        $mode = $ssl_args{SSL_version} = "TLSv12";  # TLS v1.2 per defaults
      }
      $ssl_args{Timeout} = $timeout  unless (exists $ssl_args{Timeout});
+
      # ------------------------------------------------------------------------
+     # The options for Reusing the Session ...
+     # ------------------------------------------------------------------------
+     if ( $reuseSession ) {
+        $ssl_args{SSL_session_cache} = IO::Socket::SSL::Session_Cache->new (4 + $reuseSession);
+        $ssl_args{SSL_session_key} = "Net-FTPSSL-${VERSION}-$$:${port}";
+     }
+
+     # _debug_print_hash (undef, "Socket call", "initialization", "?", $socket);
+     # _debug_print_hash (undef, "Before start_SSL() call", "initialization", "?", \%ssl_args);
+     # ------------------------------------------------------------------------
+
+     # Can we use SNI?
+     if ( $type->can ("can_client_sni") && $type->can_client_sni () ) {
+        $ssl_args{SSL_hostname} = $host  if (! exists $ssl_args{SSL_hostname});
+     }
 
      if ( $encrypt_mode eq EXP_CRYPT ) {
         # Catch the banner from the connection request ...
@@ -264,15 +435,33 @@ sub new {
         return _croak_or_return ($socket) unless (response ($socket) == CMD_OK);
      }
 
+     # ------------------------------------------------------------------------
      # Now transform the clear connection into a SSL one on our end.
-     $obj = $type->start_SSL( $socket, %ssl_args )
-               or return _croak_or_return ( $socket, undef,
-                                      "$mode: " . IO::Socket::SSL::errstr () );
+     # Messy since newer IO::Socket::SSL modules remove {_FTPSSL_arguments}!
+     # Bug Id: 120341.
+     # ------------------------------------------------------------------------
+     $obj = $type->start_SSL( $socket, %ssl_args );
+     unless ( $obj ) {
+        unless ( exists ${*$socket}{_FTPSSL_arguments} ) {
+           ${*$socket}{_FTPSSL_arguments} = \%ftpssl_args;
+           _print_LOG (undef, "Restoring _FTPSSL_arguments to \$socket.\n")  if ( $debug );
+        }
+        return _croak_or_return ( $socket, undef,
+                                  "$mode: " . IO::Socket::SSL::errstr () );
+     }
+
+     unless ( exists ${*$obj}{_FTPSSL_arguments} ) {
+        ${*$obj}{_FTPSSL_arguments} = \%ftpssl_args;
+        $obj->_print_LOG ("Restoring _FTPSSL_arguments to \$obj.\n")  if ( $debug );
+     }
+     # ------------------------------------------------------------------------
 
      if ( $encrypt_mode eq IMP_CRYPT ) {
         # Catch the banner from the implicit connection request ...
         return $obj->_croak_or_return ()  unless ( $obj->response() == CMD_OK );
      }
+
+     $ftpssl_args{start_SSL_opts} = \%ssl_args;
   }
 
 
@@ -282,57 +471,93 @@ sub new {
   if ( defined $fixHelp ) {
      my %helpHash;
 
+     $ftpssl_args{OverrideHELP} = 0;     # So we know OverrideHELP was used ...
      if ( ref ($fixHelp) eq "ARRAY" ) {
         foreach (@{$fixHelp}) {
-          $helpHash{uc($_)} = 1;
+          my $k = uc ($_);
+          $helpHash{$k} = 1  if ( $k ne "HELP" );
         }
+     } elsif ( $fixHelp == -1 ) {
+       $ftpssl_args{removeHELP} = 1;     # Uses FEAT to list commands supported!
+       delete $ftpssl_args{OverrideHELP};
      } elsif ( $fixHelp ) {
-       ${*$obj}{OverrideHELP} = 1;   # All FTP commands supported ...
+       $ftpssl_args{OverrideHELP} = 1;   # All FTP commands supported ...
      }
 
      # Set the "cache" tags used by "_help()" so that it can still be called!
-     ${*$obj}{help_cmds_found} = \%helpHash;
-     ${*$obj}{help_cmds_msg} = "214 HELP Command Overriden by request.";
-
-     # Will always return false for supported("SITE", "xxx") ...
-     ${*$obj}{help_SITE_msg} = ${*$obj}{help_cmds_msg};
+     $ftpssl_args{help_cmds_found} = \%helpHash;
+     $ftpssl_args{help_cmds_msg} = "214 HELP Command Overridden by request.";
 
      # Causes direct calls to _help($cmd) to skip the server hit.
-     ${*$obj}{help_cmds_no_syntax_available} = 1;
+     $ftpssl_args{help_cmds_no_syntax_available} = 1;
   }
   # --------------------------------------
   # End overriding "_help()" ...
   # --------------------------------------
 
   # These options control the behaviour of the Net::FTPSSL class ...
-  ${*$obj}{Host}         = $host;
-  ${*$obj}{Crypt}        = $encrypt_mode;
-  ${*$obj}{debug}        = $debug;
-  ${*$obj}{trace}        = $trace;
-  ${*$obj}{buf_size}     = $buf_size;
-  ${*$obj}{type}         = MODE_ASCII;
-  ${*$obj}{data_prot}    = $data_prot;
-  ${*$obj}{Croak}        = $die;
-  ${*$obj}{FixPutTs}     = ${*$obj}{FixGetTs} = $pres_ts;
-  ${*$obj}{OverridePASV} = $pasvHost;
-  ${*$obj}{dcsc_mode}    = FTPS_PASV;
-  ${*$obj}{Pret}         = $pret;
-  ${*$obj}{EmulateBug}   = $emulate_bug;
+  $ftpssl_args{Host}          = $host;
+  $ftpssl_args{Crypt}         = $encrypt_mode;
+  $ftpssl_args{debug}         = $debug;
+  $ftpssl_args{debug_extra}   = $debug_extra;
+  $ftpssl_args{debug_no_help} = $no_login_help;
+  $ftpssl_args{trace}         = $trace;
+  $ftpssl_args{buf_size}      = $buf_size;
+  $ftpssl_args{type}          = MODE_ASCII;
+  $ftpssl_args{data_prot}     = $data_prot;
+  $ftpssl_args{Croak}         = $die;
+  $ftpssl_args{FixPutTs}      = $ftpssl_args{FixGetTs} = $pres_ts;
+  $ftpssl_args{OverridePASV}  = $pasvHost  if (defined $pasvHost);
+  $ftpssl_args{dcsc_mode}     = FTPS_PASV;
+  $ftpssl_args{Pret}          = $pret;
+  $ftpssl_args{Timeout}       = $timeout;
+  $ftpssl_args{xWait}         = $xWait     if ( $xWait );
 
-  ${*$obj}{ftpssl_filehandle} = $FTPS_ERROR  if ( $debug == 2 );
+  $ftpssl_args{ftpssl_filehandle} = $FTPS_ERROR  if ( $debug >= 2 );
   $FTPS_ERROR = undef;
 
   # Must be last for certificates to work correctly ...
-  if ( (ref ($arg->{SSL_Client_Certificate}) eq "HASH") ||
-       (ref ($arg->{SSL_Advanced}) eq "HASH") ) {
+  if ( $reuseSession || $enableCtx ||
+       ref ($arg->{SSL_Client_Certificate}) eq "HASH" ) {
      # Reuse the command channel context ...
      my %ssl_reuse = ( SSL_reuse_ctx => ${*$obj}{_SSL_ctx} );
-     ${*$obj}{myContext}   = \%ssl_reuse;
+
+     # Added to fix CPAN Bug Id: 101388 ...
+     my $key = "SSL_ca_file";
+     if ( exists ${*$obj}{_SSL_arguments}->{$key} ) {
+        $ssl_reuse{$key} = ${*$obj}{_SSL_arguments}->{$key};
+     }
+     $key = "SSL_verifycn_name";
+     if ( exists ${*$obj}{_SSL_arguments}->{$key} ) {
+        $ssl_reuse{$key} = ${*$obj}{_SSL_arguments}->{$key};
+     }
+     $key = "SSL_verifycn_scheme";
+     if ( exists ${*$obj}{_SSL_arguments}->{$key} ) {
+        $ssl_reuse{$key} = ${*$obj}{_SSL_arguments}->{$key};
+     } elsif ( exists $ssl_args{$key} ) {
+        $ssl_reuse{$key} = $ssl_args{$key};
+     }
+
+     # Fix for Bug Ids # 104407 & 76108.  (Session Reuse!)
+     $key = "SSL_session_key";
+     if ( exists ${*$obj}{_SSL_arguments}->{$key} && ! exists $ssl_reuse{$key} ) {
+        $ssl_reuse{$key} = ${*$obj}{_SSL_arguments}->{$key};
+        # $obj->_print_LOG ("\n  *** Adding: $key --> $ssl_reuse{$key} ***\n");
+     }
+
+     $ftpssl_args{myContext} = \%ssl_reuse;
   }
 
+  # -------------------------------------------------------------------------
   # Print out the details of the SSL object.  It's TRUE only for debugging!
+  # -------------------------------------------------------------------------
   if ( $debug ) {
-     $obj->_debug_print_hash ( $host, $port, $encrypt_mode );
+     if ( ref ($arg->{SSL_Client_Certificate}) eq "HASH" ) {
+        $obj->_debug_print_hash ( "SSL_Client_Certificate", "options",
+                                $encrypt_mode, $arg->{SSL_Client_Certificate} );
+     }
+     $obj->_debug_print_hash ( "SSL", "arguments", $encrypt_mode, \%ssl_args );
+     $obj->_debug_print_hash ( $host, $port, $encrypt_mode, undef, "*" );
   }
 
   return $obj;
@@ -344,23 +569,47 @@ sub new {
 sub login {
   my ( $self, $user, $pass ) = @_;
 
-  ${*$self}{_hide_value_in_response_} = $user;
-  ${*$self}{_mask_value_in_response_} = "++++++";
+  my $arg = ${*$self}{_FTPSSL_arguments};
+
+  if ( defined $user && $user ne "" ) {
+     $arg->{_hide_value_in_response_} = $user;
+     $arg->{_mask_value_in_response_} = "++++++";
+  }
 
   my $logged_on = $self->_test_croak ( $self->_user ($user) &&
                                        $self->_passwd ($pass) );
 
-  delete ( ${*$self}{_hide_value_in_response_} );
-  delete ( ${*$self}{_mask_value_in_response_} );
+  delete ( $arg->{_hide_value_in_response_} );
+  delete ( $arg->{_mask_value_in_response_} );
 
   if ( $logged_on ) {
-     $self->supported ("HELP");     # So help is always called early instead of later.
-
-     if ( ${*$self}{FixPutTs} && ! $self->supported ("MFMT") ) {
-        ${*$self}{FixPutTs} = 0;    # Not supported by this server after all!
+     # Check if we want to supress the help logging ...
+     my $save = $arg->{debug};
+     if ( $arg->{debug_no_help} ) {
+        delete $arg->{debug};
      }
-     if ( ${*$self}{FixGetTs} && ! $self->supported ("MDTM") ) {
-        ${*$self}{FixGetTs} = 0;    # Not supported by this server after all!
+
+     # So _help is always called early instead of later.
+     $self->supported ("HELP");
+
+     $arg->{debug} = $save;  # Re-enabled again!
+
+     if ( $arg->{debug} && $arg->{debug_extra} ) {
+        my $hlp = join ("), (", sort keys %{$self->_help ()});
+        if ( $hlp eq "" ) {
+           my $msg = ( $arg->{OverrideHELP} ) ? "All" : "No";
+           $self->_print_LOG ("HELP: () --> $msg FTP Commands.\n");
+        } else {
+           $self->_print_LOG ("HELP: ($hlp)\n");
+        }
+     }
+
+     # Check if these commands are not supported by this server after all!
+     if ( $arg->{FixPutTs} && ! $self->supported ("MFMT") ) {
+        $arg->{FixPutTs} = 0;
+     }
+     if ( $arg->{FixGetTs} && ! $self->supported ("MDTM") ) {
+        $arg->{FixGetTs} = 0;
      }
   }
 
@@ -373,9 +622,10 @@ sub quit {
   my $self = shift;
   $self->_quit() or return 0;   # Don't do a croak here, since who tests?
   _my_close ($self);            # Old way $self->close();
-  $self->_close_LOG ()  if ( ${*$self}{debug} );
   return 1;
 }
+
+#-----------------------------------------------------------------------
 
 sub force_epsv {
   my $self = shift;
@@ -386,8 +636,8 @@ sub force_epsv {
   }
 
   # Don't resend the command to the FTPS server if it was sent before!
-  if ( ${*$self}{dcsc_mode} != FTPS_EPSV_1 &&
-       ${*$self}{dcsc_mode} != FTPS_EPSV_2 ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{dcsc_mode} != FTPS_EPSV_1 &&
+       ${*$self}{_FTPSSL_arguments}->{dcsc_mode} != FTPS_EPSV_2 ) {
     unless ($self->command ("EPSV", "ALL")->response () == CMD_OK) {
        return $self->_croak_or_return ();
     }
@@ -395,7 +645,7 @@ sub force_epsv {
 
   # Now that only EPSV is supported, remember which one was requested ...
   # You can no longer swap back to PASV, PORT or EPRT.
-  ${*$self}{dcsc_mode} = ($epsv_mode eq "1") ? FTPS_EPSV_1 : FTPS_EPSV_2;
+  ${*$self}{_FTPSSL_arguments}->{dcsc_mode} = ($epsv_mode eq "1") ? FTPS_EPSV_1 : FTPS_EPSV_2;
 
   # Now check out if the requested EPSV mode was actually supported ...
   unless ($self->command ("EPSV", $epsv_mode)->response () == CMD_OK) {
@@ -414,7 +664,7 @@ sub _pasv {
 
   my ($host, $port) = ("", "");
 
-  if ( ${*$self}{Pret} ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{Pret} ) {
      unless ( $self->command ("PRET", @_)->response () == CMD_OK ) {
         $self->_croak_or_return ();
         return ($host, $port);
@@ -422,14 +672,14 @@ sub _pasv {
   }
 
   unless ( $self->command ("PASV")->response () == CMD_OK ) {
-     if ( ${*$self}{Pret} ) {
+     if ( ${*$self}{_FTPSSL_arguments}->{Pret} ) {
         # Prevents infinite recursion on failure if PRET is already set ...
         $self->_croak_or_return ();
 
      } elsif ( $self->last_message () =~ m/(^|\s)PRET($|[\s.!?])/i ) {
         # Turns PRET on for all future calls to _pasv()!
         # Stays on even if it still doesn't work with PRET!
-        ${*$self}{Pret} = 1;
+        ${*$self}{_FTPSSL_arguments}->{Pret} = 1;
         $self->_print_DBG ("<<+ Auto-adding PRET option!\n");
         ($host, $port) = $self->_pasv (@_);
 
@@ -452,9 +702,9 @@ sub _pasv {
   $host = join( '.', @address[ 0 .. 3 ] );
   $port = $address[4] * 256 + $address[5];
 
-  if ( ${*$self}{OverridePASV} ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{OverridePASV} ) {
      my $ip = $host;
-     $host = ${*$self}{OverridePASV};
+     $host = ${*$self}{_FTPSSL_arguments}->{OverridePASV};
      $self->_print_DBG ( "--- Overriding PASV IP Address $ip with $host\n" );
   }
 
@@ -481,7 +731,7 @@ sub _epsv {
   my ($s1, $s2, $s3, $port, $s4) = ($1, $2, $3, $4, $5);
 
   # By definition, EPSV must use the same host for the DC as the CC.
-  return (${*$self}{Host}, $port);
+  return (${*$self}{_FTPSSL_arguments}->{Host}, $port);
 }
 
 sub prep_data_channel {
@@ -489,13 +739,13 @@ sub prep_data_channel {
   # Leaving other arguments on the stack (for use by PRET if called via PASV)
 
   # Should only do this for encrypted Command Channels.
-  if ( ${*$self}{Crypt} ne CLR_CRYPT ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{Crypt} ne CLR_CRYPT ) {
      $self->_pbsz();
      unless ($self->_prot()) { return $self->_croak_or_return (); }
   }
 
   # Determine what host/port pairs to use for the data channel ...
-  my $mode = ${*$self}{dcsc_mode};
+  my $mode = ${*$self}{_FTPSSL_arguments}->{dcsc_mode};
   my ($host, $port);
   if ( $mode == FTPS_PASV ) {
      ($host, $port) = $self->_pasv (@_);
@@ -531,10 +781,13 @@ sub _open_data_channel {
   # channel has been sent to the FTPS server and the FTPS server responds
   # to the socket you are creating below!
 
+  # Makes it easier to refrence all those pesky values over & over again.
+  my $ftps_ref = ${*$self}{_FTPSSL_arguments};
+
   my $msg = "";
   my %proxyArgs;
-  if (exists ${*$self}{myProxyArgs} ) {
-     %proxyArgs = %{${*$self}{myProxyArgs}};
+  if (exists $ftps_ref->{myProxyArgs} ) {
+     %proxyArgs = %{$ftps_ref->{myProxyArgs}};
      $msg = ($proxyArgs{'proxy-host'} || "undef") . ":" . ($proxyArgs{'proxy-port'} || "undef");
 
      # Update the host & port to connect to through the proxy server ...
@@ -544,43 +797,42 @@ sub _open_data_channel {
 
   my $socket;
 
-  if ( ${*$self}{data_prot} eq DATA_PROT_PRIVATE ) {
-     if (exists ${*$self}{myProxyArgs} ) {
-        # Set the proxy paramters for all future data connections ...
+  if ( $ftps_ref->{data_prot} eq DATA_PROT_PRIVATE ) {
+     if (exists $ftps_ref->{myProxyArgs} ) {
+        # Set the proxy parameters for all future data connections ...
         Net::SSLeay::set_proxy ( $proxyArgs{'proxy-host'}, $proxyArgs{'proxy-port'},
                                  $proxyArgs{'proxy-user'}, $proxyArgs{'proxy-pass'} );
         $msg = " (via proxy $msg)";
      }
 
-# carp "MSG=($msg)\n" . "proxyhost=($Net::SSLeay::proxyhost--$Net::SSLeay::proxyport)\n" . "auth=($Net::SSLeay::proxyauth--$Net::SSLeay::CRLF)\n";
+     # carp "MSG=($msg)\n" . "proxyhost=($Net::SSLeay::proxyhost--$Net::SSLeay::proxyport)\n" . "auth=($Net::SSLeay::proxyauth--$Net::SSLeay::CRLF)\n";
 
      $socket = Net::SSLeay::Handle->make_socket( $host, $port )
                or return $self->_croak_or_return (0,
                       "Can't open private data connection to $host:$port $msg");
 
-# carp "Socket Created!\n";
-
-  } elsif ( ${*$self}{data_prot} eq DATA_PROT_CLEAR && exists ${*$self}{myProxyArgs} ) {
+  } elsif ( $ftps_ref->{data_prot} eq DATA_PROT_CLEAR && exists $ftps_ref->{myProxyArgs} ) {
      $socket = Net::HTTPTunnel->new ( %proxyArgs ) or
              return $self->_croak_or_return (0,
                    "Can't open HTTP Proxy data connection tunnel from $msg to $host:$port");
 
-  # } elsif ( ${*$self}{data_prot} eq DATA_PROT_CLEAR && exists ${*$self}{mySocketOpts} ) {
-  } elsif ( ${*$self}{data_prot} eq DATA_PROT_CLEAR ) {
-     my %socketArgs = %{${*$self}{mySocketOpts}};
+  } elsif ( $ftps_ref->{data_prot} eq DATA_PROT_CLEAR ) {
+     my %socketArgs = %{$ftps_ref->{mySocketOpts}};
      $socketArgs{PeerAddr} = $host;
      $socketArgs{PeerPort} = $port;
 
-     $socket = IO::Socket::INET->new( %socketArgs ) or
+     $socket = $IOCLASS->new ( %socketArgs ) or
+     # $socket = IO::Socket::INET->new( %socketArgs ) or
                   return $self->_croak_or_return (0,
                              "Can't open clear data connection to $host:$port");
 
   } else {
      # TODO: Fix so DATA_PROT_SAFE & DATA_PROT_CONFIDENTIAL work.
-     return $self->_croak_or_return (0, "Currently doesn't support mode ${*$self}{data_prot} for data channels to $host:$port");
+     return $self->_croak_or_return (0, "Currently doesn't support mode $ftps_ref->{data_prot} for data channels to $host:$port");
   }
 
-  ${*$self}{data_ch} = \*$socket;  # Must call _get_data_channel() before using.
+  $ftps_ref->{data_ch} = \*$socket;     # Must call _get_data_channel() before using.
+  $ftps_ref->{data_host} = $host;       # Save the IP Address used ...
 
   return 1;   # Data Channel was established!
 }
@@ -588,37 +840,46 @@ sub _open_data_channel {
 sub _get_data_channel {
    my $self = shift;
 
-   # $self->_debug_print_hash ("host", "port", ${*$self}{data_prot}, ${*$self}{data_ch});
+   # Makes it easier to refrence all those pesky values over & over again.
+   my $ftps_ref = ${*$self}{_FTPSSL_arguments};
+
+   # $self->_debug_print_hash ("host", "port", $ftps_ref->{data_prot}, $ftps_ref->{data_ch});
 
    my $io;
-   if ( ${*$self}{data_prot} eq DATA_PROT_PRIVATE && exists (${*$self}{myContext}) ) {
-      my %ssl_opts = %{${*$self}{myContext}};
-      my $mode = $ssl_opts{SSL_version};
+   if ( $ftps_ref->{data_prot} eq DATA_PROT_PRIVATE && exists ($ftps_ref->{myContext}) ) {
+      my %ssl_opts = %{$ftps_ref->{myContext}};
+      my $mode = ${*$self}{_SSL_arguments}->{SSL_version};
 
-      $io = IO::Socket::SSL->start_SSL ( ${*$self}{data_ch}, \%ssl_opts )
+     # Can we use SNI?
+     if ( $self->can ("can_client_sni") && $self->can_client_sni () ) {
+        $ssl_opts{SSL_hostname} = $ftps_ref->{data_host};
+     }
+
+      $io = IO::Socket::SSL->start_SSL ( $ftps_ref->{data_ch}, \%ssl_opts )
                or return $self->_croak_or_return ( 0,
                                       "$mode: " . IO::Socket::SSL::errstr () );
 
-   } elsif ( ${*$self}{data_prot} eq DATA_PROT_PRIVATE ) {
+   } elsif ( $ftps_ref->{data_prot} eq DATA_PROT_PRIVATE ) {
       $io = IO::Handle->new ();
-      tie ( *$io, "Net::SSLeay::Handle", ${*$self}{data_ch} );
+      tie ( *$io, "Net::SSLeay::Handle", $ftps_ref->{data_ch} );
 
-   } elsif ( ${*$self}{data_prot} eq DATA_PROT_CLEAR ) {
-      $io = ${*$self}{data_ch};
+   } elsif ( $ftps_ref->{data_prot} eq DATA_PROT_CLEAR ) {
+      $io = $ftps_ref->{data_ch};
 
    } else {
       # TODO: Fix so DATA_PROT_SAFE & DATA_PROT_CONFIDENTIAL work.
-      return $self->_croak_or_return (0, "Currently doesn't support mode ${*$self}{data_prot} for data channels.");
+      return $self->_croak_or_return (0, "Currently doesn't support mode $ftps_ref->{data_prot} for data channels.");
    }
 
    _my_autoflush ( $io );
 
-   # $self->_debug_print_hash ("host", "port", ${*$self}{data_prot}, $io);
+   # $self->_debug_print_hash ("host", "port", $ftps_ref->{data_prot}, $io, "=");
 
    return ( $io );
 }
 
-# Note: This doesn't reference $self on purpose! (so not a bug!) See Bug Id 82094
+# Note: This doesn't reference $self on purpose! (so not a bug!)
+#       See Bug Id 82094
 sub _my_autoflush {
    my $skt = shift;
 
@@ -634,7 +895,8 @@ sub _my_autoflush {
    return;
 }
 
-# Note: This doesn't reference $self on purpose! (so not a bug!) See Bug Id 82094
+# Note: This doesn't reference $self on purpose! (so not a bug!)
+#       See Bug Id 82094
 sub _my_close {
    my $io = shift;
 
@@ -677,7 +939,7 @@ sub list {
 
   my ( $tmp, $io, $size );
 
-  $size = ${*$self}{buf_size};
+  $size = ${*$self}{_FTPSSL_arguments}->{buf_size};
 
   $io = $self->_get_data_channel ();
   unless ( defined $io ) {
@@ -773,7 +1035,7 @@ sub _get_local_file_size {
 
   # Return the trivial cases ...
   return (0) unless ( -f $file_name);
-  return (-s $file_name) if ( ${*$self}{type} eq MODE_BINARY );
+  return (-s $file_name) if ( ${*$self}{_FTPSSL_arguments}->{type} eq MODE_BINARY );
 
   # If we get here, we know we are transfering the file in ASCII mode ...
   my $fd;
@@ -784,7 +1046,7 @@ sub _get_local_file_size {
 
   my ($len, $offset) = (0, 0);
   my $data;
-  my $size = ${*$self}{buf_size} || 2048;
+  my $size = ${*$self}{_FTPSSL_arguments}->{buf_size} || 2048;
 
   while ( $len = sysread ( $fd, $data, $size ) ) {
     # print STDERR "Line: ($len, $data)\n";
@@ -829,7 +1091,7 @@ sub _get_local_file_truncate {
   }
 
   my $pos = 0;
-  if ( ${*$self}{type} eq MODE_BINARY ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{type} eq MODE_BINARY ) {
      unless ( binmode $fd ) {
       return $self->_croak_or_return(0, "Can't set binary mode to local file!");
      }
@@ -842,7 +1104,7 @@ sub _get_local_file_truncate {
      # was hit!
      my ($len, $off) = (0, 0);
      my $data;
-     my $size = ${*$self}{buf_size} || 2048;
+     my $size = ${*$self}{_FTPSSL_arguments}->{buf_size} || 2048;
 
      $size = $offset  if ( $size > $offset );
 
@@ -857,9 +1119,9 @@ sub _get_local_file_truncate {
        # (Bogus for a lot of OS, so must fix offset one char smaller.)
        if ( $diff == -1 && $cr_only ) {
           my $old = $offset--;
-          $self->_print_DBG ("<<+ 222 HOT FIX  ==> Offset ($old ==> $offset) "
-                             . "Since can't truncate between \\015 & \\012 "
-                             . "in ASCII mode!\n");
+          $self->_print_DBG ("<<+ 222 HOT FIX  ==> Offset ($old ==> $offset) ",
+                             "Since can't truncate between \\015 & \\012 ",
+                             "in ASCII mode!\n");
           # Use the last $pos value, no need to recalculate it ...
           last;
        }
@@ -912,10 +1174,10 @@ sub get {
   my $self     = shift;
   my $file_rem = shift;
   my $file_loc = shift;
-  my $offset   = shift || ${*$self}{net_ftpssl_rest_offset} || 0;
+  my $offset   = shift || ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} || 0;
 
   # Clear out this messy restart() cluge for next time ...
-  delete ( ${*$self}{net_ftpssl_rest_offset} );
+  delete ( ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} );
 
   if ( $offset < -1 ) {
     return $self->_croak_or_return(0, "Invalid file offset ($offset)!");
@@ -928,9 +1190,9 @@ sub get {
     $file_loc = basename($file_rem);
   }
 
-  $size = ${*$self}{buf_size} || 2048;
+  $size = ${*$self}{_FTPSSL_arguments}->{buf_size} || 2048;
 
-  if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
+  if ( $self->_isa_glob ($file_loc) ) {
     if ( $offset == -1 ) {
       return $self->_croak_or_return(0,
                             "Invalid file offset ($offset) for a file handle!");
@@ -957,7 +1219,7 @@ sub get {
   }
 
   my $fix_cr_issue = 1;
-  if ( ${*$self}{type} eq MODE_BINARY ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{type} eq MODE_BINARY ) {
     unless ( binmode $localfd ) {
       if ( $close_file ) {
          close ($localfd);
@@ -993,7 +1255,7 @@ sub get {
      if ( $offset && $rest ) {
         my $msg = $self->last_message ();
         $self->_rest (0);                  # Must clear out on failure!
-        ${*$self}{last_ftp_msg} = $msg;    # Restore original error message!
+        ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $msg;    # Restore original error message!
      }
 
      return $self->_croak_or_return ();
@@ -1010,7 +1272,8 @@ sub get {
      return undef;   # Already decided not to call croak if you get here!
   }
 
-  print STDERR "$func() trace ."  if (${*$self}{trace});
+  my $trace_flag = ${*$self}{_FTPSSL_arguments}->{trace};
+  print STDERR "$func() trace ."  if ($trace_flag);
   my $cnt = 0;
   my $prev = "";
   my $total = 0;
@@ -1049,7 +1312,7 @@ sub get {
        $len = length ($data);
     }
 
-    print STDERR "."  if (${*$self}{trace} && ($cnt % TRACE_MOD) == 0);
+    print STDERR "."  if ($trace_flag && ($cnt % TRACE_MOD) == 0);
     ++$cnt;
 
     $total = $self->_call_callback ($cb_idx, \$data, \$len, $total);
@@ -1081,7 +1344,7 @@ sub get {
           unless (defined $written);
   }
 
-  print STDERR ". done! (" . $self->_fmt_num ($total) . " byte(s))\n"  if (${*$self}{trace});
+  print STDERR ". done! (" . $self->_fmt_num ($total) . " byte(s))\n"  if ($trace_flag);
 
   _my_close ($io);    # Old way $io->close();
 
@@ -1093,7 +1356,7 @@ sub get {
 
   if ( $close_file ) {
      close ($localfd);
-     if ( ${*$self}{FixGetTs} ) {
+     if ( ${*$self}{_FTPSSL_arguments}->{FixGetTs} ) {
         my $tm = $self->_mdtm ( $file_rem );
         utime ( $tm, $tm, $file_loc )  if ( $tm );
      }
@@ -1107,7 +1370,7 @@ sub put {               # Regular put (STOR command)
   my $self = shift;
   my ($resp, $msg1, $msg2, $requested_file_name, $tm) = $self->_common_put (@_);
 
-  if ( $resp && ${*$self}{FixPutTs} && defined $tm ) {
+  if ( $resp && ${*$self}{_FTPSSL_arguments}->{FixPutTs} && defined $tm ) {
      $self->_mfmt ($tm, $requested_file_name);
   }
 
@@ -1118,7 +1381,7 @@ sub append {            # Append put (APPE command)
   my $self = shift;
   my ($resp, $msg1, $msg2, $requested_file_name, $tm) = $self->_common_put (@_);
 
-  if ( $resp && ${*$self}{FixPutTs} && defined $tm ) {
+  if ( $resp && ${*$self}{_FTPSSL_arguments}->{FixPutTs} && defined $tm ) {
      $self->_mfmt ($tm, $requested_file_name);
   }
 
@@ -1129,30 +1392,52 @@ sub uput {              # Unique put (STOU command)
   my $self = shift;
   my ($resp, $msg1, $msg2, $requested_file_name, $tm) = $self->_common_put (@_);
 
-  # Now lets get the real name of the file generated!
+  # Now lets get the real name of the file uploaded!
   if ( $resp ) {
     # The file name may appear in either message returned.  (The 150 or 226 msg)
     # So lets check both messages merged together!
+    # Assumes no spaces are in the new file's name!
     my $msg = $msg1 . "\n" . $msg2;
 
     if ( $msg =~ m/(FILE|name):\s*([^\s)]+)($|[\s)])/im ) {
        $requested_file_name = $2;   # We found an actual name to use ...
+
+    } elsif ( $msg =~ m/Transfer starting for\s+([^\s]+)($|\s)/im ) {
+       $requested_file_name = $1;   # We found an actual name to use ...
+       $requested_file_name =~ s/[.]$//;   # Remove optional trailing ".".
+
+    } elsif ( ${*$self}{_FTPSSL_arguments}->{uput} == 1 ) {
+       # The alternate STOU command format was used where the remote
+       # ftps server won't allow us to recomend any hints!
+       # So we don't know what the remote server used for a filename
+       # if it didn't appear in either of the message formats!
+       $requested_file_name = "?";
     }
 
     # TODO: Figure out other uput variants to check for besides the ones above.
 
     # Until then, if we can't find the file name used in the messages,
-    # we'll just have to assume that the default file name was used!
+    # we'll just have to assume that the default file name was used if
+    # we were not explicitly told it wasn't being used!
 
-    # Now lets update the timestamp for that file on the server ...
-    if ( ${*$self}{FixPutTs} && defined $tm ) {
-       $self->_mfmt ($tm, $requested_file_name);
+    if ( $requested_file_name ne "?" ) {
+       # Now lets update the timestamp for that file on the server ...
+       # It's allowed to fail since we are not 100% sure of the remote name used!
+       if ( ${*$self}{_FTPSSL_arguments}->{FixPutTs} && defined $tm ) {
+          $self->_mfmt ($tm, $requested_file_name);
+       }
+
+       # Fix done in v0.25
+       # Some servers returned the full path to the file.  But that sometimes
+       # causes issues.  So always strip off the path information.  If there
+       # was a path in the source file, then the caller knows where it was!
+       $requested_file_name = basename ($requested_file_name);
     }
 
     return ( $requested_file_name );
   }
 
-  return ( undef );
+  return ( undef );        # Fatal error & Croak is turned off.
 }
 
 # Makes sure the scratch file name generated appears in the same directory as
@@ -1172,7 +1457,8 @@ sub _get_scratch_file {
    # And get default body to use if none was supplied or it's ""!
    my $c = (caller(1))[3];
    my $os;
-   if ( defined $c && $c eq "Net::FTPSSL::xput" ) {
+   if ( defined $c &&
+       ( $c eq "Net::FTPSSL::xput" || $c eq "Net::FTPSSL::xtransfer" ) ) {
       $os = fileparse_set_fstype ("FTP");    # Follow Unix instead of OS rules.
       # Client Name + process PID ... Unique on remote server ...
       $body = $body || (hostname () . ".$$");
@@ -1215,7 +1501,7 @@ sub xput {              # A variant of the regular put (STOR command)
    my ($prefix, $postfix, $body) = (shift, shift, shift);
 
    unless ($file_rem) {
-     if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
+     if ( $self->_isa_glob ($file_loc) ) {
        return $self->_croak_or_return (0, "When you pass a stream, you must specify the remote filename.");
      }
 
@@ -1226,19 +1512,20 @@ sub xput {              # A variant of the regular put (STOR command)
                                                 $file_rem);
    return undef  unless ($scratch_name);
 
-   my $help = $self->_help ();
-   unless ( $help->{STOR} && $help->{DELE} && $help->{RNFR} && $help->{RNTO} ) {
+   unless ( $self->all_supported ( "STOR", "DELE", "RNFR", "RNTO" ) ) {
       return $self->_croak_or_return (0, "Function xput is not supported by this server.");
    }
 
    # Now lets send the file.  Make sure we can't die during this process ...
-   my $die = ${*$self}{Croak};
-   ${*$self}{Croak} = 0;
+   my $die = ${*$self}{_FTPSSL_arguments}->{Croak};
+   ${*$self}{_FTPSSL_arguments}->{Croak} = 0;
 
    my ($resp, $msg1, $msg2, $requested_file_name, $tm) =
                               $self->_common_put ($file_loc, $scratch_name);
 
    if ( $resp ) {
+     $self->_xWait ();   # Some servers require a wait before you may move on!
+
      # Delete any file sitting on the server with the final name we want to use
      # to avoid file permission issues.  Usually the file won't exist so the
      # delete will fail ...
@@ -1250,7 +1537,7 @@ sub xput {              # A variant of the regular put (STOR command)
      # Now lets update the timestamp for the file on the server ...
      # It's not an error if the file recognizer grabs it before the
      # timestamp is reset ...
-     if ( $resp && ${*$self}{FixPutTs} && defined $tm ) {
+     if ( $resp && ${*$self}{_FTPSSL_arguments}->{FixPutTs} && defined $tm ) {
         $self->_mfmt ($tm, $file_rem);
      }
    }
@@ -1258,13 +1545,13 @@ sub xput {              # A variant of the regular put (STOR command)
    # Delete the scratch file on error, but don't return this as the error msg.
    # We want the actual error encounterd from the put or rename commands!
    unless ($resp) {
-     $msg1 = ${*$self}{last_ftp_msg};
+     $msg1 = ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
      $self->delete ( $scratch_name );
-     ${*$self}{last_ftp_msg} = $msg1;
+     ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $msg1;
    }
 
    # Now allow us to die again if we must ...
-   ${*$self}{Croak} = $die;
+   ${*$self}{_FTPSSL_arguments}->{Croak} = $die;
 
    return ( $self->_test_croak ( $resp ) );
 }
@@ -1281,7 +1568,7 @@ sub xget {              # A variant of the regular get (RETR command)
      $file_loc = basename ($file_rem);
    }
 
-   if ( ref($file_loc) && ref($file_loc) eq "GLOB" ) {
+   if ( $self->_isa_glob ($file_loc) ) {
       return $self->_croak_or_return (0, "xget doesn't support file_loc being an open file handle.");
    }
 
@@ -1289,7 +1576,7 @@ sub xget {              # A variant of the regular get (RETR command)
                                                  $file_loc );
    return undef  unless ($scratch_name);
 
-   if (defined ${*$self}{net_ftpssl_rest_offset}) {
+   if (defined ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset}) {
       return $self->_croak_or_return (0, "Can't call restart() before xget()!");
    }
 
@@ -1303,6 +1590,273 @@ sub xget {              # A variant of the regular get (RETR command)
       move ( $scratch_name, $file_loc ) or
            return $self->_croak_or_return (0, "Can't rename the local scratch file!");
    }
+
+   return ( $self->_test_croak ( $resp ) );
+}
+
+# Doesn't do the CF/LF transformation.
+# It lets the source & dest servers do it if it's necessary!
+# Please note that $self & $dest_ftp will write to different log files!
+sub transfer {
+   my $self        = shift;
+   my $dest_ftp    = shift;        # A Net::FTPSSL object.
+   my $remote_file = shift || "";
+   my $dest_file   = shift || $remote_file;
+   my $offset      = shift || ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} || 0;
+
+   # Verify we are dealing with a Net::FTPSSL object ...
+   if ( ref($dest_ftp) eq "" || ref($dest_ftp) ne __PACKAGE__ ) {
+      return $self->_croak_or_return(0, "The destination server must be a valid Net::FTPSSL object! (" . ref($dest_ftp) . ")");
+   }
+
+   my $sArg = ${*$self}{_FTPSSL_arguments};
+   my $dArg = ${*$dest_ftp}{_FTPSSL_arguments};
+
+   # Clear out this messy restart() cluge for next time ...
+   delete ( $sArg->{net_ftpssl_rest_offset} );
+
+   # Don't care if this value was set or not.  Just remove it!
+   # We just use any offset from ${*$self} instead ...
+   delete ( $dArg->{net_ftpssl_rest_offset} );
+
+   my ($stmp, $dtmp) = ($sArg->{Croak} || 0, $dArg->{Croak} || 0);
+   if ( $stmp != $dtmp ) {
+      my $msg = "Both connections must use the same Croak Settings for the transfer!";
+      $msg .= "  (${stmp} vs ${dtmp})";
+      $dest_ftp->_print_DBG ("<<+ 555 $msg\n");
+      return $self->_croak_or_return (0, $msg);
+   }
+
+   ($stmp, $dtmp) = ($sArg->{type}, $dArg->{type});
+   if ( $stmp ne $dtmp ) {
+      my $msg = "Both connections must use ASCII or BIN for the transfer!";
+      $msg .= "  (${stmp} vs ${dtmp})";
+      $dest_ftp->_print_DBG ("<<+ 555 $msg\n");
+      return $self->_croak_or_return(0, $msg);
+   }
+
+   my $size = $sArg->{buf_size} || 2048;
+
+   # Validate the remaining arguments ...
+   if ( ref($remote_file) || $remote_file eq "" ) {
+      return $self->_croak_or_return(0, "The remote file must be a file name!");
+   }
+   if ( ref($dest_file) || $dest_file eq "" ) {
+      return $self->_croak_or_return(0, "The destination file must be a file name!");
+   }
+   if ( $offset < -1 ) {
+      return $self->_croak_or_return(0, "Invalid file offset ($offset)!");
+   }
+
+   # "(caller(1))[3]" returns undef if not called by another Net::FTPSSL method!
+   my $c = (caller(1))[3];
+   my $cb_idx = ( defined $c && $c eq "Net::FTPSSL::xtransfer" ) ? 2 : 1;
+   my $func = ( $cb_idx == 1 ) ? "transfer" : "xtransfer";
+   my $func2 = ( $cb_idx == 1 ) ? "Transfer" : "xTransfer";
+
+   $self->_print_DBG ( "+++ Starting $func2 Between Servers +++\n");
+   $dest_ftp->_print_DBG ( "--- Starting $func2 Between Servers ---\n");
+
+   # Calculate the file offset to send to the FTPS source server via REST ...
+   if ($offset == -1) {
+      $offset = $dest_ftp->size ($dest_file);
+      return (undef)  unless (defined $offset);
+   }
+
+   # -------------------------------------------------
+   # Set up the transfer destination server ... (put)
+   # -------------------------------------------------
+   return (undef)  unless ( $dest_ftp->prep_data_channel ("STOR", $dest_file) );
+   my $restart  = ($offset) ? $dest_ftp->_rest ($offset) : 1;
+   my $response = $dest_ftp->_stor ($dest_file);
+   unless ($restart && $response) {
+      $dest_ftp->_rest (0)  if ($restart && $offset);
+      return ($dest_ftp->_croak_or_return (), undef, undef, $dest_file, undef);
+   }
+   # my $put_msg = $dest_ftp->last_message ();
+   my $dio = $dest_ftp->_get_data_channel ();
+   return (undef)  unless (defined $dio);
+
+   # -------------------------------------------------
+   # Set up the transfer source server ... (get)
+   # -------------------------------------------------
+   unless ( $self->prep_data_channel( "RETR", $remote_file ) ) {
+      _my_close ($dio);
+      $dest_ftp->response ();
+      return (undef);     # Already decided not to call croak if you get here!
+   }
+   my $rest = ($offset) ? $self->_rest ($offset) : 1;
+   unless ( $rest && $self->_retr ($remote_file) ) {
+      if ( $offset && $rest ) {
+         my $msg = $self->last_message ();
+         $self->_rest (0);                  # Must clear out on failure!
+         $sArg->{last_ftp_msg} = $msg;    # Restore original error message!
+      }
+      _my_close ($dio);
+      $dest_ftp->response ();
+      return ($self->_croak_or_return ());
+   }
+
+   my $sio = $self->_get_data_channel ();
+   unless (defined $sio) {
+      _my_close ($dio);
+      $dest_ftp->response ();
+      return (undef)
+   }
+
+   my $trace_flag = $sArg->{trace};
+   print STDERR "$func() trace ."  if ($trace_flag);
+
+   my ($cnt, $total, $len) = (0, 0, 0);
+   my $data;
+   my $written;
+
+   # So simple without CR/LF transformations ...
+   while ( $len = sysread ($sio, $data, $size) ) {
+      unless ( defined $len ) {
+         next  if ( $! == EINTR );
+         _my_close ($dio);
+         $dest_ftp->response ();
+         return $self->_croak_or_return (0, "System read error on $func(): $!");
+      }
+
+      print STDERR "."  if ($trace_flag && ($cnt % TRACE_MOD) == 0);
+      ++$cnt;
+
+      $total = $self->_call_callback ($cb_idx, \$data, \$len, $total);
+
+      # Write to the destination server ...
+      if ($len > 0) {
+         $written = syswrite ($dio, $data, $len);
+         unless (defined $written) {
+            _my_close ($sio);
+            $self->response ();
+            return ($dest_ftp->_croak_or_return (0, "System write error on $func(): $!"));
+         }
+      }
+   }   # End while reading from the source server ...
+
+
+   # Process trailing "callback" info if returned.
+   my $trail;
+   ($trail, $len, $total) = $self->_end_callback ($cb_idx, $total);
+
+   # Write to the destination server ...
+   if ($trail && $len > 0) {
+      $written = syswrite ($dio, $trail, $len);
+      unless (defined $written) {
+         _my_close ($sio);
+         $self->response ();
+         return ($dest_ftp->_croak_or_return (0, "System write error on $func(): $!"));
+      }
+   }
+
+   print STDERR ". done!", $self->_fmt_num ($total) . " byte(s)\n"  if ($trace_flag);
+
+   # Lets finish off both connections ...
+   _my_close ($sio);
+   _my_close ($dio);
+   my $resp1 = $self->response ();
+   my $resp2 = $dest_ftp->response ();
+
+   if ($resp1 != CMD_OK || $resp2 != CMD_OK) {
+      return ($self->_croak_or_return ());
+   }
+
+   # Preserve the timestamp on the transfered file ...
+   if ($cb_idx == 1 && $sArg->{FixGetTs} && $dArg->{FixPutTs}) {
+      my $tm = $self->_mdtm ($remote_file);
+      $dest_ftp->_mfmt ($tm, $dest_file);
+   }
+
+   $self->_print_DBG ( "+++ $func2 Between Servers Completed +++\n");
+   $dest_ftp->_print_DBG ( "--- $func2 Between Servers Completed ---\n");
+
+   return (1);
+}
+
+sub xtransfer {
+   my $self        = shift;
+   my $dest_ftp    = shift;        # A Net::FTPSSL object.
+   my $remote_file = shift || "";
+   my $dest_file   = shift || $remote_file;
+
+   # See _get_scratch_file() for default valuies if undef!
+   my ($prefix, $postfix, $body) = (shift, shift, shift);
+
+   if ( ref($dest_ftp) eq "" || ref($dest_ftp) ne __PACKAGE__ ) {
+      return $self->_croak_or_return(0, "The destination server must be a valid Net::FTPSSL object! (" . ref($dest_ftp) . ")");
+   }
+
+   my $sArg = ${*$self}{_FTPSSL_arguments};
+   my $dArg = ${*$dest_ftp}{_FTPSSL_arguments};
+
+   if (defined $sArg->{net_ftpssl_rest_offset}) {
+      return $self->_croak_or_return (0, "Can't call restart() before xtransfer()!");
+   }
+   if (defined $dArg->{net_ftpssl_rest_offset}) {
+      return $dest_ftp->_croak_or_return (0, "Can't call restart() before xtransfer()!");
+   }
+
+   if ( $self->_isa_glob ($remote_file) ) {
+      return $self->_croak_or_return (0, "xtransfer doesn't support REMOTE_FILE being an open file handle.");
+   }
+   if ( $self->_isa_glob ($dest_file) ) {
+      return $self->_croak_or_return (0, "xtransfer doesn't support DEST_FILE being an open file handle.");
+   }
+
+   # Check if allowed on the destination server ...
+   unless ( $dest_ftp->all_supported ( "STOR", "DELE", "RNFR", "RNTO" ) ) {
+      return $dest_ftp->_croak_or_return (0, "Function xtransfer is not supported by the destination server.");
+   }
+
+   my $scratch_name = $self->_get_scratch_file ( $prefix, $body, $postfix,
+                                                 $dest_file );
+   return undef  unless ($scratch_name);
+
+   # Save the current die settings for both servers ...
+   my ($sdie, $ddie) = ($sArg->{Croak} || 0, $dArg->{Croak} || 0);
+   if ( $sdie != $ddie ) {
+      return $self->_croak_or_return (0, "xtransfer requires the Croak setting to be the same on both servers (${sdie} vs ${ddie})");
+   }
+
+   # Disable calling "die" on errors ... (save the current Croak setting again)
+   ($sdie, $ddie) = ($sArg->{Croak}, $dArg->{Croak});
+   (${*$self}{_FTPSSL_arguments}->{Croak}, ${*$dest_ftp}{_FTPSSL_arguments}->{Croak}) = (0, 0);
+
+   # Now lets send the file, we can no longer die during this process ...
+   my $resp = $self->transfer ($dest_ftp, $remote_file, $scratch_name, undef);
+
+   if ( $resp ) {
+      $dest_ftp->_xWait ();     # Some servers require a wait before moving on!
+
+      # Delete any file sitting on the server with the final name we want to use
+      # to avoid file permission issues.  Usually the file won't exist so the
+      # delete will fail ...
+      $dest_ftp->delete ( $dest_file );
+
+      # Now lets make it visible to the file recognizer ...
+      $resp = $dest_ftp->rename ( $scratch_name, $dest_file );
+
+      # Now lets update the timestamp for the file on the dest server ...
+      # It's not an error if the file recognizer grabs it before the
+      # timestamp is reset ...
+      if ($resp && $sArg->{FixGetTs} && $dArg->{FixPutTs}) {
+         my $tm = $self->_mdtm ($remote_file);
+         $dest_ftp->_mfmt ($tm, $dest_file);
+      }
+   }
+
+   # Delete the scratch file on error, but don't return this as the error msg.
+   # We want the actual error encounterd from the put or rename commands!
+   unless ($resp) {
+      my $msg1 = $dArg->{last_ftp_msg};
+      $dest_ftp->delete ( $scratch_name );
+      $dArg->{last_ftp_msg} = $msg1;
+   }
+
+   # Now allow us to die again if we must ...
+   ($sArg->{Croak}, $dArg->{Croak}) = ($sdie, $ddie);
 
    return ( $self->_test_croak ( $resp ) );
 }
@@ -1335,12 +1889,12 @@ sub _common_put {
   my $self     = shift;
   my $file_loc = shift;
   my $file_rem = shift;
-  my $offset   = shift || ${*$self}{net_ftpssl_rest_offset} || 0;
+  my $offset   = shift || ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} || 0;
 
   # Clear out this messy restart() cluge for next time ...
-  delete ( ${*$self}{net_ftpssl_rest_offset} );
+  delete ( ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} );
 
-  if ( ref($file_loc) eq "GLOB" && ! $file_rem ) {
+  if ( $self->_isa_glob ($file_loc) && ! $file_rem ) {
     return $self->_croak_or_return (0, "When you pass a stream, you must specify the remote filename.");
   }
 
@@ -1371,9 +1925,9 @@ sub _common_put {
   my ( $size, $localfd );
   my $close_file = 0;
 
-  $size = ${*$self}{buf_size} || 2048;
+  $size = ${*$self}{_FTPSSL_arguments}->{buf_size} || 2048;
 
-  if ( ref($file_loc) eq "GLOB" ) {
+  if ( $self->_isa_glob ($file_loc) ) {
     $localfd = \*$file_loc;
 
   } else {
@@ -1384,7 +1938,7 @@ sub _common_put {
   }
 
   my $fix_cr_issue = 1;
-  if ( ${*$self}{type} eq MODE_BINARY ) {
+  if ( ${*$self}{_FTPSSL_arguments}->{type} eq MODE_BINARY ) {
     unless ( binmode $localfd ) {
       return $self->_croak_or_return(0, "Can't set binary mode to local file!");
     }
@@ -1409,14 +1963,14 @@ sub _common_put {
   }
 
   # If alloc_size is already set, I skip this part
-  unless ( defined ${*$self}{alloc_size} ) {
+  unless ( defined ${*$self}{_FTPSSL_arguments}->{alloc_size} ) {
     if ( $close_file && -f $file_loc ) {
       my $size = -s $file_loc;
       $self->alloc($size);
     }
   }
 
-  delete ${*$self}{alloc_size};
+  delete ${*$self}{_FTPSSL_arguments}->{alloc_size};
 
   # Issue the correct "put" request ...
   my ($response, $restart) = (0, 1);
@@ -1454,7 +2008,8 @@ sub _common_put {
      return undef;   # Already decided not to call croak if you get here!
   }
 
-  print STDERR "$func() trace ."  if (${*$self}{trace});
+  my $trace_flag = ${*$self}{_FTPSSL_arguments}->{trace};
+  print STDERR "$func() trace ."  if ($trace_flag);
   my $cnt = 0;
   my $total = 0;
   my $len;
@@ -1477,7 +2032,7 @@ sub _common_put {
        ($offset, $len, $data) = $self->_put_offset_fix ( $offset, $len, $data );
     }
 
-    print STDERR "."  if (${*$self}{trace} && ($cnt % TRACE_MOD) == 0);
+    print STDERR "."  if ($trace_flag && ($cnt % TRACE_MOD) == 0);
     ++$cnt;
 
     if ( $len > 0 ) {
@@ -1509,12 +2064,12 @@ sub _common_put {
     }
   }
 
-  print STDERR ". done! (" . $self->_fmt_num ($total) . " byte(s))\n"  if (${*$self}{trace});
+  print STDERR ". done! (" . $self->_fmt_num ($total) . " byte(s))\n"  if ($trace_flag);
 
   my $tm;
   if ($close_file) {
      close ($localfd);
-     if ( ${*$self}{FixPutTs} ) {
+     if ( ${*$self}{_FTPSSL_arguments}->{FixPutTs} ) {
         $tm = (stat ($file_loc))[9];   # Get's the local file's timestamp!
      }
   }
@@ -1539,7 +2094,7 @@ sub alloc {
 
   if ( $self->supported ("ALLO") &&
        $self->_alloc($size) ) {
-    ${*$self}{alloc_size} = $size;
+    ${*$self}{_FTPSSL_arguments}->{alloc_size} = $size;
   }
   else {
     return 0;
@@ -1550,12 +2105,12 @@ sub alloc {
 
 sub delete {
   my $self = shift;
-  return ($self->_test_croak ($self->command("DELE", @_)->response == CMD_OK));
+  return ($self->_test_croak ($self->command("DELE", @_)->response() == CMD_OK));
 }
 
 sub auth {
   my $self = shift;
-  return ($self->_test_croak ($self->command("AUTH", "TLS")->response == CMD_OK));
+  return ($self->_test_croak ($self->command("AUTH", "TLS")->response() == CMD_OK));
 }
 
 sub pwd {
@@ -1564,7 +2119,7 @@ sub pwd {
 
   $self->command("PWD")->response();
 
-  if ( ${*$self}{last_ftp_msg} =~ /\"(.*)\".*/ )
+  if ( ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} =~ /\"(.*)\".*/ )
   {
     # 257 "/<PATH>/" is current directory.
     # "Quote-doubling" convention - RFC 959, Appendix II
@@ -1578,7 +2133,7 @@ sub pwd {
 
 sub cwd {
   my $self = shift;
-  return ( $self->_test_croak ($self->command("CWD", @_)->response == CMD_OK) );
+  return ( $self->_test_croak ($self->command("CWD", @_)->response() == CMD_OK) );
 }
 
 sub noop {
@@ -1605,7 +2160,7 @@ sub mkdir {
     my $self = shift;
     my $dir = shift;
     $self->command("MKD", $dir);
-    return ( $self->_test_croak ($self->response == CMD_OK) );
+    return ( $self->_test_croak ($self->response() == CMD_OK) );
 }
 
 # TODO: Make rmdir() working with recursion.
@@ -1613,13 +2168,13 @@ sub rmdir {
     my $self = shift;
     my $dir = shift;
     $self->command("RMD", $dir);
-    return ( $self->_test_croak ($self->response == CMD_OK) );
+    return ( $self->_test_croak ($self->response() == CMD_OK) );
 }
 
 sub site {
   my $self = shift;
 
-  return ($self->_test_croak ($self->command("SITE", @_)->response == CMD_OK));
+  return ($self->_test_croak ($self->command("SITE", @_)->response() == CMD_OK));
 }
 
 # A true boolean func, should never call croak!
@@ -1629,26 +2184,30 @@ sub supported {
    my $sub_cmd = uc (shift || "");
 
    my $result = 0;        # Assume invalid FTP command
+   my $arg = ${*$self}{_FTPSSL_arguments};
 
    # It will cache the result so OK to call multiple times.
    my $help = $self->_help ();
 
    # Only finds exact matches, no abbreviations like some FTP servers allow.
-   if ( ${*$self}{OverrideHELP} || exists $help->{$cmd} ) {
+   if ( $arg->{OverrideHELP} || exists $help->{$cmd} ) {
       $result = 1;           # Was a valid FTP command
-      ${*$self}{last_ftp_msg} = "214 The $cmd command is supported.";
+      $arg->{last_ftp_msg} = "214 The $cmd command is supported.";
    } else {
-      ${*$self}{last_ftp_msg} = "502 Unknown command $cmd.";
+      $arg->{last_ftp_msg} = "502 Unknown command $cmd.";
    }
 
    # Are we validating a SITE sub-command?
    if ($result && $cmd eq "SITE" && $sub_cmd ne "") {
       my $help2 = $self->_help ($cmd);
       if ( exists $help2->{$sub_cmd} ) {
-         ${*$self}{last_ftp_msg} = "214 The $cmd sub-command $sub_cmd is supported.";
-      } else {
-         ${*$self}{last_ftp_msg} = "502 Unknown $cmd sub-command - $sub_cmd.";
+         $arg->{last_ftp_msg} = "214 The SITE sub-command $sub_cmd is supported.";
+      } elsif ( scalar (keys %{$help2}) > 0 ) {
+         $arg->{last_ftp_msg} = "502 Unknown SITE sub-command - $sub_cmd.";
          $result = 0;     # It failed after all!
+      } else {
+         $arg->{last_ftp_msg} = "503 Can't validate SITE sub-commands - $sub_cmd.";
+         $result = -1;    # Maybe/mabye not supported!
       }
    }
 
@@ -1656,24 +2215,94 @@ sub supported {
    if ($result && $cmd eq "FEAT" && $sub_cmd ne "") {
       my $feat2 = $self->_feat ();
       if ( exists $feat2->{$sub_cmd} ) {
-         ${*$self}{last_ftp_msg} = "214 The $cmd sub-command $sub_cmd is supported.";
+         $arg->{last_ftp_msg} = "214 The FEAT sub-command $sub_cmd is supported.";
+         if ( exists $feat2->{OPTS} && exists $feat2->{OPTS}->{$sub_cmd} ) {
+            $arg->{last_ftp_msg} .= "  And its behaviour may be modified by OPTS.";
+         }
       } else {
-         ${*$self}{last_ftp_msg} = "502 Unknown $cmd sub-command - $sub_cmd.";
+         $arg->{last_ftp_msg} = "502 Unknown FEAT sub-command - $sub_cmd.";
          $result = 0;     # It failed after all!
       }
    }
 
-   $self->_print_DBG ( "<<+ " . ${*$self}{last_ftp_msg} . "\n" );
+   # Are we validating a OPTS sub-command?
+   if ($result && $cmd eq "OPTS" && $sub_cmd ne "") {
+      my $feat3 = $self->_feat ();
+      if ( exists $feat3->{OPTS} && exists $feat3->{OPTS}->{$sub_cmd} ) {
+         $arg->{last_ftp_msg} = "214 The FEAT sub-command $sub_cmd may be modified by the OPTS command.";
+      } elsif ( exists $feat3->{sub_cmd} ) {
+         $arg->{last_ftp_msg} = "504 The FEAT sub-command $sub_cmd may not be modified by the OPTS command.";
+      } else {
+         $arg->{last_ftp_msg} = "505 The FEAT sub-command $sub_cmd doesn't exist and so can't be modified by the OPTS command.";
+      }
+   }
+
+   $self->_print_DBG ( "<<+ ", $self->last_message (), "\n" );
 
    return ($result);
 }
 
+
+# A true boolean func, should never call croak!
+sub all_supported {
+   my $self = shift;
+   # Leave the rest of the options on the @_ array ...
+
+   my $cnt = 0;
+   foreach ( @_ ) {
+      next   unless (defined $_ && $_ ne "");
+      ++$cnt;
+      next   if ($self->supported ($_));
+      return (0);    # Something wasn't supported!
+   }
+
+   return ( ($cnt >= 1) ? 1 : 0 );
+}
+
+
+# Hacks the _help() cache, otherwise can't modify the supported logic!
+sub fix_supported {
+   my $self = shift;
+   my $mode = shift;  # True Add/False Remove
+   # Leave the rest of the options on the @_ array ...
+
+   # Can't update supported() if using OverrideHELP => 1. (Everything supported)
+   return (0)  if ( ${*$self}{_FTPSSL_arguments}->{OverrideHELP} );
+
+   # Holds the real cached help values ...
+   my $help = ${*$self}{_FTPSSL_arguments}->{help_cmds_found};
+   return (0)  unless ( defined $help );
+
+   # Flag to tell if you can add/remove the HELP command from supported!
+   my $help_flag = ( exists ${*$self}{_FTPSSL_arguments}->{OverrideHELP} ||
+                     exists ${*$self}{_FTPSSL_arguments}->{removeHELP} );
+
+   my $cnt = 0;
+   foreach ( @_ ) {
+      my $key = uc ($_);
+
+      next  if ( $key eq "HELP" && $help_flag );
+
+      if ( $mode && ! exists $help->{$key} ) {
+         $help->{$key} = 3;      # Add the command as supported.
+         ++$cnt;
+
+      } elsif ( ! $mode && exists $help->{$key} ) {
+         delete $help->{$key};   # Remove the command as supported.
+         ++$cnt;
+      }
+   }
+
+   return ( $cnt );
+}
+
+
 # The Clear Command Channel func is only valid after login.
 sub ccc {
    my $self = shift;
-   my $prot = shift || ${*$self}{data_prot};
+   my $prot = shift || ${*$self}{_FTPSSL_arguments}->{data_prot};
 
-   if ( ${*$self}{Crypt} eq CLR_CRYPT ) {
+   if ( ${*$self}{_FTPSSL_arguments}->{Crypt} eq CLR_CRYPT ) {
       return $self->_croak_or_return (undef, "Command Channel already clear!");
    }
 
@@ -1685,13 +2314,16 @@ sub ccc {
 
    # Do before the CCC command so we know which command is available to clear
    # out the command channel with.  All servers should support one or the other.
+   # We also want commands that return just one line!  [To make it less likely
+   # that the hack will cause response() to hang or get out of sync when
+   # unrecognizable junk is returned for the hack.]
    my $ccc_fix_cmd = $self->supported ("NOOP") ? "NOOP" : "PWD";
 
    # Request that just the commnad channel go clear ...
    unless ( $self->command ("CCC")->response () == CMD_OK ) {
       return $self->_croak_or_return ();
    }
-   ${*$self}{Crypt} = CLR_CRYPT;
+   ${*$self}{_FTPSSL_arguments}->{Crypt} = CLR_CRYPT;
 
    # Save before stop_SSL() removes the bless.
    my $bless_type = ref ($self);
@@ -1700,7 +2332,7 @@ sub ccc {
    # Stop SSL, but leave the socket open!
    # Converts $self to IO::Socket::INET object instead of Net::FTPSSL
    # NOTE: SSL_no_shutdown => 1 doesn't work on some boxes, and when 0,
-   #       it hangs on others without the SSL_fast_shutdown => 1 cmd.
+   #       it hangs on others without the SSL_fast_shutdown => 1 option.
    # -------------------------------------------------------------------------
    unless ( $self->stop_SSL ( SSL_no_shutdown => 0, SSL_fast_shutdown => 1 ) ) {
       return $self->_croak_or_return (undef, "Command Channel downgrade failed!");
@@ -1711,22 +2343,22 @@ sub ccc {
    ${*$self}{_SSL_opened} = 0;      # To get rid of warning on quit ...
 
    # -------------------------------------------------------------------------
-   # This is a hack, but seems to resolve the command channel corruption
-   # problem where 1st command or two afer CCC may fail or look strange ...
+   # This is a hack, but it seems to resolve the command channel corruption
+   # problem where the 1st command or two afer CCC may fail or look strange ...
    # I've even caught it a few times sending back 2 independant OK responses
    # to a single command!
-   # -------------------------------------------------------------------------
+   # ------------------------------------------------------------------------
    my $ok = CMD_ERROR;
-   foreach ( 1...3 ) {
-      $ok = $self->command ($ccc_fix_cmd)->response ();
-      last  if ( $ok == CMD_OK );
+   foreach ( 1..4 ) {
+      $ok = $self->command ($ccc_fix_cmd)->response (1);   # This "1" is a hack!
+      last  if ( $ok eq CMD_OK );   # Do char compare since not always a number.
    }
 
    if ( $ok == CMD_OK ) {
       # Complete the hack, now force a failure response!
       # And if the server was still confused ?
       # Keep asking for responses until we get our error!
-      $self->command ("xxxx");
+      $self->command ("xxxxNOOP");
       while ( $self->response () == CMD_OK ) {
          my $tmp = CMD_ERROR;   # A no-op command for loop body ...
       }
@@ -1739,16 +2371,18 @@ sub ccc {
 }
 
 
-# Allow the user to send a FTP command directly, BE CAREFUL !!
+#-----------------------------------------------------------------------
+# Allow the user to send a random FTP command directly, BE CAREFUL !!
 # Since doing unsupported stuff, we can never call croak!
-# Also not all unsupported stuff will show up in supported().
-
+# Also not all unsupported stuff will show up via supported().
+# So all we can do is try to prevent commands known to have side affects.
+#-----------------------------------------------------------------------
 sub quot {
    my $self = shift;
    my $cmd  = shift;
 
    # Format the command for testing ...
-   my $cmd2 = uc ($cmd || "");
+   my $cmd2 = (defined $cmd) ? uc ($cmd) : "";
    $cmd2 = $1  if ( $cmd2 =~ m/^\s*(\S+)(\s|$)/ );
 
    my $msg = "";   # Assume all is OK ...
@@ -1756,7 +2390,8 @@ sub quot {
    # The following FTP commands are known to open a data channel
    if ( $cmd2 eq "STOR" || $cmd2 eq "RETR" ||
         $cmd2 eq "NLST" || $cmd2 eq "LIST" ||
-        $cmd2 eq "STOU" || $cmd2 eq "APPE" ) {
+        $cmd2 eq "STOU" || $cmd2 eq "APPE" ||
+        $cmd2 eq "MLSD" ) {
       $msg = "x23 Data Connections are not supported via quot().  [$cmd2]";
 
    } elsif ( $cmd2 eq "CCC" ) {
@@ -1764,12 +2399,24 @@ sub quot {
 
    } elsif ( $cmd2 eq "" ) {
       $msg = "x21 Where is the needed command?";
+      $cmd = "";    # Making sure it isn't undefined.
+
+   } elsif ( $cmd2 eq "HELP" &&
+              ( exists ${*$self}{_FTPSSL_arguments}->{OverrideHELP} ||
+                exists ${*$self}{_FTPSSL_arguments}->{removeHELP} ) ) {
+      $msg = "x20 Why did you try to call HELP after you overrode all calls to it?";
+
+   } else {
+      # Strip off leading spaces, some servers choak on them!
+      $cmd =~ s/^\s+//;
    }
 
    if ( $msg ne "" ) {
-      ${*$self}{last_ftp_msg} = $msg;
-      substr (${*$self}{last_ftp_msg}, 0, 1) = CMD_REJECT;
-      $self->_print_DBG ( "<<+ " . ${*$self}{last_ftp_msg} . "\n" );
+      my $cmd_str = join (" ", $cmd, @_);
+      ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $msg;
+      $self->_change_status_code (CMD_REJECT);
+      $self->_print_DBG ( ">>+ ", $cmd_str, "\n" );
+      $self->_print_DBG ( "<<+ ", $self->last_message (), "\n" );
       return (CMD_REJECT);
    }
 
@@ -1782,19 +2429,44 @@ sub quot {
 
 sub ascii {
   my $self = shift;
-  ${*$self}{type} = MODE_ASCII;
+  ${*$self}{_FTPSSL_arguments}->{type} = MODE_ASCII;
   return $self->_test_croak ($self->_type(MODE_ASCII));
 }
 
 sub binary {
   my $self = shift;
-  ${*$self}{type} = MODE_BINARY;
+  ${*$self}{_FTPSSL_arguments}->{type} = MODE_BINARY;
+  return $self->_test_croak ($self->_type(MODE_BINARY));
+}
+
+# Server thinks it's ASCII & Client thinks it's BINARY
+sub mixedModeAI {
+  my $self = shift;
+  ${*$self}{_FTPSSL_arguments}->{type} = MODE_BINARY;
+  return $self->_test_croak ($self->_type(MODE_ASCII));
+}
+
+# Server thinks it's BINARY & Client thinks it's ASCII
+sub mixedModeIA {
+  my $self = shift;
+  ${*$self}{_FTPSSL_arguments}->{type} = MODE_ASCII;
   return $self->_test_croak ($self->_type(MODE_BINARY));
 }
 
 #-----------------------------------------------------------------------
 #  Internal functions
 #-----------------------------------------------------------------------
+
+sub _xWait {
+  my $self = shift;
+
+  my $slp = ${*$self}{_FTPSSL_arguments}->{xWait};
+
+  if ( $slp ) {
+     $self->_print_DBG ("---- ", "Sleeping ${slp} second(s)\n");
+     sleep ( $slp );
+  }
+}
 
 sub _user {
   my $self = shift;
@@ -1815,14 +2487,14 @@ sub _quit {
 
 sub _prot {
   my $self = shift;
-  my $opt = shift || ${*$self}{data_prot};
+  my $opt = shift || ${*$self}{_FTPSSL_arguments}->{data_prot};
 
   # C, S, E or P.
   my $resp = ( $self->command ( "PROT", $opt )->response () == CMD_OK );
 
   # Check if someone changed the data channel protection mode ...
-  if ($resp && $opt ne ${*$self}{data_prot}) {
-    ${*$self}{data_prot} = $opt;   # They did change it!
+  if ($resp && $opt ne ${*$self}{_FTPSSL_arguments}->{data_prot}) {
+    ${*$self}{_FTPSSL_arguments}->{data_prot} = $opt;   # They did change it!
   }
 
   return ( $resp );
@@ -1876,7 +2548,21 @@ sub _appe {
 
 sub _stou {
   my $self = shift;
-  return ( $self->command ( "STOU", @_ )->response () == CMD_INFO );
+
+  # Works for most non-windows FTPS servers ...
+  ${*$self}{_FTPSSL_arguments}->{uput} = 0;   # Conditionally uses scratch name.
+  my $res = $self->command ( "STOU", @_ )->response ();
+  return ( 1 ) if ( $res == CMD_INFO );
+
+  # Some windows servers won't allow any arguments ...
+  # They always use a scratch name!  (But don't always return what it is.)
+  my $msg = $self->last_message ();
+  if ( $res == CMD_ERROR && $msg =~ m/Invalid number of parameters/ ) {
+     ${*$self}{_FTPSSL_arguments}->{uput} = 1;   # Will always use scratch name.
+     $res = $self->command ( "STOU" )->response ();
+  }
+
+  return ( $res == CMD_INFO );
 }
 
 sub _abort {
@@ -1905,18 +2591,74 @@ sub mfmt {
   return ( $self->_test_croak ($self->response () == CMD_OK) );
 }
 
+# Uses the PreserveTimestamp kludge!
+# If not preserving timestamps, assumes GMT!
 sub _mfmt {
   my $self = shift;
-  my $timestamp = shift;  # (stat ($loc_file))[9] - The local file's timestamp!
+  my $timestamp = shift;    # (stat ($loc_file))[9] - The local file's timestamp!
+  my $remote_file = shift;
+  my $local = shift;        # True Local / False GMT / Undef use PreserveTimestamp
+
+  # Asks if the FTPS server is using GMT or Local time for the returned timestamp.
+  my $GMT_flag = 1;         # Assume GMT ...
+  if ( defined $local ) {
+     $GMT_flag = $local ? 0 : 1;    # Override PreserveTimestamp option ...
+  } elsif ( ${*$self}{_FTPSSL_arguments}->{FixPutTs} < 0 ) {
+     $GMT_flag = 0;                 # PreserveTimestamp said to use Local Time ...
+  }
 
   # Convert it into YYYYMMDDHHMMSS format (GM Time) [ gmtime() vs localtime() ]
-  my ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst) =
+  my ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst);
+
+  if ( $GMT_flag ) {
+     # Use GMT Time  [ gmtime() vs localtime() ]
+     ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst) =
                   gmtime ( $timestamp );
+  } else {
+     # Use Local Time  [ gmtime() vs localtime() ]
+     ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst) =
+                  localtime ( $timestamp );
+  }
 
   my $time = sprintf ("%04d%02d%02d%02d%02d%02d",
                       $yr + 1900, $mon + 1, $day, $hr, $min, $sec);
 
-  return ( $self->command ( "MFMT", $time, @_ )->response () == CMD_OK );
+  # Upload the file's new timestamp ...
+  return ( $self->command ( "MFMT", $time, $remote_file )->response () == CMD_OK );
+}
+
+
+# Parses the remote FTPS server's response for the file's timestamp!
+# Now in a separate function due to server bug reported by Net::FTP!
+# Returns:  undef or the timestamp in YYYYMMDDHHMMSS (len 14) format!
+sub _internal_mdtm_parse {
+  my $self = shift;
+
+  # Get the message returned by the FTPS server for the MDTM command ...
+  my $msg = ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
+
+  my $gmt_time_str;
+
+  # Check for the expected timestamp format ...
+  if ( $msg =~ m/(^|\D)(\d{14})($|\D)/ ) {
+     $gmt_time_str = $2;   # The timestamp on the remote server: YYYYMMDDHHMMSS.
+
+  # According to Net::FTP, some idiotic FTP server bug used
+  # ("19%d", tm.tm_year") instead of ("%d", tm.tm_year+1900)
+  # to format the year.  So converting it into the expected format!
+  # This way this bug isn't propagated outside this function!
+  # Fix doesn't work for dates before 1-1-1910, which should never happen!
+  } elsif ( $msg =~ m/(^|\D)19(\d{3})(\d{10})($|\D)/ ) {
+     my ( $yr, $rest ) = ( $2, $3 );
+
+     # The corrected date ...
+     $gmt_time_str = sprintf ("%04d%s", 1900 + $yr, $rest);
+
+     $self->_print_DBG ("---- ", "Bad Year: 19${yr}${rest}!  ",
+                        "Converting to ${gmt_time_str}\n");
+  }
+
+  return ( $gmt_time_str );
 }
 
 sub mdtm {
@@ -1924,31 +2666,47 @@ sub mdtm {
 
   my $gmt_time_str;
 
-  $self->command( "MDTM", @_ );
-
-  if ( $self->response () == CMD_OK &&
-       ${*$self}{last_ftp_msg} =~ m/(^|\D)(\d{14})($|\D)/ ) {
-    $gmt_time_str = $2;   # The timestamp on the remote server: YYYYMMDDHHMMSS.
+  if ( $self->command( "MDTM", @_ )-> response () == CMD_OK ) {
+     $gmt_time_str = $self->_internal_mdtm_parse ();
   }
 
   return ( $self->_test_croak ($gmt_time_str) );  # In GMT time ...
 }
 
+# Uses the PreserveTimestamp kludge!
+# If not preserving timestamps, assumes GMT!
 sub _mdtm {
   my $self = shift;
+  my $remote_file = shift;
+  my $local = shift;        # True Local / False GMT / Undef use PreserveTimestamp
 
-  my $timestamp;
+  my $timestamp;            # The return value ...
 
-  if ( $self->command ("MDTM", @_)->response () == CMD_OK &&
-       ${*$self}{last_ftp_msg} =~ m/(^|\D)(\d{14})($|\D)/ ) {
-    my $time_str = $2;    # The timestamp on the remote server: YYYYMMDDHHMMSS.
+  # Asks if the FTPS server is using GMT or Local time for the returned timestamp.
+  my $GMT_flag = 1;         # Assume GMT ...
+  if ( defined $local ) {
+     $GMT_flag = $local ? 0 : 1;    # Override PreserveTimestamp option ...
+  } elsif ( ${*$self}{_FTPSSL_arguments}->{FixGetTs} < 0 ) {
+     $GMT_flag = 0;                 # PreserveTimestamp said to use Local Time ...
+  }
 
-    # Now convert it into the internal format used by Perl ...
-    $time_str =~ m/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/;
-    my ($yr, $mon, $day, $hr, $min, $sec) = ($1 - 1900, $2 - 1, $3, $4, $5, $6);
+  # Collect the timestamp from the FTPS server ...
+  if ( $self->command ("MDTM", $remote_file)->response () == CMD_OK ) {
+     my $time_str = $self->_internal_mdtm_parse ();
 
-    # Use GMT Time  [ timegm() vs timelocal() ]
-    $timestamp = timegm ( $sec, $min, $hr, $day, $mon, $yr );
+     # Now convert it into the internal format used by Perl ...
+     if ( defined $time_str &&
+          $time_str =~ m/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/ ) {
+        my ($yr, $mon, $day, $hr, $min, $sec) = ($1, $2, $3, $4, $5, $6);
+
+        if ( $GMT_flag ) {
+           # Use GMT Time  [ timegm() vs timelocal() ]
+           $timestamp = timegm ( $sec, $min, $hr, $day, $mon - 1, $yr - 1900 );
+        } else {
+           # Use Local Time  [ timegm() vs timelocal() ]
+           $timestamp = timelocal ( $sec, $min, $hr, $day, $mon - 1, $yr - 1900 );
+        }
+     }
   }
 
   return ( $timestamp );
@@ -1956,17 +2714,194 @@ sub _mdtm {
 
 sub size {
   my $self = shift;
+  my $file = shift;
 
-  if ( $self->command ("SIZE", @_)->response () == CMD_OK &&
-       ${*$self}{last_ftp_msg} =~ m/\d+\s+(\d+)($|\D)/ ) {
-        return ( $1 );   # The size in bytes!  May be zero!
+  if ( $self->supported ("SIZE") ) {
+     if ( $self->command ("SIZE", $file, @_)->response () == CMD_OK &&
+          $self->message () =~ m/\d+\s+(\d+)($|\D)/ ) {
+        return ( $1 );      # The size in bytes!  May be zero!
+     }
+
+  # Note: If $file is in fact a directory, STAT will return the directory's
+  # contents!  Which can be very slow if there are tons of files in the dir!
+  } elsif ( $self->supported ("STAT") ) {
+     if ( $self->command ("STAT", $file, @_)->response () == CMD_OK ) {
+        my @msg = split ("\n", $self->message ());
+        my $cnt = @msg;
+        my $rFile = $self->_mask_regex_chars ( basename ($file) );
+
+        # ... Size Filename
+        if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+${rFile}/ ) {
+           return ( $1 );     # The size in bytes!  May be zero!
+        }
+        # ... Size Month Day HH:MM Filename
+        if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+(\S+)\s+(\d+)\s+(\d+:\d+)\s+${rFile}/ ) {
+           return ( $1 );     # The size in bytes!  May be zero!
+        }
+     }
+
+  # Can be less accurate than the other two methods ...
+  } elsif ( $self->all_supported ("MLST", "OPTS") ) {
+     # On the todo list ...
+     # Must use "OPTS MLST SIZE" if the size fact is currently disabled.
   }
 
-  return ( $self->_test_croak (undef) );
+  return ( $self->_test_croak (undef) );   # It's not a regular file!
+}
+
+sub is_file {
+   my $self = shift;
+   my $file = shift;
+
+   # Now let's disable Croak so we can't die during this test ...
+   my $die = $self->set_croak (0);
+
+   my $size = $self->size ( $file );
+
+   $self->set_croak ( $die );              # Restore the croak settings!
+
+   if ( defined $size && $size >= 0 ) {
+      return ( 1 );    # It's a plain file!  We successfully got it's size!
+   }
+
+   return ( 0 );       # It's not a plain file or it doesn't exist!
+}
+
+sub is_dir {
+   my $self = shift;
+   my $dir  = shift;
+
+   my $isDir = 0;     # Assume not a directory ...
+
+   # The current direcory!
+   my $curDir = $self->pwd ();
+
+   # Now let's disable Croak so we can't die during this test ...
+   my $die = $self->set_croak (0);
+
+   # Check if it's a directory we have access to ...
+   if ( $self->cwd ( $dir ) ) {
+      $self->cwd ( $curDir );
+      $isDir = 1;
+
+   } else {
+      # At this point if it's really a directory, we don't have access to it.
+      # And parsing error messages really isn't an option.
+
+      # So what if we now assume it it might be a directory if "is_file()"
+      # returns false and we can see that the file does exists via "nlst()"?
+
+      # I don't really like that no-access test, too many chances for false
+      # positives, so I'm open to better ideas!  I'll leave this code disabled
+      # until I can mull this over some more.
+
+      # Currently disabled ...
+      if ( 1 != 1 ) {
+         # If it isn't a regular file, then it might yet still be a directory!
+         unless ( $self->is_file ( $dir ) ) {
+            # Now check if we can see a file of this name ...
+            my @lst = $self->nlst (dirname ($dir), basename ($dir));
+            if ( scalar (@lst) ) {
+               # It may or may not be a directory ...
+               $self->_print_DBG ("--- Found match: ", $lst[0], "\n");
+               $isDir = 1;
+            }
+         }
+      }
+   }
+
+   $self->set_croak ( $die );              # Restore the croak settings!
+
+   return ( $isDir );
+}
+
+sub copy_cc_to_dc {
+   my $self = shift;
+   my $args = (ref ($_[0]) eq "ARRAY") ? $_[0] : \@_;
+
+   my %dcValues;
+   if ( exists ${*$self}{_FTPSSL_arguments}->{myContext} ) {
+      %dcValues = %{${*$self}{_FTPSSL_arguments}->{myContext}};
+   }
+
+   my $cnt = 0;
+   foreach ( @{$args} ) {
+      my $val;
+      if ( exists ${*$self}{_SSL_arguments}->{$_} ) {
+         $val = ${*$self}{_SSL_arguments}->{$_};
+
+      } elsif ( exists ${*$self}{_FTPSSL_arguments}->{start_SSL_opts}->{$_} ) {
+         $val = ${*$self}{_FTPSSL_arguments}->{start_SSL_opts}->{$_};
+
+      } elsif ( exists ${*$self}{$_} ) {
+         $val = ${*$self}{$_};
+
+      } else {
+         $self->_print_DBG ("No such Key defined for the CC: ", $_, "\n");
+         next;
+      }
+
+      $dcValues{$_} = $val;
+      ++$cnt;
+   }
+
+   # Update with the new Data Channel options ...
+   if ( $cnt > 0 ) {
+      ${*$self}{_FTPSSL_arguments}->{myContext} = \%dcValues;
+   }
+
+   if ( ${*$self}{_FTPSSL_arguments}->{debug} ) {
+      $self->_debug_print_hash ( "DC Hash", "options", "cc2dc($cnt)", \%dcValues, "#" );
+   }
+
+   return ( $cnt );
+}
+
+sub set_dc_from_hash {
+   my $self = shift;
+   my $args = (ref ($_[0]) eq "HASH") ? $_[0] : {@_};
+
+   my %dcValues;
+   if ( exists ${*$self}{_FTPSSL_arguments}->{myContext} ) {
+      %dcValues = %{${*$self}{_FTPSSL_arguments}->{myContext}};
+   }
+
+   my $cnt = 0;
+   foreach my $key ( keys %{$args} ) {
+      my $val = $args->{$key};
+
+      if ( defined $val ) {
+         # Add the requested value to the DC hash ...
+         $dcValues{$key} = $val;
+         ++$cnt;
+
+      } elsif ( exists $dcValues{$key} ) {
+         # Delete the requested value from the DC hash ...
+         delete $dcValues{$key};
+         ++$cnt;
+      }
+   }
+
+   # Update with the new Data Channel options ...
+   if ( $cnt > 0 ) {
+      ${*$self}{_FTPSSL_arguments}->{myContext} = \%dcValues;
+   }
+
+   if ( ${*$self}{_FTPSSL_arguments}->{debug} ) {
+      $self->_debug_print_hash ( "DC Hash", "options", "setdc($cnt)", \%dcValues, "%" );
+   }
+
+   return ( $cnt );
 }
 
 #-----------------------------------------------------------------------
 #  Checks what commands are available on the remote server
+#  If a "*" follows a command, it's unimplemented!
+#  The caller is free to modify the returned hash refrence.
+#  It's just a copy of what's been cached, not the original!
+#-----------------------------------------------------------------------
+#  Please remember that when OverrideHELP=>1 is used, it will always
+#  return the empty hash!!!
 #-----------------------------------------------------------------------
 
 sub _help {
@@ -1979,121 +2914,203 @@ sub _help {
    my $site_cmd = ($cmd eq "SITE");
 
    my %help;
+   my $arg = ${*$self}{_FTPSSL_arguments};
 
    # Only possible if _help() is called before 1st call to supported()!
-   unless ( $all_cmds || exists ${*$self}{help_cmds_msg} ) {
+   unless ( $all_cmds || exists $arg->{help_cmds_msg} ) {
       $self->_help ();
    }
 
-   # Now see if we've cached the result previously ...
-   if ($all_cmds && exists ${*$self}{help_cmds_msg}) {
-      ${*$self}{last_ftp_msg} = ${*$self}{help_cmds_msg};
-      my $hlp = ${*$self}{help_cmds_found};
-      return ( (defined $hlp) ? $hlp : \%help );
+   # Use FEAT instead of HELP to populate the supported hash!
+   # Assuming the HELP command itself is broken!  "via OverrideHELP=>-1"
+   if ( exists $arg->{removeHELP} && $arg->{removeHELP} == 1 ) {
+      $arg->{help_cmds_no_syntax_available} = 1;
 
-   } elsif (exists ${*$self}{"help_${cmd}_msg"}) {
-      ${*$self}{last_ftp_msg} = ${*$self}{"help_${cmd}_msg"};
-      my $hlp = ${*$self}{"help_${cmd}_found"};
-      return ( (defined $hlp) ? $hlp : \%help );
+      my $ft = $self->_feat ();
+      $ft->{FEAT} = 2  if (scalar (keys %{$ft}) > 0);
+      foreach ( keys %{$ft} ) { $ft->{$_} = 2; }  # So always TRUE
 
-   } elsif ( exists ${*$self}{help_cmds_no_syntax_available} ) {
-      ${*$self}{last_ftp_msg} = "503 Syntax for ${cmd} is not available.";
-      # $self->_print_DBG ( "<<+ " . ${*$self}{last_ftp_msg} . "\n" );
+      $arg->{help_cmds_found} = $ft;
+      $arg->{help_cmds_msg}   = $self->last_message ();
+      $self->_site_help ( $arg->{help_cmds_found} );
+      $arg->{removeHELP} = 2;     # So won't execute again ...
+
+   # For the other supported variants to OverrideHELP!
+   } elsif ( exists $arg->{OverrideHELP} ) {
+      $arg->{help_cmds_no_syntax_available} = 1;
+   }
+
+   # Now see if we've cached any results previously ...
+   my $key;
+   if ($all_cmds && exists $arg->{help_cmds_msg}) {
+      $arg->{last_ftp_msg} = $arg->{help_cmds_msg};
+      $key = "help_cmds_found";
+      %help = %{$arg->{$key}}  if ( exists $arg->{$key} );
       return ( \%help );
-   }
 
-   if ($all_cmds) {
-      $self->command ("HELP");
-   } else {
-      $self->command ("HELP", @_);
-   }
+   } elsif (exists $arg->{"help_${cmd}_msg"}) {
+      $arg->{last_ftp_msg} = $arg->{"help_${cmd}_msg"};
+      $key = "help_${cmd}_found";
+      %help = %{$arg->{$key}}  if ( exists $arg->{$key} );
+      return ( \%help );
 
-   # Now lets see if we need to parse the result to get a hash of the
-   # supported FTP commands on the other server ...
-   if ($self->response () == CMD_OK && ($all_cmds || $site_cmd)) {
-      my $helpmsg = $self->last_message ();
-      my @lines = split (/\n/, $helpmsg);
-
-      foreach my $line (@lines) {
-         # Strip off the code & separator or leading blanks if multi line.
-         $line =~ s/(^[0-9]+[\s-]?)|(^\s+)//;
-         my $lead = $1;
-
-         next  if ($line eq "");
-
-         # Skip over the start/end part of the response ...
-         # Doesn't work for all servers!
-         # next  if ( defined $lead && $lead =~ m/^\d+[\s-]?$/ );
-
-         my @lst = split (/[\s,.]+/, $line);  # Break into individual commands
-
-         if ( $site_cmd && $lst[0] eq "SITE" && $lst[1] =~ m/^[A-Z]+$/ ) {
-            $help{$lst[1]} = 1;    # Each line: "SITE CMD mixed-case-usage"
-         }
-         # Now only process if nothing is in lower case (ie: its a comment)
-         # All commands must be in upper case, some special chars not allowed.
-         # Commands ending in "*" are currently turned off.
-         elsif ( $line !~ m/[a-z()]/ ) {
-            foreach (@lst) {
-               $help{$_} = 1   if ($_ !~ m/[*]$/);
-            }
-         }
+   } elsif ( exists $arg->{help_cmds_no_syntax_available} ) {
+      if ( exists $arg->{help_cmds_found}->{$cmd} || $arg->{OverrideHELP} ) {
+         $arg->{last_ftp_msg} = "503 Syntax for ${cmd} is not available.";
+      } else {
+         $arg->{last_ftp_msg} = "501 Unknown command ${cmd}.";
       }
+      # $self->_print_DBG ( "<<+ ", $self->last_message (), "\n" );
+      return ( \%help );    # The empty hash ...
+   }
+
+   # From here on out, we will get at least one server hit ...
+
+   my $sts;
+   if ($all_cmds) {
+      $sts = $self->command ("HELP")->response ();
+      $arg->{help_cmds_msg} = $self->last_message ();
+      $arg->{help_cmds_no_syntax_available} = 1  if ( $sts != CMD_OK );
+   } else {
+      $sts = $self->command ("HELP", @_)->response ();
+      $arg->{"help_${cmd}_msg"} = $self->last_message ();
+   }
+
+   # If failure, return empty hash ...
+   return (\%help)  if ( $sts != CMD_OK );
+
+   # Check if "HELP" & "HELP CMD" return the same thing ...
+   if ( (! $all_cmds) && $arg->{help_cmds_msg} eq $self->last_message () ) {
+      $arg->{help_cmds_no_syntax_available} = 1;
+      delete $arg->{"help_${cmd}_msg"};  # Delete this wrong message ...
+      return ( $self->_help ($cmd) );    # Recursive to get the right error msg!
+   }
+
+   # HELP ...
+   if ( $all_cmds ) {
+      %help = %{$self->_help_parse ()};
 
       # If we don't find anything, it's a problem.  So don't cache if false ...
       if (scalar (keys %help) > 0) {
-         if ($all_cmds) {
-            if ($help{FEAT}) {
-               # Add the assumed OPTS command required if FEAT is supported!
-               # Even though not all servers support OPTS as is required with FEAT.
-               $help{OPTS} = 1;       # RFC 2389
-
-               # Now put any features into the help response as well ...
-               my $feat = $self->_feat ();
-               foreach (keys %{$feat}) {
-                  $help{$_} = $feat->{$_}  unless ($help{$_});
-               }
+         if ($help{FEAT}) {
+            # Now put any features into the help response as well ...
+            my $feat = $self->_feat ();
+            foreach (keys %{$feat}) {
+               $help{$_} = 2  unless ($help{$_});
             }
-
-            ${*$self}{help_cmds_found} = \%help;
-            ${*$self}{help_cmds_msg} = $helpmsg;
-
-         } elsif ( ${*$self}{help_cmds_msg} eq $helpmsg ) {
-            # "HELP SITE" just repeated same HELP text as regular "HELP" cmd ...
-            # So can't tell what SITE sub-commands are actually supported here.
-            my %empty;
-            %help = %empty;
-
-            ${*$self}{last_ftp_msg} = ${*$self}{help_SITE_msg} =
-                            "503 Site level help is not available.";
-            $self->_print_DBG ( "<<+ " . ${*$self}{help_SITE_msg} . "\n" );
-            ${*$self}{help_cmds_no_syntax_available} = 1;
-
-         } else {
-            # We got some useful SITE sub-commands to report on.
-            ${*$self}{help_SITE_msg} = $helpmsg;
-            ${*$self}{help_SITE_found} = \%help;
          }
+
+         my %siteHelp;
+         my $msg;
+         if ($help{SITE}) {
+            # See if this returns a usage statement or a list of SITE commands!
+            %siteHelp = %{$self->_help ("SITE")};
+            $msg = $self->message () if ( $self->last_status_code() == CMD_OK );
+         }
+
+         # Do only if no SITE details yet ...
+         if (scalar (keys %siteHelp) == 0) {
+            $self->_site_help (\%help, $msg);
+         }
+
+         my %lclHelp = %help;
+         $arg->{help_cmds_found} = \%lclHelp;
       }
 
-   } elsif ($all_cmds || $site_cmd) {
-      # Got here when the "HELP" or "HELP SITE" commands failed ...
-      $cmd = "cmds"  if ($all_cmds);
-      ${*$self}{"help_${cmd}_msg"} = $self->last_message ();
+   # HELP SITE ...
+   } elsif ( $site_cmd ) {
+      %help = %{$self->_help_parse (1)};
 
+      # If we find something, it means it's returning the list of SITE commands.
+      # Some servers do this rather than returning a syntax statement.
+      if (scalar (keys %help) > 0) {
+         my %siteHelp = %help;
+         $arg->{help_SITE_found} = \%siteHelp;
+      }
+
+   # HELP some_other_command ...
    } else {
-      # All other individual "HELP xxx" commands ...
-      # (on some machines it returns cmd syntax)
-      # You can only get here by calling _help("xxx") directly in your code!
-      my $msg = $self->last_message ();
-      if ( $msg eq ${*$self}{help_cmds_msg} ) {
-         # Repeated the generic "HELP" response ...
-         ${*$self}{last_ftp_msg} = ${*$self}{"help_${cmd}_msg"} =
-                         "503 Syntax for ${cmd} is not available.";
-         ${*$self}{help_cmds_no_syntax_available} = 1;
-         $self->_print_DBG ( "<<+ " . ${*$self}{"help_${cmd}_msg"} . "\n" );
-      } else {
-         ${*$self}{"help_${cmd}_msg"} = $msg;
+      # Nothing really to do here ...
+   }
+
+   return (\%help);
+}
+
+#---------------------------------------------------------------------------
+# Try to get a list of SITE commands supported.
+#---------------------------------------------------------------------------
+sub _site_help
+{
+   my $self = shift;
+   my $help = shift;
+   my $msg  = shift;     # Optional override message.
+
+   my $arg = ${*$self}{_FTPSSL_arguments};
+
+   # Not calling site() in case Croak is turned on.
+   # It's not a fatal error if this call fails ...
+   # my $ok = $self->site ("HELP");
+   my $ok = ($self->command("SITE", "HELP")->response() == CMD_OK);
+
+   $arg->{help_SITE_msg} = $self->last_message ();
+
+   if ( $ok ) {
+      my $siteHelp = $self->_help_parse (1);
+
+      if (scalar (keys %{$siteHelp}) > 0) {
+         if ( defined $help ) {
+            $help->{SITE}  = -1  unless ( exists $help->{SITE} );
+         }
+         $siteHelp->{HELP} = -1  unless ( exists $siteHelp->{HELP} );
+         $arg->{help_SITE_found} = $siteHelp;
+
+         # Only do optional override of the cached message on success!
+         $arg->{help_SITE_msg} = $msg  if ( $msg );
+      }
+   }
+
+   return;
+}
+
+#---------------------------------------------------------------------------
+# Handles the parsing of the "HELP", "HELP SITE" & "SITE HELP" commands ...
+#---------------------------------------------------------------------------
+sub _help_parse {
+   my $self     = shift;
+   my $site_cmd = shift;
+
+   my $helpmsg = $self->last_message ();
+   my @lines = split (/\n/, $helpmsg);
+
+   my %help;
+
+   foreach my $line (@lines) {
+      # Strip off the code & separator or leading blanks if multi line.
+      $line =~ s/((^[0-9]+[\s-]?)|(^\s*))//;
+      my $lead = $1;
+
+      next  if ($line eq "");
+
+      # Skip over the start/end part of the response ...
+      # Doesn't work for all servers!
+      # next  if ( defined $lead && $lead =~ m/^\d+[\s-]?$/ );
+
+      # Make sure no space between command & the * that marks it unsupported!
+      # May be more than one hit per line ...
+      $line =~ s/(\S)\s+[*]($|\s|,)/$1*$2/g;
+
+      my @lst = split (/[\s,.]+/, $line);  # Break into individual commands
+
+      if ( $site_cmd && $lst[0] eq "SITE" && $lst[1] =~ m/^[A-Z]+$/ ) {
+         $help{$lst[1]} = 1;    # Each line: "SITE CMD mixed-case-usage"
+      }
+      # Now only process if nothing is in lower case (ie: its a comment)
+      # All commands must be in upper case, some special chars not allowed.
+      # Commands ending in "*" are currently turned off.
+      elsif ( $line !~ m/[a-z()]/ ) {
+         foreach (@lst) {
+            $help{$_} = 1   if ($_ !~ m/[*]$/);
+         }
       }
    }
 
@@ -2101,47 +3118,154 @@ sub _help {
 }
 
 #-----------------------------------------------------------------------
-# Returns the list of features supported by this server ...
+# Returns a hash of features supported by this server ...
+# It's always uses the cache after the 1st call ... this list never changes!
+# Making this a static list!
+# This is the version used internally by _help & supported!
 #-----------------------------------------------------------------------
 
 sub _feat {
    my $self = shift;
 
-   my %res;
+   my $arg = ${*$self}{_FTPSSL_arguments};
 
    # Check to see if we've cached the result previously ...
-   # Must use slightly different nameing convenion than used
-   # in _help() to avoid conflicts.
-   if (exists ${*$self}{help_FEAT_msg2}) {
-      ${*$self}{last_ftp_msg} = ${*$self}{help_FEAT_msg2};
-      my $hlp = ${*$self}{help_FEAT_found2};
-      return ( (defined $hlp) ? $hlp : \%res );
+   # Must use slightly different naming convenion than used
+   # in _help() to avoid conflicts.  [set in feat()]
+   if (exists $arg->{help_FEAT_msg2}) {
+      $arg->{last_ftp_msg} = $arg->{help_FEAT_msg2};
+      my %hlp = %{$arg->{help_FEAT_found2}};
+      return ( \%hlp );
    }
 
-   if ( $self->command ("FEAT")->response () == CMD_OK ) {
-      my @lines = split (/\n/, $self->last_message ());
+   my $res = $self->feat (1);   # Undocumented opt to disable Croak if on!
 
+   return ($res);   # Feel free to modify it if you wish!  Won't harm anything!
+}
+
+
+#-----------------------------------------------------------------------
+# Returns a hash of features supported by this server ...
+# It's conditionally cached based on the results of the 1st call to FEAT!
+# So on some servers this list will be static, while on others dynamic!
+#-----------------------------------------------------------------------
+# The FEAT command returns one line per command, with optional behaviors.
+# If the command ends in "*", the command isn't supported by FEAT!
+#   Format:  CMD [behavior]
+#-----------------------------------------------------------------------
+# If one or more commands have behaviors, then it's possible for the
+# results of the FEAT command to change based on calls to
+#    "OPTS CMD behavior"
+# So if even one command has a behavior, there will be a server hit
+# to see if the FEAT results changed.  It will also add OPTS to the hash!
+# Otherwise the results are cached!
+#-----------------------------------------------------------------------
+sub feat {
+   my $self = shift;
+   my $disable_croak = shift;    # Undocumented option in POD on purpose!
+                                 # Only used when called from _feat()!
+
+   my $arg = ${*$self}{_FTPSSL_arguments};
+
+   my %res;
+
+   # Conditionally use the cache if the server will always return a static list!
+   # It will be static if the OPTS command isn't supported!
+   if ( exists $arg->{help_FEAT_found2} &&
+        ! exists $arg->{help_FEAT_found2}->{OPTS} ) {
+      $arg->{last_ftp_msg} = $arg->{help_FEAT_msg2};
+      %res = %{$arg->{help_FEAT_found2}};
+      return ( \%res );
+   }
+
+   # Check if a request has been made to not honor HELP if in the FEAT list.
+   my $remove = "";
+   if ( $arg->{removeHELP} ) {
+      $remove = "-1";
+   } elsif ( exists $arg->{OverrideHELP} ) {
+      $remove = $arg->{OverrideHELP};
+      if ( $remove == 0 ) {
+         my @lst = keys %{$arg->{help_cmds_found}};
+         $remove = "[array]"  if ($#lst != -1);
+      }
+   }
+   my $mask = "HELP * OverrideHELP=>${remove} says to remove this command.";
+
+   # Check if a request has been made to not honor HELP if in the FEAT list.
+   if ( $remove ne "" ) {
+      $arg->{_hide_value_in_response_} = "HELP";
+      $arg->{_mask_value_in_response_} = $mask;
+   }
+
+   my $status = $self->command ("FEAT")->response ();
+
+   if ( $remove ne "" ) {
+      $arg->{last_ftp_msg} =~ s/HELP/<${mask}>/i;
+      delete $arg->{_hide_value_in_response_};
+      delete $arg->{_mask_value_in_response_};
+   }
+
+   if ( $status == CMD_OK ) {
+      my @lines = split (/\n/, $self->last_message ());
+      my %behave;
+
+      my $may_change = 0;    # Assume always returns an unchanging list ...
       foreach my $line (@lines) {
          # Strip off the code & separator or leading blanks if multi line.
-         $line =~ s/(^[0-9]+[\s-]?)|(^\s+)//;
+         $line =~ s/((^[0-9]+[\s-]?)|(^\s*))//;
          my $lead = $1;
 
          # Skip over the start/end part of the response ...
          next if ( defined $lead && $lead =~ m/^\d+[\s-]?$/ );
 
-         my @lst = split (/[\s,.]+/, $line);  # Break into individual parts
+         next if ( $line eq "" );             # Skip over all blank lines
 
-         $res{$lst[0]} = 2;    # Only 1st part is the command ...
+         my @part = split (/\s+/, $line);
+
+         # Command ends in "*" or the next part is "*" ???
+         # Used to conditionally remove the HELP cmd if necessary ...
+         # Otherwise not sure if this test ever really happens ...
+         next if ($part[0] =~ m/[*]$/ || (defined $part[1] && $part[1] eq "*"));
+
+         # The value is the rest of the command ...
+         if ( $#part == 0 ) {
+            $res{$part[0]} = "";     # No behavior defined.
+         } else {
+            # Save the behavior!
+            $behave{$part[0]} = $res{$part[0]} = (split (/\s+/, $line, 2))[1];
+            $may_change = 1;
+         }
       }
 
-      # Cache the results from this command ...
-      ${*$self}{help_FEAT_found2} = \%res;
+      if ( $may_change ) {
+         # Added per RFC 2389: It says OPTS is an assumed command if FEAT is
+         # supported.  But some servers fail to implement OPTS if there are
+         # no features it can modify.  So adding OPTS to the hash only if at
+         # least one FEAT command has a behavior string defined!
+         # If no behaviors are defined it will assume the OPTS command isn't
+         # supported after all!
+         my $msg = (exists $res{OPTS}) ? "Updating OPTS Command!"
+                                       : "Auto-adding OPTS Command!";
+         $self->_print_DBG ("<<+ ", CMD_INFO, "11 ", $msg, "\n");
+
+         # Adding hash reference to list all valid OPTS commands ...
+         $res{OPTS} = \%behave;
+      }
    }
 
-   # Cache the response from this command ...
-   ${*$self}{help_FEAT_msg2} = $self->last_message ();
+   # Only cache the results if the 1st time called!  This cache is only used by
+   # this method if OPTS is not supported!  But its always used by _feat()!
+   unless ( exists $arg->{help_FEAT_msg2} ) {
+      my %res2 = %res;
+      $arg->{help_FEAT_found2} = \%res2;
+      $arg->{help_FEAT_msg2} = $self->last_message ();
+   }
 
-   return (\%res);
+   unless ( $status == CMD_OK || $disable_croak ) {
+      $self->_croak_or_return ();
+   }
+
+   return (\%res);   # The caller is free to modify the hash if they wish!
 }
 
 #-----------------------------------------------------------------------
@@ -2153,13 +3277,13 @@ sub set_croak {
    my $self = shift;
    my $turn_on = shift;
 
-   my $res = ${*$self}{Croak} || 0;
+   my $res = ${*$self}{_FTPSSL_arguments}->{Croak} || 0;
 
    if ( defined $turn_on ) {
       if ( $turn_on ) {
-         ${*$self}{Croak} = 1;
-      } elsif ( exists ( ${*$self}{Croak} ) ) {
-         delete ( ${*$self}{Croak} );
+         ${*$self}{_FTPSSL_arguments}->{Croak} = 1;
+      } elsif ( exists ( ${*$self}{_FTPSSL_arguments}->{Croak} ) ) {
+         delete ( ${*$self}{_FTPSSL_arguments}->{Croak} );
       }
    }
 
@@ -2176,13 +3300,13 @@ sub _test_croak {
    my $true = shift;
 
    unless ( $true ) {
-      $ERRSTR = ${*$self}{last_ftp_msg};
-      if ( ${*$self}{Croak} ) {
+      $ERRSTR = ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
+      if ( ${*$self}{_FTPSSL_arguments}->{Croak} ) {
          my $c = (caller(1))[3];
          if ( defined $c && $c ne "Net::FTPSSL::login" ) {
             $self->_abort ();
             $self->quit ();
-            ${*$self}{last_ftp_msg} = $ERRSTR;
+            ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $ERRSTR;
          }
 
          croak ( $ERRSTR . "\n" );
@@ -2210,7 +3334,7 @@ sub _croak_or_return {
       my $should_we_print = shift;
       $ERRSTR = shift || "Unknown Error";
 
-      _print_LOG ( undef, "<<+ $err " . $ERRSTR . "\n" ) if ( $should_we_print );
+      _print_LOG ( undef, "<<+ $err ", $ERRSTR, "\n" ) if ( $should_we_print );
       croak ( $ERRSTR . "\n" )   if ( $should_we_die );
 
    } else {
@@ -2218,44 +3342,46 @@ sub _croak_or_return {
       my $replace_mode = shift;  # 1 - append, 0 - replace,
                                  # undef - leave last_message() unchanged
       my $msg = shift;
-      $ERRSTR = $msg || ${*$self}{last_ftp_msg};
+      $ERRSTR = $msg || ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
 
       # Do 1st so updated if caller trapped the Croak!
       if ( defined $replace_mode && uc ($msg || "") ne ""  ) {
-         if ($replace_mode && uc (${*$self}{last_ftp_msg} || "") ne "" ) {
-            ${*$self}{last_ftp_msg} .= "\n" . $err . " " . $msg;
+         if ($replace_mode && uc (${*$self}{_FTPSSL_arguments}->{last_ftp_msg} || "") ne "" ) {
+            ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} .= "\n" . $err . " " . $msg;
          } else {
-            ${*$self}{last_ftp_msg} = $err . " " . $msg;
+            ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $err . " " . $msg;
          }
       }
 
-      if ( ${*$self}{Croak} ) {
+      if ( ${*$self}{_FTPSSL_arguments}->{Croak} ) {
          my $c = (caller(1))[3] || "";
 
          # Trying to prevent infinite recursion ...
-         if ( ref($self) eq "Net::FTPSSL" &&
-                    (! exists ${*$self}{_command_failed_}) &&
-                    (! exists ${*$self}{recursion}) &&
+         # Also reseting the PIPE Signal in case catastrophic failure detected!
+         if ( ref($self) eq __PACKAGE__ &&
+                    (! exists ${*$self}{_FTPSSL_arguments}->{_command_failed_}) &&
+                    (! exists ${*$self}{_FTPSSL_arguments}->{recursion}) &&
                     $c ne "Net::FTPSSL::command" &&
                     $c ne "Net::FTPSSL::response" ) {
-            ${*$self}{recursion} = "TRUE";
-            my $tmp = ${*$self}{last_ftp_msg};
+            ${*$self}{_FTPSSL_arguments}->{recursion} = "TRUE";
+            my $tmp = ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
+            local $SIG{PIPE} = "IGNORE";   # Limits scope to just current block!
             $self->_abort ();
             $self->quit ();
-            ${*$self}{last_ftp_msg} = $tmp;
+            ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = $tmp;
          }
 
          # Only do if writing the message to the error log file ...
          if ( defined $replace_mode && uc ($msg || "") ne "" &&
-              ${*$self}{debug} == 2 ) {
-            _print_LOG ( $self, "<<+ $err " . $msg . "\n" );
+              ${*$self}{_FTPSSL_arguments}->{debug} == 2 ) {
+            _print_LOG ( $self, "<<+ $err ", $msg, "\n" );
          }
 
          croak ( $ERRSTR . "\n" );
       }
 
       # Handles both cases of writing to STDERR or the error log file ...
-      if ( defined $replace_mode && uc ($msg || "") ne "" && ${*$self}{debug} ) {
+      if ( defined $replace_mode && uc ($msg || "") ne "" && ${*$self}{_FTPSSL_arguments}->{debug} ) {
          _print_LOG ( $self, "<<+ $err " . $msg . "\n" );
       }
    }
@@ -2265,21 +3391,22 @@ sub _croak_or_return {
 
 #-----------------------------------------------------------------------
 # Messages handler
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Called by both Net::FTPSSL and IO::Socket::INET classes.
 #-----------------------------------------------------------------------
 
 sub command {
-  my $self = shift;
+  my $self = shift;  # Remaining arg(s) accessed directly.
+
   my @args;
   my $data;
 
   # Remove any previous failure ...
-  delete ( ${*$self}{_command_failed_} );
+  delete ( ${*$self}{_FTPSSL_arguments}->{_command_failed_} );
 
   # remove undef values from the list.
   # Maybe I have to find out why those undef were passed.
-  @args = grep defined($_), @_ ;
+  @args = grep ( defined($_), @_ );
 
   $data = join( " ",
                 map { /\n/
@@ -2289,14 +3416,14 @@ sub command {
               );
 
   # Log the command being executed ...
-  if ( ${*$self}{debug} ) {
-     my $prefix = ( ref($self) eq "Net::FTPSSL" ) ? ">>> " : "SKT >>> ";
+  if ( ${*$self}{_FTPSSL_arguments}->{debug} ) {
+     my $prefix = ( ref($self) eq __PACKAGE__ ) ? ">>> " : "SKT >>> ";
      if ( $data =~ m/^PASS\s/ ) {
-        _print_LOG ( $self, $prefix . "PASS *******\n" ); # Don't echo passwords
+        _print_LOG ( $self, $prefix, "PASS *******\n" ); # Don't echo passwords
      } elsif ( $data =~ m/^USER\s/ ) {
-        _print_LOG ( $self, $prefix . "USER +++++++\n" ); # Don't echo user names
+        _print_LOG ( $self, $prefix, "USER +++++++\n" ); # Don't echo user names
      } else {
-        _print_LOG ( $self, $prefix . $data . "\n" );     # Echo everything else
+        _print_LOG ( $self, $prefix, $data, "\n" );      # Echo everything else
      }
   }
 
@@ -2305,11 +3432,11 @@ sub command {
   my $len = length $data;
   my $written = syswrite( $self, $data, $len );
   unless ( defined $written ) {
-    ${*$self}{_command_failed_} = "ERROR";
+    ${*$self}{_FTPSSL_arguments}->{_command_failed_} = "ERROR";
     my $err_msg = "Can't write command on socket: $!";
     carp "$err_msg";                    # This prints a warning.
+    # Not called as an object member in case $self not a Net::FTPSSL obj.
     _my_close ($self);                  # Old way $self->close();
-    # Not called as an object member in case $self not a FTPSSL obj.
     _croak_or_return ($self, 0, $err_msg);
     return $self;  # Included here due to non-standard _croak_or_return() usage.
   }
@@ -2329,114 +3456,503 @@ sub command {
 # partial line response!  (Drat, that just happened!  See 0.20 Change notes.)
 # -----------------------------------------------------------------------------
 # Called by both Net::FTPSSL and IO::Socket::INET classes.
+# Hence using func($self, ...) instead of $self->func(...)
 # -----------------------------------------------------------------------------
 # Returns a single digit response code! (The CMD_* constants!)
 # -----------------------------------------------------------------------------
 sub response {
-  my $self = shift;
+  my $self     = shift;
+  my $ccc_mess = shift || 0;  # Only set by the CCC command!  Hangs if not used.
+
+  # The buffer size to use during the sysread() call on the command channel.
+  my $buffer_size = 4096;
+
+  # Uncomment to experiment with variable buffer sizes.
+  # Very usefull in debugging _response_details () & simulating server issues.
+  # Supports any value >= 1.
+  # $buffer_size = 10;
+
+  # The warning to use when printing past the end of the current response!
+  # Used in place of $prefix in certain conditions.
+  my $warn = "Warning: Attempted to read past end of response! ";
 
   # Only continue if the command() call worked!
   # Otherwise on failure this method will hang!
   # We already printed out the failure message in command() if not croaking!
-  return (CMD_ERROR)  if ( exists ${*$self}{_command_failed_} );
+  return (CMD_ERROR)  if ( exists ${*$self}{_FTPSSL_arguments}->{_command_failed_} );
 
-  ${*$self}{last_ftp_msg} = "";   # Clear out the message
-  my $prefix = ( ref($self) eq "Net::FTPSSL" ) ? "<<< " : "SKT <<< ";
+  ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = "";   # Clear out the message
+  my $prefix = ( ref($self) eq __PACKAGE__ ) ? "<<< " : "SKT <<< ";
 
-  my ( $data, $code, $sep, $desc ) = ( "", CMD_ERROR, "-", "" );
+  my $timeout = ${*$self}{_FTPSSL_arguments}->{Timeout};
 
-  while ($sep eq "-") {
-     if ( exists ${*$self}{next_ftp_msg} ) {
-        # The previous call to response() left behind some unprocessed data.
-        # So lets use the left over data instead of calling sysread().
-        $data = ${*$self}{next_ftp_msg};
-        delete ( ${*$self}{next_ftp_msg} );   # No more left over data!
-     } else {
-        # Now lets read the response from the command channel.
-        my $read = sysread( $self, $data, 4096);
-        unless( $read ) {
-          # Not called as an object member in case $self not a FTPSSL obj.
-          _croak_or_return ($self, 0, (defined $read)
-                                ? "Can't read command channel socket: $!"
-                                : "Unexpected EOF on command channel socket: $!");
-          return (CMD_ERROR);
-        }
+  my $sep = ( ${*$self}{_FTPSSL_arguments}->{debug} && ${*$self}{_FTPSSL_arguments}->{debug_extra} ) ? "===============" : undef;
+
+  # Starting a new message ...
+  ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} = "";
+  my $data = "";
+  my ($done, $complete) = (0, 1);
+
+  # Check if we need to process anything read in past the previous command.
+  # Hopefully under normal conditions we'll find nothing to process.
+  if ( exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) {
+     _print_LOG ( $self, "Info: Response found from previous read ...\n")  if ( ${*$self}{_FTPSSL_arguments}->{debug} );
+     $data = ${*$self}{_FTPSSL_arguments}->{next_ftp_msg};
+     delete ( ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} );
+     ($done, $complete) = _response_details ($self, $prefix, \$data, 0, $ccc_mess);
+     if ( $done && $complete ) {
+        _print_edited_response ( $self, $prefix, ${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, $sep, 0 );
+        _print_edited_response ( $self, $warn, ${*$self}{_FTPSSL_arguments}->{next_ftp_msg}, $sep, 2 );
+        return last_status_code ( $self );
      }
 
-     # Now lets process the response messages we've read in.  See the comments
-     # above this function on why this code is such a mess.
-     my @lines = split( "\015\012", $data );
-     my $done = 0;
-     my $remember = 0;
-
-     foreach my $line ( @lines ) {
-       if ( $remember ) {
-          # Continuing to save the next response for next time ...
-          _print_LOG ( $self, "Saving rest of the next response! ($line)\n" )  if ( ${*$self}{debug} );
-          ${*$self}{next_ftp_msg} .= "\015\012" . $line;
-          next;
-       }
-
-       if ( $done ) {
-          # We read past the end of the current response into the next one ...
-          _print_LOG ( $self, "Attempted to read past end of response! ($line)\n" )  if ( ${*$self}{debug} );
-          ${*$self}{next_ftp_msg} = $line;
-          $remember = 1;
-          next;
-       }
-
-       # Check if the response is complete ...
-       if ( $line =~ m/^(\d+)([-\s]?)(.*)$/s ) {
-          ($code, $sep, $desc) = ($1, $2, $3);
-
-          # Fix for bug # 73115 ...
-          $sep = "-"  if (length ($code) < 3 && $sep eq "" and $desc eq "");
-       }
-
-       # Save the unedited message ...
-       ${*$self}{last_ftp_msg} .= $line;
-
-       if (${*$self}{debug}) {
-          # Do we need to hide a value in the logged response ???
-          if ( exists ${*$self}{_hide_value_in_response_} ) {
-            my $val = _mask_regex_chars ($self, ${*$self}{_hide_value_in_response_});
-            my $mask = ${*$self}{_mask_value_in_response_} || "????";
-            $line =~ s/$val/<$mask>/g;
-          }
-
-          _print_LOG ( $self, $prefix . $line . "\n" );
-       }
-
-       if ( $sep eq '-' ) {
-          ${*$self}{last_ftp_msg} .= "\n";       # Restore the internal <CR>.
-       } else {
-          $done = 1;            # The response is complete now.
-       }
-     }    # End for $line loop
-  }       # End while $sep loop
-
-  if (${*$self}{EmulateBug}) {
-     # So I can test out the rest of the code by inserting random "\n" into
-     # the response.  Bug # 73115 did this for the code above, but I also
-     # needed to debug the rest of the class when this happened, and I don't
-     # have a server that does this.
-     my $tmp = "." x ${*$self}{EmulateBug};
-     ${*$self}{last_ftp_msg} =~ s/^($tmp)/$1\n/;
-     if ( ${*$self}{debug} ) {
-        $tmp = substr( ${*$self}{last_ftp_msg}, 0, 1 );
-        _print_LOG ( $self, "(start-bug-fix-start-bug-fix)\n" );
-        _print_LOG ( $self, ${*$self}{last_ftp_msg} );
-        _print_LOG ( $self, "\n========== ($tmp) ===========\n" );
-     }
+     # Should never happen, but using very short timeout on continued commands.
+     $timeout = 2;
   }
 
+  # Check if there is data still pending on the command channel ...
+  my $rin = "";
+  vec ($rin, fileno($self), 1) = 1;
+  my $res = select ( $rin, undef, undef, $timeout );
+  if ( $res > 0 ) {
+     # Now lets read the response from the command channel itself.
+     my $cnt = 0;
+     while ( sysread( $self, $data, $buffer_size ) ) {
+        ($done, $complete) = _response_details ($self, $prefix, \$data, $done, $ccc_mess);
+        ++$cnt;
+        last  if ($done && $complete);
+     }
+
+     # Check for errors ...
+     if ( $done && $complete ) {
+        # A no-op to protect against random setting of "$!" on no real error!
+        my $nothing = "";
+
+     } elsif ( $cnt == 0 || $! ne "" ) {
+        if ($cnt > 0) {
+          # Will put brackes arround the error reponse!
+          _print_edited_response ( $self, $prefix, ${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, $sep, 1 );
+          _print_edited_response ( $self, $warn, ${*$self}{_FTPSSL_arguments}->{next_ftp_msg}, $sep, 2 );
+        }
+        _croak_or_return ($self, 0, "Unexpected EOF on Command Channel [$cnt] ($done, $complete) ($!)");
+        return (CMD_ERROR);
+     }
+
+  } elsif ( ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} ne "" ) {
+     # A Timeout here is OK, it meant the previous command was complete.
+     my $nothing = "";
+
+  } else {
+     # Will put brackes arround the error reponse!
+     _print_edited_response ( $self, $prefix, ${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, $sep, 1 );
+     _print_edited_response ( $self, $warn, ${*$self}{_FTPSSL_arguments}->{next_ftp_msg}, $sep, 2 );
+     _croak_or_return ($self, 0, "Timed out waiting for a response! [$res] ($!)");
+     return (CMD_ERROR);
+  }
+
+  # Now print out the final patched together responses ...
+  _print_edited_response ( $self, $prefix, ${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, $sep, 0 );
+  _print_edited_response ( $self, $warn, ${*$self}{_FTPSSL_arguments}->{next_ftp_msg}, $sep, 2 );
+
   # Returns the 1st digit of the 3 digit status code!
-  return substr( ${*$self}{last_ftp_msg}, 0, 1 );
+  return last_status_code ( $self );
 }
+
+#-----------------------------------------------------------------------
+# Mask sensitive information before it's written to the log file.
+# Separated out since done in multiple places.
+#-----------------------------------------------------------------------
+sub _print_edited_response {
+   my $self    = shift;
+   my $prefix  = shift;   # "<<< " vs "SKT <<< ".
+   my $msg     = shift;   # The response to print.  (may be undef)
+   my $sep     = shift;   # An optional separator string.
+   my $bracket = shift;   # 0 or 1 or 2.
+
+   # Tells which separator to use to break up lines in $msg!
+   my $breakStr = ($bracket == 2) ? "\015\012" : "\n";
+
+   # A safety check to simplify when calling with undefined {next_ftp_msg}.
+   unless (defined $msg) {
+      return;
+   }
+
+   if ( ${*$self}{_FTPSSL_arguments}->{debug} ) {
+      # Do we need to hide a value in the logged response ???
+      if ( exists ${*$self}{_FTPSSL_arguments}->{_hide_value_in_response_} ) {
+         my $val = _mask_regex_chars ($self, ${*$self}{_FTPSSL_arguments}->{_hide_value_in_response_});
+         my $mask = ${*$self}{_FTPSSL_arguments}->{_mask_value_in_response_} || "????";
+         $msg =~ s/\s${val}($|[\s.!,])/ <$mask>${1}/g;
+      }
+
+      if ($bracket) {
+         $msg = $prefix . "[" . join ("]\n${prefix}[", split ($breakStr, $msg)) . "]";
+      } else {
+         $msg = $prefix . join ("\n$prefix", split ($breakStr, $msg));
+      }
+
+      if ( defined $sep && $sep !~ m/^\s*$/ ) {
+         $msg = "Start: " . $sep . "\n" . $msg . "\nEnd::: " . $sep;
+      }
+      _print_LOG ( $self, $msg, "\n");
+   }
+
+   return;
+}
+
+#-----------------------------------------------------------------------
+# Broken out from response() in order to simplify the logic.
+# The previous version was getting way too convoluted to support.
+# Any bugs in this function easily causes things to hang or insert
+# random <CR> into the returned messages!
+#-----------------------------------------------------------------------
+# If you need to turn on the logging for this method use "Debug => 99"
+# in the constructor!
+#-----------------------------------------------------------------------
+# What a line should look like
+#    <code>-<desc>   ---  Continuation line(s) [repeateable]
+#    <code> <desc>   ---  Response completed line
+#    Anything else means it's a Continuation line with embedded <CR>'s.
+#    I think its safe to say the response completed line dosn't have
+#    any extra <CR>'s embeded in it.  Otherwise it's kind of difficult
+#    to know when to stop reading from the socket & risk hangs.
+#-----------------------------------------------------------------------
+# But what I actually saw in many cases: (list not complete)
+#     2
+#     13-First Line
+#     213
+#     -Second Line
+#     213-
+#     Third Line
+#     213-Fourth
+#      Line
+# Turns out sysread() isn't generous.  It returns as little as possible
+# sometimes.  Even when there is plenty of space left in the buffer.
+# Hence the strange behaviour above.  But once all the pieces are put
+# together properly, you see what you expected in the 1st place.
+#-----------------------------------------------------------------------
+# Returns if it thinks the current response is done & complete or not.
+#    end_respnose   - (passed as "$status" next time called)
+#        0 - Response isn't complete yet.
+#        1 - Response was done, but may or may not be truncated in <desc>.
+#    response_complete - Tells if the final line is complete or truncated.
+#        0 - Line was truncated!
+#        1 - Last line was complete!
+# Both must be true to stop reading from the socket.
+# If we've read past the response into the next one, we don't stop
+# reading until the overflow response is complete as well.  Otherwise
+# the Timeout logic might not work properly later on.
+#-----------------------------------------------------------------------
+# The data buffer.  I've seen the following:
+#    1) A line begining with: \012  (The \015 ended the pevious buffer)
+#    2) A line ending with:   \015  (The \012 started the next buffer)
+#    3) Lines not ending with: \015\012
+#    4) A line only containing: \015\012
+#    5) A line only containing: \012
+#    6) Lines ending with: \015\012
+# If you see the 1st three items, you know there is more to read
+# from the socket.  If you see the last 3 items, it's possible
+# that the next read from the socket will hang if you've already
+# seen the response complete message.  So be careful here!
+#-----------------------------------------------------------------------
+sub _response_details {
+   my $self       = shift;
+   my $prefix     = shift;   # "<<< " vs "SKT <<< ".
+   my $data_ref   = shift;   # The data buffer to parse ...
+   my $status     = shift;   # 0 or 1   (the returned status from previous call)
+
+   my $ccc_kludge = shift;   # Tells us if we are dealing with a corrupted CC
+                             # due to the aftermath of a CCC command!
+                             # 1st <CR> hit terminates the command in this case!
+
+   # The return values ...
+   my ($end_response, $response_complete) = (0, 0);
+
+   # A more restrictive option for turning on logging is needed in this method.
+   # Otherwise too much info is written to the logs and it is very confusing.
+   #    (Debug => 99 turns this extra logging on!)
+   # So only use this special option if we need to debug this one method!
+   my $debug = ${*$self}{_FTPSSL_arguments}->{debug} && ${*$self}{_FTPSSL_arguments}->{debug_extra};
+
+   # Assuming that if the line doesn't end in a <CR>, the response is truncated
+   # and we'll need the next sysread() to continue with the response.
+   # Split drops trailing <CR>, so need this flag to detect this.
+   my $end_with_cr = (substr (${$data_ref}, -2) eq "\015\012") ? 1 : 0;
+
+   if ( $debug ) {
+      my $type = ( exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) ? "Overflow" : "Current";
+      my $k = $ccc_kludge ? ", Kludge: $ccc_kludge" : "";
+      _print_LOG ($self, "In _response_details ($type, Status: $status, len = ", length (${$data_ref}), ", End: ${end_with_cr}${k})\n");
+   }
+
+   my ($ref, $splt);
+   if ( exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) {
+      $ref = \${*$self}{_FTPSSL_arguments}->{next_ftp_msg};
+      $splt = "\015\012";
+   } else {
+      $ref = \${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
+      $splt = "\n";
+   }
+
+   # Sysread() does split the \015 & \012 to seperate lines, so test for it!
+   # And fix the problem as well if it's found!
+   my $index = 0;
+   if ( substr (${$data_ref}, 0, 1) eq "\012" ) {
+      # It hangs if I strip off from $data_ref, so handle later! (via $index)
+      if ( substr (${$ref}, -1) eq "\015" ) {
+         substr (${$ref}, -1) = $splt;    # Replace with proper terminator.
+         $index = 1;
+         _print_LOG ($self, "Fixed 015/012 split!\n")  if ( $debug );
+         if ( ${$data_ref} eq "\012" ) {
+            return ($status || $ccc_kludge, 1);     # Only thing on the line.
+         }
+      }
+   }
+
+   # Check if the last line from the previous call was trucated ...
+   my $trunc = "";
+   if ( ${$ref} ne "" && substr (${$ref}, -length($splt)) ne $splt ) {
+      $trunc = (split ($splt, ${$ref}))[-1];
+   }
+
+   my @term;
+   my @data;
+   if ( $end_with_cr ) {
+      # Protects from split throwing away trailing empty lines ...
+      @data = split( "\015\012", substr ( ${$data_ref}, $index ) . "|" );
+      pop (@data);
+   } else {
+      # Last line was truncated ...
+      @data = split( "\015\012", substr ( ${$data_ref}, $index ) );
+   }
+
+   # Tag which lines are complete! (Only the last one can be truncated)
+   foreach (0..$#data) {
+      $term[$_] = 1;
+   }
+   $term[-1] = $end_with_cr;
+
+   # Current command or rolled over to the next command ???
+   my (@lines, @next, @line_term, @next_term);
+   if ( exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) {
+      @next = @data;
+      @next_term = @term;
+      @data = @term = @lines;     # All are now empty.
+   } else {
+      @lines = @data;
+      @line_term = @term;
+      @data  = @term = @next;     # All are now empty.
+   }
+
+   # ------------------------------------------------------------------------
+   # Now lets process the response messages we've read in.  See the comments
+   # above response() on why this code is such a mess.
+   # But it's much cleaner than it used to be.
+   # ------------------------------------------------------------------------
+   my ( $code, $sep, $desc, $done ) = ( CMD_ERROR, "-", "", 0 );
+   my ( $line, $term );
+
+   foreach ( 0..$#lines ) {
+      $line = $lines[$_];
+      $term = $line_term[$_];
+
+      # If the previous line was the end of the response ...
+      # There can be no <CR> in that line!
+      # So if true, it means we've read past the end of the response!
+      if ( $done ) {
+         push (@next, $line);
+         push (@next_term, $term);
+         next;
+      }
+
+      # Always represents the start of a new line ...
+      my $test = $trunc . $line;
+      $trunc = "";   # No longer possible for previous line to be truncated.
+
+      # Check if this line marks the response complete! (If sep is a space)
+      if ( $test =~ m/^(\d{3})([-\s])(.*)$/s ) {
+         ($code, $sep, $desc) = ($1, $2, $3);
+         $done = ($sep eq " ") ? $term : 0;
+
+         # Update the return status ...
+         $end_response = ($sep eq " ") ? 1: 0;
+         $response_complete = $term;
+      }
+
+      # The CCC command messes up the Command Channel for a while!
+      # So we need this work arround to immediately stop processing
+      # to avoid breaking the command channel or hanging things.
+      if ( $ccc_kludge && $term && ! $done ) {
+         _print_LOG ( $self, "Kludge: 1st CCC work around detected ...\n")  if ( $debug );
+         $end_response = $response_complete = $done = 1;
+      }
+
+      # Save the unedited message ...
+      ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} .= $line;
+
+      # Write to the log file if requested ...
+      # But due to random splits, it risks not masking properly!
+      _print_edited_response ( $self, $prefix, $line, undef, 1 )  if ( $debug );
+
+      # Finish the current line ...
+      if ($sep eq "-" && $term) {
+         ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} .= "\n";    # Restore the internal <CR>.
+      }
+   }
+
+   # ------------------------------------------------------------------------
+   # Process the response to the next command ... (read in with this one)
+   # Shouldn't happen, but it sometimes does ...
+   # ------------------------------------------------------------------------
+   my $warn = "Warning: Attempting to read past end of response! ";
+   my $next_kludge = 0;
+   $done = 0;
+   foreach ( 0..$#next ) {
+      $next_kludge = 1;
+      $line = $next[$_];
+      $term = $next_term[$_];
+
+      # We've read past the end of the current response into the next one ...
+      _print_edited_response ( $self, $warn, $line, undef, 2 )  if ( $debug );
+
+      if ( ! exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) {
+         ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} = $line;
+      } elsif ( $trunc ne "" ) {
+         ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} .= $line;
+      } else {
+         ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} .= "\015\012" . $line;
+      }
+
+      # Always represents the start of a new line ...
+      my $test = $trunc . $line;
+      $trunc = "";   # No longer possible for previous line to be truncated.
+
+      # Check if this line marks the response complete! (If sep is a space)
+      if ( $test =~ m/^(\d{3})([-\s])(.*)$/s ) {
+         ($code, $sep, $desc) = ($1, $2, $3);
+         $done = ($sep eq " ") ? $term : 0;
+
+         # Update the return status ...
+         $end_response = ($sep eq " ") ? 1: 0;
+         $response_complete = $term;
+      }
+   }
+
+   if ( $end_with_cr && exists ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} ) {
+      ${*$self}{_FTPSSL_arguments}->{next_ftp_msg} .= "\015\012";
+   }
+
+   # Complete the Kludge! (Only needed if entered the @next loop!)
+   if ( $ccc_kludge && $next_kludge && ! ($end_response && $response_complete) ) {
+      _print_LOG ( $self, "Kludge: 2nd CCC work around detected ...\n")  if ( $debug );
+      $end_response = $response_complete = 1;
+   }
+
+   return ($end_response, $response_complete);
+}
+
+#-----------------------------------------------------------------------
 
 sub last_message {
    my $self = shift;
-   return ${*$self}{last_ftp_msg};
+   return ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
+}
+
+#-----------------------------------------------------------------------
+# This method sets up a trap so that warnings can be written to my logs.
+# Always call like:  $ftps->trapWarn().
+#-----------------------------------------------------------------------
+sub trapWarn {
+   my $self  = shift;
+   my $force = shift || 0;   # Only used by t/10-compelx.t & t/20-certificate.t
+                             # Do not use the $force parameter otherwise!
+                             # You've been warned!
+
+   my $res = 0;    # Warnings are not yet trapped ...
+
+   # Only trap warnings if a debug log is turned on to write to ...
+   if ( defined $self && ${*$self}{_FTPSSL_arguments}->{debug} &&
+        ($force || exists ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle}) ) {
+      my $tmp = $SIG{__WARN__};
+
+      # Must do as an inline function call so things will go to
+      # the proper log file.
+      my $func_ref = sub { $self->_print_LOG ("WARNING: ", $_[0]); };
+
+      $warn_list{$self} = $func_ref;
+
+      # This test prevents a recursive trap ...
+      if (! exists $warn_list{OTHER}) {
+         $warn_list{OTHER} = $tmp;
+         $SIG{__WARN__} = __PACKAGE__ . "::_handleWarn";
+      }
+
+      $res = 1;     # The warnings are trapped now ...
+   }
+
+   return ($res);   # Whether trapped or not!
+}
+
+# Warning, this method cannot be called as a member function.
+# So it will never reference $self!  It's also not documented in the POD!
+# See trapWarn() instead!
+sub _handleWarn {
+   my $warn = shift;   # The warning being processed ...
+
+   # Print warning to each of the registered log files.
+   # Will always be a reference to the function to call!
+   my $func_ref;
+   foreach ( keys %warn_list ) {
+      next   if ($_ eq "OTHER");
+      $func_ref = $warn_list{$_};
+      $func_ref->( $warn );    # Prints to an open Net::FTPSSL log file ...
+   }
+
+   # Was there any parent we replaced to chain the warning to?
+   if (exists $warn_list{OTHER} && defined $warn_list{OTHER}) {
+      $func_ref = $warn_list{OTHER};
+      if (ref ($func_ref) eq "CODE") {
+         $func_ref->( $warn );
+      } elsif ( $func_ref eq "" || $func_ref eq "DEFAULT" ) {
+         print STDERR "$warn\n";
+      } elsif ( $func_ref ne "IGNORE" ) {
+         &{\&{$func_ref}}($warn);   # Will throw exception if doesn't exist!
+      }
+   }
+}
+
+# Called automatically when an instance of Net::FTPSSL goes out of scope!
+# Only called if new() was successfull!  Used so we could remove all this
+# termination logic from quit()!
+sub DESTROY {
+   my $self = shift;
+
+   if ( ${*$self}{_FTPSSL_arguments}->{debug} ) {
+      # Disable optional trapping of the warnings written to the log file
+      # now that we're going out of scope!
+      if ( exists $warn_list{$self} ) {
+         delete ($warn_list{$self});
+      }
+
+      # Now let's close the log file itself ...
+      $self->_close_LOG ();
+
+      # Comment out this Debug Statement when no longer needed!
+      # print STDERR "Good Bye FTPSSL instance! (", ref($self), ")  [$self]\n";
+   }
+}
+
+# Called automatically when this module is removed from memory.
+# NOTE: Due to how Perl's garbage collector works, in many cases END may be
+#       called before DESTROY is called!  Not what you'd expect!
+sub END {
+   # Restore to original setting when the module gets unloaded from memory!
+   # If this entry wasn't created, then we never redirected any warnings!
+   if ( exists $warn_list{OTHER} ) {
+      $SIG{__WARN__} = $warn_list{OTHER};
+      delete ( $warn_list{OTHER} );
+      # print STDERR "Good Bye FTPSSL! (", $SIG{__WARN__}, ")\n";
+   }
 }
 
 #-----------------------------------------------------------------------
@@ -2459,24 +3975,35 @@ sub _mask_regex_chars {
 #-----------------------------------------------------------------------
 sub message {
    my $self = shift;
-   return ${*$self}{last_ftp_msg};
+   return ${*$self}{_FTPSSL_arguments}->{last_ftp_msg};
 }
 
 sub last_status_code {
    my $self = shift;
 
    my $code = CMD_ERROR;
-   if ( defined ${*$self}{last_ftp_msg} ) {
-      $code = substr (${*$self}{last_ftp_msg}, 0, 1);
+   if ( defined ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} ) {
+      $code = substr (${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, 0, 1);
    }
 
    return ($code);
 }
 
+sub _change_status_code {
+   my $self = shift;
+   my $code = shift;   # Should be a single digit.  Strange behaviour otherwise!
+
+   if ( defined ${*$self}{_FTPSSL_arguments}->{last_ftp_msg} ) {
+      substr (${*$self}{_FTPSSL_arguments}->{last_ftp_msg}, 0, 1) = $code;
+   }
+
+   return;
+}
+
 sub restart {
    my $self = shift;
    my $offset = shift;
-   ${*$self}{net_ftpssl_rest_offset} = $offset;
+   ${*$self}{_FTPSSL_arguments}->{net_ftpssl_rest_offset} = $offset;
    return (1);
 }
 
@@ -2490,13 +4017,13 @@ sub set_callback {
    my $cb_work_area_ref = shift;  # Optional ref to the callback work area!
 
    if ( defined $func_ref && defined $end_func_ref ) {
-      ${*$self}{callback_func}     = $func_ref;
-      ${*$self}{callback_end_func} = $end_func_ref;
-      ${*$self}{callback_data}     = $cb_work_area_ref;
+      ${*$self}{_FTPSSL_arguments}->{callback_func}     = $func_ref;
+      ${*$self}{_FTPSSL_arguments}->{callback_end_func} = $end_func_ref;
+      ${*$self}{_FTPSSL_arguments}->{callback_data}     = $cb_work_area_ref;
    } else {
-      delete ( ${*$self}{callback_func} );
-      delete ( ${*$self}{callback_end_func} );
-      delete ( ${*$self}{callback_data} );
+      delete ( ${*$self}{_FTPSSL_arguments}->{callback_func} );
+      delete ( ${*$self}{_FTPSSL_arguments}->{callback_end_func} );
+      delete ( ${*$self}{_FTPSSL_arguments}->{callback_data} );
    }
 
    return;
@@ -2511,9 +4038,9 @@ sub _end_callback {
    my $len = 0;
 
    # Is there an end callback function to use ?
-   if ( defined ${*$self}{callback_end_func} ) {
-      $res = &{${*$self}{callback_end_func}} ( (caller($offset))[3], $total,
-                                               ${*$self}{callback_data} );
+   if ( defined ${*$self}{_FTPSSL_arguments}->{callback_end_func} ) {
+      $res = &{${*$self}{_FTPSSL_arguments}->{callback_end_func}} ( (caller($offset))[3], $total,
+                                               ${*$self}{_FTPSSL_arguments}->{callback_data} );
 
       # Now check the results for terminating the call back.
       if (defined $res) {
@@ -2538,12 +4065,12 @@ sub _call_callback {
    my $total_len = shift;
 
    # Is there is a callback function to use ?
-   if ( defined ${*$self}{callback_func} ) {
+   if ( defined ${*$self}{_FTPSSL_arguments}->{callback_func} ) {
 
       # Allowed to modify contents of $data_ref & $data_len_ref ...
-      &{${*$self}{callback_func}} ( (caller($offset))[3],
+      &{${*$self}{_FTPSSL_arguments}->{callback_func}} ( (caller($offset))[3],
                                     $data_ref, $data_len_ref, $total_len,
-                                    ${*$self}{callback_data} );
+                                    ${*$self}{_FTPSSL_arguments}->{callback_data} );
    }
 
    # Calculate the new total length to use for next time ...
@@ -2563,7 +4090,7 @@ sub _fmt_num {
 }
 
 #-----------------------------------------------------------------------
-# To assist in debugging the Certificate hash for this class ...
+# To assist in debugging the flags being used by this module ...
 #-----------------------------------------------------------------------
 
 sub _debug_print_hash
@@ -2572,40 +4099,107 @@ sub _debug_print_hash
    my $host = shift;
    my $port = shift;
    my $mode = shift;
-   my $obj  = shift || $self;   # So can log any object type ...
+   my $obj  = shift || $self;   # So can log most GLOB object types ...
+   my $sep  = shift;            # The optional separator char to print out.
 
-   $self->_print_LOG ( "\nObject " . ref($obj) . " Details ..." );
-   $self->_print_LOG ( " ($host:$port - $mode)" )  if (defined $host);
-   $self->_print_LOG ( "\n" );
+   _print_LOG ( $self, "\nObject ", ref($obj), " Details ..." );
+   _print_LOG ( $self, " ($host:$port - $mode)" )  if (defined $host);
+   _print_LOG ( $self, "\n" );
 
-   foreach (sort keys %{*$obj}) {
+   # Fix to support non-GLOB object types ...
+   my @lst;
+   my $hash = 0;
+   if ( ref ($obj) eq "HASH" ) {
+      @lst = sort keys %{$obj};
+      $hash = 1;
+   } else {
+      # It's a GLOB reference ...
+      @lst = sort keys %{*$obj};
+   }
+
+   # The separators to use ...
+   my @seps = ( "==>", "===>",
+                "---->",   "++++>",   "====>",
+                "----->",  "+++++>",  "=====>",
+                "------>", "++++++>", "======>" );
+
+   # To help detect infinite recursive loops ...
+   my %loop;
+   my %empty;
+
+   foreach (@lst) {
       unless ( defined $host ) {
          next   unless ( m/^(io_|_SSL|SSL)/ );
       }
-      my $val = ${*$obj}{$_};
-      $val = "(undef)"  unless (defined $val);
-      $val = join ("\n         ", split (/\n/, $val))  unless (ref($val));
-      $self->_print_LOG ( "  $_ ==> $val\n" );
-      if ($val =~ m/HASH\(0/) {
-         foreach (sort keys %{$val}) {
-           my $y = $val->{$_};
-           $y = "(undef)"  unless (defined $y);
-           $y = join ("\n                   ", split (/\n/, $y)) unless (ref($y));
-           $self->_print_LOG ( "        -- $_ ===> $y\n" );
-           if ($y =~ m/HASH\(0/) {
-              foreach (sort keys %{$y}) {
-                 my $z = $y->{$_};
-                 $z = "(undef)"  unless (defined $z);
-                 $z = join ("\n                       ", split (/\n/, $z)) unless (ref($z));
-                 $self->_print_LOG ( "            -- $_ ----> $z\n" );
-              }
-           }
-         }
-      }
+      my $val = ($hash) ? $obj->{$_} : ${*$obj}{$_};
+
+      %loop = %empty;     # Empty out the hash again ...
+      _print_hash_tree ( $self, "  ", 0, $_, $val, \@seps, \%loop );
    }
-   $self->_print_LOG ( "\n" );
+
+   if (defined $sep && $sep !~ m/^\s*$/) {
+      _print_LOG ( $self, $sep x 60, "\n");
+   } else {
+      _print_LOG ( $self, "\n" );
+   }
 
    return;
+}
+
+# Recursive so can handle unlimited depth of hash trees ...
+sub _print_hash_tree
+{
+   my $self     = shift;
+   my $indent   = shift;
+   my $lvl      = shift;   # Index to the $sep_ref array reference.
+   my $lbl      = shift;
+   my $val      = shift;
+   my $sep_ref  = shift;   # An array reference.
+   my $loop_ref = shift;   # A hash ref to detect infinit recursion with.
+
+   my $prefix = ($lvl == 0) ? "" : "-- ";
+   my $sep = (defined $sep_ref->[$lvl]) ? $sep_ref->[$lvl] : ".....>";
+
+   # Make sure it always has a value ...
+   $val = "(undef)"  unless (defined $val);
+
+   # Fix indentation in case "\n" appears in the value ...
+   $val = join ("\n${indent}  ", split (/\n/, $val)) unless (ref($val));
+
+   # Fix in case it's a scalar reference ...
+   $val .= "  [" . ${$val} . "]"  if ($val =~ m/SCALAR\(0/);
+
+   my $msg = "${indent}${prefix}${lbl} ${sep} ${val}";
+
+   # How deep to indent for the next level ... (add 4 spaces)
+   $indent .= "    ";
+
+   if ( $val =~ m/ARRAY\(0/ ) {
+      my $lst = join (", ", @{$val});
+      _print_LOG ( $self, $msg, "\n" );
+      _print_LOG ( $self, "${indent}[", $lst, "]\n" );
+
+   } elsif ( $val =~ m/HASH\((0x[\da-zA-Z]+)\)/ ) {
+      my $key = $1;         # The Hash address ...
+      my %start = %{$loop_ref};
+
+      _print_LOG ( $self, $msg );
+      if ( exists $loop_ref->{$key} ) {
+         _print_LOG ($self, " ... Infinite Hash Loop Detected!\n");
+      } else {
+         $start{$key} = $loop_ref->{$key} = $val;
+         _print_LOG ( $self, "\n" );
+         foreach (sort keys %{$val}) {
+            %{$loop_ref} = %start;
+            _print_hash_tree ( $self, $indent, $lvl + 1, $_, $val->{$_},
+                                      $sep_ref, $loop_ref );
+         }
+      }
+
+   # Else not an ARRAY or HASH ...
+   } else {
+      _print_LOG ( $self, $msg, "\n" );
+   }
 }
 
 #-----------------------------------------------------------------------
@@ -2617,37 +4211,109 @@ sub _print_LOG
    my $self = shift;
    my $msg = shift;
 
-   if ( defined $self && exists ${*$self}{ftpssl_filehandle} ) {
-      my $FILE = ${*$self}{ftpssl_filehandle};
-      print $FILE $msg;          # Write to file ...
+   my $FILE;
+
+   # Determine where to write the log message to ...
+   if ( defined $self && exists ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle} ) {
+      $FILE = ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle};     # A custom log file ...
    } elsif ( defined $FTPS_ERROR ) {
-      print $FTPS_ERROR $msg;    # Write to file when called during new() ...
+      $FILE = $FTPS_ERROR;       # Write to file when called during new() ...
    } else {
-      print STDERR $msg;         # Write to screen anyone ?
+      $FILE = \*STDERR;          # Write to screen anyone ?
+   }
+
+   while ( defined $msg ) {
+      print $FILE $msg;          # Write to the log file ...
+      $msg = shift;
    }
 }
 
 # Only write to the log if debug is turned on ...
 # So we don't have to test everywhere ...
+# Done this way so can be called in new() on a socket as well.
 sub _print_DBG
 {
    my $self = shift;
-   if ( defined $self && ${*$self}{debug} ) {
-     $self->_print_LOG ( @_ );   # Only if debug is turned on ...
+   if ( defined $self && ${*$self}{_FTPSSL_arguments}->{debug} ) {
+      _print_LOG ( $self, @_ );   # Only if debug is turned on ...
    }
+}
+
+sub get_log_filehandle
+{
+   my $self = shift;
+
+   my $FILE;
+   if ( defined $self && exists ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle} ) {
+      $FILE = ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle};
+   }
+
+   return ($FILE);
 }
 
 sub _close_LOG
 {
   my $self = shift; 
 
-  if ( defined $self && exists ${*$self}{ftpssl_filehandle} ) {
-     my $FILE = ${*$self}{ftpssl_filehandle};
-     close ($FILE);
-     delete ( ${*$self}{ftpssl_filehandle} );
-     # ${*$self}{debug} = 1;
+  if ( defined $self && exists ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle} ) {
+     my $FILE = ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle};
+     close ($FILE)   if ( ${*$self}{_FTPSSL_arguments}->{debug} == 2 );
+     delete ( ${*$self}{_FTPSSL_arguments}->{ftpssl_filehandle} );
+     ${*$self}{_FTPSSL_arguments}->{debug} = 1;     # Back to using STDERR again ...
   }
 }
+
+# A helper method to tell if it can be counted as a GLOB ...
+sub _isa_glob
+{
+   my $self = shift;
+   my $fh   = shift;
+
+   my $res = 0;    # Assume not a file handle/GLOB ...
+
+   if ( defined $fh ) {
+      my $tmp = ref ( $fh );
+      if ( $tmp ) {
+         $res = 1   if ( $tmp eq "GLOB" || $fh->isa ("IO::Handle") );
+      }
+   }
+
+   return ( $res );
+}
+
+#-----------------------------------------------------------------------
+# If the Domain/Family is passed as a string, this function will convert
+# it into the needed numerical value.  [Only called by new().]
+sub _validate_domain {
+   my $type   = shift;   # It's a string, not an Net::FTPSSL object!
+   my $family = shift;   # The tag used for this value.
+   my $domain = shift;   # Should never be undef when called.
+   my $debug  = shift;
+   my $die    = shift;
+
+   my $ret;
+
+   if ( $domain =~ m/^\d+$/ ) {
+      $ret = $domain;        # Already a numeric value, so just return it ...
+
+   # Valid domains are inherited functions named after the value!
+   } elsif ( $domain =~ m/^AF_/i ) {
+      if ( $type->can ( uc ($domain) ) ) {
+         my $func = $type . "::" . uc ($domain) . "()";
+         $ret = eval $func;    # Call the function to convert it to an integer!
+      }
+   }
+
+   unless ( defined $ret ) {
+      _croak_or_return ( undef, $die, $debug,
+                         "Unknown value \"${domain}\" for option ${family}." );
+   }
+
+   # Return the domain/family as a numeric value.
+   # Can be undef if invalid & Croak is turned off.
+   return ( $ret );
+}
+
 
 #-----------------------------------------------------------------------
 
@@ -2657,37 +4323,42 @@ __END__
 
 =head1 NAME
 
-Net::FTPSSL - A FTP over SSL/TLS class
+Net::FTPSSL - A FTP over TLS/SSL class
 
-=head1 VERSION 0.23
+=head1 VERSION 0.39
+
+Z<>
 
 =head1 SYNOPSIS
 
   use Net::FTPSSL;
 
-  my $ftps = Net::FTPSSL->new('ftp.yoursecureserver.com', 
+  my $ftps = Net::FTPSSL->new('ftp.your-secure-server.com', 
                               Encryption => EXP_CRYPT,
-                              Debug => 1) 
-    or die "Can't open ftp.yoursecureserver.com\n$Net::FTPSSL::ERRSTR";
+                              Debug => 1, DebugLogFile => "myLog.txt",
+                              Croak => 1);
 
-  $ftps->login('anonymous', 'user@localhost') 
-    or die "Can't login: ", $ftps->last_message();
+  $ftps->trapWarn ();     # Only call if opening a CPAN bug report.
 
-  $ftps->cwd("/pub") or die "Can't change directory: " . $ftps->last_message();
+  $ftps->login('anonymous', 'user@localhost');
 
-  $ftps->get("file") or die "Can't get file: " . $ftps->last_message();
+  $ftps->cwd("/pub");
+
+  $ftps->get("file");
 
   $ftps->quit();
 
-Had you included I<Croak =E<gt> 1> as an option to I<new>, you could have left
-off the I<or die> checks and your I<die> messages would be more specific to the
-actual problem encountered!
+Since I included I<Croak =E<gt> 1> as an option to I<new>, it automatically
+called I<die> for me if any I<Net::FTPSSL> command failed.  So there was no need
+for any messy error checking in my code example!
 
 =head1 DESCRIPTION
 
-C<Net::FTPSSL> is a class implementing a simple FTP client over a Secure
-Sockets Layer (SSL) or Transport Layer Security (TLS) connection written in
-Perl as described in RFC959 and RFC2228.  It will use TLS by default.
+C<Net::FTPSSL> is a class implementing a simple FTP client over a Transport
+Layer Security (B<TLS>) or Secure Sockets Layer (B<SSL>) connection written in
+Perl as described in RFC959 and RFC2228.  It will use TLS v1.2 by default,
+since TLS is more secure than SSL.  But if you wish to downgrade you may use
+B<SSL_version> to do so.
 
 =head1 CONSTRUCTOR
 
@@ -2723,18 +4394,20 @@ for data sent as clear text.  B<DATA_PROT_SAFE> and B<DATA_PROT_CONFIDENTIAL>
 are not currently supported.  If B<CLR_CRYPT> was selected, the data channel
 is always B<DATA_PROT_CLEAR> and can't be overridden.
 
-B<useSSL> - Use this option to connect to the server using SSL instead of TLS.
-TLS is the default encryption type and the more secure of the two protocols.
-Set B<useSSL =E<gt> 1> to use SSL.
-
 B<ProxyArgs> - A hash reference to pass to the proxy server.  When a proxy
 server is encountered, this class uses I<Net::HTTPTunnel> to get through to
 the server you need to talk to.  See I<Net::HTTPTunnel> for what values are
 supported.  Options I<remote-host> and I<remote-port> are hard coded to the
-same values as provided by I<HOST> and I<PORT> above and can not be overriden.
+same values as provided by I<HOST> and I<PORT> above and cannot be overridden.
 
 B<PreserveTimestamp> - During all I<puts> and I<gets>, attempt to preserve the
 file's timestamp.  By default it will not preserve the timestamps.
+
+Set to a value B<E<gt>> zero if the I<MDTM> & I<MFMT> commands properly use GMT.
+Set to a value B<E<lt>> zero if the server incorrectly uses it's local time zone
+instead.  Using the wrong value can result in really wacky modify times on your
+files if you choose the wrong one for your server.  F<t/10-complex.t> does
+include a test to try to guess which one the server uses.
 
 B<Pret> - Set if you are talking to a distributed FTPS server like I<DrFtpd>
 that needs a B<PRET> command issued before all calls to B<PASV>.  You only need
@@ -2749,8 +4422,11 @@ B<DebugLogFile> - Redirects the output of B<Debug> from F<STDERR> to the
 requested error log file name.  This option is ignored unless B<Debug> is also
 turned on.  Enforced this way for backwards compatibility.  If B<Debug> is set
 to B<2>, the log file will be opened in I<append> mode instead of creating a
-new log file.  This file is closed when I<quit> is called and B<Debug> messages
-go back to F<STDERR> again afterwards.
+new log file.  This log file is closed when this class instance goes out of
+scope.
+
+Instead of a file name, you may instead specify an open file handle or GLOB and
+it will write the logs there insead.  (I<Not really recommended.>)
 
 B<Croak> - Force most methods to call I<croak()> on failure instead of returning
 I<FALSE>.  The default is to return I<FALSE> or I<undef> on failure.  When it
@@ -2759,8 +4435,29 @@ last message before it attempts to close the connection.  Allowing the server
 to know the client is going away.  This will cause I<$Net::FTPSSL::ERRSTR> to
 be set as well.
 
+B<ReuseSession> - Tells the B<FTP/S> server that we wish to reuse the I<command
+channel> session for all I<data channel> connections.  (0/1/2/etc.)  It defaults
+to B<0>, no reuse.
+
+When requested, it will use a default I<session cache size> of B<5>, but you
+can increase the cache's size by setting the I<ReuseSession> to a larger value.
+Where the I<session cache size> is (4 + the I<ReuseSession> value).
+
+B<DisableContext> - Tells the B<FTP/S> server that we don't wish to reuse the
+I<command channel> context for all I<data channel> connections.  (0/1)  If
+option I<ReuseSession> or I<SSL_Client_Certificate> are also used, this option
+is ignored!  By default the context is always reused on encrypted data channels
+via B<SSL_reuse_ctx>.
+
+B<SSL_*> - SSL arguments which can be applied when I<start_SSL()> is finally
+called to encrypt the command channel.  See I<IO::Socket::SSL> for a list of
+valid arguments.
+
+This is an alternative to using the I<SSL_Client_Certificate> option.  But
+any B<SSL_*> options provided here overrides what's provided in that hash.
+
 B<SSL_Client_Certificate> - Expects a reference to a hash.  It's main purpose
-is to allow you to use client certificates when talking to your I<FTPS> server.
+is to allow you to use client certificates when talking to your I<FTP/S> server.
 Options here apply to the creation of the command channel.  And when a data
 channel is needed later, it uses the B<SSL_reuse_ctx> option to reuse the
 command channel's context.
@@ -2768,13 +4465,26 @@ command channel's context.
 See I<start_SSL()> in I<IO::Socket::SSL> for more details on this and other
 options available besides those for certificates.  If an option provided via
 this hash conflicts with other options we would normally use, the entries in
-this hash take precedence.  If all you want to do is have the data channel use
-B<SSL_reuse_ctx>, just provide an empty hash.
+this hash take precedence, except for any direct B<SSL_*> options provided in
+both places.
+
+B<Domain> - Specify the domain to use, i.e. I<AF_INET> or I<AF_INET6>.  This
+argument will be passed to the I<IO::Socket::*> class when creating the socket
+connection.  It's a way to enforce using I<IPv4> vs I<IPv6> even when it would
+default to the other.  B<Family> is an accepted alias for the B<Domain> tag if
+you prefer it.
 
 B<Buffer> - This is the block size that I<Net::FTPSSL> will use when a transfer
-is made. Default value is 10240.
+is made over the I<Data Channel>. Default value is 10240.  It does not affect
+the I<Command Channel>.
 
 B<Timeout> - Set a connection timeout value. Default value is 120.
+
+B<xWait> - Used with I<xput> & I<xtransfer>.  Tells how long to wait after the
+upload has completed before renaming the file.  The default is no wait, but
+if you specify a number here, it will wait that number of seconds before
+issuing the rename command.  Some servers force you to wait a bit before it
+will honor the I<RNTO> part of the rename command.
 
 B<LocalAddr> - Local address to use for all socket connections, this argument
 will be passed to all L<IO::Socket::INET> calls.
@@ -2783,25 +4493,29 @@ B<OverridePASV> - Some I<FTPS> servers sitting behind a firewall incorrectly
 return their local IP Address instead of their external IP Address used
 outside the firewall where the client is.  To use this option to correct this
 problem, you must specify the correct host to use for the I<data channel>
-connection.  This should usually match what you provided as the host!
+connection.  This should usually match what you provided as the host!  But if
+this server also does load balancing, you are out of luck.  This option may not
+be able to help you if multiple IP Addresses can be returned.
 
 B<OverrideHELP> - Some I<FTPS> servers on encrypted connections incorrectly send
 back part of the response to the B<HELP> command in clear text instead of it all
-being encrypted, breaking the command channel connection.  This class calls
+being encrypted, breaking the command channel connection.  This module calls
 B<HELP> internally via I<supported()> for some conditional logic, making a work
 around necessary to be able to talk to such servers.
 
-This option supports three distinct modes to support your needs.  You can pass
+This option supports B<four> distinct modes to support your needs.  You can pass
 a reference to an array that lists all the B<FTP> commands your sever supports,
-you can set it to B<1> to say all commands are supported, or set it to B<0> to
-say none of the commands are supported.  See I<supported()> for more details.
+you can set it to B<1> to say all commands are supported, set it to B<0> to say
+none of the commands are supported, or finally set it to B<-1> to call B<FEAT>
+instead of B<HELP> for the list of supported commands.  See I<supported()> or
+I<fix_supported()> for more details.
 
 This option can also be usefull when your server doesn't support the I<HELP>
 command itself and you need to trigger some of the conditional logic.
 
-B<SSL_Advanced> - Depreciated, use I<SSL_Client_Certificate> instead.  This is
-now just an alias for I<SSL_Client_Certificate> for backwards compatibility.
-If both are used, this option is ignored.
+B<useSSL> - This option is being depreciated in favor of L<IO::Socket::SSL>'s
+B<SSL_version> option.  It's just a quick and dirty way to downgrade your
+connection from B<TLS> to B<SSL> which is no longer recomended.
 
 =back
 
@@ -2820,8 +4534,7 @@ Use the given information to log into the FTPS server.
 
 =item quit()
 
-This method breaks the connection to the FTPS server.  It will also close the
-file pointed to by option I<DebugLogFile>.
+This method breaks the connection to the FTPS server.
 
 =item force_epsv( [1/2] )
 
@@ -2887,10 +4600,20 @@ ASCII is the default transfer mode.
 
 Sets the file transfer mode to binary. No I<CR LF> transformation will be done.
 
+=item mixedModeAI()
+
+Mixture of ASCII & binary mode.  The server does I<CR LF> transfernations while
+the client side does not.  (For a really weird server)
+
+=item mixedModeIA()
+
+Mixture of binary & ASCII mode.  The client does I<CR LF> transfernations while
+the server side does not.  (For a really weird server)
+
 =item put( LOCAL_FILE [, REMOTE_FILE [, OFFSET]] )
 
 Stores the I<LOCAL_FILE> onto the remote ftps server. I<LOCAL_FILE> may be a
-file handle, but in this case I<REMOTE_FILE> is required.
+open I<IO::Handle> or GLOB, but in this case I<REMOTE_FILE> is required.
 It returns B<undef> if I<put()> fails.
 
 If you provide an I<OFFSET>, this method assumes you are attempting to
@@ -2908,8 +4631,8 @@ I<REMOTE_FILE>.
 
 If the I<OFFSET> you provide turns out to be smaller than the current size of
 I<REMOVE_FILE>, the server will truncate the I<REMOTE_FILE> to that size before
-appending to the end of I<REMOTE_FILE>.  (This may not be consistent across
-all FTPS Servers, so don't depend on this feature without testing it first.)
+appending to the end of I<REMOTE_FILE>.  (I<This may not be consistent across
+all FTPS Servers, so don't depend on this feature without testing it first.>)
 
 If the option I<PreserveTimestamp> was used, and the FTPS server supports it,
 it will attempt to reset the timestamp on I<REMOTE_FILE> to the timestamp on
@@ -2919,8 +4642,8 @@ I<LOCAL_FILE>.
 
 Appends the I<LOCAL_FILE> onto the I<REMOTE_FILE> on the ftps server.  If
 I<REMOTE_FILE> doesn't exist, the file will be created.  I<LOCAL_FILE> may be
-a file handle, but in this case I<REMOTE_FILE> is required and I<OFFSET> is
-ignored.  It returns B<undef> if I<append()> fails.
+a open I<IO::Handle> or GLOB, but in this case I<REMOTE_FILE> is required and
+I<OFFSET> is ignored.  It returns B<undef> if I<append()> fails.
 
 If you provide an I<OFFSET>, it will skip over that number of bytes in the
 I<LOCAL_FILE> except when it was a file handle, but B<will not> send a B<REST>
@@ -2936,18 +4659,24 @@ I<LOCAL_FILE>.
 =item uput( LOCAL_FILE, [REMOTE_FILE] )
 
 Stores the I<LOCAL_FILE> onto the remote ftps server. I<LOCAL_FILE> may be a
-file handle, but in this case I<REMOTE_FILE> is required.  If I<REMOTE_FILE>
-already exists on the ftps server, a unique name is calculated by the server
-for use instead.
+open I<IO::Handle> or GLOB, but in this case I<REMOTE_FILE> is required.  If
+I<REMOTE_FILE> already exists on the ftps server, a unique name is calculated
+by the server for use instead.  But on some servers, the remote server won't
+take the hint and will always generate a unique name instead.
 
-If the file transfer succeeds, this function will return the actual name used
-on the remote ftps server.  If it can't figure that out, it will return what
-was used for I<REMOTE_FILE>.  On failure this method will return B<undef>.
+If the file transfer succeeds, this function will try to return the actual
+name used on the remote ftps server.  If it can't figure that out, it will
+return what was used for I<REMOTE_FILE>.  On failure this method will return
+B<undef>.  If the remote server won't take the hint and we can't figure out
+the name it used, we'll return a string containing a single B<?> instead.  In
+this case the request worked, but this command has no way to figure out what
+name was generated on the remote ftps server.  And we want to return a printable
+value that will evaluate to B<true>!
 
 If the option I<PreserveTimestamp> was used, and the FTPS server supports it,
 it will attempt to reset the timestamp on the remote file using the file name
 being returned by this function to the timestamp on I<LOCAL_FILE>.  So if the
-wrong name is being returned, the wrong file will get it's timestamp updated.
+wrong name is being returned, the wrong file could get it's timestamp updated.
 
 =item xput( LOCAL_FILE, [REMOTE_FILE, [PREFIX, [POSTFIX, [BODY]]]] )
 
@@ -2991,8 +4720,8 @@ files to send out into multiple directories.
 =item get( REMOTE_FILE [, LOCAL_FILE [, OFFSET]] )
 
 Retrieves the I<REMOTE_FILE> from the ftps server. I<LOCAL_FILE> may be a
-filename or a file handle.  It returns B<undef> if I<get()> fails.  You don't
-usually need to use I<OFFSET>.
+filename or a open I<IO::Handle> or GLOB.  It returns B<undef> if I<get()>
+fails.  You don't usually need to use I<OFFSET>.
 
 If you provide an I<OFFSET>, this method assumes your are attempting to
 continue with a download that was aborted earlier.  And it's your responsibility
@@ -3024,7 +4753,34 @@ only other difference being what B<BODY> defaults to.  It defaults to
 I<reverse(testclient).PID>.  So your default scratch file would be something
 like: S<I<_tmp.tneilctset.51243.tmp>>.
 
-Just be aware that in this case B<LOCAL_FILE> can no longer be a file handle.
+Just be aware that in this case B<LOCAL_FILE> can no longer be a open
+I<IO::Handle> or glob.
+
+=item transfer( dest_server, REMOTE_FILE [, DEST_FILE [, OFFSET]] )
+
+Retrieves the I<REMOTE_FILE> from the current ftps server and uploads it to
+the I<dest_server> as I<DEST_FILE> without making any copy of the file on your
+local file system.  If I<DEST_FILE> isn't provided, it uses I<REMOTE_FILE>
+on the I<dest_server>.
+
+It assumes that I<dest_server> is an F<Net::FTPSSL> object and you have
+already successfully logged onto I<dest_server> and set both ends to either
+binary or ascii mode!  So this function skips over the CR/LF logic and lets
+the other servers handle it.  You must also set the I<Croak> option to the
+same value on both ends.
+
+Finally, if logging is turned on, the logs to this function will be split
+between the logs on each system.  So the logs may be a bit of a pain to follow
+since you'd need to look in two places for each half.
+
+=item xtransfer( dest_server, REMOTE_FILE, [DEST_FILE, [PREFIX,
+
+[POSTFIX, [BODY]]]] )
+
+Same as I<transfer>, but it uses a temporary filename on the I<dest_server>
+during the transfer.  And then renames it to I<DEST_FILE> afterwards.
+
+See I<xput> for the meaning of the remaining parameters.
 
 =item delete( REMOTE_FILE )
 
@@ -3065,7 +4821,7 @@ Allows you to rename the file on the remote server.
 
 Send a SITE command to the remote server and wait for a response.
 
-=item mfmt( time_str, remote_file ) or _mfmt( timestamp, remote_file )
+=item mfmt( time_str, remote_file ) or _mfmt( timestamp, remote_file [, local_flag] )
 
 Both are boolean functions that attempt to reset the remote file's timestamp on
 the FTPS server and returns true on success.  The 1st version can call croak on
@@ -3075,15 +4831,25 @@ timestamp to use.
 
 I<time_str> expects the timestamp to be GMT time in format I<YYYYMMDDHHMMSS>.
 While I<timestamp> expects to be in the same format as returned by
-I<localtime()>.
+I<localtime()> and converts it to the I<YYYYMMDDHHMMSS> format for you in GMT
+time.
 
-=item mdtm( remote_file )  or  _mdtm( remote_file )
+But some servers incorectly use local time instead of GMT.  So the I<local_flag>
+option was added to tell it to use local time instead of GMT time when
+converting the timestamp into a string.  When used internally by this module,
+this functionality is controlled by I<PreserveTimestamp> instead.
+
+=item mdtm( remote_file )  or  _mdtm( remote_file [, local_flag] )
 
 The 1st version returns the file's timestamp as a string in I<YYYYMMDDHHMMSS>
 format using GMT time, it will return I<undef> or call croak on failure.
+(Some servers incorrectly use local time instead.)
 
 The 2nd version returns the file's timestamp in the same format as returned by
-I<localtime()> and will never call croak.
+I<gmtime()> and will never call croak.  But some servers incorectly use local
+time instead of GMT.  So the I<local_flag> option was added to tell it to use
+local time instead of GMT time for this conversion.  When used internally by
+this module, this functionality is controlled by I<PreserveTimestamp> instead.
 
 =item size( remote_file )
 
@@ -3098,62 +4864,7 @@ This issue depends on what OS the FTPS server is running under.  Should they
 be different, the I<ASCII> size will be the I<BINARY> size plus the number of
 lines in the file.
 
-=item quot( CMD [,ARGS] )
-
-Send a command, that I<Net::FTPSSL> does not directly support, to the remote
-server and wait for a response.  You are responsible for parsing anything
-you need from I<message()> yourself.
-
-Returns the most significant digit of the response code.  So it will ignore
-the B<Croak> request.
-
-B<WARNING> This call should only be used on commands that do not require
-data connections.  Misuse of this method can hang the connection if the
-internal list of FTP commands using a data channel is incomplete.
-
-=item ccc( [ DataProtLevel ] )
-
-Sends the clear command channel request to the FTPS server.  If you provide the
-I<DataProtLevel>, it will change it from the current data protection level to
-this one before it sends the B<CCC> command.  After the B<CCC> command, the
-data channel protection level can not be changed again and will always remain
-at this setting.  Once you execute the B<CCC> request, you will have to create
-a new I<Net::FTPSSL> object to secure the command channel again.  I<Due
-to security concerns it is recommended that you do not use this method.>
-
-If the version of I<IO::Socket::SSL> you have installed is too old, this
-function will not work since I<stop_SSL> won't be defined (like in v1.08).  So 
-it is recommended that you be on at least I<version 1.18> or later if you plan
-on using this function.
-
-=item supported( CMD [,SITE_OPT] )
-
-Returns B<TRUE> if the remote server supports the given command.  I<CMD> must
-match exactly.  This function will ignore the B<Croak> request.
-
-If the I<CMD> is SITE or FEAT and I<SITE_OPT> is supplied, it will also check
-if the specified I<SITE_OPT> sub-command is supported by that command.  Not
-all servers will support the use of I<SITE_OPT>.
-
-It determines if a command is supported by calling B<HELP> and parses the
-results for a match.  And if B<FEAT> is supported it calls B<FEAT> and adds
-these commands to the B<HELP> list.  The results are cached so B<HELP> and
-B<FEAT> are only called once.
-
-Some rare servers send the B<HELP> results partially encrypted and partially in
-clear text, causing the encrypted channel to break.  In that case you will need
-to override this method for things to work correctly with these non-conforming
-servers.  See the I<OverrideHELP> option in the constructor for how to do this.
-
-Some servers don't support the B<HELP> command itself!  When this happens, this
-method will always return B<FALSE> unless you set the I<OverrideHELP> option in
-the constructor.
-
-This method is used internally for conditional logic only when checking if the
-following 5 I<FTP> commands are allowed: B<ALLO>, B<NOOP>, B<HELP>, B<MFMT> and
-B<MDTM>.  The B<ALLO> command is used with all I<put>/I<get> command sequences.
-The other four are not checked that often.  Function I<xput> also tests for four
-more commands indirectly: B<STOR>, B<DELE>, B<RNFR> and B<RNTO>.
+Finally if the file isn't a regular file, it will return I<undef>.
 
 =item last_message() or message()
 
@@ -3174,6 +4885,108 @@ FTPS server.  The status is the first digit from the full 3 digit response code.
 The possible values are exposed via the following B<7> constants:
 CMD_INFO, CMD_OK, CMD_MORE, CMD_REJECT, CMD_ERROR, CMD_PROTECT and CMD_PENDING.
 
+=item quot( CMD [,ARGS] )
+
+Send a command, that I<Net::FTPSSL> does not directly support, to the remote
+server and wait for a response.  You are responsible for parsing anything
+you need from I<message()> yourself.
+
+Returns the most significant digit of the response code.  So it will ignore
+the B<Croak> request.
+
+B<WARNING> This call should only be used on commands that do not require
+data connections.  Misuse of this method can hang the connection if the
+internal list of FTP commands using a data channel is incomplete.
+
+=item ccc( [ DataProtLevel ] )
+
+Sends the clear command channel request to the FTPS server.  If you provide the
+I<DataProtLevel>, it will change it from the current data protection level to
+this one before it sends the B<CCC> command.  After the B<CCC> command, the
+data channel protection level cannot be changed again and will always remain
+at this setting.  Once you execute the B<CCC> request, you will have to create
+a new I<Net::FTPSSL> object to secure the command channel again.  I<Due
+to security concerns it is recommended that you do not use this method.>
+
+=item supported( CMD [, SUB_CMD] )
+
+Returns B<TRUE> if the remote server supports the given command.  I<CMD> must
+match exactly.  This function will ignore the B<Croak> request.
+
+If the I<CMD> is SITE, FEAT or OPTS and I<SUB_CMD> is supplied, it will also
+check if the specified I<SUB_CMD> sub-command is supported by that command.
+Not all servers will support the use of I<SUB_CMD>.
+
+It determines if a command is supported by calling B<HELP> and parses the
+results for a match.  And if B<FEAT> is supported it calls B<FEAT> and adds
+these commands to the B<HELP> list.  The results are cached so B<HELP> and
+B<FEAT> are only called once.
+
+Some rare servers send the B<HELP> results partially encrypted and partially in
+clear text, causing the encrypted channel to break.  In that case you will need
+to override this method for things to work correctly with these non-conforming
+servers.  See the I<OverrideHELP> option in the constructor for how to do this.
+
+Some servers don't support the B<HELP> command itself!  When this happens, this
+method will always return B<FALSE> unless you set the I<OverrideHELP> option in
+the constructor.
+
+This command assumes that the B<FTP/S> server is configured correctly.  But
+I've run into some servers where B<HELP> says a command is present when it's
+really unknown.  So I'm assuming the reverse may be true sometimes as well.
+So when you hit this issue, use I<OverrideHELP> or I<fix_supported> to work
+arround this problem.
+
+This method is used internally for conditional logic such as when checking if
+I<ALLO> is supported during any file upload requests.  In all there are about
+a dozen different commands checked internally in various situations.
+
+=item all_supported( CMD1 [, CMD2 [, CMD3 [, CMD4 [, ...]]]] )
+
+Similar to I<supported>, except that it tests everything in this list of one or
+more I<FTP> commands passed to it to see if they are supported.  If the list is
+empty, or if even one command in the list isn't supported, it returns B<FALSE>.
+Otherwise it returns B<TRUE>.  It will also ignore the B<Croak> request.
+
+=item fix_supported( MODE, CMD1 [, CMD2 [, CMD3 [, CMD4 [, ...]]]] )
+
+Sometimes the FTPS server lies to us about what commands are supported.  This
+function provides a way to give the I<supported> command updates.  This method
+is a NOOP if I<OverrideHELP =E<gt> 1> was used.  Any other I<OverrideHELP>
+option will cause B<HELP> to be ignored if it's one of the commands.
+
+If B<MODE> is true, it adds these commands to the list of supported commands.
+
+If B<MODE> is false, it removes these commands as being supported.
+
+Returns the number of FTP commands added/removed from support!
+
+=item feat()
+
+Asks the server for a list of features supported by this server.  It returns the
+list of commands as keys to a hash reference whose value (behavior) is usually
+the empty string.  But if a command returns more details about the command, the
+command's value in the hash will be those details (aka behavior).
+S<Ex: B<MLST> I<size*;create;modify*;perm;media-type>,> where B<MLST> would be
+the hash key & the rest of the line describes that command's behavior.
+
+While the B<OPTS> command is never returned by a I<FEAT> call to the server, it
+will be automtically added to this hash if any command listed has a behavior
+string after it.  Since B<OPTS> only has meaning if at least one command has
+a behavior string defined.  And many servers only implement the B<OPTS> command
+if there is a behavior that can be modified.  So in this case B<OPTS> will
+point to a hash of commands the B<OPTS> command can modify!
+
+So if the B<OPTS> command appears in the hash, then each call to F<feat> will
+result in a server hit.  Otherwise the result is cached.  This is because
+calls to B<OPTS> could modify the behaviour of B<FEAT>.
+
+If I<OverrideHELP> was used, B<HELP> will be removed from the B<FEAT> hash
+returned since you stated this server doesn't support the B<HELP> command.
+
+Should the I<FEAT> command fail for any reason, the returned hash reference
+will be empty or B<Croak> will be called.
+
 =item restart( OFFSET )
 
 Set the byte offset at which to begin the next data transfer.  I<Net::FTPSSL>
@@ -3181,17 +4994,32 @@ simply records this value and uses it during the next data transfer.  For
 this reason this method will never return an error, but setting it may cause
 subsequent data transfers to fail.
 
-I recommend using the OFFSET directly in I<get()>, I<put()>, and I<append()>
-instead of using this method.  It was only added to make I<Net::FTPSSL>
-compatible with I<Net::FTP>.  A non-zero offset in those methods will override
-what you provide here.  If you call any of the other I<get()>/I<put()> variants
-after calling this function, you will get an error.
+I recommend using the OFFSET directly in I<get()>, I<put()>, I<append()> and
+I<transfer()> instead of using this method.  It was only added to make
+I<Net::FTPSSL> compatible with I<Net::FTP>.  A non-zero offset in those methods
+will override what you provide here.  If you call any of the other
+I<get()>/I<put()> variants after calling this function, you will get an error.
 
 It is OK to use an I<OFFSET> of B<-1> here to have I<Net::FTPSSL> calculate
 the correct I<OFFSET> for you before it get's used.  Just like if you had
-provided it directly to the I<get()>, I<put()>, and I<append()> calls.
+provided it directly to the I<get()>, I<put()>, I<append()> and I<transfer()>
+calls.
 
-This I<OFFSET> will be automatically zeroed out the 1st time it is used.
+This I<OFFSET> will be automatically zeroed out after the 1st time it is used.
+
+=item is_file( FILE )
+
+Returns true if the passed I<name> is recognized as a regular file on the remote
+server.  It's assumed a regular file if the I<size> function works!
+(I<IE. returns a size E<gt>= 0 Bytes>.)
+
+=item is_dir( DIRECTORY )
+
+Returns true if the passed I<name> is recognized as a directory on the remote
+server.  It's assumed a directory if you can I<cwd> into it.
+
+If you don't have permission to I<cwd> into that directory, this function
+B<will not> recognize it as a directory, even if it really is one!
 
 =item set_callback( [cb_func_ref, end_cb_func_ref [, cb_data_ref]] )
 
@@ -3260,7 +5088,97 @@ As a final note, should the data channel be empty, it is very likely that just
 the I<end_callback> function will be called without any calls to the I<callback>
 function.
 
+=item get_log_filehandle()
+
+Returns the open file handle for the file specified by the B<DebugLogFile>
+option specified by C<new()>.  If you did not use this option, it will return
+undef.
+
+Just be aware that once this object goes out of scope, the returned file handle
+becomes invalid.
+
+=item set_dc_from_hash( HASH )
+
+This function provides you a way to micro manage the I<SSL> characteristics
+of the FTPS Data Channel without having to hack the Net::FTPSSL code base.
+It should be called as soon as possible after the call to B<new()>.
+
+It takes a I<HASH> as it's argument.  Either by value or by address.
+This hash of key/value pairs will be used to control the Data Channel
+I<SSL> options.
+
+If the key's value is set to I<undef>, it is an instruction to delete an
+existing Data Channel option.  If the key has a value it is an instruction to
+add this key/value pair to the Data Channel options.  If the option already
+exists, it will override that value.
+
+It returns the number of entries updated for the Data Channel.
+
+=item copy_cc_to_dc( FORCE, ARRAY )
+
+This function provides you a way to copy some of the I<SSL> options used
+to manage the Command Channel over to the Data Channel as well without
+having to hack the Net::FTPSSL code base.  It should be called as soon
+as possible after the call to B<new()>.
+
+It takes an I<ARRAY> as it's arguments.  Either by value or by address.
+It looks up each array value in the Command Channel's I<SSL> characteristics
+and copies them over to use as a Data Channel option.
+
+If the option doen't exist for the Command Channel, that array entry is ignored.
+
+If the option is already set in the Data Channel, the array entry overrides
+the current value in the Data Channel.
+
+It returns the number of entries updated for the Data Channel.
+
+=item trapWarn()
+
+This method is only active if I<Debug> is turned on with I<DebugLogFile>
+provided as well.  Otherwise calling it does nothing.  This trap for I<warnings>
+is automatically turned off when the the instance of this class goes out of
+scope.  It returns B<1> if the trap was turned on, else B<0> if it wasn't.
+
+Calling this method causes all B<Perl> I<warnings> to be written to the log
+file you specified when you called I<new()>.  The I<warnings> will appear in
+the log file when they occur to assist in debugging this module.  It
+automatically puts the word I<WARNING:> in front of the message being logged.
+
+So this method is only really useful if you wish to open a B<CPAN> ticket to
+report a problem with I<Net::FTPSSL> and you think having the generated warning
+showing up in the logs will help in getting your issue resolved.
+
+You may call this method for multiple I<Net::FTPSSL> instances and it will
+cause the I<warning> to be written to multiple log files.
+
+If your program already traps I<warnings> before you call this method, this
+code will forward the warning to your trap logic as well.
+
 =back
+
+=head1 INTERPRETING THE LOGS
+
+The logs generated by I<Net::FTPSSL> are very easy to interpret.  After you get
+past the initial configuration information needed to support opening a I<CPAN>
+ticket, it's basically the B<FTPS> traffic going back and forth between your
+perl I<Client> and the I<FTPS Server> you are talking to.
+
+Each line begins with a prefix that tells what is happening.
+
+C<E<gt>E<gt>E<gt>> - Represents outbound traffic sent to the FTPS Server.
+
+C<E<lt>E<lt>E<lt>> - Represents inbound traffic received from the FTPS Server.
+
+C<E<lt>E<lt>+> - Represents messages from I<Net::FTPSSL> itself in response to
+a request that doesn't hit the I<FTPS Server>.
+
+C<WARNING:> - Represents a trapped I<perl warning> written to the logs.
+
+C<SKT E<gt>E<gt>E<gt>> & C<SKT E<lt>E<lt>E<lt>> represent socket traffic
+before the I<Net::FTPSSL> object gets created.
+
+There are a couple of other rare variants to the above theme.  But they are
+purely information only.  So this is basically it.
 
 =head1 AUTHORS
 
@@ -3278,13 +5196,13 @@ I<Net::SSLeay::Handle>
 
 I<IO::Socket::SSL>
 
-RFC 959 - L<ftp://ftp.rfc-editor.org/in-notes/rfc959.txt>
+RFC 959 - L<http://www.rfc-editor.org/info/rfc959>
 
-RFC 2228 - L<ftp://ftp.rfc-editor.org/in-notes/rfc2228.txt>
+RFC 2228 - L<http://www.rfc-editor.org/info/rfc2228>
 
-RFC 2246 - L<ftp://ftp.rfc-editor.org/in-notes/rfc2246.txt>
+RFC 2246 - L<http://www.rfc-editor.org/info/rfc2246>
 
-RFC 4217 - L<ftp://ftp.rfc-editor.org/in-notes/rfc4217.txt>
+RFC 4217 - L<http://www.rfc-editor.org/info/rfc4217>
 
 =head1 CREDITS
 
@@ -3295,13 +5213,14 @@ collection of modules (libnet).
 
 Please report any bugs with a FTPS log file created via options B<Debug=E<gt>1>
 and B<DebugLogFile=E<gt>"file.txt"> along with your sample code at
-L<http://search.cpan.org/~cleach/Net-FTPSSL-0.23/FTPSSL.pm>.
+L<http://search.cpan.org/~cleach/Net-FTPSSL-0.39/FTPSSL.pm> or
+L<https://metacpan.org/pod/Net::FTPSSL>.
 
 Patches are appreciated when a log file and sample code are also provided.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 - 2013 Curtis Leach. All rights reserved.
+Copyright (c) 2009 - 2017 Curtis Leach. All rights reserved.
 
 Copyright (c) 2005 Marco Dalla Stella. All rights reserved.
 

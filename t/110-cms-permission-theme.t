@@ -2,62 +2,81 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-# Website
-my $website = MT::Test::Permission->make_website();
+    # Website
+    my $website = MT::Test::Permission->make_website( name => 'my website' );
 
-# Blog
-my $blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
-my $second_blog = MT::Test::Permission->make_blog(
-    parent_id => $website->id,
-);
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'my blog',
+    );
+    my $second_blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name => 'second blog',
+    );
 
-# Author
-my $aikawa = MT::Test::Permission->make_author(
-    name => 'aikawa',
-    nickname => 'Ichiro Aikawa',
-);
+    # Author
+    my $aikawa = MT::Test::Permission->make_author(
+        name => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-my $ichikawa = MT::Test::Permission->make_author(
-    name => 'ichikawa',
-    nickname => 'Jiro Ichikawa',
-);
+    my $ichikawa = MT::Test::Permission->make_author(
+        name => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-my $ukawa = MT::Test::Permission->make_author(
-    name => 'ukawa',
-    nickname => 'Saburo Ukawa',
-);
+    my $ukawa = MT::Test::Permission->make_author(
+        name => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
+
+    my $admin = MT::Author->load(1);
+
+    # Role
+    my $manage_themes = MT::Test::Permission->make_role(
+       name  => 'Manage Themes',
+       permissions => "'manage_themes'",
+    );
+
+    my $create_post = MT::Test::Permission->make_role(
+       name  => 'Create Post',
+       permissions => "'create_post'",
+    );
+
+    require MT::Association;
+    MT::Association->link( $aikawa => $manage_themes => $blog );
+    MT::Association->link( $ichikawa => $create_post => $blog );
+    MT::Association->link( $ukawa => $manage_themes => $second_blog );
+});
+
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog    = MT::Blog->load( { name => 'my blog' } );
+
+my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
+my $ukawa    = MT::Author->load( { name => 'ukawa' } );
 
 my $admin = MT::Author->load(1);
-
-# Role
-my $manage_themes = MT::Test::Permission->make_role(
-   name  => 'Manage Themes',
-   permissions => "'manage_themes'",
-);
-
-my $create_post = MT::Test::Permission->make_role(
-   name  => 'Create Post',
-   permissions => "'create_post'",
-);
-
-require MT::Association;
-MT::Association->link( $aikawa => $manage_themes => $blog );
-MT::Association->link( $ichikawa => $create_post => $blog );
-MT::Association->link( $ukawa => $manage_themes => $second_blog );
 
 # Run
 my ( $app, $out );
@@ -160,7 +179,7 @@ subtest 'mode = dialog_select_theme' => sub {
 
 subtest 'mode = do_export_theme' => sub {
     if ( $^O eq 'MSWin32' ) {
-        $app->config->TempDir('C:\Windows\Temp');
+        $app->config->TempDir( File::Spec->tmpdir );
     }
 
     $app = _run_app(

@@ -15,8 +15,6 @@ use MT::DataAPI::Resource::Util;
 sub updatable_fields {
     [   qw(
             status
-            allowComments
-            allowTrackbacks
             title
             body
             more
@@ -78,16 +76,6 @@ sub fields {
                 MT::Entry::status_int( $hash->{status} );
             },
         },
-        {   name                => 'allowComments',
-            alias               => 'allow_comments',
-            from_object_default => 0,
-            type                => 'MT::DataAPI::Resource::DataType::Boolean',
-        },
-        {   name                => 'allowTrackbacks',
-            alias               => 'allow_pings',
-            from_object_default => 0,
-            type                => 'MT::DataAPI::Resource::DataType::Boolean',
-        },
         {   name                => 'title',
             from_object_default => '',
         },
@@ -110,9 +98,6 @@ sub fields {
         },
         'basename',
         'permalink',
-        {   name  => 'pingsSentUrl',
-            alias => 'pinged_url_list',
-        },
         {   name  => 'date',
             alias => 'authored_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
@@ -124,122 +109,6 @@ sub fields {
         {   name  => 'modifiedDate',
             alias => 'modified_on',
             type  => 'MT::DataAPI::Resource::DataType::ISO8601',
-        },
-        'commentCount',
-        {   name  => 'trackbackCount',
-            alias => 'ping_count',
-        },
-        {   name        => 'comments',
-            from_object => sub {
-                my ($obj) = @_;
-                my $app = MT->instance;
-                my $max
-                    = MT::DataAPI::Resource::Util::int_param( $app,
-                    'maxComments' )
-                    or return [];
-                my $user = $app->user;
-
-                my $terms = undef;
-                if ( !$user->is_superuser ) {
-                    my $perm = $app->model('permission')->load(
-                        {   author_id => $user->id,
-                            blog_id   => $obj->blog_id,
-                        },
-                    );
-                    if (!$perm
-                        || !(
-                            $perm->can_do('view_all_comments')
-                            || (   $perm->can_do('view_own_entry_comment')
-                                && $obj->author_id == $user->id )
-                        )
-                        )
-                    {
-                        require MT::Comment;
-                        $terms = {
-                            visible     => 1,
-                            junk_status => MT::Comment::NOT_JUNK(),
-                        };
-                    }
-                }
-
-                my $args = {
-                    sort      => 'id',
-                    direction => 'ascend',
-                };
-                my ( @comments, @children );
-                for my $c ( @{ $obj->comments( $terms, $args ) || [] } ) {
-                    $c->parent_id
-                        ? push( @children, $c )
-                        : push( @comments, [ $c->id, $c->parent_id, $c ] );
-                }
-                for my $c (@children) {
-                    my $parent_id = $c->parent_id;
-                    my $i         = 0;
-                    my $found     = 0;
-                    for ( ; $i < scalar(@comments); $i++ ) {
-                        if ( !$found ) {
-                            if ( $comments[$i][0] == $parent_id ) {
-                                $found = 1;
-                            }
-                        }
-                        elsif ( $comments[$i][1] != $parent_id ) {
-                            last;
-                        }
-                    }
-                    splice @comments, $i, 0, [ $c->id, $c->parent_id, $c ];
-                }
-                @comments = map { $_->[2] } @comments;
-
-                MT::DataAPI::Resource->from_object(
-                    [     @comments > $max
-                        ? @comments[ 0 .. $max - 1 ]
-                        : @comments
-                    ]
-                );
-            },
-        },
-        {   name        => 'trackbacks',
-            from_object => sub {
-                my ($obj) = @_;
-                my $app = MT->instance;
-                my $max
-                    = MT::DataAPI::Resource::Util::int_param( $app,
-                    'maxTrackbacks' )
-                    or return [];
-                my $user = $app->user;
-
-                my $terms = undef;
-                if ( !$user->is_superuser ) {
-                    my $perm = $app->model('permission')->load(
-                        {   author_id => $user->id,
-                            blog_id   => $obj->blog_id,
-                        },
-                    );
-                    if (!$perm
-                        || !(
-                               $perm->can_do('manage_feedback')
-                            || $perm->can_do('manage_pages')
-                            || (   $perm->can_do('create_post')
-                                && $obj->author_id == $user->id )
-                        )
-                        )
-                    {
-                        require MT::TBPing;
-                        $terms = {
-                            visible     => 1,
-                            junk_status => MT::TBPing::NOT_JUNK(),
-                        };
-                    }
-                }
-
-                my $args = {
-                    sort      => 'id',
-                    direction => 'ascend',
-                    limit     => $max
-                };
-                MT::DataAPI::Resource->from_object(
-                    $obj->pings( $terms, $args ) || [] );
-            },
         },
         {   name        => 'assets',
             from_object => sub {

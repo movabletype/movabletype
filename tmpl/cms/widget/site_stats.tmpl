@@ -1,34 +1,24 @@
-<mt:unless name="no_permission">
 <mtapp:widget
   class="site-stats-widget"
   label="<__trans phrase="Site Stats">"
   can_close="1">
-<div id="widget-container">
-  <div class="up-left-column">
-    <div class="stats-for">
-<mt:if name="object_loop">
-      <__trans phrase="Stats for [_1]", params="<mt:if name="object_loop"><select id="select_blog_id"><mt:loop name="object_loop"><option value="<mt:var name="id">"><mt:var name="name" escape="html"></option></mt:loop></select></mt:if>">
-</mt:if>
-    </div>
+<div class="row up-column">
+  <div id="statistics_settings_link" class="col-12 text-right">
+    <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
   </div>
-  <div class="up-right-column">
-    <div id="statistics_settings_link">
-<mt:unless name="is_smartphone_devices">
-      <a href="<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Statistics Settings"></a>
-</mt:unless>
-    </div>
-  </div>
-  <div class="clear"></div>
-  <div class="down-column">
-    <div class="down-column-contents">
-      <div id="graph"></div>
-    </div>
+</div>
+<div class="row down-column">
+  <div class="col-12 down-column-contents">
+    <div id="graph" style="width: 99%;"></div>
   </div>
 </div>
 </mtapp:widget>
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="css_include" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>chart-api/mtchart.css">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script src="<$mt:var name="static_uri"$>chart-api/mtchart.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -52,36 +42,6 @@
       '#503D99',
       '#395595'
     ];
-
-    jQuery('select#select_blog_id').change( function() {
-      jQuery('#statistics_settings_link').hide();
-      jQuery('#graph').empty();
-      var select_blog_id = jQuery('select#select_blog_id').val();
-      jQuery.ajax({
-        type: 'POST',
-        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-        async: true,
-        url: '<mt:var name="script_url">',
-        dataType: 'json',
-        data: {
-          __mode: 'regenerate_site_stats_data',
-          blog_id: select_blog_id,
-          magic_token: '<mt:var name="magic_token">',
-        },
-        success: function(data) {
-          if (data.error) {
-            jQuery('#graph')
-                .append(jQuery('<div class="msg msg-error"/>').text(data.error));
-            jQuery('.site-stats-widget .down-column').css('height', 'auto');
-          }
-          else {
-            get_graph_data(data.result.stat_url, false);
-          }
-        },
-        error: function(data) {
-        }
-      });
-    });
 
     jQuery('#statistics_settings_link').hide();
 
@@ -151,15 +111,9 @@
         end: data.graph_data[9].x
       }
       new MT.ChartAPI.Graph(config, range).trigger('APPEND_TO', jQuery('#graph'));
-<mt:unless name="is_smartphone_devices">
       if (data.can_edit_config) {
-        <mt:if name="object_loop">
-        var select_blog_id = jQuery('select#select_blog_id').val();
-        jQuery('#statistics_settings_link a').attr('href', '<mt:var name="mt_url">?__mode=cfg_web_services&amp;blog_id='+select_blog_id);
-        </mt:if>
         jQuery('#statistics_settings_link').show();
       }
-</mt:unless>
     }
 
   });
@@ -167,4 +121,3 @@
   /* ]]> */
 </script>
 </mt:setvarblock>
-</mt:unless>

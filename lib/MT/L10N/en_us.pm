@@ -7,6 +7,7 @@
 package MT::L10N::en_us;    # American English
 
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use vars qw( @ISA %Lexicon );
@@ -22,6 +23,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__FILTER_DATE_ORIGIN'       => '[_1]',
     '_FILTER_DATE_DAYS'          => '[_1] days',
     '__SELECT_FILTER_VERB'       => 'is',
+    '__TIME_FILTER_HOURS'        => 'is within the last',
 
     'AUTO DETECT'              => 'Auto-detect',
     '_USER_ENABLE'             => 'Enable',
@@ -53,9 +55,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'You should be able to log in to Movable Type using this new password from the URL below. Once you have logged in, you should change your password to something more memorable.',
 
     '_BACKUP_TEMPDIR_WARNING' =>
-        'Requested data has been backed up successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because backup files contain sensitive information.',
+        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because exported files contain sensitive information.',
     '_BACKUP_DOWNLOAD_MESSAGE' =>
-        'Downloading of the backup file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the backup file only once for a session.',
+        'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
     '_USAGE_BOOKMARKLET_1' =>
         'Setting up QuickPost to post to Movable Type allows you to perform one-click posting and publishing without ever entering through the main Movable Type interface.',
     '_USAGE_BOOKMARKLET_2' =>
@@ -143,7 +145,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Clicking the link below will export all of your current weblog entries to the Tangent server. This is generally a one-time push of your entries, to be done after you have installed the Tangent add-on for Movable Type, but conceivably it could be executed whenever you wish.',
 
     '_NO_SUPERUSER_DISABLE' =>
-        'Because you are a system administrator on the Movable Type system, you can not disable yourself.',
+        'Because you are a system administrator on the Movable Type system, you cannot disable yourself.',
 
     '_USAGE_AUTHORS' =>
         'This is a list of all of the users in the Movable Type system. You can edit a user\'s profile by clicking on his/her name.',
@@ -197,15 +199,17 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Too many comments have been submitted from you in a short period of time.  Please try again in a short while.',
 
     '_INDEX_INTRO' =>
-        '<p>If you are installing Movable Type, you may want to review the <a href="http://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',
+        '<p>If you are installing Movable Type, you may want to review the <a href="https://www.sixapart.com/movabletype/docs/mtinstall.html">installation instructions</a> and view the <a rel="nofollow" href="mt-check.cgi">Movable Type System Check</a> to make sure that your system has what it needs.</p>',
     '_LOG_TABLE_BY'         => 'By',
     '_REBUILD_PUBLISH'      => 'Publish',
     '_DATE_FROM'            => 'From',
     '_DATE_TO'              => 'To',
+    '_TIME_FROM'            => 'From',
+    '_TIME_TO'              => 'To',
     '_SHORT_MAY'            => 'May',
-    '_MTCOM_URL'            => 'http://www.movabletype.com/',
-    '_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
-    '_THEME_DIRECTORY_URL'  => 'http://plugins.movabletype.org/',
+    '_MTCOM_URL'            => 'https://www.movabletype.com/',
+    '_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
+    '_THEME_DIRECTORY_URL'  => 'https://plugins.movabletype.org/',
     '_CATEGORY_BASENAME'    => 'Basename',
 
     '_AUTO'                => 1,
@@ -226,11 +230,27 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     'CATEGORY-WEEKLY_ADV'  => 'Category Weekly',
     'CATEGORY-DAILY_ADV'   => 'Category Daily',
 
+    'CONTENTTYPE_ADV'                  => 'ContentType',
+    'CONTENTTYPE-DAILY_ADV'            => 'ContentType Daily',
+    'CONTENTTYPE-WEEKLY_ADV'           => 'ContentType Weekly',
+    'CONTENTTYPE-MONTHLY_ADV'          => 'ContentType Monthly',
+    'CONTENTTYPE-YEARLY_ADV'           => 'ContentType Yearly',
+    'CONTENTTYPE-CATEGORY_ADV'         => 'ContentType Category',
+    'CONTENTTYPE-CATEGORY-DAILY_ADV'   => 'ContentType Category Daily',
+    'CONTENTTYPE-CATEGORY-WEEKLY_ADV'  => 'ContentType Category Weekly',
+    'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'ContentType Category Monthly',
+    'CONTENTTYPE-CATEGORY-YEARLY_ADV'  => 'ContentType Category Yearly',
+    'CONTENTTYPE-AUTHOR_ADV'           => 'ContentType Author',
+    'CONTENTTYPE-AUTHOR-DAILY_ADV'     => 'ContentType Author Daily',
+    'CONTENTTYPE-AUTHOR-WEEKLY_ADV'    => 'ContentType Author Weekly',
+    'CONTENTTYPE-AUTHOR-MONTHLY_ADV'   => 'ContentType Author Monthly',
+    'CONTENTTYPE-AUTHOR-YEARLY_ADV'    => 'ContentType Author Yearly',
+
     'UTC+11' => 'UTC+11 (East Australian Daylight Savings Time)',
     'UTC+10' => 'UTC+10 (East Australian Standard Time)',
 
     '_POWERED_BY' =>
-        'Powered by <a href="http://www.movabletype.org/"><$MTProductName$></a>',
+        'Powered by <a href="https://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
     '_WARNING_DELETE_USER_EUM' =>
         'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
@@ -263,6 +283,10 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_SAMPLE_PAGE_BODY' =>
         '<p>This is an example web page.</p><p>If the <code>@ADD_TO_SITE_NAV</code> tag is used on a web page, that page will be added to the navigation list in both the header and footer.</p>',
     '__CF_REQUIRED_VALUE__' => q{Value},
+
+    '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
+
+    '__TEXT_BLOCK__' => 'Text',
 );
 
 1;

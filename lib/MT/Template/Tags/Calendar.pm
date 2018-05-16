@@ -6,6 +6,7 @@
 package MT::Template::Tags::Calendar;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( start_end_month offset_time_list wday_from_ts days_in );

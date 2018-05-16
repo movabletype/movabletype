@@ -7,6 +7,7 @@
 package MT::Component;
 
 use strict;
+use warnings;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
 use MT::Util qw( encode_js weaken );
 
@@ -506,7 +507,7 @@ sub _generate_l10n_module {
         eval "require $class";
         $got_class = 1;
     }
-    elsif ( MT->config('RequiredCompatibility') < 5.0 ) {
+    elsif ( ( MT->config('RequiredCompatibility') || 0 ) < 5.0 ) {
         my @paths = split '::', $class;
         $paths[-1] .= '.pm';
         my $inc_path = join '/', @paths;
@@ -572,6 +573,7 @@ CODE
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+    return "" unless defined $text;
 
     # Here, the text must be handled as binary ( non utf-8 ) data,
     # because regexp for utf-8 string is too heavy.
@@ -746,6 +748,9 @@ sub __deep_localize_labels {
         }
         else {
             next unless $k =~ m/(?:\b|_)(?:hint|label|label_plural)\b/;
+            next
+                if exists $hash->{'no_translate'}
+                && $hash->{'no_translate'}->{$k};
             if ( !ref( my $label = $hash->{$k} ) ) {
                 $hash->{$k} = sub { $c->translate($label) };
             }

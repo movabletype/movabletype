@@ -7,6 +7,7 @@
 package MT::Task;
 
 use strict;
+use warnings;
 use base qw(MT::ErrorHandler);
 
 sub new {

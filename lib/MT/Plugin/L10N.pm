@@ -7,6 +7,7 @@
 package MT::Plugin::L10N;
 
 use strict;
+use warnings;
 use base 'MT::L10N';
 use vars qw( %Lexicon );
 

@@ -6,6 +6,7 @@
 
 package MT::App::Upgrader;
 use strict;
+use warnings;
 
 use MT::App;
 use base qw( MT::App );
@@ -71,7 +72,6 @@ sub init_request {
 
 sub login {
     my $app     = shift;
-    my $q       = $app->{query};
     my $cookies = $app->{cookies};
     my ( $user, $pass, $remember, $crypted, $cookie_middle );
     my $first_time  = 0;
@@ -90,11 +90,11 @@ sub login {
         $cookie_middle = '';
         $remember      = '';
     }
-    if ( $q->param('username') && $q->param('password') ) {
+    if ( $app->param('username') && $app->param('password') ) {
         $first_time = 1;
-        $user       = $q->param('username');
-        $pass       = $q->param('password');
-        $remember   = $q->param('remember') || '';
+        $user       = $app->param('username');
+        $pass       = $app->param('password');
+        $remember   = $app->param('remember') || '';
         $crypted    = 0;
     }
     return unless $user && ( $pass || $cookie_middle );
@@ -321,10 +321,10 @@ sub init_user {
             else {
                 $initial_email = $app->param('email') || '';
                 $initial_nickname = $app->param('nickname');
-                $initial_external_id
-                    = MT::Author->unpack_external_id(
-                    $app->param('external_id') )
-                    if $app->param('external_id');
+                if ( my $external_id = $app->param('external_id') ) {
+                    $initial_external_id
+                        = MT::Author->unpack_external_id($external_id);
+                }
             }
         }
         else {
@@ -400,7 +400,60 @@ sub init_user {
     $param{initial_external_id} = $initial_external_id;
     $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
-    $app->init_website( \%param );
+
+    my $new_user;
+    use URI::Escape;
+    $new_user = {
+        user_name        => uri_escape_utf8( $param{initial_user} ),
+        user_nickname    => uri_escape_utf8( $param{initial_nickname} ),
+        user_password    => uri_escape_utf8( $param{initial_password} ),
+        user_email       => uri_escape_utf8( $param{initial_email} ),
+        user_lang        => $param{initial_lang},
+        user_external_id => $param{initial_external_id},
+    };
+
+    if ( my $email_system = $param{initial_use_system}
+        || $param{use_system_email} )
+    {
+        $new_user->{'use_system_email'} = $email_system;
+    }
+    my $steps;
+    my $install_mode = 1;
+    eval {
+        local $app->{upgrading} = 1;
+        require MT::Upgrade;
+        MT::Upgrade->do_upgrade(
+            Install => $install_mode,
+            DryRun  => 1,
+            App     => $app,
+            (   $install_mode
+                ? ( User => $new_user )
+                : ()
+            )
+        );
+        my $steps = $app->response->{steps};
+        my $fn    = \%MT::Upgrade::functions;
+        if ( $steps && @$steps ) {
+            @$steps = sort {
+                $fn->{ $a->[0] }->{priority} <=> $fn->{ $b->[0] }->{priority}
+            } @$steps;
+        }
+    };
+    die $@ if $@;
+    $steps = $app->response->{steps};
+    my $json_steps;
+    if ( $steps && @$steps ) {
+        $json_steps = MT::Util::to_json($steps);
+    }
+
+    $param{installing}    = $install_mode;
+    $param{up_to_date}    = $json_steps ? 0 : 1;
+    $param{initial_steps} = $json_steps;
+    $param{mt_admin_url}
+        = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+        . $app->config->AdminScript;
+
+    return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
 
 sub init_website {
@@ -466,7 +519,7 @@ sub init_website {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
-    if ( $param{'support_unwritable'} == 1 ) {
+    if ( $param{'support_unwritable'} ) {
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
@@ -825,10 +878,7 @@ sub main {
         MT->log(
             {   message => MT->translate(
                     "Movable Type has been upgraded to version [_1].",
-                    (     $cur_rel
-                        ? $cur_version . '.' . $cur_rel
-                        : $cur_version
-                    ),
+                    $app->release_version_id,
                 ),
                 class    => 'system',
                 category => 'upgrade',
@@ -842,8 +892,7 @@ sub main {
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version}
-        = $cur_rel ? $cur_version . '.' . $cur_rel : $cur_version;
+    $param->{mt_version}  = $app->release_version_id;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

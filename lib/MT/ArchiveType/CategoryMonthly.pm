@@ -7,6 +7,7 @@
 package MT::ArchiveType::CategoryMonthly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Category MT::ArchiveType::Monthly );
 use MT::Util qw( dirify start_end_month );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('CATEGORY-MONTHLY_ADV');
+}
+
+sub order {
+    return 150;
 }
 
 sub default_archive_templates {
@@ -36,12 +41,12 @@ sub dynamic_template {
 
 sub template_params {
     return {
-        archive_class                      => "category-monthly-archive",
-        category_monthly_archive           => 1,
-        'module_category-monthly_archives' => 1,
-        archive_template                   => 1,
-        archive_listing                    => 1,
-        datebased_archive                  => 1,
+        archive_class            => "category-monthly-archive",
+        category_monthly_archive => 1,
+        archive_template         => 1,
+        archive_listing          => 1,
+        datebased_archive        => 1,
+        category_based_archive   => 1,
     };
 }
 

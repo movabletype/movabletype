@@ -7,6 +7,7 @@
 package MT::ArchiveType::CategoryWeekly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Category MT::ArchiveType::Weekly );
 use MT::Util qw( dirify start_end_week week2ymd );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('CATEGORY-WEEKLY_ADV');
+}
+
+sub order {
+    return 140;
 }
 
 sub default_archive_templates {
@@ -41,6 +46,7 @@ sub template_params {
         archive_template        => 1,
         archive_listing         => 1,
         datebased_archive       => 1,
+        category_based_archive  => 1,
     };
 }
 

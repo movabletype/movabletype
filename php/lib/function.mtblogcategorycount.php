@@ -6,6 +6,9 @@
 # $Id$
 
 function smarty_function_mtblogcategorycount($args, &$ctx) {
+    require_once('multiblog.php');
+    multiblog_function_wrapper('mtblogcategorycount', $args, $ctx);
+
     // status: complete
     // parameters: none
     $args['blog_id'] = $ctx->stash('blog_id');

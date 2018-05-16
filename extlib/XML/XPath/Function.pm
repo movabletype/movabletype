@@ -1,20 +1,21 @@
-# $Id: Function.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Function;
+
+$VERSION = '1.42';
+
 use XML::XPath::Number;
 use XML::XPath::Literal;
 use XML::XPath::Boolean;
 use XML::XPath::NodeSet;
 use XML::XPath::Node::Attribute;
-use strict;
+use strict; use warnings;
 
 sub new {
     my $class = shift;
     my ($pp, $name, $params) = @_;
-    bless { 
-        pp => $pp, 
-        name => $name, 
-        params => $params 
+    bless {
+        pp => $pp,
+        name => $name,
+        params => $params
         }, $class;
 }
 
@@ -43,7 +44,7 @@ sub as_xml {
     else {
         $string .= " />\n";
     }
-    
+
     return $string;
 }
 
@@ -137,14 +138,28 @@ sub local_name {
         my $nodeset = shift(@params);
         $node = $nodeset->get_node(1);
     }
-    
+
     return XML::XPath::Literal->new($node->getLocalName);
 }
 
 sub namespace_uri {
     my $self = shift;
     my ($node, @params) = @_;
-    die "namespace-uri: Function not supported\n";
+
+    if (@params > 1) {
+        die "namespace_uri() function takes one or no parameters\n";
+    }
+    elsif (@params) {
+        my $nodeset = shift(@params);
+        $node = $nodeset->get_node(1);
+    }
+
+    # Sets to xmlns:[name]="namespace" or xmlns="namespace"
+    my $namespace = $node->getNamespace->toString;
+    # We only need data between the quotation marks
+    $namespace =~ /\"(.*?)\"/;
+
+    return XML::XPath::Literal->new($1);
 }
 
 sub name {
@@ -157,7 +172,7 @@ sub name {
         my $nodeset = shift(@params);
         $node = $nodeset->get_node(1);
     }
-    
+
     return XML::XPath::Literal->new($node->getName);
 }
 
@@ -170,7 +185,7 @@ sub string {
     if (@params) {
         return XML::XPath::Literal->new($params[0]->string_value);
     }
-    
+
     # TODO - this MUST be wrong! - not sure now. -matt
     return XML::XPath::Literal->new($node->string_value);
     # default to nodeset with just $node in.
@@ -200,9 +215,12 @@ sub contains {
     my ($node, @params) = @_;
     die "starts-with: incorrect number of params\n" unless @params == 2;
     my $value = $params[1]->string_value;
-    if ($params[0]->string_value =~ /(.*?)\Q$value\E(.*)/) {
-        # $1 and $2 stored for substring funcs below
-        # TODO: Fix this nasty implementation!
+
+    if (defined $value && ($params[0]->string_value =~ /(.*?)\Q$value\E(.*)/)) {
+        # Store the values of contains1, contains2 for use in the
+        # substring functions below
+        $self->{contains1} = $1;
+        $self->{contains2} = $2;
         return XML::XPath::Boolean->True;
     }
     return XML::XPath::Boolean->False;
@@ -213,7 +231,7 @@ sub substring_before {
     my ($node, @params) = @_;
     die "starts-with: incorrect number of params\n" unless @params == 2;
     if ($self->contains($node, @params)->value) {
-        return XML::XPath::Literal->new($1); # hope that works!
+        return XML::XPath::Literal->new($self->{contains1});
     }
     else {
         return XML::XPath::Literal->new('');
@@ -225,7 +243,7 @@ sub substring_after {
     my ($node, @params) = @_;
     die "starts-with: incorrect number of params\n" unless @params == 2;
     if ($self->contains($node, @params)->value) {
-        return XML::XPath::Literal->new($2);
+        return XML::XPath::Literal->new($self->{contains2});
     }
     else {
         return XML::XPath::Literal->new('');
@@ -239,11 +257,58 @@ sub substring {
     my ($str, $offset, $len);
     $str = $params[0]->string_value;
     $offset = $params[1]->value;
-    $offset--; # uses 1 based offsets
+
+    if ($offset eq 'NaN') {
+        return XML::XPath::Literal->new('');
+    }
+
+    require POSIX;
     if (@params == 3) {
         $len = $params[2]->value;
+
+        if (($len eq 'NaN') || (($offset =~ /Infinity/) && ($len eq 'Infinity'))) {
+            return XML::XPath::Literal->new('');
+        }
+
+        if ($offset ne 'Infinity') {
+            $offset--; # uses 1 based offsets
+            $offset = POSIX::floor($offset + 0.5); # round.
+            if ($offset < 0) {
+                if ($len ne 'Infinity') {
+                    $len += $offset;
+                }
+                else {
+                    $len = length($str);
+                }
+                $offset = 0;
+            }
+            else {
+                if ($len eq 'Infinity') {
+                    return XML::XPath::Literal->new('');
+                }
+            }
+        }
+        else {
+            return XML::XPath::Literal->new('');
+        }
+
+        if ($len eq 'Infinity') {
+            $len = length($str);
+        }
+
+        $len = POSIX::floor($len + 0.5); # round.
+
+        return XML::XPath::Literal->new(substr($str, $offset, $len));
+    } else {
+        $offset--; # uses 1 based offsets
+        $offset = POSIX::floor($offset + 0.5); # round.
+
+        if ($offset < 0) {
+            $offset = 0;
+        }
+
+        return XML::XPath::Literal->new(substr($str, $offset));
     }
-    return XML::XPath::Literal->new(substr($str, $offset, $len));
 }
 
 sub string_length {
@@ -284,7 +349,13 @@ sub translate {
     local $_ = $params[0]->string_value;
     my $find = $params[1]->string_value;
     my $repl = $params[2]->string_value;
-    eval "tr/\\Q$find\\E/\\Q$repl\\E/d, 1" or die $@;
+    if (length($find) == length($repl)) {
+        eval "tr/\Q$find\E/\Q$repl\E/";
+    }
+    else {
+        eval "tr/\Q$find\E/\Q$repl\E/d";
+    }
+    die $@ if $@;
     return XML::XPath::Literal->new($_);
 }
 
@@ -347,7 +418,7 @@ sub number {
         }
         return $params[0]->to_number;
     }
-    
+
     return XML::XPath::Number->new( $node->string_value );
 }
 

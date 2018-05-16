@@ -6,25 +6,20 @@
 package MT::CMS::Plugin;
 
 use strict;
+use warnings;
 use MT::Util qw( remove_html );
 
 sub cfg_plugins {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     $param{screen_class} = 'settings-screen';
-    if ( my $blog_id = $q->param('blog_id') ) {
+    if ( my $blog_id = $app->param('blog_id') ) {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
-            if $blog
-            && (
-            $blog->is_blog
-            ? !$app->can_do('administer_blog')
-            : !$app->can_do('administer_website')
-            );
+            if $blog && !$app->can_do('administer_site');
 
-        $q->param( '_type', 'blog' );
-        $q->param( 'id',    $blog_id );
+        $app->param( '_type', 'blog' );
+        $app->param( 'id',    $blog_id );
         $param{screen_id} = "list-plugins";
         $param{screen_class} .= " plugin-settings";
         $param{output} = 'cfg_plugin.tmpl';
@@ -44,7 +39,7 @@ sub cfg_plugins {
         $param{switched}     = 1 if $app->param('switched');
         $param{'reset'}  = 1 if $app->param('reset');
         $param{saved}    = 1 if $app->param('saved');
-        $param{mod_perl} = 1 if $ENV{MOD_PERL};
+        $param{mod_perl} = 1 if MT::Util::is_mod_perl1();
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_id}    = "list-plugins";
         $param{screen_class} = "plugin-settings";
@@ -56,21 +51,20 @@ sub cfg_plugins {
 sub save_config {
     my $app = shift;
 
-    my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig');
+    my $plugin_sig = $app->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
-    my $blog_id    = $q->param('blog_id');
+    my $blog_id    = $app->param('blog_id');
 
     $app->validate_magic or return;
     return $app->permission_denied()
         unless $app->can_do('save_plugin_setting');
 
     my %param;
-    my @params = $q->param;
+    my @params = $app->multi_param;
     foreach (@params) {
         next
             if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
-        my @values = $q->param($_);
+        my @values = $app->multi_param($_);
         if ( $#values > 0 ) {
             $param{$_} = \@values;
         }
@@ -100,10 +94,9 @@ sub save_config {
 sub reset_config {
     my $app = shift;
 
-    my $q          = $app->param;
-    my $plugin_sig = $q->param('plugin_sig');
+    my $plugin_sig = $app->param('plugin_sig') || '';
     my $profile    = $MT::Plugins{$plugin_sig};
-    my $blog_id    = $q->param('blog_id');
+    my $blog_id    = $app->param('blog_id');
 
     $app->validate_magic or return;
     return $app->permission_denied()
@@ -213,6 +206,14 @@ sub build_plugin_table {
         my $row;
         my $icon = $app->static_path . 'images/plugin.gif';
 
+        my $icon_title = $app->translate('Plugin');
+        my $static_uri = $app->static_path;
+        $icon = qq{
+            <svg title="$icon_title" role="img" class="mt-icon">
+                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin">
+            </svg>
+        };
+
         if ( my $plugin = $profile->{object} ) {
             my $plugin_icon;
             if ( $plugin->icon ) {
@@ -226,7 +227,8 @@ sub build_plugin_table {
             }
             my $plugin_name = remove_html( $plugin->name() );
             my $config_link = $plugin->config_link();
-            my $plugin_page
+            my $plugin_page;
+            $plugin_page
                 = ( $cgi_path . '/' . $plugin->envelope . '/' . $config_link )
                 if $config_link;
             my $doc_link = $plugin->doc_link;
@@ -317,17 +319,17 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { !/^<\$?MTplugin\$?>$/ } (
+                    sort grep { !/^<\$?MTplugin\$?>$/ } (
                         (
 
                             # Format all 'block' tags with <MT(name)>
-                            map { s/\?$//; "<MT$_>" }
+                            sort map { s/\?$//; "<MT$_>" }
                                 ( keys %{ $block_tags || {} } )
                         ),
                         (
 
                             # Format all 'function' tags with <$MT(name)$>
-                            map {"<\$MT$_\$>"}
+                            sort map {"<\$MT$_\$>"}
                                 ( keys %{ $function_tags || {} } )
                         )
                     )
@@ -337,7 +339,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $modifiers || {} }
                 ]
             ) if $modifiers;
@@ -345,7 +347,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $junk_filters || {} }
                 ]
             ) if $junk_filters;
@@ -353,7 +355,7 @@ sub build_plugin_table {
                 [
 
                     # Filter out 'plugin' registry entry
-                    grep { $_ ne 'plugin' }
+                    sort grep { $_ ne 'plugin' }
                         keys %{ $text_filters || {} }
                 ]
             ) if $text_filters;

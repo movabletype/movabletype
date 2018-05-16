@@ -40,13 +40,13 @@ sub new {
     elsif ( ( -e $file ) && ( -r $file ) ) {
         my $z;
         if ( $file =~ /\.t?gz$/i ) {
-            open my $fh, '<', $file;
+            open my $fh, '<', $file or die "Couldn't open $file: $!";
             bless $fh, 'IO::File';
             $z = new IO::Uncompress::Gunzip $fh
                 or return $pkg->error($@);
         }
         else {
-            open $z, '<', $file;
+            open $z, '<', $file or die "Couldn't open $file: $!";
         }
         my $tar = Archive::Tar->new($z)
             or return $pkg->error(
@@ -74,7 +74,7 @@ sub flush {
         MT->translate( 'File [_1] exists; could not overwrite.', $file ) )
         if -e $file;
 
-    open my $fh, '>', $file;
+    open my $fh, '>', $file or die "Couldn't open $file: $!";
     bless $fh, 'IO::File';
     my $z = IO::Compress::Gzip->new($fh);
     $obj->{_arc}->write($z);
@@ -118,8 +118,8 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $file_enc = Encode::decode_utf8($file)
-            unless Encode::is_utf8($file);
+        my $file_enc
+            = Encode::is_utf8($file) ? $file : Encode::decode_utf8($file);
         my $f = File::Spec->catfile( $path, $file_enc );
         $obj->{_arc}->extract_file( $file, MT::FileMgr::Local::_local($f) );
     }

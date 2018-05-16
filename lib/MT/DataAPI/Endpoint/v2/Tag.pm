@@ -89,7 +89,7 @@ sub rename {
             $ot->tag_id( $same_name_tag->id );
             $ot->save
                 or return $app->error(
-                $app->tranlsate( 'Saving object failed: [_1]', $ot->errstr ),
+                $app->translate( 'Saving object failed: [_1]', $ot->errstr ),
                 500
                 );
         }
@@ -130,7 +130,7 @@ sub rename_for_site {
             $ot->tag_id( $same_name_tag->id );
             $ot->save
                 or return $app->error(
-                $app->tranlsate( 'Saving object failed: [_1]', $ot->errstr ),
+                $app->translate( 'Saving object failed: [_1]', $ot->errstr ),
                 500
                 );
         }
@@ -234,7 +234,7 @@ sub _retrieve_tag {
 
     my $tag_id = $app->param('tag_id')
         or return $app->error(
-        $app->translate( 'A paramter "[_1]" is required.', 'tag_id' ), 400 );
+        $app->translate( 'A parameter "[_1]" is required.', 'tag_id' ), 400 );
 
     my $tag = MT->model('tag')->load($tag_id);
     if ( !$tag || MT->model('tag')->load( { n8d_id => $tag->id } ) ) {

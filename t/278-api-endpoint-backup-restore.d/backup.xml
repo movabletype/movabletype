@@ -3483,13 +3483,6 @@ mtUpdateSignInWidget();
             &lt;input type=&quot;text&quot; id=&quot;search&quot; class=&quot;ti&quot; name=&quot;search&quot; value=&quot;&lt;mt:IfStraightSearch&gt;&lt;$mt:SearchString$&gt;&lt;/mt:IfStraightSearch&gt;&quot; /&gt;
 &lt;mt:If name=&quot;search_results&quot;&gt;
             &lt;input type=&quot;hidden&quot; name=&quot;IncludeBlogs&quot; value=&quot;&lt;$mt:SearchIncludeBlogs$&gt;&quot; /&gt;
-            &lt;mt:Ignore&gt;
-            &lt;!-- use these options only with MT::App::Search::Legacy --&gt;
-            &lt;ul class=&quot;search-options&quot;&gt;
-                &lt;li&gt;&lt;input type=&quot;checkbox&quot; name=&quot;CaseSearch&quot; /&gt; 大文字/小文字を区別する&lt;/li&gt;
-                &lt;li&gt;&lt;input type=&quot;checkbox&quot; name=&quot;RegexSearch&quot; /&gt; 正規表現&lt;/li&gt;
-            &lt;/ul&gt;
-            &lt;/mt:Ignore&gt;
 &lt;mt:Else&gt;
             &lt;input type=&quot;hidden&quot; name=&quot;IncludeBlogs&quot; value=&quot;&lt;$mt:WebsiteID$&gt;&lt;mt:WebsiteHasBlog&gt;&lt;mt:Blogs include_blogs=&quot;children&quot;&gt;,&lt;mt:BlogID&gt;&lt;/mt:Blogs&gt;&lt;/mt:WebsiteHasBlog&gt;&quot; /&gt;
 &lt;/mt:If&gt;
@@ -3555,7 +3548,7 @@ mtUpdateSignInWidget();
 <templatemap id='2' archive_type='Individual' blog_id='1' build_type='1' is_preferred='1' template_id='11'></templatemap>
 <templatemap id='3' archive_type='Page' blog_id='1' build_type='1' is_preferred='1' template_id='25'></templatemap>
 <templatemap id='4' archive_type='Category' blog_id='1' build_type='1' is_preferred='1' template_id='36'></templatemap>
-<permission id='2' author_id='1' blog_id='1' created_by='1' created_on='20141114211153' modified_on='20141114211153' role_mask='0'><entry_prefs>Default|Bottom</entry_prefs><permissions>&apos;edit_categories&apos;,&apos;save_image_defaults&apos;,&apos;view_blog_log&apos;,&apos;manage_pages&apos;,&apos;set_publish_paths&apos;,&apos;edit_tags&apos;,&apos;manage_member_blogs&apos;,&apos;manage_themes&apos;,&apos;manage_feedback&apos;,&apos;publish_post&apos;,&apos;edit_all_posts&apos;,&apos;edit_assets&apos;,&apos;edit_config&apos;,&apos;administer_blog&apos;,&apos;send_notifications&apos;,&apos;create_post&apos;,&apos;rebuild&apos;,&apos;edit_notifications&apos;,&apos;comment&apos;,&apos;administer_website&apos;,&apos;edit_templates&apos;,&apos;manage_users&apos;,&apos;upload&apos;,&apos;administer&apos;,&apos;create_blog&apos;,&apos;create_website&apos;,&apos;manage_plugins&apos;,&apos;view_log&apos;</permissions></permission>
+<permission id='2' author_id='1' blog_id='1' created_by='1' created_on='20141114211153' modified_on='20141114211153' role_mask='0'><entry_prefs>Default|Bottom</entry_prefs><permissions>&apos;edit_categories&apos;,&apos;view_blog_log&apos;,&apos;manage_pages&apos;,&apos;set_publish_paths&apos;,&apos;edit_tags&apos;,&apos;manage_member_blogs&apos;,&apos;manage_themes&apos;,&apos;manage_feedback&apos;,&apos;publish_post&apos;,&apos;edit_all_posts&apos;,&apos;edit_assets&apos;,&apos;edit_config&apos;,&apos;administer_blog&apos;,&apos;send_notifications&apos;,&apos;create_post&apos;,&apos;rebuild&apos;,&apos;edit_notifications&apos;,&apos;comment&apos;,&apos;administer_website&apos;,&apos;edit_templates&apos;,&apos;manage_users&apos;,&apos;upload&apos;,&apos;administer&apos;,&apos;create_blog&apos;,&apos;create_website&apos;,&apos;manage_plugins&apos;,&apos;view_log&apos;</permissions></permission>
 <fileinfo id='1' archive_type='Monthly' blog_id='1' startdate='20141101000000' template_id='4' templatemap_id='1' url='/mt2/first_website/2014/11/index.html'><file_path>/var/www/html/mt2/first_website/2014/11/index.html</file_path></fileinfo>
 <fileinfo id='2' archive_type='Individual' blog_id='1' entry_id='1' template_id='11' templatemap_id='2' url='/mt2/first_website/2014/11/abc.html'><file_path>/var/www/html/mt2/first_website/2014/11/abc.html</file_path></fileinfo>
 <fileinfo id='3' archive_type='index' blog_id='1' template_id='7' url='/mt2/first_website/rsd.xml'><file_path>/var/www/html/mt2/first_website/rsd.xml</file_path></fileinfo>

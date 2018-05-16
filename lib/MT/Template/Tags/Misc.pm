@@ -6,6 +6,7 @@
 package MT::Template::Tags::Misc;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( start_end_day start_end_week
@@ -271,6 +272,46 @@ sub _hdlr_stats_snippet {
         or return q();
 
     $provider->snipet(@_);
+}
+
+###########################################################################
+
+=head2 HasPlugin
+
+A conditional tag that returns true when a specific plugin is enabled.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (required)
+
+The name of the plugin. In case the name is not specified explicitly,
+you can use the signature of the plugin, which is the last part of
+the directory name in which the plugin exists, or the last part of
+the directory name plus the name of .pl file.
+
+=back
+
+B<Example:>
+
+    <$mt:HasPlugin name="Comments"$>...</$mt:HasPlugin>
+    <$mt:HasPlugin name="Markdown/Markdown.pl"$>...</$mt:HasPlugin>
+    <$mt:HasPlugin name="my_plugin.pl"$>...</$mt:HasPlugin>
+
+=for tags plugin
+
+=cut
+
+sub _hdlr_has_plugin {
+    my ( $ctx, $args, $cond ) = @_;
+    my $name = delete $args->{name}
+        or return $ctx->error( MT->translate("name is required.") );
+    my $PluginAlias = MT->config->PluginAlias || {};
+    if ( exists $PluginAlias->{$name} ) {
+        $name = $PluginAlias->{$name};
+    }
+    return MT->has_plugin($name) ? 1 : 0;
 }
 
 1;

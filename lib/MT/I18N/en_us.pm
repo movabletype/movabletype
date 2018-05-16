@@ -7,6 +7,7 @@
 package MT::I18N::en_us;
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 @ISA = qw( MT::I18N::default );
 

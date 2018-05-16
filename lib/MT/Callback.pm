@@ -7,6 +7,7 @@
 package MT::Callback;
 
 use strict;
+use warnings;
 
 use MT::ErrorHandler;
 @MT::Callback::ISA = qw( MT::ErrorHandler );

@@ -6,9 +6,13 @@
 # $Id$
 
 function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
-  $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
+    $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
         $ctx->stash('include_blogs', $args['include_blogs']);
         $ctx->stash('exclude_blogs', $args['exclude_blogs']);
         $ctx->stash('blog_ids', $args['blog_ids']);

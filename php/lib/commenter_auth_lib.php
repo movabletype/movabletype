@@ -38,7 +38,7 @@ function _auth_icon_url($static_path, $author) {
     }
 
     if ( $author->author_type == 1 ) {
-        return $static_path . 'images/comment/mt_logo.png';
+        return $static_path . 'images/logo-mark.svg';
     }
 
     global $_commenter_auths;

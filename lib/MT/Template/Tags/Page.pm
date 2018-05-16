@@ -6,6 +6,7 @@
 package MT::Template::Tags::Page;
 
 use strict;
+use warnings;
 
 use MT;
 
@@ -610,6 +611,19 @@ B<Example:>
     <$mt:BlogPageCount$>
 
 =for tags blogs, pages, multiblog, count
+
+=cut
+
+=head2 SitePageCount
+
+The number of published pages in the site. This template tag supports the
+multiblog template tags.
+
+B<Example:>
+
+    <$mt:SitePageCount$>
+
+=for tags sites, pages, multiblog, count
 
 =cut
 

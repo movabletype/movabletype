@@ -2,22 +2,22 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Open2;
-
-use Test::Base;
+use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
 
-use MT::Test qw(:db);
-my $app = MT->instance;
+use MT::Test;
 
 my $blog_id = 1;
 
@@ -36,129 +36,48 @@ my $blog_class  = $mt->model('blog');
 my $entry_class = $mt->model('entry');
 $entry_class->install_meta( { column_defs => $entry_meta_fields, } );
 
-if ( !$blog_class->load(1) ) {
-    my $b = $blog_class->new;
-    $b->set_values( { id => 1, } );
-    $b->save or die $b->errstr;
-}
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-$entry_class->remove_all( { blog_id => 1 } );
-for my $v (qw(1 2 10)) {
-    my $e = $entry_class->new;
-    $e->set_values(
-        {   title     => $v,
-            blog_id   => 1,
-            author_id => 1,
-            status    => MT::Entry::RELEASE,
-        }
-    );
-    $e->meta( 'field.test_text',    $v );
-    $e->meta( 'field.test_integer', $v );
-    $e->save or die $e->errstr;
-}
-
-run {
-    my $block = shift;
-
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
-
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( $block->template );
-        my $ctx = $tmpl->context;
-
-        my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
+    if ( !$blog_class->load(1) ) {
+        my $b = $blog_class->new;
+        $b->set_values( { id => 1, } );
+        $b->save or die $b->errstr;
     }
-};
 
-sub php_test_script {
-    my ( $template, $text ) = @_;
-    $text ||= '';
+    $entry_class->remove_all( { blog_id => 1 } );
+    for my $v (qw(1 2 10)) {
+        my $e = $entry_class->new;
+        $e->set_values(
+            {   title     => $v,
+                blog_id   => 1,
+                author_id => 1,
+                status    => MT::Entry::RELEASE(),
+            }
+        );
+        $e->meta( 'field.test_text',    $v );
+        $e->meta( 'field.test_integer', $v );
+        $e->save or die $e->errstr;
+    }
+});
+
+MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id, \&_set_entry_meta_php);
+
+sub _set_entry_meta_php {
+    my $block = shift;
 
     my $entry_meta_fields_php = 'array(';
     while ( my ( $name, $type ) = each %$entry_meta_fields ) {
         $entry_meta_fields_php .= "'$name' => '$type',";
     }
     $entry_meta_fields_php .= ')';
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
+    return <<"PHP";
 \$entry_meta_fields = $entry_meta_fields_php;
+foreach(\$entry_meta_fields as \$name => \$type) {
+    BaseObject::install_meta('entry', \$name, \$type);
+}
 PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->init_plugins();
-
-$db = $mt->db();
-$ctx =& $mt->context();
-
-foreach($entry_meta_fields as $name => $type) {
-    BaseObject::install_meta('entry', $name, $type);
-}
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template, $block->text );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
 }
 
 __END__

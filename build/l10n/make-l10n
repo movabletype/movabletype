@@ -36,7 +36,7 @@ echo "in lib..."
 find -L lib -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | grep -v L10N | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in mt-static..."
-find -L mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
+find -L mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.tag" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in themes..."
 find -L themes -type f -name "*.yaml" -or -name "*.js" -or -name "*.mtml" | sort | \

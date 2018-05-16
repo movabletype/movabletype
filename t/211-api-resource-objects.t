@@ -2,62 +2,39 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require YAML::Syck }
         or plan skip_all => 'YAML::Syck is not installed';
 }
 
-use File::Spec;
-use File::Copy;
-
-# Disable Commercial.pack temporarily.
+our $test_env;
 BEGIN {
-    my $commercialpack_config
-        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
-    my $commercialpack_config_rename
-        = File::Spec->catfile(
-        qw/ addons Commercial.pack config.yaml.disabled /);
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 
-    if ( -f $commercialpack_config ) {
-        move( $commercialpack_config, $commercialpack_config_rename )
-            or plan skip_all => "$commercialpack_config cannot be moved.";
-    }
+    # Disable Commercial.pack temporarily.
+    $test_env->skip_if_addon_exists('Commercial.pack');
+
+    # Disable Comments/Trackback plugins, too
+    $test_env->skip_if_plugin_exists('Comments');
+    $test_env->skip_if_plugin_exists('Trackback');
 }
 
-# Recover Commercial.pack.
-END {
-    my $commercialpack_config
-        = File::Spec->catfile(qw/ addons Commercial.pack config.yaml /);
-    my $commercialpack_config_rename
-        = File::Spec->catfile(
-        qw/ addons Commercial.pack config.yaml.disabled /);
-
-    if ( -f $commercialpack_config_rename ) {
-        move( $commercialpack_config_rename, $commercialpack_config );
-    }
-}
-
-use lib qw(lib extlib t/lib);
-
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
-
+use MT::Test;
 use File::Spec;
 use File::Basename;
 
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 
+$test_env->prepare_fixture('db_data');
+
 my $app = MT::App::DataAPI->new;
+$app->init_request;
 MT->set_instance($app);
 $app->user( $app->model('author')->load(1) );
 $app->current_api_version(1);
@@ -149,7 +126,7 @@ sub to_object {
         my $values = { %{ $obj->column_values }, %{ $obj->meta }, };
 
         if ( $d->{not_to} ) {
-            foreach my $k ( keys %{ $d->{not_to} } ) {
+            foreach my $k ( sort keys %{ $d->{not_to} } ) {
                 delete $expected_values->{$k};
                 my $value = delete $values->{$k};
                 isnt( $value, $d->{not_to}{$k}, 'converted data:' . $k );

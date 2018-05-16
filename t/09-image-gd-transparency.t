@@ -1,18 +1,25 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
-use File::Basename;
-use File::Spec;
-
+use MT::Test::Env;
 BEGIN {
     eval 'use GD; 1'
         or plan skip_all => 'GD is not installed';
 }
 
-use lib qw( lib extlib );
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use File::Basename;
+use File::Spec;
+
+use MT::Test;
 use MT::Image;
 
 my $dir = dirname( dirname( File::Spec->rel2abs(__FILE__) ) );

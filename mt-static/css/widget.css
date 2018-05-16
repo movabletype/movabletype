@@ -1,0 +1,20 @@
+.widget .panel-heading {
+    padding: 6px 13px;
+    font-weight: 600;
+}
+
+.blog-container .row.odd {
+    background-color: #fbfbfb;
+}
+
+.blog-container li:not(:first-child) {
+    border: 0;
+    border-left: 2px solid #9ea1a3;
+}
+
+.favorite-blogs-widget .blog-container {
+    max-height: 455px;
+    overflow: auto;
+    padding-left: 15px;
+}
+

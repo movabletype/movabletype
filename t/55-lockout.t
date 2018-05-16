@@ -2,13 +2,15 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
-
-use lib 't/lib', 'extlib', 'lib';
-
 
 my $fixed_time = CORE::time;
 sub fixed_time() {
@@ -22,10 +24,13 @@ BEGIN {
     *CORE::GLOBAL::time = \&fixed_time;
     use MT::FailedLogin;
 
-    use MT::Test qw(:app :db);
+    use MT::Test;
 }
 
-use Test::More;
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
+
 use MT::Lockout;
 
 

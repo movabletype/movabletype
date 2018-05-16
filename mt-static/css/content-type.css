@@ -1,0 +1,142 @@
+/* -- Setting Item */
+.setting-item {
+    position: relative;
+    margin-bottom: 5px;
+    padding: 0.62em;
+    border: 1px solid #c0c6c9;
+}
+#manage-contents-sync .setting-item {
+    padding: 0;
+}
+.item-label {
+    height: 23px;
+    line-height: 23px;
+}
+.item-label {
+    margin-right: 1.62em;
+}
+.item-label {
+    font-weight: bold;
+}
+.item-ctrl {
+    height: 23px;
+    line-height: 23px;
+    position: absolute;
+    right: 0.62em;
+    top: 50%;
+    margin-top: -8px;
+}
+
+/* -- Sync Setting */
+#add-block {
+    margin-bottom: 10px;
+}
+
+.item-header,
+.item-content {
+    position: relative;
+    padding: 0.62em;
+    outline: 0;
+}
+.item-header.ui-state-active.ui-state-hover {
+    cursor: default;
+}
+
+.entity-content
+.field-content
+.plane-text {
+    padding: 0.2em 0;
+}
+.add_field {
+    cursor: pointer;
+    margin: 10px 0;
+}
+.addblock {
+  background-color:#737373;
+  color: #ffffff;
+}
+.addblock:hover {
+  background-color:#737373;
+  opacity: 0.7;
+}
+.add_menu {
+  cursor: pointer;
+}
+.add_menu:hover {
+  background: #E3F2F4;
+}
+.add_menu .add {
+    color: #737373;
+}
+.add_menu label {
+  cursor: pointer;
+}
+.add_menu .add .icon-wrap {
+    padding: 5px;
+    margin-right: 10px;
+}
+.asset_field {
+    max-width: 300px;
+}
+.asset_field .img-preview {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-image: none;
+  background-color: #1E8CD2;
+}
+.asset_field img {
+    width: 100%;
+    max-width: 300px;
+    min-width: 100px;
+}
+.asset_field .edit-image-link {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  width: 150px;
+  margin-left: 75px;
+  margin-top: 100px;
+  text-align: center;
+  opacity: 0;
+}
+.asset_field .edit-image-link .action-link {
+  margin-bottom: 15px;
+}
+.asset_field .edit-image-link a{
+  display: block;
+  padding: 5px;
+  background-color: #000000;
+  opacity: 0.6;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  color: #ffffff;
+}
+.asset_field .edit-image-link:hover {
+  opacity: 1;
+}
+.field_options {
+    margin-bottom: 10px;
+}
+
+/* - Clearfix */
+.setting-item {
+    zoom: 1;
+}
+.setting-item:before,
+.setting-item:after {
+  display: block;
+  height: 0;
+  visibility: hidden;
+  content: "\0020";
+}
+.setting-item:after {
+  clear: both;
+}
+
+/* - icons */
+.icon-copy { background-image: url(../images/copy.gif); }

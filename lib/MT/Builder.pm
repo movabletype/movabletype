@@ -7,6 +7,7 @@
 package MT::Builder;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 use MT::Template::Node;
 use MT::Template::Handler;

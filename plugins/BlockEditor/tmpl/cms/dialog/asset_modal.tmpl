@@ -1,0 +1,639 @@
+<mt:unless name="json">
+<div class="step1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script src="<mt:var name="static_uri">js/list_table.js"></script>
+<script>
+  isModal = getByID("list-assets-dialog");
+
+  var checked = [];
+  var currentPage = 1;
+
+  function loadAssetList(offset) {
+    jQuery('.indicator, #listing-table-overlay').show();
+    jQuery('ul.pagination').hide();
+    jQuery('#asset-class').attr("disabled", "disabled");
+    jQuery('#search').attr("disabled", "disabled");
+    jQuery('#search-button').attr("disabled", "disabled");
+
+    var opts= {
+      offset: offset,
+      __mode: 'blockeditor_dialog_list_asset',
+      _type: 'asset',
+  <mt:if name="edit_field">
+        edit_field: '<mt:var name="edit_field" escape="html">',
+  </mt:if>
+  <mt:if name="blog_id">
+        blog_id: <mt:var name="blog_id" escape="html">,
+  </mt:if>
+        dialog_view: 1,
+  <mt:if name="upload_mode">
+        upload_mode: '<mt:var name="upload_mode" escape="html">',
+  </mt:if>
+      dialog: 1,
+      json: 1,
+      can_multi: <mt:var name="can_multi" default="0" escape="html">,
+      asset_id: '<mt:var name="asset_id">',
+    };
+
+    if(jQuery('#search').val().length > 0) {
+      opts.search = jQuery('#search').val();
+    }
+
+    if(jQuery('#asset-class').val().length > 0) {
+      opts.filter = 'class';
+      opts.filter_val = jQuery('#asset-class').val();
+    }
+    else {
+      opts.filter = '';
+      opts.filter_val = '';
+    }
+
+    var canPaginate = true;
+    jQuery.ajax({
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      url: '<mt:var name="script_url">',
+      dataType: 'json',
+      data: opts,
+      success: function(data) {
+        if (data.html) {
+          jQuery('#asset-table').empty();
+          jQuery('#asset-table').append(data.html);
+          if (data.pager) {
+            renderPagination(data.pager);
+          }
+          else {
+            canPaginate = false;
+          }
+        }
+      },
+      complete: function() {
+        jQuery('.indicator, #listing-table-overlay').hide();
+        if (canPaginate) {
+          jQuery('ul.pagination').show();
+        }
+        jQuery('#asset-class').removeAttr("disabled");
+        jQuery('#search').removeAttr("disabled");
+        jQuery('#search-button').removeAttr("disabled");
+        jQuery(document).trigger('complete_list_asset');
+      },
+      error: function(xhr, status, error) {
+        console.log('error: ' + status + ":" + error);
+      }
+    });
+  }
+
+  function renderPagination(pager) {
+    var $e = jQuery('.pagination').empty();
+
+    if ( pager.rows == 0 ) {
+      return;
+    }
+
+    var usefirst = false;
+    var uselast = false;
+    var prevPos = 0;
+    var nextPos = 0;
+    var start;
+    var end;
+    var page = parseInt(pager.offset / pager.limit) + 1;
+    var maxPage = Math.ceil(pager.listTotal / pager.limit);
+    currentPage = page;
+
+    if ( page > 1 ) {
+      usefirst = true;
+      prevPos = pager.offset - pager.limit;
+      start = pager.offset + 1;
+    }
+    else {
+      prevPos = 0;
+      start = 1;
+    }
+
+    if (page < maxPage) {
+      uselast = true;
+      nextPos = pager.offset + pager.limit;
+      end = pager.offset + pager.limit;
+      last = (maxPage-1) * pager.limit;
+    }
+    else {
+      nextPos = pager.offset + pager.limit;
+      end = pager.listTotal;
+      last = (maxPage-1) * pager.limit;
+    }
+
+    var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+
+    $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+
+    if (page - 2 >= 1) {
+      $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+      $e.append('<li class="page-item" aria-hidden="true">...</li>');
+    }
+
+    if (page - 1 >= 1) {
+      var firstLastClass = page - 1 == 1 ? ' first-last' : '';
+      $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
+    }
+
+    $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+
+    if (page + 1 <= maxPage) {
+      var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
+      $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+    }
+
+    if (page + 2 <= maxPage) {
+      $e.append('<li class="page-item" aria-hidden="true">...</li>');
+      $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+    }
+
+    $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
+
+    jQuery('a.start').click(function() {
+      saveChecked(page);
+      loadAssetList(0);
+      return false;
+    });
+    jQuery('a.to-start').click(function() {
+      if (!usefirst) {
+        return false;
+      }
+      saveChecked(page);
+      loadAssetList(prevPos);
+      return false;
+    });
+    jQuery('a.to-end').click(function() {
+      if (!uselast) {
+        return false;
+      }
+      saveChecked(page);
+      loadAssetList(nextPos);
+      return false;
+    });
+    jQuery('a.end').click(function() {
+      saveChecked(page);
+      loadAssetList(last);
+      return false;
+    });
+  }
+
+  function saveChecked(page) {
+    checked[page] = [];
+    jQuery('.listing-table input:checked').each(function() {
+      var id = jQuery(this).parents('tr').attr('id');
+      checked[page][id] = jQuery(this).val();
+    });
+  }
+
+  jQuery('#asset-class').change(function() {
+    checked = [];
+    loadAssetList(0);
+  });
+
+  <mt:unless name="filter" eq="userpic">
+  jQuery('#modal-search').submit(function(){
+    checked = [];
+    loadAssetList(0);
+    jQuery('.search-reset').removeClass('hidden').show();
+    return false;
+  })
+
+
+  jQuery('.search-reset').click(function() {
+    checked = [];
+    jQuery('#search').val('');
+    loadAssetList(0);
+    jQuery('.search-reset').addClass('hidden').hide();
+  });
+  </mt:unless>
+
+  var assets = {};
+  var timers = {};
+  function loadImage(id){
+    var asset = assets[id];
+    if (!asset) {
+        var detail_json = getByID("asset-" + id + "-json");
+        if (!detail_json) return false;
+        asset = eval('(' + detail_json.value + ')');
+        if (!asset) return false;
+        assets[id] = asset;
+    }
+
+    if (asset.preview_url) {
+      jQuery('#asset-' + id + '-preview').attr('src', asset.preview_url);
+    }
+  }
+
+  function change_upload_panel(mode){
+    if(mode == 'upload'){
+      jQuery('#blockeditor-list-asset-panel').hide();
+      jQuery('#blockeditor-upload-asset-panel').show();
+    }else {
+      jQuery('#blockeditor-list-asset-panel').show();
+      jQuery('#blockeditor-upload-asset-panel').hide();
+    }
+  }
+  jQuery(document).one('click', '.upload_asset', function(){
+    change_upload_panel('upload');
+  });
+  change_upload_panel('list');
+  // Initial laoading
+  loadAssetList(0);
+</script>
+<style>
+#blockeditor-list-asset-panel .asset-col {
+  cursor: pointer;
+}
+#blockeditor-list-asset-panel .img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding:0;
+    background-color: #ddd;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    box-sizing: border-box;
+}
+#blockeditor-list-asset-panel .img-preview {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  border: 1px solid #E0E0E0;
+  display:table-cell;
+  vertical-align:middle;
+  text-align: center;
+  box-sizing: border-box;
+}
+#blockeditor-list-asset-panel .img-preview image {
+  padding: 0.25rem;
+  background-color: #FFFFFF;
+  max-width: 100%;
+  height: auto;
+  vertical-align:middle;
+  box-sizing: border-box;
+}
+
+#blockeditor-list-asset-panel .img-label {
+  width: 120px;
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+</style>
+</mt:unless>
+
+<div id="blockeditor-list-asset-panel" class="tab-pane <mt:unless name="can_upload">active </mt:unless>">
+  <mt:unless name="json">
+  <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
+
+  <mt:unless name="filter" eq="userpic">
+  <div class="border-bottom pb-3">
+  <form action="" method="get" id="modal-search" class="form-inline">
+    <input type="hidden" id="asset-class" name="asset-class" value="image">
+    <div class="form-row align-items-center">
+      <div class="form-group">
+        <label class="sr-only" for="search"><__trans phrase="Search"></label>
+        <input type="text" id="search" name="search" class="form-control search-input text" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+      </div>
+      <div class="form-group ml-3">
+        <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
+          <mtapp:svgicon id="ic_search" title="Search">
+        </a>
+        <button id="search-button" class="search-command search-submit" style="display: none;">
+          <span class="sr-only">
+            <__trans phrase="Search">
+          </span>
+        </button>
+      </div>
+      <div class="form-group">
+        <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
+      </div>
+    </div>
+  </form>
+  </div>
+  </mt:unless>
+
+  <mt:setvarblock name="list_actions">
+          <div class="indicator">
+            <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
+            <__trans phrase="Loading...">
+          </div>
+          <nav aria-label="Asset List">
+            <ul class="pagination"></ul>
+          </nav>
+  </mt:setvarblock>
+
+  <div id="listing" class="listing line has-filter mt-3">
+    <div class="unit size1of1">
+      <div id="listing-table" class="listing-table-block">
+        <div id="listing-table-overlay" class="overlay"></div>
+        <div id="asset-table" class="table mt-table listing-table">
+</mt:unless>
+  <mt:if name="object_loop">
+    <mt:setvar name="row" value="1">
+    <mt:loop name="object_loop">
+          <!-- <mt:var name="row">:<mt:var name="__counter__"> -->
+          <mt:if name="__counter__" op="%" value="5" eq="0"><div class="row"></mt:if>
+          <mt:if name="__first__">
+          <div class="row">
+            <div class="col">
+                <div class="img-preview">
+                  <a href="#" class="upload_asset">
+                  <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" title="<__trans phrase="Upload new image">">
+                  </a>
+                </div>
+                <p class="img-label pt-3 m-0" title="<__trans phrase="Upload new image">"></p>
+            </div>
+          </mt:if>
+
+          <div id="asset-<mt:var name="id" escape="html">-card" class="col">
+            <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+            <label class="asset-col">
+              <div class="img-preview">
+                <mt:if name="id">
+                <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                <div class="img-overlay">
+                  <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
+                  <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
+                </div>
+                </mt:if>
+              </div>
+
+              <mt:if name="id">
+              <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                <$mt:var name="label" escape="html"$>
+              </p>
+              </mt:if>
+            </label>
+            <mt:if name="id">
+            <script>
+              loadImage('<mt:var name="id" escape="js">');
+            </script>
+            </mt:if>
+          </div>
+
+          <mt:if name="__counter__" eq="4">
+            </div>
+          </mt:if>
+          <mt:if name="__last__">
+            </div>
+          </mt:if>
+    </mt:loop>
+  <mt:else>
+      <mt:setvar name="first" value="1">
+      <mt:for var="i" from="0" to="1">
+      <div class="row">
+        <mt:for var="x" from="0" to="3">
+        <div class="col">
+            <div class="img-preview">
+              <mt:if name="first" eq="1">
+              <a href="#" class="upload_asset">
+              <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" title="<__trans phrase="Upload new image">">
+              </a>
+              </mt:if>
+            </div>
+            <mt:if name="first" eq="1">
+            <p class="img-label pt-3 m-0" title="<__trans phrase="Upload new image">"></p>
+            </mt:if>
+        </div>
+        <mt:setvar name="first" value="0">
+        </mt:for>
+      </div>
+      </mt:for>
+  </mt:if>
+  <mt:unless name="json">
+</div>
+      <div id="actions-bar" class="float-right line">
+      <mt:var name="list_actions">
+      </div>
+
+      </div>
+    </div>
+  </div>
+
+</mt:unless>
+
+</div>
+
+<mt:unless name="json">
+<mt:if name="can_upload">
+<div id="blockeditor-upload-asset-panel">
+  <mt:setvar name="blockeditor-included_upload_asset" value="1">
+  <mt:var name="asset_upload_panel">
+</div>
+</mt:if>
+</mt:unless>
+
+<mt:unless name="json">
+<mt:if name="can_upload">
+<div id="blockeditor-asset-option-panel">
+  <mt:loop name="options_loop" >
+  <div class="row asset-detail-panel" data-asset-id="<mt:var name="id">">
+    <div class="form-group col">
+      <mt:if name="thumbnail">
+              <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
+      <mt:else>
+              <img src="<mt:var name="static_uri">images/file-<mt:var name="thumbnail_type" escape="html">.svg" width="60" height="60">
+      </mtif>
+    </div>
+    <!-- options -->
+    <mt:var name="options">
+    <!-- /options -->
+  </div>
+  </mt:loop>
+</div>
+</mt:if>
+</div>
+
+
+
+<form method="post" action="<mt:var name="script_url">" name="select_asset" id="select_asset">
+  <input type="hidden" name="__mode" value="<mt:if name="next_mode"><mt:var name="next_mode" escape="html"><mt:else>dialog_insert_options</mt:if>" />
+  <input type="hidden" name="_type" value="asset" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="dialog_view" value="1" />
+  <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
+  <input type="hidden" name="dialog" value="1" />
+  <input type="hidden" name="asset_id" value="<mt:var name="asset_id">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+<mt:if name="edit_blog_id">
+  <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
+  <mt:unless name="is_image">
+  <input type="hidden" name="force_insert" value="1" />
+  </mt:unless>
+  <mt:unless name="asset_select">
+  <input type="hidden" name="entry_insert" value="1" />
+  </mt:unless>
+</mt:if>
+<mt:if name="asset_select">
+  <input type="hidden" name="direct_asset_insert" value="1" />
+  <input type="hidden" name="asset_select" value="1" />
+</mt:if>
+<mt:if name="user_id">
+  <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+</mt:if>
+<input type="hidden" name="options" value="<mt:var name="options" escape="html">" />
+<input type="hidden" name="edit" value="<mt:var name="edit" escape="html">" />
+</form>
+
+<script>
+jQuery(function(){
+jQuery(document).off('complete_list_asset').on('complete_list_asset', step1);
+
+function step1(){
+  jQuery('.modal-blockeditor .actions-bar').hide();
+  jQuery('.modal-blockeditor .actions-bar.step1').remove();
+  var cancel_button = jQuery('<a data-dismiss="modal" class="modal-cancel">' + trans('Cancel') + '</a>');
+  var next_button = jQuery('<button type="button" class="btn btn-primary submit disabled" disabled>' + trans('Next') + '</button>');
+  var actions_bar = jQuery('<div class="actions-bar step1"></div>');
+  actions_bar.append(cancel_button);
+  actions_bar.append(next_button);
+  jQuery('.modal-blockeditor .actions-bar').after(actions_bar);
+  jQuery('.step1 [name="asset-img-id"]').off('change').on('change', function(){
+    if(jQuery(this).prop('checked')){
+      jQuery('.step1 .submit').prop('disabled', false).removeClass('disabled');
+      jQuery('[name=asset_id]').val(jQuery(this).val());
+    }
+  });
+
+  jQuery('[name=asset_id]').off('change').on('change', function(){
+    if(jQuery(this).val() != ''){
+      next_button.prop('disabled', false).removeClass('disabled');
+    } else {
+      next_button.prop('disabled', true).addClass('disabled');
+    }
+  })<mt:if name="asset_id">.change()</mt:if>;
+  next_button.on('click',function(){
+    if(jQuery(this).is(':disabled')) return false;
+    var asset_id = jQuery('[name=asset_id]').val();
+    if(!asset_id) return false;
+    var data = {
+      '__mode': 'blockeditor_dialog_insert_options',
+      '_type': "asset",
+      'return_args': '<mt:var name="return_args" escape="js">',
+      'magic_token': '<mt:var name="magic_token">',
+      'dialog_view': '1',
+      'no_insert': '<mt:var name="no_insert">',
+      'id': asset_id,
+      'edit_field': '<mt:var name="edit_field" escape="js">',
+      'direct_asset_insert': '1',
+      'asset_select': '1',
+      'blog_id': '<mt:var name="edit_blog_id">',
+      options: '<mt:var name="options" escape="js">',
+      edit: '<mt:var name="edit">',
+    };
+    jQuery.ajax({
+      url: '<mt:var name="script_url">',
+      type:'POST',
+      data: data
+    })
+    .done(function(data){
+      step2(data);
+      return false;
+    })
+    .fail(function(jqXHR, textStatus, errorThrown){
+      console.log('error: ' + status + ":" + error);
+      return false;
+    });
+    return false;
+  });
+}
+function step2(data) {
+  jQuery('.modal-blockeditor .modal-body .step1').hide();
+  jQuery('.modal-blockeditor .modal-body .step2').remove();
+  var step2 = jQuery('<div class="step2"></div>');
+  step2.append(data);
+  jQuery('.modal-blockeditor .modal-body .step1').after(step2);
+  jQuery('.modal-blockeditor .actions-bar').hide();
+  var actions_bar = jQuery('<div class="actions-bar asset-actions step2"></div>');
+  var cancel_button = jQuery('<a data-dismiss="modal" class="action modal-cancel">' + trans('Cancel') + '</a>');
+  var back_button = jQuery('<button type="button" class="action previous button btn btn-default mr-3">' + trans('Back') + '</button>');
+  var submit_button = jQuery('<button type="button" class="action button btn btn-primary submit">' + trans('Add') + '</button>');
+  actions_bar.append(cancel_button);
+  actions_bar.append(back_button);
+  actions_bar.append(submit_button);
+  jQuery('.modal-blockeditor .actions-bar.step1').after(actions_bar);
+  back_button.on('click',function(){
+    jQuery('.step2').hide();
+    jQuery('.step1').show();
+  });
+
+  submit_button.on('click', function(){
+    var options = [];
+    var errors = 0;
+    jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
+      var $this = jQuery(this);
+      var id = $this.attr('data-asset-id');
+      var opts = {};
+      opts.id = id;
+      if(jQuery(this).find('[name="asset-option-thumbnail"]').prop('checked')){
+        if ( !jQuery(this).find('[name="asset-option-width"]').mtValidate('default')) {
+          // each continue
+          errors = 1;
+          return true;
+        }
+      }
+      jQuery(this).find('input').each(function() {
+        if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
+         if(jQuery(this).prop('checked')) {
+           opts[jQuery(this).attr('name')] = jQuery(this).val();
+         }
+        }
+        else {
+          opts[jQuery(this).attr('name')] = jQuery(this).val();
+        }
+      });
+      options.push(opts);
+    });
+    if( errors != 0 ){
+      return false;
+    }
+    var json = JSON.stringify(options);
+    var $form = jQuery('#asset-detail-form');
+    var asset_id = jQuery('[name=asset-img-id]:checked').val();
+
+    var data = {
+      '__mode': 'blockeditor_dialog_insert_asset',
+      '_type': "asset",
+      'return_args': '<mt:var name="return_args" escape="html">',
+      'magic_token': '<mt:var name="magic_token">',
+      'dialog_view': '1',
+      'no_insert': '<mt:var name="no_insert">',
+      'id': asset_id,
+      'edit_field': '<mt:var name="edit_field" escape="html">',
+      'direct_asset_insert': '1',
+      'asset_select': '1',
+      'blog_id': '<mt:var name="edit_blog_id">',
+      'prefs_json': json,
+    };
+    jQuery.ajax({
+      url: '<mt:var name="script_url">',
+      type:'POST',
+      data: data
+    })
+    .done(function(data){
+      step3(data);
+    }).fail(function(jqXHR, textStatus, errorThrown){
+      return false;
+    });
+    return false;
+  });
+  return false;
+}
+function step3(data){
+  jQuery('.modal-blockeditor .modal-body .step2').hide();
+  jQuery('.modal-blockeditor .modal-body .step3').remove();
+  var step3 = jQuery('<div class="step3"></div>');
+  step3.append(data);
+  jQuery('.modal-blockeditor .modal-body .step2').after(step3);
+  jQuery('.modal-blockeditor .actions-bar:eq(0) .submit').click();
+}
+});
+</script>
+</mt:unless>

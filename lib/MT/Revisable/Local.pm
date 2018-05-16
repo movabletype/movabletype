@@ -9,6 +9,7 @@
 package MT::Revisable::Local;
 
 use strict;
+use warnings;
 use base 'MT::ErrorHandler';
 
 sub revision_pkg {

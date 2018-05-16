@@ -6,6 +6,9 @@
 # $Id$
 
 function smarty_function_mttagsearchlink($args, &$ctx) {
+    require_once('multiblog.php');
+    multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
+
     $mt  = MT::get_instance();
     $blog = $ctx->stash('blog');
 

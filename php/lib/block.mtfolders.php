@@ -9,7 +9,23 @@ require_once('block.mtcategories.php');
 function smarty_block_mtfolders($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
-    $args['class'] = 'folder';
-    return smarty_block_mtcategories($args, $content, $ctx, $repeat);
+
+    $localvars = array('category_set');
+
+    if (!isset($content)) {
+        $args['class'] = 'folder';
+        unset($args['category_set_id']);
+
+        $ctx->localize($localvars);
+        $ctx->stash('category_set', null);
+    }
+
+    $ret = smarty_block_mtcategories($args, $content, $ctx, $repeat);
+
+    if (!$repeat) {
+        $ctx->restore($localvars);
+    }
+
+    return $ret;
 }
 ?>

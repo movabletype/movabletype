@@ -1,25 +1,45 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
 BEGIN {
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
     eval 'use Test::Wight; 1'
         or plan skip_all => 'Wight is not installed';
+    eval 'use Imager; 1'
+        or plan skip_all => 'Imager is not installed';
 }
 
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-    system 'perl -Ilib -Iextlib -It/lib -e "use MT::Test qw( :db :data );"';
+    $test_env = MT::Test::Env->new(
+        # to serve actual js libraries
+        StaticFilePath => "MT_HOME/mt-static/",
 
-    $ENV{MT_CONFIG} = 't/mysql-test.cfg';
+        # ImageMagick 6.90 hangs when it tries to scale
+        # the same image again (after the initialization).
+        # Version 7.07 works fine. Other three drivers do, too.
+        # Because Image::Magick hides its $VERSION in an
+        # internal package (Image::Magick::Q16 etc), it's
+        # more reliable to depend on something else.
+        ImageDriver => 'Imager',
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
-use lib qw( lib extlib );
+
+use MT::Test;
 use MT;
 use MT::PSGI;
+
+$test_env->prepare_fixture('db_data');
+
+my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
+$author->set_password('Nelson');
+$author->save or die $author->errstr;
 
 my $wight = Test::Wight->new;
 $wight->spawn_psgi( MT::PSGI->new->to_app );

@@ -7,6 +7,7 @@
 package MT::ArchiveType::Yearly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Date );
 use MT::Util qw( start_end_year );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("YEARLY_ADV");
+}
+
+sub order {
+    return 60;
 }
 
 sub dynamic_template {

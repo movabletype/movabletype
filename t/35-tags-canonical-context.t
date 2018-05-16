@@ -2,26 +2,31 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test-disable-object-cache.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use IPC::Open2;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        DisableObjectCache => 1,
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use Test::More;
+use IPC::Run3;
 use URI;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::WeblogPublisher;
+
+$test_env->prepare_fixture('db_data');
+
 my $app       = MT->instance;
 my $publisher = MT::WeblogPublisher->new;
 
@@ -104,20 +109,23 @@ sub test_mapping_url {
         'preferred_mapping_url - static'
     );
 
-    my $php_result = test_mapping_url_php( $fileinfo->id );
+SKIP: {
+        skip "Can't find executable file: php", 2 unless has_php();
+        my $php_result = test_mapping_url_php( $fileinfo->id );
 
-    is( $php_result->{current_mapping_url},
-        exists( $data->{current_mapping_url} )
-        ? $data->{current_mapping_url}
-        : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
-        'current_mapping_url - dynamic'
-    );
-    is( $php_result->{preferred_mapping_url},
-        exists( $data->{preferred_mapping_url} )
-        ? $data->{preferred_mapping_url}
-        : undef,
-        'preferred_mapping_url - dynamic'
-    );
+        is( $php_result->{current_mapping_url},
+            exists( $data->{current_mapping_url} )
+            ? $data->{current_mapping_url}
+            : $blog_uri->scheme . '://' . $blog_uri->host . $fileinfo->url,
+            'current_mapping_url - dynamic'
+        );
+        is( $php_result->{preferred_mapping_url},
+            exists( $data->{preferred_mapping_url} )
+            ? $data->{preferred_mapping_url}
+            : undef,
+            'preferred_mapping_url - dynamic'
+        );
+    }
 }
 
 sub test_mapping_url_php {
@@ -159,10 +167,9 @@ print($ctx->stash('current_mapping_url') . "\n");
 print($ctx->stash('preferred_mapping_url') . "\n");
 PHP
 
-    open2( my $php_in, my $php_out, 'php -q' );
-    print {$php_out} $test_script;
-    close $php_out;
-    my $php_result = do { local $/; <$php_in> };
+    run3 ['php', '-q'],
+        \$test_script, \my $php_result, undef
+        or die $?;
 
     my $result = {};
     @$result{qw(current_mapping_url preferred_mapping_url)} = split /\n/,

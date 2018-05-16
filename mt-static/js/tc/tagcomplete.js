@@ -16,7 +16,7 @@ auto-completion of words using an input box and a DHTML selection menu
 /*
 - Given an array of possible auto-completion words...
 - Keep in memory the current word being typed
-- on keyDown:
+- on keyUp:
     - if the character is a space, kill the internal word memory
     - if the character is a tab, autocomplete with the selected word
     - otherwise, narrow down the list of possible matches
@@ -55,8 +55,8 @@ TC.TagComplete.prototype.attachElements = function()
         this.input_box = document.getElementById(this.id);
         if ( this.input_box ) {
             var self = this;
-            var keyDown = function( event ) { return self.keyDown( event ); }
-            TC.attachEvent( this.input_box, "keydown", keyDown );
+            var keyUp = function( event ) { return self.keyUp( event ); }
+            TC.attachEvent( this.input_box, "keyup", keyUp );
             this.input_box.setAttribute("autocomplete", "off");
         }
     }
@@ -69,7 +69,7 @@ TC.TagComplete.prototype.attachElements = function()
         window.setTimeout( "TC.TagComplete.instances[ '" + this.id + "' ].attachElements();", 1000 );
 }
 
-TC.TagComplete.prototype.keyDown = function( evt )
+TC.TagComplete.prototype.keyUp = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
@@ -242,21 +242,35 @@ TC.TagComplete.prototype.onDivMouseOut = function()
 TC.TagComplete.prototype.constructCompletionBox = function()
 {
     var div = this.completion_box;
-    while ( div.hasChildNodes() )
-        div.removeChild( div.firstChild );
+    var ul = div.firstElementChild;
+    while ( ul.hasChildNodes() )
+        ul.removeChild( ul.firstChild );
     for ( var i = 0; i < this.suggestedCompletions.length; i++ )
     {
-        var inner = document.createElement('div');
-        div.appendChild(inner);
+        var inner = document.createElement('span');
+        inner.className = 'mt-suggest__select';
         inner.innerHTML = this.suggestedCompletions[ i ];
         inner.onmousedown = TC.TagComplete.prototype.onDivMouseDown;
-        inner.onmouseover = TC.TagComplete.prototype.onDivMouseOver;
-        inner.onmouseout = TC.TagComplete.prototype.onDivMouseOut;
         inner.tagComplete = this;
+
+        var li = document.createElement('li');
+        li.appendChild(inner);
+        ul.appendChild(li);
     }
-    div.style.display = 'block';
-    if (div.firstChild)
-        div.firstChild.className = 'complete-highlight';
+    div.parentElement.style.display = 'block';
+
+    var $scrollableParent = jQuery('.modal-body');
+    if ($scrollableParent.length == 0) {
+      $scrollableParent = jQuery(window);
+    }
+    var $parentElement = jQuery(div.parentElement);
+    var $inputBox = jQuery(this.input_box);
+    var margin = 30;
+    if ($scrollableParent.scrollTop() > $inputBox.offset().top) {
+      $scrollableParent.scrollTop($inputBox.offset().top - margin);
+    } else if ($scrollableParent.scrollTop() + $scrollableParent.height() < $parentElement.offset().top + $parentElement.height()) {
+      $scrollableParent.scrollTop($parentElement.offset().top + $parentElement.height() + margin - $scrollableParent.height());
+    }
 }
 
 TC.TagComplete.prototype.clearCompletions = function()
@@ -266,7 +280,7 @@ TC.TagComplete.prototype.clearCompletions = function()
     this.suggestedCompletions = new Array();
     this.selectedCompletion = 0;
     if (this.completion_box)
-        this.completion_box.style.display = 'none';
+        this.completion_box.parentElement.style.display = 'none';
 }
 
 TC.TagComplete.prototype.keyCodeToAChar = function( keyCode )

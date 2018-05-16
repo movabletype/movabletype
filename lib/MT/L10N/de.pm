@@ -6,6 +6,7 @@
 
 package MT::L10N::de;
 use strict;
+use warnings;
 use utf8;
 use MT::L10N;
 use MT::L10N::en_us;
@@ -257,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Powered by<br /><a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Powered by<br /><a href="https://www.movabletype.org/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Dieses Blog steht unter einer <a href="[_1]">Creative Commons-Lizenz</a>.',
 
 ## default_templates/calendar.mtml
@@ -675,65 +676,6 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 	'Profile' => 'Profil',
 
-## lib/MT/App/Comments.pm
-	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Fehler bei der Zuweisung von Kommentierungsrechten an Benutzer &#8222;[_1] (ID: [_2])&#8220; für Weblog \'[_3] (ID: [_4])\'. Keine geeignete Kommentierungsrolle gefunden.',
-	'Cannot load blog #[_1].' => 'Konnte Blog #[_1] nicht laden.',
-	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => 'Ungültiger Anmeldeversuch von Kommentarautor [_1] an Weblog [_2](ID: [_3]) - native Movable Type-Authentifizierung bei diesem Weblog nicht zulässig.',
-	'Invalid login.' => 'Login ungültig.',
-	'Invalid login' => 'Login ungültig',
-	'Successfully authenticated, but signing up is not allowed.  Please contact your Movable Type system administrator.' => 'Sie haben sich erfolgreich authentifiziert, dürfen sich aber nicht anmelden. Bitte wenden Sie sich an Ihren Movable-Type-Administrator.',
-	'You need to sign up first.' => 'Bitte registrieren Sie sich zuerst.',
-	'The login could not be confirmed because of a database error ([_1])' => 'Anmeldung konnte aufgrund eines Datenbankfehlers nicht durchgeführt werden ([_1])',
-	'Permission denied.' => 'Zugriff verweigert.',
-	'Login failed: permission denied for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: Zugriff verweigert für Benutzer &#8222;[_1]&#8220;',
-	'Login failed: password was wrong for user \'[_1]\'' => 'Anmeldung fehlgeschlagen: falsches Passwort für Benutzer &#8222;[_1]&#8220;',
-	'Failed login attempt by disabled user \'[_1]\'' => 'Fehlgeschlagener Anmeldeversuch von deaktiviertem Benutzer &#8222;[_1]&#8220;',
-	'Failed login attempt by unknown user \'[_1]\'' => 'Fehlgeschlagener Anmeldeversuch von unbekanntem Benutzer &#8222;[_1]&#8220;',
-	'Signing up is not allowed.' => 'Registrierungen sind nicht erlaubt.',
-	'Movable Type Account Confirmation' => 'Movable Type-Anmeldungsbestätigung',
-	'Your confirmation has expired. Please register again.' => 'Ihre Bestätigung ist nicht mehr gültig. Bitte registrieren Sie sich erneut.',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Zurück zur Ausgangsseite</a>',
-	'Your confirmation have expired. Please register again.' => 'Ihre Anmeldung ist abgelaufen. Bitte registrieren Sie sich erneut.',
-	'Commenter \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Kommentarautor &#8222;[_1]&#8220; (ID:[_2]) erfolgreich registriert.',
-	'Thanks for the confirmation.  Please sign in to comment.' => 'Vielen Dank für Ihre Bestätigung. Sie können sich jetzt anmelden und kommentieren.',
-	'[_1] registered to the blog \'[_2]\'' => '[_1] hat sich für das Blog &#8222;[_2]&#8220; registriert.',
-	'No id' => 'Keine ID',
-	'No such comment' => 'Kein entsprechender Kommentar',
-	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'IP [_1] gesperrt, da mehr als 8 Kommentare in [_2] Sekunden abgegeben wurden.',
-	'IP Banned Due to Excessive Comments' => 'IP-Adresse wegen exzessiver Kommentarabgabe gesperrt',
-	'No entry_id' => 'Entry_id fehlt',
-	'No such entry \'[_1]\'.' => 'Kein Eintrag &#8222;[_1]&#8220;.',
-	'_THROTTLED_COMMENT' => 'Sie haben zu viele Kommentare in schneller Folge abgegeben. Bitte versuchen Sie es in einigen Augenblicken erneut.',
-	'Comments are not allowed on this entry.' => 'Zu diesem Eintrag können keine Kommentare abgegeben werden.',
-	'Comment text is required.' => 'Bitte geben Sie einen Kommentartext ein.',
-	'An error occurred: [_1]' => 'Es ist ein Fehler aufgetreten: [_1]',
-	'Registration is required.' => 'Registrierung erforderlich',
-	'Name and E-mail address are required.' => 'Name und E-Mail-Adresse sind erforderlich',
-	'Invalid email address \'[_1]\'' => 'Ungültige E-Mail-Adresse &#8222;[_1]&#8220;',
-	'Invalid URL \'[_1]\'' => 'Ungültige Web-Adresse (URL) &#8222;[_1]&#8220;',
-	'Text entered was wrong.  Try again.' => 'Der eingegebene Text ist nicht richtig. Bitte versuchen Sie es erneut.',
-	'Comment save failed with [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
-	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2].',
-	'Publishing failed: [_1]' => 'Veröffentlichung fehlgeschlagen: [_1]',
-	'Cannot load template' => 'Kann Vorlage nicht laden',
-	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch wartenden Kommentarautoren &#8222;[_1]&#8220;',
-	'Registered User' => 'Registrierter Benutzer',
-	'Cannot load entry #[_1].' => 'Kann Eintrag #[_1] nicht laden.',
-	'You are trying to redirect to external resources. If you trust the site, please click the link: [_1]' => 'Weiterleitung auf eine externe Website. Wenn Sie dieser Site vertrauen, klicken Sie bitte auf diesen Link: [_1]',
-	'No entry was specified; perhaps there is a template problem?' => 'Es wurde kein Eintrag angegeben. Vielleicht gibt es ein Problem mit der Vorlage?',
-	'Somehow, the entry you tried to comment on does not exist' => 'Der Eintrag, den Sie kommentieren möchten, existiert nicht.',
-	'Invalid entry ID provided' => 'Ungültige Eintrags-ID angegeben',
-	'For improved security, please change your password' => 'Zur Steigerung Ihrer Sicherheit ändern Sie bitte Ihr Passwort.',
-	'All required fields must be populated.' => 'Alle erforderlichen Felder müssen ausgefüllt sein.',
-	'[_1] contains an invalid character: [_2]' => '[_1] enthält ein ungültiges Zeichen: [_2]',
-	'Display Name' => 'Angezeigter Name',
-	'Passwords do not match.' => 'Passwörter stimmen nicht überein.',
-	'Failed to verify the current password.' => 'Konnte das derzeitige Passwort nicht verifizieren.',
-	'Email Address is invalid.' => 'Die E-Mail-Adresse ist ungültig.',
-	'URL is invalid.' => 'Die Web-Adresse (URL) ist ungültig.',
-	'Commenter profile has successfully been updated.' => 'Das Profil des Kommentarautoren wurde erfolgreich aktualisiert.',
-	'Commenter profile could not be updated: [_1]' => 'Das Profil des Kommentarautoren konnte nicht aktualisiert werden: [_1]',
-
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Es ist ein Fehler aufgetreten: ungültige Zeichen für Zeichensatz [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fehler beim Laden der Website #[_1] zur Bereitstellung an Benutzer. Bitte überprüfen Sie Ihre NewUserDefaultWebsiteId-Einstellugen.',
@@ -803,23 +745,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch verwendet MT::App::Search.',
-
-## lib/MT/App/Trackback.pm
-	'Invalid entry ID \'[_1]\'' => 'Ungültige entry_id &#8222;[_1]&#8220;',
-	'You must define a Ping template in order to display pings.' => 'Sie müssen eine Ping-Vorlage definieren, um Pings anzeigen zu können.',
-	'Trackback pings must use HTTP POST' => 'Trackbacks müssen HTTP-POST verwenden',
-	'TrackBack ID (tb_id) is required.' => 'TrackBack_ID (tb_id) erforderlich.',
-	'Invalid TrackBack ID \'[_1]\'' => 'Ungültige TrackBack-ID &#8222;[_1]&#8220;',
-	'You are not allowed to send TrackBack pings.' => 'Sie haben keine Berechtigung, TrackBack-Pings zu senden.',
-	'You are sending TrackBack pings too quickly. Please try again later.' => 'Sie versenden TrackBacks-Pings zu schnell hintereinander. Bitte versuchen Sie es später erneut.',
-	'You need to provide a Source URL (url).' => 'Bitte geben Sie eine Quell-URL (url) an.',
-	'This TrackBack item is disabled.' => 'Dieser TrackBack-Eintrag ist deaktiviert.',
-	'This TrackBack item is protected by a passphrase.' => 'Dieser TrackBack-Eintrag ist passwortgeschützt.',
-	'TrackBack on "[_1]" from "[_2]".' => 'TrackBack zu "[_1]" von "[_2]".',
-	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'TrackBack für Kategorie &#8222;[_1]&#8220; (ID:[_2])',
-	'Cannot create RSS feed \'[_1]\': ' => 'RSS-Feed &#8222;[_1]&#8220; kann nicht angelegt werden: ',
-	'New TrackBack ping to \'[_1]\'' => 'Neuer TrackBack-Ping an &#8222;[_1]&#8220;',
-	'New TrackBack ping to category \'[_1]\'' => 'Neuer TrackBack-Ping an Kategorie &#8222;[_1]&#8220;',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => 'Authentifizierung mit den angegeben Daten fehlgeschlagen: [_1]',
@@ -1036,14 +961,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Ein erforderliches Modul fehlt',
-
-## lib/MT/Auth/OpenID.pm
-	'Could not save the session' => 'Konnte Session nicht speichern.',
-	'Could not load Net::OpenID::Consumer.' => 'Konnte Net::OpenID::Consumer nicht laden.',
-	'The address entered does not appear to be an OpenID endpoint.' => 'Die angebene Adresse ist kein OpenID-Endpunkt.',
-	'The text entered does not appear to be a valid web address.' => 'Der eingegebene Text ist keine gültige Web-Adresse.',
-	'Unable to connect to [_1]: [_2]' => 'Konnte keine Verbindung zu [_1] aufbauen: [_2]',
-	'Could not verify the OpenID provided: [_1]' => 'Die angegebene OpenID konnte nicht bestätigt werden: [_1]',
 
 ## lib/MT/Author.pm
 	'Users' => 'Benutzer',
@@ -1310,25 +1227,6 @@ use vars qw( @ISA %Lexicon );
 	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Kategorie &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;', # Translate - New # OK
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen. Hauptkategorien und Unterkategorien gleichen Ursprungs müssen eindeutige Namen haben.',
-
-## lib/MT/CMS/Comment.pm
-	'Edit Comment' => 'Kommentar bearbeiten',
-	'(untitled)' => '(ohne Überschrift)',
-	'No such commenter [_1].' => 'Kein Kommentarautor [_1].',
-	'User \'[_1]\' trusted commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; das Vertrauen ausgesprochen',
-	'User \'[_1]\' banned commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; gesperrt',
-	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat die Sperrung von Kommentarautor &#8222;[_2]&#8220; aufgehoben',
-	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'Benutzer &#8222;[_1]&#8220; hat Kommentarautor &#8222;[_2]&#8220; das Vertrauen entzogen',
-	'The parent comment id was not specified.' => 'ID des Eltern-Kommentars nicht angegeben.',
-	'The parent comment was not found.' => 'Eltern-Kommentar nicht gefunden.',
-	'You cannot reply to unapproved comment.' => 'Sie können nicht auf nicht freigeschaltete Kommentare antworten.',
-	'You cannot create a comment for an unpublished entry.' => 'Nicht veröffentlichte Einträge können nicht kommentiert werden.',
-	'You cannot reply to unpublished comment.' => 'Auf nicht veröffentlichte Kommentare kann nicht geantwortet werden.',
-	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Kommentar (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
-	'You do not have permission to approve this trackback.' => 'Sie haben keine Benutzerrechte zur Freischaltung des TrackBacks.',
-	'The entry corresponding to this comment is missing.' => 'Zugehöriger Eintrag fehlt.',
-	'You do not have permission to approve this comment.' => 'Sie haben keine Benutzerrechte zur Freischaltung des Kommentars.',
-	'Orphaned comment' => 'Verwaister Kommentar',
 
 ## lib/MT/CMS/Common.pm
 	'Invalid type [_1]' => 'Ungültiger Typ [_1]',
@@ -1635,16 +1533,6 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => 'Anzahl Versuche bis IP-Sperrung',
 	'IP address lockout interval' => 'Zeitraum bis IP-Sperrung',
 	'Lockout IP address whitelist' => 'Diese IP-Adresse nie sperren',
-
-## lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(Namenlose Kategorie)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => 'Ping (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Kategorie &#8222;[_4]&#8220; gelöscht',
-	'(Untitled entry)' => '(Namenloser Eintrag)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Ping (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
-	'No Excerpt' => 'Kein Auszug',
-	'No Title' => 'Keine Überschrift',
-	'Orphaned TrackBack' => 'Verwaistes TrackBack',
-	'category' => 'Kategorien',
 
 ## lib/MT/CMS/User.pm
 	'Create User' => 'Benutzerkonto anlegen',
@@ -2286,7 +2174,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT.pm
 	'Powered by [_1]' => 'Powered by [_1]',
 	'Version [_1]' => 'Version [_1]',
-	'http://www.movabletype.com/' => 'http://www.movabletype.com/',
+	'https://www.movabletype.com/' => 'https://www.movabletype.com/',
 	'Hello, world' => 'Hallo Welt',
 	'Hello, [_1]' => 'Hallo, [_1]',
 	'Message: [_1]' => 'Nachricht: [_1]',
@@ -2307,7 +2195,7 @@ use vars qw( @ISA %Lexicon );
 	'Error while creating email: [_1]' => 'Fehler beim Anlegen einer E-Mail: [_1]',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'Das zur OpenID-Authentifizierung erforderliche Perl-Modul Digest::SHA1 fehlt.',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Ein zur Authentifizierung von Kommentarautoren per Google ID erforderliches Perl-Moduul fehlt: [_1].',
-	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.org/documentation/',
+	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.org/documentation/',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
 	'Vox' => 'Vox',
@@ -2399,7 +2287,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '[_1]Veröffentlichen[_2] Sie Ihre(n) [_3], um die Änderungen wirksam werden zu lassen.',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '[_1]Veröffentlichen[_2] Sie Ihre Site, um die Änderungen wirksam werden zu lassen.',
 	'Actions' => 'Aktionen',
-	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
+	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.org/documentation/appendices/tags/%t.html',
 	'You used an [_1] tag without a date context set up.' => 'Sie haben einen [_1]-Vorlagenbefehl ohne Datumskontext verwendet.',
 	'Division by zero.' => 'Teilung durch Null.',
 	'[_1] is not a hash.' => '[_1] ist kein Hash-Wert.',
@@ -2494,15 +2382,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot use sort_by and sort_method together in [_1]' => '"sorty_by" und "sort_method" können nicht gemeinsam in [_1] verwendet werden.',
 	'[_1] cannot be used without publishing Category archive.' => '[_1] kann nur mit Kategoriearchiv verwendet werden.',
 	'[_1] used outside of [_2]' => '[_1] außerhalb [_2] verwendet',
-
-## lib/MT/Template/Tags/Commenter.pm
-	'This \'[_1]\' tag has been deprecated. Please use \'[_2]\' instead.' => 'Der Befehl &#8222;[_1]&#8220; wird nicht mehr unterstützt. Verwenden Sie stattdessen den Befehl \'[_2]\'.',
-
-## lib/MT/Template/Tags/Comment.pm
-	'The MTCommentFields tag is no longer available.  Please include the [_1] template module instead.' => 'Der Befehl MTComentFields steht nicht mehr zur Verfügung. Binden Sie stattdessen das Vorlagenmodul [_1] ein. ',
-	'Comment Form' => 'Kommentarformular',
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can not be used.' => 'TypePad-Authentifizierung ist für dieses Blog nicht aktiviert. MTremoteSignInLink kann daher nicht verwendet werden.',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Um Kommentarregistrierung zu aktivieren, geben Sie in Ihrer Weblog-Konfiguration oder Ihrem Benutzer-Profil ein TypePad-Token ein.',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => 'Sie haben <$MTEntryFlag$> ohne Flag verwendet.',
@@ -3861,7 +3740,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Test Mail' => 'Testmail verschicken',
 	q{This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.} => q{Movable Type verwendet diese Adresse als Absenderadresse für vom System verschickte Mails, beispielsweise bei Passwort-Anforderungen, Kommentar-Benachrichtigungen usw.},
 	'Debug Mode' => 'Debug-Modus',
-	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Geben Sie ein Zahl größer null ein, um Diagnosemodi zu aktivieren. Welche Modi verfügbar sind, finden sie in der <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Dokumentation des Debug-Modus</a> (englischsprachig).',
+	'Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.' => 'Geben Sie ein Zahl größer null ein, um Diagnosemodi zu aktivieren. Welche Modi verfügbar sind, finden sie in der <a href="https://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Dokumentation des Debug-Modus</a> (englischsprachig).',
 	'Performance Logging' => 'Performance-Logging',
 	'Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.' => 'Performance-Logging protokolliert Ereignisse, die länger als eine von Ihnen bestimmbare Zeitspanne dauern.',
 	'Turn on performance logging' => 'Performance-Logging aktivieren',
@@ -4001,25 +3880,12 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_insert.tmpl
 
-## tmpl/cms/dialog/asset_list.tmpl
-	'Insert Image' => 'Bild einfügen',
-	'Insert Asset' => 'Asset einfügen',
-	'Upload New File' => 'Neue Datei hochladen',
-	'Upload New Image' => 'Neues Bild hochladen',
-	'Asset Name' => 'Assetname',
-	'Size' => 'Größe',
+## tmpl/cms/dialog/asset_modal.tmpl
+	'Library' => 'Bibliothek',
 	'Next (s)' => 'Nächstes (s)',
 	'Insert (s)' => 'Einfügen (s)',
 	'Insert' => 'Einfügen',
 	'Cancel (x)' => 'Abbrechen (x)',
-	'No assets could be found.' => 'Keine Assets gefunden.',
-
-## tmpl/cms/dialog/asset_modal.tmpl
-	'Library' => 'Bibliothek',
-
-## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry/page' => 'Bild in Eintrag/Seite anzeigen',
-	'Remember these settings' => 'Einstellungen speichern',
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Dateioptionen',
@@ -4219,7 +4085,7 @@ use vars qw( @ISA %Lexicon );
 	'External user ID' => 'Externe Benutzer-ID',
 	'The name displayed when content from this user is published.' => 'Der Name, der zusammen mit Inhalten dieses Benutzers angezeigt werden soll.',
 	'The email address associated with this user.' => 'Mit diesem Benutzer verknüpfte E-Mail-Adresse',
-	q{This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{Die Website dieses Benutzers (z.B. http://movabletype.com/). Ist sowohl dieses als auch das Feld &#8222;Anzeigename&#8220; ausgefüllt, erzeugt Movable Type daraus per Voreinstellung einen Link zur angebenen Website und zeigt diesen unter Einträgen und Kommentaren des Benutzers an.},
+	q{This User's website (e.g. https://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.} => q{Die Website dieses Benutzers (z.B. https://movabletype.com/). Ist sowohl dieses als auch das Feld &#8222;Anzeigename&#8220; ausgefüllt, erzeugt Movable Type daraus per Voreinstellung einen Link zur angebenen Website und zeigt diesen unter Einträgen und Kommentaren des Benutzers an.},
 	'The image associated with this user.' => 'Ein diesem Benutzer zugeordnetes Bild',
 	'Select Userpic' => 'Benutzerbild wählen',
 	'Remove Userpic' => 'Benutzerbild entfernen',
@@ -4542,7 +4408,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Vorlagen-Typ',
 	'Custom Index Template' => 'Individuelle Indexvorlage',
 	'Link to File' => 'Mit Datei verlinken',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">Mehr über Veröffentlichungs-Einstellungen erfahren</a>',
+	'Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => '<a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">Mehr über Veröffentlichungs-Einstellungen erfahren</a>',
 	'Create Archive Mapping' => 'Neue Archiv-Verknüpfung einrichten',
 	'Statically (default)' => 'Statisch (Standard)',
 	'Via Publish Queue' => 'Im Hintergrund',
@@ -4675,6 +4541,7 @@ use vars qw( @ISA %Lexicon );
 	'Check Spelling' => 'Rechtschreibung prüfen',
 	'WYSIWYG Mode' => 'Grafischer Editor',
 	'HTML Mode' => 'HTML-Modus',
+	'Insert Image' => 'Bild einfügen',
 
 ## tmpl/cms/include/archive_maps.tmpl
 
@@ -4691,6 +4558,7 @@ use vars qw( @ISA %Lexicon );
 	'Created On' => 'Angelegt',
 	'Asset Missing' => 'Asset fehlt',
 	'No thumbnail image' => 'Kein Vorschaubild',
+	'Size' => 'Größe',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Veröffentlichen Sie zuerst Ihr(e) [_1], um Dateien hochladen zu können. [_2]Konfigurieren Sie die jeweiligen Veröffentlichungs-Pfade[_3] und veröffentlichen Sie die Site bzw. das Blog dann erneut. },
@@ -4838,13 +4706,13 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/footer.tmpl
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'Das ist eine Beta-Version von Movable Type. Der Einsatz als Produktivsystem wird nicht empfohlen.',
-	'http://www.movabletype.org' => 'http://www.movabletype.org',
+	'https://www.movabletype.org' => 'https://www.movabletype.org',
 	'MovableType.org' => 'MovableType.org',
-	'http://plugins.movabletype.org/' => 'http://plugins.movabletype.org/',
-	'http://wiki.movabletype.org/' => 'http://wiki.movabletype.org/',
+	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.org/',
+	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	'Wiki' => 'Wiki',
 	'Support' => 'Support',
-	'http://forums.movabletype.org/' => 'http://forums.movabletype.org/',
+	'https://forums.movabletype.org/' => 'https://forums.movabletype.org/',
 	'Forums' => 'Foren',
 	'Send Us Feedback' => 'Feedback senden',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> Version [_2]',
@@ -5153,7 +5021,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => '[_1]-Themen',
 	'All Themes' => 'Alle Themen',
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Themes' => 'Themen finden',
 	'Theme [_1] has been uninstalled.' => 'Thema [_1] deinstalliert.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Thema [_1] angewendet (<a href="[_2]">[quant,_3,Warnung,Warnungen]</a>). ',
@@ -5429,7 +5297,7 @@ use vars qw( @ISA %Lexicon );
 	'You can manage your blog by selecting an option from the menu located to the left of this message.' => 'Sie können Ihr Blog vom links befindlichen Menü aus verwalten.',
 	'If you need assistance, try:' => 'Falls Sie Hilfe benötigen, stehen folgende Möglichkeiten zur Verfügung:',
 	'Movable Type User Manual' => 'Movable Type Benutzerhandbuch',
-	'http://www.sixapart.com/movabletype/support' => 'http://www.sixapart.com/movabletype/support',
+	'https://www.sixapart.com/movabletype/support' => 'https://www.sixapart.com/movabletype/support',
 	'Movable Type Technical Support' => 'Movable Type Technischer Support',
 	'Movable Type Community Forums' => 'Movable Type Community-Foren',
 	'Change this message.' => 'Diese Nachricht ändern.',
@@ -5623,7 +5491,7 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Bitte geben Sie zur Herstellung der Datenkbankverbindung notwendigen Daten ein.',
 	'Database Type' => 'Datenbanktyp',
 	'Select One...' => 'Auswählen...',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Wird Ihr Datenbanksystem nicht aufgeführt? Führen Sie die <a href="[_1]" target="_blank">Movable Type Systemüberprüfung</a> durch, um zu erfahren, ob zusätzliche Module erforderlich sind.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Klicken Sie nach der Installation <a href="javascript:void(0)" onclick="[_1]">hier, um diese Ansicht zu aktualisieren</a>.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Mehr über <a href="[_1]" target="blank">Datenbankkonfiguration</a> erfahren',
@@ -5681,7 +5549,7 @@ use vars qw( @ISA %Lexicon );
 	'Missing Optional Modules' => 'Nicht vorhandene optionale Module',
 	'Missing Required Modules' => 'Fehlende erforderliche Module',
 	'Minimal version requirement: [_1]' => 'Mindestens erforderliche Version: [_1]',
-	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
+	'https://www.movabletype.org/documentation/installation/perl-modules.html' => 'https://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Learn more about installing Perl modules.' => 'Mehr über die Installation von Perl-Modulen erfahren',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'Alle erforderlichen Pakete vorhanden. Sie brauchen keine weiteren Pakete zu installieren.',
 
@@ -5705,7 +5573,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Um mit dem Konfigurationsassistenten eine neue Konfigurationsdatei zu erzeugen, entfernen Sie die vorhandene Konfigurationsdatei und laden Sie diese Seite neu.',
 
 ## addons/Commercial.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Eine professionell gestaltete, übersichtlich strukturierte und leicht anpass- und erweiterbare Website. ',
 	'_PWT_ABOUT_BODY' => '
 <p><strong>Platzhalter - Geben Sie hier Ihren eigenen Text ein.</strong></p>
@@ -6068,7 +5936,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	', or press the enter key to %toggle% it' => 'oder Enter drücken zum An- oder Abwählen',
 
 ## addons/Community.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'Leser-Interaktion fördern: rollen Sie neue Funktionen aus, die es Ihren Lesern leicht machen, mit Ihnen und Ihrem Unternehmen zu interagieren',
 	'Create forums where users can post topics and responses to topics.' => 'Bieten Sie Foren an, in denen Ihre Leser untereinander diskutieren können.',
 	'Users followed by [_1]' => 'Benutzer, denen [_1] folgt',
@@ -6486,7 +6354,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'This module is required in order to use the LDAP Authentication.' => 'Dieses Modul ist zur Nutzung der LDAP-Authentifizierung erforderlich.',
 
 ## addons/Enterprise.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Permissions of group: [_1]' => 'Gruppen-Berechtigungen: [_1]',
 	'Group' => 'Gruppe',
 	'Groups associated with author: [_1]' => 'Mit Autor verknüpfte Gruppen: [_1]',
@@ -6785,7 +6653,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'You successfully removed the users from this group.' => 'Benutzer erfolgreich aus Gruppe entfernt.',
 
 ## addons/Sync.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.com/movabletype/',
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Migrated sync setting' => 'Sync-Einstellungen migriert',
 	'Sync' => 'Sync',
 	'Sync Name' => 'Name der Synchronisations-Einstellung',
@@ -6917,48 +6785,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Facebook Application Secret' => 'Facebook Application Secret',
 	'The secret for the Facebook application associated with your blog.' => 'Das Application Secret der mit Ihrem Blog verknüpften Facebook-Anwendung',
 
-## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Beim Einlesen von [_1] ist ein Fehler aufgetreten (zurückgegebener HTTP-Status: [_2]). Es wird die zuletzt erfolgreich eingelesene Version des Feeds verwendet.',
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Beim Einlesen von [_1] ist ein Fehler aufgetreten (zurückgegebener HTTP-Status: [_2]). Es liegt keine vorherige Version des Feeds vor.',
-
-## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
-	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' ist ein erforderliches Argument von [_2]',
-	'MT[_1] was not used in the proper context.' => 'MT[_1] außerhalb seines Kontexts verwendet.',
-
-## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Mit Feeds.App Lite binden Sie externe Newsfeeds in Ihre Blogs ein. Noch mehr Möglichkeiten erhalten Sie durch ein <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade auf Feeds.App</a>.',
-	'Create a Feed Widget' => 'Feed-Widget anlegen',
-
-## plugins/feeds-app-lite/tmpl/config.tmpl
-	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite Widget Creator',
-	'Configure feed widget settings' => 'Feed-Widget konfigurieren',
-	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Vergeben Sie einen Namen für das Widget. Dieser Name wird auch als Name des Feeds in Ihrem Blog angezeigt werden.',
-	'[_1] Feed Widget' => '[_1]-Feed-Widget',
-	'Select the maximum number of entries to display.' => 'Anzahl der höchstens anzuzeigenden Einträge',
-	'3' => '3',
-	'5' => '5',
-	'10' => '10',
-	'All' => 'Alle',
-
-## plugins/feeds-app-lite/tmpl/msg.tmpl
-	'No feeds could be discovered using [_1]' => 'Keine Feeds per [_1] entdeckt.',
-	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{Fehler beim Einlesen von [_1]. Beachten Sie die  <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">Hinweise des Feed Validators</a> und versuchen Sie es ggf. erneut.},
-	'A widget named <strong>[_1]</strong> has been created.' => 'Widget <strong>[_1]</strong> angelegt.',
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{Sie können &ldquo;[_1]&rdquo; jetzt <a href="javascript:void(0)" onclick="closeDialog('[_2]')">bearbeiten</a> oder in Ihr Blog <a href="javascript:void(0)" onclick="closeDialog('[_3]')">einbinden</a>. Alternativ können Sie dazu auch diesen MTInclude-Befehl verwenden:},
-	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{Sie können &ldquo;[_1]&rdquo; jetzt <a href="javascript:void(0)" onclick="closeDialog('[_2]')">bearbeiten</a> oder mit diesem MTInclude-Befehl in Ihr Blog einbinden:},
-	'Create Another' => 'Weiteres Widget anlegen',
-
-## plugins/feeds-app-lite/tmpl/select.tmpl
-	'Multiple feeds were found' => 'Mehrere Feeds gefunden',
-	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => 'Wählen Sie den zu verwendenden Feed. <em>Feeds.App Lite unterstützt RSS 1.0-, RSS 2.0- und ATOM-Feeds.</em>',
-	'URI' => 'URI',
-
-## plugins/feeds-app-lite/tmpl/start.tmpl
-	'You must enter a feed or site URL to proceed' => 'Geben Sie die Adresse eines Feeds oder einer Website an.',
-	'Create a widget from a feed' => 'Feed als Widget anzeigen',
-	'Feed or Site URL' => 'Feed- oder Website-URL',
-	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'Geben Sie die URL eines Feeds oder einer Website, die Feeds anbietet, ein:',
-
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Textbausteine verwalten',
 
@@ -7080,8 +6906,8 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Social Media' => 'Social Media',
 	'https://twitter.com/movabletype' => 'https://twitter.com/movabletype',
 	'Contact Us' => 'Kontakt',
-	'http://www.movabletype.org/' => 'http://movabletype.org/',
-	'http://plugins.movabletype.org' => 'http://plugins.movabletype.org',
+	'https://www.movabletype.org/' => 'https://movabletype.org/',
+	'https://plugins.movabletype.org' => 'https://plugins.movabletype.org',
 
 ## plugins/Loupe/tmpl/welcome_mail_plain.tmpl
 	'Loupe is ready for use!' => 'Loupe ist bereits startklar!',
@@ -7269,59 +7095,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Incoming feedback can be monitored for specific keywords, domain names, and patterns. Matches can be held for moderation or scored as junk. Additionally, junk scores for these matches can be customized.' => 'Eingehendes Feedback kann auf wählbare Schlüsselbegriffe, Domainnamen und Muster durchsucht werden. Feedback mit Treffern kann automatisch zur Moderation zurückgehalten oder als Spam angesehen werden.',
 	'Keywords to Moderate' => 'Bei Auftreten dieser Schlüsselwörter Feedback moderieren',
 	'Keywords to Junk' => 'Bei Auftreten dieser Schlüsselwörter Feedback als Spam ansehen',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'Mit StyleCatchter können Sie spielend leicht neue Designvorlagen für Ihre Blogs finden und mit wenigen Klicks direkt installieren. ',
-	'MT 4 Style Library' => 'MT 4-Designs',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
-	'Styles' => 'Designs',
-	'Moving current style to blog_meta for website...' => 'Verschiebe aktuelle Designvorlage der Website nach blog_meta...',
-	'Moving current style to blog_meta for blog...' => 'Verschiebe aktuelle Designvorlage des Blogs nach blog_meta...',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Ihr mt-static-Ordner konnte nicht gefunden werden. Bitte konfigurieren Sie \'StaticFilePath\' um fortzufahren.',
-	'Permission Denied.' => 'Zugriff verweigert.',
-	'Successfully applied new theme selection.' => 'Neue Themenauswahl erfolgreich angewendet.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Default.pm
-	'Invalid URL: [_1]' => 'Ungültige URL: [_1]',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Konnte den Ordner [_1] nicht anlegen. Stellen Sie sicher, daß der Webserver Schreibrechte auf dem \'themes\'-Ordner hat.',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Library/Local.pm
-	'Failed to load StyleCatcher Library: [_1]' => 'Konnte StyleCatcher-Bibliothek nicht laden: [_1]',
-
-## plugins/StyleCatcher/lib/StyleCatcher/Util.pm
-	'(Untitled)' => '(ohne Überschrift)',
-
-## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a [_1] Style' => '[_1]-Stil wählen',
-	'3-Columns, Wide, Thin, Thin' => 'Dreispaltig: breit - schmal - schmal',
-	'3-Columns, Thin, Wide, Thin' => 'Dreispaltig: schmal - breit - schmal',
-	'3-Columns, Thin, Thin, Wide' => 'Dreispaltig: schmal - schmal - breit',
-	'2-Columns, Thin, Wide' => 'Zweispaltig: schmal - breit',
-	'2-Columns, Wide, Thin' => 'Zweispaltig: breit - schmal',
-	'2-Columns, Wide, Medium' => 'Zweispaltig: breit - mittel',
-	'2-Columns, Medium, Wide' => 'Zweispaltig: mittel - breit',
-	'1-Column, Wide, Bottom' => 'Einspaltig: breit - Fußzeile',
-	'None available' => 'Keine verfügbar',
-	'Applying...' => 'Wende an...',
-	'Apply Design' => 'Design übernehmen',
-	'Error applying theme: ' => 'Fehler bei der Übernahme des Themas:',
-	'The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout.' => 'Das gewählte Thema wurde übernommen. Da das Layout geändert wurde, veröffentlichen Sie das Blog bitte erneut, um die Änderungen wirksam werden zu lassen.',
-	'The selected theme has been applied!' => 'Das Thema wurde übernommen!',
-	'Error loading themes! -- [_1]' => 'Fehler beim Laden der Themen -- [_1]',
-	'Stylesheet or Repository URL' => 'URL des Stylesheets oder der Sammlung',
-	'Stylesheet or Repository URL:' => 'URL des Stylesheets oder der Sammlung:',
-	'Download Styles' => 'Designs herunterladen',
-	'Current theme for your weblog' => 'Aktuelles Theme Ihres Weblogs',
-	'Current Style' => 'Derzeitige Design',
-	'Locally saved themes' => 'Lokal gespeicherte Themes',
-	'Saved Styles' => 'Gespeicherte Designs',
-	'Default Styles' => 'Standarddesigns',
-	'Single themes from the web' => 'Einzelne Themes aus dem Web',
-	'More Styles' => 'Weitere Designs',
-	'Selected Design' => 'Gewähltes Design',
-	'Layout' => 'Layout',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Korrekt formatierter Text leicht gemacht',

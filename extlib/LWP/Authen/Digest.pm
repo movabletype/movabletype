@@ -3,6 +3,8 @@ package LWP::Authen::Digest;
 use strict;
 use base 'LWP::Authen::Basic';
 
+our $VERSION = '6.31';
+
 require Digest::MD5;
 
 sub auth_header {
@@ -58,7 +60,14 @@ sub auth_header {
     my @pairs;
     for (@order) {
 	next unless defined $resp{$_};
-	push(@pairs, "$_=" . qq("$resp{$_}"));
+
+	# RFC2617 says that qop-value and nc-value should be unquoted.
+	if ( $_ eq 'qop' || $_ eq 'nc' ) {
+		push(@pairs, "$_=" . $resp{$_});
+	}
+	else {
+		push(@pairs, "$_=" . qq("$resp{$_}"));
+	}
     }
 
     my $auth_value  = "Digest " . join(", ", @pairs);

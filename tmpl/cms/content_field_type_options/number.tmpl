@@ -1,0 +1,44 @@
+<mt:app:ContentFieldOptionGroup
+   type="number">
+
+  <mtapp:ContentFieldOption
+     id="number-min_value"
+     label="<__trans phrase="Min Value">">
+    <input ref="min_value" type="number" name="min_value" id="number-min_value" class="form-control html5-form w-25" value={ options.min_value || <mt:var name="config.numberfieldminvalue" escape="js"> } min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="number-max_value"
+     label="<__trans phrase="Max Value">">
+    <input ref="max_value" type="number" name="max_value" id="number-max_value" class="form-control html5-form w-25" value={ options.max_value || <mt:var name="config.numberfieldmaxvalue" escape="js"> } min="<mt:var name="config.numberfieldminvalue" escape="html">" max="<mt:var name="config.numberfieldmaxvalue" escape="html">" onkeyup={ update }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="number-decimal_places"
+     label="<__trans phrase="Number of decimal places">">
+    <input ref="decimal_places" type="number" name="decimal_places" id="number-decimal_places" class="form-control html5-form w-25" min="0" max="<mt:var name="config.numberfielddecimalplaces" escape="html">" value={ options.decimal_places || 0 } >
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="number-initial_value"
+     label="<__trans phrase="Initial Value">">
+    <input ref="initial_value" type="number" name="initial_value" id="number-initial_value" class="form-control html5-form w-25" value={ options.initial_value } min={ refs.min_value.value } max={ refs.max_value.value } />
+  </mtapp:ContentFieldOption>
+
+</mt:app:ContentFieldOptionGroup>
+
+jQuery(document).ready(function () {
+  var minValueOrMaxValueSelector = 'input[id^=number-min_value-field-options-], input[id^=number-max_value-field-options-]';
+  jQuery(document).on('keyup', minValueOrMaxValueSelector, function () {
+    var matched = this.id.match(/[^\-]+$/);
+    if (!matched) return;
+
+    var fieldId = matched[0];
+    var initialValueId = '#number-initial_value-field-options-' + fieldId;
+    var $initialValue = jQuery(initialValueId);
+    if (!$initialValue.data('mtValidator')) return;
+
+    $initialValue.mtValid({ focus: false });
+  });
+});
+

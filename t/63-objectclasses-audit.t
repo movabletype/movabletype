@@ -2,17 +2,24 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( t/lib extlib lib ../lib ../extlib );
-use MT::Test qw(:time :db);
-use Test::More;
+use MT::Test;
 use MT::App;
 use MT::Object;
 use MT::Entry;
+
+MT::Test->init_time;
+
+$test_env->prepare_fixture('db');
 
 my $app  = MT::App->new;
 my $blog = MT::Blog->load(1);

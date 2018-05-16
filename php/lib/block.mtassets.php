@@ -15,6 +15,10 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
         $blog_id = $ctx->stash('blog_id');
         $args['blog_id'] = $ctx->stash('blog_id');
         $tag = $ctx->this_tag();

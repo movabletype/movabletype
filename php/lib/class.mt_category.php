@@ -71,6 +71,74 @@ class Category extends BaseObject
         $cnt = $entry->count( array( 'where' => $where, 'join' => $join ) );
         return $cnt;
     }
+
+    public function content_data_count($terms = array()) {
+        $blog_id = $this->blog_id;
+        $cat_id = $this->id;
+
+        $where = "cd_status = 2
+                  and cd_blog_id = $blog_id";
+
+        if (isset($terms['content_type_id']) && $terms['content_type_id']) {
+            $content_type_id = $terms['content_type_id'];
+        }
+        if (isset($terms['content_field_id']) && $terms['content_field_id']) {
+            $content_field_id = $terms['content_field_id'];
+        }
+
+        if (!$content_field_id
+            && isset($terms['content_field_name'])
+            && $terms['content_field_name']
+        ) {
+            $content_field_name = $terms['content_field_name'];
+            if ($content_type_id) {
+                $cf_content_type_filter = "and cf_content_type_id = $content_type_id";
+            } else {
+                $cf_content_type_filter = "";
+            }
+            $cf_where = "cf_name = \"$content_field_name\"
+                         $cf_content_type_filter";
+            require_once("class.mt_content_field.php");
+            $content_field = new ContentField();
+            $content_field->Load($cf_where);
+            if (!$content_field->id) {
+                return 0;
+            }
+            $content_field_id = $content_field->id;
+        }
+
+        if ($content_type_id) {
+            $content_type_filter = 'and cf_idx_content_type_id = ' . $content_type_id;
+        } else {
+            $content_type_filter = '';
+        }
+
+        if ($content_field_id) {
+            $content_field_filter = 'and cf_idx_content_field_id = ' . $content_field_id;
+        } else {
+            $content_field_filter = '';
+        }
+
+        $join = array();
+        $join['mt_cf_idx'] =
+            array(
+                'condition' => "cf_idx_content_data_id = cd_id
+                                $content_type_filter
+                                $content_field_filter
+                                and cf_idx_value_integer = $cat_id"
+            );
+
+        require_once("class.mt_content_data.php");
+        $content_data = new ContentData();
+        $cnt = $content_data->count(
+            array(
+                'where' => $where,
+                'join' => $join,
+                'distinct' => true,
+            )
+        );
+        return $cnt;
+    }
 }
 
 // Relations

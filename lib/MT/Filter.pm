@@ -97,6 +97,12 @@ sub list_props {
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
+                return
+                    if !$obj->blog_id
+                    && ( $obj->object_ds eq 'entry'
+                    || $obj->object_ds eq 'page'
+                    || $obj->object_ds eq 'comment'
+                    || $obj->object_ds eq 'ping' );
                 my $class = MT->model( $obj->object_ds );
                 if ($class) {
                     return $app->uri(
@@ -106,6 +112,20 @@ sub list_props {
                             blog_id    => $obj->blog_id,
                             filter_key => $obj->id,
                         }
+                    );
+                }
+                elsif ( my ($content_type_id)
+                    = $obj->object_ds
+                    =~ /^content_data\.content_data_[0-9]+$/ )
+                {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            _type      => 'content_data',
+                            type       => 'content_data_' . $content_type_id,
+                            blog_id    => $obj->blog_id,
+                            filter_key => $obj->id,
+                        },
                     );
                 }
                 else {

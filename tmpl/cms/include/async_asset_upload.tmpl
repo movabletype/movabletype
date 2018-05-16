@@ -1,3 +1,4 @@
+<mt:setvarblock name="css_include" append="1">
 <style>
 #drop-handler {
     height: 150px;
@@ -15,7 +16,7 @@
     -ms-transform: translateY(-50%);
     text-align: center;
     font-size: 1.5em;
-}        
+}
 
 #drop-handler button{
     text-decoration: underline;
@@ -24,14 +25,7 @@
     background: transparent;
 }
 
-.upload-status-block {
-    border: solid 1px #afafaf;
-    margin: 0.5em;
-    padding: 0.5em;
-    height: 50px;
-    overflow: hidden;
-}
-
+/*
 .upload-status-block-left-panel {
     float: left;
     width: 100%;
@@ -46,6 +40,7 @@
 .upload-status-block-left-content {
     margin: 0 80px 0 0;
 }
+*/
 
 .upload-status-block-left-content.full-width {
     margin: 0 0 0 0;
@@ -96,7 +91,6 @@ h1.dialog-title {
 #open-file-dialog {
     padding: 0.3em;
     font-weight: normal;
-    color: #fff;
 }
 
 #open-file-dialog img {
@@ -135,42 +129,51 @@ h1.dialog-title {
   font-size: 18px;
   color: #0D76BF;
 }
-</style>
 
-<mt:if name="dialog">
-  <mt:if name="filter_val" eq="image">
-<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
-  <mt:elseif name="is_image">
-<h1 class="dialog-title"><__trans phrase="Upload new image"></h1>
-  <mt:else>
-<h1 class="dialog-title"><__trans phrase="Upload new asset"></h1>
-  </mt:if>
-</mt:if>
+#upload-progress .card {
+  min-height: 5rem;
+}
+</style>
+</mt:setvarblock>
 
 <form id="upload">
+
+<fieldset class="form-group text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <button class="action button primary" id="open-file-dialog"><img src="<mt:var name="static_uri">images/upload/ico_nowuploading_s@2x.png" width="12" height="10"><mt:if name="can_multi"><span><__trans phrase="Choose files to upload or drag files."></span><mt:else><span><__trans phrase="Choose file to upload or drag file."></span></mt:if></img></button>
-<mt:unless name="filter" eq="userpic">  
-    <h2><__trans phrase="Upload Destination"></h2>
+  <a href="javascript:void(0)" id="open-file-dialog" class="d-inline-block">
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
+  <mt:if name="can_multi">
+    <span><__trans phrase="Choose files to upload or drag files."></span>
+  <mt:else>
+    <span><__trans phrase="Choose file to upload or drag file."></span>
+  </mt:if>
+  </a>
+</fieldset>
+
+<fieldset class="form-group">
+  <legend class="h3"><__trans phrase="Upload Destination"></legend>
+<mt:unless name="filter" eq="userpic">
   <mt:if name="allow_to_change_at_upload">
     <mtapp:setting
       id="site_path"
-      hint="<__trans phrase="_USAGE_UPLOAD">"
-      show_hint="1"
       show_label="0"
-      label_class="top-label">
+      label_class="top-label"
+      class="form-inline">
       <mt:if name="destination_loop">
-        <select name="destination" id="destination" onchange="uploadDestinationSelect(this);">
+        <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
-          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
+            <mt:var name="label" escape="html">
+          </option>
         </mt:loop>
         </select>
-        <input type="text" id="upload_destination_custom" class="text path required valid-custom-path upload-destination hidden" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" />
+        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
         <span class="upload-extra-path">
-          / <input type="text" name="extra_path" id="extra_path" class="text path" value="<mt:var name="extra_path" escape="html">" />
+          / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
         </span>
       </mt:if>
     </mtapp:setting>
+    <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
     <div id="site_path-field" class="field field-top-label">
       <div class="field-content">
@@ -181,41 +184,63 @@ h1.dialog-title {
     </div>
   </mt:if>
 </mtunless>
+</fieldset>
+
 <mt:if name="dir_separator">
   <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
 </mt:if>
 
-    <h2><__trans phrase="Upload Options"></h2>
+<fieldset class="form-group">
+<legend class="h3"><__trans phrase="Upload Options"></legend>
 <mtapp:setting
   id="auto_rename_non_ascii"
   label="<__trans phrase="Rename filename">"
   show_label="1">
-      <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb" />
-      <label for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
+          <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+        </div>
+      </div>
 </mtapp:setting>
 <mtapp:setting
   id="operation_if_exists"
-  show_hint="0"
   show_label="1"
   label="<__trans phrase="Operation for a file exists">"
+  label_for="operation_if_exists"
   label_class="left-label">
-    <select name="operation_if_exists" id="operation_if_exists">
-      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>><__trans phrase="Upload and rename"></option>
-      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>><__trans phrase="Overwrite existing file"></option>
-      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>><__trans phrase="Cancel upload"></option>
+    <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
+      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
+        <__trans phrase="Upload and rename">
+      </option>
+      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>>
+        <__trans phrase="Overwrite existing file">
+      </option>
+      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>>
+        <__trans phrase="Cancel upload">
+      </option>
     </select>
 </mtapp:setting>
 <mtapp:setting
   id="normalize_orientation"
   label="<__trans phrase="Normalize orientation">"
   show_label="1">
-      <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb" />
-      <label for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
+          <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+        </div>
+      </div>
 </mtapp:setting>
+</fieldset>
+
 </form>
 
-<div id="upload-progress"></div>
+<div class="row">
+  <div id="upload-progress" class="col-12"></div>
+</div>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 
@@ -232,7 +257,7 @@ function resize_upload_overlay() {
 
   // Change "width" and "left" properties when dialog width is bigger than parent frame width.
   if (isDialog) {
-    offset_left = top.jQuery('#mt-dialog-iframe').offset().left;
+    offset_left = window.top.jQuery('.mt-modal iframe.embed-responsive-item:visible').offset().left;
     if (offset_left < 0) {
 
       // width
@@ -266,76 +291,79 @@ function resize_upload_overlay() {
     .css('left', left);
 }
 
-// Create upload overlay DOM once.
-if (!jQuery('#upload-overlay-container').length) {
-  jQuery('body')
-    .append(
-      jQuery('<div id="upload-overlay-container" />')
-        .append('<div id="upload-overlay-background" />')
-        .append(
-          jQuery('<div id="upload-overlay-drop" />')
-            .append('<div id="upload-overlay-border" />')
-            .append(
-              jQuery('<div id="upload-overlay-message" />')
-                .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><p><__trans phrase="Drag and drop here"></p>')
-            )
-         )
-    );
-}
+jQuery(window).load(function () {
 
-// Initialize upload overlay size.
-resize_upload_overlay();
-
-// Bind events.
-jQuery(window)
-  .on('dragover', function(e) {  // Show upload overlay.
-    e.preventDefault();
-    jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
-    jQuery('#upload-overlay-container').show();
-  });
-
-jQuery('#upload-overlay-drop')
-  .on('dragleave', function(e) {  // Hide upload overlay.
-    jQuery('body').removeClass('has-dialog');
-    jQuery('#upload-overlay-container').hide();
-  })
-  .on('drop', function(e) {  // Upload files and hide overlay.
-    e.preventDefault();
-    e.stopPropagation();
-    jQuery('body').removeClass('has-dialog');
-    jQuery('#upload-overlay-container').hide();
-
-    // Change to upload asset panel.
-    if (isDialog) {
-      jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
-    }
-
-    uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
-  });
-
-jQuery(top)
-  .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
-
-// Unbind resizing event of parent frame.
-if (isDialog) {
-  var close = top.jQuery.fn.mtDialog.close;
-
-  function unbind() {
-    jQuery(top).off('resize.multiUpload');
-    top.jQuery.fn.mtDialog.close = close;
+  // Create upload overlay DOM once.
+  if (!jQuery('#upload-overlay-container').length) {
+    jQuery('body')
+      .append(
+        jQuery('<div id="upload-overlay-container" />')
+          .append('<div id="upload-overlay-background" />')
+          .append(
+            jQuery('<div id="upload-overlay-drop" />')
+              .append('<div id="upload-overlay-border" />')
+              .append(
+                jQuery('<div id="upload-overlay-message" />')
+                  .append('<img src="<mt:var name="static_uri">images/upload/nowuploading@2x.png" width="60" height="50" /><p><__trans phrase="Drag and drop here"></p>')
+              )
+           )
+      );
   }
 
-  // Unbind when inserting asset.
-  jQuery(document).ready(function() {
-    jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
-  });
+  // Bind events.
+  jQuery(window)
+    .on('dragover', function(e) {  // Show upload overlay.
+      // Refresh upload overlay size.
+      resize_upload_overlay();
+      e.preventDefault();
+      jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
+      jQuery('#upload-overlay-container').show();
+    });
 
-  // Unbind when closing dialog.
-  top.jQuery.fn.mtDialog.close = function() {
-    close.call();
-    unbind();
-  };
-}
+  jQuery('#upload-overlay-drop')
+    .on('dragleave', function(e) {  // Hide upload overlay.
+      jQuery('body').removeClass('has-dialog');
+      jQuery('#upload-overlay-container').hide();
+    })
+    .on('drop', function(e) {  // Upload files and hide overlay.
+      e.preventDefault();
+      e.stopPropagation();
+      jQuery('body').removeClass('has-dialog');
+      jQuery('#upload-overlay-container').hide();
+
+      // Change to upload asset panel.
+      if (isDialog) {
+        jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
+      }
+
+      uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
+    });
+
+  jQuery(top)
+    .on('resize.multiUpload', resize_upload_overlay);  // Resize upload overlay whenever resizing browser.
+
+  // Unbind resizing event of parent frame.
+  if (isDialog) {
+    var close = top.jQuery.fn.mtDialog.close;
+
+    function unbind() {
+      jQuery(top).off('resize.multiUpload');
+      top.jQuery.fn.mtDialog.close = close;
+    }
+
+    // Unbind when inserting asset.
+    jQuery(document).ready(function() {
+      jQuery('.actions-bar button.primary').on('click.multiUpload', unbind);
+    });
+
+    // Unbind when closing dialog.
+    top.jQuery.fn.mtDialog.close = function() {
+      close.call();
+      unbind();
+    };
+  }
+
+});
 
 function createFormData(file) {
   var fd = new FormData();
@@ -394,23 +422,28 @@ var numOfRows = 0;
 function createUploadBlock () {
   numOfRows++;
 
-  this.uploadBlock  = jQuery('<div class="upload-status-block" id="upload-status_' + numOfRows + '"></div>');
+  this.uploadBlockPanel = jQuery('<div class="card mb-1"><div class="card-block px-4 py-2"></div></div>');
+  this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
-  this.progressbar  = jQuery('<div class="progressbar"></div>').appendTo(this.leftContent);
+
+  this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
+
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
   this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
-  this.cancelUpload = jQuery('<div class="upload-cancel"><__trans phrase="Cancel"></div>').appendTo(this.rightPanel);
+
+  this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
 <mt:unless name="filter" eq="userpic">
   this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
 
   this.editAsset.hide();
 </mt:unless>
-  this.progressbar.progressbar({ value: 0 });
-  jQuery('#upload-progress').prepend(this.uploadBlock);
+  this.progressbar.find('.progress-bar').css('width', '0')
+                                        .attr('aria-valuenow', '0');
+  jQuery('#upload-progress').prepend(this.uploadBlockPanel);
 
   // Recalculate block height
   jQuery('#content-body-right-body').height(
@@ -424,7 +457,8 @@ function createUploadBlock () {
   }
 
   this.setProgress = function(val) {
-    this.progressbar.progressbar({ value: val });
+    this.progressbar.find('.progress-bar').css('width', val + '%')
+                                          .attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
       this.filename.hide();
       this.cancelUpload.hide();
@@ -440,10 +474,24 @@ function createUploadBlock () {
     });
   }
 
-  this.setThumbnail = function(url, fname, id, msg) {
-    var data = '<img src="' + url + '"><span class="filename">' + fname;
+  this.setThumbnail = function(asset) {
+    var url = asset.thumbnail;
+    var type = asset.thumbnail_type;
+    var fname = asset.filename;
+    var id = asset.id;
+    var msg = asset.message;
+
+    var data = '';
+
+    if (url) {
+      data = '<img class="img-thumbnail" width="60" height="60" src="' + url + '">';
+    } else {
+      data = '<img src="<mt:var name="static_uri">images/file-'+type+'.svg" width="60" height="60">';
+    }
+
+    data += '&nbsp;<span class="filename">' + fname;
     if ( msg ) {
-      data += ' <span class="msg-warning" style="padding:0.5em">' + msg + '</span>';
+      data += ' <span class="bg-warning msg-warning" style="padding:0.5em">' + msg + '</span>';
     }
     data += '</span>';
 
@@ -455,28 +503,32 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
-    jQuery('.upload-status-block-left-content').addClass('full-width');  
-    jQuery('<p class="msg-error">' + err + '</p>').appendTo(this.uploadResult);
+    jQuery('.upload-status-block-left-content').addClass('full-width');
+    jQuery('<p class="text-danger msg-error">' + err + '</p>').appendTo(this.uploadResult);
   }
 
   this.setCancelResult = function(msg) {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
-    jQuery('.upload-status-block-left-content').addClass('full-width');  
-    jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
+    jQuery('.upload-status-block-left-content').addClass('full-width');
+    jQuery('<p class="text-warning msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
 <mt:unless name="filter" eq="userpic">
   this.enableEditAsset = function(Asset) {
-    var link = jQuery('<a>');
-    link.attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">').append('<__trans phrase="Edit">').appendTo(this.editAsset);
-    link.mtDialog();
+    var editLink = jQuery('<a>')
+      .attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">')
+      .attr('class', 'd-inline-block')
+      .append('<mtapp:svgicon id="ic_edit" title="Edit" size="sm" strip_linefeeds="1">')
+      .append('<span class="ml-2"><__trans phrase="Edit"><span>')
+      .appendTo(this.editAsset);
+    editLink.mtModal({ large: true });
     this.editAsset.show();
   }
 </mt:unless>
 }
- 
+
 var queue = [];
 function uploadFiles(files, items) {
     if (!files || files.length === 0 ) {
@@ -488,7 +540,7 @@ function uploadFiles(files, items) {
 <mt:else>
     var num_files = 1; // Always 1 file only
     jQuery('#upload-progress').empty();
-</mt:if>    
+</mt:if>
   var max_upload_size = <mt:var name="max_upload_size">;
 
 <mt:unless name="filter" eq="userpic">
@@ -531,13 +583,13 @@ function uploadFiles(files, items) {
     uploadBlock.setFilename(files[i].name);
     if ( files[i].size >= max_upload_size ) {
       uploadBlock.setError(trans("The file you tried to upload is too large: [_1]", files[i].name));
-      continue;  
+      continue;
     }
     if ( require_type && require_type !== 'file' ) {
       var regexp = new RegExp('^' + require_type + '/.*');
       if(!files[i].type.match(regexp)) {
         uploadBlock.setError(trans("[_1] is not a valid [_2] file.", files[i].name, require_type_label));
-        continue;  
+        continue;
       }
     }
     var f = uploadFile(fd, uploadBlock);
@@ -591,8 +643,8 @@ function uploadFile( formData, uploadBlock ) {
     else {
       // Success
       uploadBlock.setProgress(100);
-      uploadBlock.setThumbnail(data.result.asset.thumbnail, data.result.asset.filename, data.result.asset.id, data.result.asset.message);
-        
+      uploadBlock.setThumbnail(data.result.asset);
+
       uploadBlock.progressbar.hide();
 <mt:unless name="filter" eq="userpic">
       uploadBlock.enableEditAsset(data.result.asset);
@@ -617,7 +669,11 @@ function uploadFile( formData, uploadBlock ) {
   uploadBlock.setCancelUpload(xhr);
   return d.promise();
 }
+/* ]]> */
+</script>
+</mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
 jQuery('#open-file-dialog').click( function() {
   jQuery('#file').click();
   return false;
@@ -634,40 +690,37 @@ jQuery('#file').change( function(e) {
     jQuery('#file').attr('type', 'file');
   }
 });
-/* ]]> */
-</script>
 
-<mt:setvarblock name="jq_js_include" append="1">
-  <mt:unless name="filter" eq="userpic">  
-    <mt:if name="allow_to_change_at_upload">    
-  jQuery.mtValidateAddRules({
-    "#extra_path": function($e) {
-      return is_valid_path($e.val());
-    }
-  });
-  jQuery.mtValidateAddMessages({
-    "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
-  });
-    </mt:if>
-  </mt:unless>
-  <mt:if name="dialog">
-  jQuery('#upload-asset-panel').on('changePanel', function() {
-    if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
-      var id = [];
-      jQuery('#upload-progress').children('.upload-status-block').each(function() {
-          var asset_id = jQuery(this).attr('data-asset-id');
-          if (asset_id) {
-            id.push(asset_id);
-          }
-      });
-      jQuery('#select_asset input[name="id"]').val(id.join(','));
-
-      // Enable submit button
-      jQuery('.actions-bar button.primary')
-        .removeAttr('disabled')
-        .removeClass('disabled');
-    }
-  });
+<mt:unless name="filter" eq="userpic">
+  <mt:if name="allow_to_change_at_upload">
+jQuery.mtValidateAddRules({
+  "#extra_path": function($e) {
+    return is_valid_path($e.val());
+  }
+});
+jQuery.mtValidateAddMessages({
+  "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">',
+});
   </mt:if>
-  jQuery('form').find('input:visible').first().focus();
+</mt:unless>
+<mt:if name="dialog">
+jQuery('#upload-asset-panel').on('changePanel', function() {
+  if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
+    var id = [];
+    jQuery('#upload-progress').children('.upload-status-block').each(function() {
+        var asset_id = jQuery(this).attr('data-asset-id');
+        if (asset_id) {
+          id.push(asset_id);
+        }
+    });
+    jQuery('#select_asset input[name="id"]').val(id.join(','));
+
+    // Enable submit button
+    jQuery('.actions-bar button.primary')
+      .removeAttr('disabled')
+      .removeClass('disabled');
+  }
+});
+</mt:if>
+jQuery('form').find('input:visible').first().focus();
 </mt:setvarblock>

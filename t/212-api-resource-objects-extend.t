@@ -2,30 +2,34 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require YAML::Syck }
         or plan skip_all => 'YAML::Syck is not installed';
 }
 
-use lib qw(lib extlib t/lib);
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
+    # Disable Comments/Trackback plugins
+    $test_env->skip_if_plugin_exists('Comments');
+    $test_env->skip_if_plugin_exists('Trackback');
+}
+
+use MT::Test;
 
 use File::Spec;
 use File::Basename;
 
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
+
+$test_env->prepare_fixture('db_data');
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
@@ -117,7 +121,7 @@ sub to_object {
         };
 
         if ( $d->{not_to} ) {
-            foreach my $k ( keys %{ $d->{not_to} } ) {
+            foreach my $k ( sort keys %{ $d->{not_to} } ) {
                 delete $expected_values->{$k};
                 my $value = delete $values->{$k};
                 isnt( $value, $d->{not_to}{$k}, 'converted data:' . $k );

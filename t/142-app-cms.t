@@ -2,17 +2,24 @@
 
 use strict;
 use warnings;
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
+use FindBin;
+use lib "$FindBin::Bin/lib";    # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT;
-use MT::Test qw( :cms :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+$test_env->prepare_fixture('db');
+
+MT::Test->init_cms;
 
 # Create records
 my $admin = MT::Author->load(1);
@@ -70,7 +77,7 @@ subtest '5 websites and 5 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( $param->{selector_hide_blog_chooser},
             'selector_haide_blog_chooser is true.'
@@ -90,7 +97,7 @@ subtest '5 websites and 5 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( $param->{selector_hide_blog_chooser},
             'selector_haide_blog_chooser is true.'
@@ -144,7 +151,7 @@ subtest '6 websites and 6 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -163,7 +170,7 @@ subtest '6 websites and 6 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -199,7 +206,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            5, 'fav_website_loop has 5 data.' );
+            6, 'fav_website_loop has 6 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -218,7 +225,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -237,7 +244,7 @@ subtest '11 websites and 11 blogs' => sub {
         );
         ok( $param->{fav_website_loop}, 'There is fav_website_loop.' );
         is( scalar @{ $param->{fav_website_loop} },
-            4, 'fav_website_loop has 4 data.' );
+            5, 'fav_website_loop has 5 data.' );
 
         ok( !$param->{selector_hide_blog_chooser},
             'selector_hide_blog_chooser is false.'
@@ -267,57 +274,78 @@ done_testing;
 sub _expected_default_widgets {
     my $expected = {
         'system' => {
-            recent_websites => {
+            mt_news => {
+                order => 100,
+                set   => 'sidebar',
+            },
+            notification_dashboard => {
+                order => 0,
+                set   => 'main',
+            },
+            system_information => {
                 order => 100,
                 set   => 'main',
+            },
+            updates => {
+                order => 0,
+                set   => 'sidebar',
+            },
+            activity_log => {
+                order => 200,
+                set   => 'sidebar',
             },
         },
         user => {
+            mt_news => {
+                order => 100,
+                set   => 'sidebar',
+            },
             notification_dashboard => {
+                order => 0,
+                set   => 'main',
+            },
+            updates => {
+                order => 0,
+                set   => 'sidebar',
+            },
+            activity_log => {
+                order => 200,
+                set   => 'sidebar',
+            },
+            site_list => {
                 order => 100,
                 set   => 'main',
-            },
-            site_stats => {
-                order => 200,
-                set   => 'main',
-            },
-            favorite_blogs => {
-                order => 300,
-                set   => 'main',
-                param => { tab => 'website' },
-            },
-            personal_stats => {
-                order => 400,
-                set   => 'sidebar',
-            },
-            mt_news => {
-                order => 500,
-                set   => 'sidebar',
             },
         },
         website => {
-            site_stats => {
+            activity_log => {
+                order => 200,
+                set   => 'sidebar',
+            },
+            site_list => {
                 order => 100,
                 set   => 'main',
             },
-            recent_blogs => {
+            site_stats => {
                 order => 200,
                 set   => 'main',
             },
         },
         blog => {
-            site_stats => {
+            activity_log => {
+                order => 200,
+                set   => 'sidebar',
+            },
+            site_list => {
                 order => 100,
+                set   => 'main',
+            },
+            site_stats => {
+                order => 200,
                 set   => 'main',
             },
         },
     };
-    if ( MT->component('Loupe') ) {
-        $expected->{user}{welcome_to_loupe} = {
-            order => 150,
-            set   => 'main',
-        };
-    }
     $expected;
 }
 

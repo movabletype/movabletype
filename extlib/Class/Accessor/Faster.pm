@@ -1,7 +1,8 @@
 package Class::Accessor::Faster;
 use base 'Class::Accessor';
 use strict;
-$Class::Accessor::Faster::VERSION = '0.34';
+use B 'perlstring';
+$Class::Accessor::Faster::VERSION = '0.51';
 
 my %slot;
 sub _slot {
@@ -29,34 +30,41 @@ sub new {
 sub make_accessor {
     my($class, $field) = @_;
     my $n = $class->_slot($field);
-    return sub {
-        return $_[0]->[$n] if scalar(@_) == 1;
-        return $_[0]->[$n]  = scalar(@_) == 2 ? $_[1] : [@_[1..$#_]];
-    };
+    eval sprintf q{
+        sub {
+            return $_[0][%d] if scalar(@_) == 1;
+            return $_[0][%d]  = scalar(@_) == 2 ? $_[1] : [@_[1..$#_]];
+        }
+    }, $n, $n;
 }
 
 sub make_ro_accessor {
     my($class, $field) = @_;
     my $n = $class->_slot($field);
-    return sub {
-        return $_[0]->[$n] if @_ == 1;
-        my $caller = caller;
-        $_[0]->_croak("'$caller' cannot alter the value of '$field' on objects of class '$class'");
-    };
+    eval sprintf q{
+        sub {
+            return $_[0][%d] if @_ == 1;
+            my $caller = caller;
+            $_[0]->_croak(sprintf "'$caller' cannot alter the value of '%%s' on objects of class '%%s'", %s, %s);
+        }
+    }, $n, map(perlstring($_), $field, $class);
 }
 
 sub make_wo_accessor {
     my($class, $field) = @_;
     my $n = $class->_slot($field);
-    return sub {
-        if (@_ == 1) {
-            my $caller = caller;
-            $_[0]->_croak("'$caller' cannot access the value of '$field' on objects of class '$class'");
-        } else {
-            return $_[0]->[$n] = $_[1] if @_ == 2;
-            return (shift)->[$n] = \@_;
+    eval sprintf q{
+        sub {
+            if (@_ == 1) {
+                my $caller = caller;
+                $_[0]->_croak(sprintf "'$caller' cannot access the value of '%%s' on objects of class '%%s'", %s, %s);
+            }
+            else {
+                return $_[0][%d] = $_[1] if @_ == 2;
+                return (shift)->[%d] = \@_;
+            }
         }
-    };
+    }, map(perlstring($_), $field, $class), $n, $n;
 }
 
 1;
@@ -76,7 +84,7 @@ Class::Accessor::Faster - Even faster, but less expandable, accessors
 
 This is a faster but less expandable version of Class::Accessor::Fast.
 
-Class::Accessor's generated accessors require two method calls to accompish
+Class::Accessor's generated accessors require two method calls to accomplish
 their task (one for the accessor, another for get() or set()).
 
 Class::Accessor::Fast eliminates calling set()/get() and does the access itself,
@@ -88,7 +96,7 @@ Read the documentation for Class::Accessor for more info.
 
 =head1 AUTHORS
 
-Copyright 2007 Marty Pauley <marty+perl@kasei.com>
+Copyright 2017 Marty Pauley <marty+perl@martian.org>
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.  That means either (a) the GNU General Public

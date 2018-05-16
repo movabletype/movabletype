@@ -1,9 +1,11 @@
+</code>
 </pre>
+</div>
 </div>
 
 <script type="text/javascript">
 /* <![CDATA[ */
-var progress = getByID("progressbar");
+var progress = MT.Util.getByID("progressbar");
 if (progress) {
     progress.style.display = "none";
 }
@@ -14,17 +16,19 @@ if (progress) {
     <mt:if name="error">
         <mtapp:statusmsg
            id="restore-error"
-           class="error"
+           class="danger"
            can_close="0">
-          <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
+          <__trans phrase="An error occurred during the import process: [_1] Please check your import file." params="<mt:var name="error">">
         </mtapp:statusmsg>
-<div class="actions-bar">
+</div>
+<div class="modal-footer actions-bar">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
         <button
             type="submit"
             accesskey="v"
             title="<__trans phrase="View Activity Log (v)">"
-            class="action primary button mt-close-dialog-error">
+            class="action primary button btn btn-primary"
+            onclick="jQuery.fn.mtModal.close('<mt:var name="error_url" escape="js">'); return false;">
           <__trans phrase="View Activity Log">
         </button>
     </form>
@@ -34,15 +38,16 @@ if (progress) {
            id="restore-success"
            class="success"
            can_close="0">
-          <__trans phrase="All data restored successfully!">
+          <__trans phrase="All data imported successfully!">
         </mtapp:statusmsg>
-<div class="actions-bar">
+</div>
+<div class="modal-footer actions-bar">
     <form action="" method="get" onsubmit="return false" onclick="window.focus();">
         <button
             type="submit"
             accesskey="s"
             title="<__trans phrase="Close (s)">"
-            class="close action primary button mt-close-dialog">
+            class="action primary button mt-close-dialog btn btn-primary">
           <__trans phrase="Close">
         </button>
     </form>
@@ -65,15 +70,17 @@ if (progress) {
     <input type="hidden" name="blog_ids" value="<mt:var name="blog_ids" escape="html">" />
     <input type="hidden" name="asset_ids" value="<mt:var name="asset_ids" escape="html">" />
     <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
-
 </form>
-<div class="actions-bar">
+
+<p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
+</div>
+<div class="modal-footer actions-bar">
     <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
         <button
             onclick="submit_form();"
             type="submit"
             id="next-page-button"
-            class="action button hidden"
+            class="action button hidden btn btn-default"
             accesskey="s"
             title="<__trans phrase="Next Page"> (s)">
           <__trans phrase="Next Page">
@@ -94,25 +101,18 @@ timer = window.setTimeout("submit_form()", 3000);
 
 function stopTimer() {
     window.clearTimeout(timer);
-    var p = getByID("message");
+    var p = MT.Util.getByID("message");
     p.innerHTML = '';
-    DOM.removeClassName(getByID('next-page-button'), 'hidden');
+    jQuery('#next-page-button').removeClass('hidden');
 }
+
 /* ]]> */
 </script>
-<p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
+
 </mt:if>
-<script type="text/javascript">
-/* <![CDATA[ */
-App.bootstrapInline( false );
-jQuery(function() {
-    jQuery('button.mt-close-dialog-error').click(function() {
-        parent.jQuery.fn.mtDialog.close('<mt:var name="error_url">');
-    });
-    jQuery('button.mt-close-dialog-url').click(function() {
-        parent.jQuery.fn.mtDialog.close('<mt:var name="ok_url">');
-    });
-});
-/* ]]> */
+
+<script>
+jQuery('button.mt-close-dialog').mtModalClose();
 </script>
-<mt:include name="dialog/footer.tmpl">
+
+<mt:include name="layout/modal/footer.tmpl">

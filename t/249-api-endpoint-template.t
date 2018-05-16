@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -210,10 +218,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => $total_results,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -239,10 +243,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -267,10 +267,6 @@ sub suite {
                 );
 
                 $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,
@@ -301,10 +297,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => $total_count,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -326,10 +318,6 @@ sub suite {
                 );
 
                 $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => scalar @tmpl,
@@ -406,10 +394,6 @@ sub suite {
  #                my @tmpl = $app->model('template')->load(@terms_args);
  #
  #                $app->user($author);
- #
- #                no warnings 'redefine';
- #                local *boolean::true  = sub {'true'};
- #                local *boolean::false = sub {'false'};
  #
  #                return +{
  #                    totalResults => $total_results,
@@ -600,7 +584,10 @@ sub suite {
                 . $blog_index_tmpl->id
                 . '/publish',
             method       => 'POST',
-            restrictions => { 1 => [qw/ administer_blog rebuild /], },
+            restrictions => {
+                0 => [qw/ edit_templates /],
+                1 => [qw/ administer_site rebuild edit_templates /],
+            },
             code         => 403,
             error        => 'Do not have permission to publish a template.',
         },
@@ -784,8 +771,8 @@ sub suite {
                 . '/clone',
             method       => 'POST',
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to clone a template.',
@@ -861,8 +848,8 @@ sub suite {
             method       => 'POST',
             params       => { template => { name => 'preview-template', }, },
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to get template preview.',
@@ -937,8 +924,8 @@ sub suite {
                 },
             },
             restrictions => {
-                0 => [qw/ edit_templates administer_blog /],
-                1 => [qw/ edit_templates administer_blog /],
+                0 => [qw/ edit_templates administer_site /],
+                1 => [qw/ edit_templates administer_site /],
             },
             code  => 403,
             error => 'Do not have permission to get template preview.',

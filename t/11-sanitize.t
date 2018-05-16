@@ -2,11 +2,17 @@
 # $Id: 11-sanitize.t 3219 2008-12-03 07:58:25Z fumiakiy $
 use strict;
 use warnings;
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use Test::More tests => 58;
+plan tests => 58;
 
 use MT;
 use MT::Test;

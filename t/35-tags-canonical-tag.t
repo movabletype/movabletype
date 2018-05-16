@@ -2,22 +2,25 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Open2;
-
-use Test::Base;
+use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 my $app = MT->instance;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog_id = 2;
 
@@ -32,104 +35,23 @@ sub undef_to_empty_string {
     defined( $_[0] ) ? $_[0] : '';
 }
 
-run {
-    my $block = shift;
+MT::Test::Tag->run_perl_tests($blog_id, \&_set_mapping_url_perl);
+MT::Test::Tag->run_php_tests($blog_id, \&_set_mapping_url_php);
 
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
+sub _set_mapping_url_perl {
+    my ($ctx, $block) = @_;
+    $ctx->stash( 'current_mapping_url',   $block->current_mapping_url );
+    $ctx->stash( 'preferred_mapping_url', $block->preferred_mapping_url );
+}
 
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( $block->template );
-        my $ctx = $tmpl->context;
-
-        my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
-
-        $ctx->stash( 'current_mapping_url',   $block->current_mapping_url );
-        $ctx->stash( 'preferred_mapping_url', $block->preferred_mapping_url );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $current_mapping_url, $preferred_mapping_url ) = @_;
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->init_plugins();
-
-$db = $mt->db();
-$ctx =& $mt->context();
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-PHP
-
-    $test_script .= <<PHP;
+sub _set_mapping_url_php {
+    my ($block) = @_;
+    my $current_mapping_url = $block->current_mapping_url;
+    my $preferred_mapping_url = $block->preferred_mapping_url;
+    return <<"PHP";
 \$ctx->stash('current_mapping_url', '$current_mapping_url');
 \$ctx->stash('preferred_mapping_url', '$preferred_mapping_url');
 PHP
-
-    $test_script .= <<'PHP';
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template,
-                $block->current_mapping_url, $block->preferred_mapping_url );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
 }
 
 __END__

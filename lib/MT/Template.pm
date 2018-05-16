@@ -7,6 +7,7 @@
 package MT::Template;
 
 use strict;
+use warnings;
 use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
@@ -15,11 +16,14 @@ use MT::Util qw( weaken );
 use MT::Template::Node;
 sub NODE () {'MT::Template::Node'}
 
+our $DEBUG;
+
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'      => 'integer not null auto_increment',
-            'blog_id' => 'integer not null',
-            'name'    => {
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'content_type_id' => 'integer',
+            'name'            => {
                 type       => 'string',
                 size       => '255',
                 not_null   => 1,
@@ -83,11 +87,12 @@ __PACKAGE__->install_properties(
             'revision'              => 'integer meta',
         },
         indexes => {
-            blog_id    => 1,
-            name       => 1,
-            type       => 1,
-            outfile    => 1,
-            identifier => 1,
+            blog_id         => 1,
+            name            => 1,
+            type            => 1,
+            outfile         => 1,
+            identifier      => 1,
+            content_type_id => 1,
         },
         defaults => {
             'rebuild_me'     => 1,
@@ -360,6 +365,8 @@ sub build {
     my $tokens = $tmpl->tokens
         or return;
 
+    my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
+
     if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
         my $error = "";
         foreach my $err ( @{ $tmpl->{errors} } ) {
@@ -367,8 +374,7 @@ sub build {
         }
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file},
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $error
             )
         );
@@ -426,6 +432,14 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
+    if ($DEBUG) {
+        $res =~ s/\A\s+//s;
+        $res =~ s/\s+\z//s;
+        $res = join "",
+            "<!-- begin_tmpl $tmpl_name -->",
+            $res,
+            "<!-- end_tmpl $tmpl_name -->";
+    }
 
     if ($timer) {
         $timer->mark( "MT::Template::build["
@@ -436,8 +450,7 @@ sub build {
     unless ( defined($res) ) {
         return $tmpl->error(
             MT->translate(
-                "Publish error in template '[_1]': [_2]",
-                $tmpl->name || $tmpl->{__file},
+                "Publish error in template '[_1]': [_2]", $tmpl_name,
                 $build->errstr
             )
         );
@@ -463,7 +476,7 @@ sub widgets_to_modulesets {
             blog_id => $blog_id ? [ $blog_id, 0 ] : 0,
             type    => 'widget'
         }
-    ) if $widgets && @$widgets;
+    );
     my @wids;
     foreach my $name (@$widgets) {
         my ($widget) = grep { $_->name eq $name } @wtmpls;
@@ -494,7 +507,8 @@ sub save_widgetset {
         @inst = split /,/, ( $obj->modulesets || '' );
     }
 
-    my @widgets = MT::Template->load(
+    my @widgets;
+    @widgets = MT::Template->load(
         {   id      => \@inst,
             type    => 'widget',
             blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0'
@@ -518,7 +532,12 @@ sub save_widgetset {
 }
 
 sub save {
-    my $tmpl     = shift;
+    my $tmpl = shift;
+
+    return $tmpl->error( MT->translate('Content Type is required.') )
+        if ( $tmpl->type eq 'ct' || $tmpl->type eq 'ct_archive' )
+        && !$tmpl->content_type_id;
+
     my $existing = MT::Template->load(
         {   ( $tmpl->id ? ( id => { not => $tmpl->id } ) : () ),
             name    => $tmpl->name,
@@ -581,6 +600,17 @@ sub blog {
     return undef unless $this->blog_id;
     return $this->{__blog} if $this->{__blog};
     return $this->{__blog} = MT::Blog->load( $this->blog_id );
+}
+
+sub content_type {
+    my $self = shift;
+    $self->cache_property(
+        'content_type',
+        sub {
+            return unless $self->content_type_id;
+            MT->model('content_type')->load( $self->content_type_id );
+        }
+    );
 }
 
 sub set_values_internal {
@@ -1229,6 +1259,10 @@ the I<MT::ObjectDriver> classes (upon loading a template object), and if
 the template is linked to a file, it will also load the contents of that
 file, setting the 'text' property.
 
+=head2 $tmpl->content_type
+
+Returns MT::ContentType related to this template.
+
 =head1 DATA ACCESS METHODS
 
 The I<MT::Template> object holds the following pieces of data. These fields
@@ -1294,6 +1328,12 @@ disk, and needs to be re-synced.
 The size of the linked file, in bytes. This, along with I<linked_file_mtime>,
 is used to determine whether a file has been updated on disk, and needs to
 be re-synced.
+
+=item * content_type_id
+
+MT::ContentType ID related to this template.
+This value is set only when this template is for Content Type.
+(this template type is 'ct' or 'ct_archive')
 
 =back
 

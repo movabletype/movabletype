@@ -1,6 +1,6 @@
 id: FormattedText
 name: FormattedText
-version: 1.23
+version: 1.4
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="Manage boilerplate.">
@@ -12,6 +12,11 @@ object_types:
 
 applications:
     cms:
+        enable_object_methods:
+            formatted_text:
+                delete: 1
+                edit: 1
+                save: 1
         menus:
             entry:manage_formatted_text:
                 label: Boilerplate
@@ -53,7 +58,6 @@ applications:
                         return 0;
                     }
                 view:
-                    - system
                     - website
                     - blog
             entry:view_formatted_text:
@@ -62,7 +66,6 @@ applications:
                 args:
                     _type: formatted_text
                 view:
-                    - system
                     - website
                     - blog
                 display: 0

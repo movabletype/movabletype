@@ -1,6 +1,7 @@
 package HTML::Entities::Numbered;
 
 use strict;
+use warnings;
 use HTML::Entities::Numbered::Table;
 use base qw(Exporter);
 use vars qw($VERSION @EXPORT %DECIMALS %ENTITIES);

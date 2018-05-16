@@ -52,9 +52,9 @@ sub upload {
         }
     }
 
-    if ( defined $app->param('autoRenameNonAscii') ) {
-        $app->param( 'auto_rename_non_ascii',
-            $app->param('autoRenameNonAscii') );
+    my $autoRenameNonAscii = $app->param('autoRenameNonAscii');
+    if ( defined $autoRenameNonAscii ) {
+        $app->param( 'auto_rename_non_ascii', $autoRenameNonAscii );
     }
 
     MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );

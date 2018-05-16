@@ -1,14 +1,23 @@
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-};
+    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+}
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_TEST_MAIL} = 1;
+}
+
+use MT::Test;
 use MT;
 use MT::Mail;
-use Test::More;
 use MIME::Base64;
 
 my $mt = MT->new() or die MT->errstr;
@@ -34,7 +43,7 @@ my @base64_encode_suite = (
 for my $data (@base64_encode_suite) {
     my ( $headers, $body ) = send_mail( {}, $data->{input} );
     is( $body, $data->{expected}, $data->{name} . ' : body' );
-    foreach my $key ( keys %{ $data->{headers} } ) {
+    foreach my $key ( sort keys %{ $data->{headers} } ) {
         like(
             $headers->{$key},
             $data->{headers}{$key},

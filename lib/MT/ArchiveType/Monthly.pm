@@ -7,6 +7,7 @@
 package MT::ArchiveType::Monthly;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Date );
 use MT::Util qw( start_end_month );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("MONTHLY_ADV");
+}
+
+sub order {
+    return 50;
 }
 
 sub dynamic_template {

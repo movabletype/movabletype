@@ -6,6 +6,7 @@
 package MT::Template::Tags::Blog;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( encode_xml );
@@ -38,19 +39,185 @@ would iterate over only the blogs with IDs 1, 12, 19, 37 and 112.
 
 =cut
 
+=head2 ChildSites
+
+A container tag which iterates over a list of all of the child sites in the
+system. You can use any of the child site tags (L<SiteName>, L<SiteURL>, etc -
+anything starting with MTSite) inside of this tag set.
+
+B<Attributes:>
+
+=over 4
+
+=item * blog_ids
+
+This attribute allows you to limit the set of child sites iterated over by
+L<Blogs>. Multiple child sites are specified in a comma-delimited fashion.
+For example:
+
+    <mt:ChildSites blog_ids="1,12,19,37,112">
+
+would iterate over only the child sites with IDs 1, 12, 19, 37 and 112.
+
+=back
+
+=for tags multiblog, loop, child sites
+
+=cut
+
 sub _hdlr_blogs {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # Set default mode for backwards compatibility
+    $args->{mode} ||= 'loop';
+
+    if ( $args->{site_id} ) {
+        $args->{site_ids} = $args->{site_id};
+        delete $args->{site_id};
+        delete $args->{blog_id} if $args->{blog_id};
+    }
+    elsif ( $args->{blog_id} ) {
+        $args->{blog_ids} = $args->{blog_id};
+        delete $args->{blog_id};
+    }
+
+    # If MTMultiBlog was called with no arguments, we check the
+    # blog-level settings for the default includes/excludes.
+    unless ( $args->{blog_ids}
+        || $args->{include_sites}
+        || $args->{exclude_sites}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs}
+        || $args->{include_websites}
+        || $args->{exclude_websites}
+        || $args->{site_ids} )
+    {
+        my $blog = $ctx->stash('blog');
+        my $is_include
+            = $blog && defined $blog->default_mt_sites_action
+            ? $blog->default_mt_sites_action
+            : 1;
+        my $blogs = $blog && $blog->default_mt_sites_sites || '';
+
+        my $tag_name = $ctx->stash('tag');
+
+        if ( $blogs && defined($is_include) ) {
+            $args->{ $is_include ? 'include_blogs' : 'exclude_blogs' }
+                = $blogs;
+        }
+
+        # No blog-level config set
+        # Set mode to context as this will mimic no MTMultiBlog tag
+        elsif ( $tag_name eq 'mtmultiblog' ) {
+            $args->{'mode'} = 'context';    # Override 'loop' mode
+        }
+    }
+
+    # Filter mt:Sites args through access controls
+    require MT::RebuildTrigger;
+
+    # Load mt:Sites access control list
+    my %acl = MT::RebuildTrigger->load_sites_acl($ctx);
+    $args->{ $acl{mode} } = $acl{acl};
+
+    # Run mt:Sites in specified mode
+    my $res;
+    if ( $args->{mode} eq 'loop' ) {
+        $res = _loop(@_);
+    }
+    elsif ( $args->{mode} eq 'context' ) {
+        $res = _context(@_);
+    }
+    else {
+
+        # Throw error if mode is unknown
+        $res = $ctx->error(
+            MT->translate(
+                'Unknown "mode" attribute value: [_1]. '
+                    . 'Valid values are "loop" and "context".',
+                $args->{mode}
+            )
+        );
+    }
+
+    # Remove sites_context and blog_ids
+    $ctx->stash( 'sites_context',          '' );
+    $ctx->stash( 'sites_include_blog_ids', '' );
+    $ctx->stash( 'sites_exclude_blog_ids', '' );
+    return defined($res) ? $res : $ctx->error( $ctx->errstr );
+}
+
+## Supporting functions for 'mt:Sites' & 'mt:ChildSites' tag:
+
+# "context" mode:
+# The container's contents are evaluated once with a multi-site context
+sub _context {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $include_blogs
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{blog_ids};
+    my $exclude_blogs = $args->{exclude_sites} || $args->{exclude_blogs};
+
+    # Assuming multiblog context, set it.
+    my $set
+        = $args->{include_sites}
+        || $include_blogs
+        || $args->{exclude_blogs} ? 1 : 0;
+    local $ctx->{__stash}{sites_context} = 1 if $set;
+    local $ctx->{__stash}{sites_include_blog_ids}
+        = join( ',', $include_blogs )
+        if $set && $include_blogs;
+    local $ctx->{__stash}{sites_exclude_blog_ids}
+        = join( ',', $exclude_blogs )
+        if $set && $exclude_blogs;
+
+    # Evaluate container contents and return output
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $out     = $builder->build( $ctx, $tokens, $cond );
+    return
+        defined($out) ? $out : $ctx->error( $ctx->stash('builder')->errstr );
+
+}
+
+# "loop" mode:
+# The container's contents are evaluated once per specified blog
+sub _loop {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
 
+    # Set the context for blog loading
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
+
+    my $incl
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{include_website}
+        || $args->{blog_ids}
+        || $args->{site_ids};
+    $args{'no_class'} = 1
+        if $incl
+        && (
+        ( lc $incl eq 'all' )
+        || (( $incl eq 'children' || $incl eq 'siblings' )
+            && (   $args->{include_parent_site}
+                || $args->{include_with_website} )
+        )
+        );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
+    local $ctx->{__stash}{contents} = undef
+        if $args->{ignore_archive_context};
     local $ctx->{__stash}{entries} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp} = undef
+        if $args->{ignore_archive_context};
+    local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
@@ -60,25 +227,25 @@ sub _hdlr_blogs {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    require MT::Blog;
     $terms{class} = 'blog' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my @blogs = MT::Blog->load( \%terms, \%args );
+
+    my @sites = MT->model('blog')->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects( \@blogs );
-
-    for my $blog (@blogs) {
+    for my $site (@sites) {
         $count++;
-        local $ctx->{__stash}{blog}    = $blog;
-        local $ctx->{__stash}{blog_id} = $blog->id;
+        local $ctx->{__stash}{blog}    = $site;
+        local $ctx->{__stash}{blog_id} = $site->id;
         local $vars->{__first__}       = $count == 1;
-        local $vars->{__last__}        = $count == scalar(@blogs);
+        local $vars->{__last__}        = $count == scalar(@sites);
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;
+        $ctx->stash( 'sites_context',  'include_blogs' );
+        $ctx->stash( 'sites_blog_ids', $site->id );
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -142,6 +309,14 @@ Outputs the numeric ID of the blog currently in context.
 
 =cut
 
+=head2 SiteID
+
+Outputs the numeric ID of the site currently in context.
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_id {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
@@ -155,6 +330,14 @@ sub _hdlr_blog_id {
 Outputs the name of the blog currently in context.
 
 =for tags blogs
+
+=cut
+
+=head2 SiteName
+
+Outputs the name of the site currently in context.
+
+=for tags sites
 
 =cut
 
@@ -173,6 +356,14 @@ sub _hdlr_blog_name {
 Outputs the description field of the blog currently in context.
 
 =for tags blogs
+
+=cut
+
+=head2 SiteDescription
+
+Outputs the description field of the site currently in context.
+
+=for tags sites
 
 =cut
 
@@ -207,6 +398,30 @@ it to the IETF RFC # 3066.
 =back
 
 =for tags blogs
+
+=cut
+
+=head2 SiteLanguage
+
+The site's specified language. This setting can be changed on the site's general
+settings screen.
+
+B<Attributes:>
+
+=over 4
+
+=item * locale (optional; default "0")
+
+If assigned, will format the language in the style "language_LOCALE" (ie: "en_US", "de_DE", etc).
+
+=item * ietf (optional; default "0")
+
+If assigned, will change any '_' in the language code to a '-', conforming
+it to the IETF RFC # 3066.
+
+=back
+
+=for tags sites
 
 =cut
 
@@ -246,6 +461,30 @@ it to the IETF RFC # 3066.
 
 =cut
 
+=head2 SiteDateLanguage
+
+The site's specified language for date display. This setting can be changed
+on the site's Entry settings screen.
+
+B<Attributes:>
+
+=over 4
+
+=item * locale (optional; default "0")
+
+If assigned, will format the language in the style "language_LOCALE" (ie: "en_US", "de_DE", etc).
+
+=item * ietf (optional; default "0")
+
+If assigned, will change any '_' in the language code to a '-', conforming
+it to the IETF RFC # 3066.
+
+=back
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_date_language {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
@@ -264,6 +503,15 @@ Outputs the Site URL field of the blog currently in context. An ending
 '/' character is guaranteed.
 
 =for tags blogs
+
+=cut
+
+=head2 SiteURL
+
+Outputs the Site URL field of the site currently in context. An ending
+'/' character is guaranteed.
+
+=for tags sites
 
 =cut
 
@@ -294,6 +542,15 @@ Outputs the Archive URL of the blog currently in context. An ending
 
 =cut
 
+=head2 SiteArchiveURL
+
+Outputs the Archive URL of the site currently in context. An ending
+'/' character is guaranteed.
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_archive_url {
     my ( $ctx, $args, $cond ) = @_;
     my $blog;
@@ -317,6 +574,14 @@ sub _hdlr_blog_archive_url {
 Similar to the L<BlogURL> tag, but removes any domain name from the URL.
 
 =for tags blogs
+
+=cut
+
+=head2 SiteRelativeURL
+
+Similar to the L<SiteURL> tag, but removes any domain name from the URL.
+
+=for tags sites
 
 =cut
 
@@ -349,6 +614,15 @@ Outputs the Site Root field of the blog currently in context. An ending
 '/' character is guaranteed.
 
 =for tags blogs
+
+=cut
+
+=head2 SitePath
+
+Outputs the Site Root field of the blog currently in context. An ending
+'/' character is guaranteed.
+
+=for tags sites
 
 =cut
 
@@ -397,6 +671,32 @@ underscores ("_").
 
 =cut
 
+=head2 SiteHost
+
+The host name part of the absolute URL of your site.
+
+B<Attributes:>
+
+=over 4
+
+=item * exclude_port (optional; default "0")
+
+Removes any specified port number if this attribute is set to true (1),
+otherwise it will return the hostname and port number (e.g.
+www.somedomain.com:8080).
+
+=item * signature (optional; default "0")
+
+If set to 1, then this template tag will instead return a unique signature
+for the hostname, by replacing all occurrences of decimals (".") with
+underscores ("_").
+
+=back
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_host {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
@@ -441,6 +741,27 @@ If specified, will produce the timezone without the ":" character
 
 =cut
 
+=head2 SiteTimezone
+
+The timezone that has been specified for the site displayed as an offset
+from UTC in +|-hh:mm format. This setting can be changed on the site's
+General settings screen.
+
+B<Attributes:>
+
+=over 4
+
+=item * no_colon (optional; default "0")
+
+If specified, will produce the timezone without the ":" character
+("+|-hhmm" only).
+
+=back
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_timezone {
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
@@ -458,10 +779,20 @@ sub _hdlr_blog_timezone {
 =head2 BlogCCLicenseURL
 
 Publishes the license URL of the Creative Commons logo appropriate
-to the license assigned to the blog inc ontex.t If the blog doesn't
+to the license assigned to the blog in context. If the blog doesn't
 have a Creative Commons license, this tag returns an empty string.
 
 =for tags blogs, creativecommons
+
+=cut
+
+=head2 SiteCCLicenseURL
+
+Publishes the license URL of the Creative Commons logo appropriate
+to the license assigned to the site in context. If the site doesn't
+have a Creative Commons license, this tag returns an empty string.
+
+=for tags sites, creativecommons
 
 =cut
 
@@ -487,6 +818,22 @@ B<Example:>
     </MTIf>
 
 =for tags blogs, creativecommons
+
+=cut
+
+=head2 SiteCCLicenseImage
+
+Publishes the URL of the Creative Commons logo appropriate to the
+license assigned to the site in context. If the site doesn't have
+a Creative Commons license, this tag returns an empty string.
+
+B<Example:>
+
+    <MTIf tag="SiteCCLicenseImage">
+    <img src="<$MTSiteCCLicenseImage$>" alt="Creative Commons" />
+    </MTIf>
+
+=for tags sites, creativecommons
 
 =cut
 
@@ -586,6 +933,16 @@ string.
 
 =cut
 
+=head2 SiteFileExtension
+
+Returns the configured site filename extension, including a leading
+'.' character. If no extension is assigned, this returns an empty
+string.
+
+=for tags sites
+
+=cut
+
 sub _hdlr_blog_file_extension {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
@@ -635,6 +992,25 @@ If specified, the raw theme ID is returned.
 =back
 
 =for tags blogs
+
+=cut
+
+=head2 SiteThemeID
+
+Outputs applied theme's ID for the site currently in context.  The 
+identifier is modified such that underscores are changed to dashes.
+
+B<Attributes:>
+
+=over 4
+
+=item * raw (optional; default "0")
+
+If specified, the raw theme ID is returned.
+
+=back
+
+=for tags sites
 
 =cut
 

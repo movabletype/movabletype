@@ -2,6 +2,19 @@
 
 <mt:setvar name="position_actions_bottom" value="1">
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+.placeholder {
+    border: 1px dashed #c0c6c9;
+    border-radius: .25em;
+    background-color: #fbfbfb;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="system_msg">
 <mt:if name="saved">
   <mtapp:statusmsg
@@ -20,8 +33,7 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="page_content">
 <div id="edit-form">
   <form id="manager" name="manager" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="save_widget" />
@@ -35,58 +47,66 @@
     <mtapp:setting
        id="name"
        label="<__trans phrase="Widget Set Name">"
+       label_for="name"
        label_class="no-header">
-      <input type="text" name="name" id="name" class="text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
+      <input type="text" name="name" id="name" class="form-control text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
-      <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="Save changes to this widget set (s)">"
-         class="save action primary button">
-        <__trans phrase="Save Changes">
-      </button>
+      <div class="my-4">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Save changes to this widget set (s)">"
+           class="btn btn-primary save action primary button">
+          <__trans phrase="Save Changes">
+        </button>
+      </div>
     </mt:setvarblock>
 
-    <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1" settings_bar="1">
+    <div class="row">
+      <div class="col">
+        <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
+      </div>
+    </div>
 
-    <div id="widget-manager" class="line">
-      <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
-      <div id="available-column" class="unit size1of2">
+    <div id="widget-manager" class="row line">
+      <div id="available-column" class="col-6 unit size1of2">
         <mtapp:widget
            id="available-widgets"
            label="<__trans phrase="Available Widgets">">
-          <div id="available-column-items" class="connectSortable">
+          <div id="available-column-items" class="connectSortable p-2">
           <mt:loop name="available">
-            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
-              <div class="widget-header">
-                <div class="widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
-                </div>
-                <div class="widget-label">
-                  <h3><mt:var name="name" escape="html"></h3>
-                </div>
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                  <mtapp:svgicon id="ic_edit" title="edit">
+                </a>
               </div>
             </div>
           </mt:loop>
           </div>
         </mtapp:widget>
       </div>
-      <div id="installed-column" class="unit size1of2">
+      <div id="installed-column" class="col-6 unit size1of2">
         <mtapp:widget
            id="installed-widgets"
            label="<__trans phrase="Installed Widgets">">
-          <div id="installed-column-items" class="connectSortable">
+          <div id="installed-column-items" class="connectSortable p-2">
           <mt:loop name="installed">
-            <div id="module-<mt:var name="id" escape="html">" class="widget widget-item">
-              <div class="widget-header">
-                <div class="widget-action">
-                  <a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank"><__trans phrase="edit"></a>
-                </div>
-                <div class="widget-label">
-                  <h3><mt:var name="name" escape="html"></h3>
-                </div>
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                  <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                    <mtapp:svgicon id="ic_edit" title="edit">
+                  </a>
               </div>
             </div>
           </mt:loop>
@@ -97,6 +117,8 @@
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   </form>
 </div>
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery(' #installed-column-items, #available-column-items ').sortable({
         connectWith: '.connectSortable',
@@ -104,7 +126,13 @@
         distance: 3,
         cursor: 'move',
         forcePlaceholderSize: true,
-        tolerance: 'pointer'
+        tolerance: 'pointer',
+        start: function (event, ui) {
+            ui.item.attr('aria-grabbed', true);
+        },
+        stop: function (event, ui) {
+            ui.item.attr('aria-grabbed', false);
+        }
     }).disableSelection();
 
     jQuery('button.save').click( function () {
@@ -128,4 +156,5 @@
     });
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

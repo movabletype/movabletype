@@ -1,5 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Mail Configuration"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
+
+<mt:setvarblock name="page_content">
 <form id="optional_form" method="post">
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="optional" />
@@ -9,19 +10,19 @@
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
   <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
-  <div id="buttons" class="actions-bar">
+  <div id="buttons" class="actions-bar text-right">
     <button
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
     <button
        name="back"
        type="submit"
        onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
   </div>
@@ -54,8 +55,9 @@
          label_class="top-label"
          required="1"
          hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+         hint_id="emailAddressMain"
          show_hint="1">
-        <input type="text" id="email_address_main" class="text full email required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
+        <input type="text" id="email_address_main" class="form-control text full email required" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" aria-describedby="emailAddressMain" />
       </mtapp:setting>
 
     <!-- MailTransfer -->
@@ -63,7 +65,7 @@
          id="mail_transfer"
          label="<__trans phrase="Send mail via:">"
          label_class="top-label">
-        <select id="mail_transfer" name="mail_transfer">
+        <select id="mail_transfer" class="custom-select form-control" name="mail_transfer">
           <option value=""><__trans phrase="Select One..."></option>
         <mt:loop name="mail_loop">
           <option value="<mt:var name="ID">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
@@ -78,9 +80,8 @@
              id="sendmail_path"
              label="<__trans phrase="Sendmail Path">"
              label_class="top-label"
-             required="1"
-             hint="<__trans phrase="The physical file path for your Sendmail binary.">">
-            <input type="text" id="sendmail_path" class="text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
+             required="1">
+            <input type="text" id="sendmail_path" class="form-control text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
           </mtapp:setting>
         </div>
 
@@ -92,8 +93,9 @@
              label_class="top-label"
              required="1"
              hint="<__trans phrase="Address of your SMTP Server.">"
+             hint_id="smtpServer"
              show_hint="1">
-            <input type="text" id="smtp_server" class="text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
+            <input type="text" id="smtp_server" class="form-control text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" aria-describedby="smtpServer" />
           </mtapp:setting>
 
       <!-- SMTPPort -->
@@ -103,15 +105,18 @@
              label_class="top-label"
              required="1"
              hint="<__trans phrase="Port number of your SMTP Server.">"
+             hint_id="smtpPort"
              show_hint="1">
-            <input type="text" id="smtp_port" class="text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" />
+            <input type="text" id="smtp_port" class="form-control text full" name="smtp_port" value="<mt:if name="smtp_port"><mt:var name="smtp_port" escape="html"></mt:if>" aria-describedby="smtpPort" />
           </mtapp:setting>
 
       <!-- SMTPAuth -->
           <mt:if name="has_net_smtp_auth">
             <p>
-              <input type="checkbox" name="smtp_auth" id="smtp_auth" class="cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-              <label for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="smtp_auth" id="smtp_auth" class="custom-control-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
+                <label class="custom-control-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+              </div>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
       <!-- SMTPAuth Username -->
@@ -121,8 +126,9 @@
                  label_class="top-label"
                  required="1"
                  hint="<__trans phrase="Username for your SMTP Server.">"
+                 hint_id="smtpAuthUsername"
                  show_hint="1">
-                <input type="text" id="smtp_auth_username" class="text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" />
+                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" aria-describedby="smtpAuthUsername" />
               </mtapp:setting>
 
       <!-- SMTPAuth Password -->
@@ -132,8 +138,9 @@
                  label_class="top-label"
                  required="1"
                  hint="<__trans phrase="Password for your SMTP Server.">"
+                 hint_id="smtpAuthPassword"
                  show_hint="1">
-                <input type="password" id="smtp_auth_password" class="text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" />
+                <input type="password" id="smtp_auth_password" class="form-control text full" name="smtp_auth_password" value="<mt:if name="smtp_auth_password"><mt:var name="smtp_auth_password" escape="html"></mt:if>" aria-describedby="smtpAuthPassword" />
               </mtapp:setting>
 
       <!-- SSL -->
@@ -158,7 +165,7 @@
                 </mtapp:statusmsg>
               </mt:unless>
               <mt:if name="can_use_ssl">
-                <select id="smtp_ssl" name="smtp_ssl">
+                <select id="smtp_ssl" class="custom-select form-control" name="smtp_ssl">
                     <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
                     <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option></mt:if>
                     <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option></mt:if>
@@ -170,29 +177,29 @@
         </div>
       </div>
 
-      <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
+      <div id="goback" class="actions-bar text-right" <mt:if name="mail_transfer">style="display: none"</mt:if>>
         <button
            name="continue"
            type="submit"
            onclick="go('next_step');"
-           class="continue action primary button">
+           class="continue action primary button btn btn-primary">
           <__trans phrase="Continue">
         </button>
         <button
            name="back"
            type="submit"
            onclick="this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
 
-      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+      <div id="submit" class="actions-bar text-right" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
         <button
            name="continue"
            type="submit"
            onclick="go('next_step');"
-           class="continue action primary button">
+           class="continue action primary button btn btn-primary">
           <__trans phrase="Continue">
         </button>
         <button
@@ -200,14 +207,14 @@
            name="test"
            type="button"
            value="1"
-           class="test action primary button">
+           class="test action primary button btn btn-primary">
           <__trans phrase="Send Test Email">
         </button>
         <button
            name="back"
            type="submit"
            onclick="this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
@@ -219,36 +226,38 @@
          id="test_email_address"
          label="<__trans phrase="Mail address to which test email should be sent">"
          label_class="top-label">
-        <input type="text" id="test_mail_address" class="text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
+        <input type="text" id="test_mail_address" class="form-control text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
       </mtapp:setting>
 
-      <div id="submit" class="actions-bar">
+      <div id="submit" class="actions-bar text-right">
         <button
            name="test"
            type="submit"
            value="1"
            onclick="go('test')"
-           class="test action primary button">
+           class="test action primary button btn btn-primary">
           <__trans phrase="Send">
         </button>
         <button
            name="continue"
            type="submit"
            onclick="go('next_step');"
-           class="continue action primary button">
+           class="continue action primary button btn btn-primary">
           <__trans phrase="Skip">
         </button>
         <button
            id="back_to_settings"
            name="back"
            type="button"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
   </div>
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function go(mode) {
@@ -366,5 +375,8 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mt:include name="include/chromeless_footer.tmpl">
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

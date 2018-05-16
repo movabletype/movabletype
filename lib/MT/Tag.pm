@@ -7,6 +7,7 @@
 package MT::Tag;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 use MT::Util;
 
@@ -55,7 +56,8 @@ sub list_props {
                 my ( $obj, $app ) = @_;
                 my $name = MT::Util::encode_html( $obj->name );
                 my $id   = $obj->id;
-                return qq{<a href="#tagid-$id" class="edit-tag">$name</a>};
+                return
+                    qq{<a href="#tagid-$id" class="edit-tag" onclick="editTagName(this);">$name</a>};
             },
         },
         _blog => {
@@ -600,6 +602,29 @@ sub cache {
     $data || [];
 }
 
+sub get_tags_js {
+    my $class = shift;
+    my ($blog_id) = @_;
+    return undef unless $blog_id;
+
+    require MT::ObjectTag;
+    require MT::Util;
+    my $tags_js = MT::Util::to_json(
+        [   map { $_->name } MT::Tag->load(
+                undef,
+                {   join => [
+                        'MT::ObjectTag', 'tag_id',
+                        { blog_id => $blog_id }, { unique => 1 }
+                    ]
+                }
+            )
+        ]
+    );
+    $tags_js =~ s!/!\\/!g;
+
+    return $tags_js;
+}
+
 # An interface for any MT::Object that wishes to utilize tags themselves
 
 package MT::Taggable;
@@ -1015,6 +1040,10 @@ Returns the list_properties registry of this class.
 =head2 MT::Tag->system_filters
 
 Returns the system_filters registry of this class.
+
+=head2 MT::Tag->get_tags_js($blog_id)
+
+Returns JSON array of tag names in the site specified by I<$blog_id>.
 
 =head1 NOTES
 

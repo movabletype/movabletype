@@ -22,14 +22,15 @@
         var redirectUri  = encodeURIComponent($('#ga_redirect_uri').val());
         var magicToken   = $('input[name="magic_token"]').val();
 
-        $.fn.mtDialog.close();
-        $.fn.mtDialog.open(
+        $.fn.mtModal.close();
+        $.fn.mtModal.open(
             dialogUrl +
             '&client_id=' + clientId +
             '&client_secret=' + clientSecret +
             '&redirect_uri=' + redirectUri +
             '&code=<mt:Var name="code" />' +
-            '&magic_token=' + magicToken
+            '&magic_token=' + magicToken,
+            { large: true }
         );
     }
 

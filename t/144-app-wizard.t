@@ -1,14 +1,17 @@
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
 use File::Copy;
 
-use lib 't/lib', 'lib', 'extlib';
 use MT::Test qw( :app );
 use MT::App::Wizard;
 
@@ -39,13 +42,13 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
 
     {
         my $title
-            = quotemeta '<h1 id="page-title">Configuration File Exists</h1>';
+            = quotemeta '<h2 id="page-title">Configuration File Exists</h2>';
         ok( $out =~ m/$title/, 'Title is "Configuration File Exists"' );
     }
 
     {
         my $title
-            = quotemeta '<h1 id="page-title">Database Configuration</h1>';
+            = quotemeta '<h2 id="page-title">Database Configuration</h2>';
         ok( $out !~ m/$title/, 'Title is not "Database Configuration"' );
     }
 };

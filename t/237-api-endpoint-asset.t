@@ -2,15 +2,27 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+use File::Path;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
+
+my $blog = MT::Blog->load(1);
+File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
 
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
@@ -398,9 +410,6 @@ sub suite {
                     { blog_id => 1,           class     => '*' },
                     { sort    => 'file_name', direction => 'descend' },
                 );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @assets,
                     items => MT::DataAPI::Resource->from_object( \@assets ),
@@ -522,9 +531,6 @@ sub suite {
  #                    { class => '*' },
  #                    { sort  => 'file_name', direction => 'descend' },
  #                );
- #                no warnings 'redefine';
- #                local *boolean::true  = sub {'true'};
- #                local *boolean::false = sub {'false'};
  #                return +{
  #                    totalResults => scalar @assets,
  #                    items => MT::DataAPI::Resource->from_object( \@assets ),
@@ -604,9 +610,6 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( [$asset1, $asset2, $asset3] )
@@ -704,9 +707,6 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
@@ -808,9 +808,6 @@ sub suite {
                 my $asset2 = $app->model('asset')->load(7);
                 my $asset3 = $app->model('asset')->load(6);
                 my $asset4 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 4,
                     items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
@@ -885,9 +882,6 @@ sub suite {
 #            result => sub {
 #                $app->user($author);
 #                my $asset = $app->model('asset')->load(1);
-#                no warnings 'redefine';
-#                local *boolean::true  = sub {'true'};
-#                local *boolean::false = sub {'false'};
 #                my $res = +{
 #                    totalResults => 1,
 #                    items => MT::DataAPI::Resource->from_object( [$asset] ),

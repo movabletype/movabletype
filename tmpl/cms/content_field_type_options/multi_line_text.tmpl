@@ -1,0 +1,29 @@
+<mt:app:ContentFieldOptionGroup
+   type="multi_line_text">
+  
+  <mtapp:ContentFieldOption
+     id="multi_line_text-initial_value"
+     label="<__trans phrase="Initial Value">">
+    <textarea ref="initial_value" name="initial_value" id="multi_line_text-initial_value" class="form-control" >{ options.initial_value }</textarea>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="multi_line_text-input_format"
+     label="<__trans phrase="Input format">">
+    <select ref="input_format" name="input_format" id="multi_line_text-input_format" class="custom-select form-control">
+    <mt:loop name="text_filters">
+      <option value="<mt:var name="filter_key" escape="html">" selected={ options.input_formats['<mt:var name="filter_key" escape="html">'] }><mt:var name="filter_label" escape="html"></option>
+      </mt:loop>
+    </select>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    this.options.input_formats = {}
+    <mt:loop name="text_filters">
+    this.options.input_formats['<mt:var name="filter_key" escape="js">'] = ''
+    </mt:loop>
+    if ( this.options.input_format )
+      this.options.input_formats[this.options.input_format] = "selected"
+  </mtapp:ContentFieldOptionScript>
+
+</mt:app:ContentFieldOptionGroup>

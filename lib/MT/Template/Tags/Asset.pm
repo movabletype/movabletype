@@ -6,6 +6,7 @@
 package MT::Template::Tags::Asset;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( offset_time_list );
@@ -274,7 +275,7 @@ sub _hdlr_assets {
         }
 
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
@@ -532,6 +533,7 @@ sub _hdlr_assets {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
+    my $glue    = $args->{glue};
     my $per_row = $args->{assets_per_row} || 0;
     $per_row -= 1 if $per_row;
     my $row_count   = 0;
@@ -557,9 +559,16 @@ sub _hdlr_assets {
                 AssetIsLastInRow  => $l,
                 AssetsHeader      => !$i,
                 AssetsFooter      => !defined $assets[ $i + 1 ],
+                (   lc $ctx->stash('tag') eq 'contentfield'
+                    ? ( ContentFieldHeader => !$i,
+                        ContentFieldFooter => !defined $assets[ $i + 1 ],
+                        )
+                    : ()
+                ),
             }
         );
         return $ctx->error( $builder->errstr ) unless defined $out;
+        $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
         $row_count++;
         $row_count = 0 if $row_count > $per_row;
@@ -1184,8 +1193,10 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if ( $arg{Width} && $arg{Width} > $a->image_width );
-        delete $arg{Height} if ( $arg{Height} && $arg{Height} > $a->image_height );
+        delete $arg{Width}
+            if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height}
+            if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
@@ -1290,8 +1301,9 @@ sub _hdlr_asset_thumbnail_link {
     $arg{Square} = $args->{square} if $args->{square};
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if $arg{Width} > $a->image_width;
-        delete $arg{Height} if $arg{Height} > $a->image_height;
+        delete $arg{Width} if $arg{Width} and $arg{Width} > $a->image_width;
+        delete $arg{Height}
+            if $arg{Height} and $arg{Height} > $a->image_height;
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
@@ -1351,6 +1363,19 @@ B<Example:>
     <$mt:AssetBlogID$>
 
 =for tags assets, blogs
+
+=cut
+
+=head2 AssetSiteID
+
+The numeric system ID of the site that is parent to the asset currently
+in context.
+
+B<Example:>
+
+    <$mt:AssetSiteID$>
+
+=for tags assets, sites
 
 =cut
 

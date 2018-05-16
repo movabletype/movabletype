@@ -2,19 +2,29 @@
 
 use strict;
 use warnings;
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval qq{ use Test::LeakTrace; 1 }
+        or plan skip_all => 'require Test::LeakTrace';
 }
 
-use MT::Test qw(:db :data);
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new(
+        # see the comment below
+        DisableObjectCache => 1,
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT;
-use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-use Test::More HAS_LEAKTRACE
-    ? ( tests => 36 )
-    : ( skip_all => 'require Test::LeakTrace' );
-use Test::LeakTrace;
+plan tests => 36;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 

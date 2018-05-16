@@ -1,64 +1,9 @@
 <mt:setvar name="page_title" value="<__trans phrase="Edit Image">">
 
-<mt:setvarblock name="html_head" prepend="1">
+<mt:setvarblock name="css_include" append="1">
 <style type="text/css">
-div#editor {
-  margin-left: 520px;  /* 500+20 */
-}
-
-div#editor input[type=checkbox] {
-  margin-right: 3px;
-}
-div#editor label {
-  margin-right: 3px;
-  vertical-align: middle;
-}
-
-div#image {
-  width: 500px;
-  float: left;
-}
-
-/* resize block */
-div#editor-resize {
-  margin-bottom: 10px;
-}
-div.editor-resize-column,.editor-resize-subcolumn {
-  margin-bottom: 5px;
-}
-div.editor-resize-subcolumn {
-  margin-left: 22px;
-}
-input.resize {
-  width: 96px;
-  text-align: center;
-  margin-right: 8px;
-}
-button.resize {
-  margin: 0px;
-}
-
-/* metadata block */
-div#editor-metadata {
-  margin-bottom: 20px;
-}
-div.editor-metadata-column {
-  margin-bottom: 10px;
-}
-
-/* button block */
-div.editor-button-column {
-  margin-bottom: 5px;
-}
-button.editor-button {
-  width: 40px;
-  height: 40px;
-  margin: 0px;
-}
-button.history {
-  width: 84px;
-  height: 30px;
-  margin: 0px;
+.editor-button > .mt-icon {
+  margin: 0;
 }
 </style>
 </mt:setvarblock>
@@ -78,75 +23,109 @@ button.history {
   <script type="text/javascript" src="<mt:var name="static_uri">js/image_editor/image_editor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
 
-<mt:include name="dialog/header.tmpl">
+<mt:setvarblock name="modal_body">
+  <div class="container-fluid">
 
-    <div id="image-editor">
+    <div id="image-editor" class="row">
 
-      <div id="image">
+      <div id="image" class="col-8">
         <img src="<mt:var name="script_url">?__mode=thumbnail_image&blog_id=<mt:var name="blog_id" escape="url">&id=<mt:var name="id" escape="url">&ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
       </div>
 
-      <div id="editor">
+      <div id="editor" class="col-4">
 
-        <div id="editor-resize">
-          <div class="editor-resize-column">
-            <label for="resize-width"><__trans phrase="W:"></label>
-            <input id="resize-width" class="text resize" type="text" value="<mt:var name="image_width">" />
-            <label for="resize-height"><__trans phrase="H:"></label>
-            <input id="resize-height" class="text resize" type="text" value="<mt:var name="image_height">" />
-            <button id="resize-apply" class="button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
-            <button id="resize-reset" class="button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+        <div id="editor-resize" class="form-group">
+          <div class="form-row mb-1">
+            <div class="col">
+              <label class="w-100" for="resize-width">
+                <__trans phrase="Width">
+                <input id="resize-width" class="form-control text resize" type="text" value="<mt:var name="image_width">" />
+              </label>
+            </div>
           </div>
-          <div class="editor-resize-subcolumn">
-            <input id="keep-aspect-ratio" class="checkbox" type="checkbox" value="1" checked="checked" />
-            <label for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+          <div class="form-row mb-1">
+            <div class="col">
+              <label class="w-100" for="resize-height">
+                <__trans phrase="Height">
+                <input id="resize-height" class="form-control text resize" type="text" value="<mt:var name="image_height">" />
+              </label>
+            </div>
+          </div>
+          <div class="form-row align-items-center editor-resize-subcolumn">
+            <div class="col">
+              <div class="custom-control custom-checkbox">
+                <input id="keep-aspect-ratio" class="custom-control-input checkbox" type="checkbox" value="1" checked="checked" />
+                <label class="custom-control-label" for="keep-aspect-ratio"><__trans phrase="Keep aspect ratio"></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row align-items-center mb-1">
+            <div class="col">
+              <button id="resize-apply" class="btn btn-default button resize enable-submit disabled" disabled="disabled"><__trans phrase="Apply"></button>
+              <button id="resize-reset" class="btn btn-default button resize disabled" disabled="disabled"><__trans phrase="Reset"></button>
+            </div>
           </div>
         </div>
 
-        <div id="editor-metadata">
-          <mt:if name="has_metadata">
-          <div class="editor-metadata-column">
-            <input id="remove-all-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+        <div id="editor-metadata" class="form-group">
+        <mt:if name="has_metadata">
+          <div class="form-row align-items-center editor-metadata-column">
+            <div class="col">
+              <div class="custom-control custom-checkbox">
+                <input id="remove-all-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
+                <label class="custom-control-label" for="remove-all-metadata"><__trans phrase="Remove All metadata"></label>
+              </div>
+            </div>
           </div>
-          </mt:if>
-
-          <mt:if name="has_gps_metadata">
-          <div class="editor-metadata-column">
-            <input id="remove-gps-metadata" class="checkbox enable-submit" type="checkbox" />
-            <label for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+        </mt:if>
+        <mt:if name="has_gps_metadata">
+          <div class="form-row align-items-center editor-metadata-column">
+            <div class="col">
+              <div class="custom-control custom-checkbox">
+                <input id="remove-gps-metadata" class="custom-control-input checkbox enable-submit" type="checkbox" />
+                <label class="custom-control-label" for="remove-gps-metadata"><__trans phrase="Remove GPS metadata"></label>
+              </div>
+            </div>
           </div>
-          </mt:if>
+        </mt:if>
         </div>
 
-        <div id="editor-button">
-          <div class="editor-button-column">
-            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
-              <img alt="Rotate right" src="<mt:var name="static_uri">images/image_editor/rotate_right@2x.png" width="24" height="24" />
-            </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
-              <img alt="Rotate left" src="<mt:var name="static_uri">images/image_editor/rotate_left@2x.png" width="24" height="24" />
-            </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
-              <img alt="Flip horizontal" src="<mt:var name="static_uri">images/image_editor/flip_horizontal@2x.png" width="24" height="24" />
-            </button>
-            <button class="button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
-              <img alt="Flip vertical" src="<mt:var name="static_uri">images/image_editor/flip_vertical@2x.png" width="24" height="24" />
-            </button>
-            <button id="crop" class="button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
-              <img alt="Crop" src="<mt:var name="static_uri">images/image_editor/crop@2x.png" width="24" height="24" />
-            </button>
+        <div id="editor-button" class="form-group">
+          <div class="form-row align-items-center mb-4 editor-button-column">
+            <div class="col">
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate right">" onclick="image.rotate(90);">
+                <mtapp:svgicon id="ic_redo" title="Rotate right">
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Rotate left">" onclick="image.rotate(-90);">
+                <mtapp:svgicon id="ic_undo" title="Rotate left">
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip horizontal">" onclick="image.flipHorizontal();">
+                <mtapp:svgicon id="ic_fliph" title="Flip horizontal">
+              </button>
+              <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
+                <mtapp:svgicon id="ic_flipv" title="Flip vertical">
+              </button>
+              <button id="crop" class="btn btn-default p-1 button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
+                <mtapp:svgicon id="ic_crop" title="Crop">
+              </button>
+            </div>
           </div>
-
-          <div class="editor-button-column">
-            <button id="undo" class="button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
-            <button id="redo" class="button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+          <div class="form-row align-items-center editor-button-column">
+            <div class="col">
+              <button id="undo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.undo();"><__trans phrase="Undo"></button>
+              <button id="redo" class="btn btn-default button history disabled" disabled="disabled" onclick="image.redo();"><__trans phrase="Redo"></button>
+            </div>
           </div>
         </div>
 
       </div><!-- /editor -->
 
     </div><!-- /image-editor -->
+
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
 
     <div class="dialog actions-bar actions-bar-bottom">
       <form action="<mt:var name="script_url">" method="post" target="_parent">
@@ -164,19 +143,23 @@ button.history {
            type="submit"
            accesskey="s"
            title="<__trans phrase="Save (s)">"
-           class="action primary button close disabled"
+           class="action primary button disabled btn btn-primary"
            disabled="disabled">
           <__trans phrase="Save"></button>
         <button
            type="submit"
            accesskey="x"
-           class="cancel action button image-editor-close-dialog"
-           title="<__trans phrase="Cancel (x)">">
+           class="cancel action button image-editor-close-dialog btn btn-default"
+           title="<__trans phrase="Cancel (x)">"
+           data-mt-modal-close>
           <__trans phrase="Cancel"></button>
       </form>
     </div>
 
-<mt:setvarblock name="jq_js_include" append="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
     jQuery(document).ready(function() {
 
         // This is true while resizing image.
@@ -240,7 +223,7 @@ button.history {
         jQuery('input#resize-width').keyup(function(event) {
             var resizeWidth = jQuery(this).val();
             var $resizeHeight = jQuery('input#resize-height');
- 
+
             // Do nothing when there is no change.
             if (!resizing && +resizeWidth === image.width) {
                 return;
@@ -248,7 +231,7 @@ button.history {
 
             // Resizing now.
             resizing = true;
- 
+
             // Change the status of resize buttons.
             if (+resizeWidth === 0 || +resizeWidth > image.width) {
                 disableButton('button#resize-apply');
@@ -256,24 +239,24 @@ button.history {
                 enableButton('button#resize-apply');
             }
             enableButton('button#resize-reset');
- 
+
             // Trigger apply button when the button is enabled and enter key is pushed.
             if (event.keyCode === 13 && jQuery('button#resize-apply:enabled').length) {
                 jQuery('button#resize-apply').trigger('click');
                 return;
             }
- 
+
             // Do not update resize-height when "Keep aspect ratio" checked.
             if (jQuery('input#keep-aspect-ratio:checked').length === 0) {
                 return;
             }
- 
+
             // Also change resize-height empty.
             if (resizeWidth === '') {
                 $resizeHeight.val('');
                 return;
             }
- 
+
             // Update resize-height.
             var height = Math.ceil(+resizeWidth * image.height / image.width);
             $resizeHeight.val(height);
@@ -338,7 +321,10 @@ button.history {
         });
 
         // Set parameters and submit form.
-        jQuery('button.primary').click(function() {
+        jQuery('button.primary').click(function(e) {
+            window.onbeforeunload = null;
+            jQuery('button.action').attr('disabled', 'disabled');
+
             var $form = jQuery('form');
             $form.children('input[name=actions]').val(JSON.stringify(image.backActionStack));
             if (jQuery('input#remove-gps-metadata:checked').length > 0) {
@@ -347,6 +333,20 @@ button.history {
             if (jQuery('input#remove-all-metadata:checked').length > 0) {
                 $form.children('input[name=remove_all_metadata]').val(1);
             }
+
+            var $iframes = window.top.jQuery('.mt-modal iframe');
+            if ($iframes.length > 1) {
+                var prevIframe = $iframes.get(-2);
+                prevIframe.contentWindow.onbeforeunload = null;
+                $form.attr('target', prevIframe.name);
+                window.top.jQuery(prevIframe).on('load.post-form', function () {
+                    window.top.jQuery(prevIframe).off('load.post-form');
+                    window.top.jQuery.fn.mtModal.close();
+                });
+            }
+
+            $form.submit();
+            return false;
         });
 
         // Enable submit button when clicking checkbox/button.
@@ -357,18 +357,18 @@ button.history {
         });
 
         // Confirm before closing dialog.
-        jQuery('button.image-editor-close-dialog').click(function() {
+        window.onbeforeunload = function () {
             if (isDirty || resizing || image.getPlugin('crop').hasFocus()) {
                 var message = '<__trans phrase="You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?">';
                 if (confirm(message)) {
-                    parent.jQuery.fn.mtDialog.close();
+                    return true;
                 }
             } else {
-                parent.jQuery.fn.mtDialog.close();
+                return true;
             }
 
             return false;
-        });
+        }
 
         // Cancel cropping when clicking escape key.
         function cancelCropping(event) {
@@ -420,7 +420,19 @@ button.history {
                 .addClass('disabled')
                 .attr('disabled', 'disabled');
         }
+
+        jQuery(window).on('load resize', function () {
+            if (jQuery(this).width() == 798) {
+                jQuery('#image').attr('class', 'col-8');
+                jQuery('#editor').attr('class', 'col-4');
+            } else {
+                jQuery('#image').attr('class', 'col-12');
+                jQuery('#editor').attr('class', 'col-12 mt-3');
+            }
+        });
     });
+</script>
 </mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::Pref;
 use strict;
+use warnings;
 use MT;
 
 sub apply {

@@ -18,12 +18,13 @@ BEGIN {
     $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
 }
 
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test qw(:app);"
-    : "use MT::Test qw(:app :db :data);"
-);
-die $@ if $@;    # Display the cause of error.
+use MT::Test;
+
+MT::Test->init_app;
+unless ( $ENV{MT_TEST_ROOT} ) {
+    MT::Test->init_db;
+    MT::Test->init_data;
+}
 
 our @EXPORT = qw/ test_data_api /;
 
@@ -65,6 +66,7 @@ sub test_data_api {
 
     my $format = MT::DataAPI::Format->find_format('json');
 
+    $suite = [$suite] unless ref $suite eq 'ARRAY';
     for my $data (@$suite) {
         $mock_app_api->mock( 'authenticate', sub {$author} )
             if !$mock_app_api->is_mocked('authenticate');
@@ -91,7 +93,7 @@ sub test_data_api {
 
         $data->{setup}->($data) if $data->{setup};
 
-        my @special_perms = qw/ edit_templates administer_blog rebuild /;
+        my @special_perms = qw/ edit_templates administer_site rebuild /;
 
         $mock_permission->unmock('can_do')
             if $mock_permission->is_mocked('can_do');
@@ -151,7 +153,7 @@ sub test_data_api {
             $note .= '?'
                 . join( '&',
                 map { $_ . '=' . $data->{params}{$_} }
-                    keys %{ $data->{params} } );
+                sort keys %{ $data->{params} } );
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
@@ -180,7 +182,8 @@ sub test_data_api {
                 (   $params
                     ? map {
                         $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_} )
+                            ? MT::Util::to_json( $params->{$_},
+                            { canonical => 1 } )
                             : $params->{$_};
                         }
                         keys %{$params}
@@ -226,8 +229,8 @@ sub test_data_api {
         if ( my $expected_result = $data->{result} ) {
             MT->instance->user($author);
             no warnings 'redefine';
-            local *boolean::true  = sub {'true'};
-            local *boolean::false = sub {'false'};
+            local *boolean::true  = sub {$JSON::true};
+            local *boolean::false = sub {$JSON::false};
 
             $expected_result = $expected_result->( $data, $body )
                 if ref $expected_result eq 'CODE';
@@ -245,8 +248,14 @@ sub test_data_api {
 
         if ( exists $data->{error} ) {
             $result = $format->{unserialize}->($body) if !defined $result;
-            is( $result->{error}{message},
-                $data->{error}, 'error: ' . $data->{error} );
+            if ( ref $data->{error} eq ref qr// ) {
+                like( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
+            else {
+                is( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
         }
 
         if ( my $complete = $data->{complete} ) {

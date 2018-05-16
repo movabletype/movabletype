@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '6.3');
-define('PRODUCT_VERSION', '6.3.7');
-define('DATA_API_DEFAULT_VERSION', '3');
+define('VERSION', '7.0');
+define('PRODUCT_VERSION', '7.0');
+define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 7;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -63,7 +63,7 @@ class MT {
     private static $_instance = null;
 
     static public $config_type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers', 'userpasswordvalidation');
-    static public $config_type_hash  = array('pluginswitch', 'pluginschemaversion', 'commenterregistration');
+    static public $config_type_hash  = array('pluginswitch', 'pluginalias', 'pluginschemaversion', 'commenterregistration');
 
     /***
      * Constructor for MT class.
@@ -430,8 +430,6 @@ class MT {
             $cfg['signonurl'] = 'https://www.typekey.com/t/typekey/login?';
         isset($cfg['signoffurl']) or
             $cfg['signoffurl'] = 'https://www.typekey.com/t/typekey/logout?';
-        isset($cfg['identityurl']) or
-            $cfg['identityurl'] = 'http://profile.typekey.com/';
         isset($cfg['publishcommentericon']) or
             $cfg['publishcommentericon'] = '1';
         isset($cfg['allowcomments']) or
@@ -694,7 +692,7 @@ class MT {
         $this->http_error = 200;
         header("HTTP/1.1 200 OK");
         // content-type header-- need to supplement with charset
-        $content_type = $ctx->stash('content_type');
+        $content_type = $ctx->stash('http_content_type');
 
         if (!isset($content_type)) {
             $content_type = $this->mime_types['__default__'];

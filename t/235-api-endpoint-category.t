@@ -2,14 +2,31 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
+
+my $category_set = MT::Test::Permission->make_category_set( blog_id => 1 );
+my $category_set_category = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+);
 
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
@@ -106,8 +123,8 @@ sub suite {
                 +{  totalResults => 3,
                     items        => MT::DataAPI::Resource->from_object(
                         [   MT->model('category')->load(
-                                { blog_id => 1 },
-                                { sort    => 'created_by' },
+                                { blog_id => 1, category_set_id => 0 },
+                                { sort => 'created_by' },
                             )
                         ]
                     ),
@@ -188,7 +205,7 @@ sub suite {
                 { category => { label => 'test-api-permission-category' }, },
             restrictions => { 1 => [qw/ save_category /], },
             code         => 403,
-            error => 'Do not have permission to create a category.',
+            error        => 'Do not have permission to create a category.',
         },
 
         # create_category - normal tests
@@ -220,8 +237,9 @@ sub suite {
             method => 'POST',
             params => {
                 category => {
-                    label  => 'test-create-category-with-parent',
-                    parent => 1,
+                    label           => 'test-create-category-with-parent',
+                    parent          => 1,
+                    category_set_id => $category_set->id,
                 },
             },
             callbacks => [
@@ -241,8 +259,9 @@ sub suite {
             ],
             result => sub {
                 MT->model('category')->load(
-                    {   label  => 'test-create-category-with-parent',
-                        parent => 1
+                    {   label           => 'test-create-category-with-parent',
+                        parent          => 1,
+                        category_set_id => 0,
                     }
                 );
             },
@@ -281,6 +300,11 @@ sub suite {
         },
         {    # Non-existent site.
             path   => '/v2/sites/5/categories/1',
+            method => 'GET',
+            code   => 404,
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/categories/' . $category_set_category->id,
             method => 'GET',
             code   => 404,
         },
@@ -373,14 +397,26 @@ sub suite {
             },
             restrictions => { 1 => [qw/ save_category /], },
             code         => 403,
-            error => 'Do not have permission to update a category.',
+            error        => 'Do not have permission to update a category.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/categories/' . $category_set_category->id,
+            method => 'PUT',
+            params => {
+                category =>
+                    { label => 'update-test-category-with-category-set-id', },
+            },
+            code => 404,
         },
 
         # update_category - normal tests
         {   path   => '/v2/sites/1/categories/1',
             method => 'PUT',
             params => {
-                category => { label => 'update-test-api-permission-category' }
+                category => {
+                    label           => 'update-test-api-permission-category',
+                    category_set_id => $category_set->id,
+                }
             },
             callbacks => [
                 {   name =>
@@ -398,9 +434,11 @@ sub suite {
                 },
             ],
             result => sub {
-                MT->model('category')
-                    ->load(
-                    { label => 'update-test-api-permission-category' } );
+                MT->model('category')->load(
+                    {   label => 'update-test-api-permission-category',
+                        category_set_id => 0,
+                    }
+                );
             },
         },
         {   path      => '/v2/sites/1/categories/1',
@@ -480,9 +518,6 @@ sub suite {
             result => sub {
                 $app->user($author);
                 my $cat = $app->model('category')->load(1);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -534,6 +569,13 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # category of category set.
+            path => '/v2/sites/1/categories/'
+                . $category_set_category->id
+                . '/parents',
+            method => 'GET',
+            code   => 404,
+        },
 
         # list_parent_categories - normal tests
         {   path   => '/v2/sites/1/categories/3/parents',
@@ -552,9 +594,6 @@ sub suite {
                         : undef;
                 }
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => scalar @cat,
                     'items' => mt::DataAPI::Resource->from_object( \@cat ),
@@ -588,6 +627,13 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # category for category set.
+            path => '/v2/sites/1/categories/'
+                . $category_set_category->id
+                . '/siblings',
+            method => 'GET',
+            code   => 404,
+        },
 
         # list_sibling_categories - normal tests
         {    # Non-top.
@@ -599,9 +645,6 @@ sub suite {
                     = $app->model('category')
                     ->load(
                     { id => { not => 3 }, blog_id => 1, parent => 1 } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     'totalResults' => '1',
                     'items' => mt::DataAPI::Resource->from_object( [$cat] ),
@@ -618,9 +661,10 @@ sub suite {
 
                 my $cat  = $app->model('category')->load(2);
                 my @cats = $app->model('category')->load(
-                    {   id      => { not => $cat->id },
-                        blog_id => 1,
-                        parent  => $cat->parent,
+                    {   id              => { not => $cat->id },
+                        blog_id         => 1,
+                        category_set_id => 0,
+                        parent          => $cat->parent,
                     }
                 );
 
@@ -663,6 +707,13 @@ sub suite {
             method => 'GET',
             code   => 404,
         },
+        {    # category of category set.
+            path => '/v2/sites/1/categories/'
+                . $category_set_category->id
+                . '/children',
+            method => 'GET',
+            code   => 404,
+        },
 
         # list_child_categories - nomal tests
         {   path   => '/v2/sites/1/categories/1/children',
@@ -671,9 +722,6 @@ sub suite {
                 $app->user($author);
                 my @cats = $app->model('category')
                     ->load( { blog_id => 1, parent => 1 } );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@cats ),
@@ -709,8 +757,10 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load( { blog_id => 1 },
-                    { sort => 'id', direction => 'descend' } );
+                my @cats = $app->model('category')->load(
+                    { blog_id => 1,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 pop @cat_ids;
                 { categories => \@cat_ids };
@@ -728,8 +778,10 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load( { blog_id => 1 },
-                    { sort => 'id', direction => 'descend' } );
+                my @cats = $app->model('category')->load(
+                    { blog_id => 1,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },
@@ -741,22 +793,40 @@ sub suite {
             path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load( { blog_id => 1 },
-                    { sort => 'id', direction => 'descend' } );
+                my @cats = $app->model('category')->load(
+                    { blog_id => 1,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },
             restrictions => { 1 => [qw/ edit_categories /], },
             code         => 403,
-            error => 'Do not have permission to permutate categories.',
+            error        => 'Do not have permission to permutate categories.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/categories/permutate',
+            method => 'POST',
+            params => sub {
+                my @cats
+                    = $app->model('category')
+                    ->load(
+                    { blog_id => 1,    category_set_id => $category_set->id },
+                    { sort    => 'id', direction       => 'descend' } );
+                my @cat_ids = map { { id => $_->id } } @cats;
+                { categories => \@cat_ids };
+            },
+            code => 400,
         },
 
         # permutate_categories - normal tests
         {   path   => '/v2/sites/1/categories/permutate',
             method => 'POST',
             params => sub {
-                my @cats = $app->model('category')->load( { blog_id => 1 },
-                    { sort => 'id', direction => 'descend' } );
+                my @cats = $app->model('category')->load(
+                    { blog_id => 1,    category_set_id => 0 },
+                    { sort    => 'id', direction       => 'descend' }
+                );
                 my @cat_ids = map { { id => $_->id } } @cats;
                 { categories => \@cat_ids };
             },
@@ -771,9 +841,6 @@ sub suite {
                 my @category_order = split ',', $site->category_order;
 
                 $app->user($author);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return MT::DataAPI::Resource->from_object(
                     [   map { $app->model('category')->load($_) }
@@ -817,6 +884,12 @@ sub suite {
             restrictions => { 1 => [qw/ delete_category /], },
             code         => 403,
             error        => 'Do not have permission to delete a category.',
+        },
+        {    # category of category set.
+            path   => '/v2/sites/1/categories/' . $category_set_category->id,
+            method => 'DELETE',
+            code   => 404,
+            error  => 'Category not found',
         },
 
         # delete_category - normal tests

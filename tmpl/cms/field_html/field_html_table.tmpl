@@ -1,0 +1,77 @@
+<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none">
+<mt:var name="table_value">
+</table>
+<input type="hidden" id="content-field-<mt:var name="content_field_id" escape="html">" name="content-field-<mt:var name="content_field_id" escape="html">" value="" mt:raw-name="1" />
+
+<mt:unless name="loaded_tables_field_css">
+  <mt:var name="loaded_tables_field_css" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.a-table-btn-group-list > .a-table-btn-list:first-child,
+.a-table-btn-group-list > .a-table-btn-list:last-child {
+  display: none;
+}
+
+.a-table-btn {
+  cursor: pointer;
+}
+</style>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="jq_js_include" append="1">
+var browserIsFirefox = window.navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
+if (browserIsFirefox) {
+  jQuery(document).on('focus', '.a-table-editable', function () {
+    if (this.textContent === '') {
+      this.innerHTML = '<br>';
+    }
+  });
+}
+  </mt:setvarblock>
+</mt:unless>
+
+<mt:setvarblock name="jq_js_include" append="1">
+(function() {
+  var increaseDecreaseColumns = <mt:if name="options{increase_decrease_cols}">true<mt:else>false</mt:if>;
+  var increaseDecreaseRows = <mt:if name="options{increase_decrease_rows}">true<mt:else>false</mt:if>;
+  var fieldId = '<mt:var name="content_field_id" escape="js">';
+  var languageTag = '<mt:var name="language_tag" escape="js">';
+
+  var table = new aTable(
+    '#js-table-' + fieldId,
+    {
+      increaseDecreaseColumns: increaseDecreaseColumns,
+      increaseDecreaseRows: increaseDecreaseRows,
+      lang: languageTag,
+      mark: {
+        icon: {
+          td: false,
+          th: false
+        }
+      }
+    }
+  );
+
+  table.afterAction =
+  table.afterEntered = function() {
+    setDirty(true);
+    log('found dirty form: #js-table-' + fieldId);
+    (app.getIndirectMethod('setDirty'))();
+  };
+
+  function updateTableInputValue() {
+    var tableInnerHtml = jQuery(table.getTable()).children().html();
+    jQuery('#content-field-' + fieldId).val(tableInnerHtml);
+  }
+
+  jQuery(window).on('pre_autosave', function() {
+    updateTableInputValue();
+  });
+
+  jQuery('form#edit-content-type-data-form').submit(function() {
+    updateTableInputValue();
+  });
+})();
+</mt:setvarblock>
+

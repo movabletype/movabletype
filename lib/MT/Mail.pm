@@ -7,6 +7,7 @@
 package MT::Mail;
 
 use strict;
+use warnings;
 
 use MT;
 use base qw( MT::ErrorHandler );
@@ -227,7 +228,6 @@ sub _send_mt_smtp {
         and ( !$user or !$pass );
 
     # Check required modules;
-    my $mod_reqd;
     my @modules = ();
     push @modules, @{ $SMTPModules{Core} };
     push @modules, @{ $SMTPModules{Auth} } if $auth;
@@ -375,7 +375,7 @@ sub _send_mt_sendmail {
         )
     ) unless $sm_loc;
     local $SIG{PIPE} = {};
-    my $pid = open MAIL, '|-';
+    my $pid = open my $MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
@@ -388,11 +388,11 @@ sub _send_mt_sendmail {
             = ref( $hdrs->{$key} ) eq 'ARRAY'
             ? @{ $hdrs->{$key} }
             : ( $hdrs->{$key} );
-        print MAIL map "$key: $_\n", @arr;
+        print $MAIL map "$key: $_\n", @arr;
     }
-    print MAIL "\n";
-    print MAIL $body;
-    close MAIL;
+    print $MAIL "\n";
+    print $MAIL $body;
+    close $MAIL;
     1;
 }
 

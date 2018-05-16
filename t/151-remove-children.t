@@ -2,17 +2,21 @@
 
 use strict;
 use warnings;
-
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT;
-use MT::Test qw(:db);
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+$test_env->prepare_fixture('db');
 
 # Create test data
 my $website = MT::Test::Permission->make_website();

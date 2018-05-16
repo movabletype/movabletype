@@ -1,8 +1,17 @@
 #!/usr/bin/perl
 
 use strict;
-use lib 't/extlib', 't/lib', 'extlib', 'lib';
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test;
 use File::Spec;
 use Data::Dumper;
@@ -19,17 +28,17 @@ my $components = {
                 MT/Template/Tags/Blog.pm
                 MT/Template/Tags/Calendar.pm
                 MT/Template/Tags/Category.pm
-                MT/Template/Tags/Comment.pm
-                MT/Template/Tags/Commenter.pm
+                MT/Template/Tags/CategorySet.pm
+                MT/Template/Tags/ContentType.pm
                 MT/Template/Tags/Entry.pm
                 MT/Template/Tags/Filters.pm
                 MT/Template/Tags/Folder.pm
                 MT/Template/Tags/Misc.pm
                 MT/Template/Tags/Page.pm
                 MT/Template/Tags/Pager.pm
-                MT/Template/Tags/Ping.pm
                 MT/Template/Tags/Score.pm
                 MT/Template/Tags/Search.pm
+                MT/Template/Tags/Site.pm
                 MT/Template/Tags/Tag.pm
                 MT/Template/Tags/Userpic.pm
                 MT/Template/Tags/Website.pm
@@ -37,17 +46,65 @@ my $components = {
                 )
         ],
     },
-    'commercial' =>
-        { paths => [ 'CustomFields/Template/ContextHandlers.pm', ], },
+
+    # 'commercial' =>
+    #     { paths => [ 'CustomFields/Template/ContextHandlers.pm', ], },
     'community'    => { paths => [ 'MT/Community/Tags.pm', ], },
     'multiblog'    => { paths => [ 'MultiBlog/Tags.pm', ], },
     'FeedsAppLite' => { paths => [ 'MT/Feeds/Tags.pm', ], },
 };
 
+my @removed_from_core = qw(
+    BlogCommentCount BlogPingCount
+    CategoryCommentCount CategoryTrackbackCount CategoryTrackbackLink
+    CommentAuthor CommentAuthorIdentity CommentAuthorLink
+    CommentBlogID CommentBody CommentDate CommentEmail
+    CommentEntryID CommentFields CommentID CommentIP
+    CommentLink CommentName CommentOrderNumber CommentParentID
+    CommentPreviewAuthor CommentPreviewAuthorLink
+    CommentPreviewBody CommentPreviewDate CommentPreviewEmail
+    CommentPreviewIP CommentPreviewIsStatic CommentPreviewState
+    CommentPreviewURL CommentRank CommentRepliesRecurse
+    CommentReplyToLink CommentScore CommentScoreAvg
+    CommentScoreCount CommentScoreHigh CommentScoreLow
+    CommentSiteID CommentURL CommenterAuthIconURL
+    CommenterAuthType CommenterEmail CommenterID
+    CommenterName CommenterNameThunk CommenterURL
+    CommenterUsername CommenterUserpic CommenterUserpicURL
+    EntryCommentCount EntryTrackbackCount EntryTrackbackData
+    EntryTrackbackID EntryTrackbackLink
+    PingBlogName PingDate PingExcerpt PingID PingIP
+    PingRank PingScore PingScoreAvg PingScoreCount
+    PingScoreHigh PingScoreLow PingSiteName PingTitle
+    PingURL PingsSentURL RemoteSignInLink RemoteSignOutLink
+    SignInLink SignOnURL SignOutLink SiteCommentCount SitePingCount
+    TypeKeyToken UserSessionCookieDomain UserSessionCookieName
+    UserSessionCookiePath UserSessionCookieTimeout
+    UserSessionState WebsiteCommentCount WebsitePingCount
+
+    AuthorCommentCount BlogIfCommentsOpen CategoryIfAllowPings
+    CommentEntry CommentIfModerated CommentParent
+    CommentReplies CommenterIfTrusted CommenterUserpicAsset
+    Comments CommentsFooter CommentsHeader
+    EntryIfAllowComments EntryIfAllowPings EntryIfCommentsOpen
+    IfAllowCommentHTML IfCommentParent IfCommentReplies
+    IfCommenterIsAuthor IfCommenterIsEntryAuthor
+    IfCommenterRegistrationAllowed IfCommenterTrusted
+    IfCommentsAccepted IfCommentsActive IfCommentsAllowed
+    IfCommentsModerated IfExternalUserManagement
+    IfNeedEmail IfPingsAccepted IfPingsActive IfPingsAllowed
+    IfPingsModerated IfRegistrationAllowed IfRegistrationNotRequired
+    IfRegistrationRequired IfRequireCommentEmails IfTypeKeyToken
+    PingEntry Pings PingsFooter PingsHeader PingsSent
+    SiteIfCommentsOpen WebsiteIfCommentsOpen
+);
+
+my %is_removed = map { $_ => 1 } @removed_from_core;
+
 my $mt = MT->instance;
 
 my $tag_count = 0;
-foreach my $c ( keys %$components ) {
+foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
     my $tags     = $mt->component($c)->registry('tags');
     my $fn_count = scalar keys( %{ $tags->{function} } );
@@ -60,9 +117,7 @@ foreach my $c ( keys %$components ) {
     $tag_count += $count;
 }
 
-plan tests => $tag_count;
-
-foreach my $c ( keys %$components ) {
+foreach my $c ( sort keys %$components ) {
     next unless $mt->component($c);
     note("Checking for tag documentation for component $c");
     my $all_docs  = '';
@@ -115,8 +170,9 @@ foreach my $c ( keys %$components ) {
         $doc_names->{$tag} = 1;
     }
 
-    foreach my $tag ( keys %{ $tags->{function} } ) {
+    foreach my $tag ( sort keys %{ $tags->{function} } ) {
         next if $tag eq 'plugin';
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{function}{$tag} ) {
             ok( 1, "component $c, function tag $tag (extends core tag)" );
         }
@@ -126,9 +182,10 @@ foreach my $c ( keys %$components ) {
         }
     }
 
-    foreach my $tag ( keys %{ $tags->{block} } ) {
+    foreach my $tag ( sort keys %{ $tags->{block} } ) {
         next if $tag eq 'plugin';
         $tag =~ s/\?$//;
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{block}{$tag} ) {
             ok( 1, "component $c, block tag $tag (extends core tag)" );
         }
@@ -137,8 +194,9 @@ foreach my $c ( keys %$components ) {
         }
     }
 
-    foreach my $tag ( keys %{ $tags->{modifier} } ) {
+    foreach my $tag ( sort keys %{ $tags->{modifier} } ) {
         next if $tag eq 'plugin';
+        next if $is_removed{$tag};
         if ( $core_tags && $core_tags->{modifier}{$tag} ) {
             ok( 1, "component $c, modifier $tag (extends core tag)" );
         }
@@ -148,3 +206,4 @@ foreach my $c ( keys %$components ) {
     }
 }
 
+done_testing;

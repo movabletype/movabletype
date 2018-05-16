@@ -7,6 +7,7 @@
 package MT::Role;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 # NOTE: Keep the role_mask fields defined here in sync with those in
@@ -96,19 +97,8 @@ sub list_props {
                             blog_id => 0,
                         }
                     );
-                    my $cnt        = $asc_count->{ $obj->id };
-                    my $name       = MT::Util::encode_html( $obj->name );
-                    my $status_img = MT->static_path
-                        . (
-                        $cnt
-                        ? '/images/status_icons/role-active.gif'
-                        : '/images/status_icons/role-inactive.gif'
-                        );
-                    my $status_class = $cnt ? 'role-active' : 'role-inactive';
+                    my $name = MT::Util::encode_html( $obj->name );
                     push @out, qq{
-                        <span class="icon status $status_class">
-                            <img alt="$status_class" src="$status_img" />
-                        </span>
                         <a href="$url">$name</a>
                     } . (
                         $desc
@@ -175,9 +165,10 @@ sub list_props {
             ],
         },
         description => {
-            auto    => 1,
-            label   => 'Description',
-            display => 'none',
+            auto      => 1,
+            label     => 'Description',
+            use_blank => 1,
+            display   => 'none',
         },
         created_on => {
             base  => '__virtual.created_on',
@@ -294,65 +285,7 @@ sub create_default_roles {
     my $class = shift;
     my (%param) = @_;
 
-    my @default_roles = (
-        {   name        => MT->translate('Website Administrator'),
-            description => MT->translate('Can administer the website.'),
-            perms       => [ 'administer_website', 'manage_member_blogs' ]
-        },
-        {   name        => MT->translate('Blog Administrator'),
-            description => MT->translate('Can administer the blog.'),
-            role_mask   => 2**12,
-            perms       => ['administer_blog']
-        },
-        {   name        => MT->translate('Editor'),
-            description => MT->translate(
-                'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
-            ),
-            perms => [
-                'comment',         'create_post',
-                'publish_post',    'edit_all_posts',
-                'edit_categories', 'edit_tags',
-                'manage_pages',    'rebuild',
-                'upload',          'send_notifications',
-                'manage_feedback', 'edit_assets'
-            ],
-        },
-        {   name        => MT->translate('Author'),
-            description => MT->translate(
-                'Can create entries, edit their own entries, upload files and publish.'
-            ),
-            perms => [
-                'comment',      'create_post',
-                'publish_post', 'upload',
-                'send_notifications'
-            ],
-        },
-        {   name        => MT->translate('Designer'),
-            description => MT->translate(
-                'Can edit, manage, and publish blog templates and themes.'),
-            role_mask => ( 2**4 + 2**7 ),
-            perms     => [ 'manage_themes', 'edit_templates', 'rebuild' ]
-        },
-        {   name        => MT->translate('Webmaster'),
-            description => MT->translate(
-                'Can manage pages, upload files and publish blog templates.'),
-            perms => [ 'manage_pages', 'rebuild', 'upload' ]
-        },
-        {   name        => MT->translate('Contributor'),
-            description => MT->translate(
-                'Can create entries, edit their own entries, and comment.'),
-            perms => [ 'comment', 'create_post' ],
-        },
-        {   name        => MT->translate('Moderator'),
-            description => MT->translate('Can comment and manage feedback.'),
-            perms       => [ 'comment', 'manage_feedback' ],
-        },
-        {   name        => MT->translate('Commenter'),
-            description => MT->translate('Can comment.'),
-            role_mask   => 2**0,
-            perms       => ['comment'],
-        },
-    );
+    my @default_roles = _default_roles();
 
     require MT::Role;
     return 1 if MT::Role->exist();
@@ -372,6 +305,69 @@ sub create_default_roles {
     }
 
     1;
+}
+
+sub _default_roles {
+    return +(
+        {   name        => MT->translate('Site Administrator'),
+            description => MT->translate('Can administer the site.'),
+            perms       => ['administer_site']
+        },
+        {   name        => MT->translate('Editor'),
+            description => MT->translate(
+                'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'
+            ),
+            perms => [
+                'comment',             'create_post',
+                'publish_post',        'edit_all_posts',
+                'edit_categories',     'edit_tags',
+                'manage_pages',        'rebuild',
+                'upload',              'send_notifications',
+                'manage_feedback',     'edit_assets',
+                'manage_content_data', 'manage_category_set'
+            ],
+        },
+        {   name        => MT->translate('Author'),
+            description => MT->translate(
+                'Can create entries, edit their own entries, upload files and publish.'
+            ),
+            perms => [
+                'comment',      'create_post',
+                'publish_post', 'upload',
+                'send_notifications'
+            ],
+        },
+        {   name        => MT->translate('Designer'),
+            description => MT->translate(
+                'Can edit, manage, and publish blog templates and themes.'),
+            role_mask => ( 2**4 + 2**7 ),
+            perms     => [
+                'manage_themes', 'edit_templates',
+                'rebuild',       'upload',
+                'edit_assets'
+            ]
+        },
+        {   name        => MT->translate('Webmaster'),
+            description => MT->translate(
+                'Can manage pages, upload files and publish site/child site templates.'
+            ),
+            perms => [ 'manage_pages', 'rebuild', 'upload' ]
+        },
+        {   name        => MT->translate('Contributor'),
+            description => MT->translate(
+                'Can create entries, edit their own entries, and comment.'),
+            perms => [ 'comment', 'create_post' ],
+        },
+        {   name        => MT->translate('Content Designer'),
+            description => MT->translate(
+                'Can manage content types, content data and category sets.'
+            ),
+            perms => [
+                'manage_content_types', 'manage_content_data',
+                'manage_category_set'
+            ],
+        },
+    );
 }
 
 1;

@@ -2,19 +2,24 @@
 
 use strict;
 use warnings;
-use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
+use utf8;
 
-use MT::Test qw(:db :data);
+use MT::Test;
 
 use MT;
 use MT::Filter;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 
@@ -43,8 +48,8 @@ my @count_specs = (
             my ($spec)    = @_;
             my $profiler  = Data::ObjectDriver->profiler;
             my $query_log = $profiler->query_log;
-            shift @$query_log;
-            like( $query_log->[0], qr/LIMIT 1$/, 'Has LIMIT statement' );
+            is( scalar @$query_log, 2, '2 query logs' );
+            like( $query_log->[-1], qr/LIMIT 1$/, 'Has LIMIT statement' );
         },
     },
     {   name       => 'pack with grep items',
@@ -75,6 +80,7 @@ my @count_specs = (
     },
 );
 
+no warnings 'once';
 $Data::ObjectDriver::PROFILE = 1;
 for my $spec (@count_specs) {
     note( $spec->{name} );

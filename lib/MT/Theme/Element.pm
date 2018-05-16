@@ -4,6 +4,9 @@
 #
 # $Id$
 package MT::Theme::Element;
+
+use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 use MT::Util qw( weaken );
 
@@ -117,7 +120,7 @@ sub information_string {
     my ($blog)   = @_;
     my $importer = $_[0] || $element->importer
         or return;
-    $info = $importer->{info} or return;
+    my $info = $importer->{info} or return;
     my $str;
     if ( defined $info ) {
         ## info can be as CODEREF, MT Handler string and constant string.

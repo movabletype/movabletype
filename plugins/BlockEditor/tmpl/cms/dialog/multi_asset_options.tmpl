@@ -1,0 +1,44 @@
+<form id="asset-detail-panel-form">
+  <div id="asset_details">
+  <mt:loop name="options_loop" >
+  <div class="row asset-detail-panel" data-asset-id="<mt:var name="id">">
+    <div class="form-group col">
+      <mt:if name="thumbnail">
+              <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
+      <mt:else>
+              <img src="<mt:var name="static_uri">images/file-<mt:var name="thumbnail_type" escape="html">.svg" width="60" height="60">
+      </mtif>
+    </div>
+    <!-- options -->
+    <mt:var name="options">
+    <!-- /options -->
+  </div>
+  </mt:loop>
+  </div>
+</form>
+
+<script>
+  jQuery('input[name="asset-option-width"]').keypress(function(event){
+    var key = event.charCode || event.keyCode;
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
+        ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+        return true;
+    if (key > 60000) // handles range of special keys such as arrow keys
+        return true;
+    if (event.ctrlKey || event.altKey)
+        return true;
+    if ((key < 48) || (key > 57)){
+      event.preventDefault
+      return false;
+    }
+    return true;
+  });
+  jQuery.mtValidateAddRules({
+      '[name="asset-option-width"]': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+  });
+  jQuery.mtValidateAddMessages({
+      '[name="asset-option-width"]': '<__trans phrase="This field must be a positive integer.">'
+  });
+</script>

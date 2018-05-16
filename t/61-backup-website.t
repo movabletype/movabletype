@@ -1,15 +1,25 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 # Fix the bug that website is not backed up.
 # https://movabletype.fogbugz.com/f/cases/113358/
 
-use Test::More;
-
-use lib qw( lib extlib t/lib );
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::BackupRestore;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 note 'System, all';
 {

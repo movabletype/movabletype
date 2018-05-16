@@ -1,8 +1,18 @@
 #!/usr/bin/perl
 
 use strict;
-use lib 't/lib', 'extlib', 'lib';
-use Test::More tests => 14;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+plan tests => 14;
 
 use MT::Test;
 my $mt = new MT;
@@ -18,6 +28,7 @@ __PACKAGE__->install_properties({
     },
     primary_key => 'id',
     class_type => 'file',
+    datasource => 'asset',
 });
 
 package MT::TestAsset::Image;
@@ -43,7 +54,7 @@ package main;
 
 my $file = new MT::TestAsset;
 my $image = new MT::TestAsset::Image;
-my $audio = new MT::TestAsset::Audio;
+my $audio = new MT::TestAsset::Audio title => 'AudioTitle';
 
 ok($file->has_column('title'), 'file has title column');
 ok($image->has_column('title'), 'image has title column');

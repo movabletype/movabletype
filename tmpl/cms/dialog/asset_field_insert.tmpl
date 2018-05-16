@@ -1,0 +1,88 @@
+<mt:setvarblock name="js_include" append="1">
+<script>
+/* <![CDATA[ */
+jQuery(document).ready(function () {
+
+  var $container = window.parent.jQuery('#asset-field-<mt:var name="content_field_id" escape="html" escape="js">');
+  var $alert = $container.children('.alert');
+
+  <mt:unless name="can_multi">
+    $container.children('.mt-draggable').remove();
+  </mt:unless>
+
+  var html;
+  <mt:loop name="assets">
+    html = '<div class="mt-draggable" doraggable="true" aria-grabbed="false">'
+         +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html" escape="js">" value="<mt:var name="asset_id" escape="html" escape="js">">'
+         +   '<div class="col-auto">'
+         +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1" escape="js">'
+         +   '</div>'
+         +   '<div class="col">'
+    <mt:if name="asset_type" eq="audio">
+         +     '<mtapp:svgicon id="ic_audio" title="Audio" color="secondary" strip_linefeeds="1" escape="js">'
+    <mt:elseif name="asset_type" eq="image">
+      <mt:if name="asset_preview_url">
+         +     '<span class="asset-preview-image picture small mr-3 mb-3">'
+         +       '<img src="<mt:var name="asset_preview_url" escape="html" escape="js">" width="<mt:var name="asset_preview_width" escape="html" escape="js">" height="<mt:var name="asset_preview_height" escape="html" escape="js">">'
+         +     '</span>'
+      <mt:else>
+         +     '<mtapp:svgicon id="ic_image" title="Image" color="secondary" strip_linefeeds="1" escape="js">'
+      </mt:if>
+    <mt:elseif name="asset_type" eq="video">
+         +     '<mtapp:svgicon id="ic_movie" title="Video" color="secondary" strip_linefeeds="1" escape="js">'
+    <mt:else>
+         +     '<mtapp:svgicon id="ic_file" title="Asset" color="secondary" strip_linefeeds="1" escape="js">'
+    </mt:if>
+         +     '<span class="align-top">'
+         +       '<mt:var name="asset_label" escape="html" escape="js">'
+         +     '</span>'
+         +   '</div>'
+         +   '<div class="col-auto mr-3">'
+         +     '<a href="javascript:void(0)" class="remove">'
+         +       '<__trans phrase="Remove">'
+         +     '</a>'
+         +   '</div>'
+         +   '<div class="col-auto">'
+         +     '<a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
+         +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1" escape="js">'
+         +     '</a>'
+         +   '</div>'
+         +   '<div class="mt-flexBreak"></div>'
+         +   '<div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
+         +     '<div class="row">'
+         +       '<div class="col">'
+         +         '<ul class="list-unstyled">'
+         +           '<li class="asset-prview-title">'
+         +             '<strong><__trans phrase="File Name"></strong>: <mt:var name="asset_file_name" escape="html" escape="js">'
+         +           '</li>'
+    <mt:if name="asset_type" eq="image">
+         +           '<li class="asset-preview-meta">'
+         +             '<strong><__trans phrase="Dimensions"></strong>: <mt:var name="asset_dimensions" escape="html" escape="js">'
+         +           '</li>'
+    </mt:if>
+         +         '</ul>'
+         +       '</div>'
+         +     '</div>'
+         +   '</div>'
+         + '</div>';
+    $alert.before(html);
+  </mt:loop>
+
+  if ($container.data('mtValidator')) {
+    $container.mtValid({ focus: false });
+  }
+
+  window.parent.setDirty(true);
+  window.parent.log('found dirty form');
+  window.parent.app.setDirty();
+
+  jQuery.fn.mtModal.close();
+
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
+

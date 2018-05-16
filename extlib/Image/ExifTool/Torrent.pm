@@ -111,7 +111,7 @@ sub ReadBencode($$)
 
     # read next token
     $$dataPt =~ /(.)/sg or return undef;
-    
+
     my $val;
     my $tok = $1;
     if ($tok eq 'i') {      # integer
@@ -198,7 +198,7 @@ sub ExtractTags($$$;$$@)
                 $name = "Tag$name" if length($name) < 2 or $name !~ /^[A-Z]/;
                 $name = $baseName . $name if defined $baseName; # add base name if necessary
                 AddTagToTable($tagTablePtr, $id, { Name => $name });
-                $et->VPrint(0, "  [adding $id '$name']\n");
+                $et->VPrint(0, "  [adding $id '${name}']\n");
             }
             my $tagInfo = $et->GetTagInfo($tagTablePtr, $id) or next;
             if (ref $val eq 'ARRAY') {
@@ -295,7 +295,7 @@ bencoded information from BitTorrent files.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -7,6 +7,7 @@
 package MT::Util;
 
 use strict;
+use warnings;
 use utf8;
 use base 'Exporter';
 use MT::I18N qw( const );
@@ -21,17 +22,17 @@ our @EXPORT_OK
     archive_file_for format_ts dirify remove_html
     days_in wday_from_ts encode_js decode_js get_entry spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
-    decode_xml is_valid_url is_url discover_tb convert_high_ascii
+    decode_xml is_valid_url is_url convert_high_ascii
     mark_odd_rows dsa_verify perl_sha1_digest relative_date
     perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
     start_background_task launch_background_tasks substr_wref
-    extract_urls extract_domain extract_domains is_valid_date
+    extract_urls extract_domain extract_domains is_valid_date valid_date_time2ts
     epoch2ts ts2epoch escape_unicode unescape_unicode
     sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination );
+    encode_json build_upload_destination is_mod_perl1 asset_from_url );
 
 {
     my $Has_Weaken;
@@ -43,6 +44,13 @@ our @EXPORT_OK
             && Scalar::Util->can('weaken') ? 1 : 0;
         Scalar::Util::weaken( $_[0] ) if $Has_Weaken;
     }
+}
+
+sub is_mod_perl1 () {
+    return ( $ENV{MOD_PERL}
+            and
+            ( !$ENV{MOD_PERL_API_VERSION} or $ENV{MOD_PERL_API_VERSION} < 2 )
+    );
 }
 
 sub leap_day {
@@ -90,6 +98,7 @@ sub iso2ts {
     my ( $blog, $iso ) = @_;
     return undef
         unless $iso
+        and $iso
         =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my ( $y, $mo, $d, $h, $m, $s, $offset )
         = ( $1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7 );
@@ -424,10 +433,11 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt
         ? format_ts( $fmt, $ts, $blog,
-        $lang || ( $user ? $user->preferred_language : undef ) )
+        $lang
+            || ( $mt->isa('MT::App') ? $mt->user->preferred_language : undef )
+        )
         : "";
 }
 
@@ -435,7 +445,7 @@ our %Languages;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
-    return '' unless defined $ts;
+    return '' unless defined $ts and $ts ne '';
     my %f;
     unless ($lang) {
         $lang
@@ -457,8 +467,9 @@ sub format_ts {
         %f = %$f_ref;
     }
     else {
-        my $L = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )} = unpack 'A4A2A2A2A2A2', $ts;
+        my $L  = $Languages{$lang};
+        my @ts = @f{qw( Y m d H M S )}
+            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
         $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
         $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;
@@ -688,6 +699,7 @@ sub encode_js {
     use bytes;
     my ($str) = @_;
     return '' unless defined $str;
+    return $str if lc $str eq 'description';
     $str =~ s!\\!\\\\!g;
     $str =~ s!>!\\>!g;
     $str =~ s!<!\\<!g;
@@ -1182,11 +1194,16 @@ sub make_unique_basename {
     $title = '' if !defined $title;
     $title =~ s/^\s+|\s+$//gs;
     if ( $title eq '' ) {
-        if ( my $text = $entry->text ) {
-            $title = first_n_words( $text,
-                const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
+        if ( $entry->isa('MT:Entry') ) {
+            if ( my $text = $entry->text ) {
+                $title = first_n_words( $text,
+                    const('LENGTH_ENTRY_TITLE_FROM_TEXT') );
+            }
+            $title = 'Post' if $title eq '';
         }
-        $title = 'Post' if $title eq '';
+        else {
+            $title = 'Content';
+        }
     }
     my $limit = $blog->basename_limit || 30;    # FIXME
     $limit = 15  if $limit < 15;
@@ -1198,19 +1215,29 @@ sub make_unique_basename {
     my $base_copy = $base;
 
     my $class = ref $entry;
-    return _get_basename( $class, $base, $blog );
+    my $terms;
+    if ( $class eq 'MT::ContentData' ) {
+        $terms = { content_type_id => $entry->content_type_id, };
+    }
+    return _get_basename( $class, $base, $blog, $terms );
 }
 
 sub make_unique_category_basename {
     my ($cat) = @_;
     require MT::Blog;
     my $blog  = MT::Blog->load( $cat->blog_id );
+    my $name  = '';
     my $label = $cat->label;
-    $label = '' if !defined $label;
-    $label =~ s/^\s+|\s+$//gs;
-
-    my $name = MT::Util::dirify($label)
-        || ( $cat->basename_prefix(1) . $cat->id );
+    if ( defined $label ) {
+        $label =~ s/^\s+|\s+$//gs;
+        $name = MT::Util::dirify($label);
+    }
+    if ( $name eq '' ) {
+        $name
+            = $cat->id
+            ? $cat->basename_prefix(1) . $cat->id
+            : $cat->basename_prefix(0);
+    }
 
     my $limit
         = ( $blog && $blog->basename_limit ) ? $blog->basename_limit : 30;
@@ -1220,11 +1247,10 @@ sub make_unique_category_basename {
     $base =~ s/_+$//;
     $base = $cat->basename_prefix(0)
         if $base eq '';    #FIXME when does this happen?
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    return _get_basename( $cat_class, $base, $blog );
+    my $terms = { category_set_id => $cat->category_set_id || 0 };
+    return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
 sub make_unique_author_basename {
@@ -1249,30 +1275,29 @@ sub make_unique_author_basename {
     $limit = 250 if $limit > 250;
     my $base = substr( $name, 0, $limit );
     $base =~ s/_+$//;
-    my $i         = 1;
-    my $base_copy = $base;
 
     my $author_class = ref $author;
     return _get_basename( $author_class, $base );
 }
 
 sub _get_basename {
-    my ( $class, $base, $blog ) = @_;
-    my %terms;
+    my ( $class, $base, $blog, $terms ) = @_;
+    $terms ||= {};
     my $cache_key;
     if ($blog) {
         $cache_key = sprintf '%s:%s:%s:%s', 'BN', $class, $blog->id, $base;
-        $terms{blog_id} = $blog->id if $blog;
+        $terms->{blog_id} = $blog->id if $blog;
     }
     else {
         $cache_key = sprintf '%s:%s:%s', 'BN', $class, $base;
     }
+    my $column = $class eq 'MT::ContentData' ? 'identifier' : 'basename';
     my $last = MT->request($cache_key);
     if ( defined $last ) {
         $last++;
         my $test = $class->load(
-            {   basename => $base . '_' . $last,
-                %terms,
+            {   $column => $base . '_' . $last,
+                %{$terms},
             }
         );
         if ( !$test ) {
@@ -1282,7 +1307,7 @@ sub _get_basename {
     }
     else {
         ## try to load without number suffix.
-        my $test = $class->load( { basename => $base, %terms } );
+        my $test = $class->load( { $column => $base, %{$terms} } );
         if ( !$test ) {
             return $base;
         }
@@ -1293,8 +1318,8 @@ sub _get_basename {
         my %args;
         $args{start_val} = $last_id if defined $last_id;
         my $existing = $class->load(
-            {   basename => { like => $base . '_%' },
-                %terms,
+            {   $column => { like => $base . '_%' },
+                %{$terms},
             },
             {   limit     => 1,
                 sort      => 'id',
@@ -1304,13 +1329,13 @@ sub _get_basename {
         );
         last if !$existing;
         $last_id = $existing->id;
-        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/ ) {
+        if ( $existing->$column =~ /^$base\_([1-9]\d*)$/ ) {
             my $num = $1;
             next if !$num;
             $base_num = $num + 1;
             my $test = $class->load(
-                {   basename => $base . '_' . $base_num,
-                    %terms,
+                {   $column => $base . '_' . $base_num,
+                    %{$terms},
                 }
             );
             last if !$test;
@@ -1349,25 +1374,51 @@ sub get_entry {
 }
 
 sub is_valid_date {
-    my ($ts) = @_;
-    unless (
-        $ts =~ m!(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2})(?::?(\d{2}))?! )
-    {
-        return 0;
-    }
-    my $s = $6 || 0;
+    my $ts = shift or return 0;
+    my ( $year, $month, $day, $hour, $minute, $second )
+        = $ts =~ m!(\d{4})-?(\d{2})-?(\d{2})\s*(\d{2}):?(\d{2})(?::?(\d{2}))?!
+        or return 0;
+    $second ||= 0;
     return 0
-        if ( $s > 59
-        || $s < 0
-        || $5 > 59
-        || $5 < 0
-        || $4 > 23
-        || $4 < 0
-        || $2 > 12
-        || $2 < 1
-        || $3 < 1
-        || ( days_in( $2, $1 ) < $3 && !leap_day( $0, $1, $2 ) ) );
+        if (
+           $second > 59
+        || $second < 0
+        || $minute > 59
+        || $minute < 0
+        || $hour > 23
+        || $hour < 0
+        || $month > 12
+        || $month < 1
+        || $day < 1
+        || ( days_in( $month, $year ) < $day
+            && !leap_day( $year, $month, $day ) )
+        );
     1;
+}
+
+sub valid_date_time2ts {
+    my $ts = shift or return;
+    my ( $year, $month, $day, $hour, $minute, $second )
+        = $ts
+        =~ m!^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$!
+        or return;
+    $second ||= 0;
+    return
+        if (
+           $second > 59
+        || $second < 0
+        || $minute > 59
+        || $minute < 0
+        || $hour > 23
+        || $hour < 0
+        || $month > 12
+        || $month < 1
+        || $day < 1
+        || ( days_in( $month, $year ) < $day
+            && !leap_day( $year, $month, $day ) )
+        );
+    return sprintf "%04d%02d%02d%02d%02d%02d", $year, $month, $day, $hour,
+        $minute, $second;
 }
 
 sub is_valid_email {
@@ -1424,70 +1475,6 @@ sub is_url {
     my ($url) = @_;
 
     return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
-}
-
-sub discover_tb {
-    my ( $url, $find_all, $contents ) = @_;
-    my $c = '';
-    if ($contents) {
-        $c = $$contents;
-    }
-    else {
-        my $ua = MT->new_ua;
-        ## Wrap this in an eval in case some versions don't support it.
-        my $req = HTTP::Request->new( GET => $url );
-        eval {
-            $ua->timeout(30);    # limit timeout to 30 seconds
-            $ua->parse_head(0);
-        };
-
-        # prevent downloads of non-text content
-        my $res = $ua->request(
-            $req,
-            sub {
-                my ( $data, $res, $po ) = @_;
-                die
-                    unless $c ne ''
-                    or $res->header('Content-Type') =~ m!^text/!;
-                $c .= $data;
-            },
-            16384
-        );
-        return unless $res->is_success;
-    }
-    ( my $url_no_anchor = $url ) =~ s/#.*$//;
-    ( my $url_no_host   = $url_no_anchor ) =~ s!^https?://.*/!!i;
-    my (@items);
-    while ( $c =~ m!(<rdf:RDF.*?</rdf:RDF>)!sg ) {
-        my $rdf = $1;
-        my ($perm_url) = $rdf =~ m!dc:identifier="([^"]+)"!;    #"
-        $perm_url ||= "";
-        ( my $perm_url_no_host = $perm_url ) =~ s!https?://.*/!!i;
-        $perm_url_no_host =~ s/#.*$//;
-        next
-            unless $find_all
-            || $perm_url eq $url
-            || $perm_url eq $url_no_anchor
-            || $perm_url_no_host eq $url_no_host;
-        ( my $inner = $rdf ) =~ s!^.*?<rdf:Description!!s;
-        my $item = { permalink => $perm_url };
-
-        while ( $inner =~ /([\w:]+)="([^"]*)"/gs ) {    #"
-            $item->{$1} = $2;
-        }
-        $item->{ping_url} = $item->{'trackback:ping'};
-        next unless $item->{ping_url};
-        $item->{title} = decode_xml( $item->{'dc:title'} );
-        if ( !$item->{title} && $rdf =~ m!dc:description="([^"]+)"! ) {    #"
-            $item->{title}
-                = first_n_words( $1, const('LENGTH_ENTRY_TITLE_FROM_TEXT') )
-                . '...';
-        }
-        push @items, $item;
-        last unless $find_all;
-    }
-    return unless @items;
-    $find_all ? \@items : $items[0];
 }
 
 {
@@ -1898,7 +1885,7 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub browser_language {
-    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
     	(
     		[a-z]{2}      # en
     		(?:-[a-z]{2})?  # -us
@@ -1925,7 +1912,7 @@ sub browser_language {
 }
 
 sub launch_background_tasks {
-    return !( $ENV{MOD_PERL}
+    return !( is_mod_perl1()
         || $ENV{FAST_CGI}
         || $ENV{'psgi.input'}
         || !MT->config->LaunchBackgroundTasks );
@@ -1942,11 +1929,11 @@ sub start_background_task {
 
             # child
             close STDIN;
-            open STDIN, "</dev/null";
+            open STDIN, "<", "/dev/null" or die $!;
             close STDOUT;
-            open STDOUT, ">/dev/null";
+            open STDOUT, ">", "/dev/null" or die $!;
             close STDERR;
-            open STDERR, ">/dev/null";
+            open STDERR, ">", "/dev/null" or die $!;
 
             MT::Object->driver;    # This inititalizes driver
             MT::ObjectDriverFactory->configure();
@@ -1965,17 +1952,18 @@ sub start_background_task {
     eval { require bytes; 1; };
 
     sub addbin {
-        my ( $a, $b ) = @_;
-        my $length = ( length $a > length $b ? length $a : length $b );
+        my ( $left, $right ) = @_;
+        my $length
+            = ( length $left > length $right ? length $left : length $right );
 
-        $a = "\0" x ( $length - ( length $a ) ) . $a;
-        $b = "\0" x ( $length - ( length $b ) ) . $b;
+        $left  = "\0" x ( $length - ( length $left ) ) . $left;
+        $right = "\0" x ( $length - ( length $right ) ) . $right;
         my $carry  = 0;
         my $result = '';
         for ( my $i = 1; $i <= $length; $i++ ) {
-            my $adigit = ord( substr( $a, -$i, 1 ) );
-            my $bdigit = ord( substr( $b, -$i, 1 ) );
-            my $rdigit = $adigit + $bdigit + $carry;
+            my $left_digit  = ord( substr( $left,  -$i, 1 ) );
+            my $right_digit = ord( substr( $right, -$i, 1 ) );
+            my $rdigit      = $left_digit + $right_digit + $carry;
             $carry  = $rdigit / 256;
             $result = chr( $rdigit % 256 ) . $result;
         }
@@ -2084,7 +2072,7 @@ sub start_background_task {
             elsif ( $which == 3 ) { $b ^ $c ^ $d }
         };
 
-        my ( $l, $r, $p, $t, $S, @W, $P );
+        my ( $l, $r, $p, $t, @W, $P );
         do {
             $P = substr( $message, 0, 64 );
             $message = length $message >= 64 ? substr( $message, 64 ) : "";
@@ -2231,7 +2219,7 @@ sub extract_domain {
 sub extract_urls {
     use bytes;
     my @strings = @_;
-    my ( %domain, @urls );
+    my %domain;
     foreach (@strings) {
         next unless ( $_ and $_ ne '' );
         local $_ = sanitize_input($_);
@@ -2306,7 +2294,7 @@ sub unescape_unicode {
 sub expat_parser {
     my $parser = XML::Parser->new(
         Handlers => {
-            ExternEnt => sub { die "External entities disabled."; '' },
+            ExternEnt    => sub { die "External entities disabled."; },
             ExternEntFin => sub { },
         },
     );
@@ -2319,7 +2307,7 @@ sub libxml_parser {
         expand_xinclude => 0,
         expand_entities => 1,
         load_ext_dtd    => 0,
-        ext_ent_handler => sub { die "External entities disabled."; '' },
+        ext_ent_handler => sub { die "External entities disabled."; },
     );
 }
 
@@ -2370,6 +2358,7 @@ sub multi_iter {
 
 sub trim {
     my $string = shift;
+    return unless defined $string;
     $string = ltrim($string);
     $string = rtrim($string);
     $string;
@@ -2377,12 +2366,14 @@ sub trim {
 
 sub ltrim {
     my $string = shift;
+    return unless defined $string;
     $string =~ s/^\s+//;
     $string;
 }
 
 sub rtrim {
     my $string = shift;
+    return unless defined $string;
     $string =~ s/\s+$//;
     $string;
 }
@@ -2439,10 +2430,12 @@ sub get_newsbox_html {
     {
         $refresh_news = 1;
     }
-    my $last_available_news = $news_object->data()
-        if $news_object;
-    $last_available_news = Encode::decode( $enc, $last_available_news )
-        unless Encode::is_utf8($last_available_news);
+    my $last_available_news = '';
+    if ($news_object) {
+        $last_available_news = $news_object->data();
+        $last_available_news = Encode::decode( $enc, $last_available_news )
+            unless Encode::is_utf8($last_available_news);
+    }
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
 
@@ -2557,9 +2550,12 @@ sub log_time {
 # Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few)
 # requires OO access to filehandles.
 # Once CGI solved this issue, this method will be removed.
-*Fh::read = sub {
-    read( $_[0], $_[1], $_[2], $_[3] || 0 );
-};
+{
+    no warnings 'once';
+    *Fh::read = sub {
+        read( $_[0], $_[1], $_[2], $_[3] || 0 );
+    };
+}
 
 sub make_string_csv {
     my ( $value, $enc ) = @_;
@@ -2646,6 +2642,10 @@ sub translate_naughty_words {
 
 sub to_json {
     my ( $value, $args ) = @_;
+    if ( MT->config->JSONCanonicalization ) {
+        $args ||= {};
+        $args->{canonical} = 1;
+    }
     require JSON;
     return JSON::to_json( $value, $args );
 }
@@ -2904,6 +2904,122 @@ sub build_upload_destination {
     my $dest = File::Spec->catdir(@dest);
 
     return $dest;
+}
+
+sub asset_from_url {
+    my ($image_url) = @_;
+    my $ua = MT->new_ua( { paranoid => 1, timeout => 10 } ) or return;
+    my $resp = $ua->get($image_url);
+    return undef unless $resp->is_success;
+    my $image = $resp->content;
+    return undef unless $image;
+    my $mimetype = $resp->header('Content-Type');
+    return undef unless $mimetype;
+    my $ext = {
+        'image/jpeg' => '.jpg',
+        'image/png'  => '.png',
+        'image/gif'  => '.gif'
+    }->{$mimetype};
+
+    require Image::Size;
+    my ( $w, $h, $id ) = Image::Size::imgsize( \$image );
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+
+    require File::Spec;
+    my $save_path  = '%s/uploads/';
+    my $local_path = File::Spec->catdir( MT->instance->support_directory_path,
+        'uploads' );
+    $local_path =~ s|/$||
+        unless $local_path eq
+        '/';    ## OS X doesn't like / at the end in mkdir().
+    unless ( $fmgr->exists($local_path) ) {
+        $fmgr->mkpath($local_path);
+    }
+    require Digest::SHA1;
+    my $filename = Digest::SHA1::sha1_hex($image_url);
+    unless ($ext) {    # trust content type higher than url extension
+        ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
+    }
+
+    # Find unique name for the file.
+    my $i         = 1;
+    my $base_copy = $filename;
+    while (
+        $fmgr->exists( File::Spec->catfile( $local_path, $filename . $ext ) )
+        )
+    {
+        $filename = $base_copy . '_' . $i++;
+    }
+
+    my $local_relative = File::Spec->catfile( $save_path,  $filename . $ext );
+    my $local          = File::Spec->catfile( $local_path, $filename . $ext );
+    $fmgr->put_data( $image, $local, 'upload' );
+
+    require MT::Asset;
+    my $asset_pkg = MT::Asset->handler_for_file($local);
+    if ( $asset_pkg ne 'MT::Asset::Image' ) {
+        unlink $local;
+        return undef;
+    }
+
+    my $asset;
+    $asset = $asset_pkg->new();
+    $asset->file_path($local_relative);
+    $asset->file_name( $filename . $ext );
+    my $ext_copy = $ext;
+    $ext_copy =~ s/\.//;
+    $asset->file_ext($ext_copy);
+    $asset->blog_id(0);
+
+    my $original = $asset->clone;
+    my $url      = $local_relative;
+    $url =~ s!\\!/!g;
+    $asset->url($url);
+    $asset->image_width($w);
+    $asset->image_height($h);
+    $asset->mime_type($mimetype);
+
+    if ( !$asset->save ) {
+        unlink $local;
+        return undef;
+    }
+
+    MT->run_callbacks(
+        'api_upload_file.' . $asset->class,
+        File  => $local,
+        file  => $local,
+        Url   => $url,
+        url   => $url,
+        Size  => length($image),
+        size  => length($image),
+        Asset => $asset,
+        asset => $asset,
+        Type  => $asset->class,
+        type  => $asset->class,
+    );
+    MT->run_callbacks(
+        'api_upload_image',
+        File       => $local,
+        file       => $local,
+        Url        => $url,
+        url        => $url,
+        Size       => length($image),
+        size       => length($image),
+        Asset      => $asset,
+        asset      => $asset,
+        Height     => $h,
+        height     => $h,
+        Width      => $w,
+        width      => $w,
+        Type       => 'image',
+        type       => 'image',
+        ImageType  => $id,
+        image_type => $id,
+    );
+
+    $asset;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;
@@ -3171,6 +3287,12 @@ determined by reference to this value.
 Checks the IP address I<$ip_address> for syntax validity; if the
 IP address is valid, I<is_valid_ip> returns the valid
 the IP address. Otherwise, it returns C<0>.
+
+=back
+
+=head2 asset_from_url($image_url)
+
+Creates image asset from I<$image_url>.
 
 =back
 

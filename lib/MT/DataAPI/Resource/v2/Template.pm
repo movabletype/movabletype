@@ -77,7 +77,7 @@ sub fields {
             },
             to_object => sub {
                 my ( $hash, $obj ) = @_;
-                return $obj->type ne 'index';
+                return if $obj->type ne 'index';
                 return $hash->{templateType};
             },
         },
@@ -99,7 +99,7 @@ sub fields {
             },
             to_object => sub {
                 my ( $hash, $obj ) = @_;
-                return $obj->type ne 'index';
+                return if $obj->type ne 'index';
 
                 my $build_type
                     = exists( $BUILD_TYPE_TABLE{ $hash->{buildType} } )

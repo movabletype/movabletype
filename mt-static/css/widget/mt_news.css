@@ -1,0 +1,17 @@
+#mt-news-panel ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#mt-news-panel ul li {
+    margin-bottom: 5px;
+}
+
+#mt-news-panel ul.news-widget-list {
+    display: none;
+}
+
+#mt-news-panel div.most-recent-entry div.excerpt {
+    margin-top: 5px;
+}
+

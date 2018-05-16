@@ -2,18 +2,41 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Test::More;
-use lib qw(lib extlib t/lib);
-use MT::Test qw(:app :db :data);
+use MT::Test;
 use MT::Test::Permission;
 use MT::CMS::Folder;
 
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
+
 my $folder_class = MT->model('folder');
+
+subtest 'category_set_id' => sub {
+    my $folder = $folder_class->new(
+        blog_id => 1,
+        label   => 'test',
+    );
+    is( $folder->category_set_id, 0, 'default value is 0' );
+
+    $folder->category_set_id(1);
+    is( $folder->category_set_id, 0, 'value is always 0' );
+
+    $folder->column( 'category_set_id', 2 );
+    $folder->save or die $folder->errstr;
+    is( $folder->category_set_id, 0,
+        'value cannot be changed even by column method' );
+};
 
 subtest 'remove' => sub {
     my $category_id = 1;

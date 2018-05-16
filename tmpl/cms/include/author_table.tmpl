@@ -12,14 +12,14 @@
      type="button"
      accesskey="e"
      title="<__trans phrase="Enable selected users (e)">"
-     class="button mt-enable-users">
+     class="button mt-enable-users btn btn-default">
     <__trans phrase="_USER_ENABLE" escape="js">
   </button>
   <button
      type="button"
      accesskey="d"
      title="<__trans phrase="Disable selected users (d)">"
-     class="button mt-disable-users">
+     class="button mt-disable-users btn btn-default">
     <__trans phrase="_USER_DISABLE" escape="js">
   </button>
 </mt:if>
@@ -29,13 +29,17 @@
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="col head flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-      <th class="col head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
-      <th class="col head name primary"><span class="col-label"><__trans phrase="Display Name"></span></th>
-      <th class="col head created"><span class="col-label"><__trans phrase="Created By"></span></th>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="select custom-control-input" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
+      <th class="head name primary"><span class="col-label"><__trans phrase="Display Name"></span></th>
+      <th class="head created"><span class="col-label"><__trans phrase="Created By"></span></th>
     <mt:unless name="hide_entries_col">
-      <th class="col head num entries"><span class="col-label"><mt:var name="type_label"></span></th>
+      <th class="head num entries"><span class="col-label"><mt:var name="type_label"></span></th>
     </mt:unless>
     <mt:loop name="more_column_headers">
       <mt:var name="__value__">
@@ -45,27 +49,49 @@
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="col cb"><input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
-      <td class="col flag <mt:if name="status_enabled">user-status-enabled<mt:else><mt:if name="status_pending">user-status-pending<mt:else>user-status-disabled</mt:if></mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_enabled"><__trans phrase="_USER_ENABLED"><mt:else><mt:if name="status_pending"><__trans phrase="Pending"><mt:else><__trans phrase="_USER_DISABLED"></mt:if></mt:if>" class="status-icon" width="13" height="9" /></td>
-      <td class="col username"><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
-      <td class="col name">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <mt:setvarblock name="is_administrator_and_me"><mt:if name="is_administrator"><mt:if name="is_me">1<mt:else>0</mt:if><mt:else>0</mt:if></mt:setvarblock>
+          <input id="<mt:if name="is_administrator_and_me">sysadmin<mt:else>select_<mt:var name="id" escape="html"></mt:if>" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="<mt:if name="is_administrator_and_me">sysadmin<mt:else>select_<mt:var name="id" escape="html"></mt:if>">
+            <span class="sr-only"><__trans phrase="Select"></span>
+          </label>
+        </div>
+      </td>
+      <td class="username">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="User">" size="sm">
+
+ <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">">
+ </mt:if>
+          <mt:var name="name" escape="html">
+ <mt:if name="has_edit_access">
+        </a>
+ </mt:if>
+
+ <mt:if name="status_enabled">
+        <span class="badge badge-success"><__trans phrase="_USER_ENABLED"></span>
+ <mt:elseif name="status_pending">
+        <span class="badge badge-default"><__trans phrase="Pending"></span>
+ <mt:else>
+        <span class="badge badge-warning"><__trans phrase="_USER_DISABLED"></span>
+ </mt:if>
+      </td>
+      <td class="name">
       <mt:if name="nickname">
         <span class="status-name"><mt:var name="nickname" escape="html"></span>
       </mt:if>
       <mt:if name="email">
-        <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a></span>
+        <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a></span>
       </mt:if>
       <mt:if name="url">
-        <span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a></span>
+        <span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a></span>
       </mt:if>
       </td>
-      <td class="col created">
+      <td class="created">
       <mt:if name="created_by_name">
         <mt:var name="created_by_name" escape="html">
       <mt:else>
@@ -73,7 +99,7 @@
       </mt:if>
       </td>
     <mt:unless name="hide_entries_col">
-      <td class="col entries">
+      <td class="entries">
       <mt:if name="entry_count">
         <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>list&amp;_type=entry</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a>
       <mt:else>
@@ -110,4 +136,3 @@
         phrase: '<__trans phrase="to act upon" escape="js">'
     });
 </mt:setvarblock>
-

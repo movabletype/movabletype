@@ -5,6 +5,7 @@
 # $Id$
 package MT::Theme::TemplateSet;
 use strict;
+use warnings;
 use MT;
 use MT::Util qw( dirify );
 
@@ -63,7 +64,8 @@ sub apply {
         }
 
         local MT->app->{component} = $theme->id;
-        $blog->create_default_templates($set);
+        $blog->create_default_templates($set)
+            or return $element->error( $blog->errstr );
     }
 
     return 1;
@@ -129,6 +131,10 @@ sub export_template {
             label => $app->translate("Archive Templates"),
             order => 200,
         },
+        'ct' => {
+            label => $app->translate('Content Type Templates'),
+            order => 250,
+        },
         'module' => {
             label => $app->translate("Template Modules"),
             order => 300,
@@ -157,6 +163,9 @@ sub export_template {
         my $template_type;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
+        }
+        elsif ( $type eq 'ct' || $type eq 'ct_archive' ) {
+            $template_type = 'ct';
         }
         elsif ( $type eq 'widget' ) {
             $template_type = 'widget';
@@ -191,7 +200,7 @@ sub export_template {
         if ( $template_type =~ /index/ ) {
             $obj->{outfile} = $tmpl->outfile;
         }
-        if ( $template_type eq 'archive' ) {
+        if ( $template_type eq 'archive' || $template_type eq 'ct' ) {
             $obj->{archive_types}
                 = MT::CMS::Template::_populate_archive_loop( $app, $blog,
                 $tmpl );
@@ -223,11 +232,13 @@ sub export_template {
 
 {
     my %known_section = (
-        index     => 1,
-        archive   => 1,
-        module    => 1,
-        widget    => 1,
-        widgetset => 1,
+        index      => 1,
+        archive    => 1,
+        ct         => 1,
+        ct_archive => 1,
+        module     => 1,
+        widget     => 1,
+        widgetset  => 1,
     );
 
     sub _type {
@@ -273,7 +284,14 @@ sub export {
             $this->{build_type} = $t->build_type
                 if $t->build_type != MT::PublishOption::ONDEMAND();
         }
-        if ( $type eq 'archive' || $type eq 'individual' || $type eq 'page' )
+        elsif ( $type eq 'ct' || $type eq 'ct_archive' ) {
+            $this->{content_type} = $t->content_type->name;
+        }
+        if (   $type eq 'archive'
+            || $type eq 'individual'
+            || $type eq 'page'
+            || $type eq 'ct'
+            || $type eq 'ct_archive' )
         {
             my @maps
                 = MT->model('templatemap')->load( { template_id => $t->id } );
@@ -288,6 +306,14 @@ sub export {
                         : ()
                     ),
                 };
+                if ( $type eq 'ct' || $type eq 'ct_archive' ) {
+                    if ( my $dt_field = $map->dt_field ) {
+                        $map_data->{datetime_field} = $dt_field->name;
+                    }
+                    if ( my $cat_field = $map->cat_field ) {
+                        $map_data->{category_field} = $cat_field->name;
+                    }
+                }
                 $map_data->{file_template} = $map->file_template
                     if $map->file_template;
                 my $type_count = $type_count{ $map->archive_type }++;

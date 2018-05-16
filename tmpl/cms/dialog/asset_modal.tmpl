@@ -1,121 +1,58 @@
+
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
-<mt:setvarblock name="html_head" append="1">
+
+<mt:if name="filter_val" eq="image">
+  <mt:setvarblock name="page_title"><__trans phrase="Upload new image"></mt:setvarblock>
+<mt:elseif name="is_image">
+  <mt:setvarblock name="page_title"><__trans phrase="Upload new image"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Upload new asset"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="js_include" append="1">
   <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
-<mt:setvarblock name="html_head" append="1">
-<style>
-#container {
-    height: 100%;
-}
 
-#content {
-    height: 100%;
-    padding: 0px;
-}
-
-#content-body {
-    margin-top: 0px;
-    height: 100%;
-    min-height: 100%;
-}
-
-#content-body-left {
-    float: left;
-    width: 135px;
-}
-
-#content-body-right {
-    float: right;
-    margin: 0 15px 0 -150px;
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-}
-
-#content-body-right-body {
-    padding: 15px 0 0 15px;
-    margin: 0 0 0 150px;
-    height: 100%;
-    min-height: 100%;
-    border-left: solid 1px #aaa;
-}
-
-#asset-menu li {
-    margin-bottom: 0px;
-    list-style-type: none;
-    height: 50px;
-    border-bottom: solid 1px #aaa;
-    line-height: 50px;
-    padding-left: .5em;
-}
-
-#asset-menu li.last-child {
-    border-bottom: solid 1px #aaa;
-}
-
-#asset-menu li.active {
-    background-color: #cae5f8
-}
-</style>
-</mt:setvarblock>
-
-<mt:include name="dialog/header.tmpl">
-
-<div id="content-body-right">
-  <div id="content-body-right-body">
-
-<mt:if name="can_upload">
-    <div id="upload-asset-panel" class="panel">
-<mt:setvar name="included_upload_asset" value="1">
-<mt:if name="compat_upload_template">
-  <mt:include name="include/asset_upload.tmpl" dialog="1">
-<mtelse>
-  <mt:include name="include/async_asset_upload.tmpl" dialog="1">
-</mt:if>
+<mt:setvarblock name="modal_body">
+<div class="row">
+  <div id="content-body-left" class="col-2">
+    <div>
+      <ul class="nav nav-pills flex-column">
+  <mt:if name="can_upload">
+        <li class="nav-item">
+          <a href="#upload-asset-panel" class="nav-link active left-menu-item" data-panel-id="#upload-asset-panel" data-toggle="tab">
+            <__trans phrase="Upload">
+          </a>
+        </li>
+  </mtif>
+        <li class="nav-item">
+          <a href="#list-asset-panel" class="nav-link left-menu-item<mt:unless name="can_upload"> active</mt:unless>" data-panel-id="#list-asset-panel" data-toggle="tab">
+            <__trans phrase="Library">
+          </a>
+        </li>
+      </ul>
     </div>
-</mtif>
-    <div id="list-asset-panel" class="<mt:if name="can_upload">hidden </mtif>panel">
-<mt:include name="include/async_asset_list.tmpl" dialog="1">
+  </div>
+
+  <div id="content-body-right" class="col-10">
+    <div id="content-body-right-body" class="tab-content">
+
+  <mt:if name="can_upload">
+      <div id="upload-asset-panel" class="tab-pane active">
+        <mt:setvar name="included_upload_asset" value="1">
+  <mt:if name="compat_upload_template">
+        <mt:include name="include/asset_upload.tmpl" dialog="1">
+  <mtelse>
+        <mt:include name="include/async_asset_upload.tmpl" dialog="1">
+  </mt:if>
+      </div>
+  </mtif>
+      <div id="list-asset-panel" class="tab-pane <mt:unless name="can_upload">active </mt:unless>">
+        <mt:include name="include/async_asset_list.tmpl" dialog="1">
+      </div>
+
     </div>
-
-  </div>
-</div>
-
-<div id="content-body-left">
-  <div id="asset-menu">
-    <ul>
-<mt:if name="can_upload">
-      <li class="active">
-        <a href="#" class="left-menu-item" data-panel-id="#upload-asset-panel"><__trans phrase="Upload"></a>
-      </li>
-</mtif>
-      <li<mt:unless name="can_upload"> class="active"</mt:unless>>
-        <a href="#" class="left-menu-item" data-panel-id="#list-asset-panel"><__trans phrase="Library"></a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-<div class="dialog-screen">
-  <div class="actions-bar actions-bar-bottom">
-    <form action="" method="get" onsubmit="return false">
-      <button
-        type="submit"
-        accesskey="s"
-        title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
-        class="action primary button close disabled"
-        disabled="true">
-          <mt:if name="is_image"><__trans phrase="Continue"><mt:else><__trans phrase="Insert"></mt:if>
-      </button>
-      <button
-        type="submit"
-        accesskey="x"
-        class="cancel action button mt-close-dialog"
-        title="<__trans phrase="Cancel (x)">">
-        <__trans phrase="Cancel">
-      </button>
-    </form>
   </div>
 </div>
 
@@ -129,6 +66,9 @@
   <input type="hidden" name="dialog" value="1" />
   <input type="hidden" name="id" value="" />
   <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+<mt:if name="content_field_id">
+  <input type="hidden" name="content_field_id" value="<mt:var name="content_field_id">" />
+</mt:if>
 <mt:if name="edit_blog_id">
   <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
   <mt:unless name="is_image">
@@ -146,6 +86,30 @@
   <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
 </mt:if>
 </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+<div class="actions-bar actions-bar-bottom">
+  <form action="" method="get" onsubmit="return false">
+    <button
+      type="submit"
+      accesskey="s"
+      title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
+      class="action primary button disabled btn btn-primary"
+      disabled="true">
+        <mt:if name="is_image"><__trans phrase="Continue"><mt:else><__trans phrase="Insert"></mt:if>
+    </button>
+    <button
+      type="submit"
+      accesskey="x"
+      class="cancel action button mt-close-dialog btn btn-default"
+      data-mt-modal-close
+      title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </form>
+</div>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:if name="can_upload">
@@ -159,28 +123,16 @@ jQuery('.left-menu-item').click( function() {
 
   currentPanel = jQuery(this).attr('data-panel-id');
   jQuery('#select_asset input[name="id"]').val('');
-  
+
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
-  jQuery('div.panel')
-    .addClass('hidden')
-    .hide();
-  jQuery(currentPanel)
-    .removeClass('hidden')
-    .show()
-    .trigger(event);
-  jQuery(this)
-    .parent('li')
-    .siblings()
-    .removeClass('active');
-  jQuery(this)
-    .parent('li')
-    .addClass('active');
 });
+
 jQuery('.actions-bar button.primary').click(function() {
   jQuery('#select_asset').submit();
 });
 </mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

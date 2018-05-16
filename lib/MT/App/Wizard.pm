@@ -7,6 +7,7 @@
 package MT::App::Wizard;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( trim browser_language );
@@ -190,11 +191,6 @@ sub init_core_registry {
                 label =>
                     'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
             },
-            'HTML::Entities' => {
-                link => 'http://search.cpan.org/dist/HTML-Entities',
-                label =>
-                    'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.',
-            },
             'HTML::Parser' => {
                 link => 'http://search.cpan.org/dist/HTML-Parser',
                 label =>
@@ -255,12 +251,12 @@ sub init_core_registry {
             'Cache::File' => {
                 link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
                 label =>
-                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.',
+                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan via OpenID.',
             },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
                 label =>
-                    'This module is needed to enable comment registration. Also, required in order to send mail via an SMTP Server.',
+                    'This module is needed to enable comment registration. Also required in order to send mail via an SMTP Server.',
             },
             'XML::Atom' => {
                 link  => 'http://search.cpan.org/dist/XML-Atom',
@@ -269,7 +265,7 @@ sub init_core_registry {
             'Cache::Memcached' => {
                 link => 'http://search.cpan.org/dist/Cache-Memcached',
                 label =>
-                    'This module is required in order to use memcached as caching mechanism used by Movable Type.',
+                    'This module is required in order to use memcached as caching mechanism by Movable Type.',
             },
             'Archive::Tar' => {
                 link => 'http://search.cpan.org/dist/Archive-Tar',
@@ -391,6 +387,11 @@ sub init_core_registry {
                 label =>
                     'Scalar::Util is required for initializing Movable Type application.',
             },
+            'HTML::Entities' => {
+                link => 'http://search.cpan.org/dist/HTML-Entities',
+                version => 3.69,
+                label => 'HTML::Entities is required by CGI.pm',
+            },
         },
         database_options => {
             'mysql' => {
@@ -478,6 +479,10 @@ sub config_keys {
 }
 
 sub init_config {
+    return 1;
+}
+
+sub init_permissions {
     return 1;
 }
 
@@ -709,7 +714,6 @@ sub configure {
     $app->set_form_fields( $form_data, \@fields, \@advanced );
 
     my @DATA;
-    my @show;
     my $drivers = $app->object_drivers;
     foreach my $key ( keys %$drivers ) {
         my $driver  = $drivers->{$key};
@@ -785,7 +789,8 @@ sub configure {
         # if check successfully and push continue then goto next step
         $ok = 0;
         my $dbtype = $param{dbtype};
-        my $driver = $drivers->{$dbtype}{config_package}
+        my $driver;
+        $driver = $drivers->{$dbtype}{config_package}
             if exists $drivers->{$dbtype};
         $param{dbserver_null} = 1 unless $param{dbserver};
 
@@ -1120,22 +1125,23 @@ sub seed {
     }
 
     $param{static_file_path} = $param{set_static_file_to};
+    my $param_set_static_uri_to = $app->param('set_static_uri_to') || '';
 
     require URI;
     my $uri = URI->new( $app->cgipath );
-    $param{cgi_path} = $uri->path;
-    $uri = URI->new( $app->param->param('set_static_uri_to') );
+    $param{cgi_path}        = $uri->path;
+    $uri                    = URI->new($param_set_static_uri_to);
     $param{static_web_path} = $uri->path;
     $param{static_uri}      = $uri->path;
     my $drivers = $app->object_drivers;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
-    if ( $ENV{MOD_PERL}
+    if ( MT::Util::is_mod_perl1()
         || ( ( $r_uri =~ m/\/mt-wizard\.(\w+)(\?.*)?$/ ) && ( $1 ne 'cgi' ) )
         )
     {
         my $new = '';
-        if ( $ENV{MOD_PERL} ) {
+        if ( MT::Util::is_mod_perl1() ) {
             $param{mod_perl} = 1;
         }
         else {
@@ -1253,21 +1259,22 @@ sub seed {
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
+    my $manually = $app->param('manually');
     my $cfg_file = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
     if ( !-f $cfg_file ) {
 
         # write!
-        if ( open OUT, ">$cfg_file" ) {
-            print OUT $data;
-            close OUT;
+        if ( open my $OUT, ">", $cfg_file ) {
+            print $OUT $data;
+            close $OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;
-        if ( ( !-f $cfg_file ) && $app->param->param('manually') ) {
+        if ( ( !-f $cfg_file ) && $manually ) {
             $param{file_not_found} = 1;
             $param{manually}       = 1;
         }
     }
-    elsif ( $app->param->param('manually') ) {
+    elsif ($manually) {
         $param{config_created} = 1 if -f $cfg_file;
     }
 
@@ -1321,18 +1328,18 @@ sub cgipath {
     my $app = shift;
 
     # these work for Apache... need to test for IIS...
-    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+    my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
     $host =~ s/:\d+//;    # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
 
     # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
-    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+    my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME} || '';
     $uri =~ s!/mt-wizard(\.f?cgi|\.f?pl)(\?.*)?$!/!;
 
     my $cgipath = '';
-    $cgipath = $port == 443 ? 'https' : 'http';
+    $cgipath = ( $port and $port == 443 ) ? 'https' : 'http';
     $cgipath .= '://' . $host;
-    $cgipath .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
+    $cgipath .= ( !$port || $port == 443 || $port == 80 ) ? '' : ':' . $port;
     $cgipath .= $uri;
 
     $cgipath;
@@ -1408,12 +1415,12 @@ sub is_valid_static_path {
         $path = $static_uri . 'mt.js';
     }
     elsif ( $static_uri =~ m#^/# ) {
-        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
+        my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
         $host =~ s/:\d+//;    # eliminate any port that may be present
         my $port = $ENV{SERVER_PORT};
-        $path = $port == 443 ? 'https' : 'http';
+        $path = ( $port and $port == 443 ) ? 'https' : 'http';
         $path .= '://' . $host;
-        $path .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
+        $path .= ( !$port || $port == 443 || $port == 80 ) ? '' : ':' . $port;
         $path .= $static_uri . 'mt.js';
     }
     else {
@@ -1422,7 +1429,7 @@ sub is_valid_static_path {
 
     # If the hostname of $path is same with $app->cgipath,
     # do not verify SSL certificate.
-    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)\// );
+    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)(?:\/|$)/ );
     $cgihost =~ s/^http:/https:/;
     my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
     my %ssl_opts = (

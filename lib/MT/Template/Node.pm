@@ -7,6 +7,7 @@
 package MT::Template::Node;
 
 use strict;
+use warnings;
 
 sub EL_NODE_NAME ()     {0}
 sub EL_NODE_TEXT ()     {1}

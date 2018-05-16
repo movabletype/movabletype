@@ -6,15 +6,119 @@
 package MT::CMS::Search;
 
 use strict;
+use warnings;
 use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
     my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
     my $types = {
+        content_data => {
+            order     => 50,
+            condition => sub {
+                return 0
+                    unless $app->model('content_type')->exist(
+                    {   (     ($blog_id)
+                            ? ( blog_id => $blog_id )
+                            : ( blog_id => \'> 0' )
+                        )
+                    }
+                    );
+
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+
+                my $cnt = MT->model('permission')->count(
+                    [   [   {   (     ($blog_id)
+                                    ? ( blog_id => $blog_id )
+                                    : ( blog_id => \'> 0' )
+                                ),
+                                author_id => $author->id,
+                            },
+                            '-and',
+                            [   {   permissions => {
+                                        like => "\%'manage_content_data'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like => "\%'manage_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like => "\%'create_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like =>
+                                            "\%'edit_all_content_data:\%'\%"
+                                    },
+                                },
+                                '-or',
+                                {   permissions => {
+                                        like =>
+                                            "\%'publish_content_data:\%'\%"
+                                    },
+                                },
+                            ],
+                        ],
+                        '-or',
+                        {   author_id => $author->id,
+                            permissions =>
+                                { like => "\%'manage_content_data'\%" },
+                            blog_id => 0,
+                        },
+                    ]
+                );
+
+                return ( $cnt && $cnt > 0 ) ? 1 : 0;
+            },
+            handler =>
+                '$Core::MT::CMS::ContentData::build_content_data_table',
+            label      => 'Content Data',
+            perm_check => sub {
+                my ($content_data) = @_;
+                my $author = $app->user;
+                my $blog_perms
+                    = $author->permissions( $content_data->blog_id );
+                $blog_perms
+                    && $blog_perms->can_edit_content_data( $content_data,
+                    $author );
+            },
+            search_cols => {
+                identifier => sub { MT->translate('Basename') },
+                label      => sub { MT->translate('Data Label') },
+            },
+            replace_cols       => [],
+            can_replace        => 1,
+            can_search_by_date => 1,
+            date_column        => 'authored_on',
+            setup_terms_args   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                if ( $app->param('filter') && $app->param('filter_val') ) {
+                    $terms->{ $app->param('filter') }
+                        = $app->param('filter_val');
+                }
+                my $content_type_id = $app->param('content_type_id') || 0;
+                my $content_type
+                    = $app->model('content_type')
+                    ->load( { id => $content_type_id } )
+                    || $app->model('content_type')->load(
+                    { blog_id => $blog_id || \'> 0' },
+                    { sort => 'name', limit => 0 }
+                    );
+                if ($content_type) {
+                    $terms->{content_type_id} = $content_type->id;
+                    $app->param( 'content_type_id', $content_type->id );
+                }
+                $args->{sort}      = 'authored_on';
+                $args->{direction} = 'descend';
+            },
+        },
         'entry' => {
             'order'     => 100,
             'condition' => sub {
@@ -72,144 +176,6 @@ sub core_search_apis {
                         = $app->param('filter_val');
                 }
                 $args->{sort}      = 'authored_on';
-                $args->{direction} = 'descend';
-            }
-        },
-        'comment' => {
-            'order'     => 200,
-            'condition' => sub {
-                my $author = MT->app->user;
-                return 1 if $author->is_superuser;
-
-                my $cnt = MT->model('permission')->count(
-                    [   {   (     ($blog_id)
-                                ? ( blog_id => $blog_id )
-                                : ( blog_id => \'> 0' )
-                            ),
-                            author_id => $author->id,
-                        },
-                        '-and',
-                        [   {   permissions => { like => "\%'create_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'publish_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'edit_all_posts'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'manage_feedback'\%" }
-                            },
-                        ],
-                    ]
-                );
-
-                return ( $cnt && $cnt > 0 ) ? 1 : 0;
-            },
-            'handler'    => '$Core::MT::CMS::Comment::build_comment_table',
-            'label'      => 'Comments',
-            'perm_check' => sub {
-                my $author = MT->app->user;
-                return 1
-                    if $author->permissions( $_[0]->blog_id )
-                    ->can_do('manage_feedback');
-
-                my $entry = MT->model('entry')->load( $_[0]->entry_id );
-                return 1
-                    if $author->permissions( $entry->blog_id )
-                    ->can_edit_entry( $entry, $author );
-
-                return 0;
-            },
-            'search_cols' => {
-                'url'    => sub { $app->translate('URL') },
-                'text'   => sub { $app->translate('Comment Text') },
-                'email'  => sub { $app->translate('Email Address') },
-                'ip'     => sub { $app->translate('IP Address') },
-                'author' => sub { $app->translate('Name') },
-            },
-            'replace_cols'       => [qw(text)],
-            'can_replace'        => 1,
-            'can_search_by_date' => 1,
-            'setup_terms_args'   => sub {
-                my ( $terms, $args, $blog_id ) = @_;
-                $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
-            }
-        },
-        'ping' => {
-            'order'     => 300,
-            'condition' => sub {
-                my $author = MT->app->user;
-                return 1 if $author->is_superuser;
-
-                my $cnt = MT->model('permission')->count(
-                    [   {   (     ($blog_id)
-                                ? ( blog_id => $blog_id )
-                                : ( blog_id => \'> 0' )
-                            ),
-                            author_id => $author->id,
-                        },
-                        '-and',
-                        [   {   permissions => { like => "\%'create_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'publish_post'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'edit_all_posts'\%" }
-                            },
-                            '-or',
-                            {   permissions =>
-                                    { like => "\%'manage_feedback'\%" }
-                            },
-                        ],
-                    ]
-                );
-
-                return ( $cnt && $cnt > 0 ) ? 1 : 0;
-            },
-            'label'      => 'TrackBacks',
-            'handler'    => '$Core::MT::CMS::TrackBack::build_ping_table',
-            'perm_check' => sub {
-                my $author = MT->app->user;
-                my $ping   = shift;
-                require MT::Trackback;
-                my $tb = MT::Trackback->load( $ping->tb_id )
-                    or return undef;
-                if ( $tb->entry_id ) {
-                    my $entry = MT->model('entry')->load( $tb->entry_id );
-                    return 1
-                        if $author->permissions( $entry->blog_id )
-                        ->can_do('manage_feedback')
-                        || $author->permissions( $entry->blog_id )
-                        ->can_edit_entry( $entry, $author );
-                }
-                elsif ( $tb->category_id ) {
-                    return 1
-                        if $author->permissions( $tb->blog_id )
-                        ->can_do('search_category_trackbacks');
-                }
-                return 0;
-            },
-            'search_cols' => {
-                'title'      => sub { $app->translate('Title') },
-                'excerpt'    => sub { $app->translate('Excerpt') },
-                'source_url' => sub { $app->translate('Source URL') },
-                'ip'         => sub { $app->translate('IP Address') },
-                'blog_name'  => sub { $app->translate('Blog Name') },
-            },
-            'replace_cols'       => [qw(title excerpt)],
-            'can_replace'        => 1,
-            'can_search_by_date' => 1,
-            'setup_terms_args'   => sub {
-                my ( $terms, $args, $blog_id ) = @_;
-                $args->{sort}      = 'created_on';
                 $args->{direction} = 'descend';
             }
         },
@@ -435,6 +401,7 @@ sub core_search_apis {
             'condition' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
                 return 0 if !$blog_id;
 
                 my $cnt = MT->model('permission')->count(
@@ -451,6 +418,7 @@ sub core_search_apis {
             'perm_check' => sub {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
                 return 0 if !$blog_id;
 
                 my $perm = $author->permissions($blog_id);
@@ -486,7 +454,7 @@ sub core_search_apis {
         },
         'blog' => {
             'order'     => 900,
-            'label'     => 'Blogs',
+            'label'     => 'Child Sites',
             'condition' => sub {
                 my $author = MT->app->user;
                 my $blog   = MT->app->blog;
@@ -532,7 +500,7 @@ sub core_search_apis {
                 return 1 if $author->permissions(0)->can_do('edit_template');
                 return 0;
             },
-            'label'      => 'Websites',
+            'label'      => 'Sites',
             'handler'    => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {
                 my $author = MT->app->user;
@@ -557,19 +525,75 @@ sub core_search_apis {
                 $args->{sort}      = 'name';
                 $args->{direction} = 'ascend';
             }
-        }
+        },
+        'content_type' => {
+            'order'     => 1100,
+            'condition' => sub {
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+            },
+            'handler' =>
+                '$Core::MT::CMS::ContentType::build_content_type_table',
+            'label'       => 'Content Types',
+            'search_cols' => { 'name' => sub { $app->translate('Name') }, },
+            'setup_terms_args' => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                $terms->{blog_id}  = $blog_id if $blog_id;
+                $args->{sort}      = 'name';
+                $args->{direction} = 'ascend';
+            }
+        },
+        'site' => {
+            'order'     => 1000,
+            'condition' => sub {
+                my $author = MT->app->user;
+                return 0 if $blog_id;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('administer');
+                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 0;
+            },
+            'label'      => 'Sites',
+            'handler'    => '$Core::MT::CMS::Website::build_website_table',
+            'perm_check' => sub {
+                my $author = MT->app->user;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('edit_templates');
+                my ($obj) = @_;
+                my $perm = $author->permissions( $obj->id );
+                return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
+            },
+            'search_cols' => {
+                'name'        => sub { $app->translate('Name') },
+                'site_url'    => sub { $app->translate('Site URL') },
+                'site_path'   => sub { $app->translate('Site Root') },
+                'description' => sub { $app->translate('Description') },
+            },
+            'replace_cols'       => [],
+            'can_replace'        => 0,
+            'can_search_by_date' => 0,
+            'view'               => 'none',
+            'setup_terms_args'   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                $terms->{class}    = [ 'website', 'blog' ];
+                $args->{sort}      = 'name';
+                $args->{direction} = 'ascend';
+            }
+        },
     };
     return $types;
 }
 
 sub can_search_replace {
-    my $app = shift;
+    my $app     = shift;
+    my $blog_id = $app->param('blog_id');
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
     return 1 if $app->user->permissions(0)->can_do('view_log');
-    if ( $app->param('blog_id') ) {
-        my $perms = $app->user->permissions( $app->param('blog_id') );
+    return 1 if $app->user->permissions(0)->can_do('manage_users_groups');
+    if ($blog_id) {
+        my $perms = $app->user->permissions($blog_id);
         return 0 unless $perms;
         return 0 unless $perms->permissions;
         return 0 unless $perms->can_do('use_tools:search');
@@ -609,6 +633,7 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+    my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
     return $app->permission_denied()
@@ -647,6 +672,93 @@ sub search_replace {
             $param->{publish_from_search} = 1;
         }
     }
+    elsif ( $param->{object_type} eq 'content_data' ) {
+        my $selected_content_type_id = $app->param('content_type_id');
+        my $selected_content_type;
+        my ( @content_types, @date_time_fields, @date_fields, @time_fields );
+        my $iter
+            = MT->model('content_type')
+            ->load_iter( { blog_id => $blog_id || \'> 0' },
+            { sort => 'name' } );
+        my $perms = $user->permissions($blog_id);
+        while ( my $content_type = $iter->() ) {
+
+            next
+                unless (
+                   $user->is_superuser
+                || $user->permissions(0)->can_do('manage_content_data')
+                || $perms->can_do('manage_content_data')
+                || $perms->can_do(
+                    'search_content_data_' . $content_type->unique_id
+                )
+                );
+
+            push @content_types,
+                +{
+                content_type_id   => $content_type->id,
+                content_type_name => $content_type->name,
+                (         !$selected_content_type_id
+                        || $content_type->id == $selected_content_type_id
+                    )
+                ? ( selected => 1 )
+                : (),
+                };
+            $selected_content_type_id ||= $content_type->id;
+            if ( $content_type->id == $selected_content_type_id ) {
+                $selected_content_type = $content_type;
+            }
+
+            my $mapper = sub {
+                +{  date_time_field_id       => $_->{id},
+                    date_time_field_label    => $_->{options}{label},
+                    date_time_field_ct_id    => $content_type->id,
+                    date_time_field_selected => (
+                               $param->{date_time_field_id}
+                            && $_->{id} == $param->{date_time_field_id}
+                    ),
+                };
+            };
+            push @date_time_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'date_and_time' }
+                @{ $content_type->fields };
+            push @date_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'date_only' } @{ $content_type->fields };
+            push @time_fields, map { $mapper->($_) }
+                grep { $_->{type} eq 'time_only' } @{ $content_type->fields };
+        }
+        $param->{content_types}    = \@content_types;
+        $param->{date_time_fields} = \@date_time_fields;
+        $param->{date_fields}      = \@date_fields;
+        $param->{time_fields}      = \@time_fields;
+
+        if ( $selected_content_type && $param->{date_time_field_id} ) {
+            my $field_data = $selected_content_type->get_field(
+                $param->{date_time_field_id} );
+            if ( $field_data->{type} eq 'time_only' ) {
+                $param->{show_datetime_fields_type} = 'time';
+            }
+            else {
+                $param->{show_datetime_fields_type} = 'date';
+            }
+        }
+        else {
+            $param->{show_datetime_fields_type} = 'date';
+        }
+
+        my $blog_perms = $user->permissions($blog_id);
+        if ( $user->is_superuser ) {
+            $param->{can_republish} = 1;
+        }
+        elsif ( $selected_content_type && $blog_perms ) {
+            my $unique_id = $selected_content_type->unique_id;
+            $param->{can_republish}
+                = $blog_perms->can_do(
+                "publish_content_data_via_list_$unique_id")
+                || $blog_perms->can_do("publish_all_content_data_$unique_id")
+                ? 1
+                : 0;
+        }
+    }
 
     my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
     my $placeholder = $tmpl->getElementById('search_results');
@@ -657,20 +769,22 @@ sub search_replace {
 sub do_search_replace {
     my $app     = shift;
     my ($param) = @_;
-    my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
-    my ($search,        $replace,     $do_replace,     $case,
-        $is_regex,      $is_limited,  $type,           $is_junk,
-        $is_dateranged, $ids,         $datefrom_year,  $datefrom_month,
-        $datefrom_day,  $dateto_year, $dateto_month,   $dateto_day,
-        $from,          $to,          $show_all,       $do_search,
-        $orig_search,   $quicksearch, $publish_status, $my_posts,
-        $search_type,   $filter,      $filter_val
+    my ($search,       $replace,            $do_replace,
+        $case,         $is_regex,           $is_limited,
+        $type,         $is_junk,            $is_dateranged,
+        $ids,          $datefrom_year,      $datefrom_month,
+        $datefrom_day, $dateto_year,        $dateto_month,
+        $dateto_day,   $date_time_field_id, $from,
+        $to,           $timefrom,           $timeto,
+        $show_all,     $do_search,          $orig_search,
+        $quicksearch,  $publish_status,     $my_posts,
+        $search_type,  $filter,             $filter_val
         )
-        = map scalar $q->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        = map scalar $app->param($_),
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -689,7 +803,6 @@ sub do_search_replace {
     if ( ( 'user' eq $type ) ) {
         $type = 'author';
     }
-
     foreach my $obj_type (qw( role association )) {
         if ( $type eq $obj_type ) {
             $type = 'author';
@@ -718,10 +831,33 @@ sub do_search_replace {
     if ($ids) {
         @ids = split /,/, $ids;
     }
+    my ( $content_type, @content_types );
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') || 0;
+        $content_type
+            = $app->model('content_type')->load( { id => $content_type_id } )
+            || $app->model('content_type')->load(
+            { blog_id => $blog_id || \'> 0' },
+            { sort => 'name', limit => 1 },
+            );
+
+        my $iter = $app->model('content_type')
+            ->load_iter( { blog_id => $blog_id || \'> 0' } );
+        while ( my $ct = $iter->() ) {
+            push @content_types, $ct;
+        }
+    }
     if ($is_limited) {
-        @cols = $q->param('search_cols');
+        @cols = $app->multi_param('search_cols');
         my %search_api_cols
             = map { $_ => 1 } keys %{ $search_api->{search_cols} };
+        if ( $type eq 'content_data' ) {
+            %search_api_cols = (
+                %search_api_cols,
+                map { '__field:' . $_->{id} => 1 }
+                    map { @{ $_->searchable_fields } } @content_types,
+            );
+        }
         if ( @cols && ( $cols[0] =~ /,/ ) ) {
             @cols = split /,/, $cols[0];
         }
@@ -731,9 +867,17 @@ sub do_search_replace {
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
+        if ( $type eq 'content_data' ) {
+            push @cols, map { '__field:' . $_->{id} }
+                map { @{ $_->searchable_fields } } @content_types;
+        }
     }
     my $quicksearch_id;
-    if ( $quicksearch && ( $search || '' ) ne '' && $search !~ m{ \D }xms ) {
+    if (   $quicksearch
+        && defined $search
+        && $search ne ''
+        && $search !~ m{ \D }xms )
+    {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
@@ -763,18 +907,26 @@ sub do_search_replace {
             }
         }
     }
-    elsif ( $is_dateranged && $from && $to ) {
-        $is_dateranged = 1;
-        s!\D!!g foreach ( $from, $to );
-        $datefrom = substr( $from, 0, 8 );
-        $dateto   = substr( $to,   0, 8 );
+    elsif ($is_dateranged) {
+        if ( $from && $to ) {
+            s!\D!!g foreach ( $from, $to );
+            $datefrom = substr( $from, 0, 8 );
+            $dateto   = substr( $to,   0, 8 );
+        }
+        if ( $timefrom && $timeto ) {
+            s!\D!!g foreach ( $timefrom, $timeto );
+            $timefrom = substr $timefrom, 0, 6;
+            $timeto   = substr $timeto,   0, 6;
+            $timefrom = "0$timefrom" if length $timefrom == 5;
+            $timeto   = "0$timeto"   if length $timeto == 5;
+        }
     }
-    my $tab = $q->param('tab') || 'entry';
+    my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
     my $plain_search = $search;
-    if ( ( $search || '' ) ne '' ) {
+    if ( defined $search && $search ne '' ) {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
     }
@@ -792,8 +944,9 @@ sub do_search_replace {
         || MT->config->default('CMSSearchLimit');
 
     # don't allow passed limit to be higher than config limit
-    if ( $q->param('limit') && ( $q->param('limit') < $limit ) ) {
-        $limit = $q->param('limit');
+    my $param_limit = $app->param('limit');
+    if ( $param_limit && ( $param_limit < $limit ) ) {
+        $limit = $param_limit;
     }
     $limit =~ s/\D//g if $limit ne 'all';
     my $matches;
@@ -809,7 +962,8 @@ sub do_search_replace {
         my %args;
         ## we need to search all user/group for 'grant permissions',
         ## if $blog_id is specified. it affects the setup_terms_args.
-        if ( $app->param('__mode') eq 'dialog_grant_role' ) {
+        my $mode = $app->param('__mode') || '';
+        if ( $mode eq 'dialog_grant_role' ) {
             if ($blog_id) {
                 my $perm = $author->permissions($blog_id);
                 return $app->permission_denied()
@@ -831,15 +985,18 @@ sub do_search_replace {
                     if (   $blog
                         && !$blog->is_blog
                         && ( $author->permissions($blog_id)
-                            ->has('manage_member_blogs')
+                            ->has('administer_site')
                             || $author->is_superuser )
                         )
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids = map { $_->id } @blogs;
-                        push @blog_ids, $blog_id;
-                        $terms{blog_id} = \@blog_ids;
+                        my @blog_ids;
+                        foreach my $b (@blogs) {
+                            push @blog_ids, $b->id
+                                if $author->permissions( $b->id )
+                                ->has('administer_site');
+                        }
                     }
                     else {
                         $terms{blog_id} = $blog_id;
@@ -854,13 +1011,16 @@ sub do_search_replace {
                 $blog = MT::Blog->load($blog_id) if $blog_id;
                 if (   $blog
                     && !$blog->is_blog
-                    && $author->permissions($blog_id)
-                    ->has('manage_member_blogs') )
+                    && $author->permissions($blog_id)->has('administer_site')
+                    )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids = map { $_->id } @blogs;
-                    push @blog_ids, $blog_id;
-                    %terms = ( blog_id => \@blog_ids );
+                    my @blog_ids;
+                    foreach my $b (@blogs) {
+                        push @blog_ids, $b->id
+                            if $author->permissions( $b->id )
+                            ->has('administer_site');
+                    }
                 }
                 else {
                     %terms = ( blog_id => $blog_id );
@@ -886,14 +1046,43 @@ sub do_search_replace {
             $terms{class}  = $type;
         }
         if ($is_dateranged) {
-            $args{range_incl}{$date_col} = 1;
-            if ( $datefrom gt $dateto ) {
-                $terms{$date_col}
-                    = [ $dateto . '000000', $datefrom . '235959' ];
+            if ($date_time_field_id) {
+                my $field_data
+                    = $content_type->get_field($date_time_field_id);
+                my $datetime_term;
+                if ( $field_data->{type} eq 'time_only' ) {
+                    $datetime_term
+                        = ( $timefrom gt $timeto )
+                        ? [ "19700101${timeto}", "19700101${timefrom}" ]
+                        : [ "19700101${timefrom}", "19700101${timeto}" ];
+                }
+                else {
+                    $datetime_term
+                        = ( $datefrom gt $dateto )
+                        ? [ "${dateto}000000", "${datefrom}235959" ]
+                        : [ "${datefrom}000000", "${dateto}235959" ];
+                }
+                my $join = $app->model('content_field_index')->join_on(
+                    undef,
+                    {   content_data_id  => \'= cd_id',
+                        content_field_id => $date_time_field_id,
+                        value_datetime   => $datetime_term,
+                    },
+                    { range_incl => { value_datetime => 1 } },
+                );
+                $args{joins} ||= [];
+                push @{ $args{joins} }, $join;
             }
             else {
-                $terms{$date_col}
-                    = [ $datefrom . '000000', $dateto . '235959' ];
+                $args{range_incl}{$date_col} = 1;
+                if ( $datefrom gt $dateto ) {
+                    $terms{$date_col}
+                        = [ $dateto . '000000', $datefrom . '235959' ];
+                }
+                else {
+                    $terms{$date_col}
+                        = [ $datefrom . '000000', $dateto . '235959' ];
+                }
             }
         }
         if ( defined $publish_status ) {
@@ -916,7 +1105,7 @@ sub do_search_replace {
         }
 
         my @terms;
-        if ( !$is_regex ) {
+        if ( !$is_regex && $type ne 'content_data' ) {
 
             # MT::Object doesn't like multi-term hashes within arrays
             if (%terms) {
@@ -934,7 +1123,7 @@ sub do_search_replace {
                         # Direct ID search
                         push( @col_terms, { $col => $plain_search }, '-or' );
                     }
-                    else {
+                    elsif ( $col !~ /^__field:\d+$/ ) {
                         push( @col_terms,
                             { $col => { like => $query_string } }, '-or' );
                     }
@@ -1052,10 +1241,19 @@ sub do_search_replace {
         my %replace_cols;
         if ($do_replace) {
             %replace_cols = map { $_ => 1 } @{ $api->{replace_cols} };
+            if ($content_type) {
+                %replace_cols = (
+                    %replace_cols,
+                    map { '__field:' . $_->{id} => 1 }
+                        @{ $content_type->replaceable_fields }
+                );
+            }
         }
 
+        my $content_field_types = $app->registry('content_field_types');
+
         my $re;
-        if ( ( $search || '' ) ne '' ) {
+        if ( defined $search && $search ne '' ) {
             $re = eval {qr/$search/};
             if ( my $err = $@ ) {
                 return $app->error(
@@ -1074,22 +1272,125 @@ sub do_search_replace {
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
-                    my $text = $obj->column($col);
+                    my $text;
+                    my ( $content_field_id, $field_data, $field_registry );
+                    if ( $col =~ /^__field:(\d+)$/ ) {
+                        $content_field_id = $1;
+                        $field_data
+                            = $content_type->get_field($content_field_id)
+                            or next;
+                        $field_registry
+                            = $content_field_types->{ $field_data->{type} };
+                        $text = $obj->data->{$content_field_id};
+                    }
+                    else {
+                        $text = $obj->column($col);
+                    }
                     $text = '' unless defined $text;
                     if ($do_replace) {
-                        if ( $text =~ s!$re!$replace!g ) {
+                        my $replaced;
+                        my $replace_handler;
+                        if ( my $replace_handler
+                            = $field_registry->{replace_handler} )
+                        {
+                            $replace_handler
+                                = $app->handler_to_coderef($replace_handler);
+                            unless ($replace_handler) {
+                                my $error = $app->translate(
+                                    'replace_handler of [_1] field is invalid',
+                                    $field_data->{type}
+                                );
+                                $app->param( 'error', $error );
+                            }
+                            if ($replace_handler) {
+                                $replaced = $replace_handler->(
+                                    $re, $replace, $field_data, $text, $obj
+                                );
+                            }
+                        }
+                        else {
+                            $replaced = $text =~ s!$re!$replace!g;
+                        }
+                        if ($replaced) {
+                            if ( $content_field_id && !$app->param('error') )
+                            {
+                                if ( $field_data->{options}{required} ) {
+                                    my $is_empty = !ref $text
+                                        && ( !defined $text || $text eq '' );
+                                    if ($is_empty) {
+                                        $app->param(
+                                            'error',
+                                            $app->translate(
+                                                '"[_1]" field is required.',
+                                                $field_data->{options}{label}
+                                            )
+                                        );
+                                    }
+                                }
+                                unless ( $app->param('error') ) {
+                                    my $ss_validator
+                                        = $field_registry->{ss_validator};
+                                    if ($ss_validator) {
+                                        $ss_validator
+                                            = $app->handler_to_coderef(
+                                            $ss_validator);
+                                        unless ($ss_validator) {
+                                            my $error = $app->translate(
+                                                'ss_validator of [_1] field is invalid',
+                                                $field_data->{type}
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
+                                    }
+                                    if ($ss_validator) {
+                                        my $error = $ss_validator->(
+                                            $app, $field_data, $text
+                                        );
+                                        if ($error) {
+                                            $error = $app->translate(
+                                                '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
+                                                $text,
+                                                $field_data->{options}{label},
+                                                $content_type->name,
+                                                $obj->id,
+                                                $error,
+                                            );
+                                            $app->param( 'error', $error );
+                                        }
+                                    }
+                                }
+                                unless ( $app->param('error') ) {
+                                    my $data = $obj->data;
+                                    $data->{$content_field_id} = $text;
+                                    $obj->data($data);
+                                }
+                            }
+                            elsif ( !$content_field_id ) {
+                                $obj->$col($text);
+                            }
                             $match++;
-                            $obj->$col($text);
                         }
                     }
                     else {
-                        $match = $search ne '' ? $text =~ m!$re! : 1;
+                        if (   $search ne ''
+                            && $field_registry
+                            && $field_registry->{search_handler} )
+                        {
+                            my $search_handler = $app->handler_to_coderef(
+                                $field_registry->{search_handler} );
+                            $match = $search_handler && $search_handler->(
+                                $re, $field_data, $text, $obj
+                            );
+                        }
+                        else {
+                            $match = $search ne '' ? $text =~ m!$re! : 1;
+                        }
                         last if $match;
                     }
                 }
             }
             if ( $match || $show_all ) {
-                if ( $do_replace && !$show_all ) {
+                if ( $do_replace && !$show_all && !$app->param('error') ) {
                     push @to_save,      $obj;
                     push @to_save_orig, $orig_obj;
                 }
@@ -1106,6 +1407,11 @@ sub do_search_replace {
                 pop @data;
             }
             $matches = @data;
+
+            if ( $do_replace && !$show_all && $app->param('error') ) {
+                @to_save      = ();
+                @to_save_orig = ();
+            }
         }
         else {
             $matches = 0;
@@ -1280,18 +1586,29 @@ sub do_search_replace {
         }
     }
     if ($is_dateranged) {
-        ( $datefrom_year, $datefrom_month, $datefrom_day )
-            = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-        ( $dateto_year, $dateto_month, $dateto_day )
-            = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-        $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
-            $datefrom_day;
-        $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month, $dateto_day;
+        if ( $from && $to ) {
+            ( $datefrom_year, $datefrom_month, $datefrom_day )
+                = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
+            ( $dateto_year, $dateto_month, $dateto_day )
+                = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
+            $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
+                $datefrom_day;
+            $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month,
+                $dateto_day;
+        }
+        if ( $timefrom && $timeto ) {
+            $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
+            $timeto =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
+        }
     }
 
+    my $error = $app->param('error') || '';
+    my $res_search
+        = $do_replace ? $app->param('orig_search') : $app->param('search');
+    $res_search = '' unless defined $res_search;
     my %res = (
-        error => $q->param('error') || '',
-        limit => $limit,
+        error               => $error,
+        limit               => $limit,
         limit_all           => $limit eq 'all',
         count_matches       => $matches,
         replace_count       => $replace_count,
@@ -1300,16 +1617,14 @@ sub do_search_replace {
         object_label        => $class->class_label,
         object_label_plural => $class->class_label_plural,
         object_type         => $type,
-        search              => (
-              $do_replace ? $q->param('orig_search')
-            : $q->param('search')
-            )
-            || '',
-        searched => (
-            $do_replace ? $q->param('orig_search')
+        search              => $res_search,
+        searched            => (
+            $do_replace
+            ? ( defined $app->param('orig_search')
+                    && $app->param('orig_search') ne '' )
             : (        $do_search
-                    && $q->param('search')
-                    && $q->param('search') ne '' )
+                    && defined $app->param('search')
+                    && $app->param('search') ne '' )
             )
             || $show_all
             || defined $publish_status
@@ -1323,6 +1638,9 @@ sub do_search_replace {
         datefrom_month     => $datefrom_month,
         datefrom_day       => $datefrom_day,
         to                 => $to,
+        date_time_field_id => $date_time_field_id,
+        timefrom           => $timefrom,
+        timeto             => $timeto,
         dateto_year        => $dateto_year,
         dateto_month       => $dateto_month,
         dateto_day         => $dateto_day,
@@ -1355,7 +1673,31 @@ sub do_search_replace {
             : exists( $search_api->{plugin} )
             ? $search_api->{plugin}->translate( $search_cols->{$field} )
             : $app->translate( $search_cols->{$field} );
+        $search_field{replaceable}
+            = ( grep { $_ eq $field } @{ $search_api->{replace_cols} || [] } )
+            ? 1
+            : 0;
         push @search_cols, \%search_field;
+    }
+    if ( $res{object_type} eq 'content_data' ) {
+        for my $ct (@content_types) {
+            for my $f ( @{ $ct->searchable_fields } ) {
+                push @search_cols,
+                    +{
+                    field       => '__field:' . $f->{id},
+                    label       => $f->{options}{label},
+                    selected    => exists( $cols{ '__field:' . $f->{id} } ),
+                    hidden      => ( $ct->id != $content_type->id ) ? 1 : 0,
+                    field_ct_id => $ct->id,
+                    replaceable => (
+                        grep { $_->{id} == $f->{id} }
+                            @{ $ct->replaceable_fields }
+                        )
+                    ? 1
+                    : 0,
+                    };
+            }
+        }
     }
     $res{'search_cols'} = \@search_cols;
 

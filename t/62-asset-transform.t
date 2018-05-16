@@ -1,20 +1,27 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
-use File::Basename;
-use File::Copy;
-use File::Spec;
-use File::Temp qw( tempfile );
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib qw( lib extlib t/lib );
-use MT::Test qw( :app :db );
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use File::Basename;
+use File::Copy;
+use File::Spec;
+use File::Temp qw( tempfile );
+
+use MT::Test;
 use MT::Test::Permission;
 use MT;
 use MT::Image;
@@ -22,6 +29,10 @@ use MT::Image;
 if ( !MT::Image->new ) {
     plan skip_all => 'ImageDriver may be invalid.';
 }
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db');
 
 my @methods = qw/ scale crop_rectangle rotate flip_horizontal flip_vertical /;
 

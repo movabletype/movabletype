@@ -1,0 +1,16 @@
+.mt-contentblock__block {
+  display: block;
+  word-wrap: break-word;
+}
+.blockeditor .asset_field {
+  max-width: 100%;
+}
+.blockeditor .asset_field img {
+  width: auto;
+  max-width: 100%;
+  min-width: auto;
+}
+.div.mce-tinymce-inline {
+  margin-top: 10px;
+  margin-left: 50px;
+}

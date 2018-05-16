@@ -100,7 +100,7 @@
 
   <mt:var name="html_body">
 
-  <div id="header"<mt:if name="count_notification_dashboard"> class="has-notification"</mt:if>>
+  <div id="header">
     <div id="brand">
       <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><span><img alt="<mt:var name="mt_product_name">" src="<mt:var name="static_uri">images/logo/movable-type-logo.png" /></span></a>
     </div>
@@ -182,13 +182,6 @@
       <!-- /Menu Bar Nav--></div>
     <!-- /Menu Bar --></div>
   </mt:if>
-  <mt:if name="count_notification_dashboard">
-  <div id="notification-indicator">
-    <div id="notification-indicator-content"> 
-      <p class="msg-text"><mt:unless name="scope_type" eq="user"><a href="<$mt:var name="mt_url"$>?__mode=dashboard"></mt:unless><__trans phrase="You have <strong>[quant,_1,message,messages]</strong> from the system." params="<mt:var name="count_notification_dashboard">"><mt:unless name="scope_type" eq="user"></a></mt:unless></p>
-    </div>
-  </div>
-  </mt:if>
   <!-- /Header --></div>
 
   <mt:if name="is_generic_website">
@@ -217,9 +210,9 @@
             <mt:loop name="sub_nav_loop">
             <mt:if name="allowed">
               <mt:if name="current">
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label" escape="html"></span></em></a></li>
               <mt:else>
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label"></span></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label" escape="html"></span></a></li>
               </mt:if>
             </mt:if>
             </mt:loop>

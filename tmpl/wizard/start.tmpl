@@ -22,7 +22,7 @@ a:active {
     min-height: 30px;
     margin: 25px 0 0;
 }
-#container {
+.container {
     position: relative;
     width: 550px;
     margin: 45px auto 30px;
@@ -74,8 +74,7 @@ label {
 </mt:setvarblock>
 </mt:unless>
 
-<mt:include name="include/chromeless_header.tmpl">
-
+<mt:setvarblock name="page_content">
 <mt:unless name="cfg_exists">
 <form method="post" onsubmit="return check_static_uri();">
   <input type="hidden" name="__mode" value="next_step" />
@@ -88,9 +87,8 @@ label {
   <mtapp:setting
      id="default_language"
      label="<__trans phrase="Language">"
-     label_class="top-label"
-     hint="<__trans phrase="Default language.">">
-    <select name="default_language" id="default_language">
+     label_class="top-label">
+    <select name="default_language" id="default_language" class="custom-select form-control">
     <mt:loop name="languages">
       <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>
@@ -101,20 +99,18 @@ label {
     <h2><__trans phrase="Configure Static Web Path"></h2>
 
   <mt:if name="uri_invalid">
-  <mtapp:statusmsg
-     id="uri_invalid"
-     class="error"
-     can_close="0">
-    <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html" escape="html"$>">
-  </mtapp:statusmsg>
+  <div id="uri_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html" escape="html"$>">
+    </p>
+  </div>
   </mt:if>
   <mt:if name="file_invalid">
-  <mtapp:statusmsg
-     id="file_invalid"
-     class="error"
-     can_close="0">
-    <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html" escape="html"$>">
-  </mtapp:statusmsg>
+  <div id="file_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html" escape="html"$>">
+    </p>
+  </div>
   </mt:if>
 
     <p><__trans phrase="Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets." params="<strong>mt-static</strong>"></p>
@@ -138,24 +134,26 @@ label {
        label="<__trans phrase="Static web path">"
        label_class="top-label"
        show_hint="1"
+       hint_id="staticWebPath"
        hint="$hintfoo">
-      <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="text full" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="">
+      <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="form-control text full" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="" aria-describedby="staticWebPath">
     </mtapp:setting>
     <mtapp:setting
        id="set_static_file_to"
        label="<__trans phrase="Static file path">"
        label_class="top-label"
        show_hint="1"
+       hint_id="staticFilePath"
        hint="$hintfp">
-      <input type="text" name="set_static_file_to" id="set_static_file_to" class="text full" value="<$mt:var name="set_static_file_to" default="$static_file_path" escape="html"$>" size="">
+      <input type="text" name="set_static_file_to" id="set_static_file_to" class="form-control text full" value="<$mt:var name="set_static_file_to" default="$static_file_path" escape="html"$>" size="" aria-describedby="staticFilePath">
     </mtapp:setting>
   </div>
 
-  <div class="actions-bar">
+  <div class="actions-bar" style="text-align: right;">
     <button
        type="submit"
        title="<__trans phrase="Begin">"
-       class="next action primary button">
+       class="next action primary button btn btn-primary">
       <__trans phrase="Begin">
     </button>
   </div>
@@ -164,6 +162,7 @@ label {
 <p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
 <p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
 </mt:unless>
+</mt:setvarblock>
 
 <mt:unless name="uri_invalid">
     <mt:unless name="file_invalid">
@@ -175,6 +174,7 @@ label {
     </mt:unless>
 </mt:unless>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function check_static_uri() {
@@ -219,4 +219,8 @@ function check_static_uri() {
 }
 /* ]]> */
 </script>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

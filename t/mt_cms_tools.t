@@ -2,11 +2,17 @@
 
 use strict;
 use warnings;
-
-use lib 't/lib';
-use MT::Test qw(:newdb);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test qw(:newdb);
 
 plan tests => 8;
 
@@ -24,8 +30,9 @@ plan tests => 8;
 
     require MT::App::CMS;
     my $app = MT::App::CMS->instance;
+    $app->init_request;
     note( 'Object types are: '
-            . join( q{, }, keys %{ MT->registry('object_types') } ) );
+            . join( q{, }, sort keys %{ MT->registry('object_types') } ) );
 
     require MT::CMS::Tools;
     my $ret = MT::CMS::Tools::upgrade($app);

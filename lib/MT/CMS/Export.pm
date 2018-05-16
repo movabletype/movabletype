@@ -6,6 +6,7 @@
 package MT::CMS::Export;
 
 use strict;
+use warnings;
 use MT::Util qw( dirify );
 
 sub start_export {
@@ -21,6 +22,7 @@ sub start_export {
         if !$blog;
 
     $param{blog_id} = $blog_id;
+    $app->add_breadcrumb( $app->translate('Export Site Entries') );
     $app->load_tmpl( 'export.tmpl', \%param );
 }
 
@@ -30,11 +32,11 @@ sub export {
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
         or
-        return $app->error( $app->translate("Please select a blog."), 400 );
+        return $app->error( $app->translate("Please select a site."), 400 );
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Loading blog '[_1]' failed: [_2]", $blog_id,
+            "Loading site '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         ),
         404
@@ -49,7 +51,7 @@ sub export {
     if ( $file eq ".txt" ) {
         my @ts = localtime(time);
         $file = sprintf "export-%06d-%04d%02d%02d%02d%02d%02d.txt",
-            $app->param('blog_id'), $ts[5] + 1900, $ts[4] + 1,
+            $blog_id, $ts[5] + 1900, $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
     }
 

@@ -1,11 +1,6 @@
-<mt:setvarblock name="page_title"><__trans phrase="Export [_1] Themes" params="<mt:if name="blog_id"><mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if><mt:else><__trans phrase="Global"></mt:if>"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Export Themes"></mt:setvarblock>
 
 <mt:setvar name="export_theme" value="1">
-
-<mt:setvarblock name="html_head" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
-</mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
 <div id="msg-block">
@@ -19,8 +14,7 @@
 </div>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="page_content">
 <form id="theme_settings" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="do_export_theme" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -37,62 +31,69 @@
        id="theme-name-field"
        required="1"
        label="<__trans phrase="Name">"
-       hint="<__trans phrase="The name of your theme.">">
-      <input type="text" name="theme_name" id="theme_name" class="text required" value="<mt:var name="theme_name" escape="html">" />
+       label_for="theme_name">
+      <input type="text" name="theme_name" id="theme_name" class="form-control text required" value="<mt:var name="theme_name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-id-field"
        required="1"
        label="<__trans phrase="Basename">"
+       label_for="theme_id"
        show_hint="1"
+       hint_id="basenameHelp"
        hint="<__trans phrase="Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').">">
-      <input type="text" name="theme_id" id="theme_id" class="text required" value="<mt:var name="theme_id" escape="html">" />
+      <input type="text" name="theme_id" id="theme_id" class="form-control text required" value="<mt:var name="theme_id" escape="html">" aria-describedby="basenameHelp" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-version-field"
        required="1"
        label="<__trans phrase="Version">"
-       hint="<__trans phrase="A version number for this theme.">">
-       <input type="text" name="theme_version" id="theme_version" class="text required" value="<mt:var name="theme_version" escape="html">" />
+       label_for="theme_version">
+       <input type="text" name="theme_version" id="theme_version" class="form-control text required" value="<mt:var name="theme_version" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-description-field"
        label="<__trans phrase="Description">"
-       hint="<__trans phrase="A description for this theme.">">
-       <textarea name="description" id="description" class="text low"><mt:var name="description" escape="html"></textarea>
+       label_for="description">
+       <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-author-name-field"
        label="<__trans phrase="_THEME_AUTHOR">"
-       hint="<__trans phrase="The author of this theme.">">
-       <input type="text" name="theme_author_name" id="theme_author_name" class="text" value="<mt:var name="theme_author_name" escape="html">" />
+       label_for="theme_author_name">
+       <input type="text" name="theme_author_name" id="theme_author_name" class="form-control text" value="<mt:var name="theme_author_name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-author-link-field"
        label="<__trans phrase="Author link">"
-       hint="<__trans phrase="The author's website.">">
-      <input type="text" name="theme_author_link" id="theme_author_link" class="text" value="<mt:var name="theme_author_link" escape="html">" />
+       label_for="theme_author_link">
+      <input type="text" name="theme_author_link" id="theme_author_link" class="form-control text" value="<mt:var name="theme_author_link" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="theme-options-field"
-       label="<__trans phrase="Options">"
-       hint="<__trans phrase="Additional assets to be included in the theme.">"
-       content_class="field-content-text">
-      <ul>
+       label="<__trans phrase="Options">">
+      <ul class="list-unstyled">
       <mt:loop name="exporters">
         <li>
-          <label for="<mt:var name="id">-include"><input type="checkbox" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>> <mt:var name="label"></label>
+          <div class="form-inline">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
+              <label class="custom-control-label" for="<mt:var name="id" escape="html">-include"><mt:var name="label"></label>
+            </div>
         <mt:if name="template">
-          <span id="<mt:var name="id">-detail" class="theme-option-detail <mt:unless name="include"> active</mt:unless>">
-            <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog"><__trans phrase="Details"></a>
-          </span>
+            <span id="<mt:var name="id">-detail" class="theme-option-detail ml-3 <mt:unless name="include"> active</mt:unless>">
+              <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+                <__trans phrase="Details">
+              </a>
+            </span>
         </mt:if>
+          </div>
         </li>
       </mt:loop>
       </ul>
@@ -102,8 +103,8 @@
     <mtapp:setting
        id="theme-output-field"
        label="<__trans phrase="Destination">"
-       hint="<__trans phrase="Select How to get theme.">">
-      <select name="output" id="output">
+       label_for="output">
+      <select name="output" id="output" class="custom-select form-control">
       <mt:loop name="output_methods">
         <option value="<mt:var name="id">"<mt:if name="output" eq="$id"> selected="selected"</mt:if>>
           <mt:var name="label">
@@ -126,13 +127,15 @@
      type="submit"
      accesskey="s"
      title="<__trans phrase="Export Theme">"
-     class="export action button primary">
+     class="export action button primary btn btn-primary">
     <__trans phrase="Export Theme"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery.mtCheckbox();
@@ -156,7 +159,7 @@ jQuery(function() {
                 return this.raise('<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">');
             }
             if ( is_duplicated_basename( $e.val() ) ) {
-                return this.raise('<__trans phrase="Cannot install new theme with existing (and protected) theme's basename." escape="singlequotes">');
+                return this.raise('<__trans phrase="Cannot install new theme with existing (and protected) theme\'s basename." escape="singlequotes">');
             }
             return true;
         },
@@ -175,4 +178,7 @@ jQuery(function() {
     <mt:var name="js_include_footer" />
 /* ]]> */
 </script>
-<mt:include name="include/footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

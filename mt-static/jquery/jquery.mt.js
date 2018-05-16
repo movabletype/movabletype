@@ -137,7 +137,7 @@ $.mtEditSiteUrl = function(options) {
         if (!$path.hasClass('show-input')) {
             $path
                 .before('<span class="'+this+'_url_path-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+this+'_url_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
             $subdomain.parents('.field-content').find('.subdomain').hide();
@@ -152,7 +152,7 @@ $.mtEditSiteUrl = function(options) {
                 .before('<span class="'+this+'_url_path-text path-text">'+$subdomain.val()+'</span>');
             if ($('button#mt-set-'+this+'_url_path').length === 0) {
                 $path
-                    .after('<button type="button" id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                    .after('<button type="button" id="mt-set-'+this+'_url_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                     .hide();
             }
         }
@@ -223,7 +223,6 @@ $.mtUseAbsolute = function() {
     });
 };
 
-
 /*
  * mtEditSitePath
  *
@@ -243,7 +242,7 @@ $.mtEditSitePath = function(options) {
         if ( !$absolute_path.hasClass('show-input') ) {
             $absolute_path
                 .before('<span class="'+id+'_path_absolute-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'_path_absolute" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'_path_absolute" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path_absolute-text').text($absolute_path.val());
         }
@@ -252,7 +251,7 @@ $.mtEditSitePath = function(options) {
         if ( !$path.hasClass('show-input') ) {
             $path
                 .before('<span class="'+id+'_path-text path-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'_path" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path-text').text($path.val());
 
@@ -732,7 +731,7 @@ $.fn.mtRebasename = function(options) {
         var $input = $('input#basename'),
             dirify_text = $input.hide().val();
         $input.hide().before('<span class="basename-text"></span>');
-        $input.parent('span.basename').after('<button type="button" id="mt-set-basename" class="mt-edit-field-button button">'+opts.edit+'</button>');
+        $input.parent('span.basename').after('<button type="button" id="mt-set-basename" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>');
         if (opts.basename) {
             $('span.basename-text').text(opts.basename);
         } else {
@@ -778,14 +777,14 @@ $.fn.mtEditInput = function(options) {
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'" class="mt-edit-field-button button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
-                .after('<button type="button" id="mt-set-'+id+'" class="mt-edit-field-button button">'+opts.edit+'</button>')
+                .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
         $('button#mt-set-'+id).click(function() {
@@ -933,7 +932,7 @@ $.extend( $.mtValidator.prototype, {
         return false;
     },
     validClass: 'valid',
-    errorClass: 'error',
+    errorClass: 'is-invalid',
     doFocus: true,
     wrapError: function ( $target, msg ) {
         return $('<label/>')
@@ -964,7 +963,7 @@ $.mtValidator('top', {
     showError: function( $target, $error_block ) {
         if ( $('div#msg-block').text() == 0 ) {
             var $block = $('<div/>')
-                .addClass('msg msg-error')
+                .addClass('alert alert-danger')
                 .append( $('<p>').text( trans('You have an error in your input.') ) )
                 .append( $('<ul />') );
 
@@ -984,19 +983,83 @@ $.mtValidator('top', {
 });
 $.mtValidator('simple', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return $('<div />').append(
             $('<label/>')
                 .attr('for', $target.attr('id') )
-                .addClass('validate-error msg-error')
+                .addClass('validate-error msg-error text-danger')
                 .text(msg)
             );
+    },
+    removeError: function ( $target, $error_block ) {
+        $error_block.remove();
+        $target.parent().removeClass('has-error');
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.find('label.msg-error').text(msg);
     }
 });
+$.mtValidator('simple-group', {
+    removeError: function ( $target, $error_block ) {
+        var $container = $target.parents('.group-container');
+        var groupInputs = $container.find('.group').toArray();
+        var invalidInputs = jQuery.grep(groupInputs, function (input) {
+            if (input.getAttribute('id') === $target.attr('id')) {
+                return false;
+            }
+            return $.data( input, 'mtValidateError' );
+        });
+        if ($target.is('input[type=radio],input[type=checkbox]')) {
+            $container.siblings('.group-error').remove();
+            invalidInputs.forEach(function (input) {
+                $.data( input, 'mtValidateError', null );
+                $.data( input, 'mtValidateLastError', null );
+                $(input).addClass( this.validClass );
+                $(input).removeClass( this.errorClass );
+            });
+        } else {
+            if (invalidInputs.length === 0) {
+                $container.siblings('.group-error').remove();
+            } else {
+                var error = $.data( invalidInputs[0], 'mtValidateLastError' );
+                $container.siblings('.group-error')
+                    .find('label.msg-error')
+                    .text(error);
+            }
+        }
+    },
+    updateError: function( $target, $error_block, msg ) {
+        $target.parents('.group-container')
+            .siblings('.group-error')
+            .find('label.msg-error')
+            .text(msg);
+    },
+    showError: function( $target, $error_block ) {
+        var $container = $target.parents('.group-container');
+        if ($container.siblings('.group-error').length === 0) {
+            $container.after($error_block);
+        }
+        if ($target.is('input[type=radio],input[type=checkbox]')) {
+            var groupInputs = $container.find('.group').toArray();
+            groupInputs.forEach(function (input) {
+                $.data( input, 'mtValidateError', $error_block );
+            });
+        }
+    },
+    wrapError: function ( $target, msg ) {
+        return $('<div />')
+            .addClass('group-error')
+            .append(
+                $('<label/>')
+                    .attr('for', $target.attr('id') )
+                    .addClass('validate-error msg-error text-danger')
+                    .text(msg)
+            );
+    }
+});
 $.mtValidator('simple2', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return $('<li />').append(
             $('<label/>')
                 .attr('for', $target.attr('id') )
@@ -1008,8 +1071,8 @@ $.mtValidator('simple2', {
         var ins = true;
         if ( $('div#'+id+'-msg-block ul').length == 0 ) {
             var $block = $('<div/>')
-                .addClass('validate-error msg-error')
-                .append( $('<ul />') );
+                .addClass('text-danger validate-error msg-error')
+                .append( $('<ul class="list-unstyled" />') );
 
             $('div#'+id+'-msg-block').append( $block );
         } else {
@@ -1026,6 +1089,7 @@ $.mtValidator('simple2', {
         }
     },
     removeError: function( $target, $error_block ) {
+        $target.parent().removeClass('has-error');
         var id = $target.parents().find('div.field-content').first().parent().attr('id');
         $error_block.remove();
         if ( $('div#'+id+'-msg-block ul li').length == 0 ) {
@@ -1047,10 +1111,11 @@ $.mtValidator('simple2', {
 });
 jQuery.mtValidator('url_path_subdomain', {
     wrapError: function ( $target, msg ) {
+        $target.parent().addClass('has-error');
         return jQuery('<div />').append(
             jQuery('<label/>')
                 .attr('for', $target.attr('id') )
-                .addClass('validate-error msg-error')
+                .addClass('validate-error msg-error text-danger')
                 .text(msg)
             );
     },
@@ -1067,6 +1132,7 @@ jQuery.mtValidator('url_path_subdomain', {
             .find('label.msg-error:hidden:first')
             .closest('div')
             .show();
+        $target.parent().removeClass('has-error');
     },
     updateError: function( $target, $error_block, msg ) {
         $error_block.find('label.msg-error').text(msg);
@@ -1076,7 +1142,7 @@ $.mtValidator('default', {
     wrapError: function ( $target, msg ) {
         return $('<label style="position: absolute;" />')
             .attr('for', $target.attr('id') || '')
-            .addClass('msg-error msg-balloon validate-error')
+            .addClass('msg-error msg-balloon validate-error label label-default')
             .text(msg);
     },
     showError: function( $target, $error_block ) {
@@ -1134,6 +1200,9 @@ $.mtValidateRules = {
     '.date': function ($e) {
         return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
     },
+    '.time': function ($e) {
+        return !$e.val() || /^\d{2}:\d{2}:\d{2}$/.test($e.val());
+    },
 
     // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
     '.email': function ($e) {
@@ -1145,14 +1214,136 @@ $.mtValidateRules = {
         return !$e.val() || /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test($e.val());
     },
 
+    '.url-field': function ($e) {
+        return !$e.val() || /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/.test($e.val());
+    },
+
     '.required': function ($e) {
         return $e.val().length > 0;
     },
     '.digit, .num': function ($e) {
         return !$e.val() || /^\d+$/.test($e.val());
     },
+    '.signed-digit': function ($e) {
+        return !$e.val() || /^-?\d+$/.test($e.val());
+    },
     '.number': function ($e) {
         return !$e.val() || /\d/.test($e.val()) && /^\d*\.?\d*$/.test($e.val());
+    },
+    '.signed-number': function ($e) {
+        return !$e.val() || /\d/.test($e.val()) && /^(-?\d+)?\.?\d*$/.test($e.val());
+    },
+    '.min-length': function ($e) {
+        var minLength = Number($e.data('mt-min-length')) || 0;
+        if ($e.val().length >= minLength) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $.mtValidateMessages['.min-length'].replace(/{{min}}/, minLength);
+            return false;
+        }
+    },
+    '.multiple-select': function ($e) {
+        if (!$e.attr('multiple')) {
+            return true;
+        }
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        if (!max && !min) {
+            return true;
+        }
+        var selectedCount = $e.children('option:selected').length;
+        if (max && max < selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if (min && min > selectedCount) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.checkbox': function ($e) {
+        var multiple = $e.data('mt-multiple') ? true : false;
+        var max = Number($e.data('mt-max-select')) || 0;
+        var min = Number($e.data('mt-min-select')) || 0;
+        var required = $e.data('mt-required') ? true : false;
+        var checkboxName = $e.attr('name');
+        var checkedCount = $e.parents('.group-container')
+            .find('input[name=' + checkboxName + ']:checked').length;
+        if ( required && checkedCount === 0) {
+            this.error = true;
+            this.errstr = trans('Please select one of these options');
+            return false;
+        } else if ( !multiple && checkedCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 option can be selected');
+            return false;
+        } else if ( multiple && max && max < checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if ( multiple && min && min > checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.category': function ($e) {
+        var $input = $e.parents('.group-container').find('[id^=category-ids-]');
+        var multiple = $input.data('mt-multiple') ? true : false;
+        var max = Number($input.data('mt-max-select')) || 0;
+        var min = Number($input.data('mt-min-select')) || 0;
+        var required = $input.data('mt-required') ? true : false;
+        var checkedCats = $.grep( $input.val().split(','), function (catId) {
+            return catId;
+        } );
+        var checkedCount = checkedCats.length;
+        if ( required && checkedCount === 0) {
+            this.error = true;
+            this.errstr = trans('Please select one of these options');
+            return false;
+        } else if ( !multiple && checkedCount > 1 ) {
+            this.error = true;
+            this.errstr = trans('Only 1 option can be selected');
+            return false;
+        } else if ( multiple && max && max < checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options less than or equal to [_1] must be selected', max);
+            return false;
+        } else if ( multiple && min && min > checkedCount ) {
+            this.error = true;
+            this.errstr = trans('Options greater than or equal to [_1] must be selected', min);
+            return false;
+        } else {
+            return true;
+        }
+    },
+    '.html5-form': function ($e) {
+        if (!$e.get(0).checkValidity || $e.get(0).checkValidity()) {
+            return true;
+        } else {
+            this.error = true;
+            this.errstr = $e.get(0).validationMessage;
+            return false;
+        }
+    },
+    '.ss-validator': function ($e) {
+        var contentFieldId = $e.data('mtContentFieldId');
+        if (!contentFieldId) {
+            return true;
+        }
+        if (window.ssValidateError && window.ssValidateError[contentFieldId]) {
+            this.error = true;
+            this.errstr = window.ssValidateError[contentFieldId];
+            return false;
+        } else {
+            return true;
+        }
     }
 };
 
@@ -1165,12 +1356,17 @@ $.mtValidateAddMessages = function ( rules ) {
 };
 
 $.mtValidateMessages = {
-    '.date':        trans('Invalid date format'),
-    '.email':       trans('Invalid email address'),
-    '.url':         trans('Invalid URL'),
-    '.required':    trans('This field is required'),
-    '.digit, .num': trans('This field must be an integer'),
-    '.number':      trans('This field must be a number')
+    '.date':          trans('Invalid date format'),
+    '.time':          trans('Invalid time format'),
+    '.email':         trans('Invalid email address'),
+    '.url':           trans('Invalid URL'),
+    '.url-field':     trans('Invalid URL'),
+    '.required':      trans('This field is required'),
+    '.digit, .num':   trans('This field must be an integer'),
+    '.signed-digit':  trans('This field must be a signed integer'),
+    '.number':        trans('This field must be a number'),
+    '.signed-number': trans('This field must be a signed number'),
+    '.min-length':    trans('Please input [_1] characters or more', '{{min}}')
 };
 
 $.fn.extend({
@@ -1190,7 +1386,7 @@ $.fn.extend({
         var errors = 0,
             error_elements = [],
             successes = 0,
-            defaults = { focus: true };
+            defaults = { focus: true, afterTrigger: true };
         opts = $.extend( defaults, opts );
         this.each( function () {
             var $this = $(this),
@@ -1237,6 +1433,9 @@ $.fn.extend({
         if ( opts.focus && error_elements.length ) {
             error_elements[0].focus();
         }
+        if ( opts.afterTrigger ) {
+            this.trigger('after-mt-valid');
+        }
         return errors == 0;
     },
     mtUnvalidate: function() {
@@ -1259,7 +1458,13 @@ $.fn.extend({
     }
 });
 
-$(document).on('keyup focusin focusout','input, textarea',function () {
+$(document).on('keyup change input', 'input, textarea', function () {
+    var ns = $.data( this, 'mtValidator' );
+    if ( !ns ) return true;
+    $(this).mtValid({ focus: false });
+});
+
+$(document).on('focusin focusout','input:not([type=radio]):not(.group), textarea',function () {
     var ns = $.data( this, 'mtValidator' );
     if ( !ns ) return true;
     $(this).mtValid({ focus: false });
@@ -1334,8 +1539,8 @@ $.fn.mtEditInputBlock = function(options) {
           $time = $('input#'+id);
       if (!$div.hasClass('show-input')) {
           $div
-              .before('<span class="'+id+'-text"></span>')
-              .after('<button type="button" id="mt-edit-'+id+'" class="button mt-edit-field-button">'+opts.edit+'</button>')
+              .before('<span class="'+id+'-text mr-2"></span>')
+              .after('<button type="button" id="mt-edit-'+id+'" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
               .hide();
           $('span.'+id+'-text').text(opts.text);
           $div.hide();
@@ -1350,5 +1555,206 @@ $.fn.mtEditInputBlock = function(options) {
       });
     });
 };
+
+/*
+ * mtModal
+ *
+ */
+$.fn.mtModal = function (options) {
+  var defaults = {
+      loadingimage: StaticURI + 'images/indicator.gif',
+      esckeyclose: true
+  };
+  var opts = $.extend(defaults, options);
+  initModal();
+  return this.each(function() {
+      var eachOpts;
+      if (this.dataset.hasOwnProperty('mtModalLarge')) {
+        eachOpts = $.extend({ large: true }, opts);
+      } else {
+        eachOpts = opts;
+      }
+      $(this).on('click', function() {
+        openModal(this.href, eachOpts);
+        return false;
+      });
+  });
+};
+
+$.fn.mtModalClose = function () {
+  return this.each(function () {
+    var url = window.top.jQuery(this).data().mtModalClose;
+    $(this).on('click', function () {
+      return window.top.jQuery.fn.mtModal.close(url);
+    });
+  });
+};
+
+$.fn.mtModal.open = function (url, options) {
+  var defaults = {
+      loadingimage: StaticURI + 'images/indicator.gif',
+      esckeyclose: true
+  };
+  var opts = $.extend(defaults, options);
+  initModal();
+  openModal(url, opts);
+};
+
+$.fn.mtModal.close = function (url) {
+  var $modal = window.top.jQuery('.mt-modal');
+  $modal.modal('hide');
+  if (url) window.top.location = url;
+  return false;
+};
+
+function getModalHtml() {
+  return '<style>iframe.embed-response-item:not(:last-child) { display: none; }</style>'
+    + '<div class="modal fade mt-modal">'
+    + '<div class="modal-dialog">'
+    + '<div class="modal-content embed-responsive">'
+    + '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function initModal() {
+  var $modal = window.top.jQuery('.mt-modal');
+  if ($modal.length > 0) return;
+
+  window.top.jQuery(window.top.document.body).append(getModalHtml());
+  $modal = window.top.jQuery('.mt-modal');
+
+  // Disable drag & drop on overlay.
+  $modal.on('dragover drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  $modal.on('hide.bs.modal', function (e) {
+    var $m = window.top.jQuery('.mt-modal');
+    var iframeCountBeforeRemove = $m.find('iframe').length;
+    var $iframe = $m.find('iframe:last-child');
+    var iframeWindow = $iframe.get(0).contentWindow;
+    var iframeBeforeunloadEvent = iframeWindow.onbeforeunload;
+
+    if (iframeBeforeunloadEvent && !iframeBeforeunloadEvent.call(iframeWindow)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return false;
+    }
+
+    if (iframeCountBeforeRemove <= 1) {
+      return true;
+    } else {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      $iframe.remove();
+      return false;
+    }
+  });
+
+  $modal.on('hidden.bs.modal', function (e) {
+    var $iframe = window.top.jQuery('.mt-modal iframe:last-child');
+    $iframe.remove();
+  });
+
+  window.top.jQuery(window.top).on('resize', resizeModal);
+}
+
+function openModal(href, opts) {
+  if (!href.match(/[\?&]dialog=1/)) {
+    href += '&dialog=1';
+  }
+
+  if (opts.form) {
+    openModalWithForm(href, opts);
+  } else {
+    openModalWithoutForm(href, opts);
+  }
+
+  var $modal = window.top.jQuery('.mt-modal');
+
+  if (opts.full) {
+    $modal.find('.modal-dialog').css('width', '100%');
+  } else {
+    $modal.find('.modal-dialog').css('width', '');
+  }
+
+  if (opts.large) {
+    $modal.find('.modal').addClass('bs-example-modal-lg');
+    $modal.find('.modal-dialog').addClass('modal-lg');
+  } else {
+    $modal.find('.modal').removeClass('bs-example-modal-lg');
+    $modal.find('.modal-dialog').removeClass('modal-lg');
+  }
+
+  var $iframe = getIframe();
+  $iframe.attr('src', href);
+  $modal.find('.modal-content').append($iframe);
+
+  $modal.modal(getModalOptions(opts));
+}
+
+function getNextIframeId() {
+  var id = 0;
+  var $lastIframe = window.top.jQuery('.mt-modal iframe:last-child');
+  if ($lastIframe.length > 0) {
+    var lastName = $lastIframe.attr('name');
+    var lastId = lastName.replace(/modal-(\d)+/, "$1");
+    id = Number(lastId) + 1;
+  }
+  return id;
+}
+
+function getIframe() {
+  var id = getNextIframeId();
+  var html = '<iframe class="mt-dialog-iframe embed-responsive-item" name="modal-'+id+'"></iframe>';
+  var $iframe = window.top.jQuery(html);
+  $iframe.on('load', resizeModal);
+  return $iframe;
+}
+
+function getModalOptions(opts) {
+  var modalOptions = {};
+
+  var modalOptionKeys = [
+    'backdrop',
+    'keyboard',
+    'focus',
+    'show'
+  ];
+  modalOptionKeys.forEach(function (key) {
+    if (opts.hasOwnProperty(key)) {
+      modalOptions[key] = opts[key];
+    }
+  });
+  if (!modalOptions.hasOwnProperty('keyboard') && opts.hasOwnProperty('esckeyclose')) {
+    modalOptions.keyboard = opts.esckeyclose;
+  }
+
+  return modalOptions;
+}
+
+function openModalWithForm(href, opts) {
+
+}
+
+function openModalWithoutForm(href, opts) {
+
+}
+
+function resizeModal() {
+  var modalHeight;
+  var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
+  if ($iframeContents.find('body .modal-body').length > 0) {
+    modalHeight = $iframeContents.find('body').outerHeight(true);
+  } else {
+    modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
+  }
+  if ( modalHeight < 500 ) {
+    modalHeight = 500;
+  }
+  $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
+}
 
 })(jQuery);

@@ -6,6 +6,7 @@
 
 package MT::Blocklist;
 use strict;
+use warnings;
 
 use MT::Object;
 @MT::Blocklist::ISA = qw( MT::Object );

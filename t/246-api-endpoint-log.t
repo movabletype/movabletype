@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -37,7 +45,7 @@ sub suite {
             method => 'POST',
             params => { log => {} },
             code   => 409,
-            error  => "A paramter \"message\" is required.\n",
+            error  => "A parameter \"message\" is required.\n",
         },
         {    # Not logged in.
             path      => '/v2/sites/1/logs',
@@ -248,10 +256,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -281,10 +285,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -309,10 +309,6 @@ sub suite {
                     }
                 );
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@logs ),
@@ -336,10 +332,6 @@ sub suite {
                         level   => MT::Log::ERROR(),
                     }
                 );
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 0,

@@ -2,9 +2,17 @@
 
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 42;
+plan tests => 24;
 
 BEGIN {
         $ENV{MT_APP} = 'MT::App::CMS';
@@ -13,7 +21,11 @@ BEGIN {
 use MT;
 use MT::Author;
 use MT::Blog;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog = MT::Blog->load(1);
 my $user = MT::Author->load(2);
@@ -53,7 +65,6 @@ $app = _run_app(
 	{ __test_user => $user, __mode => 'search_replace', blog_id => 0, do_search => 1, search => 'rain', _type => 'entry' } 
 );
 $out = delete $app->{__test_output};
-print STDERR $out;
 ok ($out, "Global entry search results are present");
 ok ($out =~ /Republish selected entries/i, "Publish entries button is present");
 ok ($out =~ /Delete selected entries/i, "Delete entries button is present");
@@ -83,15 +94,6 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok ($out, "Global comment search results are present");
-ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
-ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
-ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
-ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
-ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
-ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
-ok ($out =~ /Ban commenter\(s\)/i, "Ban commenter dropdown is present");
-ok ($out =~ /Unban commenter\(s\)/i, "Unban commenter dropdown is present");
 
 # blog search for a comment
 # __mode=search_replace&_type=comment&do_search=1&search=hello&blog_id=1
@@ -101,12 +103,3 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok ($out, "Blog comment search results are present");
-ok ($out =~ /Publish selected comments/i, "Publish comments button is present");
-ok ($out =~ /Delete selected comments/i, "Delete comments button is present");
-ok ($out =~ /Mark as Spam/i, "Spam comments dropdown is present");
-ok ($out =~ /Remove Spam status/i, "Non Spam comments dropdown is present");
-ok ($out =~ /Unpublish comment\(s\)/i, "Unpublish comments dropdown is present");
-ok ($out =~ /Trust commenter\(s\)/i, "Trust commenter dropdown is present");
-ok ($out =~ /Untrust commenter\(s\)/i, "Untrust commenter dropdown is present");
-ok ($out =~ /Ban commenter\(s\)/i, "Ban commenter dropdown is present");
-ok ($out =~ /Unban commenter\(s\)/i, "Unban commenter dropdown is present");

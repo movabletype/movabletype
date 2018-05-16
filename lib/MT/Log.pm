@@ -7,6 +7,7 @@
 package MT::Log;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 use MT::Util qw( ts2epoch epoch2ts offset_time );
 
@@ -84,11 +85,12 @@ sub list_props {
             },
         },
         message => {
-            auto    => 1,
-            label   => 'Message',
-            order   => 200,
-            display => 'force',
-            html    => sub {
+            auto      => 1,
+            label     => 'Message',
+            order     => 200,
+            display   => 'force',
+            use_blank => 1,
+            html      => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $msg = $obj->message;
@@ -100,15 +102,21 @@ sub list_props {
                     $desc = $obj->description;
                 }
                 $desc = $desc->() if ref $desc eq 'CODE';
-                $desc = ''        if $msg eq $desc;
+                $desc = '' unless defined $desc;
+                $desc = '' if $msg eq $desc;
                 $desc = MT::Util::encode_html($desc);
                 $msg  = MT::Util::encode_html($msg);
+                my $id = $obj->id;
                 return $desc
                     ? qq{
                     <div class="log-message can-select">
-                      <a href="#" class="toggle-link icon-left icon-spinner detail-link">$msg</a>
-                      <div class="log-metadata detail">
-                        <pre>$desc</pre>
+                      <a href="#log-detail-$id" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="log-detail-$id">
+                        $msg
+                      </a>
+                      <div id="log-detail-$id" class="collapse log-metadata detail">
+                        <div class="card card-block bg-light mt-2 p-2">
+                          <pre class="pre-scrollable"><code>$desc</code></pre>
+                        </div>
                       </div>
                     </div>
                 }
@@ -303,9 +311,10 @@ sub list_props {
             ],
         },
         metadata => {
-            auto    => 1,
-            label   => 'Metadata',
-            display => 'none',
+            auto      => 1,
+            label     => 'Metadata',
+            use_blank => 1,
+            display   => 'none',
         },
         modified_on => {
             base    => '__virtual.modified_on',
@@ -316,17 +325,17 @@ sub list_props {
             display => 'none',
         },
         ip => {
-            auto    => 1,
-            label   => 'IP Address',
-            display => 'default',
+            auto      => 1,
+            label     => 'IP Address',
+            display   => 'default',
+            use_blank => 1,
         },
         id => {
             base            => '__virtual.id',
             label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                return MT->translate( 'Showing only ID: [_1]', $id );
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                return MT->translate( 'Showing only ID: [_1]', $val );
             },
             display         => 'none',
             filter_editable => 0,
@@ -399,7 +408,7 @@ sub metadata_object {
     my $log   = shift;
     my $class = $log->metadata_class;
     return undef unless $class;
-    my $id = int( $log->metadata );
+    my $id = int( $log->metadata || 0 );
     return undef unless $id;
     eval "require $class;" or return undef;
     $class->load($id);
@@ -518,19 +527,19 @@ sub class_label { MT->translate("TrackBacks") }
 
 sub description {
     my $log  = shift;
-    my $id   = int( $log->metadata );
+    my $id   = int( $log->metadata || 0 );
     my $ping = $log->metadata_object;
     my $msg;
     if ($ping) {
         $msg = $ping->to_hash->{'tbping.excerpt_html'};
     }
-    else {
-        $msg = MT->translate( "TrackBack # [_1] not found.", $log->metadata );
+    elsif ($id) {
+        $msg = MT->translate( "TrackBack # [_1] not found.", $id );
     }
     $msg;
 }
 
-# Hint for tranlsate
+# Hint for translate
 # trans('blog');
 # trans('website');
 # trans('search');

@@ -2,10 +2,17 @@
 
 use strict;
 use warnings;
-
-use lib 'extlib', 'lib';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT::Template;
 
 use MT::App::CMS;
@@ -32,7 +39,7 @@ __TMPL__
         'not_included'             => undef,
     );
 
-    for my $name ( keys %map ) {
+    for my $name ( sort keys %map ) {
         my $expected = $map{$name};
         my $elms     = $tmpl->getElementsByName($name);
         if ( defined($expected) ) {

@@ -1,7 +1,7 @@
-# $Id: Response.pm 1943 2006-06-25 18:59:50Z btrott $
-
 package URI::Fetch::Response;
+$URI::Fetch::Response::VERSION = '0.13';
 use strict;
+use warnings;
 
 sub new {
     my $class = shift;
@@ -27,7 +27,11 @@ sub content_type  { shift->_var('content_type',  @_) }
 
 sub is_success  {
     my $response = shift;
-    return $response->http_response->is_success if $response->http_response;
+    if ($response->http_response) {
+        return 1 if $response->http_response->code == 304
+                 && defined($response->content);
+        return $response->http_response->is_success;
+    }
     return 1;
 }
 
@@ -115,6 +119,11 @@ The I<HTTP::Response> object returned from the fetch.
 
 Wrappers around the C<$res-E<gt>response> methods of the same name, for
 convenience.
+
+B<Note:> there is one difference from the behaviour of L<HTTP::Response>.
+If you are using a cache and get a 304 response, but the data is retrieved
+from the cache, then C<is_success> will return true,
+because C<res-E<gt>content> is usable.
 
 =head2 $res->content_type
 

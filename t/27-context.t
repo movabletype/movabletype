@@ -2,12 +2,17 @@
 # $Id: 27-context.t 1100 2007-12-12 01:48:53Z hachi $
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
-
-use Test::More tests => 57;
+plan tests => 54;
 use File::Temp qw( tempfile );
 
 use MT;
@@ -19,11 +24,11 @@ use MT::Template;
 use MT::Template::Context;
 use MT::Util qw( first_n_words html_text_transform );
 
-use vars qw( $DB_DIR $T_CFG $BASE );
+use MT::Test;
 
-use MT::Test qw(:db :data);
+$test_env->prepare_fixture('db_data');
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+my $mt = MT->new or die MT->errstr;
 isa_ok($mt, 'MT');
 
 sub build {
@@ -70,6 +75,9 @@ isa_ok($blog, 'MT::Blog');
 my $author = MT::Author->load({ name => 'Chuck D' });
 isa_ok($author, 'MT::Author');
 
+$author->set_password('bass');
+$author->save or die $author->errstr;
+
 ok($author && $author->is_valid_password('bass'), 'valid');
 ok($author && !$author->is_valid_password('wrong'), 'invalid');
 
@@ -100,7 +108,6 @@ $ts = sprintf "%04d.%02d.%02d %02d:%02d:%02d", @ts;
 is(build($ctx, '<$MTEntryTitle$>'), $entry->title, 'MTEntryTitle');
 is(build($ctx, '<$MTEntryAuthor$>'), $entry->author->name, 'MTEntryAuthor');
 is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
-is(build($ctx, '<$MTEntryCommentCount$>'), 0, 'MTEntryCommentCount');
 is(build($ctx, '<$MTEntryDate format="%Y.%m.%d %H:%M:%S"$>'), $ts, 'MTEntryDate format');
 
 is(build($ctx, '<$MTEntryBody words="2"$>'), first_n_words($entry->text, 2), 'MTEntryBody words 2');
@@ -200,7 +207,3 @@ $comment->save or die $comment->errstr;
 # Clear caching of things like the comment count of an entry
 $entry = MT::Entry->load($entry->id);
 $ctx->stash('entry', $entry);
-
-is(build($ctx, '<MTComments><$MTCommentBody encode_xml="1"$></MTComments>'),
-   "<![CDATA[<p>This is not a comment</p>]]>", 'This is not a comment');
-is(build($ctx, '<$MTEntryCommentCount$>'), 1, 'MTEntryCommentCount');

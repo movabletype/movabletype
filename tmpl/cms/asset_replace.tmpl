@@ -1,6 +1,6 @@
 <mt:setvar name="page_title" value="<__trans phrase="Upload New Asset">">
 
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function submit_form(f, command) {
@@ -11,8 +11,7 @@ function submit_form(f, command) {
 </script>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
 <mt:include name="include/asset_replace.tmpl">
 
-<mt:include name="include/footer.tmpl" id="footer_include">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

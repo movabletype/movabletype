@@ -1,20 +1,26 @@
 #!/usr/bin/perl
 
 use strict;
-use lib qw( t/lib extlib lib ../lib ../extlib );
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use Data::Dumper;
-use Test::More tests => 29;
+plan tests => 29;
 
 use MT;
 use MT::Object;
 
-use vars qw( $DB_DIR $T_CFG );
+use MT::Test;
 
-BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-use MT::Test qw(:db);
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance;    # plugins are go!
 

@@ -7,6 +7,7 @@
 package MT::Author;
 
 use strict;
+use warnings;
 
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
@@ -49,6 +50,7 @@ __PACKAGE__->install_properties(
             'widgets'                  => 'hash meta',
             'favorite_blogs'           => 'array meta',
             'favorite_websites'        => 'array meta',
+            'favorite_sites'           => 'array meta',
             'password_reset'           => 'string meta',
             'password_reset_expires'   => 'string meta',
             'password_reset_return_to' => 'string meta',
@@ -149,20 +151,28 @@ sub list_props {
             count_class  => 'entry',
             count_col    => 'author_id',
             filter_type  => 'author_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
         },
-        comment_count => {
-            base         => 'author.entry_count',
-            label        => 'Comments',
-            filter_label => '__COMMENT_COUNT',
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data Count',
             display      => 'default',
-            order        => 400,
-            count_class  => 'comment',
-            count_col    => 'commenter_id',
-            filter_type  => 'commenter_id',
-            raw          => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( $prop->count_class )
-                    ->count( { commenter_id => $obj->id } );
+            order        => 250,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
             },
         },
         author_name => {
@@ -217,6 +227,7 @@ sub list_props {
             auto      => 1,
             display   => 'none',
             label     => 'Website URL',
+            use_blank => 1,
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $obj->url;
@@ -322,126 +333,6 @@ sub system_filters {
     };
 }
 
-sub commenter_list_props {
-    return {
-        name => {
-            auto       => 1,
-            label      => 'Username',
-            display    => 'force',
-            order      => 100,
-            sub_fields => [
-                {   class   => 'userpic',
-                    label   => 'Userpic',
-                    display => 'optional',
-                },
-                {   class   => 'user-info',
-                    label   => 'User Info',
-                    display => 'optional',
-                },
-            ],
-            bulk_html => \&_bulk_author_name_html,
-        },
-        nickname => {
-            base  => 'author.nickname',
-            order => 200,
-        },
-        comment_count => {
-            base  => 'author.comment_count',
-            order => 300,
-        },
-        author_name => {
-            base  => 'author.author_name',
-            order => 400,
-        },
-        created_on => {
-            base  => '__virtual.created_on',
-            order => 500,
-        },
-        modified_on => {
-            base  => '__virtual.modified_on',
-            order => 600,
-        },
-
-        email  => { base => 'author.email' },
-        status => {
-            base    => '__virtual.single_select',
-            display => 'none',
-            label   => 'Status',
-            col     => 'status',
-            terms   => sub {
-                my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
-                my $val = $args->{value};
-                $db_args->{joins} ||= [];
-                my $blog_id
-                    = MT->config->SingleCommunity ? 0 : $opts->{blog_ids};
-                if ( $val eq 'enabled' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   permissions => { like => '%\'comment\'%', },
-                            author_id => \'= author_id',
-                            blog_id   => $blog_id,
-                        }
-                        );
-                }
-                elsif ( $val eq 'disabled' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   restrictions => { like => '%\'comment\'%', },
-                            author_id => \'= author_id',
-                            blog_id   => $blog_id,
-                        }
-                        );
-                }
-                elsif ( $val eq 'pending' ) {
-                    push @{ $db_args->{joins} },
-                        MT->model('permission')->join_on(
-                        undef,
-                        {   permissions  => \'IS NULL',        # FOR-EDITOR',
-                            restrictions => \'IS NULL',        # FOR-EDITOR',
-                            author_id    => \'= author_id',    # FOR-EDITOR',
-                            blog_id      => $blog_id,
-                        }
-                        );
-                }
-                return;
-
-            },
-            single_select_options => [
-                {   label => MT->translate('__COMMENTER_APPROVED'),
-                    value => 'enabled',
-                },
-                { label => MT->translate('Banned'),  value => 'disabled', },
-                { label => MT->translate('Pending'), value => 'pending', },
-            ],
-        },
-    };
-}
-
-sub commenter_system_filters {
-    return {
-        enabled => {
-            label => 'Enabled Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'enabled' }, }, ],
-            order => 100,
-        },
-        disabled => {
-            label => 'Disabled Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'disabled' }, }, ],
-            order => 200,
-        },
-        pending => {
-            label => 'Pending Commenters',
-            items =>
-                [ { type => 'status', args => { value => 'pending' }, }, ],
-            order => 300,
-        },
-    };
-}
-
 sub member_list_props {
     return {
         name => {
@@ -515,14 +406,15 @@ sub member_list_props {
             },
         },
         entry_count => {
-            base        => '__virtual.object_count',
-            view        => [ 'blog', 'website' ],
-            label       => 'Entries',
-            count_class => 'entry',
-            count_col   => 'author_id',
-            filter_type => 'author_id',
-            list_screen => 'entry',
-            count_terms => sub {
+            base         => '__virtual.object_count',
+            view         => [ 'blog', 'website' ],
+            label        => 'Entries',
+            filter_label => '__ENTRY_COUNT',
+            count_class  => 'entry',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            list_screen  => 'entry',
+            count_terms  => sub {
                 my $prop = shift;
                 my ($opts) = @_;
                 return { blog_id => $opts->{blog_ids} };
@@ -530,20 +422,22 @@ sub member_list_props {
             count_args => { unique => 1, },
             order      => 400,
         },
-        comment_count => {
-            base        => '__virtual.object_count',
-            label       => 'Comments',
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            list_screen => 'comment',
-            count_terms => sub {
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data Count',
+            display      => 'default',
+            order        => 350,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'author_id',
+            filter_type  => 'author_id',
+            html         => sub {
                 my $prop = shift;
-                my ($opts) = @_;
-                return { blog_id => $opts->{blog_ids} };
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
             },
-            count_args => { unique => 1, },
-            order      => 500,
         },
         type => {
             label     => 'Type',
@@ -587,14 +481,6 @@ sub member_system_filters {
             },
             order => 100,
         },
-        external_users => {
-            label     => 'Externally Authenticated Commenters',
-            items     => [ { type => 'type', args => { value => 2 }, }, ],
-            condition => sub {
-                MT->config->SingleCommunity ? 0 : 1;
-            },
-            order => 200,
-        },
     };
 }
 
@@ -610,57 +496,61 @@ sub _bulk_author_name_html {
         if keys %asset_for_load;
     my %userpic = map { $_->id => $_ } @userpics;
     my @results;
-    my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
-    my $view_icon = MT->static_path . 'images/status_icons/link.gif';
+    my $static_uri = MT->static_path;
 
     for my $obj (@$objs) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
             ($userpic_url) = $userpic->thumbnail_url(
-                Width  => 36,
-                Height => 36,
+                Width  => 48,
+                Height => 48,
                 Square => 1
             );
         }
         else {
-            $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
+            $userpic_url = MT->static_path . 'images/user-default.svg';
         }
-        my ( $status_img, $status_label );
+        my ( $status_label, $translated_status_label, $badge_type );
         if ( MT->config->SingleCommunity ) {
             if ( $obj->type == MT::Author::AUTHOR() ) {
-                $status_img
-                    = $obj->status == ACTIVE()   ? 'user-enabled.gif'
-                    : $obj->status == INACTIVE() ? 'user-disabled.gif'
-                    :                              'user-pending.gif';
                 $status_label
                     = $obj->status == ACTIVE()   ? 'Enabled'
                     : $obj->status == INACTIVE() ? 'Disabled'
                     :                              'Pending';
+                $translated_status_label = $app->translate($status_label);
+
+                $badge_type
+                    = $obj->status == ACTIVE()   ? 'success'
+                    : $obj->status == INACTIVE() ? 'default'
+                    :                              'warning';
             }
             else {
-                $status_img
-                    = $obj->is_trusted(0) ? 'trusted.gif'
-                    : $obj->is_banned(0)  ? 'banned.gif'
-                    :                       'authenticated.gif';
                 $status_label
                     = $obj->is_trusted(0) ? 'Trusted'
                     : $obj->is_banned(0)  ? 'Banned'
                     :                       'Authenticated';
+                $translated_status_label = $app->translate($status_label);
+
+                $badge_type
+                    = $obj->is_trusted(0) ? 'success'
+                    : $obj->is_banned(0)  ? 'default'
+                    :                       'info';
             }
         }
         else {
             my $blog_id = $opts->{blog_id};
-            $status_img
-                = $obj->is_trusted($blog_id) ? 'trusted.gif'
-                : $obj->is_banned($blog_id)  ? 'banned.gif'
-                :                              'authenticated.gif';
             $status_label
                 = $obj->is_trusted($blog_id) ? 'Trusted'
                 : $obj->is_banned($blog_id)  ? 'Banned'
                 :                              'Authenticated';
+            $translated_status_label = $app->translate($status_label);
+
+            $badge_type
+                = $obj->is_trusted($blog_id) ? 'success'
+                : $obj->is_banned($blog_id)  ? 'default'
+                :                              'info';
         }
 
-        $status_img = MT->static_path . 'images/status_icons/' . $status_img;
         my $lc_status_label = lc $status_label;
         my $auth_img        = MT->static_path;
         my $auth_label;
@@ -682,13 +572,19 @@ sub _bulk_author_name_html {
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
-            <div class="userpic picture small ">
-                <img src="$userpic_url" />
-                <img alt="$auth_label" src="$auth_img" width="12" height="12" class="icon auth-type" />
-            </div>
-            <span class="icon status $status_label">
-                <img alt="$status_label" src="$status_img" class="status $lc_status_label" />
-            </span>
+            <div class="row">
+                <div class="col-1 pl-0 userpic">
+                    <div class="mt-user">
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                    </div>
+                </div>
+                <div class="col pl-4">
+                     <span class="icon status $status_label">
+                         <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                             <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                         </svg>
+                     </span>
         };
 
         if ( $app->can_do('edit_authors') || $app->user->id == $obj->id ) {
@@ -703,21 +599,38 @@ sub _bulk_author_name_html {
                 },
             );
             $out
-                .= qq{<span class="username"><a href="$edit_link">$name</a></span>};
+                .= qq{<span class="username"><a href="$edit_link">$name</a> <span class="badge badge-$badge_type">$translated_status_label</span></span>};
         }
         else {
-            $out .= qq{<span class="username">$name</span>};
+            $out
+                .= qq{<span class="username">$name <span class="badge badge-$badge_type">$status_label</span></span>};
         }
         if ( $url || $email ) {
-            $out .= q{<ul class="user-info description">};
-            $out
-                .= qq{<li class="user-info-item user-email"><img alt="Email "src="$mail_icon" /> <a href="mailto:$email" title="$email">$email</a></li>}
-                if $email;
-            $out
-                .= qq{<li class="user-info-item user-url"><img alt="URL" src="$view_icon" /> <a href="$url" title="$url">$url</a></li>}
-                if $url;
+            $out .= q{<ul class="list-unstyled user-info description">};
+            if ($email) {
+                $out .= qq{
+                    <li class="user-info-item user-email">
+                        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
+                        </svg>
+                        <a href="mailto:$email" title="$email">$email</a>
+                    </li>
+                };
+            }
+            if ($url) {
+                $out .= qq{
+                    <li class="user-info-item user-url">
+                        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
+                        </svg>
+                        <a href="$url" title="$url">$url</a>
+                    </li>
+                };
+            }
             $out .= q{</ul>};
         }
+        $out .= '</div>';    # <div class="col">
+        $out .= '</div>';    # <div class="row">
         push @results, $out;
     }
     return @results;
@@ -945,14 +858,15 @@ sub save {
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
     if ($privs_found) {
-        my $perm = MT->model('permission')->load({
-            blog_id => 0,
-            author_id => $auth->id,
-        });
+        my $perm = MT->model('permission')->load(
+            {   blog_id   => 0,
+                author_id => $auth->id,
+            }
+        );
         if ( !$perm ) {
             $perm = MT->model('permission')->new unless $perm;
             $perm->author_id( $auth->id );
-            $perm->blog_id( 0 );
+            $perm->blog_id(0);
         }
         $perm->permissions($privs);
         $perm->save
@@ -1008,24 +922,17 @@ sub is_superuser {
 }
 
 sub can_create_blog {
-    my $author = shift;
-    if (@_) {
-        $author->permissions(0)->can_create_blog(@_);
-    }
-    else {
-        $author->is_superuser()
-            || $author->permissions(0)->can_create_blog(@_);
-    }
+    return 0;
 }
 
 sub can_create_website {
     my $author = shift;
     if (@_) {
-        $author->permissions(0)->can_create_website(@_);
+        $author->permissions(0)->can_create_site(@_);
     }
     else {
         $author->is_superuser()
-            || $author->permissions(0)->can_create_website(@_);
+            || $author->permissions(0)->can_create_site(@_);
     }
 }
 
@@ -1059,6 +966,72 @@ sub can_edit_templates {
     else {
         $author->is_superuser()
             || $author->permissions(0)->can_edit_templates(@_);
+    }
+}
+
+sub can_manage_content_types {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_content_types(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_content_types(@_);
+    }
+}
+
+sub can_manage_content_data {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_content_data(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_content_data(@_);
+    }
+}
+
+sub can_sign_in_cms {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_cms(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_cms(@_);
+    }
+}
+
+sub can_sign_in_data_api {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_sign_in_data_api(@_);
+    }
+}
+
+sub can_create_site {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_create_site(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_create_site(@_);
+    }
+}
+
+sub can_manage_users_groups {
+    my $self = shift;
+    if (@_) {
+        $self->permissions(0)->can_manage_users_groups(@_);
+    }
+    else {
+        $self->is_superuser
+            || $self->permissions(0)->can_manage_users_groups(@_);
     }
 }
 
@@ -1117,11 +1090,6 @@ sub permissions {
         }
         elsif ( @perm == 1 ) {
             $perm = $perm[0];
-            if ( !$perm->blog_id ) {
-                $perm->blog_id( $obj->id );
-                delete $perm->{column_values}{blog_id};
-                delete $perm->{changed_cols}{blog_id};
-            }
         }
         elsif ( @perm > 2 ) {
 
@@ -1427,7 +1395,7 @@ sub auth_icon_url {
     return q() unless $auth_type;
 
     if ( $author->type == MT::Author::AUTHOR() ) {
-        return $static_path . 'images/comment/mt_logo.png';
+        return $static_path . 'images/logo-mark.svg';
     }
 
     my $authenticator = MT->commenter_authenticator( $auth_type, force => 1 );
@@ -1458,24 +1426,27 @@ sub userpic {
 sub userpic_thumbnail_options {
     my $author = shift;
 
-    # Specify these to put an author's userpic thumbnail in a consistent
-    # place whenever userpic_url is called as an instance method on a
-    # particular author.
-    my %real_userpic_options = (
-        Path => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
-        Format => MT->translate( 'userpic-[_1]-%wx%h%x', $author->id ),
-    ) if ref $author;
-
     my $cfg     = MT->config;
     my $max_dim = $cfg->UserpicThumbnailSize;
     my $square  = $cfg->UserpicAllowRect ? 0 : 1;
-    return (
+    my %options = (
         Width  => $max_dim,
         Height => $max_dim,
         Square => $square,
         Type   => 'png',
-        %real_userpic_options,
     );
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    if ( ref $author ) {
+        $options{Path}
+            = File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' );
+        $options{Format}
+            = MT->translate( 'userpic-[_1]-%wx%h%x', $author->id );
+    }
+
+    return %options;
 }
 
 sub userpic_file {
@@ -1708,7 +1679,7 @@ Remove all failed-login histories that belong to this user
 =head2 $author->is_email_hidden()
 
 Indicate if author's email is hidden. Hidden emails are packed to hexadecimal
-strings, should not be displayed to the public, and need to be packed before 
+strings, should not be displayed to the public, and need to be packed before
 use. To retrive the real email use:
 
     $email = pack "H*", $author->email();
@@ -1726,7 +1697,7 @@ Set commenting permissions, where $action can be 'approve', 'ban' or 'pending'.
 
 =head2 $author->commenter_status($blog_id)
 
-Get the current commenting permissions for this author. returns one of these 
+Get the current commenting permissions for this author. returns one of these
 constants: C<MT::Author::BANNED> C<MT::Author::APPROVED> C<MT::Author::PENDING>
 
 =head2 $author->is_trusted($blog_id)
@@ -1764,11 +1735,11 @@ object or the ID of such an object.
 
 =head2 $author->can_create_blog([$bool])
 
-check or set author's permission to create blog
+DEPRECATED: check or set author's permission to create blog
 
 =head2 $author->can_create_website([$bool])
 
-check or set author's permission to create a website
+DEPRECATED: check or set author's permission to create a website
 
 =head2 $author->can_view_log([$bool])
 
@@ -1807,39 +1778,39 @@ will return the system permissions for this author.
 =head2 $author->can_do($action, [ at_least_one => 1, [ blog_id => $blogs ] ])
 
 Search if this user have this permission. if at_least_one is not supplied,
-searches only on system permissions. if at_least_one is supplies, and blog_id 
+searches only on system permissions. if at_least_one is supplies, and blog_id
 is not supplied, search for this permission in ALL the blogs this author
 have permissions in. If blog_id is supplied, then the search is limited to
-these blogs. $blogs can be either an ID of a single blog, or an array ref 
+these blogs. $blogs can be either an ID of a single blog, or an array ref
 for a list of blog ids.
 
 =head2 $author->role_iter($terms, $args)
 
-Returns an iterator for the roles of this author. see L<MT::Object> to learn 
+Returns an iterator for the roles of this author. see L<MT::Object> to learn
 about iterators. if exist C<$terms->{blog_id}>, returns blog roles. otherwise,
 return system-wide roles.
 
-aside of C<$terms->{blog_id}>, $terms and $args are passed to 
+aside of C<$terms->{blog_id}>, $terms and $args are passed to
 MT::Role->load_iter
 
 =head2 $author->blog_iter($terms, $args)
 
-Returns an iterator for the blogs of this author. see L<MT::Object> to learn 
-about iterators. if author is not superuser, retrive also the permissions 
+Returns an iterator for the blogs of this author. see L<MT::Object> to learn
+about iterators. if author is not superuser, retrive also the permissions
 for each blog
 
 $terms and $args are passed to MT::Blog->load_iter
 
 =head2 $author->group_iter($terms, $args)
 
-Returns an iterator for the groups this author belongs to. see L<MT::Object> 
+Returns an iterator for the groups this author belongs to. see L<MT::Object>
 to learn about iterators.
 
 $terms and $args are passed to the groups handler class's load_iter
 
 =head2 $author->group_role_iter($terms, $args)
 
-Returns an iterator for the groups and roles this author belongs to. 
+Returns an iterator for the groups and roles this author belongs to.
 see L<MT::Object> to learn about iterators. If $terms->{blog_id} is defined,
 the function will return the author's roles and groups related to that blog.
 
@@ -1848,8 +1819,8 @@ $terms and $args are passed to the groups handler class's load_iter
 =head2 $author->add_role($role [, $blog])
 
 Add a role to this author. $role should be a MT::Role object, and $blog,
-is supplied, should be a MT::Blog object. also, if $blog is supplied, 
-the role will be added as related to this blog. otherwise, it will be 
+is supplied, should be a MT::Blog object. also, if $blog is supplied,
+the role will be added as related to this blog. otherwise, it will be
 added as system-wide role.
 
 =head2 $author->remove_role($role [, $blog])
@@ -1877,7 +1848,7 @@ in the format of "role_id,blog_id,role_id,blog_id"
 =head2 $author->auth_icon_url([$size])
 
 Returns an icon to show how this commenter is registered to the system - by
-MT account, or by external service. (for example, Facebook account, openid 
+MT account, or by external service. (for example, Facebook account, openid
 and such) returns the icon URL, or an empty string if can't find one.
 
 If supplied, $size should contain a string describing the size, such as
@@ -1897,7 +1868,7 @@ Returns the file location of this author's user picture
 Returns the URL for this author's user picture
 
 If called in scalar context, returns the URL. if called in list context
-returns (URL, width, height). returns undef (or an empty list) if the 
+returns (URL, width, height). returns undef (or an empty list) if the
 picture does not exists.
 
 =head2 $author->userpic_html()
@@ -1935,7 +1906,7 @@ The type of author record. Currently, MT stores authenticated commenters in the 
 
 =item * status
 
-A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package). 
+A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package).
 
 =item * email
 

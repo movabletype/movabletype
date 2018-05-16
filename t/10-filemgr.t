@@ -2,8 +2,16 @@
 # $Id: 10-filemgr.t 2562 2008-06-12 05:12:23Z bchoate $
 use strict;
 use warnings;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use File::Temp;
 
 use MT;
@@ -34,7 +42,7 @@ ok(-f $File, "$File is a regular file");
 ok($fmgr->delete($File), "delete($File)");
 ok(!-f $File, "$File is gone");
 
-my ($fh, $filename) = File::Temp->tempfile('XXXXXX', UNLINK => 1);
+my ($fh, $filename) = File::Temp::tempfile('XXXXXX', UNLINK => 1);
 $fmgr->rename( $filename, $filename );
 ok( -f $filename, '$file should not remove' );
 

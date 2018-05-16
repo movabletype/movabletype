@@ -2,8 +2,12 @@
 <mt:setvar name="position_actions_bottom" value="1">
 
 <mt:setvar name="spam" value="1">
+<mt:if name="enabled_plugins{Comments}">
 <mt:setvar name="comments" value="1">
+</mt:if>
+<mt:if name="enabled_plugins{Trackback}">
 <mt:setvar name="trackbacks" value="1">
+</mt:if>
 
 <mt:setvarblock name="system_msg">
 <mt:if name="error">
@@ -43,8 +47,8 @@
 </mt:if>
 </mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:if name="enabled_plugins{CommentsTrackback}">
+<mt:setvarblock name="page_content">
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
   <input type="hidden" name="__mode" value="save" />
@@ -54,91 +58,98 @@
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
 
-  <h2><__trans phrase="Spam Settings"></h2>
   <mtapp:settinggroup id="cfg-spam">
-    <script type="text/javascript">
-    /* <![CDATA[ */
-    function scoreNudge(amount) {
-        var fld = getByID('junk_score_threshold');
-        score = fld.value;
-        score.replace(/\+/, '');
-
-        // If score is decimal,
-        // it is calculated as integer.
-        var idx = score.lastIndexOf(".");
-        if (idx > 0) {
-          var decimalPart = score.substring(idx);
-          var length = decimalPart.length - 1;
-          var carry = Math.pow(10, length);
-          var carried_score = parseFloat((score * carry).toFixed(0));
-          var carried_amount = amount * carry;
-          score = parseFloat((carried_score + carried_amount) / carry);
-        } else {
-          score = parseFloat(score) + amount;
-        }
-
-        if (isNaN(score)) score = amount;
-        if (score > 10) score = 10;
-        if (score < -10) score = -10;
-        if (score > 0) score = '+' + score;
-        fld.value = score;
-        return false;
-    }
-    /* ]]> */
-    </script>
+    <legend class="h3"><__trans phrase="Spam Settings"></legend>
 
     <mtapp:setting
        id="auto_delete_junk"
        label="<__trans phrase="Automatic Deletion">"
        help_page="blog_settings_feedback"
        help_section="autodelete_junk">
-      <input id="auto_delete_junk" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> /> <label for="auto_delete_junk"><__trans phrase="Automatically delete spam feedback after the time period shown below."></label>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input id="auto_delete_junk" class="custom-control-input" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> data-toggle="collapse" data-target="#auto_delete_junk_prefs" aria-expanded="<mt:if name="auto_delete_junk">true<mt:else>false</mt:if>" aria-controls="auto_delete_junk_prefs" />
+          <label class="custom-control-label" for="auto_delete_junk">
+            <__trans phrase="Automatically delete spam feedback after the time period shown below.">
+          </label>
+        </div>
+      </div>
     </mtapp:setting>
 
-    <div id="auto_delete_junk_prefs"<mt:unless name="auto_delete_junk">class=" hidden"</mt:unless>>
+    <div id="auto_delete_junk_prefs" class="collapse<mt:if name="auto_delete_junk"> show</mt:if>">
       <mtapp:setting
          id="junk_folder_expiry"
          label="<__trans phrase="Delete Spam After">"
-         hint="<__trans phrase="When an item has been reported as spam for this many days, it is automatically deleted.">"
+         label_for="junk_folder_expiry"
          help_page="blog_settings_feedback"
          help_section="delete_junk_after">
-        <input type="text" name="junk_folder_expiry" id="junk_folder_expiry" class="text days" value="<mt:var name="junk_folder_expiry" escape="html">" /> <__trans phrase="days">
+        <div class="form-inline">
+          <input type="text" name="junk_folder_expiry" id="junk_folder_expiry" class="form-control text days" value="<mt:var name="junk_folder_expiry" escape="html">" /> <__trans phrase="days">
+        </div>
       </mtapp:setting>
     </div>
 
     <mtapp:setting
        id="junk_score_threshold"
        label="<__trans phrase="Spam Score Threshold">"
-       hint="<__trans phrase="Comments and TrackBacks receive a spam score between -10 (complete spam) and +10 (not spam). Feedback with a score which is lower than the threshold shown above will be reported as spam.">"
+       label_for="junk_score_threshold"
        help_page="blog_settings_feedback"
-       help_section="junk_score_threshold">
-      <a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive"> <img alt="<__trans phrase="Decrease">" src="<mt:var name="static_uri">images/decrease.gif" /></a>
-      <input type="text" name="junk_score_threshold" id="junk_score_threshold" class="text num" value="<mt:var name="junk_score_threshold" escape="html">" />
-      <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)"><img alt="<__trans phrase="Increase">" src="<mt:var name="static_uri">images/increase.gif" /> <__trans phrase="More Aggressive"></a>
+       help_section="junk_score_threshold"
+       hint="<__trans phrase="This value can be between -10 and +10. The bigger this value is, the more possible spam-detection framework determines comment/trackback as a spam.">"
+       show_hint="1">
+      <div class="input-group" style="width: 10rem;">
+        <div class="input-group-prepend">
+          <span class="input-group-text btn" onclick="return scoreNudge(-1);">
+            -
+          </span>
+        </div>
+        <input id="junk_score_threshold" name="junk_score_threshold" class="form-control mt-stepper" type="text" value="<mt:var name="junk_score_threshold" escape="html">" min="-10" max="10">
+        <div class="input-group-append">
+          <span class="input-group-text btn" onclick="return scoreNudge(1);">
+            +
+          </span>
+        </div>
+      </div>
     </mtapp:setting>
 
     <mtapp:setting
        id="nofollow_urls"
-       class="has-option"
        label="<__trans phrase="Apply 'nofollow' to URLs">"
        help_page="blog_settings_feedback"
        help_section="nofollow_urls">
-      <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" onclick="toggleSubPrefs(this)" /> <label for="nofollow_urls"><__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation."></label>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" value="1" name="nofollow_urls" class="custom-control-input" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" data-toggle="collapse" data-target="#nofollow_urls-option" aria-expanded="<mt:if name="nofollow_urls">true<mt:else>false</mt:if>" aria-controls="nofollow_urls-option" />
+          <label class="custom-control-label" for="nofollow_urls">
+            <__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.">
+          </label>
+        </div>
+      </div>
     </mtapp:setting>
 
-    <div id="nofollow_urls-option">
+    <mt:if name="enabled_plugins{Comments}">
+    <div id="nofollow_urls-option" class="collapse<mt:if name="nofollow_urls"> show</mt:if>">
       <mtapp:setting
          id="follow_auth_links"
          label="<__trans phrase="'nofollow' exception for trusted commenters">"
          help_page="blog_settings_feedback"
          help_section="follow_auth_links">
-        <input type="checkbox" value="1" name="follow_auth_links" id="follow_auth_links"<mt:if name="follow_auth_links"> checked="checked"</mt:if> class="cb" /> <label for="follow_auth_links"><__trans phrase="Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter."></label>
+        <div class="form-group">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" value="1" name="follow_auth_links" id="follow_auth_links"<mt:if name="follow_auth_links"> checked="checked"</mt:if> class="custom-control-input cb" />
+            <label class="custom-control-label" for="follow_auth_links">
+              <__trans phrase="Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.">
+            </label>
+          </div>
+        </div>
       </mtapp:setting>
     </div>
+    </mt:if>
   </mtapp:settinggroup>
 
-  <h2><__trans phrase="Comment Settings"></h2>
+  <mt:if name="enabled_plugins{Comments}">
   <mtapp:settinggroup id="cfg-comment">
+    <legend class="h3"><__trans phrase="Comment Settings"></legend>
 
   <mt:if name="allow_comments">
     <mt:unless name="system_allow_comments">
@@ -157,77 +168,142 @@
 
     <mtapp:setting
        id="allow_comments"
-       class="has-option"
        label="<__trans phrase="Accept Comments">"
        help_page="blog_settings_feedback"
        help_section="accept_comments_from">
-      <input type="checkbox" name="allow_comments" id="allow_comments"<mt:if name="allow_comments"> checked="checked"</mt:if> value="1" /> <label for="allow_comments"><__trans phrase="Accept comments according to the policies shown below."></label>
-      <p><a href="<mt:var name="script_url">?__mode=cfg_registration&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup Registration"></a></p>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="allow_comments" class="custom-control-input" id="allow_comments"<mt:if name="allow_comments"> checked="checked"</mt:if> value="1" data-toggle="collapse" data-target="#allow_comments-option" aria-expanded="<mt:if name="allow_comments">true<mt:else>false</mt:if>" aria-controls="allow_comments-option" />
+          <label class="custom-control-label" for="allow_comments">
+            <__trans phrase="Accept comments according to the policies shown below.">
+          </label>
+        </div>
+        <p>
+          <a href="<mt:var name="script_url">?__mode=cfg_registration&amp;blog_id=<mt:var name="blog_id" escape="url">">
+            <__trans phrase="Setup Registration">
+          </a>
+        </p>
+      </div>
     </mtapp:setting>
 
-    <div id="allow_comments-option">
-      <h3><__trans phrase="Commenting Policy"></h3>
+    <div id="allow_comments-option" class="collapse<mt:if name="allow_comments"> show</mt:if>">
       <mtapp:settinggroup id="comment-policy-setting">
+        <legend class="h3"><__trans phrase="Commenting Policy"></legend>
         <mtapp:setting
            id="moderate_comments"
            label="<__trans phrase="Immediately approve comments from">"
-           hint="<__trans phrase="Specify what should happen to comments after submission. Unapproved comments are held for moderation.">"
            help_page="blog_settings_feedback"
            help_section="immediately_publish_comments_from">
-          <ul>
-            <li><label><input type="radio" name="moderate_comments" value="1"<mt:if name="moderate_comments_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="No one"></label></li>
-            <li><label><input type="radio" name="moderate_comments" value="2"<mt:if name="moderate_comments_2"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Trusted commenters only"></label></li>
-            <li><label><input type="radio" name="moderate_comments" value="3"<mt:if name="moderate_comments_3"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Any authenticated commenters"></label></li>
-            <li><label><input type="radio" name="moderate_comments" value="0"<mt:if name="moderate_comments_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Anyone"></label></li>
+          <ul class="list-unstyled">
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="moderate_comments_1" name="moderate_comments" value="1"<mt:if name="moderate_comments_1"> checked="checked"</mt:if> class="custom-control-input rb" />
+                <label class="custom-control-label" for="moderate_comments_1"><__trans phrase="No one"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="moderate_comments_2" name="moderate_comments" value="2"<mt:if name="moderate_comments_2"> checked="checked"</mt:if> class="custom-control-input rb" />
+                <label class="custom-control-label" for="moderate_comments_2"><__trans phrase="Trusted commenters only"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="moderate_comments_3" name="moderate_comments" value="3"<mt:if name="moderate_comments_3"> checked="checked"</mt:if> class="custom-control-input rb" />
+                <label class="custom-control-label" for="moderate_comments_3"><__trans phrase="Any authenticated commenters"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="moderate_comments_0" name="moderate_comments" value="0"<mt:if name="moderate_comments_0"> checked="checked"</mt:if> class="custom-control-input rb" />
+                <label class="custom-control-label" for="moderate_comments_0"><__trans phrase="Anyone"></label>
+              </div>
+            </li>
           </ul>
         </mtapp:setting>
 
         <mtapp:setting
            id="allow_comment_html"
-           class="has-option"
            label="<__trans phrase="Allow HTML">"
            help_page="blog_settings_feedback"
            help_section="allow_html">
-          <input type="checkbox" name="allow_comment_html" id="allow_comment_html" onclick="toggleSubPrefs(this);" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="cb" /> <label for="allow_comment_html"><__trans phrase="Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out."></label>
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="custom-control-input cb" data-toggle="collapse" data-target="#allow_comment_html-option" aria-expanded="<mt:if name="allow_comment_html">true<mt:else>false</mt:if>" aria-controls="allow_comment_html-option" />
+              <label class="custom-control-label" for="allow_comment_html">
+                <__trans phrase="Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.">
+              </label>
+            </div>
+          </div>
         </mtapp:setting>
 
-        <div id="allow_comment_html-option">
+        <div id="allow_comment_html-option" class="collapse<mt:if name="allow_comment_html"> show</mt:if>">
           <mtapp:setting
              id="sanitize_spec"
              label="<__trans phrase="Limit HTML Tags">"
-             hint="<__trans phrase="Specify the list of HTML tags to allow when accepting a comment.">"
              help_page="blog_settings_general"
              help_section="limit_html_tags">
-            <ul>
-              <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use defaults">:</label> <span class="hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span></li>
-              <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use my settings">:</label> <input type="text" name="sanitize_spec_manual" id="sanitize_spec_manual" class="text med" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" /></li>
+            <ul class="list-unstyled">
+              <li>
+                <div class="custom-control custom-radio">
+                  <input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="custom-control-input rb" />
+                  <label class="custom-control-label" for="sanitize_spec_0">
+                    <__trans phrase="Use defaults">:
+                    <span class="text-muted hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span>
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="custom-control custom-radio">
+                  <input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="custom-control-input rb" />
+                  <label class="custom-control-label form-inline" for="sanitize_spec_1">
+                    <__trans phrase="Use my settings">:
+                    <input type="text" name="sanitize_spec_manual" id="sanitize_spec_manual" class="form-control text med" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" />
+                  </label>
+                </div>
+              </li>
             </ul>
           </mtapp:setting>
         </div>
-        
+
         <mtapp:setting
            id="email_new_comments"
            label="<__trans phrase="E-mail Notification">"
-           hint="<__trans phrase="Specify when Movable Type should notify you of new comments.">"
            help_page="blog_settings_feedback"
            help_section="email_notification">
-          <ul>
-            <li><label><input type="radio" name="email_new_comments" value="1"<mt:if name="email_new_comments_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On"></label></li>
-            <li><label><input type="radio" name="email_new_comments" value="2"<mt:if name="email_new_comments_2"> checked="checked"</mt:if> class="rb"  /> <__trans phrase="Only when attention is required"></label></li>
-            <li><label><input type="radio" name="email_new_comments" value="0"<mt:unless name="email_new_comments"> checked="checked"</mt:unless> class="rb" /> <__trans phrase="Off"></label></li>
+          <ul class="list-unstyled">
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_comments_1" name="email_new_comments" value="1"<mt:if name="email_new_comments_1"> checked="checked"</mt:if> class="custom-control-input rb" />
+                <label class="custom-control-label" for="email_new_comments_1"><__trans phrase="On"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_comments_2" name="email_new_comments" value="2"<mt:if name="email_new_comments_2"> checked="checked"</mt:if> class="custom-control-input rb"  />
+                <label class="custom-control-label" for="email_new_comments_2"><__trans phrase="Only when attention is required"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_comments_0" name="email_new_comments" value="0"<mt:unless name="email_new_comments"> checked="checked"</mt:unless> class="custom-control-input rb" />
+                <label class="custom-control-label" for="email_new_comments_0"><__trans phrase="Off"></label>
+              </div>
+            </li>
           </ul>
         </mtapp:setting>
       </mtapp:settinggroup>
 
-      <h3><__trans phrase="Comment Display Settings"></h3>
-      <mtapp:settinggroup id="comment-display-setting">    
+      <mtapp:settinggroup id="comment-display-setting">
+        <legend class="h3"><__trans phrase="Comment Display Settings"></legend>
         <mtapp:setting
            id="sort_order_comments"
            label="<__trans phrase="Comment Order">"
+           label_for="sort_order_comments"
            hint="<__trans phrase="Select whether you want comments displayed in ascending (oldest at top) or descending (newest at top) order.">"
            help_page="blog_settings_general"
            help_section="comment_order">
-          <select name="sort_order_comments" id="sort_order_comments">
+          <select name="sort_order_comments" id="sort_order_comments" class="custom-select form-control">
             <option value="ascend"<mt:if name="sort_order_comments_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
             <option value="descend"<mt:if name="sort_order_comments_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
           </select>
@@ -238,16 +314,23 @@
            label="<__trans phrase="Auto-Link URLs">"
            help_page="blog_settings_feedback"
            help_section="autolink_urls">
-          <input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<mt:if name="autolink_urls"> checked="checked"</mt:if> class="cb" /> <label for="autolink_urls"><__trans phrase="Transform URLs in comment text into HTML links."></label>
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<mt:if name="autolink_urls"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="autolink_urls">
+                <__trans phrase="Transform URLs in comment text into HTML links.">
+              </label>
+            </div>
+          </div>
         </mtapp:setting>
 
         <mtapp:setting
            id="convert_paras_comments"
            label="<__trans phrase="Text Formatting">"
-           hint="<__trans phrase="Specifies the Text Formatting option to use for formatting visitor comments.">"
+           label_for="convert_paras_comments"
            help_page="blog_settings_feedback"
            help_section="comment_text_formatting">
-          <select name="convert_paras_comments" id="convert_paras_comments">
+          <select name="convert_paras_comments" id="convert_paras_comments" class="custom-select form-control">
           <mt:loop name="text_filters_comments">
             <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
           </mt:loop>
@@ -256,9 +339,10 @@
 
         <mtapp:setting
            id="captcha_provider"
-           label="<__trans phrase="CAPTCHA Provider">">
+           label="<__trans phrase="CAPTCHA Provider">"
+           label_for="captcha_provider">
         <mt:if name="captcha_loop">
-          <select name="captcha_provider" id="captcha_provider">
+          <select name="captcha_provider" id="captcha_provider" class="custom-select form-control">
             <option value="none"><__trans phrase="none"></option>
           <mt:loop name="captcha_loop">
             <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
@@ -267,25 +351,33 @@
           <mt:else>
             <p>
               <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="No CAPTCHA provider available">" width="9" height="9" />
-              <span class="alert-warning-inline"><__trans phrase="No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory."></span>
+              <span class="text-warning alert-warning-inline">
+                <__trans phrase="No CAPTCHA provider is available in this system.  Please check to see if Image::Magick is installed and if the CaptchaSourceImageBase configuration directive points to a valid captcha-source directory within the 'mt-static/images' directory.">
+              </span>
             </p>
         </mt:if>
         </mtapp:setting>
 
         <mtapp:setting
            id="use_comment_confirmation"
-           label="<__trans phrase="Use Comment Confirmation Page">"
-           hint="<__trans phrase="Use comment confirmation page">">
-          <input type="checkbox" name="use_comment_confirmation" id="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> value="1" />
-          <label for="use_comment_confirmation"><__trans phrase="Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted."></label>
+           label="<__trans phrase="Use Comment Confirmation Page">">
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_comment_confirmation" class="custom-control-input" id="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> value="1" />
+              <label class="custom-control-label" for="use_comment_confirmation">
+                <__trans phrase="Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.">
+              </label>
+            </div>
+          </div>
         </mtapp:setting>
       </mtapp:settinggroup>
     </div>
   </mtapp:settinggroup>
+  </mt:if>
 
-
-  <h2><__trans phrase="Trackback Settings"></h2>
+  <mt:if name="enabled_plugins{Trackback}">
   <mtapp:settinggroup id="cfg_trackback">
+    <legend class="h3"><__trans phrase="Trackback Settings"></legend>
 
   <mt:unless name="system_allow_pings">
     <mtapp:statusmsg
@@ -298,64 +390,114 @@
 
     <mtapp:setting
        id="allow_pings"
-       class="has-option"
        label="<__trans phrase="Accept TrackBacks">"
        help_page="blog_settings_feedback"
        help_section="accept_trackbacks">
-      <input type="checkbox" name="allow_pings" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" /> <label for="allow_pings"><__trans phrase="Accept TrackBacks from any source."></label>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="allow_pings" class="custom-control-input" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" data-toggle="collapse" data-target="#allow_pings-option" aria-expanded="<mt:if name="allow_pings">true<mt:else>false</mt:if>" aria-controls="allow_pings-option" />
+          <label class="custom-control-label" for="allow_pings"><__trans phrase="Accept TrackBacks from any source."></label>
+        </div>
+      </div>
     </mtapp:setting>
 
-    <div id="allow_pings-option">
-      <h3><__trans phrase="TrackBack Policy"></h3>
+    <div id="allow_pings-option" class="collapse<mt:if name="allow_pings"> show</mt:if>">
       <mtapp:settinggroup id="trackback-policy-setting">
+        <legend class="h3"><__trans phrase="TrackBack Policy"></legend>
         <mtapp:setting
            id="moderate_pings"
            label="<__trans phrase="Moderation">"
            help_page="blog_settings_feedback"
            help_section="trackback_moderation">
-          <input type="checkbox" name="moderate_pings" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> value="1" /> <label for="moderate_pings"><__trans phrase="Hold all TrackBacks for approval before they are published."></label>
+          <div class="form-group">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="moderate_pings" class="custom-control-input" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> value="1" />
+              <label class="custom-control-label" for="moderate_pings">
+                <__trans phrase="Hold all TrackBacks for approval before they are published.">
+              </label>
+            </div>
+          </div>
         </mtapp:setting>
 
         <mtapp:setting
            id="email-new_pings"
            label="<__trans phrase="E-mail Notification">"
-           hint="<__trans phrase="Specify when Movable Type should notify you of new TrackBacks.">"
            help_page="blog_settings_feedback"
            help_section="email_notification">
-          <ul>
-            <li><label><input type="radio" name="email_new_pings" value="1"<mt:if name="EMAIL_NEW_PINGS_1"> checked="checked"</mt:if> /> <__trans phrase="On"></label></li>
-            <li><label><input type="radio" name="email_new_pings" value="2"<mt:if name="EMAIL_NEW_PINGS_2"> checked="checked"</mt:if> /> <__trans phrase="Only when attention is required"></label></li>
-            <li><label><input type="radio" name="email_new_pings" value="0"<mt:unless name="email_new_pings"> checked="checked"</mt:unless> /> <__trans phrase="Off"></label></li>
+          <ul class="list-unstyled">
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_pings_1" name="email_new_pings" class="custom-control-input" value="1"<mt:if name="EMAIL_NEW_PINGS_1"> checked="checked"</mt:if> />
+                <label class="custom-control-label" for="email_new_pings_1"><__trans phrase="On"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_pings_2" name="email_new_pings" class="custom-control-input" value="2"<mt:if name="EMAIL_NEW_PINGS_2"> checked="checked"</mt:if> />
+                <label class="custom-control-label" for="email_new_pings_2"><__trans phrase="Only when attention is required"></label>
+              </div>
+            </li>
+            <li>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="email_new_pings_0" name="email_new_pings" class="custom-control-input" value="0"<mt:unless name="email_new_pings"> checked="checked"</mt:unless> />
+                <label class="custom-control-label" for="email_new_pings_0"><__trans phrase="Off"></label>
+              </div>
+            </li>
           </ul>
         </mtapp:setting>
-      </mtapp:settinggroup>          
+      </mtapp:settinggroup>
 
       <mtapp:settinggroup id="trackback-option-setting">
-        <legend><__trans phrase="TrackBack Options"></legend>
+        <legend class="h3"><__trans phrase="TrackBack Options"></legend>
         <mtapp:setting
            id="autodiscover_links"
            label="<__trans phrase="TrackBack Auto-Discovery">"
-           hint="<__trans phrase="When auto-discovery is turned on, any external HTML links in new entries will be extracted and the appropriate sites will automatically be sent a TrackBack ping.">"
            help_page="blog_settings_entry_defaults"
            help_section="trackback_autodiscovery">
-          <ul>
+          <ul class="list-unstyled">
             <li>
-              <input type="checkbox" value="1" name="autodiscover_links" id="autodiscover_links"<mt:if name="autodiscover_links"> checked="checked"</mt:if> /> <label for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" value="1" name="autodiscover_links" class="custom-control-input" id="autodiscover_links"<mt:if name="autodiscover_links"> checked="checked"</mt:if> />
+                <label class="custom-control-label" for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
+              </div>
             <mt:if name="system_allow_selected_pings">
-              <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide."></span></p>
+              <p>
+                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
+                <span class="alert-warning-inline">
+                  <__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide.">
+                </span>
+              </p>
             <mt:else>
               <mt:unless name="system_allow_outbound_pings">
-              <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide."></span></p>
+              <p>
+                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+                <span class="alert-warning-inline">
+                  <__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide.">
+                </span>
+              </p>
               </mt:unless>
             </mt:if>
             </li>
             <li>
-              <input type="checkbox" value="1" name="internal_autodiscovery" id="internal_autodiscovery"<mt:if name="internal_autodiscovery"> checked="checked"</mt:if> class="cb" /> <label for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" value="1" name="internal_autodiscovery" class="custom-control-input" id="internal_autodiscovery"<mt:if name="internal_autodiscovery"> checked="checked"</mt:if> class="cb" />
+                <label class="custom-control-label" for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
+              </div>
             <mt:if name="system_allow_selected_pings">
-              <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide."></span></p>
+              <p>
+                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
+                <span class="text-warning alert-warning-inline">
+                  <__trans phrase="Note: This option may be affected since outbound pings are constrained system-wide.">
+                </span>
+              </p>
             <mt:else>
               <mt:unless name="system_allow_local_pings">
-              <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" /> <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide."></span></p>
+              <p>
+                <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+                <span class="text-warning alert-warning-inline">
+                  <__trans phrase="Note: This option is currently ignored since outbound pings are disabled system-wide.">
+                </span>
+              </p>
               </mt:unless>
             </mt:if>
             </li>
@@ -364,27 +506,56 @@
       </mtapp:settinggroup>
     </div>
   </mtapp:settinggroup>
+  </mt:if>
 
   <mt:setvarblock name="action_buttons">
     <button
        type="submit"
        accesskey="s"
        title="<__trans phrase="Save changes to these settings (s)">"
-       class="save action primary button">
+       class="save action primary button btn btn-primary">
       <__trans phrase="Save Changes">
     </button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-jQuery(function() {
-    jQuery('input#auto_delete_junk').click(function() {
-        jQuery('div#auto_delete_junk_prefs').toggleClass('hidden');
-    });
-});
+
+function scoreNudge(amount) {
+    var fld = MT.Util.getByID('junk_score_threshold');
+    score = fld.value;
+    score.replace(/\+/, '');
+
+    // If score is decimal,
+    // it is calculated as integer.
+    var idx = score.lastIndexOf(".");
+    if (idx > 0) {
+      var decimalPart = score.substring(idx);
+      var length = decimalPart.length - 1;
+      var carry = Math.pow(10, length);
+      var carried_score = parseFloat((score * carry).toFixed(0));
+      var carried_amount = amount * carry;
+      score = parseFloat((carried_score + carried_amount) / carry);
+    } else {
+      score = parseFloat(score) + amount;
+    }
+
+    if (isNaN(score)) score = amount;
+    if (score > 10) score = 10;
+    if (score < -10) score = -10;
+    if (score > 0) score = '+' + score;
+    fld.value = score;
+    return false;
+}
+
 /* ]]> */
 </script>
+</mt:setvarblock>
+</mt:if>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

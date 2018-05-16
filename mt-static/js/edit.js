@@ -12,7 +12,7 @@ MT.App = new Class( MT.App, {
 
     currentEditor: "content",
     editorMode: "textarea",
-    
+
 
     initComponents: function() {
         arguments.callee.applySuper( this, arguments );
@@ -36,11 +36,11 @@ MT.App = new Class( MT.App, {
             this.setDelegate( "categoryList", this.catList );
             this.catList.redraw( this.catCache );
         }
-        
+
         var cs = DOM.getElement( "open-category-selector1" );
         if ( defined( MT.App.selectedCategoryList ) && MT.App.selectedCategoryList.length == 0 && cs )
             this.categorySelector.open( cs );
-        
+
         if ( DOM.getElement( "calendar" ) )
             this.calendar = new this.constructor.Calendar( "calendar", "calendar" );
     },
@@ -48,7 +48,7 @@ MT.App = new Class( MT.App, {
 
     initEditor: Function.stub,
 
-    
+
     destroyObject: function() {
         this.categorySelector = null;
         this.catList = null;
@@ -57,12 +57,12 @@ MT.App = new Class( MT.App, {
         arguments.callee.applySuper( this, arguments );
     },
 
-    
+
     eventBeforeUnload: function( event ) {
         if ( this.editor ) {
-            if ( this.editor.changed ) 
+            if ( this.editor.changed )
                 this.changed = true;
-       
+
             /* preserve what they changed ( if they hit back ) */
             if ( this.changed )
                 this.saveHTML( false );
@@ -82,15 +82,15 @@ MT.App = new Class( MT.App, {
     eventClick: function( event ) {
         var command = this.getMouseEventCommand( event );
         switch( command ) {
-            
+
             case "openCategorySelector":
                 this.categorySelector.open( event.commandElement )
                 break;
-            
+
             case "closeCategorySelector":
                 this.categorySelector.close( event.commandElement );
                 break;
-            
+
             /* editor commands */
             case "setModeTextarea":
                 this.editor.setMode( "textarea" );
@@ -107,14 +107,20 @@ MT.App = new Class( MT.App, {
                     return;
 
                 var e = event.target;
+                var return_args = '__mode=list&amp;_type='
+                    + e.getAttribute( "mt:object-type" )
+                    + '&amp;blog_id='
+                    + e.getAttribute( "mt:blog-id" );
+                if (e.hasAttribute('mt:subtype'))
+                    return_args += '&amp;type='
+                        + e.getAttribute('mt:subtype');
                 if( !doRemoveItems(
                         form,
                         e.getAttribute( "mt:object-singular" ),
                         e.getAttribute( "mt:object-plural" ),
                         false,
                         {
-                            'return_args': '__mode=list&amp;_type='+e.getAttribute( "mt:object-type" )
-                                +'&amp;blog_id='+e.getAttribute( "mt:blog-id" )
+                            'return_args': return_args
                         } ) )
                     return event.stop();
                 break;
@@ -164,7 +170,7 @@ MT.App = new Class( MT.App, {
         return event.stop();
     },
 
-    
+
     setEditorIframeHTML: function() {
         this.editor.setHTML( this.editorInput[ app.currentEditor ].value );
         this.editor.setMode( "iframe" );
@@ -181,12 +187,12 @@ MT.App = new Class( MT.App, {
 
         this.changed = true;
     },
-    
-    
+
+
     saveHTML: function( resetChanged ) {
         if ( !this.editor )
             return;
-        
+
         this.fixHTML();
 
         this.editorInput[ this.currentEditor ].value = this.editor.getHTML();
@@ -224,11 +230,11 @@ MT.App = new Class( MT.App, {
                 ancs = this.editor.iframe.document.getElementsByTagName( "a" );
                 forms = this.editor.iframe.document.getElementsByTagName( "form" );
             }
-                
+
             if ( imgs )
                 for ( var i = 0; i < imgs.length; i++ )
                     imgs[ i ].src = imgs[ i ].src;
-                
+
             /* fix links, skiping over any with a anchor */
             if ( ancs )
                 for ( var i = 0; i < ancs.length; i++ )
@@ -289,9 +295,16 @@ MT.App = new Class( MT.App, {
 
 MT.App.CategoryList = new Class( Object, {
 
-    
-    init: function( element ) {
+
+    init: function( element, args ) {
         this.element = DOM.getElement( element );
+
+        if ( !args ) args = {};
+
+        this.catCache = args.catCache;
+        this.contentFieldId = args.contentFieldId || 0;
+        this.multiple = args.multiple;
+        this.selectedCategoryList = args.selectedCategoryList || MT.App.selectedCategoryList;
     },
 
 
@@ -299,14 +312,15 @@ MT.App.CategoryList = new Class( Object, {
         this.element = null;
     },
 
-        
+
     redraw: function( catCache ) {
         if ( !catCache )
-            catCache = app.catCache;
-        var el = DOM.getElement( "category-ids" );
+            catCache = this.catCache || app.catCache;
+        var id = this.contentFieldId ? 'category-ids-' + this.contentFieldId : 'category-ids';
+        var el = DOM.getElement( id );
         if ( el )
-            el.value = MT.App.selectedCategoryList.join( "," );
-        this.element.innerHTML = Template.process( "categoryList", { items: MT.App.selectedCategoryList, cache: catCache } );
+            el.value = this.selectedCategoryList.join( "," );
+        this.element.innerHTML = Template.process( "categoryList", { items: this.selectedCategoryList, cache: catCache, multiple: this.multiple } );
     },
 
 
@@ -329,39 +343,52 @@ MT.App.CategoryList = new Class( Object, {
     eventClick: function( event ) {
         var command = app.getMouseEventCommand( event );
         var id = DOM.getMouseEventAttribute( event, "mt:id" );
+        var contentFieldId = DOM.getMouseEventAttribute( event, 'mt:content-field-id' );
+        var categorySelector = contentFieldId
+            ? app.fieldCategorySelectors[contentFieldId]
+            : app.categorySelector;
+        var categoryList = contentFieldId
+            ? categorySelector.catList
+            : this;
         switch( command ) {
 
             case "primary":
                 if ( !defined( id ) )
                     return;
                 /* make category primary */
-                var idx = MT.App.selectedCategoryList.indexOf( id );
+                var idx = categoryList.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                MT.App.selectedCategoryList.splice( idx, 1 );
-                MT.App.selectedCategoryList.splice( 0, 0, id );
-                this.redraw();
-                app.categorySelector.redraw();
+                categoryList.selectedCategoryList.splice( idx, 1 );
+                categoryList.selectedCategoryList.splice( 0, 0, id );
+                categoryList.redraw();
+                categorySelector.redraw();
+                if (contentFieldId) {
+                    setDirty(true);
+                }
                 break;
-            
+
             case "remove":
                 if ( !defined( id ) )
                     return;
                 /* remove a category */
-                var idx = MT.App.selectedCategoryList.indexOf( id );
+                var idx = categoryList.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
-                MT.App.selectedCategoryList.splice( idx, 1 );
-                this.redraw();
-                app.categorySelector.redraw();
+                categoryList.selectedCategoryList.splice( idx, 1 );
+                categoryList.redraw();
+                categorySelector.redraw();
+                if (contentFieldId) {
+                    setDirty(true);
+                }
                 break;
-                
+
             case "openCategorySelector":
-                app.categorySelector.open( event.commandElement );
+                categorySelector.open( event.commandElement );
                 break;
 
             case "closeCategorySelector":
-                app.categorySelector.close( event.commandElement );
+                categorySelector.close( event.commandElement );
                 break;
 
             default:
@@ -370,7 +397,5 @@ MT.App.CategoryList = new Class( Object, {
         }
         return event.stop();
     }
-    
-
 } );
 

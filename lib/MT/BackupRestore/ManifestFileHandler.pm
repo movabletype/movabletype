@@ -7,6 +7,7 @@
 package MT::BackupRestore::ManifestFileHandler;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 
 @MT::BackupRestore::ManifestFileHandler::ISA = qw(XML::SAX::Base);
@@ -47,7 +48,7 @@ sub start_element {
 
     if ( $self->{start} ) {
         die MT->translate(
-            "The uploaded file was not a valid Movable Type backup manifest file."
+            "The uploaded file was not a valid Movable Type exported manifest file."
             )
             if !( ( 'manifest' eq $name )
             && ( MT::BackupRestore::NS_MOVABLETYPE() eq $ns ) );

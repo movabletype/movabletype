@@ -2,9 +2,17 @@
 
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 69;
+plan tests => 70;
 
 use MT;
 use MT::Blog;
@@ -13,8 +21,10 @@ use MT::Log;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
-use MT::Test qw( :db :data );
+use MT::Test;
 use MT::TheSchwartz::Error;
+
+$test_env->prepare_fixture('db_data');
 
 # Change file name from index.html into _index.html.
 my $fi = MT::FileInfo->load(
@@ -34,7 +44,7 @@ my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
 
     my $job_count = 0;
-    my @tmpls = MT::Template->load( { blog_id => $blog->id } );
+    my @tmpls = sort {$a->name cmp $b->name} MT::Template->load( { blog_id => $blog->id } );
     ok( @tmpls, "Templates exist for this blog" );
 
     for ( my $i = 0; $i < scalar(@tmpls); $i++ ) {

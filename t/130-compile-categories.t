@@ -1,12 +1,21 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT;
 use MT::Template::Context;
+
+$test_env->prepare_fixture('db_data');
 
 my $mt = MT->new();
 isnt( $mt, undef, "MT loaded" );
@@ -245,7 +254,7 @@ foreach my $test (@suite) {
     $expr
         = $ctx->compile_category_filter( $test->{cat_filter}, $test->{cats} );
     ok( $expr, 'expr is defined' );
-    foreach my $cat_id ( keys %cats_hash ) {
+    foreach my $cat_id ( sort keys %cats_hash ) {
         if ( grep { $cat_id == $_ } @{ $test->{expr_ok} } ) {
             ok( $expr->( { $cat_id => 1 } ), 'expr true for ' . $cat_id );
         }

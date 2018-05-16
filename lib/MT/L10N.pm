@@ -6,6 +6,7 @@
 
 package MT::L10N;
 use strict;
+use warnings;
 use Locale::Maketext;
 
 @MT::L10N::ISA = qw( Locale::Maketext );

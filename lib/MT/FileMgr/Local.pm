@@ -6,6 +6,7 @@
 
 package MT::FileMgr::Local;
 use strict;
+use warnings;
 
 use MT::FileMgr;
 @MT::FileMgr::Local::ISA = qw( MT::FileMgr );
@@ -38,7 +39,7 @@ sub get_data {
     my $is_handle = $fmgr->is_handle($from);
     if ( !$is_handle ) {
         $fh = gensym();
-        open $fh,
+        open $fh, "<",
             _local($from)
             or return $fmgr->error(
             MT->translate(
@@ -71,7 +72,7 @@ sub put {
     my $rv;
     if ( !$fmgr->is_handle($from) ) {
         my $fh = gensym();
-        open $fh,
+        open $fh, "<",
             $from
             or return $fmgr->error(
             MT->translate(
@@ -209,7 +210,7 @@ sub content_is_updated {
     ## If the system has Digest::MD5, compare MD5 hashes; otherwise
     ## read in the file and compare the strings.
     my $fh = gensym();
-    open $fh, $file or return 1;
+    open $fh, "<", $file or return 1;
     if ( eval { require Digest::MD5; 1 } ) {
         my $ctx = Digest::MD5->new;
         $ctx->addfile($fh);

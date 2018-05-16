@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="<$MTProductName version="1"$>" />
+<mt:IfBlog>
+    <mt:IfNonEmpty tag="Link" template="styles">
+    <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+    <mt:else>
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    </mt:IfNonEmpty>
+<mt:else>
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+</mt:IfBlog>
+<MTIgnore>
+ ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
+</MTIgnore>
+<MTNoSearch><MTElse>
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Site Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStatic><MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch></MTIfStatic>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes$>" />
+</MTElse></MTNoSearch>
+    <title><MT_TRANS phrase="Search Results"></title>
+</head>
+<body class="<MTNoSearch>layout-one-column<MTElse>layout-two-column-right</MTElse></MTNoSearch> mt-search-results">
+   <div id="container">
+      <div id="container-inner" class="pkg">
+
+         <div id="banner">
+            <div id="banner-inner" class="pkg">
+               <h1 id="banner-header"><MT_TRANS phrase="Site search"></h1>
+            </div>
+         </div>
+
+         <div id="pagebody">
+            <div id="pagebody-inner" class="pkg">
+               <div id="alpha">
+                  <div id="alpha-inner" class="pkg">
+
+<MTIgnore>
+  ##########  <MT_TRANS phrase="STRAIGHT SEARCHES GET THE SEARCH QUERY FORM">
+</MTIgnore>
+                      <MTIfStatic><MTIfStraightSearch>
+                      <h2 class="search-results-header"><MT_TRANS phrase="Search this site"></h2>
+                      <form action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
+                         <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+                         <input type="hidden" name="SearchContentTypes" value="<$MTSearchContentTypes$>" />
+                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
+                      </form>
+                      </MTIfStraightSearch></MTIfStatic>
+
+<MTIgnore>
+    ##########  <MT_TRANS phrase="SEARCH RESULTS DISPLAY">
+</MTIgnore>
+                      <MTSearchResults>
+                          <MTBlogResultHeader>
+                              <h3 class="search-results-header">
+                              <MTIfStatic><MTIfStraightSearch>
+                                  <MT_TRANS phrase="Matching content data from [_1]" params="<$MTBlogName encode_html="1" encode_html="1"$>">
+                              </MTIfStraightSearch></MTIfStatic>
+                              </h3>
+                              <div class="search-results-container">
+                          </MTBlogResultHeader>
+
+                              <h3>
+                                  <a href="<$MTContentPermalink$>"><$MTContentLabel encode_html="1"$></a>
+                                  (<$MTContentTypeName encode_html="1"$>)
+                              </h3>
+                              <div class="content-fields">
+                                  <ul>
+                          <MTContentFields>
+                                  <li>
+                                  <b>
+                                      <$MTVar name="content_field_options{label}" escape="html"$>
+                                      (<$MTVar name="content_field_type_label" escape="html"$>)
+                                      :
+                                  </b>
+                              <MTContentField>
+                                  <MTIf name="content_field_type" eq="date_and_time">
+                                  <$MTContentFieldValue format="%Y-%m-%d %H:%M:%S"$>
+                                  <MTElseIf name="content_field_type" eq="date_only">
+                                  <$MTContentFieldValue format="%Y-%m-%d"$>
+                                  <MTElseIf name="content_field_type" eq="time_only">
+                                  <$MTContentFieldValue format="%H:%M:%S"$>
+                                  <MTElseIf name="content_field_type" like="^(select_box|radio_button|checkboxes)$">
+                                  <$MTVar name="__key__" escape="html"$>(<$MTVar name="__value__" escape="html"$>)
+                                  <MTElseIf name="content_field_type" like="^(asset|asset_audio|asset_video|asset_image)$">
+                                  <$MTAssetLabel escape="html"$> (ID:<$MTAssetID$>)
+                                  <MTElseIf name="content_field_type" eq="categories">
+                                  <$MTCategoryLabel escape="html"$> (ID:<$MTCategoryID$>)
+                                  <MTElseIf name="content_field_type" eq="tags">
+                                  <$MTTagLabel escape="html"$><MTIf tag="tagid"> (ID:<$MTTagID$>)</MTIf>
+                                  <MTElseIf name="content_field_type" eq="list">
+                                  <$MTContentFieldValue escape="html"$>
+                                  <MTElseIf name="content_field_type" eq="tables">
+                                  <$MTContentFieldValue regex_replace="/table/","table border='1' cellpadding='3'"$>
+                                  <MTElseIf name="content_field_type" eq="content_type">
+                                  (ID:<$MTContentID$>)
+                                  <MTElse>
+                                  <$MTVar name="__value__" escape="html"$>
+                                  </MTIf>
+                              </MTContentField>
+                                  </li>
+                          </MTContentFields>
+                                  </ul>
+                              </div>
+
+                              <p class="content-footer">
+                                  <span class="post-footers"><MT_TRANS phrase="Posted <MTIfNonEmpty tag="ContentAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]" params="<$MTContentAuthorDisplayName encode_html="1"$>%%<$MTContentDate$>"></span>
+                              </p>
+
+                          <MTBlogResultFooter>
+                              </div>
+                              <div class="content-navi">
+                                  <mt:IfPreviousResults><a href="<$mt:PreviousLink$>" rel="prev">&lt; <__trans phrase="Previous"></a>&nbsp;&nbsp;</mt:IfPreviousResults><mt:PagerBlock><mt:IfCurrentPage><$mt:Var name="__value__"$><mt:Else><a href="<$mt:PagerLink$>"><$mt:Var name="__value__"$></a></mt:IfCurrentPage><mt:Unless name="__last__">&nbsp;</mt:Unless></mt:PagerBlock><mt:IfMoreResults>&nbsp;&nbsp;<a href="<$mt:NextLink$>" rel="next"><__trans phrase="Next"> &gt;</a></mt:IfMoreResults>
+                              </div>
+                          </MTBlogResultFooter>
+                          <MTIfMaxResultsCutoff>
+                          <MT_TRANS phrase="Showing the first [_1] results." params="<$MTMaxResults$>">
+                          </MTIfMaxResultsCutoff>
+                      </MTSearchResults>
+
+<MTIgnore>
+  ##########  <MT_TRANS phrase="NO RESULTS FOUND MESSAGE">
+</MTIgnore>
+                      <MTNoSearchResults>
+                          <h3 class="search-results-header">
+                              <MTIfStatic><MTIfStraightSearch>
+                                  <MT_TRANS phrase="Content Data matching '[_1]'" params="<$MTSearchString encode_html="1"$>">
+                              </MTIfStraightSearch></MTIfStatic>
+                              <MTIfTagSearch>
+                                  <MT_TRANS phrase="Content Data tagged with '[_1]'" params="<$MTSearchString encode_html="1"$>">
+                              </MTIfTagSearch>
+                          </h3>
+                          <p><MT_TRANS phrase="No pages were found containing '[_1]'." params="<$MTSearchString encode_html="1"$>"></p>
+                      </MTNoSearchResults>
+
+                      <MTNoSearch>
+                          <h3 class="search-results-header"><MT_TRANS phrase="Instructions"></h3>
+                          <p><MT_TRANS phrase="By default, this search engine looks for all of the specified words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+                          <blockquote>
+                              <p><code>"<MT_TRANS phrase="movable type">"</code></p>
+                          </blockquote>
+                          <p><MT_TRANS phrase="The search engine also supports the AND, OR, and NOT boolean operators:"></p>
+                          <blockquote>
+                              <p><code><MT_TRANS phrase="personal OR publishing"></code></p>
+                              <p><code><MT_TRANS phrase="publishing NOT personal"></code></p>
+                          </blockquote>
+                      </MTNoSearch>
+                  </div>
+               </div>
+<MTIgnore>
+    ##########  <MT_TRANS phrase="END OF ALPHA SEARCH RESULTS DIV">
+    ##########  <MT_TRANS phrase="BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION">
+</MTIgnore>
+               <MTNoSearch>
+               <MTElse>
+                   <MTIgnore>
+                       ##########  <MT_TRANS phrase="SET VARIABLES FOR SEARCH vs TAG information">
+                   </MTIgnore>
+
+                   <MTSetVar name="search_feed_text" value="<MT_TRANS phrase="Subscribe to feed">">
+                   <MTIfTagSearch>
+                       <MTSetVar name="search_feed_param" value="tag">
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future content data tagged '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
+                    <MTElse>
+                       <MTSetVar name="search_feed_param" value="search">
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future content data matching '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
+                   </MTElse>
+                   </MTIfTagSearch>
+
+                   <div id="beta">
+                      <div id="beta-inner" class="pkg">
+
+                          <MTIgnore>
+                              ##########  <MT_TRANS phrase="SEARCH/TAG FEED SUBSCRIPTION INFORMATION">
+                          </MTIgnore>
+                          <div class="module-search-feed module">
+                             <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
+                             <div class="module-content">
+                                 <p><$MTGetVar name="search_feed_description">  [<a href="<MT_TRANS phrase="http://www.sixapart.com/about/feeds">"><MT_TRANS phrase="What is this?"></a>]</p>
+                                 <p>
+                                     <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<$MTGetVar name="search_feed_text"$>" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;SearchContentTypes=<$MTSearchContentTypes$>" title="<MT_TRANS phrase="Subscribe to feed">"><MT_TRANS phrase="Subscribe to feed"></a>
+                                 </p>
+                             </div>
+                          </div>
+
+                      </div>
+                  </div>
+              </MTElse>
+              </MTNoSearch>
+
+            </div>
+         </div>  <MTIgnore>#### <MT_TRANS phrase="END OF PAGE BODY"> ####</MTIgnore>
+      </div>
+   </div> <MTIgnore>#### <MT_TRANS phrase="END OF CONTAINER"> ####</MTIgnore>
+</body>
+</html>

@@ -3,7 +3,8 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = "1.67";
+our $VERSION = '1.73';
+$VERSION = eval $VERSION;
 
 our ($ABS_REMOTE_LEADING_DOTS, $ABS_ALLOW_RELATIVE_SCHEME, $DEFAULT_QUERY_FORM_DELIMITER);
 
@@ -94,6 +95,7 @@ sub _uric_escape
     return $str;
 }
 
+my %require_attempted;
 
 sub implementor
 {
@@ -128,9 +130,13 @@ sub implementor
     no strict 'refs';
     # check we actually have one for the scheme:
     unless (@{"${ic}::ISA"}) {
-        # Try to load it
-        eval "require $ic";
-        die $@ if $@ && $@ !~ /Can\'t locate.*in \@INC/;
+        if (not exists $require_attempted{$ic}) {
+            # Try to load it
+            my $_old_error = $@;
+            eval "require $ic";
+            die $@ if $@ && $@ !~ /Can\'t locate.*in \@INC/;
+            $@ = $_old_error;
+        }
         return undef unless @{"${ic}::ISA"};
     }
 
@@ -351,6 +357,8 @@ __END__
 URI - Uniform Resource Identifiers (absolute and relative)
 
 =head1 SYNOPSIS
+
+ use URI;
 
  $u1 = URI->new("http://www.perl.com");
  $u2 = URI->new("foo", "http");
@@ -987,6 +995,12 @@ common, generic and server methods.
 
 Information about ssh is available at L<http://www.openssh.com/>.
 C<URI> objects belonging to the ssh scheme support the common,
+generic and server methods. In addition, they provide methods to
+access the userinfo sub-components: $uri->user and $uri->password.
+
+=item B<sftp>:
+
+C<URI> objects belonging to the sftp scheme support the common,
 generic and server methods. In addition, they provide methods to
 access the userinfo sub-components: $uri->user and $uri->password.
 

@@ -500,10 +500,12 @@ sub import {
     my $param;
     local *MT::build_page = sub { $param = $_[2] };
     local *MT::App::print = sub { };
+    local *MT::App::send_http_header = sub { };
 
     MT::CMS::Import::do_import($app) or return;
 
     if ( !$param->{import_success} ) {
+        chomp $param->{error};
         return $app->error(
             $app->translate(
                 'An error occurred during the import process: [_1]. Please check your import file.',
@@ -546,7 +548,7 @@ sub preview_by_id {
     my $entry_json = $app->param( $entry->class )
         or return $app->error(
         $app->translate(
-            'A resource "[_1_]" is required.',
+            'A resource "[_1]" is required.',
             $entry->class_label
         ),
         400
@@ -662,7 +664,7 @@ sub _preview_common {
     $app->param( '_type', $entry->class );
 
 # TODO: Allow to make a preview content when Individual/Page mapping not found.
-# Currently, we can not make preview content when templatemap could not be found.
+# Currently, we cannot make preview content when templatemap could not be found.
     require MT::TemplateMap;
     my $at = $entry->class eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(

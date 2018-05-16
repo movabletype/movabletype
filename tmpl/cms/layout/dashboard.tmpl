@@ -1,0 +1,39 @@
+<mt:setvartemplate name="layout">
+
+  <mt:include name="layout/common/header.tmpl">
+
+  <div class="row">
+  <mt:include name="include/primary_navigation.tmpl">
+
+    <div class="mt-mainContent" style="min-width: 0;">
+
+  <mt:include name="include/breadcrumbs.tmpl">
+
+        <h2 id="page-title"><mt:var name="page_title"></h2>
+
+      <div class="col-12 clearfix mb-5">
+        <div class="float-right">
+          <form name="dashoboard_reload_form" id="dashoboard_reload_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1">
+  <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<$mt:var name="blog_id" escape="html"$>"></mt:if>
+  <mt:if name="system_overview_nav"><input type="hidden" name="blog_id" value="0"></mt:if>
+            <input type="hidden" name="__mode" value="dashboard">
+            <input type="hidden" name="reload" value="1">
+            <button type="submit" class="btn btn-default"><svg title="<__trans phrase="reload">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_reload" /></svg> <__trans phrase="Reload"></button>
+          </form>
+        </div>
+      </div>
+
+  <mt:include name="include/system_msg.tmpl">
+  <mt:var name="page_content">
+
+    </div>
+
+  <mt:if name="related_content">
+  <div class="mt-secondaryPanel">
+    <mt:var name="related_content">
+  </div>
+  </mt:if>
+  </div>
+
+  <mt:include name="layout/common/footer.tmpl">
+</mt:setvartemplate>

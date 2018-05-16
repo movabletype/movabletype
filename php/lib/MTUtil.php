@@ -1226,7 +1226,7 @@ function category_label_path($cat) {
     return $result;
 }
 
-function cat_path_to_category($path, $blogs = null, $class = 'category') {
+function cat_path_to_category($path, $blogs = null, $class = 'category', $category_set_id = 0) {
     $mt = MT::get_instance();
     if (!$blogs) {
         $ctx = $mt->context();
@@ -1243,7 +1243,7 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
         }
         $last_cat_ids = array(0);
         foreach ($cat_path as $label) {
-            $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $label, 'parent' => $last_cat_ids, 'show_empty' => 1, 'class' => $class)));
+            $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $label, 'parent' => $last_cat_ids, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
             if (!$cats)
                 break;
             $last_cat_ids = array();
@@ -1254,7 +1254,7 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
     if ($cats)
         return $cats;
     if (!$cats && $path) {
-        $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $path, 'show_empty' => 1, 'class' => $class)));
+        $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $path, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
         if ($cats)
             return $cats;
     }

@@ -1,18 +1,28 @@
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval { require LWP::UserAgent::Local }
+        or plan skip_all => 'Some of the deps of LWP::UserAgent::Local are not available';
 }
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use MT::Test;
 use MT::Test::Permission;
 use MT::Util qw(archive_file_for);
 use File::Basename qw(dirname);
-use Test::More;
 use MIME::Base64;
-use Clone qw/ clone /;
+use Storable qw(dclone);
+
+$test_env->prepare_fixture('db_data');
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -32,11 +42,14 @@ my $base_uri = '/mt-xmlrpc.cgi';
 my $username = 'Chuck D';
 my $password = 'seecret';
 
+my $author = MT->model('author')->load(2) or die MT->model('author')->errstr;
+$author->api_password($password);
+$author->save or die $author->errstr;
+
 use XMLRPC::Lite;
 my $ser   = XMLRPC::Serializer->new();
 my $deser = XMLRPC::Deserializer->new();
 
-require LWP::UserAgent::Local;
 my $ua = new LWP::UserAgent::Local( { ScriptAlias => '/' } );
 
 my $logo
@@ -141,7 +154,7 @@ sub _blogger_post {
 
     for my $type (qw/ array hash /) {
         for my $i ( 1 .. ( scalar(@$base_params) - 1 ) ) {
-            my $params = clone($base_params);
+            my $params = dclone($base_params);
 
             my $value = $params->[$i];
             $params->[$i]
@@ -183,10 +196,10 @@ sub _meta_weblog_post {
             if ( $i == $items_col ) {
 
                 my $base_items = $base_params->[$items_col];
-                for my $key ( keys %$base_items ) {
+                for my $key ( sort keys %$base_items ) {
                     next if $key eq 'categories' || $key eq 'mt_tb_ping_urls';
 
-                    my $params = clone($base_params);
+                    my $params = dclone($base_params);
                     my $items  = $params->[$items_col];
                     my $value  = $items->{$key};
                     $items->{$key}
@@ -211,7 +224,7 @@ sub _meta_weblog_post {
 
             }
             else {
-                my $params = clone($base_params);
+                my $params = dclone($base_params);
 
                 $params->[$i]
                     = ( $type eq 'array' )

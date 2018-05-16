@@ -6,6 +6,7 @@
 package MT::Template::Tags::Website;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( encode_xml );
@@ -38,19 +39,205 @@ would iterate over only the websites with IDs 1, 12 and 19.
 
 =cut
 
+=head2 Sites
+
+A container tag which iterates over a list of all of the sites in the
+system. You can use any of the site tags (L<SiteName>, L<SiteURL>, etc -
+anything starting with MTSite) inside of this tag set.
+
+B<Attributes:>
+
+=over 4
+
+=item * site_ids
+
+This attribute allows you to limit the set of sites iterated over by
+L<Sites>. Multiple sites are specified in a comma-delimited fashion.
+For example:
+
+    <mt:Sites site_ids="1,12,19">
+
+would iterate over only the sites with IDs 1, 12 and 19.
+
+=back
+
+=over 4
+
+=item * mode (default: "loop")
+
+"loop": Information on multiple blogs is displayed in blog units.
+
+"context": Information on whole of multiple blogs is sorted and displayed.
+
+=back
+
+=for tags multiblog, loop, sites
+
+=cut
+
+=head2 MultiBlog
+
+This tag is an alias for the Sites tag
+
+=cut
+
+=head2 OtherBlog
+
+This tag is an alias for the Sites tag
+
+=cut
+
 sub _hdlr_websites {
+    my ( $ctx, $args, $cond ) = @_;
+
+    # Set default mode for backwards compatibility
+    $args->{mode} ||= 'loop';
+
+    if ( $args->{site_id} ) {
+        $args->{site_ids} = $args->{site_id};
+        delete $args->{site_id};
+        delete $args->{blog_id} if $args->{blog_id};
+    }
+    elsif ( $args->{blog_id} ) {
+        $args->{blog_ids} = $args->{blog_id};
+        delete $args->{blog_id};
+    }
+
+    # If MTMultiBlog was called with no arguments, we check the
+    # blog-level settings for the default includes/excludes.
+    unless ( $args->{blog_ids}
+        || $args->{include_sites}
+        || $args->{exclude_sites}
+        || $args->{include_blogs}
+        || $args->{exclude_blogs}
+        || $args->{include_websites}
+        || $args->{exclude_websites}
+        || $args->{site_ids} )
+    {
+        my $blog = $ctx->stash('blog');
+        my $is_include
+            = $blog && defined $blog->default_mt_sites_action
+            ? $blog->default_mt_sites_action
+            : 1;
+        my $blogs = $blog && $blog->default_mt_sites_sites || '';
+
+        my $tag_name = $ctx->stash('tag');
+
+        if ( $blogs && defined($is_include) ) {
+            $args->{ $is_include ? 'include_blogs' : 'exclude_blogs' }
+                = $blogs;
+        }
+
+        # No blog-level config set
+        # Set mode to context as this will mimic no MTMultiBlog tag
+        elsif ( $tag_name eq 'mtmultiblog' ) {
+            $args->{'mode'} = 'context';    # Override 'loop' mode
+        }
+    }
+
+    # Filter mt:Sites args through access controls
+    require MT::RebuildTrigger;
+
+    # Load mt:Sites access control list
+    my %acl = MT::RebuildTrigger->load_sites_acl($ctx);
+    $args->{ $acl{mode} } = $acl{acl};
+
+    # Run mt:Sites in specified mode
+    my $res;
+    if ( $args->{mode} eq 'loop' ) {
+        $res = _loop(@_);
+    }
+    elsif ( $args->{mode} eq 'context' ) {
+        $res = _context(@_);
+    }
+    else {
+
+        # Throw error if mode is unknown
+        $res = $ctx->error(
+            MT->translate(
+                'Unknown "mode" attribute value: [_1]. '
+                    . 'Valid values are "loop" and "context".',
+                $args->{mode}
+            )
+        );
+    }
+
+    # Remove sites_context and blog_ids
+    $ctx->stash( 'sites_context',          '' );
+    $ctx->stash( 'sites_include_blog_ids', '' );
+    $ctx->stash( 'sites_exclude_blog_ids', '' );
+    return defined($res) ? $res : $ctx->error( $ctx->errstr );
+}
+
+## Supporting functions for 'mt:Sites' tag:
+
+# mt:Sites's "context" mode:
+# The container's contents are evaluated once with a multi-site context
+sub _context {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $include_blogs
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{blog_ids};
+    my $exclude_blogs = $args->{exclude_sites} || $args->{exclude_blogs};
+
+    # Assuming multiblog context, set it.
+    if ( $include_blogs || $exclude_blogs ) {
+        $ctx->stash( 'sites_context', 1 );
+        $ctx->stash( 'sites_include_blog_ids', join( ',', $include_blogs ) )
+            if $include_blogs;
+        $ctx->stash( 'sites_exclude_blog_ids', join( ',', $exclude_blogs ) )
+            if $exclude_blogs;
+    }
+
+    # Evaluate container contents and return output
+    my $builder = $ctx->stash('builder');
+    my $tokens  = $ctx->stash('tokens');
+    my $out     = $builder->build( $ctx, $tokens, $cond );
+    return
+        defined($out) ? $out : $ctx->error( $ctx->stash('builder')->errstr );
+
+}
+
+# mt:Sites's "loop" mode:
+# The container's contents are evaluated once per specified blog
+sub _loop {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
 
+    # Set the context for blog loading
     $ctx->set_blog_load_context( $args, \%terms, \%args, 'id' )
         or return $ctx->error( $ctx->errstr );
+
+    my $incl
+        = $args->{include_sites}
+        || $args->{include_blogs}
+        || $args->{include_website}
+        || $args->{blog_ids}
+        || $args->{site_ids};
+    my $tag_name = lc $ctx->stash('tag');
+    $args{'no_class'} = 1
+        if ( $tag_name ne 'websites' )
+        && $incl
+        && (
+        ( lc $incl eq 'all' )
+        || (( $incl eq 'children' || $incl eq 'siblings' )
+            && (   $args->{include_parent_site}
+                || $args->{include_with_website} )
+        )
+        );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
+    local $ctx->{__stash}{contents} = undef
+        if $args->{ignore_archive_context};
     local $ctx->{__stash}{entries} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp} = undef
+        if $args->{ignore_archive_context};
+    local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
     local $ctx->{current_timestamp_end} = undef
         if $args->{ignore_archive_context};
@@ -60,16 +247,22 @@ sub _hdlr_websites {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    require MT::Website;
-    $terms{class} = 'website' unless $terms{class};
+    if (  !$terms{class}
+        && $tag_name ne 'multiblog'
+        && $tag_name ne 'otherblog' )
+    {
+        $terms{class} = 'website';
+    }
+    elsif ( $terms{class} ) {
+        delete $terms{class};
+    }
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
-    my @sites = MT::Website->load( \%terms, \%args );
+
+    my @sites = MT->model('website')->load( \%terms, \%args );
     my $res   = '';
     my $count = 0;
     my $vars  = $ctx->{__stash}{vars} ||= {};
-    MT::Meta::Proxy->bulk_load_meta_objects( \@sites );
-
     for my $site (@sites) {
         $count++;
         local $ctx->{__stash}{blog}    = $site;
@@ -79,6 +272,8 @@ sub _hdlr_websites {
         local $vars->{__odd__}         = ( $count % 2 ) == 1;
         local $vars->{__even__}        = ( $count % 2 ) == 0;
         local $vars->{__counter__}     = $count;
+        $ctx->stash( 'sites_context',  'include_blogs' );
+        $ctx->stash( 'sites_blog_ids', $site->id );
         defined( my $out = $builder->build( $ctx, $tokens, $cond ) )
             or return $ctx->error( $builder->errstr );
         $res .= $out;
@@ -585,6 +780,14 @@ sub _hdlr_website_theme_id {
 A container tag which loads parent website of blog in the current context.
 
 =for tags websites blogs
+
+=cut
+
+=head2 SiteParentSite
+
+A container tag which loads parent site of child site in the current context.
+
+=for tags sites
 
 =cut
 

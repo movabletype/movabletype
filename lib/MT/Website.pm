@@ -7,6 +7,7 @@
 package MT::Website;
 
 use strict;
+use warnings;
 use base qw( MT::Blog );
 
 __PACKAGE__->install_properties(
@@ -25,11 +26,11 @@ __PACKAGE__->install_properties(
 );
 
 sub class_label {
-    return MT->translate("Website");
+    return MT->translate("Site");
 }
 
 sub class_label_plural {
-    MT->translate("Websites");
+    MT->translate("Sites");
 }
 
 sub list_props {
@@ -37,9 +38,9 @@ sub list_props {
         id         => { base => 'blog.id', },
         name       => { base => 'blog.name', },
         blog_count => {
-            label        => 'Blogs',
-            filter_label => '__BLOG_COUNT',
-            order        => 200,
+            label        => 'Child Sites',
+            filter_label => 'Child Site Count',
+            order        => 250,
             base         => '__virtual.object_count',
             display      => 'default',
             count_class  => 'blog',
@@ -59,6 +60,16 @@ sub list_props {
                 );
 
                 return { id => [ map( $_->blog_id, @perms ) ] };
+            },
+            html => sub {
+                my $prop = shift;
+                my ($obj) = @_;
+                if ( $obj->is_blog ) {
+                    '-';
+                }
+                else {
+                    $prop->super(@_);
+                }
             },
         },
         page_count => {
@@ -89,26 +100,12 @@ sub list_props {
                 return $html;
             },
         },
-        comment_count => {
-            base => 'blog.comment_count',
-            html => sub {
-                my $prop = shift;
-                my $html = $prop->super(@_);
-                $html =~ s/"(.+)"/"$1&filter=current_context"/;
-                return $html;
-            },
+        content_type_count => {
+            base => 'blog.content_type_count',
         },
-
-        # not in use in 5.1
-        # member_count => {
-        #     base      => 'blog.member_count',
-        #     html_link => sub {
-        #         my $prop = shift;
-        #         my ( $obj, $app ) = @_;
-        #         my $link = $prop->super(@_);
-        #         $link . '&filter=current_context';
-        #     },
-        # },
+        content_count => {
+            base => 'blog.content_count',
+        },
         theme_id => {
             base                  => 'blog.theme_id',
             single_select_options => sub {
@@ -116,6 +113,10 @@ sub list_props {
                 require MT::Theme;
                 return MT::Theme->load_theme_loop;
             },
+        },
+        parent_website => {
+            base => 'blog.parent_website',
+            view => ['system'],
         },
         created_on  => { base => 'blog.created_on' },
         modified_on => { base => 'blog.modified_on' },
@@ -207,7 +208,7 @@ sub add_blog {
         { type => MT::Author::AUTHOR(), },
         {   join => MT::Permission->join_on(
                 'author_id',
-                {   permissions => "\%'manage_member_blogs'\%",
+                {   permissions => "\%'administer_site'\%",
                     blog_id     => $website->id,
                 },
                 { 'like' => { 'permissions' => 1 } }
@@ -219,10 +220,10 @@ sub add_blog {
         require MT::Role;
         my $user = MT->instance->user;
         if ($user) {
-            my @roles = MT::Role->load_by_permission("administer_blog");
+            my @roles = MT::Role->load_by_permission("administer_site");
             my $role;
             foreach my $r (@roles) {
-                next if $r->permissions =~ m/\'administer_website\'/;
+                next if $r->permissions =~ m/\'administer_site\'/;
                 $role = $r;
                 last;
             }
