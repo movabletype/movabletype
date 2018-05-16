@@ -3,7 +3,16 @@
   <div class="row no-gutters align-items-center">
     <div class="col">
       <ul class="nav nav-tabs d-flex mb-3" role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
-        <mt:if name="options{label}"><li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></label></li></mt:if></mt:if>
+<mt:if name="options{label}">
+        <li class="mr-auto">
+          <label for="contentblock1">
+            <mt:var name="options{label}" escape="html">
+  <mt:if name=options{required}>
+            <span class="badge badge-danger"><__trans phrase="Required"></span>
+  </mt:if>
+          </label>
+        </li>
+</mt:if>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev">プレビュー</a></li>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort">並び替え</a></li>
       </ul>
@@ -35,6 +44,7 @@
       <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
     </div>
   </div>
+</div>
 </div>
 
 <mt:unless name="loaded_multi_line_text_field">

@@ -4,7 +4,13 @@
   <div class="row no-gutters align-items-center">
     <div class="col">
       <ul class="nav nav-tabs d-flex mb-3" role="tablist">
-        <li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name="options{required}"> <span class="badge badge-danger"><__trans phrase="Required"></span></label></li></mt:if>
+        <li class="mr-auto">
+          <label for="contentblock1"><mt:var name="options{label}" escape="html">
+<mt:if name="options{required}">
+            <span class="badge badge-danger"><__trans phrase="Required"></span>
+</mt:if>
+          </label>
+        </li>
       </ul>
     </div>
   </div>
@@ -26,6 +32,7 @@
     </div>
     </mt:unless>
   </div>
+</div>
 </div>
 
 <mt:unless name="loaded_multi_line_text_field_js">
