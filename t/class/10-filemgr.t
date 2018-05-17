@@ -55,4 +55,21 @@ my ( $fh, $filename ) = File::Temp::tempfile( 'XXXXXX', UNLINK => 1 );
 $fmgr->rename( $filename, $filename );
 ok( -f $filename, '$file should not remove' );
 
+my $dir         = File::Temp::tempdir;
+my $symlink_dir = "${dir}_link";
+symlink $dir, $symlink_dir;
+( $fh, $filename ) = File::Temp::tempfile( 'XXXXXX', DIR => $dir );
+close($fh);
+ok( $fmgr->rmdir($symlink_dir) && -d $symlink_dir,
+    'cannot remove symlink of directory'
+);
+ok( $fmgr->delete($symlink_dir) && !-e $symlink_dir,
+    'remove symlink of directory by delete'
+);
+ok( $fmgr->rmdir($filename) && -f $filename, 'cannot remove file by rmdir' );
+ok( !$fmgr->rmdir($dir) && -d $dir,
+    'cannot remove directory that is not empty' );
+ok( $fmgr->delete($filename) && !-f $filename, 'remove file by delete' );
+ok( $fmgr->rmdir($dir) && !-d $dir, 'remove empty directory by rmdir' );
+
 done_testing();
