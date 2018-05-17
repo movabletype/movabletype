@@ -61,3 +61,5 @@ perltidy.LOG
 
 cover_db/
 
+.envrc
+

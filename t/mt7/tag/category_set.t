@@ -161,6 +161,7 @@ $vars->{category_set_01_id}        = $category_set_01->id;
 $vars->{category_set_02_name}      = $category_set_02->name;
 $vars->{content_type_01_name}      = $content_type_01->name;
 $vars->{content_type_02_unique_id} = $content_type_02->unique_id;
+$vars->{content_type_02_id}        = $content_type_02->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 MT::Test::Tag->run_php_tests( $blog->id );
@@ -182,6 +183,16 @@ test category set 01
 === mt:CategorySets label="Set Content Type Unique ID"
 --- template
 <mt:CategorySets content_type="[% content_type_02_unique_id %]"><mt:CategorySetName></mt:CategorySets>
+--- expected
+test category set 02
+--- skip_php
+1
+
+=== mt:CategorySets label="Set Content Type ID"
+--- skip
+1
+--- template
+<mt:CategorySets content_type="[% content_type_02_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 02
 --- skip_php
