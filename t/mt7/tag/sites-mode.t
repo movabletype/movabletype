@@ -47,10 +47,14 @@ $test_env->prepare_fixture(
         MT::Test->init_db;
 
         # Site 1
-        my $site_01 = MT::Test::Permission->make_website(
-            parent_id => 0,
-            name      => 'test site 01'
-        );
+        #my $site_01 = MT::Test::Permission->make_website(
+        #    parent_id => 0,
+        #    name      => 'test site 01'
+        #);
+        my $site_01 = MT->model('website')->load(1);
+        $site_01->parent_id(0);
+        $site_01->name('test site 01');
+        $site_01->save;
 
         my $ct_01 = MT::Test::Permission->make_content_type(
             name    => 'test content data',
@@ -155,7 +159,7 @@ $test_env->prepare_fixture(
         ];
         $ct_03->fields($fields_03);
         $ct_03->save or die $ct_03->errstr;
-        my $count_03 = 1;
+        my $count_03 = 11;
 
         for ( 1 .. 5 ) {
             MT::Test::Permission->make_content_data(
@@ -196,7 +200,7 @@ $test_env->prepare_fixture(
         ];
         $ct_04->fields($fields_04);
         $ct_04->save or die $ct_04->errstr;
-        my $count_04 = 6;
+        my $count_04 = 16;
 
         for ( 1 .. 5 ) {
             MT::Test::Permission->make_content_data(
@@ -267,32 +271,32 @@ test single line text 1
 <mt:ChildSites include_sites="[% include_blogs %]" mode="loop"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
 --- expected
-test single line text 5
-test single line text 4
-test single line text 3
-test single line text 2
-test single line text 1
-test single line text 10
-test single line text 9
-test single line text 8
-test single line text 7
-test single line text 6
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
 
 === mt:ChildSites mode="context"
 --- template
 <mt:ChildSites include_sites="[% include_blogs %]" mode="context"><mt:Contents content_type="test content data">
 <mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites>
 --- expected
-test single line text 10
-test single line text 9
-test single line text 8
-test single line text 7
-test single line text 6
-test single line text 5
-test single line text 4
-test single line text 3
-test single line text 2
-test single line text 1
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
 
 === mt:MultiBlog mode="loop"
 --- template
@@ -349,3 +353,256 @@ test single line text 1
 <mt:MultiBlog><mt:MultiBlogIfLocalBlog><mt:BlogID></mt:MultiBlogIfLocalBlog></mt:MultiBlog>
 --- expected
 [% site_01_id %]
+
+=== mt:ChildSites in mt:Sites no mode
+--- template
+<mt:Sites><mt:ChildSites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:Sites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:Sites nested and no mode
+--- template
+<mt:Sites><mt:Sites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites></mt:Sites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:ChildSites nested and no mode
+--- template
+<mt:ChildSites><mt:ChildSites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:ChildSites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:ChildSites in mt:Sites mode="loop"
+--- template
+<mt:Sites><mt:ChildSites mode="loop"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:Sites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:Sites nested and mode="loop"
+--- template
+<mt:Sites><mt:Sites mode="loop"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites></mt:Sites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:ChildSites nested and mode="loop"
+--- template
+<mt:ChildSites><mt:ChildSites mode="loop"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:ChildSites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:ChildSites in mt:Sites mode="context"
+--- template
+<mt:Sites><mt:ChildSites mode="context"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:Sites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:Sites nested and mode="context"
+--- template
+<mt:Sites><mt:Sites mode="context"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites></mt:Sites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:ChildSites nested and mode="context"
+--- template
+<mt:ChildSites><mt:ChildSites mode="context"><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:ChildSites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:ChildSites in mt:Sites mode="context"
+--- template
+<mt:Sites mode="context"><mt:ChildSites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:Sites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+
+=== mt:Sites nested and mode="context"
+--- template
+<mt:Sites mode="context"><mt:Sites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:Sites></mt:Sites>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+test single line text 10
+test single line text 9
+test single line text 8
+test single line text 7
+test single line text 6
+
+=== mt:ChildSites nested and mode="context"
+--- template
+<mt:ChildSites mode="context"><mt:ChildSites><mt:Contents content_type="test content data">
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents></mt:ChildSites></mt:ChildSites>
+--- expected
+test single line text 15
+test single line text 14
+test single line text 13
+test single line text 12
+test single line text 11
+test single line text 20
+test single line text 19
+test single line text 18
+test single line text 17
+test single line text 16
+

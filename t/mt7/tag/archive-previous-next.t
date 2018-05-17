@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 6;
+plan tests => 1 * blocks;
 
 use MT;
 use MT::Test;
@@ -82,6 +82,8 @@ $test_env->prepare_fixture(
             category_set_id => $category_set->id,
             label           => 'category3',
         );
+
+        # ContentType 1
         my $ct = MT::Test::Permission->make_content_type(
             name    => 'test content type',
             blog_id => $blog->id,
@@ -176,6 +178,103 @@ $test_env->prepare_fixture(
             is_preferred  => 1,
             dt_field_id   => $date_cf->id,
         );
+
+        # ContentType 2
+        my $ct02 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 2',
+            blog_id => $blog->id,
+        );
+        my $cat_cf02 = MT::Test::Permission->make_content_field(
+            blog_id            => $ct02->blog->id,
+            content_type_id    => $ct02->id,
+            name               => 'categories',
+            type               => 'categories',
+            related_cat_set_id => $category_set->id,
+        );
+        my $date_cf02 = MT::Test::Permission->make_content_field(
+            blog_id         => $ct02->blog->id,
+            content_type_id => $ct02->id,
+            name            => 'date and time',
+            type            => 'date_and_time',
+        );
+        my $fields02 = [
+            {   id      => $cat_cf02->id,
+                order   => 1,
+                type    => $cat_cf02->type,
+                options => {
+                    label        => 1,
+                    category_set => $cat_cf02->related_cat_set_id,
+                },
+                unique_id => $cat_cf02->unique_id,
+            },
+            {   id        => $date_cf02->id,
+                order     => 2,
+                type      => $date_cf02->type,
+                options   => { label => $date_cf02->name },
+                unique_id => $date_cf02->unique_id,
+            },
+        ];
+        $ct02->fields($fields02);
+        $ct02->save or die $ct->errstr;
+
+        my $cd4 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog->id,
+            content_type_id => $ct02->id,
+            data            => {
+                $cat_cf02->id  => [ $category1->id ],
+                $date_cf02->id => '20180308180500',
+            },
+        );
+        my $cd5 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog->id,
+            content_type_id => $ct02->id,
+            data            => {
+                $cat_cf02->id  => [ $category2->id ],
+                $date_cf02->id => '20180407180500',
+            },
+        );
+        my $cd6 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog->id,
+            content_type_id => $ct02->id,
+            author_id       => $author2->id,
+            data            => {
+                $cat_cf02->id  => [ $category3->id ],
+                $date_cf02->id => '20180506180500',
+            },
+        );
+
+        my $template02 = MT::Test::Permission->make_template(
+            blog_id         => $blog->id,
+            content_type_id => $ct02->id,
+            name            => 'ContentType Test 02',
+            type            => 'ct',
+            text            => 'test 02',
+        );
+
+        my $map_04 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Category',
+            file_template => '%-c/%i',
+            is_preferred  => 1,
+            cat_field_id  => $cat_cf02->id,
+        );
+        my $map_05 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Author',
+            file_template => 'author/%-a/%f',
+            is_preferred  => 1,
+        );
+        my $map_06 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Monthly',
+            file_template => '%y/%m/%i',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf02->id,
+        );
+
     }
 );
 
@@ -184,6 +283,8 @@ my $blog = MT::Blog->load( { name => 'test blog 01' } );
 my $content_type = MT::ContentType->load( { name => 'test content type' } );
 
 $vars->{content_type_unique_id} = $content_type->unique_id;
+$vars->{content_type_name}      = $content_type->name;
+$vars->{content_type_id}        = $content_type->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 
@@ -226,4 +327,32 @@ category2,category3
 <mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
 category1,category2
+
+=== MT:ArchiveNext with name
+--- template
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+--- expected
+test2
+
+=== MT:ArchivePrevious with name
+--- template
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+--- expected
+test1
+
+=== MT:ArchiveNext with id
+--- skip
+1
+--- template
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+--- expected
+test2
+
+=== MT:ArchivePrevious with id
+--- skip
+1
+--- template
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+--- expected
+test1
 

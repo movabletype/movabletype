@@ -15,7 +15,6 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
 plan tests => 1 * blocks;
 
 use MT;
@@ -25,9 +24,22 @@ my $app = MT->instance;
 
 my $blog_id = 1;
 
+my $vars = {};
+
+sub var {
+    for my $line (@_) {
+        for my $key ( keys %{$vars} ) {
+            my $replace = quotemeta "[% ${key} %]";
+            my $value   = $vars->{$key};
+            $line =~ s/$replace/$value/g;
+        }
+    }
+    @_;
+}
+
 filters {
-    template => [qw( chomp )],
-    expected => [qw( chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
     error    => [qw( chomp )],
 };
 
@@ -106,6 +118,17 @@ my $cd3 = MT::Test::Permission->make_content_data(
     authored_on     => $next_month . '15000000',
     data            => { $cf_datetime->id => $this_month . '03180500', },
 );
+my $cd4 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => '20170615000000',
+    data => { $cf_category->id => [ $category1->id ], },
+);
+
+$vars->{ct_uid}    = $ct->unique_id;
+$vars->{ct_name}   = $ct->name;
+$vars->{ct_id}     = $ct->id;
+$vars->{cat_label} = $category2->label;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -113,9 +136,9 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== MT::ContentCalendar
+=== MT::ContentCalendar with content type unique_id
 --- template
-<mt:ContentCalendar month="201706" content_type="test content data">
+<mt:ContentCalendar month="201706" content_type="[% ct_uid %]">
 <mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
 --- expected
 1
@@ -132,7 +155,7 @@ __END__
 12
 13
 14
-15
+
 16
 17
 18
@@ -149,6 +172,77 @@ __END__
 
 30
 
+=== MT::ContentCalendar with content type name
+--- template
+<mt:ContentCalendar month="201706" content_type="[% ct_name %]">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
+
+=== MT::ContentCalendar with content type id
+--- template
+<mt:ContentCalendar month="201706" content_type="[% ct_id %]">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
 
 === MT::ContentCalendar with month="next"
 --- template
@@ -185,6 +279,43 @@ __END__
 12
 13
 14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
+
+
+=== MT::ContentCalendar with category_set and category
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set" category="[% cat_label %]">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
 15
 16
 17
@@ -201,3 +332,4 @@ __END__
 28
 
 30
+

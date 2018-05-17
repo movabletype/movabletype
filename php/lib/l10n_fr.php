@@ -40,6 +40,9 @@ $Lexicon_fr = array(
 
 ## php/lib/block.mtentries.php
 
+## php/lib/block.mthasplugin.php
+	'name is required.' => 'le nom est requis.',
+
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => 'Vous avez utilisé une balise [_1] sans attribut de nom valide.',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] est illégal.',
@@ -69,17 +72,6 @@ $Lexicon_fr = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anonyme',
-
-## php/lib/function.mtcommentauthor.php
-
-## php/lib/function.mtcommenternamethunk.php
-	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'La balise \'[_1]\' est obsolète. Veuillez utiliser la balise \'[_2]\' à la place.',
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Répondre',
-
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Note',
 
@@ -88,7 +80,7 @@ $Lexicon_fr = array(
 
 ## php/lib/function.mtpasswordvalidation.php
 	'Password should be longer than [_1] characters' => 'Le mot de passe doit faire plus de [_1] caractères',
-	"Password should not include your Username" => "Le mot de passe ne doit pas être composé de votre nom d'utilisateur",
+	'Password should not include your Username' => "Le mot de passe ne doit pas être composé de votre nom d'utilisateur",
 	'Password should include letters and numbers' => 'Le mot de passe doit être composé de lettres et de chiffres',
 	'Password should include lowercase and uppercase letters' => 'Le mot de passe doit être composé de lettres en minuscule et majuscule',
 	'Password should contain symbols such as #!$%' => 'Le mot de passe doit contenir des caractères spéciaux comme #!$%',
@@ -102,9 +94,6 @@ $Lexicon_fr = array(
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
-
-## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'L\'authentification TypePad n\'est pas activée pour ce blog. MTRemoteSignInLink ne peut pas être utilisé.',
 
 ## php/lib/function.mtsetvar.php
 
