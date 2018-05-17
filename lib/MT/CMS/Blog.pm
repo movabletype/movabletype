@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -2155,8 +2155,7 @@ sub save_filter {
 #      && $app->param('enable_archive_paths');
     if ( $screen eq 'cfg_prefs' ) {
         for my $param_name (
-            qw( max_revisions_entry max_revisions_cd max_revisions_template )
-            )
+            qw( max_revisions_entry max_revisions_cd max_revisions_template ))
         {
             my $value = $app->param($param_name) || 0;
             return $eh->error(
