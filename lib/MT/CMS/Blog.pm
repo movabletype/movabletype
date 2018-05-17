@@ -1496,10 +1496,11 @@ sub dialog_select_weblog {
     $app->listing(
         {   type     => 'blog',
             code     => $hasher,
-            template => 'dialog/select_weblog.tmpl',
-            terms    => $terms,
-            args     => $args,
-            params   => {
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_weblog.tmpl',
+            terms  => $terms,
+            args   => $args,
+            params => {
                 dialog_title  => $app->translate("Select Child Site"),
                 items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
