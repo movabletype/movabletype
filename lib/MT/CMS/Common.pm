@@ -300,7 +300,7 @@ sub save {
             # through the form.
             $obj->auth_type( $app->config->AuthenticationModule )
                 unless $obj->auth_type;
-            if ( $values{'status'} == MT::Author::ACTIVE() ) {
+            if ( ( $values{'status'} || 0 ) == MT::Author::ACTIVE() ) {
                 my $sys_perms      = MT::Permission->perms('system');
                 my $can_administer = $app->param('can_administer');
                 if ($can_administer) {
