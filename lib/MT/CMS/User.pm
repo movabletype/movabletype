@@ -65,8 +65,9 @@ sub edit {
         }
         $param->{unlocked} = $app->param('unlocked') ? 1 : 0;
 
-        $param->{can_modifiy_sys_perms} = 1
-            if $param->{editing_other_profile} && !$obj->is_superuser;
+        $param->{can_modify_sys_perms} = 1
+            if $param->{editing_other_profile}
+            && ( $app->user->is_superuser || !$obj->is_superuser );
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;
@@ -98,7 +99,7 @@ sub edit {
         $param->{can_recover_password}      = MT::Auth->can_recover_password;
         $param->{perm_can_sign_in_cms}      = 1;
         $param->{perm_can_sign_in_data_api} = 1;
-        $param->{can_modifiy_sys_perms}     = 1;
+        $param->{can_modify_sys_perms}      = 1;
     }
 
     # Make permission list
@@ -1330,7 +1331,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args => { sort => 'name' },
+                {   args         => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
