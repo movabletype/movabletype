@@ -67,6 +67,13 @@ my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
 $vars->{ct1_id}  = $ct1->id;
 $vars->{ct1_uid} = $ct1->unique_id;
 
+my $blog2 = MT::Test::Permission->make_blog( blog_id => 2 );
+MT::Test::Permission->make_content_data(
+    blog_id         => $blog2->id,
+    content_type_id => $ct1->id,
+    status          => MT::ContentStatus::RELEASE(),
+);
+
 MT::Test::Tag->run_perl_tests($blog_id);
 
 # MT::Test::Tag->run_php_tests($blog_id);
@@ -78,4 +85,11 @@ __END__
 <mt:SiteContentCount content_type="test content type 1">
 --- expected
 5
+
+
+=== MT::SiteContentCount
+--- template
+<mt:SiteContentCount blog_id="2" content_type="test content type 1">
+--- expected
+1
 
