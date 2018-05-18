@@ -363,6 +363,7 @@ sub set_blog_load_context {
     my $blog_ids
         = $attr->{include_sites}
         || $attr->{blog_ids}
+        || $attr->{blog_id}
         || $attr->{include_blogs}
         || $attr->{site_ids}
         || $attr->{include_websites};
