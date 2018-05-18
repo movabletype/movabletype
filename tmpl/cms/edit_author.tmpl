@@ -230,7 +230,8 @@ function showPasswordField() {
 
   <fieldset id="author-profile-settings" class="form-group">
     <legend class="h3"><__trans phrase="Profile"></legend>
-  <mt:if name="editing_other_profile">
+<mt:unless name="new_object">
+  <mt:if name="can_modify_sys_perms">
 
     <mtapp:setting
        id="status"
@@ -252,6 +253,7 @@ function showPasswordField() {
       </select>
     </mtapp:setting>
   </mt:if>
+</mt:unless>
 
     <mtapp:setting
        id="name"

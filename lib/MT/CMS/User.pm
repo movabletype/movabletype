@@ -66,7 +66,8 @@ sub edit {
         $param->{unlocked} = $app->param('unlocked') ? 1 : 0;
 
         $param->{can_modify_sys_perms} = 1
-            if $param->{editing_other_profile} && !$obj->is_superuser;
+            if $param->{editing_other_profile}
+            && ( $app->user->is_superuser || !$obj->is_superuser );
         $param->{can_modify_password}
             = ( $param->{editing_other_profile} || $param->{is_me} )
             && MT::Auth->password_exists;

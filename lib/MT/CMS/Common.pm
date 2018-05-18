@@ -293,9 +293,11 @@ sub save {
             if ( ( $author->id || 0 ) == ( $obj->id || 0 ) )
             || ( !$author->is_superuser && $obj->is_superuser );
 
-        if ( !$id
-            || ( !$obj->is_superuser && $author->can_manage_users_groups ) )
+        if (  !$id
+            || $author->is_superuser
+            || $author->can_manage_users_groups )
         {
+
             # Assign the auth_type unless it was assigned
             # through the form.
             $obj->auth_type( $app->config->AuthenticationModule )
