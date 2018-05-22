@@ -646,21 +646,10 @@ sub init_request {
             && ( $mode ne 'recover' )
             && ( $mode ne 'upgrade' ) )
         {
-            my $schema  = $app->config('SchemaVersion');
-            my $version = $app->config('MTVersion');
-            my $rel_num = $app->config('MTReleaseNumber');
-            if (   !$schema
-                || ( $schema < $app->schema_version )
-                || ($app->config->NotifyUpgrade
-                    && (   !$version
-                        || ( $version < $app->version_number )
-                        || (!defined $rel_num
-                            || ( ( $version == $app->version_number )
-                                && ($rel_num < ( $app->release_number || 0 ) )
-                            )
-                        )
-                    )
-                )
+            require MT::Upgrade;
+            if (MT::Upgrade->needs_upgrade_schema_version
+                || ( $app->config->NotifyUpgrade
+                    && MT::Upgrade->needs_upgrade_mt_release_number )
                 )
             {
                 $app->{upgrade_required} = 1;

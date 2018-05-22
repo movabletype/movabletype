@@ -891,10 +891,10 @@ sub core_finish {
         $user = $App->{author};
     }
 
-    my $cfg        = MT->config;
-    my $cur_schema = MT->instance->schema_version;
-    my $old_schema = $cfg->SchemaVersion || 0;
-    if ( $cur_schema > $old_schema ) {
+    my $cfg = MT->config;
+
+    if ( $self->needs_upgrade_schema_version ) {
+        my $cur_schema = MT->schema_version;
         $self->progress(
             $self->translate_escape(
                 "Database has been upgraded to version [_1].", $cur_schema
@@ -971,19 +971,11 @@ sub core_finish {
         $cfg->PluginSchemaVersion( $plugin_schema, 1 );
     }
 
-    my $cur_version = MT->version_number;
-    my $cur_rel     = MT->release_number;
-    if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
-        $cfg->MTVersion( $cur_version, 1 );
-        $cfg->MTReleaseNumber( $cur_rel, 1 );
+    if ( $self->needs_upgrade_mt_version ) {
+        $cfg->MTVersion( MT->version_number, 1 );
     }
-    elsif (
-        !defined( $cfg->MTReleaseNumber )
-        || (   $cur_version == $cfg->MTVersion
-            && $cur_rel > $cfg->MTReleaseNumber )
-        )
-    {
-        $cfg->MTReleaseNumber( $cur_rel, 1 );
+    if ( $self->needs_upgrade_mt_release_number ) {
+        $cfg->MTReleaseNumber( MT->release_number, 1 );
     }
     $cfg->save_config unless $DryRun;
 
@@ -1077,6 +1069,29 @@ sub core_update_records {
         $self->progress( "$msg (100%)", $param{step} );
     }
     1;
+}
+
+sub needs_upgrade_schema_version {
+    my $class = shift;
+    my $cfg   = MT->config;
+    !$cfg->SchemaVersion || MT->schema_version > $cfg->SchemaVersion;
+}
+
+sub needs_upgrade_mt_version {
+    my $class = shift;
+    my $cfg   = MT->config;
+    !$cfg->MTVersion || MT->version_number > $cfg->MTVersion;
+}
+
+sub needs_upgrade_mt_release_number {
+    my $class = shift;
+    my $cfg   = MT->config;
+    return 1 if !defined $cfg->MTReleaseNumber;
+    return 1 if $class->needs_upgrade_mt_version;
+    return 1
+        if MT->version_number == $cfg->MTVersion
+        && MT->release_number > $cfg->MTReleaseNumber;
+    0;
 }
 
 1;

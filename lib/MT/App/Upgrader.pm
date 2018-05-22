@@ -840,10 +840,7 @@ sub main {
         return $app->upgrade();
     }
 
-    my $schema     = $app->{cfg}->SchemaVersion    || 0;
-    my $version    = $app->config->MTVersion       || 0;
-    my $rel_number = $app->config->MTReleaseNumber || 0;
-
+    my $schema = $app->{cfg}->SchemaVersion || 0;
     if ( $schema >= 3.2 ) {
         my $author;
         eval {
@@ -857,22 +854,14 @@ sub main {
         }
     }
 
-    my $cur_schema  = MT->schema_version;
-    my $cur_version = MT->version_number;
-    my $cur_rel     = MT->release_number;
-
-    if ( $cur_schema > $schema ) {
+    require MT::Upgrade;
+    if ( MT::Upgrade->needs_upgrade_schema_version ) {
 
         # yes, MT itself is needing an upgrade...
         $param->{mt_upgrade} = 1;
     }
-    elsif (
-        $app->config->NotifyUpgrade
-        && (( $cur_version > $version )
-            || ( !defined $rel_number
-                || ( $cur_version == $version && $cur_rel > $rel_number ) )
-        )
-        )
+    elsif ( $app->config->NotifyUpgrade
+        && MT::Upgrade->needs_upgrade_mt_release_number )
     {
         $param->{mt_version_incremented} = 1;
         MT->log(
@@ -884,13 +873,15 @@ sub main {
                 category => 'upgrade',
             }
         );
+        my $cur_version = MT->version_number;
+        my $cur_rel     = MT->release_number;
         $app->config( 'MTVersion',       $cur_version, 1 );
         $app->config( 'MTReleaseNumber', $cur_rel,     1 );
         $app->config->save_config;
     }
 
     $param->{help_url}    = $app->help_url();
-    $param->{to_schema}   = $cur_schema;
+    $param->{to_schema}   = MT->schema_version;
     $param->{from_schema} = $schema;
     $param->{mt_version}  = $app->release_version_id;
 
