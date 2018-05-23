@@ -428,7 +428,7 @@ subtest 'mode = dialog_post_comment' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_post_comment" );
-    ok( $out =~ m!An error occurred!i,
+    ok( $out =~ m!permission=1!i,
         "dialog_post_comment by other permission" );
 
     done_testing();
