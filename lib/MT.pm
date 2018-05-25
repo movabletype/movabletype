@@ -59,11 +59,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 0;
+        $RELEASE_NUMBER = 1;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4207';
+        $RELEASE_VERSION_ID = 'r.4208';
     }
 
     $DebugMode = 0;
