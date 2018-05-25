@@ -1,10 +1,10 @@
 <mt:setvarblock name="js_include" append="1">
 <mt:if name="optimize_ui">
-<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/tiny_mce/tinymce.min.js"></script>
+<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/tiny_mce/tinymce.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:else>
-<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/tiny_mce/tinymce.js"></script>
+<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/tiny_mce/tinymce.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
-<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/lib/js/adapter.js"></script>
+<script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/lib/js/adapter.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript">
 jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
 </script>
