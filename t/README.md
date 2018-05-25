@@ -18,6 +18,12 @@ $ prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
 
 ### update fixture
 
+Fixture depends on the followings.
+* installed addons/plugins
+* schema_version of core and addons/plugins
+
+So, when you update fixture, you need to remove additional addons/plugins before executing the following command.
+
 ```sh
 $ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
 ```
