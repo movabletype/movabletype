@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -124,16 +125,17 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
             ok( $image->exif->GetValue('JFIFVersion'),
                 'JFIFVersion tag is still remaining.'
             );
-            
-            SKIP: {
+
+        SKIP: {
                 my $mtimg = MT::Image->new;
                 skip( "no $driver for image $tempfile", 1 ) unless $mtimg;
                 ok( $mtimg->init( Filename => $image->file_path ),
-                    'Read the image having no metadata.' );
-                
+                    'Read the image having no metadata.'
+                );
+
                 $image->rotate(90);
             }
-            
+
             ok( !$image->has_metadata,
                 'Has no metadata after rotating image.' );
         };
