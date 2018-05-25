@@ -25,7 +25,7 @@ Fixture depends on the followings.
 So, when you update fixture for Travis CI, you need to remove additional addons/plugins before executing the following command.
 
 ```sh
-$ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+$ MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
 ```
 
 ### ignore fixture
