@@ -24,6 +24,12 @@ use MT::Image;
 
 use Image::ExifTool;
 
+my $jpg_file
+    = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
+
+# test may fail on Travis CI when test.jpg is changed by other test
+`git checkout $jpg_file`;
+
 $test_env->prepare_fixture('db');
 
 my $cfg = MT->config;
@@ -33,8 +39,6 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
-        my $jpg_file
-            = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
         my ( $fh, $tempfile )
             = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg' );
         close $fh;
