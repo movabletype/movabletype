@@ -379,6 +379,65 @@ $test_env->prepare_fixture(
                 $cf_image->id            => [],
             },
         );
+
+        # Relative
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'test content data for relative',
+            blog_id => $blog_id,
+        );
+        my $cf_relative_1 = MT::Test::Permission->make_content_field(
+            blog_id         => $ct2->blog_id,
+            content_type_id => $ct2->id,
+            name            => 'relative_1',
+            type            => 'date_and_time',
+        );
+        my $cf_relative_2 = MT::Test::Permission->make_content_field(
+            blog_id         => $ct2->blog_id,
+            content_type_id => $ct2->id,
+            name            => 'relative_2',
+            type            => 'date_and_time',
+        );
+        my $cf_relative_3 = MT::Test::Permission->make_content_field(
+            blog_id         => $ct2->blog_id,
+            content_type_id => $ct2->id,
+            name            => 'relative_3',
+            type            => 'date_and_time',
+        );
+        my $fields2 = [
+            {   id        => $cf_relative_1->id,
+                order     => 7,
+                type      => $cf_relative_1->type,
+                options   => { label => $cf_relative_1->name },
+                unique_id => $cf_relative_1->unique_id,
+            },
+            {   id        => $cf_relative_2->id,
+                order     => 7,
+                type      => $cf_relative_2->type,
+                options   => { label => $cf_relative_2->name },
+                unique_id => $cf_relative_2->unique_id,
+            },
+            {   id        => $cf_relative_3->id,
+                order     => 7,
+                type      => $cf_relative_3->type,
+                options   => { label => $cf_relative_3->name },
+                unique_id => $cf_relative_3->unique_id,
+            },
+        ];
+        $ct2->fields($fields2);
+        $ct2->save or die $ct2->errstr;
+        my $blog = MT->model('blog')->load($blog_id);
+        my $now  = MT::Util::epoch2ts( $blog, time() - 3600 );
+        my $cd03 = MT::Test::Permission->make_content_data(
+            blog_id         => $ct2->blog_id,
+            content_type_id => $ct2->id,
+            author_id       => 1,
+            data            => {
+                $cf_relative_1->id => $now,
+                $cf_relative_2->id => $now,
+                $cf_relative_3->id => $now,
+            },
+        );
+
     }
 );
 
@@ -484,18 +543,278 @@ aaaaa</p>
 test
 test
 
-=== mt:ContentFieldValue with date format
+=== mt:ContentFieldValue with date and time format
 --- template
 <mt:Contents content_type="test content data" offset="1" limit="1">
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%Y"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%b"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%B"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%m"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%d"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%e"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%j"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%k"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%I"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%l"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%M"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%S"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%p"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%a"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%A"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%w"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%x"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%X"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="cz"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="dk"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="nl"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="en"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="fr"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="de"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="is"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="no"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="pl"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="pt"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="si"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="es"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="fi"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="se"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue utc="1"></mt:ContentField>
 </mt:Contents>
 --- expected
 2017
 17
-12
+Jun
+June
+06
+03
+ 3
+154
+18
+18
+06
+ 6
+05
+00
+PM
+Sat
+Saturday
+6
+June  3, 2017
+ 6:05 PM
 2017-06-03T18:05:00+00:00
+Sat, 03 Jun 2017 18:05:00 +0000
+ 3. &#268;erven 2017 18:05
+03.06.2017 18:05
+ 3 juni 2017 18:05
+June  3, 2017  6:05 PM
+ 3 juin 2017 18h05
+ 3.06.17 18:05
 03.06.17 18:05
+03.06.17 18:05
+Juni  3, 2017  6:05 EM
+ 3 czerwca 2017 18:05
+junho  3, 2017  6:05 PM
+03.06.17 18:05
+ 3 de Junio 2017 a las 06:05 PM
+03.06.17 18:05
+juni  3, 2017  6:05 EM
+2017-06-03
+June  3, 2017  6:05 PM
+
+=== mt:ContentFieldValue with date_only format
+--- template
+<mt:Contents content_type="test content data" offset="1" limit="1">
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%Y"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%b"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%B"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%m"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%d"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%e"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%j"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%k"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%I"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%l"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%M"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%S"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%p"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%a"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%A"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%w"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%x"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%X"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="cz"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="dk"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="nl"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="en"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="fr"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="de"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="is"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="it"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="no"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="pl"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="pt"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="si"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="es"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="fi"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="se"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
+<mt:ContentField content_field="date_only"><mt:ContentFieldValue utc="1"></mt:ContentField>
+</mt:Contents>
+--- expected
+2017
+17
+Jun
+June
+06
+05
+ 5
+156
+00
+ 0
+12
+12
+00
+00
+AM
+Mon
+Monday
+1
+June  5, 2017
+12:00 AM
+2017-06-05T00:00:00+00:00
+Mon, 05 Jun 2017 00:00:00 +0000
+ 5. &#268;erven 2017  0:00
+05.06.2017 00:00
+ 5 juni 2017  0:00
+June  5, 2017 12:00 AM
+ 5 juin 2017  0h00
+ 5.06.17  0:00
+05.06.17 00:00
+05.06.17 00:00
+Juni  5, 2017 12:00 FM
+ 5 czerwca 2017  0:00
+junho  5, 2017 12:00 AM
+05.06.17 00:00
+ 5 de Junio 2017 a las 12:00 AM
+05.06.17 00:00
+juni  5, 2017 12:00 FM
+2017-06-05
+June  5, 2017 12:00 AM
+
+=== mt:ContentFieldValue with time_only format
+--- template
+<mt:Contents content_type="test content data" offset="1" limit="1">
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%Y"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%y"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%b"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%B"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%m"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%d"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%e"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%j"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%H"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%k"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%I"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%l"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%M"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%S"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%p"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%a"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%A"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%w"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%x"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%X"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="cz"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="dk"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="nl"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="en"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="fr"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="de"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="is"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="it"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="no"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="pl"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="pt"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="si"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="es"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="fi"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="se"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
+<mt:ContentField content_field="time_only"><mt:ContentFieldValue utc="1"></mt:ContentField>
+</mt:Contents>
+--- expected
+1970
+70
+Jan
+January
+01
+01
+ 1
+001
+12
+12
+12
+12
+34
+56
+PM
+Thu
+Thursday
+4
+January  1, 1970
+12:34 PM
+1970-01-01T12:34:56+00:00
+Thu, 01 Jan 1970 12:34:56 +0000
+ 1. Leden 1970 12:34
+01.01.1970 12:34
+ 1 januari 1970 12:34
+January  1, 1970 12:34 PM
+ 1 janvier 1970 12h34
+ 1.01.70 12:34
+01.01.70 12:34
+01.01.70 12:34
+Januar  1, 1970 12:34 EM
+ 1 stycznia 1970 12:34
+janeiro  1, 1970 12:34 PM
+01.01.70 12:34
+ 1 de Enero 1970 a las 12:34 PM
+01.01.70 12:34
+januari  1, 1970 12:34 EM
+1970-01-01
+January  1, 1970 12:34 PM
+
+=== mt:ContentFieldValue with relative
+--- template
+<mt:Contents content_type="test content data for relative">
+<mt:ContentField content_field="relative_1"><mt:ContentFieldValue relative="1"></mt:ContentField>
+<mt:ContentField content_field="relative_2"><mt:ContentFieldValue relative="2"></mt:ContentField>
+<mt:ContentField content_field="relative_3"><mt:ContentFieldValue relative="3"></mt:ContentField>
+</mt:Contents>
+--- expected
+1 hour ago
+1 hour ago
+1 hour
+
+=== mt:ContentFieldValue with relative js
+--- template
+<mt:Contents content_type="test content data" offset="1" limit="1">
+<mt:ContentField content_field="date and time"><mt:ContentFieldValue relative="js"></mt:ContentField>
+</mt:Contents>
+--- expected
+<script type="text/javascript">
+/* <![CDATA[ */
+document.write(mtRelativeDate(new Date(2017,5,03,18,05,00), 'June  3, 2017  6:05 PM'));
+/* ]]> */
+</script><noscript>June  3, 2017  6:05 PM</noscript>
