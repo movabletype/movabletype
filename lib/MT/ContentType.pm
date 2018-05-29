@@ -504,10 +504,11 @@ sub permission_groups {
     return \@groups;
 }
 
-sub _eval_if_mssql_server {
+sub _eval_if_mssql_server_or_oracle {
     my ($sub) = @_;
-    my $using_mssql_server = lc( MT->config->ObjectDriver ) =~ /mssqlserver/;
-    $using_mssql_server ? eval { $sub->() } : $sub->();
+    my $using_mssql_server_or_oracle
+        = lc( MT->config->ObjectDriver ) =~ /mssqlserver|oracle/;
+    $using_mssql_server_or_oracle ? eval { $sub->() } : $sub->();
 }
 
 # class method
@@ -515,7 +516,7 @@ sub all_permissions {
     my $class = shift;
     my @all_permissions;
     my @content_types
-        = _eval_if_mssql_server( sub { @{ $class->load_all } } );
+        = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
     for my $content_type (@content_types) {
         push( @all_permissions, $content_type->permissions )
             if $content_type->blog;
