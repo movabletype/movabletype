@@ -174,12 +174,41 @@ for ( 1 .. 5 ) {
     );
 }
 
+# Dummy Content Type
+my $ct2 = MT::Test::Permission->make_content_type(
+    name    => 'test content type 2',
+    blog_id => $blog_id,
+);
+my $cf_single_line_text2 = MT::Test::Permission->make_content_field(
+    blog_id         => $ct2->blog_id,
+    content_type_id => $ct2->id,
+    name            => 'single line text 2',
+    type            => 'single_line_text',
+);
+my $fields2 = [
+    {   id        => $cf_single_line_text2->id,
+        order     => 1,
+        type      => $cf_single_line_text2->type,
+        options   => { label => $cf_single_line_text2->name },
+        unique_id => $cf_single_line_text2->unique_id,
+    },
+];
+$ct2->fields($fields2);
+$ct2->save or die $ct2->errstr;
+MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct2->id,
+    status          => MT::ContentStatus::RELEASE(),
+    data => { $cf_single_line_text->id => 'test single line text ', },
+);
+
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
 my $date_cf = MT::ContentField->load( { name => 'date and time' } );
 my $cd4     = MT::ContentData->load(4);
 
+$vars->{ct_name}     = $ct->name;
 $vars->{ct_id}       = $ct->id;
 $vars->{ct_uid}      = $ct->unique_id;
 $vars->{cf1_uid}     = $cf1->unique_id;
@@ -198,17 +227,17 @@ __END__
 --- template
 <mt:Contents>a</mt:Contents>
 --- expected
-aaaaa
+aaaaaa
 
-=== MT::Contents
+=== MT::Contents with content_type="name"
 --- template
-<mt:Contents content_type="test content type 1">a</mt:Contents>
+<mt:Contents content_type="[% ct_name %]">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with content_type_id modifier
+=== MT::Contents with content_type="id"
 --- template
-<mt:Contents content_type_id="[% ct_id %]">a</mt:Contents>
+<mt:Contents content_type="[% ct_id %]">a</mt:Contents>
 --- expected
 aaaaa
 
@@ -297,7 +326,7 @@ test single line text 4
 
 === MT::Contents with glue
 --- template
-<mt:Contents blog_id="1" glue=","><mt:ContentID></mt:Contents>
+<mt:Contents content_type="[% ct_uid %]" blog_id="1" glue=","><mt:ContentID></mt:Contents>
 --- expected
 1,2,3,4,5
 
