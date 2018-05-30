@@ -77,8 +77,9 @@ $test_env->prepare_fixture(
 
 my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
 
-$vars->{ct1_id}  = $ct1->id;
-$vars->{ct1_uid} = $ct1->unique_id;
+$vars->{ct1_id}   = $ct1->id;
+$vars->{ct1_uid}  = $ct1->unique_id;
+$vars->{ct1_name} = $ct1->name;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -86,9 +87,21 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== MT::AuthorContentCount
+=== MT::AuthorContentCount with content_type="unique_id"
 --- template
-<mt:Authors id="1"><mt:AuthorContentCount content_type="test content type 1"></mt:Authors>
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct1_uid %]"></mt:Authors>
+--- expected
+5
+
+=== MT::AuthorContentCount with content_type="id"
+--- template
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct1_id %]"></mt:Authors>
+--- expected
+5
+
+=== MT::AuthorContentCount with content_type="name"
+--- template
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct1_name %]"></mt:Authors>
 --- expected
 5
 
