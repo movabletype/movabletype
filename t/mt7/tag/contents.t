@@ -344,3 +344,15 @@ test single line text 4
 --- expected
 4
 
+=== MT::Contents parameters
+--- template
+<mt:Contents><mt:var name="__counter__">:<mt:if name="__odd__">odd</mt:if><mt:if name="__even__">even</mt:if><mt:if name="__first__"> - first</mt:if><mt:if name="__last__"> - last</mt:if>
+</mt:Contents>
+--- expected
+1:odd - first
+2:even
+3:odd
+4:even
+5:odd
+6:even - last
+
