@@ -972,12 +972,16 @@ sub core_finish {
     }
 
     my $cur_version = MT->version_number;
+    my $cur_rel     = MT->release_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
+        $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
-    my $cur_rel = MT->release_number;
-    if ( !defined( $cfg->MTReleaseNumber )
-        || ( $cur_rel > $cfg->MTReleaseNumber ) )
+    elsif (
+        !defined( $cfg->MTReleaseNumber )
+        || (   $cur_version == $cfg->MTVersion
+            && $cur_rel > $cfg->MTReleaseNumber )
+        )
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
     }

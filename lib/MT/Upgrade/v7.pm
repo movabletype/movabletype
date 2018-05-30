@@ -456,7 +456,12 @@ sub _v7_migrate_blog_templatemap_archive_type {
         _migrate_site_archive_type( $self, $blog );
     }
 
-    my @maps = MT->model('templatemap')->load();
+    my @maps = MT->model('templatemap')->load(
+        undef,
+        {   join => MT->model('blog')
+                ->join_on( undef, { id => \'= templatemap_blog_id' } ),
+        },
+    );
     foreach my $map (@maps) {
         my $type = $map->archive_type;
         $type =~ s/_/-/;

@@ -27,6 +27,8 @@ sub run_perl_tests {
     SKIP: {
             skip $block->skip, 1 if $block->skip;
 
+            MT::Request->instance->reset;
+
             my $tmpl = MT::Template->new;
             $tmpl->text( $block->template );
             my $ctx = $tmpl->context;

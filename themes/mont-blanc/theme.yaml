@@ -36,7 +36,7 @@ elements:
             display: force
             initial_value: ''
             label: Title
-            max_length: 1024
+            max_length: 255
             min_length: 0
             order: 1
             required: 1
