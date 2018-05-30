@@ -110,9 +110,9 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.0';
+    $version = '7.0.1';
 }
-my $release_version = 'r.4207';
+my $release_version = 'r.4208';
 
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
