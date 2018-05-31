@@ -56,6 +56,14 @@ $test_env->prepare_fixture(
             name    => 'test content type 1',
             blog_id => $blog_id,
         );
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 2',
+            blog_id => $blog_id,
+        );
+        my $ct3 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 3',
+            blog_id => $blog_id,
+        );
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct1->id,
@@ -72,14 +80,23 @@ $test_env->prepare_fixture(
             content_type_id => $ct1->id,
             status          => MT::ContentStatus::RELEASE(),
         );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct2->id,
+            status          => MT::ContentStatus::RELEASE(),
+        );
     }
 );
 
 my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
+my $ct2 = MT::ContentType->load( { name => 'test content type 2' } );
+my $ct3 = MT::ContentType->load( { name => 'test content type 3' } );
 
 $vars->{ct1_id}   = $ct1->id;
 $vars->{ct1_uid}  = $ct1->unique_id;
 $vars->{ct1_name} = $ct1->name;
+$vars->{ct2_uid}  = $ct2->unique_id;
+$vars->{ct3_uid}  = $ct3->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -105,10 +122,28 @@ __END__
 --- expected
 5
 
-
 === MT::AuthorContentCount without author context
 (Content data author is actually used in an individual content page, not with Contents tag)
 --- template
 <mt:Contents content_type="test content type 1"><mt:AuthorContentCount></mt:Contents>
 --- expected
-155555
+166666
+
+=== MT::AuthorContentCount with plural
+--- template
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct1_uid %]" plural="plural #"></mt:Authors>
+--- expected
+plural 5
+
+=== MT::AuthorContentCount with singular
+--- template
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct2_uid %]" singular="singular"></mt:Authors>
+--- expected
+singular
+
+=== MT::AuthorContentCount with none
+--- template
+<mt:Authors id="1"><mt:AuthorContentCount content_type="[% ct3_uid %]" none="none"></mt:Authors>
+--- expected
+none
+
