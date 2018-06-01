@@ -231,7 +231,7 @@ aaaaa
 --- error
 No Content Type could be found.
 
-=== MT::ContentsW with limit
+=== MT::Contents with limit
 --- template
 <mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
