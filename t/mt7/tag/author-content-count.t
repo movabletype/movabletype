@@ -92,3 +92,10 @@ __END__
 --- expected
 5
 
+
+=== MT::AuthorContentCount without author context
+(Content data author is actually used in an individual content page, not with Contents tag)
+--- template
+<mt:Contents content_type="test content type 1"><mt:AuthorContentCount></mt:Contents>
+--- expected
+155555
