@@ -42,7 +42,7 @@ my $ct1 = MT::Test::Permission->make_content_type(
 my $ct2 = MT::Test::Permission->make_content_type(
     name        => 'content type without description',
     blog_id     => $blog_id,
-    description => '',
+    description => undef,
 );
 
 MT::Test::Permission->make_content_data(
