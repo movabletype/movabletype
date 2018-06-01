@@ -147,3 +147,9 @@ Abby
 --- expected
 <a href="/author/authorce2f3/">Abby</a>
 
+=== MT::ContentAuthorLink with show_hcard="1"
+--- template
+<mt:Contents content_type="test content type"><mt:ContentAuthorLink show_hcard="1"></mt:Contents>
+--- expected
+<a class="fn url" href="https://example.com/~abby">Abby</a>
+
