@@ -215,6 +215,12 @@ __END__
 --- expected
 /test/archives/2017/09/mtcontentpermalink-test-data-02/
 
+=== MT::ContentPermalink ContentType 02 with index
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink with_index="1"></mt:Contents>
+--- expected
+/test/archives/2017/09/mtcontentpermalink-test-data-02/index.html
+
 === MT::ContentPermalink ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink></mt:Contents>
