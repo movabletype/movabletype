@@ -61,7 +61,7 @@ __END__
 --- expected
 May 30, 2017  8:30 PM
 
-=== MT::ContentCreatedDate with date formats
+=== MT::ContentDate with date formats
 --- template
 <mt:Contents content_type="test content data">
 <mt:ContentDate format="%Y">
