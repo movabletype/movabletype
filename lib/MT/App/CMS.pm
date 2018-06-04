@@ -4349,8 +4349,6 @@ sub rebuild_these_content_data {
                 unless $perms
                 && $perms->can_republish_content_data( $cd, $app->user );
 
-            my $type = $cd->class;
-
             $blogs{ $cd->blog_id } = ();
             $app->rebuild_content_data(
                 ContentData       => $cd,
