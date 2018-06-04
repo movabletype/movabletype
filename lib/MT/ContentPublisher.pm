@@ -2176,7 +2176,6 @@ sub publish_future_contents {
         my $iter = MT->model('content_data')->load_iter(
             {   blog_id => $site->id,
                 status  => MT::ContentStatus::FUTURE(),
-                class   => '*'
             },
             {   'sort'    => 'authored_on',
                 direction => 'descend'
@@ -2291,7 +2290,6 @@ sub unpublish_past_contents {
             {   blog_id        => $site->id,
                 status         => MT::ContentStatus::RELEASE(),
                 unpublished_on => [ undef, $now ],
-                class          => '*',
             },
             {   range     => { unpublished_on => 1 },
                 'sort'    => 'unpublished_on',
