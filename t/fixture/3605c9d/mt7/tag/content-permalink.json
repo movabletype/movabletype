@@ -461,7 +461,6 @@
          "cd_author_id",
          "cd_authored_on",
          "cd_blog_id",
-         "cd_class",
          "cd_content_type_id",
          "cd_created_by",
          "cd_created_on",
@@ -473,6 +472,7 @@
          "cd_label",
          "cd_modified_by",
          "cd_modified_on",
+         "cd_random",
          "cd_status",
          "cd_unique_id",
          "cd_unpublished_on",
@@ -483,11 +483,10 @@
             "1",
             "2017-09-27 11:23:14",
             "2",
-            "content_data",
             "1",
             null,
             "__NOW__",
-            "624d090eb11c5e1763f562bf48fa98422eb58c6d",
+            "38bde659e5d8806e94d8bd8fc09e625f87b57449",
             "0",
             null,
             "1",
@@ -495,8 +494,9 @@
             null,
             null,
             "__NOW__",
+            "7",
             "2",
-            "cc2838448244bff1358f36869397a97e35049832",
+            "bbcd22c0a02106c7f5d2f8546181c196b98b6a7b",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -504,11 +504,10 @@
             "1",
             "2017-09-27 11:23:14",
             "2",
-            "content_data",
             "2",
             null,
             "__NOW__",
-            "eedc1870b022e94da5ba004dcbd41138032807dc",
+            "9e406d1716028a4dbe989357a97f71bc6b5c5c27",
             "0",
             null,
             "2",
@@ -516,8 +515,9 @@
             null,
             null,
             "__NOW__",
+            "9",
             "2",
-            "5477f8736f8d90c5dfbc0dce1c5f1eb36db29c9b",
+            "60896478d99139994646e5de7fe1e8551e46e33b",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -525,11 +525,10 @@
             "1",
             "2017-09-27 11:23:14",
             "2",
-            "content_data",
             "3",
             null,
             "__NOW__",
-            "8716300e61feeb08944af04deea9b89e9d10aafd",
+            "e5c89229f571d6438ad6b9bfe00576e2207c7662",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -537,8 +536,9 @@
             null,
             null,
             "__NOW__",
+            "9",
             "2",
-            "5e8ddd460f53f2552e5f588a63c9756d979dddc9",
+            "418dad4d25cb37f947df5141e9ab84cc01c706a2",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -578,7 +578,7 @@
             null,
             null,
             "categories",
-            "1d5efa3ecbbc3e3a37491d57df247da5b7cefac6"
+            "d1cb7b6a02a60a34d1f785e2e4e4ee67e451f9de"
          ]
       ]
    },
@@ -627,7 +627,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0042\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0042\n",
             "1"
          ]
       ]
@@ -660,7 +660,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "624d090eb11c5e1763f562bf48fa98422eb58c6d",
+            "38bde659e5d8806e94d8bd8fc09e625f87b57449",
             null,
             null
          ],
@@ -675,7 +675,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "eedc1870b022e94da5ba004dcbd41138032807dc",
+            "9e406d1716028a4dbe989357a97f71bc6b5c5c27",
             null,
             null
          ],
@@ -690,7 +690,7 @@
             null,
             "__NOW__",
             "test content type 03",
-            "8716300e61feeb08944af04deea9b89e9d10aafd",
+            "e5c89229f571d6438ad6b9bfe00576e2207c7662",
             null,
             null
          ]
@@ -2416,5 +2416,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; core 7.0042; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0042; formattedtext 1.00"
 }
