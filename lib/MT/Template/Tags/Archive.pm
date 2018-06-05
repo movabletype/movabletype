@@ -846,7 +846,8 @@ sub _hdlr_archive_link {
     my $content_type_id
         = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
-    $arch = $blog->site_url if $content && $content->class eq 'page';
+    $arch = $blog->site_url
+        if $content && $content->can('class') && $content->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
     $arch
         .= archive_file_for( $content, $blog, $at, $cat, undef,

@@ -68,8 +68,7 @@ sub _hdlr_contents {
         ? $content_type->[0]->id
         : [ map { $_->id } @$content_type ];
 
-    my $class_type     = $args->{class_type} || 'content_data';
-    my $class          = MT->model($class_type);
+    my $class          = MT->model('content_data');
     my $cat_class_type = 'category';
     my $cat_class      = MT->model($cat_class_type);
 
@@ -349,9 +348,6 @@ sub _hdlr_contents {
                 $args{range_incl}{$dt_field} = 1;
             }
         }
-
-        # Adds class_type
-        $terms{class} = $class_type;
 
         my $map        = $ctx->stash('template_map');
         my $sort_by_cf = 0;
