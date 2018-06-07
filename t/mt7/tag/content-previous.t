@@ -181,6 +181,10 @@ my $cd3 = MT::ContentData->load(
     }
 );
 
+$vars->{ct_uid}  = $ct->unique_id;
+$vars->{ct_name} = $ct->name;
+$vars->{ct_id}   = $ct->id;
+
 $vars->{cat_cf_id}  = $cat_cf->id;
 $vars->{date_cf_id} = $date_cf->id;
 
@@ -194,9 +198,21 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== MT:ContentPrevious
+=== MT:ContentPrevious with unique_id
 --- template
-<mt:Contents content_type="test content type"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
+<mt:Contents content_type="[% ct_uid %]"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
+--- expected
+[% cd2_id %][% cd1_id %]
+
+=== MT:ContentPrevious with name 
+--- template
+<mt:Contents content_type="[% ct_name %]"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
+--- expected
+[% cd2_id %][% cd1_id %]
+
+=== MT:ContentPrevious with _id
+--- template
+<mt:Contents content_type="[% ct_id %]"><mt:ContentPrevious><mt:ContentID></mt:ContentPrevious></mt:Contents>
 --- expected
 [% cd2_id %][% cd1_id %]
 

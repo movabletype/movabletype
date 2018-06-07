@@ -76,6 +76,17 @@ $test_env->prepare_fixture(
         my $data = { $cf->id => 'test label 2', };
         $cd2->data($data);
         $cd2->save or die $cd2->errstr;
+
+        my $cd3 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            label           => undef,
+        );
+        my $cd4 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            label           => 'test label 4',
+        );
     }
 );
 
@@ -90,8 +101,11 @@ __END__
 
 === MT::ContentLabel (test content type 1)
 --- template
-<mt:Contents content_type="test content type 1"><mt:ContentLabel></mt:Contents>
+<mt:Contents content_type="test content type 1"><mt:ContentLabel>
+</mt:Contents>
 --- expected
+test label 4
+
 test label 1
 
 === MT::ContentLabel (test content type 2)
@@ -99,4 +113,3 @@ test label 1
 <mt:Contents content_type="test content type 2"><mt:ContentLabel></mt:Contents>
 --- expected
 test label 2
-

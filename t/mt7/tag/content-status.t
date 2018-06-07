@@ -57,7 +57,23 @@ $test_env->prepare_fixture(
     }
 );
 
-MT::Test::Tag->run_perl_tests($blog_id);
+# As Contents tag only lists published contents, allow explicitly to set content with other status to test
+MT::Test::Tag->run_perl_tests(
+    $blog_id,
+    sub {
+        my ( $ctx, $block ) = @_;
+        my $status = $block->status // return;
+        my $ct = MT->model('content_type')
+            ->load( { name => 'test content data', blog_id => $blog_id } );
+        my $content = MT->model('content_data')->load(
+            {   content_type_id => $ct->id,
+                blog_id         => $blog_id,
+                status          => $status,
+            }
+        );
+        $ctx->stash( content => $content );
+    }
+);
 
 # MT::Test::Tag->run_php_tests($blog_id);
 
@@ -69,3 +85,25 @@ __END__
 </mt:Contents>
 --- expected
 Publish
+
+
+=== MT::ContentStatus for a draft content
+--- template
+<mt:ContentStatus>
+--- expected
+Draft
+--- skip_php
+1
+--- status eval
+MT::ContentStatus::HOLD()
+
+
+=== MT::ContentStatus for a published content
+--- template
+<mt:ContentStatus>
+--- expected
+Publish
+--- skip_php
+1
+--- status eval
+MT::ContentStatus::RELEASE()
