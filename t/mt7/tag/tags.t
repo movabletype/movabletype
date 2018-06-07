@@ -135,6 +135,7 @@ my $ct = MT::ContentType->load( { name => 'test content type 1' } );
 
 $vars->{ct_uid}  = $ct->unique_id;
 $vars->{ct_name} = $ct->name;
+$vars->{ct_id}   = $ct->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -157,6 +158,12 @@ tag2:2,tag1:1
 === mt:Tags with content_type name
 --- template
 <mt:Tags top="20" type="content_type" content_type="[% ct_name %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
+--- expected
+tag2:2,tag1:1
+
+=== mt:Tags with content_type id
+--- template
+<mt:Tags top="20" type="content_type" content_type="[% ct_id %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
 --- expected
 tag2:2,tag1:1
 
