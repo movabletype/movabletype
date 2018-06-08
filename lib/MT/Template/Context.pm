@@ -545,7 +545,7 @@ sub get_content_type_context {
     if ( my $str = $args->{content_type} ) {
         if (!$content_type
             || (   $content_type
-                && $content_type->unique_id != $str
+                && $content_type->unique_id ne $str
                 && ($content_type->blog_id != $blog_id
                     || (   $content_type->blog_id == $blog_id
                         && $content_type->name ne $str )
