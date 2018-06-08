@@ -2227,8 +2227,12 @@ sub _hdlr_entry_author_link {
         if ( $a->type == MT::Author::AUTHOR() ) {
             local $ctx->{__stash}{author} = $a;
             local $ctx->{current_archive_type} = undef;
+            my $archive_type
+                = lc $ctx->stash('tag') eq 'contentauthorlink'
+                ? 'ContentType-Author'
+                : 'Author';
             if (my $link = $ctx->invoke_handler(
-                    'archivelink', { type => 'Author' }, $cond
+                    'archivelink', { type => $archive_type }, $cond
                 )
                 )
             {

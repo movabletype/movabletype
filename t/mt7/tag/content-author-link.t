@@ -140,8 +140,6 @@ Abby
 <a href="mailto:test@example.com">Birman</a>
 
 === MT::ContentAuthorLink with type="archive"
---- skip
-1
 --- template
 <mt:Contents content_type="test content type"><mt:ContentAuthorLink type="archive"></mt:Contents>
 --- expected
