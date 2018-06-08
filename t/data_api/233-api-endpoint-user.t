@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -610,10 +611,10 @@ sub suite {
             error => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/users',
-            method => 'POST',
+            path      => '/v2/users',
+            method    => 'POST',
             author_id => 4,
-            params => {
+            params    => {
                 user => {
                     name         => 'create-user',
                     displayName  => 'create user',
@@ -746,8 +747,8 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/users/3',
-            method => 'PUT',
+            path      => '/v2/users/3',
+            method    => 'PUT',
             author_id => 4,
             params =>
                 { user => { systemPermissions => [qw( create_site )], }, },
@@ -801,11 +802,11 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions (no superuser).
-            path   => '/v2/users/3/unlock',
-            method => 'POST',
-            code   => 403,
+            path      => '/v2/users/3/unlock',
+            method    => 'POST',
+            code      => 403,
             author_id => 4,
-            result => sub {
+            result    => sub {
                 return +{
                     error => {
                         code    => 403,
@@ -836,11 +837,11 @@ sub suite {
 
         # recover_password_for_user - irregular tests
         {    # Non superuser.
-            path   => '/v2/users/3/recover_password',
-            method => 'POST',
-            code   => 403,
+            path      => '/v2/users/3/recover_password',
+            method    => 'POST',
+            code      => 403,
             author_id => 4,
-            result => sub {
+            result    => sub {
                 return +{
                     error => {
                         code => 403,
@@ -871,11 +872,11 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions (no superuser).
-            path   => '/v2/users/3/recover_password',
-            method => 'POST',
-            code   => 403,
+            path      => '/v2/users/3/recover_password',
+            method    => 'POST',
+            code      => 403,
             author_id => 4,
-            error  => 'Do not have permission to recover password for user.',
+            error => 'Do not have permission to recover password for user.',
         },
 
         # recover_password_for_user - normal tests
