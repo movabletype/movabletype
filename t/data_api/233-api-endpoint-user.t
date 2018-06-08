@@ -649,8 +649,13 @@ sub suite {
                 },
             },
             result => sub {
-                return $app->model('author')
+                my $user = $app->model('author')
                     ->load( { name => 'create-user' } );
+                is( $user->auth_type,
+                    $app->config->AuthenticationModule,
+                    'auth_type is set'
+                );
+                $user;
             },
         },
         {    # No url, no dateFormat, no textFormat, status is disabled,
@@ -668,8 +673,13 @@ sub suite {
                 },
             },
             result => sub {
-                return $app->model('author')
+                my $user = $app->model('author')
                     ->load( { name => 'create-user-without-url' } );
+                is( $user->auth_type,
+                    $app->config->AuthenticationModule,
+                    'auth_type is set'
+                );
+                $user;
             },
         },
         {    # Grant system permissions.
@@ -686,9 +696,13 @@ sub suite {
                 },
             },
             result => sub {
-                $app->user($author);
-                return $app->model('author')
+                my $user = $app->model('author')
                     ->load( { name => 'create-user-with-permissions' } );
+                is( $user->auth_type,
+                    $app->config->AuthenticationModule,
+                    'auth_type is set'
+                );
+                $user;
             },
         },
         {    # Grant system permissions (superuser).
@@ -705,8 +719,13 @@ sub suite {
                 },
             },
             result => sub {
-                return $app->model('author')
+                my $user = $app->model('author')
                     ->load( { name => 'create-super-user' } );
+                is( $user->auth_type,
+                    $app->config->AuthenticationModule,
+                    'auth_type is set'
+                );
+                $user;
             },
         },
 
