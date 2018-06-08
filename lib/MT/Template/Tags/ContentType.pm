@@ -1469,8 +1469,6 @@ sub _hdlr_content_calendar {
         my $id            = $args->{category_set};
         my $cat_set_class = MT->model('category_set');
         $category_set = $cat_set_class->load($id) if $id =~ m/^\d+$/;
-        $category_set = $cat_set_class->load( { unique_id => $id } )
-            unless $category_set;
         $category_set = $cat_set_class->load( { name => $id } )
             unless $category_set;
         if ($category_set) {
