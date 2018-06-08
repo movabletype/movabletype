@@ -55,18 +55,41 @@ $test_env->prepare_fixture(
             name    => 'test content type 1',
             blog_id => $blog_id,
         );
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 2',
+            blog_id => $blog_id,
+        );
+        my $ct3 = MT::Test::Permission->make_content_type(
+            name    => 'test content type 3',
+            blog_id => $blog_id,
+        );
         MT::Test::Permission->make_content_data(
             blog_id         => $blog_id,
             content_type_id => $ct1->id,
             status          => MT::ContentStatus::RELEASE(),
         ) for ( 1 .. 5 );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct1->id,
+            status          => MT::ContentStatus::HOLD(),
+        );
+        MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $ct2->id,
+            status          => MT::ContentStatus::RELEASE(),
+        );
     }
 );
 
 my $ct1 = MT::ContentType->load( { name => 'test content type 1' } );
+my $ct2 = MT::ContentType->load( { name => 'test content type 2' } );
+my $ct3 = MT::ContentType->load( { name => 'test content type 3' } );
 
-$vars->{ct1_id}  = $ct1->id;
-$vars->{ct1_uid} = $ct1->unique_id;
+$vars->{ct1_id}   = $ct1->id;
+$vars->{ct1_uid}  = $ct1->unique_id;
+$vars->{ct1_name} = $ct1->name;
+$vars->{ct2_uid}  = $ct2->unique_id;
+$vars->{ct3_uid}  = $ct3->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -78,7 +101,7 @@ __END__
 --- template
 <mt:ContentsCount>
 --- expected
-5
+6
 
 === MT::ContentsCount in contents context
 --- template
@@ -86,16 +109,21 @@ __END__
 --- expected
 5
 
-=== MT::ContentsCount with content_type_id modifier
+=== MT::ContentsCount with content_type="id" modifier
 --- template
-<mt:ContentsCount content_type_id="[% ct1_id %]">
+<mt:ContentsCount content_type="[% ct1_id %]">
 --- expected
 5
 
-=== MT::ContentsCount with ct_unique_id modifier
---- SKIP
+=== MT::ContentsCount with content_type="unique_id" modifier
 --- template
-<mt:ContentsCount ct_unique_id="[% ct1_uid %]">
+<mt:ContentsCount content_type="[% ct1_uid %]">
+--- expected
+5
+
+=== MT::ContentsCount with content_type="name" modifier
+--- template
+<mt:ContentsCount content_type="[% ct1_name %]">
 --- expected
 5
 
@@ -107,7 +135,26 @@ __END__
 
 === MT::ContentsCount with content_type modifier and wrong name
 --- template
-<mt:ContentsCount content_type="test content type 2">
+<mt:ContentsCount content_type="test content type 5">
 --- error
 No Content Type could be found.
+
+=== MT::ContentsCount with plural
+--- template
+<mt:ContentsCount content_type="[% ct1_uid %]" plural="plural #">
+--- expected
+plural 5
+
+
+=== MT::ContentsCount with singular
+--- template
+<mt:ContentsCount content_type="[% ct2_uid %]" singular="singular">
+--- expected
+singular
+
+=== MT::ContentsCount with none
+--- template
+<mt:ContentsCount content_type="[% ct3_uid %]" none="none">
+--- expected
+none
 

@@ -24,9 +24,22 @@ my $app = MT->instance;
 
 my $blog_id = 1;
 
+my $vars = {};
+
+sub var {
+    for my $line (@_) {
+        for my $key ( keys %{$vars} ) {
+            my $replace = quotemeta "[% ${key} %]";
+            my $value   = $vars->{$key};
+            $line =~ s/$replace/$value/g;
+        }
+    }
+    @_;
+}
+
 filters {
-    template => [qw( chomp )],
-    expected => [qw( chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
     error    => [qw( chomp )],
 };
 
@@ -44,6 +57,13 @@ $test_env->prepare_fixture(
             name            => 'single line text',
             type            => 'single_line_text',
         );
+        my $cf_single_line_text_no_data
+            = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'single line text no data',
+            type            => 'single_line_text',
+            );
         my $cf_multi_line_text = MT::Test::Permission->make_content_field(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -190,6 +210,12 @@ $test_env->prepare_fixture(
                 options   => { label => $cf_single_line_text->name },
                 unique_id => $cf_single_line_text->unique_id,
             },
+            {   id        => $cf_single_line_text_no_data->id,
+                order     => 1,
+                type      => $cf_single_line_text_no_data->type,
+                options   => { label => $cf_single_line_text_no_data->name },
+                unique_id => $cf_single_line_text_no_data->unique_id,
+            },
             {   id        => $cf_multi_line_text->id,
                 order     => 2,
                 type      => $cf_multi_line_text->type,
@@ -335,18 +361,19 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             author_id       => 1,
             data            => {
-                $cf_single_line_text->id => 'test single line text',
-                $cf_multi_line_text->id  => "test multi line text\naaaaa",
-                $cf_number->id           => '12345',
-                $cf_url->id              => 'https://example.com/~abby',
-                $cf_embedded_text->id    => "abc\ndef",
-                $cf_datetime->id         => '20170603180500',
-                $cf_date->id             => '20170605000000',
-                $cf_time->id             => '19700101123456',
-                $cf_select_box->id       => [2],
-                $cf_radio->id            => [3],
-                $cf_checkbox->id         => [ 1, 3 ],
-                $cf_list->id             => [ 'aaa', 'bbb', 'ccc' ],
+                $cf_single_line_text->id         => 'test single line text',
+                $cf_single_line_text_no_data->id => '',
+                $cf_multi_line_text->id => "test multi line text\naaaaa",
+                $cf_number->id          => '12345',
+                $cf_url->id             => 'https://example.com/~abby',
+                $cf_embedded_text->id   => "abc\ndef",
+                $cf_datetime->id        => '20170603180500',
+                $cf_date->id            => '20170605000000',
+                $cf_time->id            => '19700101123456',
+                $cf_select_box->id      => [2],
+                $cf_radio->id           => [3],
+                $cf_checkbox->id        => [ 1, 3 ],
+                $cf_list->id            => [ 'aaa', 'bbb', 'ccc' ],
                 $cf_table->id => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
@@ -358,21 +385,81 @@ $test_env->prepare_fixture(
     }
 );
 
+my $cf = MT->model('cf')->load( { name => 'single line text' } );
+
+$vars->{cf_unique_id} = $cf->unique_id;
+$vars->{cf_name}      = $cf->name;
+$vars->{cf_id}        = $cf->id;
+
 MT::Test::Tag->run_perl_tests($blog_id);
 
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== mt:ContentField content_field="single line text"
+=== mt:ContentField without contents context
 --- template
-<mt:Contents content_type="test content data"><mt:ContentField content_field="single line text"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:ContentField content_field="single line text"><mt:var name="__value__"></mt:ContentField>
+--- error
+No Content Type could be found.
+
+=== mt:ContentField content_field="single line text" (unique_id)
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="[% cf_unique_id %]"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
 Header
 test single line text
 Footer
+
+=== mt:ContentField content_field="single line text" (name)
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="[% cf_name %]"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:var name="__value__">
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+test single line text
+Footer
+
+=== mt:ContentField content_field="single line text" (id)
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="[% cf_id %]"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:var name="__value__">
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+test single line text
+Footer
+
+=== mt:ContentField with mt:Else
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="single line text no data">
+<mt:var name="__value__"><mt:Else>no data
+</mt:ContentField></mt:Contents>
+--- expected
+no data
+
+=== mt:ContentField without content_field modifier (use first field)
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:var name="__value__">
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+test single line text
+Footer
+
+=== mt:ContentField no data
+--- skip
+1
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:var name="__value__">
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- error
+No Content Field could be found.
 
 === mt:ContentField content_field="multi line text"
 --- template
@@ -570,6 +657,7 @@ Footer
 </mt:ContentFields></mt:Contents>
 --- expected
 single line text
+
 multi line text
 number
 url
@@ -592,6 +680,7 @@ asset_image
 </mt:ContentFields></mt:Contents>
 --- expected
 single_line_text
+
 multi_line_text
 number
 url
