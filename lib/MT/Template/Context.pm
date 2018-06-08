@@ -545,6 +545,7 @@ sub get_content_type_context {
     if ( my $str = $args->{content_type} ) {
         if (!$content_type
             || (   $content_type
+                && ( $str =~ /^\d+$/ && $content_type->id != $str )
                 && $content_type->unique_id ne $str
                 && ($content_type->blog_id != $blog_id
                     || (   $content_type->blog_id == $blog_id
@@ -558,9 +559,12 @@ sub get_content_type_context {
             unless ($content_type) {
                 ($content_type)
                     = MT->model('content_type')
-                    ->load( { blog_id => $blog_id, name => $str } )
-                    or return $ctx->_no_content_type_error();
+                    ->load( { blog_id => $blog_id, name => $str } );
             }
+            if ( !$content_type && $str =~ /^\d+$/ ) {
+                $content_type = MT->model('content_type')->load($str);
+            }
+            return $ctx->_no_content_type_error() unless $content_type;
         }
     }
 

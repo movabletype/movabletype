@@ -135,16 +135,12 @@ __END__
 1
 
 === mt:ArchiveList id 01
---- skip
-1
 --- template
 <mt:ArchiveList type="ContentType-Author" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList>
 --- expected
 11
 
 === mt:ArchiveList id 02
---- skip
-1
 --- template
 <mt:ArchiveList type="ContentType-Author" content_type="[% content_type_02_id %]"><mt:ArchiveCount></mt:ArchiveList>
 --- expected
