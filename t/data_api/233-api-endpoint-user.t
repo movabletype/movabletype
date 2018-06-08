@@ -688,11 +688,12 @@ sub suite {
             is_superuser => 1,
             params       => {
                 user => {
-                    name              => 'create-user-with-permissions',
-                    displayName       => 'create user with permissions',
-                    password          => 'password',
-                    email             => 'chuckd@sixapart.com',
-                    systemPermissions => [ qw( create_blog view_log ), ],
+                    name        => 'create-user-with-permissions',
+                    displayName => 'create user with permissions',
+                    password    => 'password',
+                    email       => 'chuckd@sixapart.com',
+                    systemPermissions =>
+                        [ qw( create_blog view_log sign_in_data_api ), ],
                 },
             },
             result => sub {
@@ -703,6 +704,17 @@ sub suite {
                     'auth_type is set'
                 );
                 $user;
+            },
+        },
+        {
+            # login by created user
+            path      => '/v2/authentication',
+            method    => 'POST',
+            author_id => 0,
+            params    => {
+                username => 'create-user-with-permissions',
+                password => 'password',
+                clientId => 'mt-test',
             },
         },
         {    # Grant system permissions (superuser).
