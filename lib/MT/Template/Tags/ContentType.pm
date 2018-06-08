@@ -1752,7 +1752,8 @@ sub _hdlr_content_field {
             unless $field_data;
     }
     $field_data
-        ||= $ctx->stash('content_field_data') || $content_type->fields->[0]
+        ||= $ctx->stash('content_field_data')
+        || ( $args->{content_field} ? undef : $content_type->fields->[0] )
         or return $ctx->_no_content_field_error;
 
     local $ctx->{__stash}{content_field_data} = $field_data

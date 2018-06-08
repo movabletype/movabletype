@@ -452,8 +452,6 @@ test single line text
 Footer
 
 === mt:ContentField no data
---- skip
-1
 --- template
 <mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
