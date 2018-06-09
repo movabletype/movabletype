@@ -175,7 +175,7 @@ __END__
 --- template
 <mt:Archives><mt:if name="template_params" key="archive_listing"><mt:var name="template_params" key="archive_listing"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
 --- expected
-0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 
 === mt:Archives template_params="datebased_archive"
 --- template
