@@ -44,7 +44,7 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class               => "contenttype-datebased-daily-archive",
+        archive_class               => "contenttype-daily-archive",
         datebased_daily_archive     => 1,
         archive_template            => 1,
         archive_listing             => 1,
