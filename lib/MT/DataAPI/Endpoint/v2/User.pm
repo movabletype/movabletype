@@ -32,7 +32,8 @@ sub create {
     my $orig_user = $app->model('author')->new;
 
     $orig_user->set_values(
-        {   nickname    => '',
+        {   auth_type   => $app->config->AuthenticationModule,
+            nickname    => '',
             text_format => 0,
         }
     );
