@@ -1497,8 +1497,8 @@ sub userpic_html {
     return unless $thumb_url;
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="" />};
+        ? q{<img src="%s&%d" width="%d" height="%d" />}
+        : q{<img src="%s?%d" width="%d" height="%d" />};
     sprintf $format,
         MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
 }
