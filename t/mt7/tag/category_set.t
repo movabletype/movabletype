@@ -189,8 +189,6 @@ test category set 02
 1
 
 === mt:CategorySets label="Set Content Type ID"
---- skip
-1
 --- template
 <mt:CategorySets content_type="[% content_type_02_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected

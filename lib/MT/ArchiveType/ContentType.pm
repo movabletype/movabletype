@@ -30,7 +30,6 @@ sub template_params {
         archive_class       => "contenttype-archive",
         contenttype_archive => 1,
         archive_template    => 1,
-        archive_listing     => 1,
     };
 }
 

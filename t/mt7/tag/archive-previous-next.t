@@ -341,16 +341,12 @@ test2
 test1
 
 === MT:ArchiveNext with id
---- skip
-1
 --- template
 <mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with id
---- skip
-1
 --- template
 <mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected

@@ -175,7 +175,7 @@ __END__
 --- template
 <mt:Archives><mt:if name="template_params" key="archive_listing"><mt:var name="template_params" key="archive_listing"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
 --- expected
-0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 
 === mt:Archives template_params="datebased_archive"
 --- template
@@ -337,5 +337,5 @@ __END__
 --- template
 <mt:Archives><mt:if name="template_params" key="archive_class"><mt:var name="template_params" key="archive_class"><mt:else>0</mt:if><mt:unless name="__last__">,</mt:unless></mt:Archives>
 --- expected
-entry-archive,page-archive,datebased-daily-archive,datebased-weekly-archive,datebased-monthly-archive,datebased-yearly-archive,author-archive,author-daily-archive,author-weekly-archive,author-monthly-archive,author-yearly-archive,category-archive,category-daily-archive,category-weekly-archive,category-monthly-archive,category-yearly-archive,contenttype-archive,contenttype-datebased-daily-archive,contenttype-datebased-weekly-archive,contenttype-datebased-monthly-archive,contenttype-datebased-yearly-archive,contenttype-author-archive,contenttype-author-daily-archive,contenttype-author-weekly-archive,contenttype-author-monthly-archive,contenttype-author-yearly-archive,contenttype-category-archive,contenttype-category-daily-archive,contenttype-category-weekly-archive,contenttype-category-monthly-archive,contenttype-category-yearly-archive
+entry-archive,page-archive,datebased-daily-archive,datebased-weekly-archive,datebased-monthly-archive,datebased-yearly-archive,author-archive,author-daily-archive,author-weekly-archive,author-monthly-archive,author-yearly-archive,category-archive,category-daily-archive,category-weekly-archive,category-monthly-archive,category-yearly-archive,contenttype-archive,contenttype-daily-archive,contenttype-weekly-archive,contenttype-monthly-archive,contenttype-yearly-archive,contenttype-author-archive,contenttype-author-daily-archive,contenttype-author-weekly-archive,contenttype-author-monthly-archive,contenttype-author-yearly-archive,contenttype-category-archive,contenttype-category-daily-archive,contenttype-category-weekly-archive,contenttype-category-monthly-archive,contenttype-category-yearly-archive
 
