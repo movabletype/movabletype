@@ -1628,10 +1628,21 @@ sub search {
                         );
                 }
                 else {
-                    $stmt_sort = $class->_prepare_statement_for_normal_sort(
-                        search_fields => $search_fields,
-                        sort_index    => $sort_index,
-                    );
+                    if ( lc( MT->config->ObjectDriver ) =~ /mssqlserver/ ) {
+                        $stmt_sort
+                            = $class
+                            ->_prepare_statement_for_normal_sort_on_mssql(
+                            search_fields => $search_fields,
+                            sort_index    => $sort_index,
+                            );
+                    }
+                    else {
+                        $stmt_sort
+                            = $class->_prepare_statement_for_normal_sort(
+                            search_fields => $search_fields,
+                            sort_index    => $sort_index,
+                            );
+                    }
                 }
                 my $sql_sort_table
                     = '(' . $stmt_sort->as_sql . ") AS sort$sort_index";
@@ -1773,6 +1784,99 @@ sub _prepare_statement_for_normal_sort {
             )
         }
     );
+
+    $stmt;
+}
+
+sub _prepare_statement_for_sub_on_mssql {
+    my $class = shift;
+    my ( $search_fields, $sort_index ) = @_;
+
+    my $driver = $class->driver;
+    my $dbd    = $driver->dbd;
+
+    my $stmt = $dbd->sql_class->new;
+
+    my @sort_cols;
+    for my $col ( $class->_sort_columns ) {
+        my $db_col = $driver->_decorate_column_name(
+            MT->model('content_field_index'), $col );
+        push @sort_cols, "CONVERT(varchar, $db_col) + ','";
+    }
+    my $sort_col = join ',', @sort_cols;
+    $stmt->add_select($sort_col);
+    $stmt->from(
+        [   $driver->table_for( MT->model('content_field_index') )
+                . " AS sub$sort_index",
+        ]
+    );
+    my $id_column
+        = $driver->_decorate_column_name( MT->model('content_field'), 'id' );
+    my $sub_cd_id_column
+        = $driver->_decorate_column_name( MT->model('content_field_index'),
+        'content_data_id', "sub$sort_index" );
+    my $tmp_cd_id_column
+        = $driver->_decorate_column_name( MT->model('content_field_index'),
+        'content_data_id', "tmp$sort_index" );
+    $stmt->add_complex_where(
+        [   { $sub_cd_id_column => \("= $tmp_cd_id_column"), },
+            { $id_column        => [ map { $_->id } @$search_fields ], },
+        ]
+    );
+    $stmt->order(
+        [   {   column => $driver->_decorate_column_name(
+                    MT->model('content_field_index'), 'id'
+                ),
+                desc => 'ASC',
+            }
+        ]
+    );
+
+    $stmt;
+}
+
+sub _prepare_statement_for_normal_sort_on_mssql {
+    my $class         = shift;
+    my %args          = @_;
+    my $search_fields = $args{search_fields};
+    my $sort_index    = $args{sort_index};
+
+    my $driver = $class->driver;
+    my $dbd    = $driver->dbd;
+
+    my $stmt = $dbd->sql_class->new;
+
+    my $content_data_id_col = 'content_data_id';
+    $stmt->add_select(
+        $driver->_decorate_column_name( MT->model('content_field_index'),
+            $content_data_id_col ) => $content_data_id_col,
+    );
+
+    my $stmt_sub
+        = $class->_prepare_statement_for_sub_on_mssql( $search_fields,
+        $sort_index );
+    my $sql_sub = $stmt_sub->as_sql;
+    $stmt->add_select("($sql_sub FOR XML PATH('')) as sort$sort_index");
+
+    $stmt->from(
+        [   $driver->table_for( MT->model('content_field') ),
+            $driver->table_for( MT->model('content_field_index') )
+                . " AS tmp$sort_index",
+        ]
+    );
+
+    my $cf_id_column
+        = $driver->_decorate_column_name( MT->model('content_field'), 'id' );
+    my $tmp_cf_id_column
+        = $driver->_decorate_column_name( MT->model('content_field_index'),
+        'content_field_id', "tmp$sort_index" );
+    $stmt->add_complex_where(
+        [   { $cf_id_column => \("= $tmp_cf_id_column"), },
+            { $cf_id_column => [ map { $_->id } @$search_fields ], },
+        ]
+    );
+
+    unshift @{ $stmt->bind }, @{ $stmt_sub->bind };
 
     $stmt;
 }
