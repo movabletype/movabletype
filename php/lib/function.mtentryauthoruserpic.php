@@ -29,7 +29,7 @@ function smarty_function_mtentryauthoruserpic($args, &$ctx) {
     $dimensions = sprintf('width="%s" height="%s"', $mt->config('UserpicThumbnailSize'), $mt->config('UserpicThumbnailSize'));
 
     $link =sprintf('<img src="%s?%d" %s alt="%s" />',
-                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset->label));
+                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset[0]->label));
 
     return $link;
 }

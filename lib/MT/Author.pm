@@ -1495,12 +1495,14 @@ sub userpic_html {
     my %param  = @_;
     my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
+    my $asset = $author->userpic(@_);
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="" />};
+        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" />}
+        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" />};
     sprintf $format,
-        MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
+        MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
+        MT::Util::encode_html( $asset->label );
 }
 
 sub can_do {
