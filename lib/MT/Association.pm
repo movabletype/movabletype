@@ -371,7 +371,10 @@ sub list_props {
         _type => {
             view  => [],
             terms => sub {
-                my $types = [ MT::Association::USER_BLOG_ROLE(),MT::Association::GROUP_BLOG_ROLE() ];
+                my $types = [
+                    MT::Association::USER_BLOG_ROLE(),
+                    MT::Association::GROUP_BLOG_ROLE()
+                ];
                 return { type => $types };
             }
         },
@@ -522,11 +525,8 @@ sub system_filters {
         for_user => {
             label => 'Permissions for Users',
             items => [
-                {
-                    type => 'type',
-                    args => {
-                        value => 1,
-                    }
+                {   type => 'type',
+                    args => { value => 1, }
                 },
             ],
             order => 100,
@@ -534,11 +534,8 @@ sub system_filters {
         for_group => {
             label => 'Permissions for Groups',
             items => [
-                {
-                    type => 'type',
-                    args => {
-                        value => 2,
-                    }
+                {   type => 'type',
+                    args => { value => 2, }
                 },
             ],
             order => 200,

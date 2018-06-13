@@ -1682,11 +1682,11 @@ BEGIN {
                 default_sort_key    => 'modified_on',
             },
             group => {
-                object_label        => 'Group',
-                default_sort_key    => 'name',
-                primary             => 'name',
-                permission          => 'administer',
-                view                => 'system',
+                object_label     => 'Group',
+                default_sort_key => 'name',
+                primary          => 'name',
+                permission       => 'administer',
+                view             => 'system',
             },
             group_member => {
                 screen_label        => 'Manage Group Members',

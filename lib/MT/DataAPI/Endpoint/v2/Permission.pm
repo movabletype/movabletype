@@ -370,13 +370,9 @@ sub grant_to_group {
 
     # Check parameters.
     my ($group) = context_objects(@_) or return;
-    my $site
-        = _retrieve_site_from_param(
-        $app)
+    my $site = _retrieve_site_from_param($app)
         or return;
-    my $role
-        = _retrieve_role_from_param(
-        $app)
+    my $role = _retrieve_role_from_param($app)
         or return;
 
     $app->param( 'blog_id', $site->id );
@@ -403,14 +399,10 @@ sub revoke_from_group {
 
     my ($group) = context_objects(@_) or return;
 
-    my $site
-        = _retrieve_site_from_param(
-        $app)
+    my $site = _retrieve_site_from_param($app)
         or return;
 
-    my $role
-        = _retrieve_role_from_param(
-        $app)
+    my $role = _retrieve_role_from_param($app)
         or return;
 
     my $assoc = $app->model('association')->load(

@@ -15,48 +15,40 @@ use MT::DataAPI::Resource::Common;
 use MT::Group;
 
 sub updatable_fields {
-    [
-        qw(
-          status
-          ),
-        {
-            name      => 'name',
+    [   qw(
+            status
+            ),
+        {   name      => 'name',
             condition => sub {
                 _create_or_update_with_active()
-                  && !_external_group_management();
+                    && !_external_group_management();
             },
         },
-        {
-            name      => 'displayName',
+        {   name      => 'displayName',
             contition => sub {
                 _create_or_update_with_active()
-                  && !_ldap_external_group_management();
+                    && !_ldap_external_group_management();
             },
         },
-        {
-            name      => 'description',
+        {   name      => 'description',
             condition => \&_create_or_update_with_active,
         },
     ];
 }
 
 sub fields {
-    [
-        qw(
-          id
-          name
-          ),
-        {
-            name                => 'displayName',
+    [   qw(
+            id
+            name
+            ),
+        {   name                => 'displayName',
             alias               => 'display_name',
             from_object_default => '',
         },
-        {
-            name                => 'description',
+        {   name                => 'description',
             from_object_default => '',
         },
-        {
-            name        => 'status',
+        {   name        => 'status',
             from_object => sub {
                 my ($obj) = @_;
                 return if !defined( $obj->status );
@@ -88,28 +80,24 @@ sub fields {
                 return 0;
             },
         },
-        {
-            name      => 'externalId',
+        {   name      => 'externalId',
             alias     => 'external_id',
             condition => sub {
                 my $app = MT->instance or return;
                 my $cfg = $app->config or return;
                 return $cfg->AuthenticationModule ne 'MT'
-                  && $cfg->ExternalGroupManagement;
+                    && $cfg->ExternalGroupManagement;
             },
         },
-        {
-            name                => 'memberCount',
+        {   name                => 'memberCount',
             alias               => 'user_count',
             from_object_default => 0,
         },
-        {
-            name        => 'permissionCount',
+        {   name        => 'permissionCount',
             from_object => sub {
                 my ($obj) = @_;
                 my $count = MT::Association->count(
-                    {
-                        group_id => $obj->id,
+                    {   group_id => $obj->id,
                         type     => MT::Association::GROUP_BLOG_ROLE(),
                     }
                 );
@@ -117,8 +105,7 @@ sub fields {
             },
             from_object_default => 0,
         },
-        {
-            name             => 'updatable',
+        {   name             => 'updatable',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
                 my $app = MT->instance;
@@ -154,11 +141,11 @@ sub _create_or_update_with_active {
 
     my $status;
     if ( exists $resource_group->{status} ) {
-        $status =
-          (      $resource_group->{status}
-              && $resource_group->{status} eq 'Enabled' )
-          ? MT::Group::ACTIVE()
-          : MT::Group::INACTIVE();
+        $status
+            = (    $resource_group->{status}
+                && $resource_group->{status} eq 'Enabled' )
+            ? MT::Group::ACTIVE()
+            : MT::Group::INACTIVE();
     }
     else {
         my $group = $app->model('group')->load($group_id) or return;

@@ -17,7 +17,7 @@ sub save_filter {
     return 1 if $obj->status == MT::Group::INACTIVE();
 
     if ( !$obj->status ) {
-        return $app->errtrans('A parameter "[_1]" is invalid.', 'status' );
+        return $app->errtrans( 'A parameter "[_1]" is invalid.', 'status' );
     }
 
     if ( !defined( $obj->name ) || $obj->name eq '' ) {

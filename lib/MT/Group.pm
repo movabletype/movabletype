@@ -523,59 +523,58 @@ sub list_props {
 
 sub member_list_props {
     return {
-		name => {
-			label => 'Username',
-			col => 'name',
-			display => 'force',
-			order => 100,
-            base => '__virtual.string',
-			sub_fields => [
-				{
-					class => 'userpic',
-					label => 'Userpic',
-					display => 'optional',
-				},
-				{
-					class => 'user-info',
-					label => 'User Info',
-					display => 'optional',
-				},
-			],
-			html => sub {
-				my ( $prop, $obj, $app ) = @_;
-				MT::Author::_bulk_author_name_html($prop, [ $obj->user ], $app );
-			},
-			bulk_sort => sub {
-				my $prop = shift;
-				my ($objs) = @_;
-				sort { $a->user->name cmp $b->user->name } @$objs;
-			},
-			terms => sub {
-				my $prop = shift;
-				my ( $args, $db_terms, $db_args ) = @_;
-				my $term = $prop->super(@_);
-				$db_args->{joins} ||= [];
-				push @{ $db_args->{joins} },
-				  MT->model('author')->join_on(
-					undef,
-					{
-						id => \'= association_author_id',
-						name => $term->{name},
-					},
-					{}
-				  );
-			},
-			sort => 0,
-		},
-        nickname => {
-            base => '__virtual.string',
-            col => 'name',
-            label => 'Display Name',
-            order => 200,
-            display => 'default',
+        name => {
+            label      => 'Username',
+            col        => 'name',
+            display    => 'force',
+            order      => 100,
+            base       => '__virtual.string',
+            sub_fields => [
+                {   class   => 'userpic',
+                    label   => 'Userpic',
+                    display => 'optional',
+                },
+                {   class   => 'user-info',
+                    label   => 'User Info',
+                    display => 'optional',
+                },
+            ],
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
-                MT::Author::_nickname_bulk_html($prop, [ $obj->user ], $app );
+                MT::Author::_bulk_author_name_html( $prop, [ $obj->user ],
+                    $app );
+            },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ($objs) = @_;
+                sort { $a->user->name cmp $b->user->name } @$objs;
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $term = $prop->super(@_);
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model('author')->join_on(
+                    undef,
+                    {   id   => \'= association_author_id',
+                        name => $term->{name},
+                    },
+                    {}
+                    );
+            },
+            sort => 0,
+        },
+        nickname => {
+            base    => '__virtual.string',
+            col     => 'name',
+            label   => 'Display Name',
+            order   => 200,
+            display => 'default',
+            html    => sub {
+                my ( $prop, $obj, $app ) = @_;
+                MT::Author::_nickname_bulk_html( $prop, [ $obj->user ],
+                    $app );
             },
             bulk_sort => sub {
                 my $prop = shift;
@@ -583,59 +582,62 @@ sub member_list_props {
                 sort { $a->user->nickname cmp $b->user->nickname } @$objs;
             },
             terms => sub {
-            my $prop = shift;
-            my ( $args, $db_terms, $db_args ) = @_;
-            my $term = $prop->super(@_);
-            $db_args->{joins} ||= [];
-            push @{ $db_args->{joins} },
-                MT->model('author')->join_on(
-                undef,
-                {
-                    id => \'= association_author_id',
-                    nickname => $term->{name},
-                },
-                {}
-                );
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $term = $prop->super(@_);
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model('author')->join_on(
+                    undef,
+                    {   id       => \'= association_author_id',
+                        nickname => $term->{name},
+                    },
+                    {}
+                    );
             },
             sort => 0,
         },
-		group_name => {
-			label => 'Group Name',
-			filter_label => 'Group',
-			display => 'force',
-			base => '__virtual.string',
-			order => 300,
-			col => 'name',
-			html => sub {
-				my ( $prop, $obj, $app ) = @_;
-				my $group = $obj->group;
-				return unless $group;
-				my $name = MT::Util::encode_html($group->name);
-				my $description = MT::Util::encode_html($group->description);
-				my $edit_url = $app->uri(
-					mode => 'view',
-					args => {
-						_type   => 'group',
-						id      => $group->id,
-						blog_id => 0,
-					},
-				);
-				my $status =
-				  $group->status == MT::Group::ACTIVE()
-				  ? 'enabled'
-				  :                                         'disabled';
-				my $translated_status_label =
-				    $group->status == MT::Group::ACTIVE()
-				  ? $app->translate('Enabled')
-				  :                                         $app->translate('Disabled');
-				my $badge_type = $group->status == MT::Group::ACTIVE() ? 'success' : 'default';
-				my $description_block = ( length($description) > 0 )
-				  ? qq{
+        group_name => {
+            label        => 'Group Name',
+            filter_label => 'Group',
+            display      => 'force',
+            base         => '__virtual.string',
+            order        => 300,
+            col          => 'name',
+            html         => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my $group = $obj->group;
+                return unless $group;
+                my $name = MT::Util::encode_html( $group->name );
+                my $description
+                    = MT::Util::encode_html( $group->description );
+                my $edit_url = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'group',
+                        id      => $group->id,
+                        blog_id => 0,
+                    },
+                );
+                my $status
+                    = $group->status == MT::Group::ACTIVE()
+                    ? 'enabled'
+                    : 'disabled';
+                my $translated_status_label
+                    = $group->status == MT::Group::ACTIVE()
+                    ? $app->translate('Enabled')
+                    : $app->translate('Disabled');
+                my $badge_type
+                    = $group->status == MT::Group::ACTIVE()
+                    ? 'success'
+                    : 'default';
+                my $description_block = ( length($description) > 0 )
+                    ? qq{
                         <p class="description">$description</p>
                     }
-				  : q{};
-				my $static_uri = $app->static_path;
-				return qq{
+                    : q{};
+                my $static_uri = $app->static_path;
+                return qq{
                         <span class="status $status">
                             <svg title="group" role="img" class="mt-icon mt-icon--sm">
                                 <use xlink:href="${static_uri}images/sprite.svg#ic_member">
@@ -647,28 +649,27 @@ sub member_list_props {
                         </span>
                         $description_block
                     };
-			},
-			terms => sub {
-				my $prop = shift;
-				my ( $args, $db_terms, $db_args ) = @_;
-				my $term = $prop->super(@_);
-				$db_args->{joins} ||= [];
-				push @{ $db_args->{joins} },
-				  MT->model('group')->join_on(
-					undef,
-					{
-						id => \'= association_group_id',
-						name => $term->{name},
-					},
-					{}
-				  );
-			},
-			bulk_sort => sub {
-				my $prop = shift;
-				my ($objs) = @_;
-				sort { $a->group->name cmp $b->group->name } @$objs;
-			},
-		},
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $term = $prop->super(@_);
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model('group')->join_on(
+                    undef,
+                    {   id   => \'= association_group_id',
+                        name => $term->{name},
+                    },
+                    {}
+                    );
+            },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ($objs) = @_;
+                sort { $a->group->name cmp $b->group->name } @$objs;
+            },
+        },
         _type => {
             terms => sub {
                 require MT::Association;
@@ -677,28 +678,28 @@ sub member_list_props {
             view => 'none',
         },
         content_data_count => {
-            order => 350,
-            label => 'Content Data Count',
-            display => 'default',
-            base => '__virtual.object_count',
-            col_class => 'num',
+            order       => 350,
+            label       => 'Content Data Count',
+            display     => 'default',
+            base        => '__virtual.object_count',
+            col_class   => 'num',
             count_class => 'content_data',
-            count_col => 'author_id',
+            count_col   => 'author_id',
             filter_type => 'author_id',
-            ref_column => 'author_id',
-            html => sub { my $prop = shift; $prop->raw(@_) },
+            ref_column  => 'author_id',
+            html        => sub { my $prop = shift; $prop->raw(@_) },
         },
         entry_count => {
-            label => '__ENTRY_COUNT',
-            display => 'default',
-            order => 400,
-            base => '__virtual.object_count',
-            col_class => 'num',
+            label       => '__ENTRY_COUNT',
+            display     => 'default',
+            order       => 400,
+            base        => '__virtual.object_count',
+            col_class   => 'num',
             count_class => 'entry',
-            count_col => 'author_id',
+            count_col   => 'author_id',
             filter_type => 'author_id',
-            ref_column => 'author_id',
-            html => sub {
+            ref_column  => 'author_id',
+            html        => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $count = MT->model( $prop->count_class )
@@ -716,16 +717,16 @@ sub member_list_props {
             },
         },
         comment_count => {
-            label => '__COMMENT_COUNT',
-            display => 'default',
-            order => 500,
-            base => '__virtual.object_count',
-            col_class => 'num',
+            label       => '__COMMENT_COUNT',
+            display     => 'default',
+            order       => 500,
+            base        => '__virtual.object_count',
+            col_class   => 'num',
             count_class => 'comment',
-            count_col => 'commenter_id',
+            count_col   => 'commenter_id',
             filter_type => 'commenter_id',
-            ref_column => 'author_id',
-            html => sub {
+            ref_column  => 'author_id',
+            html        => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
                 my $count = MT->model( $prop->count_class )
@@ -743,70 +744,74 @@ sub member_list_props {
             }
         },
         created_on => {
-            base => '__virtual.created_on',
-            order => 700,
+            base    => '__virtual.created_on',
+            order   => 700,
             display => 'optional',
-            raw => sub {
+            raw     => sub {
                 my ( $prop, $obj ) = @_;
-                $obj->user->created_on
+                $obj->user->created_on;
             },
             terms => sub {
                 my $prop = shift;
-                my ($args, $load_terms, $load_args) = @_;
+                my ( $args, $load_terms, $load_args ) = @_;
                 my $term = $prop->super(@_);
                 $load_args->{joins} ||= [];
-                push @{ $load_args->{joins} }, MT->model('author')->join_on(
+                push @{ $load_args->{joins} },
+                    MT->model('author')->join_on(
                     undef,
-                    {
-                        id => \'=association_author_id',
+                    {   id         => \'=association_author_id',
                         created_on => $term->{created_on},
                     },
                     {}
-                );
+                    );
             },
         },
         modified_on => {
-            base => '__virtual.modified_on',
-            order => 800,
+            base    => '__virtual.modified_on',
+            order   => 800,
             display => 'optional',
-            raw => sub {
+            raw     => sub {
                 my ( $prop, $obj ) = @_;
-                $obj->user->modified_on
+                $obj->user->modified_on;
             },
             terms => sub {
                 my $prop = shift;
-                my ($args, $load_terms, $load_args) = @_;
+                my ( $args, $load_terms, $load_args ) = @_;
                 my $term = $prop->super(@_);
                 $load_args->{joins} ||= [];
-                push @{ $load_args->{joins} }, MT->model('author')->join_on(
+                push @{ $load_args->{joins} },
+                    MT->model('author')->join_on(
                     undef,
-                    {
-                        id => \'=association_author_id',
+                    {   id         => \'=association_author_id',
                         created_on => $term->{modified_on},
                     },
                     {}
-                );
+                    );
             },
         },
-        blog_name => {
-            display => 'none',
-        },
-        status => {
-            label => 'Status',
-            base => '__virtual.single_select',
-            col => 'status',
-            display => 'none',
+        blog_name => { display => 'none', },
+        status    => {
+            label                 => 'Status',
+            base                  => '__virtual.single_select',
+            col                   => 'status',
+            display               => 'none',
             single_select_options => sub {
                 my @sso;
-                push @sso, {
+                push @sso,
+                    {
                     label => MT->translate('Active'),
-                    value => 'active' };
-                push @sso, {
+                    value => 'active'
+                    };
+                push @sso,
+                    {
                     label => MT->translate('Inactive'),
-                    value => 'inactive' };
-                push @sso, {
+                    value => 'inactive'
+                    };
+                push @sso,
+                    {
                     label => MT->translate('Pending'),
-                    value => 'pending' };
+                    value => 'pending'
+                    };
                 return \@sso;
             },
             terms => sub {
@@ -823,52 +828,51 @@ sub member_list_props {
                 return unless $val;
 
                 $load_args->{joins} ||= [];
-                push @{ $load_args->{joins} }, MT->model('author')->join_on(
+                push @{ $load_args->{joins} },
+                    MT->model('author')->join_on(
                     undef,
-                    {
-                        id => \'=association_author_id',
-                        status  => $val,
+                    {   id     => \'=association_author_id',
+                        status => $val,
                     },
                     {}
-                );
+                    );
             },
         },
         email => {
-            base => '__virtual.string',
-            col => 'name',
-            label => 'Email',
+            base         => '__virtual.string',
+            col          => 'name',
+            label        => 'Email',
             filter_label => 'Email Address',
-            display => 'none',
-            col => 'email',
-            terms => sub {
+            display      => 'none',
+            col          => 'email',
+            terms        => sub {
                 my $prop = shift;
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $term = $prop->super(@_);
                 $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} }, MT->model('author')->join_on(
+                push @{ $db_args->{joins} },
+                    MT->model('author')->join_on(
                     undef,
-                    {
-                        id => \'= association_author_id',
+                    {   id    => \'= association_author_id',
                         email => $term->{email},
                     },
-                    { }
-                );
+                    {}
+                    );
             },
             sort => 0,
         },
         group_id => {
-            base => '__virtual.hidden',
-            col => 'group_id',
+            base            => '__virtual.hidden',
+            col             => 'group_id',
             filter_editable => 0,
-            display => 'none',
+            display         => 'none',
             label_via_param => sub {
                 my ( $prop, $app, $val ) = @_;
-                my $group = MT->model('group')->load( $val )
-                    or return $prop->error(MT->translate('Invalid parameter.'));
-                my $label = MT->translate(
-                    'Members of group: [_1]',
-                    $group->name,
-                );
+                my $group = MT->model('group')->load($val)
+                    or return $prop->error(
+                    MT->translate('Invalid parameter.') );
+                my $label = MT->translate( 'Members of group: [_1]',
+                    $group->name, );
                 $prop->{label} = MT::Util::encode_html($label);
             },
             args_via_param => sub {
@@ -908,11 +912,8 @@ sub member_system_filters {
         enabled => {
             label => 'Enabled Users',
             items => [
-                {
-                    type => 'status',
-                    args => {
-                        value => 'active',
-                    },
+                {   type => 'status',
+                    args => { value => 'active', },
                 },
             ],
             order => 100,
@@ -920,11 +921,8 @@ sub member_system_filters {
         disabled => {
             label => 'Disabled Users',
             items => [
-                {
-                    type => 'status',
-                    args => {
-                        value => 'inactive',
-                    }
+                {   type => 'status',
+                    args => { value => 'inactive', }
                 },
             ],
             order => 200,

@@ -964,7 +964,8 @@ sub grant_role {
     }
 
     _grant_role_for_group( $app, \@blogs, \@roles )
-        if ( $app->model("group") && ($app->param('group') || $app->param('group_id')) );
+        if ( $app->model("group")
+        && ( $app->param('group') || $app->param('group_id') ) );
 
     $app->add_return_arg( saved => 1 );
     $app->call_return;

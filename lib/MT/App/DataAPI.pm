@@ -2366,138 +2366,155 @@ sub core_endpoints {
         },
 
         # group
-        {   id => 'list_groups',
-            route => '/groups',
-            version => 2,
-            handler => "${pkg}v2::Group::list",
+        {   id             => 'list_groups',
+            route          => '/groups',
+            version        => 2,
+            handler        => "${pkg}v2::Group::list",
             default_params => {
-                limit => 25,
-                offset => 0,
-                sortBy => 'name',
-                sortOrder => 'ascend',
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
                 searchFields => 'name,displayName,description',
-                filterKeys => 'status',
+                filterKeys   => 'status',
             },
-            error_codes => 
-                { 403 => 'Do not have permission to retrieve the requested groups.', },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested groups.',
+            },
         },
-        {   id => 'list_groups_for_user',
-            route => '/users/:user_id/groups',
-            version => 2,
-            handler => "${pkg}v2::Group::list_for_user",
+        {   id             => 'list_groups_for_user',
+            route          => '/users/:user_id/groups',
+            version        => 2,
+            handler        => "${pkg}v2::Group::list_for_user",
             default_params => {
-                limit => 25,
-                offset => 0,
-                sortBy => 'name',
-                sortOrder => 'ascend',
+                limit        => 25,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
                 searchFields => 'name,displayName,description',
-                filterKeys => 'status',
+                filterKeys   => 'status',
             },
-            error_codes =>
-                { 403 => "Do not have permission to retrieve the requested user's groups.", },
+            error_codes => {
+                403 =>
+                    "Do not have permission to retrieve the requested user's groups.",
+            },
         },
-        {   id => 'get_group',
-            route => '/groups/:group_id',
-            version => 2,
-            handler => "${pkg}v2::Group::get",
-            error_codes =>
-               { 403 => "Do not have permission to retrieve the requested group.",},
+        {   id          => 'get_group',
+            route       => '/groups/:group_id',
+            version     => 2,
+            handler     => "${pkg}v2::Group::get",
+            error_codes => {
+                403 =>
+                    "Do not have permission to retrieve the requested group.",
+            },
         },
-        {   id => 'create_group',
-            route => '/groups',
+        {   id        => 'create_group',
+            route     => '/groups',
             resources => ['group'],
-            verb => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Group::create",
-            error_codes => 
-                {403 => "Do not have permission to create a group.",},
-        },
-        {   id => 'update_group',
-            route => '/groups/:group_id',
-            resources => ['group'],
-            verb => 'PUT',
-            version => 2,
-            handler => "${pkg}v2::Group::update",
+            verb      => 'POST',
+            version   => 2,
+            handler   => "${pkg}v2::Group::create",
             error_codes =>
-                { 403 => "Do not have permission to update a group.",},
+                { 403 => "Do not have permission to create a group.", },
         },
-        {   id => 'delete_group',
-            route => '/groups/:group_id',
-            verb => 'DELETE',
+        {   id        => 'update_group',
+            route     => '/groups/:group_id',
+            resources => ['group'],
+            verb      => 'PUT',
+            version   => 2,
+            handler   => "${pkg}v2::Group::update",
+            error_codes =>
+                { 403 => "Do not have permission to update a group.", },
+        },
+        {   id      => 'delete_group',
+            route   => '/groups/:group_id',
+            verb    => 'DELETE',
             version => 2,
             handler => "${pkg}v2::Group::delete",
             error_codes =>
-                {403 => "Do not have permission to delete a group.",},
+                { 403 => "Do not have permission to delete a group.", },
         },
+
         # permission
-        {   id => 'list_permissions_for_group',
-            route => '/groups/:group_id/permissions',
-            version => 2,
+        {   id             => 'list_permissions_for_group',
+            route          => '/groups/:group_id/permissions',
+            version        => 2,
             default_params => {
-                limit => 25,
-                offset => 0,
-                sortBy => 'blog_id',
-                sortOrder => 'ascend',
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
                 filterKeys => 'blogIds',
             },
-            handler => "${pkg}v2::Permission::list_for_group",
-            error_codes =>
-                {403 => "Do not have permission to retrieve the requested group's permissions."},
+            handler     => "${pkg}v2::Permission::list_for_group",
+            error_codes => {
+                403 =>
+                    "Do not have permission to retrieve the requested group's permissions."
+            },
         },
-        {   id => 'grant_permission_to_group',
-            route => '/groups/:group_id/permissions/grant',
-            verb => 'POST',
+        {   id      => 'grant_permission_to_group',
+            route   => '/groups/:group_id/permissions/grant',
+            verb    => 'POST',
             version => 2,
             handler => "${pkg}v2::Permission::grant_to_group",
             error_codes =>
-                {403 => "Do not have permission to grant a permission."},
+                { 403 => "Do not have permission to grant a permission." },
         },
-        {   id => 'revoke_permission_from_group',
-            route => '/groups/:group_id/permissions/revoke',
-            verb => 'POST',
+        {   id      => 'revoke_permission_from_group',
+            route   => '/groups/:group_id/permissions/revoke',
+            verb    => 'POST',
             version => 2,
             handler => "${pkg}v2::Permission::revoke_from_group",
             error_codes =>
-                {403 => "Do not have permission to revoke a permission.",},
+                { 403 => "Do not have permission to revoke a permission.", },
         },
+
         # group member
-        {   id => 'list_members_for_group',
-            route => '/groups/:group_id/members',
-            version => 2,
-            handler => "${pkg}v2::Group::list_members_for_group",
+        {   id             => 'list_members_for_group',
+            route          => '/groups/:group_id/members',
+            version        => 2,
+            handler        => "${pkg}v2::Group::list_members_for_group",
             default_params => {
-                limit => 10,
-                offset => 0,
-                sortBy => 'name',
-                sortOrder => 'ascend',
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
                 searchFields => 'name,displayName,email,url',
-                filterKeys => 'status,lockout',
+                filterKeys   => 'status,lockout',
             },
-            error_codes =>
-                {403 => "Do not have permission to retrieve the list of group members.",},
+            error_codes => {
+                403 =>
+                    "Do not have permission to retrieve the list of group members.",
+            },
         },
-        {   id => 'get_member_for_group',
-            route => '/groups/:group_id/members/:member_id',
-            version => 2,
-            handler => "${pkg}v2::Group::get_member",
-            error_codes =>
-                {403 => "Do not have permission to retrieve the requested group member.",},
+        {   id          => 'get_member_for_group',
+            route       => '/groups/:group_id/members/:member_id',
+            version     => 2,
+            handler     => "${pkg}v2::Group::get_member",
+            error_codes => {
+                403 =>
+                    "Do not have permission to retrieve the requested group member.",
+            },
         },
-        {   id => 'add_member_to_group',
-            route => '/groups/:group_id/members',
-            verb => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Group::add_member",
-            error_codes =>
-                {403 => "Do not have permission to add a member to group.",},
+        {   id          => 'add_member_to_group',
+            route       => '/groups/:group_id/members',
+            verb        => 'POST',
+            version     => 2,
+            handler     => "${pkg}v2::Group::add_member",
+            error_codes => {
+                403 => "Do not have permission to add a member to group.",
+            },
         },
-        {   id => 'remove_member_from_group',
-            route => '/groups/:group_id/members/:member_id',
-            verb => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Group::remove_member",
-            error_codes =>
-                {403 => "Do not have permission to remove a member from group.",},
+        {   id          => 'remove_member_from_group',
+            route       => '/groups/:group_id/members/:member_id',
+            verb        => 'DELETE',
+            version     => 2,
+            handler     => "${pkg}v2::Group::remove_member",
+            error_codes => {
+                403 =>
+                    "Do not have permission to remove a member from group.",
+            },
         },
     ];
 }
@@ -2685,19 +2702,17 @@ sub init_plugins {
 
             # group callbacks
             $pkg
-                . 'view_permission_filter.group'=>
+                . 'view_permission_filter.group' =>
                 "$Core::MT::CMS::Group::CMSViewPermissionFilter_group",
             $pkg
-                . 'save_permission_filter.group'=>
+                . 'save_permission_filter.group' =>
                 "$Core::MT::CMS::Group::CMSSavePermissionFilter_group",
+            $pkg . 'save_filter.group' => "${pfx}Group::save_filter",
             $pkg
-                . 'save_filter.group'=>
-                "${pfx}Group::save_filter",
-            $pkg
-                . 'delete_permission_filter.group'=>
+                . 'delete_permission_filter.group' =>
                 "$Core::MT::CMS::Group::CMSDeletePermissionFilter_group",
             $pkg
-                . 'pre_load_filtered_list.group'=>
+                . 'pre_load_filtered_list.group' =>
                 "$Core::MT::CMS::Group::CMSPreLoadFilteredList_group",
         }
     );

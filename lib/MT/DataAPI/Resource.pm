@@ -173,10 +173,9 @@ sub core_resources {
             },
         ],
         'content_data' => 'cd',
-        'group' => [
-            {
-                version => 2,
-                fields => "${pkg}v2::Group::fields",
+        'group'        => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Group::fields",
                 updatable_fields => "${pkg}v2::Group::updatable_fields",
             },
         ],
