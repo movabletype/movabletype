@@ -252,6 +252,16 @@ sub delete {
     1;
 }
 
+sub rmdir {
+    my $fmgr = shift;
+    my ($dir) = @_;
+    return 1 unless -d $dir && ! -l $dir;
+    rmdir $dir
+        or return $fmgr->error( "Deleting '[_1]' directory failed: [_2]",
+        $dir, _syserr("$!") );
+    1;
+}
+
 1;
 __END__
 

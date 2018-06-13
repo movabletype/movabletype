@@ -816,6 +816,11 @@ sub sql {
     1;
 }
 
+sub search {
+    my $driver = shift;
+    $driver->SUPER::search(@_);
+}
+
 1;
 __END__
 

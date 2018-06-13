@@ -574,6 +574,10 @@ sub _get_normal_ids_for_actual_fields {
                     [   { value_varchar => { like => "%$value%" } },
                         '-or',
                         { value_text => { like => "%$value%" } },
+                        '-or',
+                        { value_float => { like => "%$value%" } },
+                        '-or',
+                        { value_double => { like => "%$value%" } },
                     ],
                 ],
                 {   join => MT->model('content_field')->join_on(

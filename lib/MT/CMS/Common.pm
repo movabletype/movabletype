@@ -293,14 +293,16 @@ sub save {
             if ( ( $author->id || 0 ) == ( $obj->id || 0 ) )
             || ( !$author->is_superuser && $obj->is_superuser );
 
-        if ( !$id
-            || ( !$obj->is_superuser && $author->can_manage_users_groups ) )
+        if (  !$id
+            || $author->is_superuser
+            || $author->can_manage_users_groups )
         {
+
             # Assign the auth_type unless it was assigned
             # through the form.
             $obj->auth_type( $app->config->AuthenticationModule )
                 unless $obj->auth_type;
-            if ( $values{'status'} == MT::Author::ACTIVE() ) {
+            if ( ( $values{'status'} || 0 ) == MT::Author::ACTIVE() ) {
                 my $sys_perms      = MT::Permission->perms('system');
                 my $can_administer = $app->param('can_administer');
                 if ($can_administer) {

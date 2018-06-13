@@ -61,5 +61,6 @@ perltidy.LOG
 
 cover_db/
 
+.vscode/
 .envrc
 

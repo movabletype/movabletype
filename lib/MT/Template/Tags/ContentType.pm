@@ -68,8 +68,7 @@ sub _hdlr_contents {
         ? $content_type->[0]->id
         : [ map { $_->id } @$content_type ];
 
-    my $class_type     = $args->{class_type} || 'content_data';
-    my $class          = MT->model($class_type);
+    my $class          = MT->model('content_data');
     my $cat_class_type = 'category';
     my $cat_class      = MT->model($cat_class_type);
 
@@ -349,9 +348,6 @@ sub _hdlr_contents {
                 $args{range_incl}{$dt_field} = 1;
             }
         }
-
-        # Adds class_type
-        $terms{class} = $class_type;
 
         my $map        = $ctx->stash('template_map');
         my $sort_by_cf = 0;
@@ -1473,8 +1469,6 @@ sub _hdlr_content_calendar {
         my $id            = $args->{category_set};
         my $cat_set_class = MT->model('category_set');
         $category_set = $cat_set_class->load($id) if $id =~ m/^\d+$/;
-        $category_set = $cat_set_class->load( { unique_id => $id } )
-            unless $category_set;
         $category_set = $cat_set_class->load( { name => $id } )
             unless $category_set;
         if ($category_set) {
@@ -1756,7 +1750,8 @@ sub _hdlr_content_field {
             unless $field_data;
     }
     $field_data
-        ||= $ctx->stash('content_field_data') || $content_type->fields->[0]
+        ||= $ctx->stash('content_field_data')
+        || ( $args->{content_field} ? undef : $content_type->fields->[0] )
         or return $ctx->_no_content_field_error;
 
     local $ctx->{__stash}{content_field_data} = $field_data

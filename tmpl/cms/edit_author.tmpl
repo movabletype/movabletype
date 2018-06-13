@@ -230,7 +230,8 @@ function showPasswordField() {
 
   <fieldset id="author-profile-settings" class="form-group">
     <legend class="h3"><__trans phrase="Profile"></legend>
-  <mt:if name="editing_other_profile">
+<mt:unless name="new_object">
+  <mt:if name="can_modify_sys_perms">
 
     <mtapp:setting
        id="status"
@@ -252,6 +253,7 @@ function showPasswordField() {
       </select>
     </mtapp:setting>
   </mt:if>
+</mt:unless>
 
     <mtapp:setting
        id="name"
@@ -271,7 +273,7 @@ function showPasswordField() {
     <mtapp:setting
        id="external_id"
        label="<__trans phrase="External user ID">">
-      <mt:var name="external_id" escape="html">
+      <p><mt:var name="external_id" escape="html"></p>
     </mtapp:setting>
     </mt:if>
   </mt:if>
@@ -489,7 +491,7 @@ function showPasswordField() {
       <mt:loop name="loaded_permissions">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
-            <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modifiy_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
+            <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modify_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
             <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
           </div>
         </div>

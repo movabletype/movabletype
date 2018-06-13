@@ -44,12 +44,12 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class             => "contenttype-datebased-monthly-archive",
-        datebased_monthly_archive => 1,
-        archive_template          => 1,
-        archive_listing           => 1,
-        datebased_archive         => 1,
-        datebased_only_archive    => 1,
+        archive_class               => "contenttype-monthly-archive",
+        datebased_monthly_archive   => 1,
+        archive_template            => 1,
+        archive_listing             => 1,
+        datebased_archive           => 1,
+        datebased_only_archive      => 1,
         contenttype_archive_listing => 1,
     };
 }

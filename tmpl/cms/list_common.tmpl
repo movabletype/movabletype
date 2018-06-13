@@ -110,7 +110,7 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot+compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
 
 <script>
@@ -140,6 +140,7 @@ jQuery.event.special.listReady = {
   </mt:if>
 
   var objectType = '<mt:var name="object_type" escape="js">';
+  var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
 
   var listClient = new ListClient({
     url: '<mt:var name="script_url">',
@@ -319,6 +320,7 @@ jQuery.event.special.listReady = {
       localeCalendarHeader: localeCalendarHeader,
       objectLabel: objectLabel,
       objectType: objectType,
+      objectTypeForTableClass: objectTypeForTableClass,
       disableUserDispOption: disableUserDispOption
     });
   });

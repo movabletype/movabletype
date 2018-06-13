@@ -435,6 +435,7 @@ CREATE TABLE `mt_cd` (
   `cd_label` varchar(255) NULL DEFAULT NULL,
   `cd_modified_by` integer(11) NULL DEFAULT NULL,
   `cd_modified_on` datetime NULL DEFAULT NULL,
+  `cd_random` integer(11),
   `cd_status` smallint(6) NOT NULL,
   `cd_unique_id` varchar(40) NOT NULL,
   `cd_unpublished_on` datetime NULL DEFAULT NULL,

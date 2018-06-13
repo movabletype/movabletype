@@ -504,11 +504,20 @@ sub permission_groups {
     return \@groups;
 }
 
+sub _eval_if_mssql_server_or_oracle {
+    my ($sub) = @_;
+    my $using_mssql_server_or_oracle
+        = lc( MT->config->ObjectDriver ) =~ /mssqlserver|oracle/;
+    $using_mssql_server_or_oracle ? eval { $sub->() } : $sub->();
+}
+
 # class method
 sub all_permissions {
     my $class = shift;
     my @all_permissions;
-    for my $content_type ( @{ $class->load_all } ) {
+    my @content_types
+        = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
+    for my $content_type (@content_types) {
         push( @all_permissions, $content_type->permissions )
             if $content_type->blog;
     }
@@ -833,7 +842,7 @@ sub _make_tag_system_filter {
             label => sub {
                 MT->translate( 'Tags with [_1]', $self->name );
             },
-            view => [ 'website', 'blog' ],
+            view      => [ 'website', 'blog' ],
             items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
             order     => $order,
             condition => sub {

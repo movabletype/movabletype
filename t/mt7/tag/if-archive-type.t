@@ -287,10 +287,8 @@ __END__
 111
 
 === mt:IfArchiveType with content_type="id"
---- skip
-1
 --- template
-<mt:ArchiveList type="ContentType" content_type="[% content_type_01_id %]"><mt:IfArchiveType type="ContentType" content_type="[% content_type_01_id%]">1</mt:IfArchiveType></mt:ArchiveList>
+<mt:ArchiveList type="ContentType" content_type="[% content_type_01_id %]"><mt:IfArchiveType type="ContentType" content_type="[% content_type_01_id %]">1</mt:IfArchiveType></mt:ArchiveList>
 --- expected
 111
 

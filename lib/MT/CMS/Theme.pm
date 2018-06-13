@@ -7,7 +7,7 @@ package MT::CMS::Theme;
 
 use strict;
 use warnings;
-use MT::Util qw( remove_html dirify is_valid_url encode_html );
+use MT::Util qw( remove_html dirify is_valid_url );
 use MT::Theme;
 use File::Spec;
 
@@ -132,41 +132,6 @@ sub _build_theme_table {
     );
     unshift @data, $current_theme if $current_theme;
     return \@data;
-}
-
-sub dialog_select_theme {
-    my $app = shift;
-    my %param;
-    $param{idfield}    = $app->param('idfield');
-    $param{namefield}  = $app->param('namefield');
-    $param{imagefield} = $app->param('imagefield');
-    return $app->permission_denied()
-        unless $app->can_do('open_dialog_select_theme');
-
-    my $cfg     = $app->config;
-    my $blog    = $app->blog;
-    my $current = MT->config->NewUserBlogTheme;
-    my $list    = _build_theme_table(
-        classes => { blog => 1, both => 1, },
-        current => $current
-    );
-    $param{theme_loop} = $list;
-    $param{theme_json} = {
-        map {
-            $_->{theme_id} => {
-                label => encode_html(
-                    'CODE' eq ref $_->{label}
-                    ? $_->{label}->()
-                    : $_->{label}
-                ),
-                description => encode_html( $_->{description} ),
-                thumb       => $_->{thumbnail_url},
-                thumb_w     => $_->{thumb_w},
-                thumb_h     => $_->{thumb_h},
-                }
-        } @$list
-    };
-    $app->load_tmpl( 'dialog/select_theme.tmpl', \%param );
 }
 
 sub apply {

@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -1496,10 +1496,11 @@ sub dialog_select_weblog {
     $app->listing(
         {   type     => 'blog',
             code     => $hasher,
-            template => 'dialog/select_weblog.tmpl',
-            terms    => $terms,
-            args     => $args,
-            params   => {
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_weblog.tmpl',
+            terms  => $terms,
+            args   => $args,
+            params => {
                 dialog_title  => $app->translate("Select Child Site"),
                 items_prompt  => $app->translate("Selected Child Site"),
                 search_prompt => $app->translate(
@@ -2155,8 +2156,7 @@ sub save_filter {
 #      && $app->param('enable_archive_paths');
     if ( $screen eq 'cfg_prefs' ) {
         for my $param_name (
-            qw( max_revisions_entry max_revisions_cd max_revisions_template )
-            )
+            qw( max_revisions_entry max_revisions_cd max_revisions_template ))
         {
             my $value = $app->param($param_name) || 0;
             return $eh->error(

@@ -2045,9 +2045,9 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserBlogTheme'        => { default => 'rainier' },
-            'NewUserDefaultWebsiteId' => undef,
-            'NewUserTemplateBlogId'   => undef,
+            'NewUserBlogTheme'        => undef,                  ## DEPRECATED
+            'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
+            'NewUserTemplateBlogId'   => undef,                  ## DEPRECATED
             'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -3205,7 +3205,6 @@ sub load_core_permissions {
                 'open_system_check_screen'   => 1,
                 'use_tools:system_info_menu' => 1,
                 'delete_any_filters'         => 1,
-                'open_dialog_select_theme'   => 1,
             }
         },
         'system.create_blog' => {
@@ -3706,13 +3705,6 @@ future use.
 A L<MT::ConfigMgr> get/set method for the C<DefaultUserTagDelimiter>
 configuration setting. Translates the keyword values 'comma' and
 'space' to the ASCII code for those characters.
-
-=head2 MT::Core::NewUserAutoProvisioning
-
-A L<MT::ConfigMgr> get/set method for the C<NewUserAutoProvisioning>
-configuration setting. Even if the user has enabled this setting,
-it will force a value of '0' unless the C<DefaultSiteRoot> and
-C<DefaultSiteURL> configuration settings are also assigned.
 
 =head2 MT::Core::UserSessionCookieName
 
