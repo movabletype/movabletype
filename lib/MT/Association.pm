@@ -371,7 +371,7 @@ sub list_props {
         _type => {
             view  => [],
             terms => sub {
-                my $types = MT->component('Enterprise') ? [ 1, 2 ] : 1;
+                my $types = [ MT::Association::USER_BLOG_ROLE(),MT::Association::GROUP_BLOG_ROLE() ];
                 return { type => $types };
             }
         },
