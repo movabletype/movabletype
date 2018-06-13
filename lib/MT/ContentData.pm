@@ -1817,7 +1817,7 @@ sub _prepare_statement_for_sub_on_mssql {
         }
         elsif ( $col eq 'value_float' || $col eq 'value_double' ) {
             push @sort_cols,
-                "CONVERT($convert_to, CAST($db_col, decimal($decimal_p,$decimal_s)) + ','";
+                "CONVERT($convert_to, CAST($db_col AS decimal($decimal_p,$decimal_s))) + ','";
         }
         elsif ( $col eq 'value_datetime' ) {
             push @sort_cols, "CONVERT($convert_to, $db_col, 20) + ','";
