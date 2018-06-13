@@ -1801,12 +1801,24 @@ sub _prepare_statement_for_sub_on_mssql {
         = lc( MT->config->ObjectDriver ) eq 'umssqlserver'
         ? 'nvarchar'
         : 'varchar';
+    my $decimal_s = MT->config->NumberFieldDecimalPlaces;
+    my $decimal_p = $decimal_s + do {
+        my $max = length MT->config->NumberFieldMaxValue;
+        my $min = length MT->config->NumberFieldMinValue;
+        $max > $min ? $max : $min;
+    };
 
     my @sort_cols;
     for my $col ( $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        push @sort_cols, "CONVERT($convert_to, $db_col) + ','";
+        if ( $col eq 'value_float' || $col eq 'value_double' ) {
+            push @sort_cols,
+                "CONVERT($convert_to, CAST($db_col, decimal($decimal_p,$decimal_s)) + ','";
+        }
+        else {
+            push @sort_cols, "CONVERT($convert_to, $db_col) + ','";
+        }
     }
     my $sort_col = join ',', @sort_cols;
     $stmt->add_select($sort_col);
