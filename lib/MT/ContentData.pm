@@ -1812,7 +1812,10 @@ sub _prepare_statement_for_sub_on_mssql {
     for my $col ( $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        if ( $col eq 'value_float' || $col eq 'value_double' ) {
+        if ( $col eq 'value_varchar' || $col eq 'value_text' ) {
+            push @sort_cols, "$db_col + ','";
+        }
+        elsif ( $col eq 'value_float' || $col eq 'value_double' ) {
             push @sort_cols,
                 "CONVERT($convert_to, CAST($db_col, decimal($decimal_p,$decimal_s)) + ','";
         }
