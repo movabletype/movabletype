@@ -56,35 +56,38 @@ sub class_label_plural {
 sub list_props {
     return {
         user_name => {
-            label        => 'User',
-            filter_label => 'User Name',
+            label        => 'User/Group',
+            filter_label => 'User/Group Name',
             base         => '__virtual.string',
             display      => 'force',
             order        => 100,
             col          => 'name',               # this looks up author table
             html         => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $type = 'user';
-                return '(unknown object)' unless defined $obj->user;
-                my $name      = MT::Util::encode_html( $obj->user->name );
+                require MT::Author;
+                my $type
+                    = $obj->type == MT::Association::USER_BLOG_ROLE()
+                    ? 'user'
+                    : 'group';
+                my $icon_type = $type eq 'user' ? 'ic_user' : 'ic_member';
+                my $name      = MT::Util::encode_html( $obj->$type->name );
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
-                        _type   => 'author',
-                        id      => $obj->user->id,
+                        _type   => $type eq 'user' ? 'author' : 'group',
+                        id      => $obj->$type->id,
                         blog_id => 0,
                     },
                 );
-                my $user_title = $app->translate('User');
                 my $static_uri = $app->static_path;
                 return qq{
-                    <a href="$edit_link" class="align-top">$name</a>
-                    <span class="target-type $type">
-                        <svg title="$user_title" role="img" class="mt-icon mt-icon--sm">
-                            <use xlink:href="${static_uri}images/sprite.svg#ic_user">
-                        </svg>
-                    </span>
-                };
+                                    <a href="$edit_link">$name</a>
+                                    <span class="target-type $type">
+                                        <svg title="$type" role="img" class="mt-icon mt-icon--sm">
+                                            <use xlink:href="${static_uri}images/sprite.svg#$icon_type">
+                                        </svg>
+                                    </span>
+                                };
             },
             terms => sub {
                 my $prop = shift;
@@ -92,15 +95,36 @@ sub list_props {
                 my $author_terms = $prop->super(@_);
                 my @authors
                     = MT->model('author')->load( { %$author_terms, }, );
-                return
-                    scalar @authors
-                    ? { author_id => [ map { $_->id } @authors ] }
-                    : { author_id => { '<' => 0 } };
+                my @groups = MT->model('group')->load( { %$author_terms, }, );
+                if ( scalar @authors && scalar @groups ) {
+                    return [
+                        [   { author_id => [ map { $_->id } @authors ] },
+                            '-or',
+                            { group_id => [ map { $_->id } @groups ] },
+                        ]
+                    ];
+                }
+                elsif ( scalar @authors ) {
+                    return { author_id => [ map { $_->id } @authors ] };
+                }
+                elsif ( scalar @groups ) {
+                    return { group_id => [ map { $_->id } @groups ] };
+                }
+                return { author_id => { '<' => 0 } };
             },
             bulk_sort => sub {
                 my $prop = shift;
                 my ($objs) = @_;
-                sort { $a->user->name cmp $b->user->name } @$objs;
+                sort {
+                    (     $a->type == MT::Association::USER_BLOG_ROLE()
+                        ? $a->user->name
+                        : $a->group->name
+                    ) cmp(
+                        $b->type == MT::Association::USER_BLOG_ROLE()
+                        ? $b->user->name
+                        : $b->group->name
+                        )
+                } @$objs;
             },
             sort => 0,
         },
@@ -171,19 +195,62 @@ sub list_props {
                 }
                 return { role_id => [ map { $_->id } @roles ], };
             },
-            sort => sub {
+            bulk_sort => sub {
                 my $prop = shift;
-                my ( $terms, $args ) = @_;
-                $args->{joins} ||= [];
-                delete $args->{sort};
-                push @{ $args->{joins} }, MT->model('role')->join_on(
-                    undef,
-                    { id => \'= association_role_id', },    # FOR-EDITOR '},
-                    {   sort      => 'name',
-                        direction => delete $args->{direction},
-                    },
+                my ($objs) = @_;
+                sort {
+                    (     $a->type == MT::Association::USER_BLOG_ROLE()
+                        ? $a->user->name
+                        : $a->group->name
+                    ) cmp(
+                        $b->type == MT::Association::USER_BLOG_ROLE()
+                        ? $b->user->name
+                        : $b->group->name
+                        )
+                } @$objs;
+            },
+        },
+        group_id => {
+            auto            => 1,
+            label           => 'Group',
+            display         => 'none',
+            filter_editable => 0,
+            label_via_param => sub {
+                my ( $prop, $app, $val ) = @_;
+                my $group = MT->model('group')->load($val)
+                    or return $prop->error(
+                    MT->translate('Invalid parameter.') );
+                return MT->translate(
+                    'Permissions of group: [_1]',
+                    $group->display_name || $group->name,
                 );
-                return;
+            },
+            args_via_param => sub {
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                return { option => 'equal', value => $val };
+            },
+
+        },
+        type => {
+            base                  => '__virtual.single_select',
+            display               => 'none',
+            col                   => 'type',
+            label                 => 'Type',
+            single_select_options => sub {
+                my @sso;
+
+                push @sso,
+                    {
+                    label => MT->translate('User'),
+                    value => 1
+                    };
+                push @sso,
+                    {
+                    label => MT->translate('Group'),
+                    value => 2
+                    };
+                return \@sso;
             },
         },
         blog_name => {
@@ -450,6 +517,35 @@ sub _rebuild_favorite {
     $user->rebuild_favorite_sites;
 }
 
+sub system_filters {
+    return {
+        for_user => {
+            label => 'Permissions for Users',
+            items => [
+                {
+                    type => 'type',
+                    args => {
+                        value => 1,
+                    }
+                },
+            ],
+            order => 100,
+        },
+        for_group => {
+            label => 'Permissions for Groups',
+            items => [
+                {
+                    type => 'type',
+                    args => {
+                        value => 2,
+                    }
+                },
+            ],
+            order => 200,
+        },
+    };
+}
+
 1;
 
 #trans('association')
@@ -514,7 +610,7 @@ for the C<@things> parameter.
 
 =head2 $assoc->rebuild_permissions()
 
-Update permissions affected by this association object. Will be called 
+Update permissions affected by this association object. Will be called
 automatically after save and remove operations.
 
 =head2 $assoc->user()

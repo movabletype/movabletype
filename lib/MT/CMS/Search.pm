@@ -580,6 +580,38 @@ sub core_search_apis {
                 $args->{direction} = 'ascend';
             }
         },
+        'group' => {
+            'order'             => 850,
+            'system_permission' => 'administer',
+            'label'             => 'Groups',
+            'perm_check'        => sub {
+                return 1 if $author->is_superuser;
+                if ($blog_id) {
+                    my $perm = $author->permissions($blog_id);
+                    return $perm->can_administer_site;
+                }
+                return 0;
+            },
+            'search_cols' => {
+                'name'         => sub { $app->translate('Group Name') },
+                'display_name' => sub { $app->translate('Display Name') },
+                'description'  => sub { $app->translate('Description') },
+            },
+            'replace_cols'       => [],
+            'can_replace'        => 0,
+            'can_search_by_date' => 0,
+            'setup_terms_args'   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                if ($blog_id) {
+                    $args->{'join'} = MT->model('association')
+                        ->join_on( 'group_id', { blog_id => $blog_id } );
+                }
+            },
+            'handler' => '$Core::MT::CMS::Group::build_group_table',
+            'results_table_template' => '<mt:include name="include/group_table.tmpl">',
+            'view' => 'system',
+        },
+
     };
     return $types;
 }
