@@ -1788,6 +1788,28 @@ sub _prepare_statement_for_normal_sort {
     $stmt;
 }
 
+sub _get_decimal_s {
+    my $decimal_s = MT->config->NumberFieldDecimalPlaces;
+    if ( defined $decimal_s && $decimal_s =~ /^[0-9]+$/ && $decimal_s >= 0 ) {
+        $decimal_s;
+    }
+    else {
+        MT->config->default('NumberFieldDecimalPlaces');
+    }
+}
+
+sub _get_decimal_p_minus_s {
+    my $max_length = length( MT->config->NumberFieldMaxValue ) || 0;
+    my $min_length = length( MT->config->NumberFieldMinValue ) || 0;
+    my $p_minus_s = $max_length > $min_length ? $max_length : $min_length;
+    if ( $p_minus_s > 0 ) {
+        $p_minus_s;
+    }
+    else {
+        length MT->config->default('NumberFieldMaxValue');
+    }
+}
+
 sub _prepare_statement_for_sub_on_mssql {
     my $class = shift;
     my ( $search_fields, $sort_index ) = @_;
@@ -1801,12 +1823,8 @@ sub _prepare_statement_for_sub_on_mssql {
         = lc( MT->config->ObjectDriver ) eq 'umssqlserver'
         ? 'nvarchar'
         : 'varchar';
-    my $decimal_s = MT->config->NumberFieldDecimalPlaces;
-    my $decimal_p = $decimal_s + do {
-        my $max = length MT->config->NumberFieldMaxValue;
-        my $min = length MT->config->NumberFieldMinValue;
-        $max > $min ? $max : $min;
-    };
+    my $decimal_s = _get_decimal_s();
+    my $decimal_p = $decimal_s + _get_decimal_p_minus_s();
 
     my @sort_cols;
     for my $col ( $class->_sort_columns ) {
