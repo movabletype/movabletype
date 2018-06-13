@@ -1797,11 +1797,16 @@ sub _prepare_statement_for_sub_on_mssql {
 
     my $stmt = $dbd->sql_class->new;
 
+    my $convert_to
+        = lc( MT->config->ObjectDriver ) eq 'umssqlserver'
+        ? 'nvarchar'
+        : 'varchar';
+
     my @sort_cols;
     for my $col ( $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        push @sort_cols, "CONVERT(varchar, $db_col) + ','";
+        push @sort_cols, "CONVERT($convert_to, $db_col) + ','";
     }
     my $sort_col = join ',', @sort_cols;
     $stmt->add_select($sort_col);
