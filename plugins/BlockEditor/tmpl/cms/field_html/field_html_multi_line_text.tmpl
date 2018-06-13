@@ -1,48 +1,38 @@
 <div class="group-container multi_line_text-field-container content-field" <mt:var name="required">>
-  <div class="form-group">
-    <div class="row no-gutters align-items-center">
-      <div class="col">
-        <ul class="nav nav-tabs d-flex mb-3" role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
-<mt:if name="options{label}">
-          <li class="mr-auto">
-            <label for="contentblock1">
-              <mt:var name="options{label}" escape="html">
-  <mt:if name=options{required}>
-              <span class="badge badge-danger"><__trans phrase="Required"></span>
-  </mt:if>
-            </label>
-          </li>
-</mt:if>
-          <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev">プレビュー</a></li>
-          <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort">並び替え</a></li>
-        </ul>
-      </div>
+<div class="form-group">
+  <div class="row no-gutters align-items-center">
+    <div class="col">
+      <ul class="nav nav-tabs d-flex mb-3" role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
+        <mt:if name="options{label}"><li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></label></li></mt:if></mt:if>
+        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev">プレビュー</a></li>
+        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort">並び替え</a></li>
+      </ul>
     </div>
-    <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
-      <div class="form-group mb-4">
-        <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
-        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control w-50 convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
-<mt:loop name="text_filters">
-          <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-</mt:loop>
-        </select>
-      </div>
+  </div>
+  <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
+    <div class="form-group mb-4">
+      <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
+      <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control w-50 convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+      <mt:loop name="text_filters">
+        <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+      </mt:loop>
+      </select>
+    </div>
 
-<mt:ignore>editor-content</mt:ignore>
-<mt:unless name="editors">
-      <mt:include name="include/editor_multi.tmpl">
-<mt:else>
-      <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-        <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
-      </div>
-</mt:unless>
+    <mt:ignore>editor-content</mt:ignore>
+    <mt:unless name="editors">
+    <mt:include name="include/editor_multi.tmpl">
+    <mt:else>
+    <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
+      <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
+    </div>
+    </mt:unless>
 
-<mt:ignore>blockeditor-content</mt:ignore>
-      <div id="editor-input-content-field-<mt:var name="content_field_id">-blockeditor" class="blockeditor sortable" data-blockeditor-field_id="<mt:var name="content_field_id">" hidden>
-      </div>
-      <div id="blockeditor_add-<mt:var name="content_field_id">" class="pt-3" hidden>
-        <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
-      </div>
+    <mt:ignore>blockeditor-content</mt:ignore>
+    <div id="editor-input-content-field-<mt:var name="content_field_id">-blockeditor" class="blockeditor sortable" data-blockeditor-field_id="<mt:var name="content_field_id">" hidden>
+    </div>
+    <div id="blockeditor_add-<mt:var name="content_field_id">" class="pt-3" hidden>
+      <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
     </div>
   </div>
 </div>
@@ -53,22 +43,22 @@
 <input type="hidden" name="block_editor_data" id="block_editor_data" value="">
 
 <div class="modal modal-blockeditor" role="dialog" aria-labelledby="exampleModal" aria-hidden="true" >
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-body options d-none">
-      </div>
-      <div class="modal-footer">
-      </div>
-    </div>
-  </div>
+ <div class="modal-dialog modal-lg" role="document">
+   <div class="modal-content">
+     <div class="modal-header">
+       <h4 class="modal-title"></h4>
+       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+         <span aria-hidden="true">&times;</span>
+       </button>
+     </div>
+     <div class="modal-body">
+     </div>
+     <div class="modal-body options d-none">
+     </div>
+     <div class="modal-footer">
+     </div>
+   </div>
+ </div>
 </div>
 
   <mt:setvarblock name="js_include" append="1">
@@ -80,10 +70,6 @@
     <mt:loop name="blockeditor_fields">
     <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
     </mt:loop>
-
-    <script type="riot/tag" src="<mt:var name="static_uri">plugins/BlockEditor/tag/list-asset-panel.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
   </mt:setvarblock>
   <mt:setvarblock name="html_head" append="1">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
