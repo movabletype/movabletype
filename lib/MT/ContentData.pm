@@ -1645,7 +1645,10 @@ sub search {
                     }
                 }
                 my $sql_sort_table
-                    = '(' . $stmt_sort->as_sql . ") AS sort$sort_index";
+                    = '('
+                    . $stmt_sort->as_sql . ')'
+                    . _as_operator()
+                    . " sort$sort_index";
                 my $join_condition
                     = $dbd->db_column_name( $tbl, 'id', $args->{alias} )
                     . " = sort$sort_index."
@@ -1687,6 +1690,15 @@ sub search {
     local $args->{sort};
     local $args->{direction};
     $class->SUPER::search( $terms, $args );
+}
+
+sub _as_operator {
+    if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+        '';
+    }
+    else {
+        ' AS';
+    }
 }
 
 sub _sort_columns {
@@ -1759,30 +1771,56 @@ sub _prepare_statement_for_normal_sort {
     my $stmt = $dbd->sql_class->new;
 
     my $content_data_id_col = 'content_data_id';
-    $stmt->add_select(
-        $driver->_decorate_column_name( MT->model('content_field_index'),
-            $content_data_id_col ) => $content_data_id_col
-    );
+    my $content_data_id_db_col
+        = $driver->_decorate_column_name( MT->model('content_field_index'),
+        $content_data_id_col );
+    $stmt->add_select( $content_data_id_db_col => $content_data_id_col );
+
+    my $decimal_s         = _get_decimal_s();
+    my $decimal_p_minus_s = _get_decimal_p_minus_s();
+    my $oracle_number_format
+        = ( '9' x $decimal_p_minus_s ) . '.' . ( '9' x $decimal_s );
 
     my $sort_col = q{''};
     for my $col ( reverse $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        $sort_col = "IFNULL(GROUP_CONCAT($db_col), $sort_col)";
+        if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+            if ( $col eq 'value_blob' ) {
+                $sort_col
+                    = "NVL(LISTAGG(UTL_RAW.CAST_TO_NVARCHAR2(DBMS_LOB.SUBSTR($db_col, 4000, 1)), ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
+            }
+            elsif ( $col eq 'value_float' || $col eq 'value_double' ) {
+                $sort_col
+                    = "NVL(LISTAGG(TRIM(TO_NCHAR($db_col, '$oracle_number_format')), ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
+            }
+            elsif ( $col eq 'value_datetime' ) {
+                $sort_col
+                    = "NVL(LISTAGG(TO_NCHAR($db_col, 'YYYY/MM/DD HH24:MI:SS'), ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
+            }
+            else {
+                $sort_col
+                    = "NVL(LISTAGG($db_col, ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
+            }
+        }
+        else {
+            $sort_col = "IFNULL(GROUP_CONCAT($db_col), $sort_col)";
+        }
     }
-    $sort_col .= " AS sort$sort_index";
+    $sort_col .= _as_operator() . " sort$sort_index";
     $stmt->add_select($sort_col);
 
     my $stmt_tmp = $class->_prepare_statement_for_tmp($search_fields);
     my $sql_tmp  = $stmt_tmp->as_sql;
-    $stmt->from( ["($sql_tmp) AS tmp$sort_index"] );
+    $stmt->from( [ "($sql_tmp)" . _as_operator() . " tmp$sort_index" ] );
     $stmt->bind( $stmt_tmp->bind );
     $stmt->group(
-        {   column => $driver->_decorate_column_name(
-                MT->model('content_field_index'),
-                'content_data_id'
-            )
-        }
+        [   {   column => $driver->_decorate_column_name(
+                    MT->model('content_field_index'),
+                    'content_data_id'
+                )
+            }
+        ]
     );
 
     $stmt;
@@ -1943,12 +1981,13 @@ sub _prepare_statement_for_single_number_sort {
     my $sort_col
         = $driver->_decorate_column_name( MT->model('content_field_index'),
         "value_$data_type" )
-        . " AS sort$sort_index";
+        . _as_operator()
+        . " sort$sort_index";
     $stmt->add_select($sort_col);
 
     my $stmt_tmp = $class->_prepare_statement_for_tmp($search_fields);
     my $sql_tmp  = $stmt_tmp->as_sql;
-    $stmt->from( ["($sql_tmp) AS tmp$sort_index"] );
+    $stmt->from( [ "($sql_tmp)" . _as_operator . " tmp$sort_index" ] );
     $stmt->bind( $stmt_tmp->bind );
 
     $stmt;
