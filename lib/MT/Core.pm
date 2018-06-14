@@ -186,6 +186,9 @@ BEGIN {
             'ts_error'      => 'MT::TheSchwartz::Error',
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
+
+            # group
+            'group' => 'MT::Group',
         },
         list_properties => {
             __virtual => {
@@ -1303,15 +1306,21 @@ BEGIN {
             content_type  => '$Core::MT::ContentType::list_props',
             content_field => '$Core::MT::ContentField::list_props',
             content_data => '$Core::MT::ContentData::list_props_for_data_api',
+            group        => '$Core::MT::Group::list_props',
+            group_member => '$Core::MT::Group::member_list_props',
         },
         system_filters => {
-            entry  => '$Core::MT::Entry::system_filters',
-            page   => '$Core::MT::Page::system_filters',
-            tag    => '$Core::MT::Tag::system_filters',
-            asset  => '$Core::MT::Asset::system_filters',
-            author => '$Core::MT::Author::system_filters',
-            member => '$Core::MT::Author::member_system_filters',
-            log    => '$Core::MT::Log::system_filters',
+            entry        => '$Core::MT::Entry::system_filters',
+            page         => '$Core::MT::Page::system_filters',
+            tag          => '$Core::MT::Tag::system_filters',
+            asset        => '$Core::MT::Asset::system_filters',
+            author       => '$Core::MT::Author::system_filters',
+            member       => '$Core::MT::Author::member_system_filters',
+            log          => '$Core::MT::Log::system_filters',
+            association  => '$Core::MT::Association::system_filters',
+            group        => '$Core::MT::Group::system_filters',
+            group_member => '$Core::MT::Group::member_system_filters',
+
         },
         listing_screens => {
             website => {
@@ -1671,6 +1680,25 @@ BEGIN {
                 view                => [ 'website', 'blog' ],
                 primary             => 'id',
                 default_sort_key    => 'modified_on',
+            },
+            group => {
+                object_label     => 'Group',
+                default_sort_key => 'name',
+                primary          => 'name',
+                permission       => 'administer',
+                view             => 'system',
+            },
+            group_member => {
+                screen_label        => 'Manage Group Members',
+                object_label_plural => 'Group Members',
+                object_label        => 'Group Member',
+                object_type         => 'association',
+                default_sort_key    => 'name',
+                permission          => 'administer',
+                primary             => 'name',
+                view                => 'system',
+                search_label        => 'User',
+                search_type         => 'author',
             },
         },
         summaries => {

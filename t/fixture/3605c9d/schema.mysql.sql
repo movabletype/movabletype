@@ -1,6 +1,6 @@
 -- 
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Fri Apr 13 10:02:39 2018
+-- Created on Wed Jun 13 08:52:35 2018
 -- 
 SET foreign_key_checks=0;
 
@@ -423,7 +423,6 @@ CREATE TABLE `mt_cd` (
   `cd_author_id` integer(11) NOT NULL,
   `cd_authored_on` datetime NULL DEFAULT NULL,
   `cd_blog_id` integer(11) NOT NULL,
-  `cd_class` varchar(255) NULL DEFAULT 'content_data',
   `cd_content_type_id` integer(11) NOT NULL,
   `cd_created_by` integer(11) NULL DEFAULT NULL,
   `cd_created_on` datetime NULL DEFAULT NULL,
@@ -435,12 +434,11 @@ CREATE TABLE `mt_cd` (
   `cd_label` varchar(255) NULL DEFAULT NULL,
   `cd_modified_by` integer(11) NULL DEFAULT NULL,
   `cd_modified_on` datetime NULL DEFAULT NULL,
-  `cd_random` integer(11),
+  `cd_random` integer(11) NULL DEFAULT NULL,
   `cd_status` smallint(6) NOT NULL,
   `cd_unique_id` varchar(40) NOT NULL,
   `cd_unpublished_on` datetime NULL DEFAULT NULL,
   `cd_week_number` integer(11) NULL DEFAULT NULL,
-  INDEX `mt_cd_class` (`cd_class`),
   INDEX `mt_cd_content_type_id` (`cd_content_type_id`),
   INDEX `mt_cd_ct_unique_id` (`cd_ct_unique_id`),
   INDEX `mt_cd_label` (`cd_label`),
@@ -543,7 +541,7 @@ CREATE TABLE `mt_cf_idx` (
   `cf_idx_value_float` float NULL DEFAULT NULL,
   `cf_idx_value_integer` integer(11) NULL DEFAULT NULL,
   `cf_idx_value_text` mediumtext NULL,
-  `cf_idx_value_varchar` varchar(1024) NULL DEFAULT NULL,
+  `cf_idx_value_varchar` varchar(255) NULL DEFAULT NULL,
   INDEX `mt_cf_idx_value_datetime` (`cf_idx_value_datetime`),
   INDEX `mt_cf_idx_value_double` (`cf_idx_value_double`),
   INDEX `mt_cf_idx_value_float` (`cf_idx_value_float`),
@@ -873,6 +871,29 @@ CREATE TABLE `mt_formatted_text` (
   INDEX `mt_formatted_text_label` (`formatted_text_label`),
   INDEX `mt_formatted_text_modified_on` (`formatted_text_modified_on`),
   PRIMARY KEY (`formatted_text_id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+
+DROP TABLE IF EXISTS `mt_group`;
+
+--
+-- Table: `mt_group`
+--
+CREATE TABLE `mt_group` (
+  `group_created_by` integer(11) NULL DEFAULT NULL,
+  `group_created_on` datetime NULL DEFAULT NULL,
+  `group_description` mediumtext NULL,
+  `group_display_name` varchar(255) NULL DEFAULT NULL,
+  `group_external_id` varchar(255) NULL DEFAULT NULL,
+  `group_id` integer(11) NOT NULL auto_increment,
+  `group_modified_by` integer(11) NULL DEFAULT NULL,
+  `group_modified_on` datetime NULL DEFAULT NULL,
+  `group_name` varchar(255) NOT NULL,
+  `group_status` integer(11) NULL DEFAULT 1,
+  INDEX `mt_group_created_on` (`group_created_on`),
+  INDEX `mt_group_external_id` (`group_external_id`),
+  INDEX `mt_group_name` (`group_name`),
+  INDEX `mt_group_status` (`group_status`),
+  PRIMARY KEY (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS `mt_ipbanlist`;

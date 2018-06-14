@@ -348,6 +348,88 @@ sub revoke_from_user {
     return +{ status => 'success' };
 }
 
+sub list_for_group {
+    my ( $app, $endpoint ) = @_;
+
+    my ($group) = context_objects(@_) or return;
+
+    my %terms = ( group_id => $group->id, );
+
+    my $res = filtered_list( $app, $endpoint, 'association', \%terms )
+        or return;
+
+    return +{
+        totalResults => ( $res->{count} || 0 ),
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub grant_to_group {
+    my ( $app, $endpoint ) = @_;
+
+    # Check parameters.
+    my ($group) = context_objects(@_) or return;
+    my $site = _retrieve_site_from_param($app)
+        or return;
+    my $role = _retrieve_role_from_param($app)
+        or return;
+
+    $app->param( 'blog_id', $site->id );
+
+    local $app->{return_args};
+    local $app->{redirect};
+    local $app->{redirect_use_meta};
+
+    require MT::CMS::User;
+    MT::CMS::User::grant_role($app);
+
+    return if $app->errstr;
+
+    if ( !$app->{return_args} ) {
+        return $app->error(
+            $app->translate('Granting permission failed: [_1]'), 500 );
+    }
+
+    return +{ status => 'success' };
+}
+
+sub revoke_from_group {
+    my ( $app, $endpoint ) = @_;
+
+    my ($group) = context_objects(@_) or return;
+
+    my $site = _retrieve_site_from_param($app)
+        or return;
+
+    my $role = _retrieve_role_from_param($app)
+        or return;
+
+    my $assoc = $app->model('association')->load(
+        {   blog_id  => $site->id,
+            role_id  => $role->id,
+            group_id => $group->id,
+        }
+    );
+    if ( !$assoc ) {
+        return $app->error( $app->translate('Association not found'), 404 );
+    }
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        'association', $assoc )
+        or return;
+
+    $assoc->remove
+        or return $app->error(
+        $app->translate( 'Revoking permission failed: [_1]', $assoc->errstr ),
+        500
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.association', $app, $assoc );
+
+    return +{ status => 'success' };
+}
+
 1;
 
 __END__
