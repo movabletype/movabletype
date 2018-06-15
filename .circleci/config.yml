@@ -26,6 +26,6 @@ jobs:
             service mysql start
             service memcached start
 
-            prove t plugins/*/t
+            PERL_JSON_BACKEND=0 prove t plugins/*/t
             phpunit
 
