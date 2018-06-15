@@ -494,6 +494,8 @@ sub save_schema {
     flock $fh, LOCK_EX;
     print $fh $schema;
     close $fh;
+
+    print "Saved test schema: $file\n" if $force;
 }
 
 sub _generate_schema {
