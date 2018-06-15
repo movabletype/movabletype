@@ -21,7 +21,7 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"), glob("$MT_HOME/addons/*/extlib");
+use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 sub new {
@@ -63,8 +63,8 @@ sub write_config {
 
     my %connect_info = $self->connect_info;
 
-    my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
-        ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
+    my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
+        || ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
     require MT;
 
@@ -404,9 +404,11 @@ sub load_schema_and_fixture {
         $y + 1900, $mo + 1, $d, $h, $m, $s );
     my @pool = ( 'a' .. 'z', 0 .. 9 );
     my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
-    my $salt = join '', map { $pool[ rand @pool ] } 1 .. 16;
+    my $salt     = join '', map { $pool[ rand @pool ] } 1 .. 16;
+
     # Tentative password; update it later when necessary
-    my $author_pass = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
+    my $author_pass
+        = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
     my $schema  = _slurp($schema_file)  or return;
     my $fixture = _slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
@@ -423,7 +425,9 @@ sub load_schema_and_fixture {
     }
 
     my $fixture_schema_version = $fixture->{schema_version};
-    if ( !$fixture_schema_version or $fixture_schema_version ne $self->schema_version ) {
+    if (  !$fixture_schema_version
+        or $fixture_schema_version ne $self->schema_version )
+    {
         diag "FIXTURE IS IGNORED: please update fixture";
         return;
     }
@@ -661,13 +665,13 @@ sub test_schema {
 
 sub skip_if_addon_exists {
     my ( $self, $name ) = @_;
-    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $config = "$MT_HOME/addons/$name/config.yaml";
     plan skip_all => "$config exists" if -f $config;
 }
 
 sub skip_if_plugin_exists {
     my ( $self, $name ) = @_;
-    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $config = "$MT_HOME/plugins/$name/config.yaml";
     plan skip_all => "$config exists" if -f $config;
 }
 
@@ -720,7 +724,7 @@ sub enable_plugin {
 }
 
 sub schema_version {
-    my $self = shift;
+    my $self     = shift;
     my %versions = (
         core => MT->schema_version,
         $self->plugin_schema_version,
