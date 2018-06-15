@@ -647,6 +647,8 @@ sub test_schema {
 
     my $driver       = lc $self->{driver};
     my $schema_file  = "$self->{fixture_dirs}[0]/schema.$driver.sql";
+    plan skip_all => 'schema is not found' unless -f $schema_file;
+
     my $saved_schema = _slurp($schema_file);
 
     my $generated_schema = $self->_generate_schema;
