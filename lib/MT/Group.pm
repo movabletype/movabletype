@@ -930,6 +930,13 @@ sub member_system_filters {
     };
 }
 
+MT->add_callback(
+    'backup.plugin_objects',
+    10,
+    undef,
+    \&MT::Group::backup_plugin_cb,
+);
+
 1;
 __END__
 

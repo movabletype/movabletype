@@ -90,37 +90,6 @@
             "1",
             "https://example.com/~abby",
             null
-         ],
-         [
-            "__API_PASS__",
-            "MT",
-            "test1",
-            null,
-            null,
-            null,
-            "1978-01-31 07:45:00",
-            "relative",
-            "test@example.com",
-            null,
-            null,
-            null,
-            "2",
-            null,
-            "0",
-            null,
-            null,
-            "test1",
-            "Birman",
-            "__AUTHOR_PASS__",
-            "en_US",
-            null,
-            null,
-            null,
-            "1",
-            null,
-            "1",
-            "",
-            null
          ]
       ]
    },
@@ -214,7 +183,7 @@
             null,
             null,
             null,
-            "ContentType-Author",
+            "",
             "",
             null,
             null,
@@ -378,38 +347,17 @@
             "1",
             null,
             "__NOW__",
-            "3e32f27d30cccaf96654bcddf73b74d2905965cf",
+            "1fdff036620edb7f581fed5de594285270e9b475",
             "0",
             null,
             "1",
-            "ceafd3036a63f254653130f690877fc2389d0e02",
+            "b689ab1f07e7398e4191975ba7de0fcb333b21ba",
             null,
             null,
             "__NOW__",
-            "5",
+            "6",
             "2",
-            "ceafd3036a63f254653130f690877fc2389d0e02",
-            "2017-05-31 16:36:00",
-            "201722"
-         ],
-         [
-            "2",
-            "2017-05-30 16:36:00",
-            "1",
-            "2",
-            null,
-            "__NOW__",
-            "d04f9cc3ecc89ddb2fd1248a41e5a1124bafcd85",
-            "0",
-            null,
-            "2",
-            "a473a8cfc417871be1b7ca24f1e4372a5d4b3acd",
-            null,
-            null,
-            "__NOW__",
-            "7",
-            "2",
-            "a473a8cfc417871be1b7ca24f1e4372a5d4b3acd",
+            "b689ab1f07e7398e4191975ba7de0fcb333b21ba",
             "2017-05-31 16:36:00",
             "201722"
          ]
@@ -422,7 +370,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0042\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0043\n",
             "1"
          ]
       ]
@@ -454,23 +402,8 @@
             "1",
             null,
             "__NOW__",
-            "test content type",
-            "3e32f27d30cccaf96654bcddf73b74d2905965cf",
-            null,
-            null
-         ],
-         [
-            "1",
-            null,
-            "__NOW__",
-            null,
-            "This is a sample.",
-            null,
-            "2",
-            null,
-            "__NOW__",
-            "test content type 2",
-            "d04f9cc3ecc89ddb2fd1248a41e5a1124bafcd85",
+            "test content data",
+            "1fdff036620edb7f581fed5de594285270e9b475",
             null,
             null
          ]
@@ -522,22 +455,6 @@
             "__NOW__",
             null,
             "'administer_blog','administer_site','administer_website','comment','create_post','create_site','edit_all_posts','edit_assets','edit_categories','edit_config','edit_notifications','edit_tags','edit_templates','manage_category_set','manage_content_data','manage_content_types','manage_feedback','manage_member_blogs','manage_pages','manage_themes','manage_users','publish_post','rebuild','send_notifications','set_publish_paths','upload','view_blog_log'",
-            null,
-            "0",
-            null
-         ],
-         [
-            "2",
-            "0",
-            null,
-            null,
-            "__NOW__",
-            null,
-            "3",
-            null,
-            "__NOW__",
-            null,
-            "'sign_in_cms','sign_in_data_api'",
             null,
             "0",
             null
@@ -801,56 +718,6 @@
             "1",
             "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
-         ],
-         [
-            "1",
-            "0",
-            "0",
-            "1",
-            "1",
-            null,
-            "__NOW__",
-            "0",
-            "6",
-            null,
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "ContentType Test",
-            "blog.html",
-            "1",
-            "test",
-            "ct"
-         ]
-      ]
-   },
-   "mt_templatemap" : {
-      "cols" : [
-         "templatemap_archive_type",
-         "templatemap_blog_id",
-         "templatemap_build_interval",
-         "templatemap_build_type",
-         "templatemap_cat_field_id",
-         "templatemap_dt_field_id",
-         "templatemap_file_template",
-         "templatemap_id",
-         "templatemap_is_preferred",
-         "templatemap_template_id"
-      ],
-      "rows" : [
-         [
-            "ContentType-Author",
-            "1",
-            null,
-            "1",
-            null,
-            null,
-            "author/%-a/%f",
-            "1",
-            "1",
-            "6"
          ]
       ]
    },
@@ -870,5 +737,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0042; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0043; formattedtext 1.00"
 }
