@@ -246,8 +246,8 @@ sub add_member {
     my $groups = $app->param('group');
     my $users  = $app->param('author');
 
-    my @groups = split( /\,/, $groups );
-    my @users  = split( /\,/, $users );
+    my @groups = $groups ? split( /\,/, $groups ) : ();
+    my @users  = $users  ? split( /\,/, $users )  : ();
     my $grp_class = $app->model('group');
     my $usr_class = $app->model('author');
 
