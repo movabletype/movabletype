@@ -6,6 +6,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install CPAN modules
+          command: |
+            cpanm --installdeps ./t
+      - run:
           name: Remove skip tests
           command: |
             rm t/34-sqlite.t
