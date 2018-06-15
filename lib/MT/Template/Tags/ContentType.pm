@@ -235,7 +235,7 @@ sub _hdlr_contents {
     foreach my $id (qw/ id unique_id /) {
         if (( my $target_id = $args->{$id} )
             && (   ref( $args->{$id} )
-                || ( $id eq 'id' && $args->{$id} =~ m/^\d+$/ )
+                || ( $id eq 'id' && $args->{$id} =~ m/^[0-9]+$/ )
                 || ( $id eq 'unique_id' ) )
             )
         {
@@ -308,7 +308,7 @@ sub _hdlr_contents {
                 else {
                     my $date_cf = '';
                     $date_cf = MT->model('cf')->load($arg)
-                        if ( $arg =~ /^\d+$/ );
+                        if ( $arg =~ /^[0-9]+$/ );
                     ($date_cf)
                         = MT->model('cf')->load( { unique_id => $arg } )
                         unless ($date_cf);
@@ -1468,7 +1468,7 @@ sub _hdlr_content_calendar {
         my $category_set;
         my $id            = $args->{category_set};
         my $cat_set_class = MT->model('category_set');
-        $category_set = $cat_set_class->load($id) if $id =~ m/^\d+$/;
+        $category_set = $cat_set_class->load($id) if $id =~ m/^[0-9]+$/;
         $category_set = $cat_set_class->load( { name => $id } )
             unless $category_set;
         if ($category_set) {
@@ -1543,7 +1543,7 @@ sub _hdlr_content_calendar {
         else {
             my $date_cf = '';
             $date_cf = MT->model('cf')->load($arg)
-                if ( $arg =~ /^\d+$/ );
+                if ( $arg =~ /^[0-9]+$/ );
             ($date_cf) = MT->model('cf')->load( { unique_id => $arg } )
                 unless ($date_cf);
             ($date_cf) = MT->model('cf')->load( { name => $arg } )
@@ -1736,7 +1736,7 @@ sub _hdlr_content_field {
     my $field_data;
     if ( my $id = $args->{content_field} ) {
         ($field_data) = grep { $_->{id} == $id } @{ $content_type->fields }
-            if $id =~ m/^\d+$/;
+            if $id =~ m/^[0-9]+$/;
         ($field_data)
             = grep { defined $_->{unique_id} && $_->{unique_id} eq $id }
             @{ $content_type->fields }
