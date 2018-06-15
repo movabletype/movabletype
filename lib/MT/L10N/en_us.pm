@@ -287,6 +287,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
 
     '__TEXT_BLOCK__' => 'Text',
+
+    '__GROUP_MEMBER_COUNT' => 'Members',
 );
 
 1;
