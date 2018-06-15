@@ -1692,22 +1692,22 @@ sub core_menus {
         'group' => {
             icon  => 'ic_member',
             label => 'Groups',
-            order => 1000
+            order => 1000,
         },
         'feedback' => {
             label => "Feedbacks",
             icon  => 'ic_feedback',
-            order => 1100,
+            order => 1000,
         },
         'role' => {
             label => 'Roles',
             icon  => 'ic_role',
-            order => 1200,
+            order => 1100,
         },
         'design' => {
             label => "Design",
             icon  => 'ic_design',
-            order => 1300,
+            order => 1200,
         },
         'filter' => {
             label => "Filters",
