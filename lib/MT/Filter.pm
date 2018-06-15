@@ -128,6 +128,16 @@ sub list_props {
                         },
                     );
                 }
+                elsif ( $obj->object_ds eq 'group_member' ) {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            _type      => $obj->object_ds,
+                            blog_id    => $obj->blog_id,
+                            filter_key => $obj->id,
+                        },
+                    );
+                }
                 else {
                     return;
                 }
