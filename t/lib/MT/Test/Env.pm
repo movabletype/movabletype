@@ -527,19 +527,26 @@ sub _sql_translator_filter_mysql {
         my $options = $table->options;
         my $i       = 0;
         my $saw_charset;
+        my $saw_engine;
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
             if ( $key eq 'CHARACTER SET' ) {
                 $options->[$i]{$key} = 'utf8';
                 $saw_charset = 1;
             }
-            splice @$options, $i, 1 if $key =~ /^(?:AUTO_INCREMENT|ENGINE)$/;
+            if ( $key eq 'ENGINE' ) {
+                $options->[$i]{$key} = 'InnoDB';
+                $saw_engine = 1;
+            }
+            splice @$options, $i, 1 if $key eq 'AUTO_INCREMENT';
             $i++;
         }
         if ( !$saw_charset ) {
             $table->options( { 'CHARACTER SET' => 'utf8' } );
         }
-        $table->options( { 'ENGINE' => 'InnoDB' } );
+        if ( !$saw_engine ) {
+            $table->options( { 'ENGINE' => 'InnoDB' } );
+        }
 
         # Some of the PHP tests assume that float has no explicit size
         my $order = 0;
