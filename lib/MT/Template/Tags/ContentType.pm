@@ -814,6 +814,10 @@ sub _hdlr_contents {
         $res .= $out;
         $i++;
     }
+    if ( !@contents ) {
+        return MT::Template::Context::_hdlr_pass_tokens_else(@_);
+    }
+
     $res;
 }
 
