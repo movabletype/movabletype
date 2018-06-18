@@ -202,6 +202,12 @@ MT::Test::Permission->make_content_data(
     data => { $cf_single_line_text->id => 'test single line text ', },
 );
 
+# Empty Content Type
+my $ct3 = MT::Test::Permission->make_content_type(
+    name    => 'test content type 3',
+    blog_id => $blog_id,
+);
+
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
@@ -216,6 +222,7 @@ $vars->{cf2_uid}     = $cf2->unique_id;
 $vars->{cf3_uid}     = $cf3->unique_id;
 $vars->{date_cf_uid} = $date_cf->unique_id;
 $vars->{cd4_uid}     = $cd4->unique_id;
+$vars->{ct3_name}    = $ct3->name;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -223,50 +230,50 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 __END__
 
-=== MT::Contents without modifier
+=== MT:Contents without modifier
 --- template
 <mt:Contents>a</mt:Contents>
 --- expected
 aaaaaa
 
-=== MT::Contents with content_type="name"
+=== MT:Contents with content_type="name"
 --- template
 <mt:Contents content_type="[% ct_name %]">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with content_type="id"
+=== MT:Contents with content_type="id"
 --- template
 <mt:Contents content_type="[% ct_id %]">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with ct_unique_id modifier
+=== MT:Contents with ct_unique_id modifier
 --- SKIP
 --- template
 <mt:Contents ct_unique_id="[% ct_uid %]">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with content_type modifier
+=== MT:Contents with content_type modifier
 --- template
 <mt:Contents content_type="test content type 1">a</mt:Contents>
 --- expected
 aaaaa
 
-=== MT::Contents with content_type modifier and wrong blog_id
+=== MT:Contents with content_type modifier and wrong blog_id
 --- template
 <mt:Contents content_type="test content type 1" blog_ids="2">a</mt:Contents>
 --- error
 No Content Type could be found.
 
-=== MT::Contents with limit
+=== MT:Contents with limit
 --- template
 <mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
 
-=== MT::Contents with sort_by content field
+=== MT:Contents with sort_by content field
 --- template
 <mt:Contents content_type="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -283,7 +290,7 @@ test single line text 2
 test single line text 1
 
 
-=== MT::Contents with sort_by content field
+=== MT:Contents with sort_by content field
 --- template
 <mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -292,7 +299,7 @@ test single line text 1
 test single line text 3
 
 
-=== MT::Contents with category
+=== MT:Contents with category
 --- template
 <mt:Contents blog_id="1" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -301,7 +308,7 @@ test single line text 3
 test single line text 2
 
 
-=== MT::Contents with tag
+=== MT:Contents with tag
 --- template
 <mt:Contents blog_id="1" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -310,41 +317,41 @@ test single line text 2
 test single line text 4
 
 
-=== MT::Contents with days
+=== MT:Contents with days
 --- template
 <mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
 --- expected
 123
 
 
-=== MT::Contents with date_field
+=== MT:Contents with date_field
 --- template
 <mt:Contents blog_id="1" days="2" date_field="[% date_cf_uid %]"><mt:ContentID></mt:Contents>
 --- expected
 12
 
 
-=== MT::Contents with glue
+=== MT:Contents with glue
 --- template
 <mt:Contents content_type="[% ct_uid %]" blog_id="1" glue=","><mt:ContentID></mt:Contents>
 --- expected
 1,2,3,4,5
 
 
-=== MT::Contents with ID
+=== MT:Contents with ID
 --- template
 <mt:Contents id="4"><mt:ContentID></mt:Contents>
 --- expected
 4
 
 
-=== MT::Contents with Unique ID
+=== MT:Contents with Unique ID
 --- template
 <mt:Contents unique_id="[% cd4_uid %]" glue=","><mt:ContentID></mt:Contents>
 --- expected
 4
 
-=== MT::Contents parameters
+=== MT:Contents parameters
 --- template
 <mt:Contents><mt:var name="__counter__">:<mt:if name="__odd__">odd</mt:if><mt:if name="__even__">even</mt:if><mt:if name="__first__"> - first</mt:if><mt:if name="__last__"> - last</mt:if>
 </mt:Contents>
@@ -355,4 +362,10 @@ test single line text 4
 4:even
 5:odd
 6:even - last
+
+=== MT:Contents with MT:Else
+--- template
+<mt:Contents content_type="[% ct3_name %]"><mt:ContentID><mt:Else>Content is not found.</mt:Contents>
+--- expected
+Content is not found.
 
