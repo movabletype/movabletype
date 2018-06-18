@@ -11,7 +11,7 @@ use warnings;
 
 use MT::Util qw( encode_html remove_html spam_protect );
 
-sub _hdlr_author_link {
+sub hdlr_author_link {
     my ( $ctx, $args, $cond, $a, $archive_type ) = @_;
 
     my $type = $args->{type} || '';

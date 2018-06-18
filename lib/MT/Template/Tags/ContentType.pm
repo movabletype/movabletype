@@ -1001,7 +1001,7 @@ sub _hdlr_content_author_link {
     my $a = $cd->author;
     return '' unless $a;
 
-    return MT::Template::Tags::Common::_hdlr_author_link( @_, $a,
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $a,
         'ContentType-Author' );
 }
 
