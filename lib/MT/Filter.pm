@@ -97,14 +97,22 @@ sub list_props {
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                return
-                    if !$obj->blog_id
-                    && ( $obj->object_ds eq 'entry'
-                    || $obj->object_ds eq 'page'
-                    || $obj->object_ds eq 'comment'
-                    || $obj->object_ds eq 'ping' );
-                my $class = MT->model( $obj->object_ds );
-                if ($class) {
+                my $scope
+                    = !$obj->blog_id ? 'system'
+                    : MT->model('blog')->load( $obj->blog_id )->is_blog
+                    ? 'blog'
+                    : 'website';
+                my $list_screen
+                    = MT->registry( listing_screens => $obj->object_ds );
+                if ($list_screen) {
+                    my $can_edit = 0;
+                    if ( my $view = $list_screen->{view} ) {
+                        $view = [$view] unless ref $view;
+                        my %view = map { $_ => 1 } @$view;
+                        if ( $view{$scope} ) {
+                            $can_edit = 1;
+                        }
+                    }
                     return $app->uri(
                         mode => 'list',
                         args => {
@@ -112,7 +120,7 @@ sub list_props {
                             blog_id    => $obj->blog_id,
                             filter_key => $obj->id,
                         }
-                    );
+                    ) if $can_edit;
                 }
                 elsif ( my ($content_type_id)
                     = $obj->object_ds
@@ -123,16 +131,6 @@ sub list_props {
                         args => {
                             _type      => 'content_data',
                             type       => 'content_data_' . $content_type_id,
-                            blog_id    => $obj->blog_id,
-                            filter_key => $obj->id,
-                        },
-                    );
-                }
-                elsif ( $obj->object_ds eq 'group_member' ) {
-                    return $app->uri(
-                        mode => 'list',
-                        args => {
-                            _type      => $obj->object_ds,
                             blog_id    => $obj->blog_id,
                             filter_key => $obj->id,
                         },
