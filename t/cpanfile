@@ -109,5 +109,6 @@ on 'test' => sub {
     requires 'Test::MockObject';
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
+    requires 'Text::Diff';
     requires 'Wight';
 };

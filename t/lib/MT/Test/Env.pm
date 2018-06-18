@@ -21,7 +21,7 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"), glob("$MT_HOME/addons/*/extlib");
+use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 sub new {
@@ -35,6 +35,7 @@ sub new {
     my $self = bless {
         root   => $root,
         driver => $ENV{MT_TEST_BACKEND} || 'mysql',
+        config => \%extra_config,
     }, $class;
 
     $self->write_config( \%extra_config );
@@ -62,8 +63,8 @@ sub write_config {
 
     my %connect_info = $self->connect_info;
 
-    my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER} ||
-        ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
+    my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
+        || ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
     require MT;
 
@@ -241,26 +242,64 @@ sub dbh {
     ) or die $DBI::errstr;
 }
 
+sub _get_id_from_caller {
+    my $self = shift;
+    return $self->{fixture_id} if $self->{fixture_id};
+
+    for ( my $i = 0; $i < 3; $i++ ) {
+        my $file = ( caller($i) )[1];
+        next unless $file =~ s!\.t$!!;
+        my $id = $file;
+        $id =~ s!^($MT_HOME/)?!!;
+        $id =~ s!^(?:(.*?)/)?t/!!;
+
+        $self->{fixture_id}        = $id;
+        $self->{extra_plugin_path} = $1;
+
+        return $id;
+    }
+    die "get_id_from_caller can't detect .t file";
+}
+
+sub _set_fixture_dirs {
+    my $self = shift;
+    return $self->{fixture_dirs} if @{ $self->{fixture_dirs} || [] };
+
+    $self->_find_addons_and_plugins();
+    my $md5 = md5_hex( join '+', @{ $self->{addons_and_plugins} } );
+    my $uid = substr( $md5, 0, 7 );
+
+    my @fixture_dirs = ("$MT_HOME/t/fixture/$uid");
+
+    if ( $self->{extra_plugin_path} ) {
+        push @fixture_dirs,
+            "$MT_HOME/$self->{extra_plugin_path}/t/fixture/$uid";
+    }
+    $self->{fixture_dirs} = \@fixture_dirs;
+}
+
+sub _schema_file {
+    my $self = shift;
+
+    my $driver = lc $self->{driver};
+    return "schema.$driver.sql";
+}
+
+sub _fixture_file {
+    my ( $self, $id ) = @_;
+    return "$id.json";
+}
+
 sub prepare_fixture {
     my $self = shift;
-    my $code;
-    my @addons = _find_addons_and_plugins();
-    my $uid    = substr( md5_hex( join '+', sort @addons ), 0, 7 );
 
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1" or die $@;
     MT->set_instance( $app->new );
 
-    my $fixture_dir = "$MT_HOME/t/fixture/$uid";
+    my $id = $self->_get_id_from_caller;
 
-    my $id = (caller)[1];    # file
-    $id =~ s!^($MT_HOME/)?!!;
-    $id =~ s!\.t$!!;
-    $id =~ s!^(?:(.*?)/)?t/!!;
-    if ($1) {
-        $fixture_dir = "$MT_HOME/$1/t/fixture/$uid";
-        mkpath $fixture_dir unless -d $fixture_dir;
-    }
+    my $code;
     if ( ref $_[0] eq 'CODE' ) {
         $code = shift;
     }
@@ -281,22 +320,22 @@ sub prepare_fixture {
             $code = shift;
         }
     }
-    my $driver  = lc $self->{driver};
-    my $schema  = "$fixture_dir/schema.$driver.sql";
-    my $fixture = "$fixture_dir/$id.json";
+
     if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
-        $self->load_schema_and_fixture( $schema, $fixture ) or $code->();
+        $self->load_schema_and_fixture($id) or $code->();
     }
     else {
         $code->();
     }
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
-        mkpath $fixture_dir unless -d $fixture_dir;
-        open my $fh, '>', "$fixture_dir/README" or die $!;
-        print $fh join "\n", @addons, "";
-        close $fh;
-        $self->save_schema($schema);
-        $self->save_fixture($fixture);
+        $self->save_schema;
+        $self->save_fixture($id);
+
+        if ( $self->{fixture_dirs}[-1] ) {
+            open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
+            print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
+            close $fh;
+        }
     }
 
     require MT::Theme;
@@ -319,18 +358,43 @@ sub _slurp {
 }
 
 sub _find_addons_and_plugins {
+    my $self = shift;
+    return $self->{addons_and_plugins} if $self->{addons_and_plugins};
+
     my @files;
     push @files, glob "$MT_HOME/addons/*/config.yaml";
     push @files, glob "$MT_HOME/plugins/*/config.yaml";
     push @files, glob "$MT_HOME/plugins/*/*.pl";
+
+    # respect explicit PluginPath
+    if ( $self->{config}{PluginPath} ) {
+        for my $path ( @{ $self->{config}{PluginPath} } ) {
+            push @files, glob "$path/*/config.yaml";
+            push @files, glob "$path/*/*.pl";
+        }
+    }
+
     my %seen;
-    grep {!$seen{$_}++} map {$_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1} @files;
+    $self->{addons_and_plugins} = [
+        sort
+        grep { !$seen{$_}++ }
+        map { $_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1 } @files
+    ];
+}
+
+sub _find_file {
+    my ( $self, $file ) = @_;
+    for my $dir ( @{ $self->{fixture_dirs} } ) {
+        return "$dir/$file" if -f "$dir/$file";
+    }
+    return;
 }
 
 sub load_schema_and_fixture {
-    my ( $self, $schema_file, $fixture_file ) = @_;
-    return unless -f $schema_file;
-    return unless -f $fixture_file;
+    my ( $self, $fixture_id ) = @_;
+    my $schema_file = $self->_find_file( $self->_schema_file ) or return;
+    my $fixture_file = $self->_find_file( $self->_fixture_file($fixture_id) )
+        or return;
     return
         unless
         eval { require SQL::Maker; SQL::Maker->load_plugin('InsertMulti'); 1 };
@@ -340,9 +404,11 @@ sub load_schema_and_fixture {
         $y + 1900, $mo + 1, $d, $h, $m, $s );
     my @pool = ( 'a' .. 'z', 0 .. 9 );
     my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
-    my $salt = join '', map { $pool[ rand @pool ] } 1 .. 16;
+    my $salt     = join '', map { $pool[ rand @pool ] } 1 .. 16;
+
     # Tentative password; update it later when necessary
-    my $author_pass = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
+    my $author_pass
+        = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
     my $schema  = _slurp($schema_file)  or return;
     my $fixture = _slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
@@ -359,7 +425,9 @@ sub load_schema_and_fixture {
     }
 
     my $fixture_schema_version = $fixture->{schema_version};
-    if ( !$fixture_schema_version or $fixture_schema_version ne $self->schema_version ) {
+    if (  !$fixture_schema_version
+        or $fixture_schema_version ne $self->schema_version )
+    {
         diag "FIXTURE IS IGNORED: please update fixture";
         return;
     }
@@ -399,11 +467,40 @@ sub load_schema_and_fixture {
 }
 
 sub save_schema {
-    my ( $self, $file ) = @_;
-    eval { require SQL::Translator } or return;
+    my $self = shift;
+
+    my $force;
+    if ( !ref $self ) {
+        $self = $self->new;
+        local $ENV{MT_CONFIG} = $self->config_file;
+        require MT::Test;
+        MT::Test->init_db;
+        $force = 1;
+    }
+
+    $self->_set_fixture_dirs;
+
+    #  always save in MT_HOME/t/fixture
+    my $file = join "/", $self->{fixture_dirs}[0], $self->_schema_file;
 
     # skip if updated quite recently
-    return if -f $file and (stat($file))[9] - time < 300;
+    return if !$force and -f $file and ( stat($file) )[9] - time < 300;
+
+    my $schema = $self->_generate_schema or return;
+
+    my $dir = dirname($file);
+    mkpath $dir unless -d $dir;
+    open my $fh, '>', $file or die $!;
+    flock $fh, LOCK_EX;
+    print $fh $schema;
+    close $fh;
+
+    print "Saved test schema: $file\n" if $force;
+}
+
+sub _generate_schema {
+    my $self = shift;
+    eval { require SQL::Translator } or return;
 
     my $driver = lc $self->{driver};
     my $dbh    = $self->dbh;
@@ -421,14 +518,7 @@ sub save_schema {
         parser_args    => { dbh => $dbh },
         %translator_args,
     );
-    my $schema = $translator->translate or die $translator->error;
-
-    my $dir = dirname($file);
-    mkpath $dir unless -d $dir;
-    open my $fh, '>', $file or die $!;
-    flock $fh, LOCK_EX;
-    print $fh $schema;
-    close $fh;
+    $translator->translate or die $translator->error;
 }
 
 sub _sql_translator_filter_mysql {
@@ -437,17 +527,25 @@ sub _sql_translator_filter_mysql {
         my $options = $table->options;
         my $i       = 0;
         my $saw_charset;
+        my $saw_engine;
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
             if ( $key eq 'CHARACTER SET' ) {
                 $options->[$i]{$key} = 'utf8';
                 $saw_charset = 1;
             }
+            if ( $key eq 'ENGINE' ) {
+                $options->[$i]{$key} = 'InnoDB';
+                $saw_engine = 1;
+            }
             splice @$options, $i, 1 if $key eq 'AUTO_INCREMENT';
             $i++;
         }
         if ( !$saw_charset ) {
             $table->options( { 'CHARACTER SET' => 'utf8' } );
+        }
+        if ( !$saw_engine ) {
+            $table->options( { 'ENGINE' => 'InnoDB' } );
         }
 
         # Some of the PHP tests assume that float has no explicit size
@@ -465,8 +563,19 @@ sub _sql_translator_filter_mysql {
 }
 
 sub save_fixture {
-    my ( $self, $file ) = @_;
+    my ( $self, $fixture_id ) = @_;
     eval { require Time::Piece; require Time::Seconds; 1 } or return;
+
+    $self->_set_fixture_dirs;
+
+    my $file = $self->_fixture_file($fixture_id);
+    if ( -f "$self->{fixture_dirs}[0]/$file" ) {
+        $file = "$self->{fixture_dirs}[0]/$file";
+    }
+    else {
+        $file = "$self->{fixture_dirs}[-1]/$file";
+        mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
+    }
 
     my $driver = lc $self->{driver};
     my $dbh    = $self->dbh;
@@ -533,15 +642,48 @@ sub save_fixture {
     close $fh;
 }
 
+sub _cut_created_on {
+    my $schema = shift;
+    $schema =~ s/^\-\- Created on .+$//m;
+    $schema;
+}
+
+sub test_schema {
+    my $self = shift;
+
+    $self->_get_id_from_caller;
+    $self->_set_fixture_dirs;
+
+    my $driver       = lc $self->{driver};
+    my $schema_file  = "$self->{fixture_dirs}[0]/schema.$driver.sql";
+    plan skip_all => 'schema is not found' unless -f $schema_file;
+
+    my $saved_schema = _slurp($schema_file);
+
+    my $generated_schema = $self->_generate_schema;
+
+    if (_cut_created_on($generated_schema) eq _cut_created_on($saved_schema) )
+    {
+        pass "schema is up-to-date";
+    }
+    else {
+        fail "schema is out-of-date";
+        if ( eval { require Text::Diff } ) {
+            diag Text::Diff::diff( \$generated_schema, \$saved_schema,
+                { STYLE => 'Unified' } );
+        }
+    }
+}
+
 sub skip_if_addon_exists {
     my ( $self, $name ) = @_;
-    my $config   = "$MT_HOME/addons/$name/config.yaml";
+    my $config = "$MT_HOME/addons/$name/config.yaml";
     plan skip_all => "$config exists" if -f $config;
 }
 
 sub skip_if_plugin_exists {
     my ( $self, $name ) = @_;
-    my $config   = "$MT_HOME/plugins/$name/config.yaml";
+    my $config = "$MT_HOME/plugins/$name/config.yaml";
     plan skip_all => "$config exists" if -f $config;
 }
 
@@ -594,7 +736,7 @@ sub enable_plugin {
 }
 
 sub schema_version {
-    my $self = shift;
+    my $self     = shift;
     my %versions = (
         core => MT->schema_version,
         $self->plugin_schema_version,

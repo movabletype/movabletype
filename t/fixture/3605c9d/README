@@ -2,9 +2,9 @@ plugins/BlockEditor
 plugins/FormattedText
 plugins/FormattedTextForTinyMCE
 plugins/GoogleAnalytics
+plugins/Markdown
+plugins/Textile
 plugins/TinyMCE
 plugins/WXRImporter
-plugins/Markdown
-plugins/spamlookup
-plugins/Textile
 plugins/WidgetManager
+plugins/spamlookup
