@@ -12,7 +12,7 @@ use warnings;
 use MT::Util qw( encode_html remove_html spam_protect );
 
 sub hdlr_author_link {
-    my ( $ctx, $args, $cond, $a, $archive_type ) = @_;
+    my ( $ctx, $args, $cond, $a ) = @_;
 
     my $type = $args->{type} || '';
 
@@ -49,21 +49,6 @@ sub hdlr_author_link {
             $str = spam_protect($str) if $args->{'spam_protect'};
             return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str,
                 $displayname;
-        }
-    }
-    elsif ( $type eq 'archive' && $archive_type ) {
-        require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
-            local $ctx->{current_archive_type} = undef;
-            if (my $link = $ctx->invoke_handler(
-                    'archivelink', { type => $archive_type }, $cond
-                )
-                )
-            {
-                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
-                    $displayname;
-            }
         }
     }
     return $displayname;

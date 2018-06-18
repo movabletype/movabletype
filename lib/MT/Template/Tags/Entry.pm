@@ -9,7 +9,8 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( offset_time_list spam_protect asset_cleanup );
+use MT::Util
+    qw( offset_time_list spam_protect asset_cleanup encode_html remove_html );
 use MT::Entry;
 use MT::I18N qw( first_n_text const );
 use MT::Template::Tags::Common;
@@ -2185,7 +2186,28 @@ sub _hdlr_entry_author_link {
     my $a = $e->author;
     return '' unless $a;
 
-    return MT::Template::Tags::Common::hdlr_author_link( @_, $a, 'Author' );
+    my $type = $args->{type} || '';
+
+    if ( $type && $type eq 'archive' ) {
+        require MT::Author;
+        if ( $a->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $a;
+            local $ctx->{current_archive_type} = undef;
+            if (my $link = $ctx->invoke_handler(
+                    'archivelink', { type => 'Author' }, $cond
+                )
+                )
+            {
+                my $target = $args->{new_window} ? ' target="_blank"' : '';
+                my $displayname
+                    = encode_html( remove_html( $a->nickname || '' ) );
+                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
+                    $displayname;
+            }
+        }
+    }
+
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
 }
 
 ###########################################################################
