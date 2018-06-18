@@ -16,7 +16,6 @@ use MT::ContentStatus;
 use MT::ContentType;
 use MT::Util;
 use MT::Util::ContentType;
-use MT::Template::Tags::Common;
 
 =head2 Contents
 
@@ -995,14 +994,7 @@ link published.
 =cut
 
 sub _hdlr_content_author_link {
-    my ( $ctx, $args, $cond ) = @_;
-    my $cd = $ctx->stash('content')
-        or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return '' unless $a;
-
-    return MT::Template::Tags::Common::_content_author_link( @_, $a,
-        'ContentType-Author' );
+    _check_and_invoke( 'entryauthorlink', @_ );
 }
 
 =head2 ContentAuthorURL
