@@ -40,7 +40,8 @@
       datasource: this.datasource,
       blog_id: this.siteId,
       id: args.id,
-      magic_token: this.magicToken
+      magic_token: this.magicToken,
+      not_encode_result: 1
     };
     if (args.changed) {
       data = $.extend(data, {

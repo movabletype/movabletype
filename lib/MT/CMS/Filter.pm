@@ -125,9 +125,10 @@ sub delete {
     my $filter_class = MT->model('filter');
     my $filter       = $filter_class->load($id)
         or return $app->json_error( $app->translate('No such filter') );
-    my $blog_id = $app->param('blog_id') || 0;
-    my $ds      = $app->param('datasource');
-    my $user    = $app->user;
+    my $blog_id     = $app->param('blog_id') || 0;
+    my $ds          = $app->param('datasource');
+    my $encode_html = $app->param('not_encode_result') ? 0 : 1;
+    my $user        = $app->user;
 
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
@@ -143,7 +144,7 @@ sub delete {
     my $list = $app->param('list');
     if ( defined $list && !$list ) {
         my %res;
-        my $filters = filters( $app, $ds, encode_html => 1 );
+        my $filters = filters( $app, $ds, encode_html => $encode_html );
         $res{id}      = $filter->id;
         $res{filters} = $filters;
         return $app->json_result( \%res );
