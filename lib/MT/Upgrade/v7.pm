@@ -151,6 +151,15 @@ sub upgrade_functions {
             version_limit => 7.0042,
             priority      => 3,
         },
+        'v7_rebuild_ct_count_of_category_sets' => {
+            version_limit => 7.0044,
+            priority      => 3.3,
+            updater       => {
+                type  => 'category_set',
+                label => "Rebuilding Content Type count of Category Sets...",
+                code  => sub { },
+            },
+        },
     };
 }
 
