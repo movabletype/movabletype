@@ -28,43 +28,46 @@ my %ClassTable = (
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || [];
-    $value = [$value] unless ref $value eq 'ARRAY';
-
-    require MT::CMS::Asset;
-    my $hasher = MT::CMS::Asset::build_asset_hasher(
-        $app,
-        PreviewWidth  => 80,
-        PreviewHeight => 80,
-    );
+    my $raw_value = $field_data->{value} || [];
+    my @value = ref $raw_value eq 'ARRAY' ? @$raw_value : ($raw_value);
 
     my @asset_loop;
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
-    my $iter = $app->model($type)->load_iter( { id => $value } );
-    my %asset_hash;
-    while ( my $asset = $iter->() ) {
-        $asset_hash{ $asset->id } = $asset;
-    }
-    for my $asset_id (@$value) {
-        my $asset = $asset_hash{$asset_id} or next;
 
-        my $row = $asset->get_values;
-        $hasher->( $asset, $row );
+    if (@value) {
+        require MT::CMS::Asset;
+        my $hasher = MT::CMS::Asset::build_asset_hasher(
+            $app,
+            PreviewWidth  => 80,
+            PreviewHeight => 80,
+        );
 
-        push @asset_loop,
-            {
-            asset_id             => $row->{id},
-            asset_blog_id        => $row->{blog_id},
-            asset_dimensions     => $row->{'Actual Dimensions'},
-            asset_file_name      => $row->{file_name},
-            asset_file_size      => $row->{file_size},
-            asset_label          => $row->{label},
-            asset_preview_url    => $row->{preview_url},
-            asset_preview_height => $row->{preview_height},
-            asset_preview_width  => $row->{preivew_width},
-            asset_type           => $row->{class},
-            };
+        my $iter = $app->model($type)->load_iter( { id => \@value } );
+        my %asset_hash;
+        while ( my $asset = $iter->() ) {
+            $asset_hash{ $asset->id } = $asset;
+        }
+        for my $asset_id (@value) {
+            my $asset = $asset_hash{$asset_id} or next;
+
+            my $row = $asset->get_values;
+            $hasher->( $asset, $row );
+
+            push @asset_loop,
+                {
+                asset_id             => $row->{id},
+                asset_blog_id        => $row->{blog_id},
+                asset_dimensions     => $row->{'Actual Dimensions'},
+                asset_file_name      => $row->{file_name},
+                asset_file_size      => $row->{file_size},
+                asset_label          => $row->{label},
+                asset_preview_url    => $row->{preview_url},
+                asset_preview_height => $row->{preview_height},
+                asset_preview_width  => $row->{preivew_width},
+                asset_type           => $row->{class},
+                };
+        }
     }
 
     my $options = $field_data->{options} || {};
@@ -82,7 +85,7 @@ sub field_html_params {
 
     my $asset_class = $app->model($type);
 
-    {   asset_loop => @asset_loop ? \@asset_loop : undef,
+    {   asset_loop           => @asset_loop ? \@asset_loop : undef,
         asset_type_for_field => $asset_class->class_type,
         multiple             => $multiple,
         required             => $required,
@@ -421,14 +424,18 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $cd_id       = $content_data->id;
-    my $field_id    = $prop->content_field_id;
-    my $asset_ids   = $content_data->data->{$field_id} || [];
-    my $asset_count = MT::Asset->count( { id => $asset_ids } ) || 0;
+    my $cd_id         = $content_data->id;
+    my $field_id      = $prop->content_field_id;
+    my $raw_asset_ids = $content_data->data->{$field_id} or return '';
+    my @asset_ids
+        = ref $raw_asset_ids eq 'ARRAY' ? @$raw_asset_ids : ($raw_asset_ids);
+    return '' unless @asset_ids;
+
+    my $asset_count = MT::Asset->count( { id => \@asset_ids } ) || 0;
 
     if ( $asset_count == 1 ) {
         my $can_double_encode = 1;
-        my $asset = MT::Asset->load( { id => $asset_ids } );
+        my $asset = MT::Asset->load( { id => \@asset_ids } );
         my $encoded_label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
@@ -537,7 +544,7 @@ sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
     my @assets = MT->model('asset')->load(
-        { id => $values, class => '*' },
+        { id        => $values, class => '*' },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @assets;

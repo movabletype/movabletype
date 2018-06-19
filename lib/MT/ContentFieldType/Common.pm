@@ -497,13 +497,17 @@ sub search_handler_multiple {
 }
 
 sub search_handler_reference {
-    my ( $search_regex, $field_data, $object_ids, $content_data ) = @_;
-    return 0 unless defined $object_ids;
-    $object_ids = [$object_ids] unless ref $object_ids eq 'ARRAY';
+    my ( $search_regex, $field_data, $raw_object_ids, $content_data ) = @_;
+    return 0 unless $raw_object_ids;
+    my @object_ids
+        = ref $raw_object_ids eq 'ARRAY'
+        ? @$raw_object_ids
+        : ($raw_object_ids);
+    return 0 unless @object_ids;
     my $field_registry
         = MT->registry( 'content_field_types', $field_data->{type} );
     my $iter = MT->model( $field_registry->{search_class} )
-        ->load_iter( { id => $object_ids } );
+        ->load_iter( { id => \@object_ids } );
     while ( my $obj = $iter->() ) {
         for my $col ( @{ $field_registry->{search_columns} } ) {
             my $text = defined $obj->$col ? $obj->$col : '';
