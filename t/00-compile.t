@@ -194,6 +194,7 @@ use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::ContentType');
+use_ok('MT::Template::Tags::Common');
 
 SKIP: {
 

@@ -14,8 +14,9 @@ use MT::ContentData;
 use MT::ContentField;
 use MT::ContentStatus;
 use MT::ContentType;
-use MT::Util;
+use MT::Util qw( offset_time_list encode_html remove_html );
 use MT::Util::ContentType;
+use MT::Template::Tags::Common;
 
 =head2 Contents
 
@@ -994,7 +995,35 @@ link published.
 =cut
 
 sub _hdlr_content_author_link {
-    _check_and_invoke( 'entryauthorlink', @_ );
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $a = $cd->author;
+    return '' unless $a;
+
+    my $type = $args->{type} || '';
+
+    if ( $type && $type eq 'archive' ) {
+        require MT::Author;
+        if ( $a->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $a;
+            local $ctx->{current_archive_type} = undef;
+            if (my $link = $ctx->invoke_handler(
+                    'archivelink', { type => 'ContentType-Author' },
+                    $cond
+                )
+                )
+            {
+                my $target = $args->{new_window} ? ' target="_blank"' : '';
+                my $displayname
+                    = encode_html( remove_html( $a->nickname || '' ) );
+                return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
+                    $displayname;
+            }
+        }
+    }
+
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
 }
 
 =head2 ContentAuthorURL
