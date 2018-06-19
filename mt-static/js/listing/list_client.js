@@ -37,10 +37,11 @@
     }
     var data = {
       __mode: 'delete_filter',
-      datasource: this.datasource,
       blog_id: this.siteId,
+      datasource: this.datasource,
       id: args.id,
-      magic_token: this.magicToken
+      magic_token: this.magicToken,
+      not_encode_result: 1
     };
     if (args.changed) {
       data = $.extend(data, {
