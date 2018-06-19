@@ -123,7 +123,7 @@ sub _cs_terms {
     my ( $args, $db_terms, $db_args ) = @_;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type               => 'category',
+        {   type               => 'categories',
             related_cat_set_id => $args->{value},
         },
     );

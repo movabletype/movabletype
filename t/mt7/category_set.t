@@ -77,13 +77,13 @@ subtest 'ct_count' => sub {
         content_type_id    => $ct->id,
         related_cat_set_id => $cat_set->id,
         name               => 'test category field',
-        type               => 'category',
+        type               => 'categories',
     );
 
     $cat_set = MT::CategorySet->load( $cat_set->id );
     is( $cat_set->ct_count, 1, 'ct_count is 1' );
 
-    $cf->type('radio');
+    $cf->type('radio_button');
     $cf->save or die $cf->errstr;
     $cat_set = MT::CategorySet->load( $cat_set->id );
     is( $cat_set->ct_count, 0, 'ct_count is 0' );
