@@ -89,8 +89,8 @@
       __mode: 'save_filter',
       blog_id: this.siteId,
       datasource: this.datasource,
-      label: args.filter.label,
       items: JSON.stringify(args.filter.items),
+      label: args.filter.label,
       list: 0,
       magic_token: this.magicToken,
       not_encode_result: 1
