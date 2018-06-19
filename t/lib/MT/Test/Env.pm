@@ -298,6 +298,7 @@ sub prepare_fixture {
     MT->set_instance( $app->new );
 
     my $id = $self->_get_id_from_caller;
+    $self->_set_fixture_dirs;
 
     my $code;
     if ( ref $_[0] eq 'CODE' ) {
