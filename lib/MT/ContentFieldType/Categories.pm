@@ -108,7 +108,7 @@ sub ss_validator {
 
     my $iter
         = MT::Category->load_iter(
-        { id => $data, category_set_id => $options->{category_set} },
+        { id        => $data, category_set_id => $options->{category_set} },
         { fetchonly => { id => 1 } } );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
@@ -131,15 +131,19 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $raw_cat_ids = $content_data->data->{ $prop->content_field_id };
+    return '' unless $raw_cat_ids;
+    my @cat_ids
+        = ref $raw_cat_ids eq 'ARRAY' ? @$raw_cat_ids : ($raw_cat_ids);
+    return '' unless @cat_ids;
 
     my %cats;
-    my $iter = MT::Category->load_iter( { id => $cat_ids },
+    my $iter = MT::Category->load_iter( { id => \@cat_ids },
         { fetchonly => { id => 1, blog_id => 1, label => 1 } } );
     while ( my $cat = $iter->() ) {
         $cats{ $cat->id } = $cat;
     }
-    my @cats = grep {$_} map { $cats{$_} } @$cat_ids;
+    my @cats = grep {$_} map { $cats{$_} } @cat_ids;
 
     my $can_double_encode = 1;
 
@@ -179,7 +183,7 @@ sub terms {
 
         my @cat_ids;
         my $iter = MT::Category->load_iter(
-            {   label => { like => "%${string}%" },
+            {   label           => { like => "%${string}%" },
                 category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },

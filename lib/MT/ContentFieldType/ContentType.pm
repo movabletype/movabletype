@@ -14,23 +14,26 @@ use MT::ContentType;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || [];
-    $value = [$value] unless ref $value eq 'ARRAY';
+    my $raw_value = $field_data->{value} || [];
+    my @value = ref $raw_value eq 'ARRAY' ? @$raw_value : ($raw_value);
 
-    my %tmp_cd;
-    my $iter = MT::ContentData->load_iter( { id => $value } );
-    while ( my $cd = $iter->() ) {
-        $tmp_cd{ $cd->id } = $cd;
-    }
-    my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
-    my @content_data_loop = map {
-        {   cd_id              => $_->id,
-            cd_blog_id         => $_->blog_id,
-            cd_content_type_id => $_->content_type_id,
-            cd_data            => $_->preview_data,
-            cd_label => $_->label || MT->translate('No Label (ID:[_1]'),
+    my @content_data_loop;
+    if (@value) {
+        my %tmp_cd;
+        my $iter = MT::ContentData->load_iter( { id => \@value } );
+        while ( my $cd = $iter->() ) {
+            $tmp_cd{ $cd->id } = $cd;
         }
-    } @content_data;
+        my @content_data = grep {$_} map { $tmp_cd{$_} } @value;
+        @content_data_loop = map {
+            {   cd_id              => $_->id,
+                cd_blog_id         => $_->blog_id,
+                cd_content_type_id => $_->content_type_id,
+                cd_data            => $_->preview_data,
+                cd_label => $_->label || MT->translate('No Label (ID:[_1]'),
+            }
+        } @content_data;
+    }
 
     my $content_field_id = $field_data->{content_field_id} || 0;
     my $content_field = MT::ContentField->load($content_field_id);
@@ -69,11 +72,17 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $child_cd_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $raw_child_cd_ids = $content_data->data->{ $prop->content_field_id };
+    return '' unless $raw_child_cd_ids;
+    my @child_cd_ids
+        = ref $raw_child_cd_ids eq 'ARRAY'
+        ? @$raw_child_cd_ids
+        : ($raw_child_cd_ids);
+    return '' unless @child_cd_ids;
 
     my %child_cd;
     my $iter = MT::ContentData->load_iter(
-        { id => $child_cd_ids },
+        { id => \@child_cd_ids },
         {   fetchonly => {
                 id              => 1,
                 blog_id         => 1,
@@ -83,10 +92,11 @@ sub html {
             }
         },
     );
+
     while ( my $cd = $iter->() ) {
         $child_cd{ $cd->id } = $cd;
     }
-    my @child_cd = map { $child_cd{$_} } @$child_cd_ids;
+    my @child_cd = map { $child_cd{$_} } @child_cd_ids;
 
     my @cd_links;
     for my $cd (@child_cd) {
@@ -318,9 +328,8 @@ sub preview_handler {
 
 sub search_handler {
     my ( $search_regex, $field_data, $content_data_ids, $content_data ) = @_;
-    return 0 unless defined $content_data_ids;
-    $content_data_ids = [$content_data_ids]
-        unless ref $content_data_ids eq 'ARRAY';
+    return 0 unless $content_data_ids;
+    return 0 if ref $content_data_ids eq 'ARRAY' && !@$content_data_ids;
     my $iter
         = MT->model('content_data')->load_iter( { id => $content_data_ids } );
     while ( my $cd = $iter->() ) {

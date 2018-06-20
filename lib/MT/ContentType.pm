@@ -726,7 +726,7 @@ sub _make_tag_list_prop_count {
                     {   $blog_id ? ( blog_id => $blog_id ) : (),
                         tag_id            => $obj->id,
                         object_datasource => 'content_data',
-                        cf_id             => \@tags_field_ids,
+                        cf_id => @tags_field_ids ? \@tags_field_ids : 0,
                     },
                     {   sort      => 'cnt',
                         direction => 'descend',
@@ -806,7 +806,7 @@ sub _make_tag_list_prop_filter {
                     MT->model('objecttag')->join_on(
                     'tag_id',
                     {   object_datasource => 'content_data',
-                        cf_id             => \@tags_field_ids,
+                        cf_id => @tags_field_ids ? \@tags_field_ids : 0,
                     },
                     {   group  => ['tag_id'],
                         unique => 1,
