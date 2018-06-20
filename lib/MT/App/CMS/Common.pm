@@ -285,6 +285,21 @@ sub init_core_callbacks {
             $pkg
                 . 'post_delete.content_type' =>
                 "${pfx}ContentType::post_delete",
+
+            # group callbacks
+            $pkg
+                . 'view_permission_filter.group' =>
+                "${pfx}Group::CMSViewPermissionFilter_group",
+            $pkg
+                . 'save_permission_filter.group' =>
+                "${pfx}Group::CMSSavePermissionFilter_group",
+            $pkg
+                . 'delete_permission_filter.group' =>
+                "${pfx}Group::CMSDeletePermissionFilter_group",
+            $pkg
+                . 'pre_load_filtered_list.group' =>
+                "${pfx}Group::CMSPreLoadFilteredList_group",
+
         }
     );
 }

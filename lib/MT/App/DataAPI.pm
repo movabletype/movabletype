@@ -2701,19 +2701,9 @@ sub init_plugins {
                 "${pfx}ContentData::save_filter",
 
             # group callbacks
-            $pkg . 'view_permission_filter.group' => sub {
-                MT::CMS::Group::CMSViewPermissionFilter_group(@_);
-            },
-            $pkg . 'save_permission_filter.group' => sub {
-                MT::CMS::Group::CMSSavePermissionFilter_group(@_);
-            },
             $pkg . 'save_filter.group' => "${pfx}Group::save_filter",
-            $pkg . 'delete_permission_filter.group' => sub {
-                MT::CMS::Group::CMSDeletePermissionFilter_group(@_);
-            },
-            $pkg . 'pre_load_filtered_list.group' => sub {
-                MT::CMS::Group::CMSPreLoadFilteredList_group(@_);
-            },
+
+            
         }
     );
 
