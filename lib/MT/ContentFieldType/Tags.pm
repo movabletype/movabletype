@@ -138,7 +138,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
     my $field_label = $options->{label};
 
-    my $iter = MT::Tag->load_iter( { name => $data },
+    my $iter = MT::Tag->load_iter( { name => @$data ? $data : 0 },
         { binary => { name => 1 }, fetchonly => [ 'id', 'name' ] } );
     my %valid_tag_hash;    # name => id
     while ( my $tag = $iter->() ) {

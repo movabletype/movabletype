@@ -136,7 +136,7 @@ sub ss_validator {
     my $field_label     = $options->{label};
 
     my $iter = MT::ContentData->load_iter(
-        {   id              => $data,
+        {   id              => @$data ? $data : 0,
             blog_id         => $app->blog->id,
             content_type_id => $content_type_id,
         },

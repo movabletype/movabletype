@@ -480,7 +480,7 @@ sub ss_validator {
     my $field_type_label = $field_data->{type_label};
 
     my $iter = MT::Asset->load_iter(
-        {   id      => $data,
+        {   id => @$data ? $data : 0,
             blog_id => $app->blog->id,
         },
         { fetchonly => { id => 1 } }

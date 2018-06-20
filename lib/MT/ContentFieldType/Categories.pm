@@ -106,10 +106,12 @@ sub ss_validator {
 
     my $options = $field_data->{options} || {};
 
-    my $iter
-        = MT::Category->load_iter(
-        { id        => $data, category_set_id => $options->{category_set} },
-        { fetchonly => { id => 1 } } );
+    my $iter = MT::Category->load_iter(
+        {   id => @$data ? $data : 0,
+            category_set_id => $options->{category_set}
+        },
+        { fetchonly => { id => 1 } }
+    );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
         $valid_cats{ $cat->id } = 1;
