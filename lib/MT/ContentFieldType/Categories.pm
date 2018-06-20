@@ -416,10 +416,10 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @categories
-        = MT->model('category')
-        ->load( { id => $values },
-        { fetchonly => { id => 1, label => 1 } }, );
+    my @categories = MT->model('category')->load(
+        { id        => @$values ? $values : 0 },
+        { fetchonly => { id => 1, label => 1 } },
+    );
     my %label_hash = map { $_->id => $_->label } @categories;
 
     my $contents = '';
