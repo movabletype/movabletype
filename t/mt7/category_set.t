@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -80,8 +81,12 @@ subtest 'ct_count' => sub {
         type               => 'categories',
     );
 
+    ok( exists MT->registry('content_field_types')->{categories} );
+
     $cat_set = MT::CategorySet->load( $cat_set->id );
     is( $cat_set->ct_count, 1, 'ct_count is 1' );
+
+    ok( exists MT->registry('content_field_types')->{radio_button} );
 
     $cf->type('radio_button');
     $cf->save or die $cf->errstr;
