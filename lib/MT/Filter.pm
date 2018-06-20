@@ -108,7 +108,7 @@ sub list_props {
                 else {
                     $scope = 'system';
                 }
-                if ($scope != 'system'
+                if ($scope ne 'system'
                     && ( my ($content_type_id)
                         = $obj->object_ds
                         =~ /^content_data\.content_data_[0-9]+$/ )
