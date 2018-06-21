@@ -195,11 +195,11 @@ sub tag_handler {
 
     my $iter;
     if ($is_preview) {
-        $iter = MT::Tag->load_iter( { name => $value },
+        $iter = MT::Tag->load_iter( { name => @$value ? $value : 0 },
             { binary => { name => 1 } } );
     }
     else {
-        $iter = MT::Tag->load_iter( { id => $value } );
+        $iter = MT::Tag->load_iter( { id => @$value ? $value : 0 } );
     }
 
     my %tags;

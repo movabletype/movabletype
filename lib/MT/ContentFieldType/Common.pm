@@ -383,7 +383,7 @@ sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $asset_terms = {
-        id     => $value,
+        id     => @$value ? $value : 0,
         class  => '*',
         parent => \'IS NULL',
     };
@@ -411,9 +411,10 @@ sub tag_handler_content_type {
     my $content_data = $ctx->stash('content')
         or return $ctx->_no_content_error;
 
-    my $ids = $content_data->data->{ $field_data->{id} };
+    my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
+    my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
     my @contents
-        = MT->model('content_data')->load( { id => $ids } );
+        = MT->model('content_data')->load( { id => @ids ? \@ids : 0 } );
     local $ctx->{__stash}{contents} = \@contents;
 
     $ctx->invoke_handler( 'contents', $args, $cond );
