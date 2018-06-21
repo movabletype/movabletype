@@ -138,7 +138,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
     my $field_label = $options->{label};
 
-    my $iter = MT::Tag->load_iter( { name => $data },
+    my $iter = MT::Tag->load_iter( { name => @$data ? $data : 0 },
         { binary => { name => 1 }, fetchonly => [ 'id', 'name' ] } );
     my %valid_tag_hash;    # name => id
     while ( my $tag = $iter->() ) {
@@ -195,11 +195,11 @@ sub tag_handler {
 
     my $iter;
     if ($is_preview) {
-        $iter = MT::Tag->load_iter( { name => $value },
+        $iter = MT::Tag->load_iter( { name => @$value ? $value : 0 },
             { binary => { name => 1 } } );
     }
     else {
-        $iter = MT::Tag->load_iter( { id => $value } );
+        $iter = MT::Tag->load_iter( { id => @$value ? $value : 0 } );
     }
 
     my %tags;
@@ -297,8 +297,10 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @tags = MT->model('tag')
-        ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
+    my @tags = MT->model('tag')->load(
+        { id        => @$values ? $values : 0 },
+        { fetchonly => { id => 1, name => 1 } },
+    );
     my %name_hash = map { $_->id => $_->name } @tags;
 
     my $contents = '';

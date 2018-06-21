@@ -1477,7 +1477,9 @@ sub remove_children {
         eval "# line " . __LINE__ . " " . __FILE__
             . "\nno warnings 'all';require $class;";
         for my $key (@keys) {
-            $class->remove_children_multi( { $key => $obj_id } );
+            if ( $class->has_column($key) ) {
+                $class->remove_children_multi( { $key => $obj_id } );
+            }
         }
     }
     1;
@@ -1509,7 +1511,9 @@ sub remove_children_multi {
             eval "# line " . __LINE__ . " " . __FILE__
                 . "\nno warnings 'all';require $child;";
             for my $key ( $class->child_keys ) {
-                $child->remove_children_multi( { $key => \@ids } );
+                if ( $child->has_column($key) ) {
+                    $child->remove_children_multi( { $key => \@ids } );
+                }
             }
         }
 

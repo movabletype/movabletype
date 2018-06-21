@@ -106,10 +106,12 @@ sub ss_validator {
 
     my $options = $field_data->{options} || {};
 
-    my $iter
-        = MT::Category->load_iter(
-        { id        => $data, category_set_id => $options->{category_set} },
-        { fetchonly => { id => 1 } } );
+    my $iter = MT::Category->load_iter(
+        {   id => @$data ? $data : 0,
+            category_set_id => $options->{category_set}
+        },
+        { fetchonly => { id => 1 } }
+    );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
         $valid_cats{ $cat->id } = 1;
@@ -223,7 +225,7 @@ sub tag_handler {
         MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id              => $value,
+        id              => @$value ? $value : 0,
         category_set_id => $category_set_id,
     };
     my $cat_args = {};
@@ -414,10 +416,10 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @categories
-        = MT->model('category')
-        ->load( { id => $values },
-        { fetchonly => { id => 1, label => 1 } }, );
+    my @categories = MT->model('category')->load(
+        { id        => @$values ? $values : 0 },
+        { fetchonly => { id => 1, label => 1 } },
+    );
     my %label_hash = map { $_->id => $_->label } @categories;
 
     my $contents = '';
