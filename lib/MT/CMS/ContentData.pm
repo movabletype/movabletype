@@ -1385,6 +1385,7 @@ sub _build_content_data_preview {
     $ctx->stash( 'content',      $content_data );
     $ctx->stash( 'content_type', $content_type );
     $ctx->stash( 'blog',         $blog );
+    $ctx->stash( 'blog_id',      $blog->id ) if $blog;
     $ctx->{current_timestamp}    = $content_data->authored_on;
     $ctx->{curernt_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
