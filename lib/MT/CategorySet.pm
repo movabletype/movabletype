@@ -274,7 +274,7 @@ sub _calculate_ct_count {
     return unless $self->id;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type               => 'category',
+        {   type               => 'categories',
             related_cat_set_id => $self->id,
         },
     );
