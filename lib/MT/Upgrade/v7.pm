@@ -154,7 +154,11 @@ sub upgrade_functions {
         'v7_rebuild_ct_count_of_category_sets' => {
             version_limit => 7.0044,
             priority      => 3.3,
-            updater       => {
+            condition     => sub {
+                my ( $self, %param ) = @_;
+                $param{from} && $param{from} >= 7;
+            },
+            updater => {
                 type  => 'category_set',
                 label => "Rebuilding Content Type count of Category Sets...",
                 code => sub { },    # It's OK only to save category_set.
