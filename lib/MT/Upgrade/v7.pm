@@ -157,7 +157,7 @@ sub upgrade_functions {
             updater       => {
                 type  => 'category_set',
                 label => "Rebuilding Content Type count of Category Sets...",
-                code  => sub { },
+                code => sub { },    # It's OK only to save category_set.
             },
         },
     };
