@@ -49,7 +49,7 @@ sub _content_type_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
         tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
+            '$Core::MT::ContentFieldType::ContentType::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>

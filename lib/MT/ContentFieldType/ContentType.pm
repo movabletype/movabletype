@@ -387,4 +387,29 @@ sub site_data_import_handler {
     @new_content_data_ids ? \@new_content_data_ids : undef;
 }
 
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+
+    my $options = $field_data->{options} || {};
+    my $source_content_type
+        = MT->model('content_type')->load( $options->{source} || 0 )
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+
+    my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
+    my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
+    my @contents
+        = MT->model('content_data')->load( { id => @ids ? \@ids : 0 } );
+
+    local $ctx->{__stash}{parent_content}      = $ctx->stash('content');
+    local $ctx->{__stash}{parent_content_type} = $ctx->stash('content_type');
+
+    local $ctx->{__stash}{content};
+    local $ctx->{__stash}{content_type} = $source_content_type;
+    local $ctx->{__stash}{contents}     = \@contents;
+
+    $ctx->invoke_handler( 'contents', $args, $cond );
+}
+
 1;
