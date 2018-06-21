@@ -403,23 +403,6 @@ sub tag_handler_asset {
     $ctx->invoke_handler( 'assets', $args, $cond );
 }
 
-sub tag_handler_content_type {
-    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
-
-    my $content_type = $ctx->stash('content_type')
-        or return $ctx->_no_content_type_error;
-    my $content_data = $ctx->stash('content')
-        or return $ctx->_no_content_error;
-
-    my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
-    my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
-    my @contents
-        = MT->model('content_data')->load( { id => @ids ? \@ids : 0 } );
-    local $ctx->{__stash}{contents} = \@contents;
-
-    $ctx->invoke_handler( 'contents', $args, $cond );
-}
-
 sub field_value_handler_datetime {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $tok     = $ctx->stash('tokens');
