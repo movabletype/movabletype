@@ -97,26 +97,22 @@ sub list_props {
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                return
-                    if !$obj->blog_id
-                    && ( $obj->object_ds eq 'entry'
-                    || $obj->object_ds eq 'page'
-                    || $obj->object_ds eq 'comment'
-                    || $obj->object_ds eq 'ping' );
-                my $class = MT->model( $obj->object_ds );
-                if ($class) {
-                    return $app->uri(
-                        mode => 'list',
-                        args => {
-                            _type      => $obj->object_ds,
-                            blog_id    => $obj->blog_id,
-                            filter_key => $obj->id,
-                        }
-                    );
+
+                my $blog  = undef;
+                my $scope = undef;
+                if ( $obj->blog_id ) {
+                    $blog = MT->model('blog')->load( $obj->blog_id );
+                    return unless $blog;
+                    $scope = $blog->is_blog ? 'blog' : 'website';
                 }
-                elsif ( my ($content_type_id)
-                    = $obj->object_ds
-                    =~ /^content_data\.content_data_[0-9]+$/ )
+                else {
+                    $scope = 'system';
+                }
+                if ($scope ne 'system'
+                    && ( my ($content_type_id)
+                        = $obj->object_ds
+                        =~ /^content_data\.content_data_[0-9]+$/ )
+                    )
                 {
                     return $app->uri(
                         mode => 'list',
@@ -128,14 +124,29 @@ sub list_props {
                         },
                     );
                 }
-                elsif ( $obj->object_ds eq 'group_member' ) {
+
+                my $list_screen
+                    = MT->registry( listing_screens => $obj->object_ds );
+                if ($list_screen) {
+                    my $can_edit = 0;
+                    if ( my $view = $list_screen->{view} ) {
+                        $view = [$view] unless ref $view;
+                        my %view = map { $_ => 1 } @$view;
+                        if ( $scope && $view{$scope} ) {
+                            $can_edit = 1;
+                        }
+                    }
+                    else {
+                        $can_edit = 1;
+                    }
+                    return unless $can_edit;
                     return $app->uri(
                         mode => 'list',
                         args => {
                             _type      => $obj->object_ds,
                             blog_id    => $obj->blog_id,
                             filter_key => $obj->id,
-                        },
+                        }
                     );
                 }
                 else {

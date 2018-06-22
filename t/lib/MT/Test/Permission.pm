@@ -1079,4 +1079,27 @@ sub make_content_data {
     }
 }
 
+sub make_filter {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id     => 1,
+        author_id  => 1,
+        label => 'Test filter',
+        object_ds => 'entry',
+        %params,
+    };
+
+    require MT::Filter;
+    my $filter = MT::Filter->new;
+
+    $filter->$_( $values->{$_} ) for keys %{$values};
+    $filter->save or die q{Couldn't save filter record: } . $filter->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    return $filter;
+}
+
 1;
