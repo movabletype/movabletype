@@ -173,7 +173,7 @@ sub run_step {
         local $MT::CallbacksEnabled = 0;
         if ( my $cond = $fn->{condition} ) {
             $cond = MT->handler_to_coderef($cond);
-            next unless $cond->( $self, %param );
+            return unless $cond->( $self, %param );
         }
         my %update_params;
         if ( $fn->{updater} ) {
