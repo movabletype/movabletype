@@ -1353,7 +1353,14 @@ sub _build_content_data_preview {
         {   archive_type => $at,
             is_preferred => 1,
             blog_id      => $blog_id,
-        }
+        },
+        {   join => MT->model('template')->join_on(
+                undef,
+                {   id              => \'= template_map_template_id',
+                    content_type_id => $content_type->id,
+                },
+            ),
+        },
     );
 
     my $tmpl;
