@@ -1356,8 +1356,9 @@ sub _build_content_data_preview {
         },
         {   join => MT->model('template')->join_on(
                 undef,
-                {   id              => \'= template_map_template_id',
+                {   id              => \'= templatemap_template_id',
                     content_type_id => $content_type->id,
+                    type            => 'ct',
                 },
             ),
         },
