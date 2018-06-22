@@ -687,7 +687,13 @@ sub member_list_props {
             count_col   => 'author_id',
             filter_type => 'author_id',
             ref_column  => 'author_id',
-            html        => sub { my $prop = shift; $prop->raw(@_) },
+            html        => sub {
+                my $prop = shift;
+                my ( $obj, $app, $opts ) = @_;
+                my $count = MT->model( $prop->count_class )
+                    ->count( { $prop->count_col => $obj->author_id } );
+                return $count;
+            },
         },
         entry_count => {
             label       => '__ENTRY_COUNT',
@@ -930,11 +936,8 @@ sub member_system_filters {
     };
 }
 
-MT->add_callback(
-    'backup.plugin_objects',
-    10,
-    undef,
-    \&MT::Group::backup_plugin_cb,
+MT->add_callback( 'backup.plugin_objects', 10,
+    undef, \&MT::Group::backup_plugin_cb,
 );
 
 1;
