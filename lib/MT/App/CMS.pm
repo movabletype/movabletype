@@ -610,23 +610,10 @@ sub init_plugins {
                 "${pfx}CategorySet::can_list",
 
             # group
-            $pkg
-                . 'view_permission_filter.group' =>
-                "${pfx}Group::CMSViewPermissionFilter_group",
-            $pkg
-                . 'save_permission_filter.group' =>
-                "${pfx}Group::CMSSavePermissionFilter_group",
-            $pkg
-                . 'delete_permission_filter.group' =>
-                "${pfx}Group::CMSDeletePermissionFilter_group",
-            $pkg . 'save_filter.group' => "${pfx}Group::CMSSaveFilter_group",
             $pkg . 'pre_load_filtered_list.group_member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 $filter->append_item( { type => '_type', } );
             },
-            $pkg
-                . 'pre_load_filtered_list.group' =>
-                "${pfx}Group::CMSPreLoadFilteredList_group",
             'list_template_param.group' => sub {
                 my $cb = shift;
                 my ( $app, $param, $tmpl ) = @_;
@@ -639,6 +626,7 @@ sub init_plugins {
                 $param->{page_title}
                     = MT->translate( q{[_1]'s Group}, $author_name );
             },
+            $pkg . 'save_filter.group' => "${pfx}Group::CMSSaveFilter_group",
         }
     );
 
@@ -2343,7 +2331,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => [ "blog", "website" ],
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2352,7 +2340,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
