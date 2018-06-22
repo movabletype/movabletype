@@ -48,14 +48,14 @@ sub core_backup_instructions {
         'blog'         => { 'order' => 400 },
         'author'       => { 'order' => 420 },
         'category_set' => { 'order' => 490 },
+        'content_type' => { 'order' => 490 },
 
         # These 'association' classes should be backed up
         # after the object classes.
-        'association'  => { 'order' => 510 },
-        'placement'    => { 'order' => 510 },
-        'trackback'    => { 'order' => 510 },
-        'filter'       => { 'order' => 510 },
-        'content_type' => { 'order' => 510 },
+        'association' => { 'order' => 510 },
+        'placement'   => { 'order' => 510 },
+        'trackback'   => { 'order' => 510 },
+        'filter'      => { 'order' => 510 },
 
         # Ping should be backed up after Trackback.
         'tbping'        => { 'order' => 520 },
@@ -1860,7 +1860,10 @@ sub backup_terms_args {
 
 sub parents {
     my $obj = shift;
-    { blog_id => [ MT->model('blog'), MT->model('website') ], };
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        content_type_id =>
+            { class => MT->model('content_type'), optional => 1 },
+    };
 }
 
 package MT::TemplateMap;
