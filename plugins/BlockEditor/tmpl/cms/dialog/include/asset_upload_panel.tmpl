@@ -315,7 +315,9 @@ function resize_upload_overlay() {
       resize_upload_overlay();
       e.preventDefault();
       jQuery('body').addClass('has-dialog');  // Forbid scrolling upload screen while dragging file.
-      jQuery('#upload-overlay-container').show();
+      if(jQuery('.step1').css('display') == 'block'){
+        jQuery('#upload-overlay-container').show();
+      }
     });
 
   jQuery('#upload-overlay-drop')

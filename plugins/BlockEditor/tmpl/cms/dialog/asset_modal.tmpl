@@ -535,6 +535,7 @@ function step1(){
     })
     .done(function(data){
       step2(data);
+      jQuery('#upload-overlay-container').hide();
       return false;
     })
     .fail(function(jqXHR, textStatus, errorThrown){
@@ -542,6 +543,10 @@ function step1(){
       return false;
     });
     return false;
+  });
+  cancel_button.on('click', function(){
+    jQuery('#upload-overlay-container').remove();
+    return true;
   });
 }
 function step2(data) {
