@@ -3923,5 +3923,473 @@ abstract class MTDatabase {
         $this->_rebuild_trigger_cache[$blog_id] = $rebuild_trigger;
         return $rebuild_trigger;
     }
+
+    function fetch_content_type($id) {
+        if ( isset( $this->_content_type_id_cache[$id] ) && !empty( $this->_content_type_id_cache[$id] ) ) {
+            return $this->_content_type_id_cache[$id];
+        }
+        require_once("class.mt_content_type.php");
+        $content_type= New ContentType;
+        $content_type->Load( $id );
+        if ( !empty( $content_type ) ) {
+            $this->_content_type_id_cache[$id] = $content_type;
+            return $content_type;
+        } else {
+            return null;
+        }
+    }
+
+    public function fetch_content_types($args) {
+        require_once('class.mt_content_type.php');
+
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'content_type_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'content_type_blog_id = ' . $blog_id;
+        }
+
+        $content_types= array();
+        if (isset($args['content_type'])) {
+            $str = $args['content_type'];
+            if (isset($blog_filter))
+                $blog_filter = 'and '.$blog_filter;
+            if (ctype_digit($str)) {
+                $sql = "select
+                            mt_content_type.*
+                        from mt_content_type
+                        where
+                            content_type_id = \"$str\"
+                            $blog_filter";
+                $result = $this->db()->SelectLimit($sql);
+                if ($result->EOF) return null;
+            } else {
+                $sql = "select
+                            mt_content_type.*
+                        from mt_content_type
+                        where
+                            content_type_unique_id = \"$str\"
+                            $blog_filter";
+                $result = $this->db()->SelectLimit($sql);
+                if ($result->EOF) {
+                    $sql = "select
+                                mt_content_type.*
+                            from mt_content_type
+                            where
+                                content_type_name = \"$str \"
+                                $blog_filter";
+                    $result = $this->db()->SelectLimit($sql);
+                }
+                if ($result->EOF) return null;
+            }
+        } else {
+            $sql = "select
+                        mt_content_type.*
+                    from mt_content_type
+                    where
+                        $blog_filter";
+            $result = $this->db()->SelectLimit($sql);
+            if ($result->EOF) return null;
+        }
+
+        $field_names = array_keys($result->fields);
+
+        $j = 0;
+        while (!$result->EOF) {
+            $ct = new ContentType;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $ct->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($ct)) break;
+
+            $ct->content_type_authored_on = $this->db2ts($ct->content_type_authored_on);
+            $ct->content_type_modified_on = $this->db2ts($ct->content_type_modified_on);
+            $content_types[] = $ct;
+        }
+
+        return $content_types;
+    }
+
+    public function fetch_contents($args, $content_type_id, &$total_count = NULL) {
+        require_once('class.mt_content_data.php');
+        $extras = array();
+
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and cd_blog_id ' . $sql;
+            $mt = MT::get_instance();
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty( $blog ) )
+                $blog_id = $blog->blog_id;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+            $blog = $this->fetch_blog($blog_id);
+        }
+
+        if (empty($blog))
+            return null;
+
+        if (isset($content_type_id)) {
+            if (is_array($content_type_id)) {
+                if ( count($content_type_id) > 1 )
+                    $content_type_filter = "and cd_content_type_id in (" . implode(',', $content_type_id) . ' )';
+                else
+                    $content_type_filter = "and cd_content_type_id = " . array_shift($content_type_id);
+            } else {
+                $content_type_filter = 'and cd_content_type_id = '.$content_type_id;
+            }
+        }
+
+        // determine any custom fields that we should filter on
+        $fields = array();
+        foreach ($args as $name => $v)
+            if (preg_match('/^field___(\w+)$/', $name, $m))
+                $fields[$m[1]] = $v;
+
+        # automatically include offset if in request
+        if ($args['offset'] == 'auto') {
+            $args['offset'] = 0;
+            #if ($args['limit'] || $args['lastn']) {
+            if ($args['limit']) {
+                if (intval($_REQUEST['offset']) > 0) {
+                    $args['offset'] = intval($_REQUEST['offset']);
+                }
+            }
+        }
+
+        if ($args['limit'] == 'auto') {
+            if (intval($_REQUEST['limit']) > 0) {
+                $args['limit'] = intval($_REQUEST['limit']);
+            }
+        }
+
+        if (isset($args['include_blogs']) or isset($args['exclude_blogs'])) {
+            $blog_ctx_arg = isset($args['include_blogs']) ?
+                array('include_blogs' => $args['include_blogs']) :
+                array('exclude_blogs' => $args['exclude_blogs']);
+            $include_with_website = $args['include_parent_site'] || $args['include_with_website'];
+            if (isset($args['include_blogs']) && isset($include_with_website)) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $include_with_website));
+            }
+        }
+
+        # a context hash for filter routines
+        $ctx = array();
+        $filters = array();
+
+        if (!isset($_REQUEST['content_ids_published'])) {
+            $_REQUEST['content_ids_published'] = array();
+        }
+
+        if (isset($args['unique']) && $args['unique']) {
+            $filters[] = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
+            $ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+        }
+
+        # special case for selecting a particular entry
+        if (isset($args['id'])) {
+            $content_filter = 'and cd_id = '.$args['id'];
+            $start = ''; $end = ''; $limit = 1; $blog_filter = ''; $day_filter = '';
+        } else {
+            $content_filter = '';
+        }
+
+        $content_list = array();
+
+        if (count($content_list) && ($content_filter == '')) {
+            $content_list = implode(",", array_keys($content_list));
+            # set a reasonable cap on the entry list cache. if
+            # user is selecting something too big, then they'll
+            # just have to wait through a scan.
+            if (strlen($content_list) < 2048)
+                $content_filter = "and cd_id in ($content_list)";
+        }
+
+        if (isset($args['author'])) {
+            $author_filter = 'and author_name = \'' .
+                $this->escape($args['author']) . "'";
+            $extras['join']['mt_author'] = array(
+                    'condition' => "cd_author_id = author_id"
+                    );
+        } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
+            $author_filter = "and cd_author_id = '" . $args['author_id'] . "'";
+        }
+
+        if (isset($args['days']) && !$date_filter) {
+            $day_filter = 'and ' . $this->limit_by_day_sql('cd_authored_on', intval($args['days']));
+        } elseif (isset($args['limit'])) {
+            if (!isset($args['id'])) $limit = $args['limit'];
+        } else {
+            $found_valid_args = 0;
+            foreach ( array(
+                'limit', 'days',
+                'author',
+              ) as $valid_key )
+            {
+                if (array_key_exists($valid_key, $args)) {
+                    $found_valid_args = 1;
+                    break;
+                }
+            }
+        }
+
+        if (isset($args['sort_order'])) {
+            if ($args['sort_order'] == 'ascend') {
+                $order = 'asc';
+            } elseif ($args['sort_order'] == 'descend') {
+                $order = 'desc';
+            }
+        } 
+        if (!isset($order)) {
+            $order = 'desc';
+            if (isset($blog) && isset($blog->blog_sort_order_posts)) {
+                if ($blog->blog_sort_order_posts == 'ascend') {
+                    $order = 'asc';
+                }
+            }
+        }
+
+        if (isset($args['offset']))
+            $offset = $args['offset'];
+
+        if (isset($args['limit']) || isset($args['offset'])) {
+            if (isset($args['sort_by'])) {
+                if ($args['sort_by'] == 'authored_on') {
+                    $sort_field = 'cd_authored_on';
+                } elseif ($args['sort_by'] == 'modified_on') {
+                    $sort_field = 'cd_modified_on';
+                } elseif ($args['sort_by'] == 'created_on') {
+                    $sort_field = 'cd_created_on';
+                } elseif ($args['sort_by'] == 'author_id') {
+                    $sort_field = 'cd_author_id';
+                } elseif ($args['sort_by'] == 'identifier') {
+                    $sort_field = 'cd_identifier';
+                } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
+                    $post_sort_limit = $limit ? $limit : 0;
+                    $post_sort_offset = $offset ? $offset : 0;
+                    $limit = 0; $offset = 0;
+                    $no_resort = 0;
+                } else {
+                    $sort_field = 'cd_' . $args['sort_by'];
+                }
+                if ($sort_field) $no_resort = 1;
+            }
+            else {
+                $sort_field = 'cd_authored_on'; 
+            }
+        } else {
+            $sort_field = 'cd_authored_on'; 
+            $no_resort = 0;
+        }
+
+        if ($sort_field) {
+            $base_order = (
+                isset( $args['sort_order'] )
+                    ? $args['sort_order']
+                    : ( isset( $args['base_sort_order'] )
+                            ? $args['base_sort_order']
+                            : '' )
+            ) === 'ascend' ? 'asc' : 'desc';
+        }
+
+        if (count($filters) || !is_null($total_count)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
+        }
+
+        if (count($fields)) {
+            $meta_join_num = 1;
+            $content_meta_info = ContentData::get_meta_info('cd');
+            if (!empty($content_meta_info)) {
+                foreach ($fields as $name => $value) {
+                    if (isset($content_meta_info['field.'.$name])) {
+                        $meta_col = $content_meta_info['field.'.$name];
+                        $value = $this->escape($value);
+                        $table = "mt_cd_meta cd_meta$meta_join_num";
+                        $extras['join'][$table] = array(
+                            'condition' => "(cd_meta$meta_join_num.cd_meta_cd_id = cd_id
+                                and cd_meta$meta_join_num.cd_meta_type = 'field.$name'
+                                and cd_meta$meta_join_num.cd_meta_$meta_col='$value')\n"
+                            );
+                        $meta_join_num++;
+                    }
+                }
+            }
+        }
+
+        $join_clause = '';
+        if (isset($extras['join'])) {
+            $joins = $extras['join'];
+            $keys = array_keys($joins);
+            foreach($keys as $key) {
+                $table = $key;
+                $cond = $joins[$key]['condition'];
+                $type = '';
+                if (isset($joins[$key]['type']))
+                    $type = $joins[$key]['type'];
+                $join_clause .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+            }
+        }
+
+        $sql = "select
+                    mt_cd.*
+                from mt_cd
+                    $join_clause
+                where
+                    cd_status = 2
+                    $blog_filter
+                    $content_type_filter
+                    $content_filter
+                    $author_filter
+                    $date_filter
+                    $day_filter
+                    $class_filter
+                    $max_comment_filter
+                    $min_comment_filter";
+        if ($sort_field) {
+            $sql .= "order by $sort_field $base_order";
+            if ($sort_field == 'cd_authored_on') {
+                $sql .= ",cd_id $base_order";
+            }
+        }
+
+        if ( !is_null($total_count) ) {
+            $orig_offset = $post_select_offset ? $post_select_offset : $offset;
+            $orig_limit = $post_select_limit ? $post_select_limit : $limit;
+        }
+
+        if ($limit <= 0) $limit = -1;
+        if ($offset <= 0) $offset = -1;
+        $result = $this->db()->SelectLimit($sql, $limit, $offset);
+        if ($result->EOF) return null;
+
+        $field_names = array_keys($result->fields);
+
+        $contents = array();
+        $j = 0;
+        $offset = $post_select_offset ? $post_select_offset : $orig_offset;
+        $limit = $post_select_limit ? $post_select_limit : 0;
+        $id_list = array();
+        $_total_count = 0;
+        while (!$result->EOF) {
+            $cd = new ContentData;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $cd->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cd)) break;
+            if (count($filters)) {
+                foreach ($filters as $f) {
+                    if (!$f($cd, $ctx)) {
+                        continue 2;
+                    }
+                }
+            }
+            $_total_count++;
+            if ( !is_null($total_count) ) {
+                if ( ($orig_limit > 0)
+                  && ( ($_total_count-$offset) > $orig_limit) ) {
+                    // collected all the entries; only count numbers;
+                    continue;
+                }
+            }
+            if ($offset && ($j++ < $offset)) continue;
+            $cd->cd_authored_on = $this->db2ts($cd->cd_authored_on);
+            $cd->cd_modified_on = $this->db2ts($cd->cd_modified_on);
+            $id_list[] = $cd->cd_id;
+            $contents[] = $cd;
+            $this->_comment_count_cache[$cd->cd_id] = $cd->cd_comment_count;
+            $this->_ping_count_cache[$cd->cd_id] = $cd->cd_ping_count;
+            if ( is_null($total_count) ) {
+                // the request does not want total count; break early
+                if (($limit > 0) && (count($contents) >= $limit)) break;
+            }
+        }
+        ContentData::bulk_load_meta($contents);
+
+        if ( !is_null($total_count) )
+            $total_count = $_total_count;
+
+        if (!$no_resort) {
+            $sort_field = '';
+            if (isset($args['sort_by'])) {
+                if ($args['sort_by'] == 'title') {
+                    $sort_field = 'entry_title';
+                } elseif ($args['sort_by'] == 'id') {
+                    $sort_field = 'entry_id';
+                } elseif ($args['sort_by'] == 'status') {
+                    $sort_field = 'entry_status';
+                } elseif ($args['sort_by'] == 'modified_on') {
+                    $sort_field = 'entry_modified_on';
+                } elseif ($args['sort_by'] == 'author_id') {
+                    $sort_field = 'entry_author_id';
+                } elseif ($args['sort_by'] == 'excerpt') {
+                    $sort_field = 'entry_excerpt';
+                } elseif ($args['sort_by'] == 'comment_created_on') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'score') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'rate') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'trackback_count') {
+                    $sort_field = 'entry_ping_count';  
+                } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    $sort_field = 'entry_field.' . $match[1];
+                } else {
+                    $sort_field = 'entry_' . $args['sort_by'];
+                }
+            } else {
+                $sort_field = 'cd_authored_on';
+            }
+
+            if ($sort_field) {
+                if ($sort_field == 'cd_authored_on') {
+                    // already double-sorted by the DB
+                } else {
+                    if (preg_match('/^cd_(field\..*)/', $sort_field, $match)) {
+                        if (! $content_meta_info) {
+                            $content_meta_info = ContentData('cd');
+                        }
+                        $sort_by_numeric =
+                            preg_match('/integer|float/', $content_meta_info[$match[1]]);
+                    }
+                    else {
+                        $sort_by_numeric =
+                            ($sort_field == 'cd_status') || ($sort_field == 'cd_author_id') || ($sort_field == 'cd_id')
+                            || ($sort_field == 'cd_comment_count') || ($sort_field == 'cd_ping_count');
+                    }
+
+                    $sort_fn = "\$f = '" . addslashes($sort_field) . "'; " .
+                        ($sort_by_numeric
+                            ? 'if ($a->$f == $b->$f) return 0; return $a->$f < $b->$f ? -1 : 1;'
+                            : 'return strcmp($a->$f,$b->$f);');
+
+                    $sorter = create_function(
+                        $order == 'asc' ? '$a,$b' : '$b,$a',
+                        $sort_fn);
+                    usort($contents, $sorter);
+
+                    if (isset($post_sort_offset)) {
+                        $contents = array_slice($contents, $post_sort_offset, $post_sort_limit);
+                    }
+                }
+            }
+        }
+
+        if (count($id_list) <= 30) { # TODO: find a good upper limit
+            # pre-cache comment counts and categories for these contents
+            $this->cache_categories($id_list);
+            $this->cache_permalinks($id_list);
+        }
+
+        return $contents;
+    }
 }
 ?>
