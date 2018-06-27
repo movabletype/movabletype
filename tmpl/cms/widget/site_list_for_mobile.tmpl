@@ -1,0 +1,42 @@
+<mt:loop name="sites">
+<div class="mt-table--outline d-md-none mb-5">
+  <table class="table mt-table mb-0">
+    <thead>
+      <th class="p-4">
+        <div class="h3 my-0">
+          <a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
+            <mt:var name="site_name" escape="html">
+          </a>
+        </div>
+        <a href="<mt:var name="site_url">" target="_blank" class="font-weight-normal">
+          <mt:var name="site_url">
+        </a>
+      </th>
+    </head>
+    <tbody>
+  <mt:if name="content_types">
+    <mt:loop name="content_types">
+      <tr>
+        <td>
+      <mt:if name="can_list">
+          <a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">">
+            <mt:var name="name" escape="html">
+          </a>
+      <mt:else>
+          <mt:var name="name" escape="html">
+      </mt:if>
+        </td>
+      </tr>
+    </mt:loop>
+  <mt:else>
+      <tr>
+        <td>
+          <__trans phrase="No Content Type could be found.">
+        </td>
+      </tr>
+  </mt:if>
+    </tbody>
+  </table>
+</div>
+</mt:loop>
+

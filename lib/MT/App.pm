@@ -3632,15 +3632,17 @@ sub build_widgets {
         $tmpl_name =~ s/\.tmpl$//;
 
         my $set = $widget->{set} || $widget_cfg->{set} || 'main';
-        local $widget_param->{blog_id}             = $blog_id;
-        local $widget_param->{widget_block}        = $set;
-        local $widget_param->{widget_id}           = $widget_inst;
-        local $widget_param->{widget_scope}        = $widget_set;
-        local $widget_param->{widget_singular}     = $widget->{singular} || 0;
-        local $widget_param->{magic_token}         = $app->current_magic;
-        local $widget_param->{build_menus}         = 0;
+        local $widget_param->{blog_id}         = $blog_id;
+        local $widget_param->{widget_block}    = $set;
+        local $widget_param->{widget_id}       = $widget_inst;
+        local $widget_param->{widget_mobile}   = $widget->{mobile} ? 1 : 0;
+        local $widget_param->{widget_scope}    = $widget_set;
+        local $widget_param->{widget_singular} = $widget->{singular} || 0;
+        local $widget_param->{magic_token}     = $app->current_magic;
+        local $widget_param->{build_menus}     = 0;
         local $widget_param->{build_blog_selector} = 0;
         local $widget_param->{build_compose_menus} = 0;
+
         if ( my $h = $widget->{code} || $widget->{handler} ) {
             $h = $app->handler_to_coderef($h);
             $h->( $app, $tmpl, $widget_param );
