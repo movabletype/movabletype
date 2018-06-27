@@ -207,6 +207,4 @@ function _get_content_type( $ctx, $args ) {
         array( join( ',', $not_found ) ) )
         : $content_types;
 }
-
 ?>
-
