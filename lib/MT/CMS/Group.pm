@@ -33,7 +33,7 @@ sub CMSSaveFilter_group {
 
 sub CMSViewPermissionFilter_group {
     my ( $eh, $app, $id ) = @_;
-    return $id && ( $app->user->is_superuser() );
+    return $id && ( $app->user->can_manage_users_groups() );
 }
 
 sub CMSPreLoadFilteredList_group {
@@ -53,19 +53,19 @@ sub CMSPreLoadFilteredList_group {
 # TBD: group management capability
 sub CMSSavePermissionFilter_group {
     my ( $eh, $app, $id ) = @_;
-    return $app->user->is_superuser;
+    return $app->user->can_manage_users_groups();
 }
 
 # TBD: group management capability
 sub CMSDeletePermissionFilter_group {
     my ( $eh, $app, $obj ) = @_;
-    return $app->user->is_superuser();
+    return $app->user->can_manage_users_groups();
 }
 
 sub dialog_select_group_user {
     my $app = shift;
     return $app->permission_denied()
-        unless $app->user->is_superuser;
+        unless $app->user->can_manage_users_groups();
 
     my $type = $app->param('_type');
 
@@ -197,7 +197,6 @@ sub dialog_select_group_user {
     }
 }
 
-
 sub remove_member {
     my $app      = shift;
     my $user     = $app->user;
@@ -205,7 +204,7 @@ sub remove_member {
     my @id       = $app->multi_param('id');
 
     $app->validate_magic or return;
-    $user->is_superuser  or return $app->permission_denied();
+    $user->can_manage_users_groups() or return $app->permission_denied();
 
     $app->setup_filtered_ids
         if $app->param('all_selected');
@@ -241,7 +240,7 @@ sub add_member {
     my $user = $app->user;
 
     $app->validate_magic or return;
-    $user->is_superuser  or return $app->permission_denied();
+    $user->can_manage_users_groups() or return $app->permission_denied();
 
     my $groups = $app->param('group');
     my $users  = $app->param('author');
@@ -304,7 +303,7 @@ sub view_group {
         if $app->param('blog_id');
 
     return $app->permission_denied()
-        unless $app->user->is_superuser;
+        unless $app->user->can_manage_users_groups();
 
     my ($params) = @_;
     my $id = $app->param('id');
@@ -352,7 +351,7 @@ sub view_group {
                 type     => MT::Association::GROUP_BLOG_ROLE(),
             }
         );
-        if ( $app->user->is_superuser ) {
+        if ( $app->user->can_manage_users_groups() ) {
             if ( !$app->config->ExternalGroupManagement ) {
                 $param{can_edit_groupname} = 1;
             }
@@ -363,7 +362,7 @@ sub view_group {
         $param{nav_authors}    = 1;
         $param{new_object}     = 1;
         $param{status_enabled} = 1;
-        if ( $app->user->is_superuser ) {
+        if ( $app->user->can_manage_users_groups() ) {
             $param{can_edit_groupname} = 1;
         }
         if ( $cfg->AuthenticationModule ne 'MT' ) {
@@ -409,7 +408,7 @@ sub build_group_table {
     }
     return [] unless $iter;
     my $param = $args{param};
-    $param->{has_edit_access}  = $app->user->is_superuser();
+    $param->{has_edit_access}  = $app->user->can_manage_users_groups();
     $param->{is_administrator} = $app->user->is_superuser();
     my ( %blogs, %user_count_refs );
     while ( my $group = $iter->() ) {
@@ -452,7 +451,7 @@ sub remove_group {
     my @id        = $app->multi_param('id');
 
     $app->validate_magic or return;
-    $user->is_superuser  or return $app->permission_denied();
+    $user->can_manage_users_groups() or return $app->permission_denied();
 
     my $grp_class    = $app->model('group');
     my $author_class = $app->model('author');
@@ -489,7 +488,7 @@ sub add_group {
     my $user = $app->user;
 
     $app->validate_magic or return;
-    $user->is_superuser  or return $app->permission_denied();
+    $user->can_manage_users_groups() or return $app->permission_denied();
 
     my $author_id    = $app->param('author_id');
     my $ids          = $app->param('ids');
@@ -547,6 +546,5 @@ sub edit_role {
     $params->{members} += $group_count;
     $tmpl;
 }
-
 
 1;

@@ -1498,7 +1498,7 @@ sub core_list_actions {
                 handler   => '$Core::MT::CMS::Group::delete_group',
                 condition => sub {
                     my $app = MT->instance;
-                    $app->user->is_superuser()
+                    $app->user->can_manage_users_groups()
                         && ( !$app->config->ExternalGroupManagement )
                         && ( !$app->param('author_id') );
                 },
@@ -1511,7 +1511,7 @@ sub core_list_actions {
                 button     => 1,
                 condition  => sub {
                     my $app = MT->instance;
-                    $app->user->is_superuser()
+                    $app->user->can_manage_users_groups()
                         && ( !$app->param('author_id') );
                 },
             },
@@ -1523,7 +1523,7 @@ sub core_list_actions {
                 button     => 1,
                 condition  => sub {
                     my $app = MT->instance;
-                    $app->user->is_superuser()
+                    $app->user->can_manage_users_groups()
                         && ( !$app->param('author_id') );
                 },
             },
@@ -1541,7 +1541,7 @@ sub core_list_actions {
                 mode      => 'remove_member',
                 condition => sub {
                     my $app = MT->instance;
-                    $app->user->is_superuser()
+                    $app->user->can_manage_users_groups()
                         && ( !$app->config->ExternalGroupManagement );
                 },
             },
@@ -1777,7 +1777,7 @@ sub core_menus {
             mode              => 'list',
             args              => { _type => 'group' },
             view              => 'system',
-            system_permission => 'administer',
+            system_permission => "administer,manage_users_groups",
         },
         'group:create' => {
 
@@ -1786,7 +1786,7 @@ sub core_menus {
             mode              => 'view',
             args              => { _type => 'group' },
             view              => 'system',
-            system_permission => 'administer',
+            system_permission => "administer,manage_users_groups",
             condition         => sub {
                 my $app = MT->instance;
                 $app->config->ExternalGroupManagement ? 0 : 1;
@@ -1798,7 +1798,7 @@ sub core_menus {
             mode              => 'list',
             args              => { _type => 'group_member' },
             view              => 'system',
-            system_permission => 'administer',
+            system_permission => "administer,manage_users_groups",
         },
         'role:manage' => {
             label             => "Manage",
