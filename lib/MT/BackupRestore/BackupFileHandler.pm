@@ -357,7 +357,7 @@ sub start_element {
                         = $obj = $class->new;
                 }
                 elsif ( 'cd' eq $name || 'content_data' eq $name ) {
-                    $obj ||= $class->new;
+                    $obj = $class->new;
                     require MT::ContentType::UniqueID;
                     MT::ContentType::UniqueID::set_unique_id($obj);
                     my $new_ct = $objects->{ 'MT::ContentType#uid:'
