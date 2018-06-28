@@ -203,8 +203,8 @@
 
 <list-filter-header>
   <div class="row">
-    <div class="col-11">
-      <ul class="list-inline">
+    <div class="col-12 col-md-11">
+      <ul class="list-inline mb-0">
         <li class="list-inline-item">
           { trans('Filter:') }
         </li>
@@ -229,7 +229,7 @@
         </li>
       </ul>
     </div>
-    <div class="col-1">
+    <div class="d-none d-md-block col-md-1">
       <button id="toggle-filter-detail"
         class="btn btn-default dropdown-toggle float-right"
         data-toggle="collapse"
