@@ -84,7 +84,10 @@ SKIP: {
 
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
-                my $expected = $block->expected;
+                my $expected
+                    = $block->expected_error
+                    ? $block->expected_error
+                    : $block->expected;
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
 
@@ -132,6 +135,10 @@ PHP
     $test_script .= <<'PHP';
 $blog = $db->fetch_blog($blog_id);
 $ctx->stash('blog', $blog);
+
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
+    print($error_msg."\n");
+}, E_USER_ERROR );
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);

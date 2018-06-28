@@ -328,8 +328,6 @@ test single line text 4
 
 
 === MT:Contents with days
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
 --- expected
@@ -337,8 +335,6 @@ test single line text 4
 
 
 === MT:Contents with date_field
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" days="2" date_field="[% date_cf_uid %]"><mt:ContentID></mt:Contents>
 --- expected
@@ -346,8 +342,6 @@ test single line text 4
 
 
 === MT:Contents with glue
---- skip_php
-1
 --- template
 <mt:Contents content_type="[% ct_uid %]" blog_id="1" glue=","><mt:ContentID></mt:Contents>
 --- expected
@@ -355,8 +349,6 @@ test single line text 4
 
 
 === MT:Contents with ID
---- skip_php
-1
 --- template
 <mt:Contents id="4"><mt:ContentID></mt:Contents>
 --- expected
@@ -384,8 +376,6 @@ test single line text 4
 6:even - last
 
 === MT:Contents with MT:Else
---- skip_php
-1
 --- template
 <mt:Contents content_type="[% ct3_name %]"><mt:ContentID><mt:Else>Content is not found.</mt:Contents>
 --- expected
