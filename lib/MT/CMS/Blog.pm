@@ -3630,7 +3630,7 @@ sub _determine_total {
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            class   => $obj_class,
+            ( $obj_class eq 'entry' ) ? ( class => 'entry' ) : (),
             (   $archiver->contenttype_author_based && $content_type_id
                 ? ( content_type_id => $content_type_id )
                 : ()
