@@ -25,9 +25,22 @@ my $app = MT->instance;
 
 my $blog_id = 1;
 
+my $vars = {};
+
+sub var {
+    for my $line (@_) {
+        for my $key ( keys %{$vars} ) {
+            my $replace = quotemeta "[% ${key} %]";
+            my $value   = $vars->{$key};
+            $line =~ s/$replace/$value/g;
+        }
+    }
+    @_;
+}
+
 filters {
-    template => [qw( chomp )],
-    expected => [qw( chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
     error    => [qw( chomp )],
 };
 
@@ -82,13 +95,70 @@ $test_env->prepare_fixture(
     }
 );
 
+my $cf = MT->model('cf')->load( { name => 'single1' } );
+my $ct = MT->model('content_type')->load( $cf->content_type_id );
+
+$vars->{cf_id}         = $cf->id;
+$vars->{cf_uid}        = $cf->unique_id;
+$vars->{cf_type}       = $cf->type;
+$vars->{cf_order}      = $ct->fields->[0]{order};
+$vars->{cf_type_label} = 'Single Line Text';
+
 MT::Test::Tag->run_perl_tests($blog_id);
 
 # MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== MT::ContentFields
+=== MT::ContentFields with content_field_id
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_id" eq="[% cf_id %]"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
+--- expected
+Header
+test1
+
+10
+Footer
+
+=== MT::ContentFields with content_field_unique_id
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_unique_id" eq="[% cf_uid %]"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
+--- expected
+Header
+test1
+
+10
+Footer
+
+=== MT::ContentFields with content_field_type
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_type" eq="[% cf_type %]"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
+--- expected
+Header
+test1
+
+test2
+Footer
+
+=== MT::ContentFields with content_field_order
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_order" eq="[% cf_order %]"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
+--- expected
+Header
+test1
+
+10
+Footer
+
+=== MT::ContentFields with content_field_options
 --- template
 <mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
 <mt:if name="content_field_options{label}" eq="single1"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
@@ -100,3 +170,24 @@ test1
 10
 Footer
 
+=== MT::ContentFields with content_field_type_label
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentFieldsHeader>Header</mt:ContentFieldsHeader>
+<mt:if name="content_field_type_label" eq="[% cf_type_label %]"><mt:ContentField><mt:var name="__value__"></mt:ContentField><mt:else><mt:var name="content_field_order"></mt:if>
+<mt:ContentFieldsFooter>Footer</mt:ContentFieldsFooter></mt:ContentFields></mt:Contents>
+--- expected
+Header
+test1
+
+test2
+Footer
+
+=== MT::ContentFields with content_field_type_label
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields>
+<mt:if name="__first__">first</mt:if><mt:if name="__last__">last</mt:if><mt:if name="__odd__">odd</mt:if><mt:if name="__even__">even</mt:if><mt:var name="__counter__">
+</mt:ContentFields></mt:Contents>
+--- expected
+firstodd1
+
+lasteven2
