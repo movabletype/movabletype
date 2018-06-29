@@ -452,7 +452,7 @@ sub set_object_status {
         next unless $obj;
         next if ( $obj->id == $app->user->id ) && ( $type eq 'author' );
         next if $new_status == $obj->status;
-        next if !$app->user->is_superuser      && $obj->is_superuser;
+        next if !$app->user->is_superuser      && ($type eq 'author' && $obj->is_superuser);
 
         $obj->status($new_status);
         if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
