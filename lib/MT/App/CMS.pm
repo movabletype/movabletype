@@ -851,7 +851,7 @@ sub core_content_actions {
                 class             => 'icon-action',
                 label             => 'Add user to group',
                 mode              => 'dialog_select_group_user',
-                system_permission => 'administer',
+                system_permission => 'administer,manage_users_groups',
                 condition         => sub {
                     my $app = MT->instance;
                     $app->config->ExternalGroupManagement ? 0 : 1;
