@@ -164,7 +164,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 ($mttag == 'mtassets') ||
                 ($mttag == 'mtentryassets') ||
                 ($mttag == 'mtpageassets') ||
-                ($mttag == 'mtcommentreplies')) {
+                ($mttag == 'mtcommentreplies') ||
+                ($mttag == 'mtcontents')) {
                 $conditional = 1;
             } else {
                 $conditional = 0;
