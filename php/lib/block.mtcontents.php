@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
-    $localvars = array(array('content', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
+    $localvars = array(array('content', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_limit', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
 
     if (!isset($res)) {
         $ctx->localize($localvars);
@@ -38,11 +38,11 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $lastn = $args['lastn'];
-        $ctx->stash('_entries_lastn', $lastn);
+        $limit = $args['limit'];
+        $ctx->stash('_contents_limit', $limit);
         $ctx->stash('__out', false);
     } else {
-        $lastn = $ctx->stash('_contents_lastn');
+        $limit = $ctx->stash('_contents_limit');
         $counter = $ctx->stash('_contents_counter');
         $out = $ctx->stash('__out');
     }
@@ -87,7 +87,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             $args['current_timestamp_end'] = $tse;
         }
         if (isset($archiver)) {
-            ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
+            $args['limit'] or $args['limit'] = -1;
             $archiver->setup_args($args);
         }
 
@@ -108,12 +108,12 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
     }
 
     $ctx->stash('_contents_glue', $args['glue']);
-    if (($lastn > count($contents)) || ($lastn == -1)) {
-        $lastn = count($contents);
-        $ctx->stash('_contents_lastn', $lastn);
+    if (($limit > count($contents)) || ($limit == -1)) {
+        $limit = count($contents);
+        $ctx->stash('_contents_limit', $limit);
     }
 
-    if ($lastn ? ($counter < $lastn) : ($counter < count($contents))) {
+    if ($limit ? ($counter < $limit) : ($counter < count($contents))) {
         $blog_id = $ctx->stash('blog_id');
         $content = $contents[$counter];
         if (!empty($content)) {

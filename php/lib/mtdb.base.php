@@ -4053,7 +4053,6 @@ abstract class MTDatabase {
         # automatically include offset if in request
         if ($args['offset'] == 'auto') {
             $args['offset'] = 0;
-            #if ($args['limit'] || $args['lastn']) {
             if ($args['limit']) {
                 if (intval($_REQUEST['offset']) > 0) {
                     $args['offset'] = intval($_REQUEST['offset']);
