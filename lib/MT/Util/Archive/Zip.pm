@@ -14,6 +14,9 @@ use Archive::Zip;
 
 use constant ARCHIVE_TYPE => 'zip';
 
+use MT::FileMgr::Local;
+use Encode;
+
 sub new {
     my $pkg = shift;
     my ( $type, $file ) = @_;
@@ -28,17 +31,18 @@ sub new {
         my $status = $zip->readFromFileHandle($file);
         return $pkg->error( MT->translate('Could not read from filehandle.') )
             if Archive::Zip::AZ_OK() != $status;
-        $obj->{_file} = $file;
+        $obj->{_fh}   = $file;
         $obj->{_mode} = 'r';
     }
     elsif ( ( -e $file ) && ( -r $file ) ) {
-        open my $fh, '<', $file;
+        open my $fh, '<', $file or die "Couldn't open $file: $!";
         bless $fh, 'IO::File';
         my $status = $zip->readFromFileHandle($fh);
         return $pkg->error(
             MT->translate( 'File [_1] is not a zip file.', $file ) )
             if Archive::Zip::AZ_OK() != $status;
-        $obj->{_file} = $fh;
+        $obj->{_file} = $file;
+        $obj->{_fh}   = $fh;
         $obj->{_mode} = 'r';
     }
     elsif ( !( -e $file ) ) {
@@ -60,9 +64,9 @@ sub flush {
         MT->translate( 'File [_1] exists; could not overwrite.', $file ) )
         if -e $file;
 
-    open my $fh, '>', $file;
+    open my $fh, '>', $file or die "Couldn't open $file: $!";
     bless $fh, 'IO::File';
-    $obj->{_file} = $fh;
+    $obj->{_fh} = $fh;
     $obj->{_arc}->writeToFileHandle($fh);
     $obj->{_flushed} = 1;
 }
@@ -72,9 +76,10 @@ sub close {
 
     $obj->flush;
 
-    close $obj->{_file};
+    close $obj->{_fh};
     $obj->{_arc}  = undef;
     $obj->{_file} = undef;
+    $obj->{_fh}   = undef;
     1;
 }
 
@@ -92,6 +97,34 @@ sub is {
 sub files {
     my $obj = shift;
     $obj->{_arc}->memberNames;
+}
+
+sub is_safe_to_extract {
+    my $obj = shift;
+
+    for my $member ( $obj->{_arc}->members ) {
+        my $file = $member->fileName;
+        if ( $member->isSymbolicLink ) {
+            return $obj->error(
+                MT->translate(
+                    "[_1] in the archive is not a regular file", $file
+                )
+            );
+        }
+        if ( File::Spec->file_name_is_absolute($file) ) {
+            return $obj->error(
+                MT->translate(
+                    "[_1] in the archive is an absolute path", $file
+                )
+            );
+        }
+        my ( $vol, $dirs, $basename ) = File::Spec->splitpath($file);
+        if ( grep { $_ eq '..' } File::Spec->splitdir($dirs) ) {
+            return $obj->error(
+                MT->translate( "[_1] in the archive contains ..", $file ) );
+        }
+    }
+    1;
 }
 
 sub extract {
