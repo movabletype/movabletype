@@ -91,9 +91,6 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             $archiver->setup_args($args);
         }
 
-        if ($tag = $ctx->stash('Tag')) {
-            $args['tag'] or $args['tags'] or $args['tags'] = is_object($tag) ? $tag->tag_name : $tag;
-        }
         if ( isset($args['offset']) && ($args['offset'] == 'auto') )
             $total_count = 0;
         $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
