@@ -135,8 +135,6 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             } else {
                 $next_content_created_on = '';
             }
-            $ctx->stash('DateHeader', !(substr($content->cd_authored_on, 0, 8) == substr($last_content_created_on, 0, 8)));
-            $ctx->stash('DateFooter', (substr($content->cd_authored_on, 0, 8) != substr($next_content_created_on, 0, 8)));
             $ctx->stash('content', $content);
             $ctx->stash('current_timestamp', $content->cd_authored_on);
             $ctx->stash('current_timestamp_end', null);
