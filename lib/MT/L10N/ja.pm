@@ -6466,8 +6466,7 @@ use vars qw( @ISA %Lexicon );
 	'TrackBack ID (tb_id) is required.' => 'トラックバックIDが必要です。',
 	'Invalid TrackBack ID \'[_1]\'' => 'トラックバックID([_1])が不正です。',
 	'You are not allowed to send TrackBack pings.' => 'トラックバック送信を許可されていません。',
-	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけても
- 一度送信してください。',
+	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけてもう一度送信してください。',
 	'You need to provide a Source URL (url).' => 'URLが必要です。',
 	'Invalid URL \'[_1]\'' => '不正なURL \'[_1]\'',
 	'This TrackBack item is disabled.' => 'トラックバックは無効に設定されています。',
@@ -6480,11 +6479,9 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/Trackback/lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])をカテゴリ\'[
-_4]\'から削除しました。',
+	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])をカテゴリ\'[_4]\'から削除しました。',
 	'(Untitled entry)' => '(タイトルなし)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。
-',
+	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。',
 	'No Excerpt' => '抜粋なし',
 	'Orphaned TrackBack' => '対応する記事のないトラックバック',
 	'category' => 'カテゴリ',
