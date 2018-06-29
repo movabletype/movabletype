@@ -582,10 +582,11 @@ sub core_search_apis {
         },
         'group' => {
             'order'             => 850,
-            'system_permission' => 'administer',
+            'system_permission' => 'administer,manage_users_groups',
             'label'             => 'Groups',
             'perm_check'        => sub {
                 return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
                 if ($blog_id) {
                     my $perm = $author->permissions($blog_id);
                     return $perm->can_administer_site;
