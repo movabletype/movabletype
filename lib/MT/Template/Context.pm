@@ -10,11 +10,6 @@ use strict;
 use warnings;
 use base qw( MT::ErrorHandler );
 
-use constant FALSE => -99999;
-use Exporter;
-*import = \&Exporter::import;
-use vars qw( @EXPORT );
-@EXPORT = qw( FALSE );
 use MT::Util qw( weaken );
 use MT::Template::Handler;
 
