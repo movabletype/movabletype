@@ -16,6 +16,9 @@ use IO::Uncompress::Gunzip;
 
 use constant ARCHIVE_TYPE => 'tgz';
 
+use MT::FileMgr::Local;
+use Encode;
+
 sub new {
     my $pkg = shift;
     my ( $type, $file ) = @_;
@@ -52,6 +55,7 @@ sub new {
             or return $pkg->error(
             MT->translate( 'File [_1] is not a tgz file.', $file ) );
         $obj->{_arc}  = $tar;
+        $obj->{_file} = $file;
         $obj->{_mode} = 'r';
     }
     elsif ( !( -e $file ) ) {
@@ -78,7 +82,7 @@ sub flush {
     bless $fh, 'IO::File';
     my $z = IO::Compress::Gzip->new($fh);
     $obj->{_arc}->write($z);
-    $obj->{_file}    = $z;
+    $obj->{_fh}      = $z;
     $obj->{_flushed} = 1;
 }
 
@@ -87,10 +91,11 @@ sub close {
 
     $obj->flush;
 
-    $obj->{_file}->close
-        if exists $obj->{_file};
+    $obj->{_fh}->close
+        if exists $obj->{_fh};
     $obj->{_arc}  = undef;
     $obj->{_file} = undef;
+    $obj->{_fh}   = undef;
     1;
 }
 
@@ -108,6 +113,34 @@ sub is {
 sub files {
     my $obj = shift;
     $obj->{_arc}->list_files;
+}
+
+sub is_safe_to_extract {
+    my $obj = shift;
+
+    for my $archive_tar_file ( $obj->{_arc}->get_files ) {
+        my $file = $archive_tar_file->full_path;
+        if ( !$archive_tar_file->is_file && !$archive_tar_file->is_dir ) {
+            return $obj->error(
+                MT->translate(
+                    "[_1] in the archive is not a regular file", $file
+                )
+            );
+        }
+        if ( File::Spec->file_name_is_absolute($file) ) {
+            return $obj->error(
+                MT->translate(
+                    "[_1] in the archive is an absolute path", $file
+                )
+            );
+        }
+        my ( $vol, $dirs, $basename ) = File::Spec->splitpath($file);
+        if ( grep { $_ eq '..' } File::Spec->splitdir($dirs) ) {
+            return $obj->error(
+                MT->translate( "[_1] in the archive contains ..", $file ) );
+        }
+    }
+    1;
 }
 
 sub extract {
