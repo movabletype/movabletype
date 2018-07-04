@@ -849,6 +849,8 @@ sub init_content_type {
     my ( $cb, $app ) = @_;
     my $core = $app->component('core');
 
+    return unless MT->model('content_type')->table_is_created;
+
     my $core_listing_screens         = $core->registry('listing_screens');
     my $content_data_listing_screens = _make_content_data_listing_screens();
     for my $key ( keys %{$content_data_listing_screens} ) {
