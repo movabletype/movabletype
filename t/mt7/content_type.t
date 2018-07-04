@@ -50,7 +50,5 @@ subtest 'forbid creating content_type with not unique unique_id' => sub {
     ok( $ct2->errstr, 'unique_id column must be unique' );
 };
 
-ok( MT::ContentType->table_is_created, 'mt_content_type table is created' );
-
 done_testing;
 

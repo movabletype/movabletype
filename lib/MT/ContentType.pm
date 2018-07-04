@@ -865,12 +865,4 @@ sub _get_tag_field_ids {
     );
 }
 
-sub table_is_created {
-    my $class  = shift;
-    my $driver = $class->driver or return;
-    my $dbh    = $driver->rw_handle or return;
-    return unless $dbh->do('select 1 from mt_content_type limit 1');
-    1;
-}
-
 1;
