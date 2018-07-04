@@ -15,8 +15,9 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
+
+#plan tests => 1 * blocks;
 
 use MT;
 use MT::Test;
@@ -26,9 +27,9 @@ my $app = MT->instance;
 my $blog_id = 1;
 
 filters {
-    template => [qw( chomp )],
-    expected => [qw( chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( chomp )],
+    expected       => [qw( chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -48,7 +49,7 @@ $test_env->prepare_fixture(
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -67,6 +68,5 @@ __END__
 === MT::ContentID without content context
 --- template
 <mt:ContentID>
---- error
+--- expected_error
 You used an 'mtContentID' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
-

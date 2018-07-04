@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use URI;
-use MT::Stats;
+use MT::Stats qw(readied_provider);
 use MT::DataAPI::Resource;
 
 sub provider {

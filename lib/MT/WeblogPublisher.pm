@@ -8,22 +8,12 @@ package MT::WeblogPublisher;
 
 use strict;
 use warnings;
-use base qw( MT::ErrorHandler Exporter );
-our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
+use base qw( MT::ErrorHandler );
 
 use MT::ArchiveType;
 use File::Basename;
 
 our %ArchiveTypes;
-
-sub ArchiveFileTemplate {
-    my %param = @_;
-    \%param;
-}
-
-sub ArchiveType {
-    new MT::ArchiveType(@_);
-}
 
 sub new {
     my $class = shift;

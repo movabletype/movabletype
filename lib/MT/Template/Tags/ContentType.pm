@@ -1230,12 +1230,7 @@ sub _hdlr_contents_count {
         $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
             or return;
 
-        my $iter = MT::ContentData->load_iter( \%terms, \%args );
-        my $last = $args->{limit} || 10;
-        while ( my $cd = $iter->() ) {
-            return $count if $last && $last <= $count;
-            $count++;
-        }
+        $count = MT::ContentData->count( \%terms, \%args );
     }
 
     $ctx->count_format( $count, $args );
