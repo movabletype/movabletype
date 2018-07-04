@@ -45,13 +45,14 @@ sub edit {
     my $field_data;
     if ( $param->{error} ) {
         $field_data = delete $param->{data};
-        if ( $field_data ) {
+        if ($field_data) {
             if ( $field_data =~ /^".*"$/ ) {
-            	$field_data =~ s/^"//;
+                $field_data =~ s/^"//;
                 $field_data =~ s/"$//;
                 $field_data = MT::Util::decode_js($field_data);
             }
-            $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
+            $field_data
+                = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
     }
     else {
@@ -785,7 +786,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -847,6 +848,13 @@ sub list_actions {
 
 sub init_content_type {
     my ( $cb, $app ) = @_;
+
+    require MT::Object;
+    my $driver = MT::Object->driver;
+    return
+        unless $driver
+        && $driver->table_exists( $app->model('content_type') );
+
     my $core = $app->component('core');
 
     my $core_listing_screens         = $core->registry('listing_screens');
