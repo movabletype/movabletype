@@ -161,7 +161,7 @@ sub _hdlr_contents {
         }
     }
 
-    if ( ( $args->{limit} || '' ) eq 'auto' ) {
+    if ( !$args->{limit} || ( ( $args->{limit} || '' ) eq 'auto' ) ) {
         $args->{limit} = 10;
     }
 
