@@ -162,21 +162,7 @@ sub _hdlr_contents {
     }
 
     if ( ( $args->{limit} || '' ) eq 'auto' ) {
-        my ( $days, $limit );
-        my $blog = $ctx->stash('blog');
-        if ( $blog && ( $days = $blog->days_on_index ) ) {
-            my @ago = offset_time_list( time - 3600 * 24 * $days, $blog_id );
-            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{authored_on} = [$ago];
-            $args{range_incl}{authored_on} = 1;
-        }
-        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{limit} = $limit;
-        }
-        else {
-            delete $args->{limit};
-        }
+        $args->{limit} = 10;
     }
 
     $terms{status} = MT::ContentStatus::RELEASE();
@@ -1244,22 +1230,8 @@ sub _hdlr_contents_count {
         $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
             or return;
 
-        my ( $days, $limit );
-        my $blog = $ctx->stash('blog');
-        if ( $blog && ( $days = $blog->days_on_index ) ) {
-            my @ago = MT::Util::offset_time_list( time - 3600 * 24 * $days,
-                $ctx->stash('blog_id') );
-            my $ago = sprintf "%04d%02d%02d%02d%02d%02d",
-                $ago[5] + 1900, $ago[4] + 1, @ago[ 3, 2, 1, 0 ];
-            $terms{$by} = [$ago];
-            $args{range_incl}{$by} = 1;
-        }
-        elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
-            $args->{lastn} = $limit;
-        }
-
         my $iter = MT::ContentData->load_iter( \%terms, \%args );
-        my $last = $args->{lastn};
+        my $last = $args->{limit} || 10;
         while ( my $cd = $iter->() ) {
             return $count if $last && $last <= $count;
             $count++;

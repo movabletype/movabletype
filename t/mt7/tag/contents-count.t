@@ -51,6 +51,12 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
+        # Blog
+        my $blog_01 = MT->model('blog')->load($blog_id);
+        $blog_01->days_on_index(1);
+        $blog_01->entries_on_index(1);
+        $blog_01->save;
+
         my $ct1 = MT::Test::Permission->make_content_type(
             name    => 'test content type 1',
             blog_id => $blog_id,
