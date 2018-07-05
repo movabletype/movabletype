@@ -33,7 +33,7 @@
   <mt:loop name="user_actions">
         <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
         <li>
-          <a href="<mt:var name="user_action_href">"<mt:if name="target"> target="<mt:var name="target" escape="html"></mt:if>" class="dropdown-item">
+          <a href="<mt:var name="user_action_href">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
             <mt:var name="label" escape="html">
           </a>
         </li>
