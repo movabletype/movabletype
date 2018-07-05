@@ -270,11 +270,9 @@
 
                     setTimeout(function() {
                         self.$editorTextarea.show();
-                        self.$editorIframe.css({
-                            'visibility': 'hidden',
-                            'position': 'absolute'
-                        });
+                        self.$editorIframe.hide();
                         self.$editorPathRow.children().hide();
+                        self.tinymce.hidden = true;
                     }, 0);
 
                     this.editor = this.source;
@@ -291,12 +289,10 @@
                     this.tinymce.setContent(this.source.getContent());
                 });
 
-                this.$editorIframe.css({
-                    'visibility': 'visible',
-                    'position': 'static'
-                });
+                this.$editorIframe.show();
                 this.$editorPathRow.children().show();
                 this.$editorTextarea.hide();
+                self.tinymce.hidden = false;
 
                 this.editor = this.tinymce;
                 this.$editorElement = this.$editorIframe;
@@ -439,7 +435,7 @@
             }
             var save = ed.save;
             ed.save = function () {
-                if ( ed.mtEditorStatus["mode"] === 'wysiwyg' ) {
+                if ( ! ed.isHidden() ) {
                     save.apply(ed, arguments);
                 }
             }
