@@ -135,10 +135,7 @@ sub archive_group_contents {
     my $blog  = $ctx->stash('blog');
     my $a     = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    if ( $limit && ( $limit eq 'auto' ) ) {
-        my $blog = $ctx->stash('blog');
-        $limit = $blog->entries_on_index if $blog;
-    }
+    $limit = 0 if defined $limit && $limit eq 'none';
     return [] unless $a;
     require MT::ContentData;
     my @contents = MT::ContentData->load(

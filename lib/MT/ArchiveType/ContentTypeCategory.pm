@@ -209,10 +209,7 @@ sub archive_group_contents {
         : undef;
 
     my $limit = $param->{limit};
-    if ( $limit && ( $limit eq 'auto' ) ) {
-        my $blog = $ctx->stash('blog');
-        $limit = $blog->entries_on_index if $blog;
-    }
+    $limit = 0 if defined $limit && $limit eq 'none';
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
     my $map = $ctx->stash('template_map');
     my $cat_field_id = $map ? $map->cat_field_id : '';
