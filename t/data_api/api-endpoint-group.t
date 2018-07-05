@@ -7,6 +7,7 @@ use lib "$FindBin::Bin/../lib";
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -25,6 +26,11 @@ use MT::Group;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+require MT::Test::Permission;
+my $non_permission_author = MT::Test::Permission->make_author();
+$non_permission_author->can_manage_users_groups(0);
+$non_permission_author->save();
 
 # test.
 my $suite = suite();
@@ -93,6 +99,7 @@ sub suite {
             path         => '/v2/groups',
             method       => 'POST',
             params       => { group => { name => 'group-1', }, },
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error        => 'Do not have permission to create a group.',
@@ -147,7 +154,7 @@ sub suite {
             path         => '/v2/groups',
             method       => 'GET',
             is_superuser => 0,
-            restrictions => { 0 => [qw/ administer /], },
+            restrictions => { 0 => [qw/ administer manage_users_groups /], },
             code         => 403,
             error =>
                 'Do not have permission to retrieve the requested groups.',
@@ -260,6 +267,7 @@ sub suite {
         {    # Not superuser.
             path         => '/v2/groups/1',
             method       => 'GET',
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
         },
@@ -324,6 +332,7 @@ sub suite {
             path         => '/v2/groups/1',
             method       => 'PUT',
             params       => { group => { name => 'update-group-1', }, },
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error        => 'Do not have permission to update a group.',
@@ -400,6 +409,7 @@ sub suite {
         {    # Not superuser.
             path         => '/v2/groups/1',
             method       => 'DELETE',
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
         },
@@ -444,7 +454,7 @@ sub suite {
             path         => '/v2/users/2/groups',
             method       => 'GET',
             is_superuser => 0,
-            restrictions => { 0 => [qw/ administer /], },
+            restrictions => { 0 => [qw/ administer manage_users_groups /], },
             code         => 403,
             error =>
                 'Do not have permission to retrieve the requested user\'s groups.',
@@ -553,6 +563,7 @@ sub suite {
             path         => '/v2/groups/3/members',
             method       => 'POST',
             params       => { member => { id => 1, }, },
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error => 'Do not have permission to add a member to group.',
@@ -590,6 +601,7 @@ sub suite {
         {    # No permissions.
             path         => '/v2/groups/3/members',
             method       => 'GET',
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error =>
@@ -651,6 +663,7 @@ sub suite {
         {    # No permissions.
             path         => '/v2/groups/3/members/1',
             method       => 'GET',
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error =>
@@ -691,6 +704,7 @@ sub suite {
         {    # No permissions.
             path         => '/v2/groups/3/members/1',
             method       => 'DELETE',
+            author_id    => $non_permission_author->id,
             is_superuser => 0,
             code         => 403,
             error => 'Do not have permission to remove a member from group.',
