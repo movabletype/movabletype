@@ -50,16 +50,10 @@ filters {
 $test_env->prepare_fixture('db');
 
 # Blog
-my $blog_01 = MT->model('blog')->load($blog_id);
-$blog_01->days_on_index(1);
-$blog_01->save;
-
-my $blog_02 = MT::Test::Permission->make_blog(
-    parent_id => 0,
-    name      => 'test blog 02',
-);
-$blog_02->entries_on_index(1);
-$blog_02->save;
+my $blog = MT->model('blog')->load($blog_id);
+$blog->days_on_index(1);
+$blog->entries_on_index(1);
+$blog->save;
 
 # Content Type
 my $ct = MT::Test::Permission->make_content_type(
@@ -220,40 +214,6 @@ my $ct3 = MT::Test::Permission->make_content_type(
     blog_id => $blog_id,
 );
 
-# Blog 02 Content Type
-my $ct4 = MT::Test::Permission->make_content_type(
-    name    => 'test content type 4',
-    blog_id => $blog_02->id,
-);
-my $cf_single_line_text4 = MT::Test::Permission->make_content_field(
-    blog_id         => $ct4->blog_id,
-    content_type_id => $ct4->id,
-    name            => 'single line text 4',
-    type            => 'single_line_text',
-);
-my $fields4 = [
-    {   id        => $cf_single_line_text4->id,
-        order     => 1,
-        type      => $cf_single_line_text4->type,
-        options   => { label => $cf_single_line_text4->name },
-        unique_id => $cf_single_line_text4->unique_id,
-    },
-];
-$ct4->fields($fields4);
-$ct4->save or die $ct4->errstr;
-MT::Test::Permission->make_content_data(
-    blog_id         => $blog_02->id,
-    content_type_id => $ct4->id,
-    status          => MT::ContentStatus::RELEASE(),
-    data => { $cf_single_line_text4->id => 'test single line text ', },
-);
-MT::Test::Permission->make_content_data(
-    blog_id         => $blog_02->id,
-    content_type_id => $ct4->id,
-    status          => MT::ContentStatus::RELEASE(),
-    data => { $cf_single_line_text4->id => 'test single line text ', },
-);
-
 my $cf1     = MT::ContentField->load( { name => 'single line text' } );
 my $cf2     = MT::ContentField->load( { name => 'categories' } );
 my $cf3     = MT::ContentField->load( { name => 'tags' } );
@@ -269,8 +229,6 @@ $vars->{cf3_uid}     = $cf3->unique_id;
 $vars->{date_cf_uid} = $date_cf->unique_id;
 $vars->{cd4_uid}     = $cd4->unique_id;
 $vars->{ct3_name}    = $ct3->name;
-$vars->{site01_id}   = $blog_01->id;
-$vars->{site02_id}   = $blog_02->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -323,17 +281,11 @@ No Content Type could be found.
 --- expected
 aaa
 
-=== MT:Contents with limit="auto" (Do not apply days_on_index)
+=== MT:Contents with limit
 --- template
-<mt:Contents content_type="test content type 1" limit="auto">a</mt:Contents>
+<mt:Contents content_type="test content type 1" limit="none">a</mt:Contents>
 --- expected
 aaaaa
-
-=== MT:Contents in site_02 with limit="auto" (Do not apply entries_on_index)
---- template
-<mt:Contents site_ids="[% site02_id %]" content_type="test content type 4" limit="auto">a</mt:Contents>
---- expected
-aa
 
 === MT:Contents with sort_by content field
 --- skip_php

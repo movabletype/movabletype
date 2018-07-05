@@ -161,9 +161,8 @@ sub _hdlr_contents {
         }
     }
 
-    if ( !$args->{limit} || ( ( $args->{limit} || '' ) eq 'auto' ) ) {
-        $args->{limit} = 10;
-    }
+    delete $args->{limit}
+        if exists $args->{limit} && $args->{limit} eq 'none';
 
     $terms{status} = MT::ContentStatus::RELEASE();
 
