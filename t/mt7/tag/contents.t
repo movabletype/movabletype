@@ -42,12 +42,18 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture('db');
+
+# Blog
+my $blog = MT->model('blog')->load($blog_id);
+$blog->days_on_index(1);
+$blog->entries_on_index(1);
+$blog->save;
 
 # Content Type
 my $ct = MT::Test::Permission->make_content_type(
@@ -199,7 +205,7 @@ MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct2->id,
     status          => MT::ContentStatus::RELEASE(),
-    data => { $cf_single_line_text->id => 'test single line text ', },
+    data => { $cf_single_line_text2->id => 'test single line text ', },
 );
 
 # Empty Content Type
@@ -274,6 +280,12 @@ No Content Type could be found.
 <mt:Contents content_type="test content type 1" limit="3">a</mt:Contents>
 --- expected
 aaa
+
+=== MT:Contents with limit
+--- template
+<mt:Contents content_type="test content type 1" limit="none">a</mt:Contents>
+--- expected
+aaaaa
 
 === MT:Contents with sort_by content field
 --- skip_php

@@ -399,7 +399,7 @@ sub list_props {
                     : q{};
                 my $static_uri = $app->static_path;
 
-                if ( $app->can_do('edit_group') ) {
+                if ( $app->can_do('edit_groups') ) {
                     return qq{
                       <span class="status $status">
                           <svg title="$status_label" role="img" class="mt-icon mt-icon--sm">
@@ -446,7 +446,7 @@ sub list_props {
             count_terms        => { author_id => { not => 0 } },
             filter_type        => 'group_id',
             list_screen        => 'group_member',
-            list_permit_action => 'access_to_group_member_list',
+            list_permit_action => 'access_to_any_group_list',
         },
         created_on => {
             base    => '__virtual.created_on',
