@@ -11,6 +11,8 @@
 
       <h2 id="page-title"><mt:var name="page_title"></h2>
 
+      <mt:include name="include/system_msg.tmpl">
+
       <div class="clearfix mb-5">
         <div class="float-right">
           <form name="dashoboard_reload_form" id="dashoboard_reload_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1">
@@ -23,7 +25,6 @@
         </div>
       </div>
 
-      <mt:include name="include/system_msg.tmpl">
       <mt:var name="page_content">
 
     </div>
