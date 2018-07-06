@@ -185,46 +185,52 @@
                 config['body_id'] = adapter.id;
             }
 
-            if($('[data-target=' + adapter.id+']').val() == 'richtext'){
+            var text_format = $('[data-target=' + adapter.id+']').val();
+            if( text_format == 'richtext'){
                 config.theme = "inlite";
                 config.inline = true;
+            } else {
+                config.theme = "modern";
+                config.inline = false;
             }
 
-
-            if( config.inline && $('#' + adapter.id).prop('nodeName') == 'TEXTAREA' ) {
-                var textarea  = $('#' + adapter.id);
-                var attrs = {};
-                $.each(textarea.get(0).attributes, function(idx, attr){
-                    attrs[attr.nodeName] = attr.nodeValue;
-                });
-                var editorElement = textarea.replaceWith(function(){
-                    return $('<div />', attrs).append(adapter.$editorElement.val());
-                });
-                $('#' + adapter.id).css({
-                    'height': 'auto',
-                    'min-height': '350px',
-                    'max-width': '100%',
-                    'overflow-x': 'auto',
-                });
-
-            } else if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
-                var div  = $('#' + adapter.id);
-                var attrs = {};
-                $.each(div.get(0).attributes, function(idx, attr){
-                    attrs[attr.nodeName] = attr.nodeValue;
-                });
-                var editorElement = div.replaceWith(function(){
-                    var html = adapter.$editorElement.html();
-                    html = html.replace(/<br data-mce-bogus="1">/g,'');
-                    if(html.match(/^<p><\/p>$/)) html = '';
-                    return $('<textarea />', attrs).val(html);
-                });
-                $('#' + adapter.id).css({
-                    'height': '',
-                    'min-height': '',
-                    'max-width': '',
-                    'overflow-x': '',
-                });
+            if( text_format == 'richtext') {
+                if( $('#' + adapter.id).prop('nodeName') == 'TEXTAREA' ) {
+                    var textarea  = $('#' + adapter.id);
+                    var attrs = {};
+                    $.each(textarea.get(0).attributes, function(idx, attr){
+                        attrs[attr.nodeName] = attr.nodeValue;
+                    });
+                    var editorElement = textarea.replaceWith(function(){
+                        return $('<div />', attrs).append(adapter.$editorElement.val());
+                    });
+                    $('#' + adapter.id).css({
+                        'height': 'auto',
+                        'min-height': '350px',
+                        'max-width': '100%',
+                        'overflow-x': 'auto',
+                    });
+                }
+            } else {
+                if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
+                    var div  = $('#' + adapter.id);
+                    var attrs = {};
+                    $.each(div.get(0).attributes, function(idx, attr){
+                        attrs[attr.nodeName] = attr.nodeValue;
+                    });
+                    var editorElement = div.replaceWith(function(){
+                        var html = adapter.$editorElement.html();
+                        html = html.replace(/<br\s?(?:data-mce-bogus)?.*?>/g,'');
+                        if(html.match(/^<p><\/p>$/)) html = '';
+                        return $('<textarea />', attrs).val(html);
+                    });
+                    $('#' + adapter.id).css({
+                        'height': '',
+                        'min-height': '',
+                        'max-width': '',
+                        'overflow-x': '',
+                    });
+                }
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 

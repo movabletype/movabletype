@@ -225,6 +225,7 @@
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
+          app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.setHTML(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
@@ -244,6 +245,7 @@
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
+          app.editor.reload();
           app.editor.setMode('textarea');
           app.editor.setContent(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
