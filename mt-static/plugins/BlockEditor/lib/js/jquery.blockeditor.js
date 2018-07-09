@@ -169,8 +169,12 @@
     var block_field = _get_block_field(editor_id);
     block_field.siblings('.add_field-group').remove();
     block_field.empty();
-    block_editor_data[editor_id] = null;
-    managers[editor_id] = null;
+    if( typeof block_editor_data !== 'undefined' ){
+        block_editor_data[editor_id] = null;
+    }
+    if( typeof managers !== 'undefined' ){
+        managers[editor_id] = null;
+    }
     return this;
   };
   var _get_data = function() {

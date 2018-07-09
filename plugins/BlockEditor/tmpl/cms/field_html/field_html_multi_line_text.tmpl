@@ -160,7 +160,7 @@
       jQuery('#'+field_id).removeClass('editor-plaintext');
       app.setEditorIframeHTML(field_id);
       <mt:else>
-      jQuery('#'+field_id).html(response.result[field_id]);
+      jQuery('#'+field_id).val(response.result[field_id]);
       jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
       jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
       app.editor.reload();
@@ -218,14 +218,15 @@
           // changing to plaintext editor
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
-          app.editor.setMode('textarea');
+          app.editor.setMode(option);
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
-          app.editor.setMode('textarea');
+          app.editor.reload();
+          app.editor.setMode(option);
           app.editor.setHTML(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
@@ -237,14 +238,15 @@
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           app.editor.reload();
-          app.editor.setMode('textarea');
+          app.editor.setMode(option);
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
           jQuery('#'+editor_id).parents('.editor-content').addClass('editor-plaintext');
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
-          app.editor.setMode('textarea');
+          app.editor.reload();
+          app.editor.setMode(option);
           app.editor.setContent(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
@@ -353,7 +355,6 @@ function setMultiLineTextData($form) {
       fieldId = m[1];
       $form.append(jQuery('<textarea hidden style="display:none;" name="content-field-multi-' + fieldId + '" mt:raw-name="1"></textarea>'));
       $form.find('textarea[name=content-field-multi-' + fieldId + ']').val(this.value);
-      console.log($form.find('[content-field-multi-' + fieldId + ']').val());
     }
   });
 }
