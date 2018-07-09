@@ -2032,4 +2032,11 @@ sub _is_single_float_or_double_field {
     ( $data_type eq 'float' || $data_type eq 'double' ) ? 1 : 0;
 }
 
+sub pack_revision {
+    my $self   = shift;
+    my $values = $self->SUPER::pack_revision(@_);
+    $values->{data} = $self->data;
+    $values;
+}
+
 1;
