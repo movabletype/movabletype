@@ -370,7 +370,7 @@ sub read_config_db {
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
         my $data      = $config->data;
-        my @data      = split /[\r?\n]/, $data;
+        my @data      = split /[\r\n]/, $data;
         my $line      = 0;
         foreach (@data) {
             $line++;
