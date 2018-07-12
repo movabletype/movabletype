@@ -1030,6 +1030,7 @@ sub make_menus {
             },
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
+            mobile    => 1,
             condition => sub {
 
                 return 0 if $ct->blog_id != MT->app->blog->id;
