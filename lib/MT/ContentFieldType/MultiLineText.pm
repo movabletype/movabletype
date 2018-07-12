@@ -74,19 +74,26 @@ sub options_html_params {
 sub field_value_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
+    my $blog         = $ctx->stash('blog');
+    my $content_data = $ctx->stash('content')
+      or return $ctx->_no_content_error;
+    my $convert_breaks =
+      exists $args->{convert_breaks} ? $args->{convert_breaks}
+      : $content_data
+      ? MT::Serialize->unserialize( $content_data->convert_breaks )
+      : undef;
+
+    if ($convert_breaks) {
+        my $filters =
+          ref $convert_breaks eq 'REF'
+          ? $$convert_breaks->{ $field_data->{id} }
+          : '__default__';
+
+        $value = MT->apply_text_filters( $value, [$filters], $ctx );
+    }
+
     if ( exists $args->{words} ) {
         $value = first_n_text( $value, $args->{words} );
-    }
-    elsif ( exists $args->{convert_breaks} ) {
-        my $content_data = $ctx->stash('content')
-            or return $ctx->_no_content_error;
-        my $convert_breaks
-            = $content_data
-            ? MT::Serialize->unserialize( $content_data->convert_breaks )
-            : undef;
-        my $filters
-            = $convert_breaks ? $$convert_breaks->{ $field_data->{id} } : '';
-        $value = MT->apply_text_filters( $value, [$filters], $ctx );
     }
 
     return $value;
