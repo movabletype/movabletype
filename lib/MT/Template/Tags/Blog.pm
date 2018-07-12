@@ -264,6 +264,15 @@ been assigned a Creative Commons License.
 
 =cut
 
+=head2 SiteIfCCLicense
+
+A conditional tag that is true when the current site in context has
+been assigned a Creative Commons License.
+
+=for tags sites, creativecommons
+
+=cut
+
 sub _hdlr_blog_if_cc_license {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');

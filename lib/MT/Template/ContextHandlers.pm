@@ -72,6 +72,8 @@ sub core_tags {
             'SitesIfLocalSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
+            'SiteIfCCLicense?' =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
