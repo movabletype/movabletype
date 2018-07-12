@@ -2640,7 +2640,8 @@ BLOG: for my $blog_id (@id) {
                 my @elements = $theme->elements;
                 my ($set)
                     = grep { $_->{importer} eq 'template_set' } @elements;
-                $set = $set->{data};
+                require Storable;
+                $set = Storable::dclone( $set->{data} );
                 if ( ref $set ) {
                     $set->{envelope} = $theme->path;
                     $theme->__deep_localize_labels($set);
@@ -2888,7 +2889,8 @@ sub refresh_individual_templates {
         if ( my $theme = $blog->theme ) {
             my @elements = $theme->elements;
             my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
-            $set = $set->{data};
+            require Storable;
+            $set = Storable::dclone( $set->{data} );
             if ( ref $set ) {
                 $set->{envelope} = $theme->path;
                 $theme->__deep_localize_labels($set);
