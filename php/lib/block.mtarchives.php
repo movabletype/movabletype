@@ -30,6 +30,16 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
 
     if ($i < count($at)) {
         $curr_at = $at[$i];
+
+        require_once("archive_lib.php");
+        try {
+            $archiver = ArchiverFactory::get_archiver($curr_at);
+        } catch (Exception $e) {
+            return $ctx->error($this->translate("ArchiveType not found - [_1]", $at), E_USER_ERROR);
+        }
+        if ($archiver)
+            $ctx->__stash['vars']['template_params'] = $archiver->get_template_params();
+
         $ctx->stash('current_archive_type', $curr_at);
         $ctx->stash('archive_type_index', $i);
         $counter = $i + 1;
