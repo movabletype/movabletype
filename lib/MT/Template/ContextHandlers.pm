@@ -479,7 +479,6 @@ sub core_tags {
 
             CommentSiteID    => sub {''},
             SiteCommentCount => sub {''},
-            PingSiteName     => sub {''},
             SitePingCount    => sub {''},
 
             SiteCategoryCount =>
