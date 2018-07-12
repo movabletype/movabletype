@@ -758,6 +758,29 @@ sub __deep_localize_labels {
     }
 }
 
+sub __deep_localize_templatized_values {
+    my ( $c, $hash ) = @_;
+    foreach my $k ( keys %$hash ) {
+        if ( ref( $hash->{$k} ) eq 'HASH' ) {
+            __deep_localize_templatized_values( $c, $hash->{$k} );
+        }
+        else {
+            next unless $k =~ m/\A(?:
+                  name
+                | description
+                | category_field
+                | category_set
+                | content_type
+                | date_field
+                | source
+            )\z/x;
+            if ( !ref( my $value = $hash->{$k} ) ) {
+                $hash->{$k} = $c->translate_templatized($value);
+            }
+        }
+    }
+}
+
 1;
 __END__
 

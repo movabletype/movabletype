@@ -18,6 +18,7 @@ sub apply {
 
     ## deep localize for labels
     $theme->__deep_localize_labels($set);
+    $theme->__deep_localize_templatized_values($set);
     $set->{templates}{plugin} = $theme
         if $set->{templates} && 'HASH' eq ref $set->{templates};
     ## taken from MT::CMS::Template
