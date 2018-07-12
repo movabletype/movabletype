@@ -416,8 +416,8 @@ Empty
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
-test multi line text
-aaaaa
+<p>test multi line text<br />
+aaaaa</p>
 12345
 https://example.com/~abby
 abc
@@ -444,8 +444,8 @@ aaabbbccc
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
-test multi line text
-aaaaa
+<p>test multi line text<br />
+aaaaa</p>
 12345
 https://example.com/~abby
 abc
