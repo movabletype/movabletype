@@ -18,15 +18,60 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::Permission;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture('db');
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+
+        my $ct = MT::Test::Permission->make_content_type(
+            blog_id => 1,
+            name    => 'test content type',
+        );
+
+        my $cf = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'multi line text',
+            type            => 'multi_line_text',
+        );
+
+        my $fields = [
+            {   id        => $cf->id,
+                label     => 1,
+                name      => $cf->name,
+                order     => 1,
+                type      => $cf->type,
+                unique_id => $cf->unique_id,
+            }
+        ];
+        $ct->fields($fields);
+        $ct->save or die $ct->errstr;
+
+        my $cd = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            author_id       => 1,
+            content_type_id => $ct->id,
+            data            => { $cf->id => 'test text', },
+        );
+
+        my $tmpl_text = << "TMPL";
+        <mt:Contents content_type="test content type" limit="1"><mt:ContentField content_field="multi line text"><mt:ContentFieldValue language="ja"></mt:ContentField></mt:Contents>
+TMPL
+
+        my $tmpl = MT::Test::Permission->make_template(
+            name            => 'test content type template',
+            text            => $tmpl_text,
+            content_type_id => $ct->id,
+        );
+    }
+);
 
 use IPC::Open2;
 
 delimiters( '@@@', '---' );
-plan tests => 4 * blocks() + 4 * blocks('decode_entities');
 
 use MT;
 my $app = MT->instance;
@@ -43,6 +88,12 @@ filters {
     markdown                  => [qw( chomp )],
     markdown_with_smartypants => [qw( chomp )],
 };
+
+my $ct = $app->model('content_type')->load( { name => 'test content type' } );
+my $cf = $app->model('content_field')->load( { name => 'multi line text' } );
+my $cd = $app->model('content_data')->load( { content_type_id => $ct->id } );
+my $ct_tmpl = $app->model('template')
+    ->load( { name => 'test content type template' } );
 
 run {
     my $block = shift;
@@ -67,6 +118,25 @@ run {
         }
         is( $result, $block->$text_filter,
             $block->name . ' text_filter:' . $text_filter );
+
+        $cd->data( { $cf->id => $block->text } );
+        my $convert_breaks = {};
+        $convert_breaks->{ $cf->id } = $text_filter;
+        $cd->convert_breaks( MT::Serialize->serialize( \$convert_breaks ) );
+        $cd->save or die $cd->errstr;
+
+        my $ctx2 = $ct_tmpl->context;
+        $ctx2->stash( 'content', $cd );
+
+        my $result2 = $ct_tmpl->build;
+        $result2 =~ s/(\r\n|\r|\n)+\z//g;
+        if ( my $unlike = $block->decode_entities ) {
+            chomp($unlike);
+            unlike( $result2, qr/$unlike/, "unlike: $unlike" );
+            $result2 = decode_entities($result2);
+        }
+        is( $result2, $block->$text_filter, "content data " . $block->name . ' text_filter:' . $text_filter );
+
     }
 };
 
@@ -145,6 +215,7 @@ SKIP:
         }
     };
 }
+done_testing;
 
 __END__
 
