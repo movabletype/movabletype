@@ -289,6 +289,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__TEXT_BLOCK__' => 'Text',
 
     '__GROUP_MEMBER_COUNT' => 'Members',
+
+    '__LIST_FIELD_LABEL' => 'List',
 );
 
 1;
