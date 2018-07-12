@@ -67,8 +67,6 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
-            'SiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
             'SitesLocalSite' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
             'SitesIfLocalSite?' =>
