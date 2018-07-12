@@ -4013,6 +4013,21 @@ abstract class MTDatabase {
         return $content_types;
     }
 
+    function fetch_content($cid) {
+        if ( isset( $this->_cd_id_cache[$cid] ) && !empty( $this->_cd_id_cache[$cid] ) ) {
+            return $this->_cd_id_cache[$cid];
+        }
+        require_once("class.mt_content_data.php");
+        $cd = New ContentData;
+        $cd ->Load( $cid );
+        if ( !empty( $cd) ) {
+            $this->_cd_id_cache[$cid] = $cd;
+            return $cd;
+        } else {
+            return null;
+        }
+    }
+
     public function fetch_contents($args, $content_type_id, &$total_count = NULL) {
         require_once('class.mt_content_data.php');
         $extras = array();
