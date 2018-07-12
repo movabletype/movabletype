@@ -222,12 +222,6 @@ jQuery.event.special.listReady = {
     };
   </mt:loop>
 
-  <mt:if name="has_list_actions">
-  var hasListActions = true;
-  <mt:else>
-  var hasListActions = false;
-  </mt:if>
-
   <mt:if name="has_pulldown_actions">
   var hasPulldownActions = true;
   <mt:else>
@@ -305,7 +299,6 @@ jQuery.event.special.listReady = {
       zeroStateLabel: zeroStateLabel,
 
       buttonActions: buttonActions,
-      hasListActions: hasListActions,
       hasPulldownActions: hasPulldownActions,
       listActions: listActions,
       moreListActions: moreListActions,

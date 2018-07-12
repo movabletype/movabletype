@@ -6,7 +6,7 @@
   >
     { action.label }
   </button>
-  <div if={ listTop.opts.hasListActions && listTop.opts.hasPulldownActions }
+  <div if={ listTop.opts.hasPulldownActions }
     class="btn-group"
   >
     <button class="btn btn-default dropdown-toggle"
