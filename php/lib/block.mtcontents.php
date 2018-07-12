@@ -39,6 +39,8 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
         $counter = 0;
         $limit = $args['limit'];
+        if (!ctype_digit($limit) && $limit === 'none')
+            $limit = 0;
         $ctx->stash('_contents_limit', $limit);
         $ctx->stash('__out', false);
     } else {
@@ -51,16 +53,8 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
     if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
         $l = 0;
-        if ( $args['limit'] ) {
-            if ( $args['limit'] == 'auto' ) {
-                if ( $_REQUEST['limit'] )
-                    $l = $_REQUEST['limit'];
-            }
-            else
-                $l = $args['limit'];
-        }
-        if ( !$l )
-            $l = 20;
+        if ( $args['limit'] )
+            $l = $args['limit'];
         $ctx->stash('__pager_limit', $l);
         if ( $_REQUEST['offset'] )
             $ctx->stash('__pager_offset', $_REQUEST['offset']);
