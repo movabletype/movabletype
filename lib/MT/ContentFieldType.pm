@@ -1162,7 +1162,7 @@ sub _tags_registry {
 }
 
 sub _list_registry {
-    {   label                => 'List',
+    {   label                => '__LIST_FIELD_LABEL',
         data_type            => 'varchar',
         order                => 190,
         icon_class           => 'ic_list',
