@@ -10,7 +10,7 @@
     <tr>
       <th class="head datetime"><span class="col-label"><__trans phrase="_REVISION_DATE_"></span></th>
       <th class="head note primary"><span class="col-label"><__trans phrase="Note"></span></th>
-    <mt:if name="object_type" like="(entry|page|cd)">
+    <mt:if name="object_type" like="(entry|page|content_data)">
       <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
     </mt:if>
       <th class="head created-by"><span class="col-label"><__trans phrase="Saved By"></span></th>
@@ -27,7 +27,7 @@
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision highlight</mt:if>">
       <td class="datetime"><span class="revision-datetime"><a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a></span></td>
       <td class="note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
-    <mt:if name="object_type" like="(entry|page|cd)">
+    <mt:if name="object_type" like="(entry|page|content_data)">
       <td class="status">
       <mt:if name="rev_status" eq="1">
         <span class="icon-left-wide icon-draft"><__trans phrase="Draft"></span>
