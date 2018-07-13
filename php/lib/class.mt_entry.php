@@ -87,7 +87,7 @@ class Entry extends BaseObject
 
     public function pings() {
         $pings = array();
-        
+
         $tb = $this->trackback();
         if (!empty($tb)) {
             require_once('class.mt_tbping.php');
