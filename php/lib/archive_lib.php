@@ -2359,7 +2359,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
 class ContentTypeArchiver implements ArchiveType {
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate("ContentType");
+        return $mt->translate("CONTENTTYPE_ADV");
     }
 
     public function get_title($args) {
@@ -2606,7 +2606,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
 class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Daily');
+        return $mt->translate('CONTENTTYPE-DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -2711,7 +2711,7 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Weekly');
+        return $mt->translate('CONTENTTYPE-WEEKLY_ADV');
     }
 
     public function get_title($args) {
@@ -2821,7 +2821,7 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Monthly');
+        return $mt->translate('CONTENTTYPE-MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -2917,10 +2917,9 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
 
 class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
 
-    // Override Method
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Yearly');
+        return $mt->translate('CONTENTTYPE-YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -3011,7 +3010,7 @@ class ContentTypeAuthorArchiver implements ArchiveType {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author');
+        return $mt->translate('CONTENTTYPE-AUTHOR_ADV');
     }
 
     public function get_title($args) {
@@ -3298,7 +3297,7 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Yearly');
+        return $mt->translate('CONTENTTYPE-AUTHOR-YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -3405,7 +3404,7 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Monthly');
+        return $mt->translate('CONTENTTYPE-AUTHOR-MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -3521,7 +3520,7 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Daily');
+        return $mt->translate('CONTENTTYPE-AUTHOR-DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -3641,7 +3640,7 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Weekly');
+        return $mt->translate('CONTENTTYPE-AUTHOR-WEEKLY_ADV');
     }
 
     public function get_title($args) {
@@ -3769,7 +3768,7 @@ class ContentTypeCategoryArchiver implements ArchiveType {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category');
+        return $mt->translate('CONTENTTYPE-CATEGORY_ADV');
     }
 
     public function get_title($args) {
@@ -4065,7 +4064,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Yearly');
+        return $mt->translate('CONTENTTYPE-CATEGORY-YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -4185,7 +4184,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Monthly');
+        return $mt->translate('CONTENTTYPE-CATEGORY-MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -4300,7 +4299,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Daily');
+        return $mt->translate('CONTENTTYPE-CATEGORY-DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -4420,7 +4419,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Weekly');
+        return $mt->translate('CONTENTTYPE-CATEGORY-WEEKLY_ADV');
     }
 
     public function get_title($args) {
