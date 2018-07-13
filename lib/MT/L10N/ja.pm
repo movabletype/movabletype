@@ -1735,7 +1735,7 @@ use vars qw( @ISA %Lexicon );
 	'Video Asset' => 'ビデオアセット',
 	'Image Asset' => '画像アセット',
 	'Embedded Text' => '埋め込みテキスト',
-	'list' => 'リスト',
+	'__LIST_FIELD_LABEL' => 'リスト',
 	'Table' => 'テーブル',
 
 ## lib/MT/ContentFieldType/Asset.pm
