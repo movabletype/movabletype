@@ -146,69 +146,69 @@ sub init_core_registry {
         },
         optional_packages => {
             'Digest::SHA' => {
-                link => 'http://search.cpan.org/dist/Digest-SHA/',
+                link => 'https://metacpan.org/pod/Digest::SHA',
                 label =>
                     'Digest::SHA is required in order to provide enhanced protection of user passwords.',
             },
             'Plack' => {
-                link => 'http://search.cpan.org/dist/Plack/',
+                link => 'https://metacpan.org/pod/Plack',
                 label =>
                     'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::PSGI' => {
-                link => 'http://search.cpan.org/dist/CGI-PSGI/',
+                link => 'https://metacpan.org/pod/CGI::PSGI',
                 label =>
                     'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::Parse::PSGI' => {
-                link => 'http://search.cpan.org/dist/CGI-Emulate-PSGI/',
+                link => 'https://metacpan.org/pod/CGI::Parse::PSGI',
                 label =>
                     'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'XMLRPC::Transport::HTTP::Plack' => {
                 link =>
-                    'http://search.cpan.org/dist/SOAP-Transport-HTTP-Plack/',
+                    'https://metacpan.org/pod/XMLRPC::Transport::HTTP::Plack',
                 label =>
                     'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'Net::SMTP' => {
-                link => 'http://search.cpan.org/dist/libnet/',
+                link => 'https://metacpan.org/pod/Net::SMTP',
                 label =>
                     'Net::SMTP is required in order to send mail using an SMTP server.',
             },
             'Authen::SASL' => {
-                link => 'http://search.cpan.org/dist/Authen-SASL/',
+                link => 'https://metacpan.org/pod/Authen::SASL',
                 label =>
                     'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
             },
             'IO::Socket::SSL' => {
-                link => 'http://search.cpan.org/dist/IO-Socket-SSL/',
+                link => 'https://metacpan.org/pod/IO::Socket::SSL',
                 label =>
                     'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.',
             },
             'Net::SSLeay' => {
-                link => 'http://search.cpan.org/dist/Net-SSLeay/',
+                link => 'https://metacpan.org/pod/Net::SSLeay',
                 label =>
                     'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
             },
             'HTML::Parser' => {
-                link => 'http://search.cpan.org/dist/HTML-Parser',
+                link => 'https://metacpan.org/pod/HTML::Parser',
                 label =>
                     'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'SOAP::Lite' => {
-                link    => 'http://search.cpan.org/dist/SOAP-Lite',
+                link    => 'https://metacpan.org/pod/SOAP::Lite',
                 version => 0.50,
                 label =>
                     'This module is needed if you want to use the MT XML-RPC server implementation.',
             },
             'File::Temp' => {
-                link => 'http://search.cpan.org/dist/File-Temp',
+                link => 'https://metacpan.org/pod/File::Temp',
                 label =>
                     'This module is needed if you would like to be able to overwrite existing files when you upload.',
             },
             'List::Util' => {
-                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
+                link => 'https://metacpan.org/pod/List::Util',
                 label =>
                     'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
             },
@@ -218,177 +218,177 @@ sub init_core_registry {
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
             'GD' => {
-                link => 'http://search.cpan.org/dist/GD',
+                link => 'https://metacpan.org/pod/GD',
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
             'Imager' => {
-                link => 'http://search.cpan.org/dist/Imager',
+                link => 'https://metacpan.org/pod/Imager',
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
             'IPC::Run' => {
-                link => 'http://search.cpan.org/dist/IPC-Run',
+                link => 'https://metacpan.org/pod/IPC::Run',
                 label =>
                     'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
             },
             'Storable' => {
 
-                link => 'http://search.cpan.org/dist/Storable',
+                link => 'https://metacpan.org/pod/Storable',
                 label =>
                     'This module is required by certain MT plugins available from third parties.',
             },
             'Crypt::DSA' => {
-                link => 'http://search.cpan.org/dist/Crypt-DSA',
+                link => 'https://metacpan.org/pod/Crypt::DSA',
                 label =>
                     'This module accelerates comment registration sign-ins.',
             },
             'Crypt::SSLeay' => {
-                link => 'http://search.cpan.org/dist/Crypt-SSLeay',
+                link => 'https://metacpan.org/pod/Crypt::SSLeay',
                 label =>
                     'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.',
             },
             'Cache::File' => {
-                link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
+                link => 'https://metacpan.org/pod/Cache::File',
                 label =>
                     'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan via OpenID.',
             },
             'MIME::Base64' => {
-                link => 'http://search.cpan.org/dist/MIME-Base64',
+                link => 'https://metacpan.org/pod/MIME::Base64',
                 label =>
                     'This module is needed to enable comment registration. Also required in order to send mail via an SMTP Server.',
             },
             'XML::Atom' => {
-                link  => 'http://search.cpan.org/dist/XML-Atom',
+                link  => 'https://metacpan.org/pod/XML::Atom',
                 label => 'This module enables the use of the Atom API.',
             },
             'Cache::Memcached' => {
-                link => 'http://search.cpan.org/dist/Cache-Memcached',
+                link => 'https://metacpan.org/pod/Cache::Memcached',
                 label =>
                     'This module is required in order to use memcached as caching mechanism by Movable Type.',
             },
             'Archive::Tar' => {
-                link => 'http://search.cpan.org/dist/Archive-Tar',
+                link => 'https://metacpan.org/pod/Archive::Tar',
                 label =>
                     'This module is required in order to archive files in backup/restore operation.',
             },
             'IO::Compress::Gzip' => {
-                link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
+                link => 'https://metacpan.org/pod/IO::Compress::Gzip',
                 label =>
                     'This module is required in order to compress files in backup/restore operation.',
             },
             'IO::Uncompress::Gunzip' => {
-                link => 'http://search.cpan.org/dist/IO-Compress-Zlib',
+                link => 'https://metacpan.org/pod/IO::Uncompress::Gunzip',
                 label =>
                     'This module is required in order to decompress files in backup/restore operation.',
             },
             'Archive::Zip' => {
-                link => 'http://search.cpan.org/dist/Archive-Zip',
+                link => 'https://metacpan.org/pod/Archive::Zip',
                 label =>
                     'This module is required in order to archive files in backup/restore operation.',
             },
             'XML::SAX' => {
-                link => 'http://search.cpan.org/dist/XML-SAX',
+                link => 'https://metacpan.org/pod/XML::SAX',
                 label =>
                     'This module and its dependencies are required in order to restore from a backup.',
             },
             'Digest::SHA1' => {
-                link => 'http://search.cpan.org/dist/Digest-SHA1',
+                link => 'https://metacpan.org/pod/Digest::SHA1',
                 label =>
                     'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.',
             },
             'Safe' => {
-                link => 'http://search.cpan.org/dist/Safe',
+                link => 'https://metacpan.org/pod/Safe',
                 label =>
                     'This module is used in a test attribute for the MTIf conditional tag.',
             },
             'Digest::MD5' => {
-                link  => 'http://search.cpan.org/dist/Digest-MD5',
+                link  => 'https://metacpan.org/pod/Digest::MD5',
                 label => 'This module is used by the Markdown text filter.',
             },
             'Text::Balanced' => {
-                link => 'http://search.cpan.org/dist/Text-Balanced',
+                link => 'https://metacpan.org/pod/Text::Balanced',
                 label =>
                     'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
             },
             'XML::Parser' => {
-                link  => 'http://search.cpan.org/dist/XML-Parser',
+                link  => 'https://metacpan.org/pod/XML::Parser',
                 label => 'This module required for action streams.',
             },
             'XML::SAX::ExpatXS' => {
-                link => 'http://search.cpan.org/dist/XML-SAX-ExpatXS',
+                link => 'https://metacpan.org/pod/XML::SAX::ExpatXS',
                 label =>
                     'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
-                link => 'http://search.cpan.org/dist/XML-SAX-Expat',
+                link => 'https://metacpan.org/pod/XML::SAX::Expat',
                 label =>
                     'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 0.37,
             },
             'XML::LibXML::SAX' => {
-                link => 'http://search.cpan.org/dist/XML-LibXML-SAX',
+                link => 'https://metacpan.org/pod/XML::LibXML::SAX',
                 label =>
                     'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 1.70,
             },
             'Time::HiRes' => {
-                link => 'http://search.cpan.org/dist/Time-HiRes/',
+                link => 'https://metacpan.org/pod/Time::HiRes',
                 label =>
                     'This module is required for executing run-periodic-tasks.',
             },
             'Mozilla::CA' => {
-                link => 'http://search.cpan.org/dist/Mozilla-CA/',
+                link => 'https://metacpan.org/pod/Mozilla::CA',
                 label =>
                     'This module is required for Google Analytics site statistics and for verification of SSL certificates.',
             },
             'YAML::Syck' => {
-                link => 'http://search.cpan.org/dist/YAML-Syck',
+                link => 'https://metacpan.org/pod/YAML::Syck',
                 label =>
                     'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
             },
         },
         required_packages => {
             'Image::Size' => {
-                link => 'http://search.cpan.org/dist/Image-Size',
+                link => 'https://metacpan.org/pod/Image::Size',
                 label =>
                     'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
             },
             'CGI::Cookie' => {
                 link =>
-                    'http://search.cpan.org/search?query=cgi-cookie&mode=module',
+                    'https://metacpan.org/pod/CGI::Cookie',
                 label => 'This module is required for cookie authentication.',
             },
             'DBI' => {
-                link => 'http://search.cpan.org/dist/DBI',
+                link => 'https://metacpan.org/pod/DBI',
                 label =>
                     'DBI is required to work with most supported databases.',
                 version => 1.21,
             },
             'CGI' => {
-                link => 'http://search.cpan.org/dist/CGI.pm',
+                link => 'https://metacpan.org/pod/CGI',
                 label =>
                     'CGI is required for all Movable Type application functionality.',
             },
             'File::Spec' => {
-                link    => 'http://search.cpan.org/dist/File-Spec',
+                link    => 'https://metacpan.org/pod/File::Spec',
                 version => 0.8,
                 label =>
                     'File::Spec is required to work with file system path information on all supported operating systems.',
             },
             'LWP::UserAgent' => {
-                link => 'http://search.cpan.org/dist/libwww-perl/',
+                link => 'https://metacpan.org/pod/LWP::UserAgent',
                 label =>
                     'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.',
             },
             'Scalar::Util' => {
-                link => 'http://search.cpan.org/dist/Scalar-List-Utils',
+                link => 'https://metacpan.org/pod/Scalar::Util',
                 label =>
                     'Scalar::Util is required for initializing Movable Type application.',
             },
             'HTML::Entities' => {
-                link => 'http://search.cpan.org/dist/HTML-Entities',
+                link => 'https://metacpan.org/pod/HTML::Entities',
                 version => 3.69,
                 label => 'HTML::Entities is required by CGI.pm',
             },
@@ -632,8 +632,7 @@ sub start {
     foreach my $key ( keys %$drivers ) {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
-        my $link   = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
+        my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
         push @DATA,
             [
             $driver->{dbd_package},
@@ -723,8 +722,7 @@ sub configure {
         foreach my $id (@$display) {
             push @ids, "'" . $id . "'";
         }
-        my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
+        my $link = 'https://metacpan.org/pod/' . $driver->{dbd_package};
         push @DATA,
             [
             $driver->{dbd_package},
