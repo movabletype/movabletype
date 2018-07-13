@@ -893,8 +893,7 @@ if ($mt) {
     foreach my $key ( keys %$drivers ) {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
-        my $link   = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
+        my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
         push @DATA,
             [
             $driver->{dbd_package},
