@@ -155,7 +155,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 preg_match('!^MTHas!i', $mttag) ||
                 (preg_match('![a-z]If[A-Z]!i', $mttag) &&
                 !preg_match('![a-z]Modified[A-Z]!i', $mttag) &&
-                !preg_match('![a-z]Notify[A-Z]!i', $mttag)) ||
+                !preg_match('![a-z]Notify[A-Z]!i', $mttag) &&
+                !preg_match('![a-z]Identifier!i', $mttag)) ||
                 isset($ctx->conditionals[$mttag])) {
                 $conditional = 1;
             } elseif (($mttag == 'mtentries') ||
