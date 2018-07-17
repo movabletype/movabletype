@@ -2640,9 +2640,13 @@ BLOG: for my $blog_id (@id) {
                 my @elements = $theme->elements;
                 my ($set)
                     = grep { $_->{importer} eq 'template_set' } @elements;
-                $set = $set->{data};
-                $set->{envelope} = $theme->path if ref $set;
-                $theme->__deep_localize_labels($set) if ref $set;
+                require Storable;
+                $set = Storable::dclone( $set->{data} );
+                if ( ref $set ) {
+                    $set->{envelope} = $theme->path;
+                    $theme->__deep_localize_labels($set);
+                    $theme->__deep_localize_templatized_values($set);
+                }
                 $tmpl_list = MT::DefaultTemplates->templates($set);
             }
             else {
@@ -2885,9 +2889,13 @@ sub refresh_individual_templates {
         if ( my $theme = $blog->theme ) {
             my @elements = $theme->elements;
             my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
-            $set = $set->{data};
-            $set->{envelope} = $theme->path if ref $set;
-            $theme->__deep_localize_labels($set) if ref $set;
+            require Storable;
+            $set = Storable::dclone( $set->{data} );
+            if ( ref $set ) {
+                $set->{envelope} = $theme->path;
+                $theme->__deep_localize_labels($set);
+                $theme->__deep_localize_templatized_values($set);
+            }
             $tmpl_list = MT::DefaultTemplates->templates($set);
         }
         else {
