@@ -1426,7 +1426,7 @@ div.mce-notification-error {
 
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
-  <div class="btn-group mb-4 w-100" role="group">
+  <div class="btn-group mb-4 w-100 d-none d-md-inline-flex" role="group">
     <mt:if name="previous_entry_id">
       <a class="btn btn-default w-50" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev"></a>
     <mt:else>
