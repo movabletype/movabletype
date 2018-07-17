@@ -771,7 +771,6 @@ sub __deep_localize_templatized_values {
                 | category_field
                 | category_set
                 | content_type
-                | date_field
                 | datetime_field
                 | source
             )\z/x;
