@@ -801,7 +801,7 @@
 </mt:if>
 
 <mt:if name="object_type" like="(entry|page)">
-<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
+<div id="assets-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
   <mtapp:widget
      id="asset_container"
