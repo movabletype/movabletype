@@ -1011,10 +1011,23 @@ div.mce-notification-error {
           app.setEditorIframeHTML();
       }
 
+      function changeTextFormatOfOtherForm(currentFormId, selectedIndex) {
+          var otherForm;
+          if (currentFormId == 'convert_breaks') {
+              otherForm = document.getElementById('convert_breaks_for_mobile');
+          } else {
+              otherForm = document.getElementById('convert_breaks');
+          }
+          otherForm.options[selectedIndex].selected = true;
+      }
+
       <mt:unless name="editors">
       function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
+
+          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
+
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
@@ -1027,15 +1040,17 @@ div.mce-notification-error {
                   return;
               }
           }
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              jQuery('#formatting-help-link').removeClass('disabled');
-          } else {
-              jQuery('#formatting-help-link').addClass('disabled');
-          }
+          var convertBreaks = document.forms['entry_form'].convert_breaks;
+          convertBreaks.forEach(function (s) {
+              var key = s.options[s.selectedIndex].value;
+              if (url = docs[key]) {
+                  if (url.indexOf('http://') == -1)
+                      url = HelpBaseURI + url;
+                  jQuery('#formatting-help-link').removeClass('disabled');
+              } else {
+                  jQuery('#formatting-help-link').addClass('disabled');
+              }
+          });
 
           if (cur_text_format == 'richtext') {
               // changing to plaintext editor
@@ -1067,6 +1082,9 @@ div.mce-notification-error {
       function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
+
+          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
+
           if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
@@ -1079,15 +1097,17 @@ div.mce-notification-error {
                   return;
               }
           }
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              jQuery('#formatting-help-link').removeClass('disabled');
-          } else {
-              jQuery('#formatting-help-link').addClass('disabled');
-          }
+          var convertBreaks = document.forms['entry_form'].convert_breaks;
+          convertBreaks.forEach(function (s) {
+              var key = s.options[s.selectedIndex].value;
+              if (url = docs[key]) {
+                  if (url.indexOf('http://') == -1)
+                      url = HelpBaseURI + url;
+                  jQuery('#formatting-help-link').removeClass('disabled');
+              } else {
+                  jQuery('#formatting-help-link').addClass('disabled');
+              }
+          });
 
           if (option == 'richtext') {
               app.saveHTML(false);
@@ -1208,18 +1228,6 @@ div.mce-notification-error {
       <mt:loop name="text_filters">
       docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
       </mt:loop>
-      function openTFDocs() {
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              window.open(url, 'manual', 'width=450,height=550,scrollbars=yes,status=yes,resizable=yes');
-          } else {
-              return false;
-              // return openManual('entries', 'entry_text_formatting');
-          }
-      }
 
       function toggleFile() {
           var fld = getByID("basename");
@@ -1252,7 +1260,7 @@ div.mce-notification-error {
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').focus();</mt:unless>
-          jQuery('#convert_breaks').change(changedTextFormat);
+          jQuery('#convert_breaks, #convert_breaks_for_mobile').change(changedTextFormat);
       }
 
       var tagPos = 0;
@@ -1497,7 +1505,7 @@ div.mce-notification-error {
 
   <mt:else eq="text">
     <mt:section id="text">
-    <div id="text-field" class="mod field">
+    <div id="text-field" class="mod field mb-5">
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
@@ -1506,7 +1514,7 @@ div.mce-notification-error {
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks" class="form-inline">
+          <div id="field-convert_breaks" class="form-inline d-none d-md-block">
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
@@ -1528,6 +1536,28 @@ div.mce-notification-error {
       </div>
       <mt:include name="include/editor.tmpl">
     </div>
+
+    <mtapp:setting
+      id="convert_breaks_for_mobile"
+      label="<__trans phrase="Format">"
+      class="d-md-none">
+      <select name="convert_breaks" id="convert_breaks_for_mobile" class="custom-select form-control">
+      <mt:loop name="text_filters">
+        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+      </mt:loop>
+      </select>
+      <$mt:setvar name="show_formatting_help" value="1"$>
+      <mt:if name="convert_breaks" eq="richtext">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="0">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="__default__">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+    </mtapp:setting>
+
     </mt:section>
 
   <mt:else eq="tags">
