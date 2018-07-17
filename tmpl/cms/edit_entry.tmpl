@@ -732,7 +732,7 @@
 </div>
 
 <mt:if name="enabled_plugins{CommentsTrackback}">
-<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
+<div id="feedback-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
