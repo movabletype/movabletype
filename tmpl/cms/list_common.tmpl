@@ -107,6 +107,8 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -185,6 +187,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
   };
   </mt:loop>
 
@@ -202,6 +205,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
   };
   </mt:loop>
 
@@ -219,6 +223,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
     };
   </mt:loop>
 
@@ -226,6 +231,12 @@ jQuery.event.special.listReady = {
   var hasPulldownActions = true;
   <mt:else>
   var hasPulldownActions = false;
+  </mt:if>
+
+  <mt:if name="has_mobile_pulldown_actions">
+  var hasMobilePulldownActions = true;
+  <mt:else>
+  var hasMobilePulldownActions = false;
   </mt:if>
 
   <mt:if name="use_actions">
@@ -300,6 +311,7 @@ jQuery.event.special.listReady = {
 
       buttonActions: buttonActions,
       hasPulldownActions: hasPulldownActions,
+      hasMobilePulldownActions: hasMobilePulldownActions,
       listActions: listActions,
       moreListActions: moreListActions,
       plural: plural,

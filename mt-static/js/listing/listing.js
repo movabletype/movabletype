@@ -30,142 +30,188 @@ riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\
     }.bind(this)
 });
 
-riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActions}" class="btn btn-default mr-2" data-action-id="{key}" onclick="{doAction}"> {action.label} </button> <div if="{listTop.opts.hasPulldownActions}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'More actions...\')} </button> <div class="dropdown-menu"> <a each="{action, key in listTop.opts.listActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{Object.keys(listTop.opts.moreListActions).length > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in listTop.opts.moreListActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
+riot.tag2('list-actions-for-mobile', '<div if="{hasActionForMobile()}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select action\')} </button> <div class="dropdown-menu"> <a each="{action, key in buttonActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <a each="{action, key in listActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{moreListActionsForMobile() > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in moreListActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
+    this.mixin('listActions')
 
-    this.selectedActionId = null
-    this.selectedAction = null
+    this.buttonActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.buttonActions)
+    }.bind(this)
 
-    this.doAction = function(e) {
-      this.selectedActionId = e.target.dataset.actionId
-      this.selectedAction = this.getAction(this.selectedActionId)
-      this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
+    this.listActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.listActions)
+    }.bind(this)
 
-      var args = {}
+    this.moreListActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.moreListActions)
+    }.bind(this)
 
-      if (!this.checkCount()) {
-        return false
-      }
-
-      if (this.selectedAction.input) {
-        var input = prompt(this.selectedAction.input)
-        if (input) {
-          args.itemsetActionInput = input
-        } else {
-          return false
+    this._getActionsForMobile = function(actions) {
+      var mobileActions = {}
+      Object.keys(actions).forEach(function (key) {
+        var action = actions[key]
+        if (action.mobile) {
+          mobileActions[key] = action
         }
-      }
-
-      if (!this.selectedAction.no_prompt) {
-        if (this.selectedAction.continue_prompt) {
-          if (!confirm(this.selectedAction.continue_prompt)) {
-            return false
-          }
-        } else {
-          if (!confirm(this.getConfirmMessage())) {
-            return false
-          }
-        }
-      }
-
-      var requestArgs = this.generateRequestArguments(args)
-
-      if (this.selectedAction.xhr) {
-      } else if (this.selectedAction.dialog) {
-        var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
-        requestData.dialog = 1
-        var url = ScriptURI + '?' + jQuery.param(requestData, true)
-        jQuery.fn.mtModal.open(url, { large: true });
-      } else {
-        this.sendRequest(requestArgs)
-      }
+      })
+      return mobileActions
     }.bind(this)
 
-    this.sendRequest = function(postArgs) {
-      this.listTop.opts.listActionClient.post(postArgs)
-    }.bind(this)
-
-    this.generateRequestArguments = function(args) {
-      return jQuery.extend({
-        action: this.selectedAction,
-        actionName: this.selectedActionId,
-        allSelected: this.store.checkedAllRows,
-        ids: this.store.getCheckedRowIds()
-      }, args)
-    }.bind(this)
-
-    this.getAction = function(actionId) {
-      return this.listTop.opts.buttonActions[actionId]
-        || this.listTop.opts.listActions[actionId]
-        || this.listTop.opts.moreListActions[actionId]
-        || null;
-    }.bind(this)
-
-    this.getCheckedRowCount = function() {
-      return this.store.getCheckedRowCount()
-    }.bind(this)
-
-    this.checkCount = function() {
-      var checkedRowCount = this.getCheckedRowCount()
-
-      if (checkedRowCount == 0) {
-        this.alertNoSelectedError()
-        return false
-      }
-      if (this.selectedAction.min && checkedRowCount < this.selectedAction.min) {
-        this.alertMinimumError()
-        return false
-      }
-      if (this.selectedAction.max && checkedRowCount > this.selectedAction.max) {
-        this.alertMaximumError()
-        return false
-      }
-      return true
-    }.bind(this)
-
-    this.alertNoSelectedError = function() {
-      alert(trans(
-        'You did not select any [_1] to [_2].',
-        this.listTop.opts.plural,
-        this.selectedActionPhrase
-      ))
-    }.bind(this)
-
-    this.alertMinimumError = function() {
-      alert(trans(
-        'You can only act upon a minimum of [_1] [_2].',
-        this.selectedAction.min,
-        this.listTop.opts.plural
-      ))
-    }.bind(this)
-
-    this.alertMaximumError = function() {
-      alert(trans(
-        'You can only act upon a maximum of [_1] [_2].',
-        this.selectedAction.max,
-        this.listTop.opts.plural
-      ))
-    }.bind(this)
-
-    this.getConfirmMessage = function() {
-      var checkedRowCount = this.getCheckedRowCount()
-
-      if (checkedRowCount == 1) {
-        return trans(
-          'Are you sure you want to [_2] this [_1]?',
-          this.listTop.opts.singular,
-          this.selectedActionPhrase
-        )
-      } else {
-        return trans(
-          'Are you sure you want to [_3] the [_1] selected [_2]?',
-          checkedRowCount,
-          this.listTop.opts.plural,
-          this.selectedActionPhrase
-        );
-      }
+    this.hasActionForMobile = function() {
+      var mobileActionCount = Object.keys(this.buttonActionsForMobile()).length
+        + Object.keys(this.listActionsForMobile()).length
+        + Object.keys(this.moreListActionsForMobile()).length
+      return mobileActionCount > 0
     }.bind(this)
 });
+
+
+riot.tag2('list-actions-for-pc', '<button each="{action, key in listTop.opts.buttonActions}" class="btn btn-default mr-2" data-action-id="{key}" onclick="{doAction}"> {action.label} </button> <div if="{listTop.opts.hasPulldownActions}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'More actions...\')} </button> <div class="dropdown-menu"> <a each="{action, key in listTop.opts.listActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{Object.keys(listTop.opts.moreListActions).length > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in listTop.opts.moreListActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('listActions')
+});
+
+riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none d-md-block"></div> <div data-is="list-actions-for-mobile" class="col d-md-none"></div>', '', '', function(opts) {
+    this.mixin('listTop')
+
+    riot.mixin('listActions', {
+      init: function () {
+        this.selectedActionId = null
+        this.selectedAction = null
+      },
+
+      doAction: function (e) {
+        this.selectedActionId = e.target.dataset.actionId
+        this.selectedAction = this.getAction(this.selectedActionId)
+        this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
+
+        var args = {}
+
+        if (!this.checkCount()) {
+          return false
+        }
+
+        if (this.selectedAction.input) {
+          var input = prompt(this.selectedAction.input)
+          if (input) {
+            args.itemsetActionInput = input
+          } else {
+            return false
+          }
+        }
+
+        if (!this.selectedAction.no_prompt) {
+          if (this.selectedAction.continue_prompt) {
+            if (!confirm(this.selectedAction.continue_prompt)) {
+              return false
+            }
+          } else {
+            if (!confirm(this.getConfirmMessage())) {
+              return false
+            }
+          }
+        }
+
+        var requestArgs = this.generateRequestArguments(args)
+
+        if (this.selectedAction.xhr) {
+        } else if (this.selectedAction.dialog) {
+          var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
+          requestData.dialog = 1
+          var url = ScriptURI + '?' + jQuery.param(requestData, true)
+          jQuery.fn.mtModal.open(url, { large: true });
+        } else {
+          this.sendRequest(requestArgs)
+        }
+      },
+
+      sendRequest: function (postArgs) {
+        this.listTop.opts.listActionClient.post(postArgs)
+      },
+
+      generateRequestArguments: function (args) {
+        return jQuery.extend({
+          action: this.selectedAction,
+          actionName: this.selectedActionId,
+          allSelected: this.store.checkedAllRows,
+          ids: this.store.getCheckedRowIds()
+        }, args)
+      },
+
+      getAction: function (actionId) {
+        return this.listTop.opts.buttonActions[actionId]
+          || this.listTop.opts.listActions[actionId]
+          || this.listTop.opts.moreListActions[actionId]
+          || null;
+      },
+
+      getCheckedRowCount: function () {
+        return this.store.getCheckedRowCount()
+      },
+
+      checkCount: function () {
+        var checkedRowCount = this.getCheckedRowCount()
+
+        if (checkedRowCount == 0) {
+          this.alertNoSelectedError()
+          return false
+        }
+        if (this.selectedAction.min && checkedRowCount < this.selectedAction.min) {
+          this.alertMinimumError()
+          return false
+        }
+        if (this.selectedAction.max && checkedRowCount > this.selectedAction.max) {
+          this.alertMaximumError()
+          return false
+        }
+        return true
+      },
+
+      alertNoSelectedError: function () {
+        alert(trans(
+          'You did not select any [_1] to [_2].',
+          this.listTop.opts.plural,
+          this.selectedActionPhrase
+        ))
+      },
+
+      alertMinimumError: function () {
+        alert(trans(
+          'You can only act upon a minimum of [_1] [_2].',
+          this.selectedAction.min,
+          this.listTop.opts.plural
+        ))
+      },
+
+      alertMaximumError: function () {
+        alert(trans(
+          'You can only act upon a maximum of [_1] [_2].',
+          this.selectedAction.max,
+          this.listTop.opts.plural
+        ))
+      },
+
+      getConfirmMessage: function () {
+        var checkedRowCount = this.getCheckedRowCount()
+
+        if (checkedRowCount == 1) {
+          return trans(
+            'Are you sure you want to [_2] this [_1]?',
+            this.listTop.opts.singular,
+            this.selectedActionPhrase
+          )
+        } else {
+          return trans(
+            'Are you sure you want to [_3] the [_1] selected [_2]?',
+            checkedRowCount,
+            this.listTop.opts.plural,
+            this.selectedActionPhrase
+          );
+        }
+      }
+    })
+});
+
 
 riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header"></div> <div id="list-filter-collapse" class="collapse"> <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3"> </div> </div>', '', '', function(opts) {
     riot.mixin('listFilterTop', {
@@ -741,7 +787,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-3"> <div data-is="list-actions" if="{opts.useActions}" class="col-12"> </div> </div> <div class="row mb-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {

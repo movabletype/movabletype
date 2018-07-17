@@ -941,6 +941,7 @@ sub list_actions {
             order      => 100,
             js_message => 'publish',
             button     => 1,
+            mobile     => 1,
             condition  => sub {
                 return 0 if MT->app->mode eq 'view';
                 _check_permission(
@@ -956,11 +957,13 @@ sub list_actions {
             code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
+            mobile     => 1,
         },
         'set_draft' => {
             label     => "Unpublish Contents",
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
+            mobile    => 1,
             condition => sub {
                 return 0 if MT->app->mode eq 'view';
                 return _check_permission(

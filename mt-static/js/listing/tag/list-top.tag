@@ -1,8 +1,9 @@
 <list-top>
   <div class="d-none d-md-block mb-3" data-is="display-options"></div>
   <div class="row mb-3">
-    <div data-is="list-actions" if={ opts.useActions } class="col-12">
-    </div>
+    <virtual data-is="list-actions"
+      if={ opts.useActions }
+    ></virtual>
   </div>
   <div class="row mb-3">
     <div class="col-12">
