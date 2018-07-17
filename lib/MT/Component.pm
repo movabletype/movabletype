@@ -772,6 +772,7 @@ sub __deep_localize_templatized_values {
                 | category_set
                 | content_type
                 | date_field
+                | datetime_field
                 | source
             )\z/x;
             if ( !ref( my $value = $hash->{$k} ) ) {
