@@ -26,15 +26,12 @@ sub init {
     my $mozilla_ca = eval { require Mozilla::CA; 1 };
     $options{SSL_Client_Certificate} = {
         SSL_verify_mode => $verify,
-        $verify ? ( SSL_version => MT->config->SSLVersion
-                || MT->config->FTPSSSLVersion
-                || 'SSLv23:!SSLv3:!SSLv2' ) : (),
-        ( $verify && eval { require Mozilla::CA; 1 } )
-        ? ( SSL_verifycn_name   => $_[0],
-            SSL_verifycn_scheme => 'ftp',
-            SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
-            )
-        : (),
+        SSL_version     => MT->config->SSLVersion
+            || MT->config->FTPSSSLVersion
+            || 'SSLv23:!SSLv3:!SSLv2',
+        SSL_verifycn_name   => $_[0],
+        SSL_verifycn_scheme => 'ftp',
+        $mozilla_ca ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file() ) : (),
     };
 
     # Overwrite the arguments of Net::FTPSSL.
