@@ -14,7 +14,7 @@
 /**
 	\mainpage
 
-	@version   v5.20.3  01-Jan-2016
+	@version   v5.20.12  30-Mar-2018
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -36,6 +36,21 @@
 
 if (!defined('_ADODB_LAYER')) {
 	define('_ADODB_LAYER',1);
+
+	// The ADOdb extension is no longer maintained and effectively unsupported
+	// since v5.04. The library will not function properly if it is present.
+	if(defined('ADODB_EXTENSION')) {
+		$msg = "Unsupported ADOdb Extension (v" . ADODB_EXTENSION . ") detected! "
+			. "Disable it to use ADOdb";
+
+		$errorfn = defined('ADODB_ERROR_HANDLER') ? ADODB_ERROR_HANDLER : false;
+		if ($errorfn) {
+			$conn = false;
+			$errorfn('ADOdb', basename(__FILE__), -9999, $msg, null, null, $conn);
+		} else {
+			die($msg . PHP_EOL);
+		}
+	}
 
 	//==============================================================================================
 	// CONSTANT DEFINITIONS
@@ -217,7 +232,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.20.3  01-Jan-2016';
+		$ADODB_vers = 'v5.20.12  30-Mar-2018';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -658,23 +673,23 @@ if (!defined('_ADODB_LAYER')) {
 		}
 		if (isset($rez)) {
 			$err = $this->ErrorMsg();
+			$errno = $this->ErrorNo();
 			if (empty($err)) {
 				$err = "Connection error to server '$argHostname' with user '$argUsername'";
 			}
-			$ret = false;
 		} else {
 			$err = "Missing extension for ".$this->dataProvider;
-			$ret = 0;
+			$errno = 0;
 		}
 		if ($fn = $this->raiseErrorFn) {
-			$fn($this->databaseType,'CONNECT',$this->ErrorNo(),$err,$this->host,$this->database,$this);
+			$fn($this->databaseType, 'CONNECT', $errno, $err, $this->host, $this->database, $this);
 		}
 
 		$this->_connectionID = false;
 		if ($this->debug) {
 			ADOConnection::outp( $this->host.': '.$err);
 		}
-		return $ret;
+		return false;
 	}
 
 	function _nconnect($argHostname, $argUsername, $argPassword, $argDatabaseName) {
@@ -1116,25 +1131,39 @@ if (!defined('_ADODB_LAYER')) {
 				$sqlarr = explode('?',$sql);
 				$nparams = sizeof($sqlarr)-1;
 
+				if (!$array_2d) {
+					// When not Bind Bulk - convert to array of arguments list
+					$inputarr = array($inputarr);
+				} else {
+					// Bulk bind - Make sure all list of params have the same number of elements
+					$countElements = array_map('count', $inputarr);
+					if (1 != count(array_unique($countElements))) {
+						$this->outp_throw(
+							"[bulk execute] Input array has different number of params  [" . print_r($countElements, true) .  "].",
+							'Execute'
+						);
+						return false;
+					}
+					unset($countElements);
+				}
 				// Make sure the number of parameters provided in the input
 				// array matches what the query expects
-				if ($nparams != count($inputarr)) {
+				$element0 = reset($inputarr);
+				if ($nparams != count($element0)) {
 					$this->outp_throw(
-						"Input array has " . count($inputarr) .
+						"Input array has " . count($element0) .
 						" params, does not match query: '" . htmlspecialchars($sql) . "'",
 						'Execute'
 					);
 					return false;
 				}
 
-				if (!$array_2d) {
-					$inputarr = array($inputarr);
-				}
+				// clean memory
+				unset($element0);
 
 				foreach($inputarr as $arr) {
 					$sql = ''; $i = 0;
-					//Use each() instead of foreach to reduce memory usage -mikefedyk
-					while(list(, $v) = each($arr)) {
+					foreach ($arr as $v) {
 						$sql .= $sqlarr[$i];
 						// from Ron Baldwin <ron.baldwin#sourceprose.com>
 						// Only quote string types
@@ -1467,6 +1496,9 @@ if (!defined('_ADODB_LAYER')) {
 	 * @return		the recordset ($rs->databaseType == 'array')
 	 */
 	function SelectLimit($sql,$nrows=-1,$offset=-1, $inputarr=false,$secs2cache=0) {
+		$nrows = (int)$nrows;
+		$offset = (int)$offset;
+
 		if ($this->hasTop && $nrows > 0) {
 			// suggested by Reinhard Balling. Access requires top after distinct
 			// Informix requires first before distinct - F Riosa
@@ -1481,7 +1513,7 @@ if (!defined('_ADODB_LAYER')) {
 					// access includes ties in result
 					if ($isaccess) {
 						$sql = preg_replace(
-						'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop.' '.((integer)$nrows).' ',$sql);
+						'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop.' '.$nrows.' ',$sql);
 
 						if ($secs2cache != 0) {
 							$ret = $this->CacheExecute($secs2cache, $sql,$inputarr);
@@ -1491,10 +1523,10 @@ if (!defined('_ADODB_LAYER')) {
 						return $ret; // PHP5 fix
 					} else if ($ismssql){
 						$sql = preg_replace(
-						'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop.' '.((integer)$nrows).' ',$sql);
+						'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop.' '.$nrows.' ',$sql);
 					} else {
 						$sql = preg_replace(
-						'/(^\s*select\s)/i','\\1 '.$this->hasTop.' '.((integer)$nrows).' ',$sql);
+						'/(^\s*select\s)/i','\\1 '.$this->hasTop.' '.$nrows.' ',$sql);
 					}
 			} else {
 				$nn = $nrows + $offset;
@@ -2362,6 +2394,7 @@ if (!defined('_ADODB_LAYER')) {
 	 */
 	function Close() {
 		$rez = $this->_close();
+		$this->_queryID = false;
 		$this->_connectionID = false;
 		return $rez;
 	}
@@ -3009,6 +3042,61 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		return $rs;
 	}
 
+	/**
+	 * Get the last error recorded by PHP and clear the message.
+	 *
+	 * By clearing the message, it becomes possible to detect whether a new error
+	 * has occurred, even when it is the same error as before being repeated.
+	 *
+	 * @return array|null Array if an error has previously occurred. Null otherwise.
+	 */
+	protected function resetLastError() {
+		$error = error_get_last();
+
+		if (is_array($error)) {
+			$error['message'] = '';
+		}
+
+		return $error;
+	}
+
+	/**
+	 * Compare a previously stored error message with the last error recorded by PHP
+	 * to determine whether a new error has occured.
+	 *
+	 * @param array|null $old Optional. Previously stored return value of error_get_last().
+	 *
+	 * @return string The error message if a new error has occured
+	 *                or an empty string if no (new) errors have occured..
+	 */
+	protected function getChangedErrorMsg($old = null) {
+		$new = error_get_last();
+
+		if (is_null($new)) {
+			// No error has occured yet at all.
+			return '';
+		}
+
+		if (is_null($old)) {
+			// First error recorded.
+			return $new['message'];
+		}
+
+		$changed = false;
+		foreach($new as $key => $value) {
+			if ($new[$key] !== $old[$key]) {
+				$changed = true;
+				break;
+			}
+		}
+
+		if ($changed === true) {
+			return $new['message'];
+		}
+
+		return '';
+	}
+
 } // end class ADOConnection
 
 
@@ -3358,14 +3446,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		$results = array();
 		$cnt = 0;
 		while (!$this->EOF && $nRows != $cnt) {
-			// $results[] = $this->fields;
-			$rs = $this->fields;
-			$keys = array_keys($rs);
-			$new_rs = null;
-			foreach( $keys as $key )
-				$new_rs[strtolower($key)] = $rs[$key];
-			$results[] = $new_rs;
-			
+			$results[] = $this->fields;
 			$this->MoveNext();
 			$cnt++;
 		}
@@ -4595,8 +4676,8 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 				$class = $db; break;
 		}
 
-		$file = ADODB_DIR."/drivers/adodb-".$db.".inc.php";
-		@include_once($file);
+		$file = "drivers/adodb-$db.inc.php";
+		@include_once(ADODB_DIR . '/' . $file);
 		$ADODB_LASTDB = $class;
 		if (class_exists("ADODB_" . $class)) {
 			return $class;

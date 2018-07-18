@@ -175,7 +175,6 @@ class dbObject {
 	* Destroys the object
 	*/
 	function destroy() {
-		unset( $this );
 	}
 
 	/**
@@ -290,12 +289,14 @@ class dbTable extends dbObject {
 		switch( $this->currentElement ) {
 			case 'INDEX':
 				if( !isset( $attributes['PLATFORM'] ) OR $this->supportedPlatform( $attributes['PLATFORM'] ) ) {
-					xml_set_object( $parser, $this->addIndex( $attributes ) );
+					$index = $this->addIndex( $attributes );
+					xml_set_object( $parser,  $index );
 				}
 				break;
 			case 'DATA':
 				if( !isset( $attributes['PLATFORM'] ) OR $this->supportedPlatform( $attributes['PLATFORM'] ) ) {
-					xml_set_object( $parser, $this->addData( $attributes ) );
+					$data = $this->addData( $attributes );
+					xml_set_object( $parser, $data );
 				}
 				break;
 			case 'DROP':
@@ -1408,8 +1409,9 @@ class adoSchema {
 	function __construct( $db ) {
 		// Initialize the environment
 		$this->mgq = get_magic_quotes_runtime();
-		#set_magic_quotes_runtime(0);
-		ini_set("magic_quotes_runtime", 0);
+		if ($this->mgq !== false) {
+			ini_set('magic_quotes_runtime', 0 );
+		}
 
 		$this->db = $db;
 		$this->debug = $this->db->debug;
@@ -2376,9 +2378,9 @@ class adoSchema {
 	* @deprecated adoSchema now cleans up automatically.
 	*/
 	function Destroy() {
-		ini_set("magic_quotes_runtime", $this->mgq );
-		#set_magic_quotes_runtime( $this->mgq );
-		unset( $this );
+		if ($this->mgq !== false) {
+			ini_set('magic_quotes_runtime', $this->mgq );
+		}
 	}
 }
 
