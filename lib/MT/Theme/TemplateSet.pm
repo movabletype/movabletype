@@ -15,8 +15,8 @@ sub apply {
     if ( !ref $set ) {
         $set = MT->registry( 'template_sets', $set );
     }
-    require Storable;
-    $set = Storable::dclone($set);
+    require Clone::PP;
+    $set = Clone::PP::clone($set);
 
     ## deep localize for labels
     $theme->__deep_localize_labels($set);
