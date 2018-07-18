@@ -1,6 +1,6 @@
 <?php
 /**
-	@version   v5.20.3  01-Jan-2016
+	@version   v5.20.12  30-Mar-2018
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -148,9 +148,6 @@ class ADODB_pdo extends ADOConnection {
 					$argDSN .= ';dbname='.$argDatabasename;
 			}
 		}
-		if ( $this->port ) {
-			$argDSN .= ';port=' . $this->port;
-		}
 		try {
 			$this->_connectionID = new PDO($argDSN, $argUsername, $argPassword);
 		} catch (Exception $e) {
@@ -199,6 +196,7 @@ class ADODB_pdo extends ADOConnection {
 
 			$this->_driver->_connectionID = $this->_connectionID;
 			$this->_UpdatePDO();
+			$this->_driver->database = $this->database;
 			return true;
 		}
 		$this->_driver = new ADODB_pdo_base();
@@ -269,6 +267,16 @@ class ADODB_pdo extends ADOConnection {
 		return $this->_driver->OffsetDate($dayFraction,$date);
 	}
 
+	function SelectDB($dbName)
+	{
+		return $this->_driver->SelectDB($dbName);
+	}
+
+	function SQLDate($fmt, $col=false)
+	{
+		return $this->_driver->SQLDate($fmt, $col);
+	}
+
 	function ErrorMsg()
 	{
 		if ($this->_errormsg !== false) {
@@ -327,6 +335,17 @@ class ADODB_pdo extends ADOConnection {
 		return $err;
 	}
 
+    /**
+     * @param bool $auto_commit
+     * @return void
+     */
+	function SetAutoCommit($auto_commit)
+    {
+        if(method_exists($this->_driver, 'SetAutoCommit')) {
+            $this->_driver->SetAutoCommit($auto_commit);
+        }
+    }
+
 	function SetTransactionMode($transaction_mode)
 	{
 		if(method_exists($this->_driver, 'SetTransactionMode')) {
@@ -350,7 +369,7 @@ class ADODB_pdo extends ADOConnection {
 		}
 		$this->transCnt += 1;
 		$this->_autocommit = false;
-		$this->_connectionID->setAttribute(PDO::ATTR_AUTOCOMMIT,false);
+		$this->SetAutoCommit(false);
 
 		return $this->_connectionID->beginTransaction();
 	}
@@ -376,7 +395,7 @@ class ADODB_pdo extends ADOConnection {
 		$this->_autocommit = true;
 
 		$ret = $this->_connectionID->commit();
-		$this->_connectionID->setAttribute(PDO::ATTR_AUTOCOMMIT,true);
+		$this->SetAutoCommit(true);
 		return $ret;
 	}
 
@@ -398,7 +417,7 @@ class ADODB_pdo extends ADOConnection {
 		$this->_autocommit = true;
 
 		$ret = $this->_connectionID->rollback();
-		$this->_connectionID->setAttribute(PDO::ATTR_AUTOCOMMIT,true);
+		$this->SetAutoCommit(true);
 		return $ret;
 	}
 
@@ -461,8 +480,6 @@ class ADODB_pdo extends ADOConnection {
 		#adodb_backtrace();
 		#var_dump($this->_bindInputArray);
 		if ($stmt) {
-			if (empty($this->_driver))
-				$this->_driver = new stdClass;
 			$this->_driver->debug = $this->debug;
 			if ($inputarr) {
 				$ok = $stmt->execute($inputarr);
@@ -512,6 +529,30 @@ class ADODB_pdo extends ADOConnection {
 	{
 		return ($this->_connectionID) ? $this->_connectionID->lastInsertId() : 0;
 	}
+
+	/**
+	 * Quotes a string to be sent to the database.
+	 * If we have an active connection, delegates quoting to the underlying
+	 * PDO object. Otherwise, replace "'" by the value of $replaceQuote (same
+	 * behavior as mysqli driver)
+	 * @param string  $s            The string to quote
+	 * @param boolean $magic_quotes If false, use PDO::quote().
+	 * @return string Quoted string
+	 */
+	function qstr($s, $magic_quotes = false)
+	{
+		if (!$magic_quotes) {
+			if ($this->_connectionID) {
+				return $this->_connectionID->quote($s);
+			}
+			return "'" . str_replace("'", $this->replaceQuote, $s) . "'";
+		}
+
+		// undo magic quotes for "
+		$s = str_replace('\\"', '"', $s);
+		return "'$s'";
+	}
+
 }
 
 class ADODB_pdo_base extends ADODB_pdo {
@@ -704,12 +745,22 @@ class ADORecordSet_pdo extends ADORecordSet {
 		}
 		//adodb_pr($arr);
 		$o->name = $arr['name'];
-		if (isset($arr['native_type']) && $arr['native_type'] <> "null") {
-			$o->type = $arr['native_type'];
+		if (isset($arr['sqlsrv:decl_type']) && $arr['sqlsrv:decl_type'] <> "null") 
+		{
+		    /*
+		    * If the database is SQL server, use the native built-ins
+		    */
+		    $o->type = $arr['sqlsrv:decl_type'];
 		}
-		else {
-			$o->type = adodb_pdo_type($arr['pdo_type']);
+		elseif (isset($arr['native_type']) && $arr['native_type'] <> "null") 
+		{
+		    $o->type = $arr['native_type'];
 		}
+		else 
+		{
+		     $o->type = adodb_pdo_type($arr['pdo_type']);
+		}
+		
 		$o->max_length = $arr['len'];
 		$o->precision = $arr['precision'];
 

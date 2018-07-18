@@ -13,7 +13,7 @@
         "oomphinc/composer-installers-extender": "^1.1"
     },
     "require": {
-        "adodb/adodb-php": "5.20.3"
+        "adodb/adodb-php": "^5.20"
     },
     "extra": {
         "installer-types": ["library"],
