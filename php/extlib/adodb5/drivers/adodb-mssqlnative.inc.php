@@ -127,7 +127,6 @@ class ADODB_mssqlnative extends ADOConnection {
 	var $connectionInfo = array();
 	var $sequences = false;
 	var $mssql_version = '';
-    var $is_utf = false;
 
 	function __construct()
 	{
@@ -483,9 +482,7 @@ class ADODB_mssqlnative extends ADOConnection {
 		$connectionInfo["Database"]=$argDatabasename;
 		$connectionInfo["UID"]=$argUsername;
 		$connectionInfo["PWD"]=$argPassword;
-        if ( $this->is_utf )
-            $connectionInfo['CharacterSet'] = 'UTF-8';
-
+		
 		foreach ($this->connectionParameters as $parameter=>$value)
 		    $connectionInfo[$parameter] = $value;
 		
@@ -833,12 +830,6 @@ class ADODB_mssqlnative extends ADOConnection {
 		# end adg
 		return $retarr;
 	}
-
-    function Execute($sql,$inputarr=false) {
-        if ( $this->is_utf )
-            $sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
-        return parent::Execute( $sql, $inputarr );
-    }
 
 }
 
