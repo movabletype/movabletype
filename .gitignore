@@ -64,3 +64,5 @@ cover_db/
 .vscode/
 .envrc
 
+/vendor/
+
