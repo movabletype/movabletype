@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1b08ca1e41e5cf0b8de7f74007f9984",
+    "content-hash": "1a3f0e710f0fffa7a66534d311861fb2",
     "packages": [
         {
             "name": "adodb/adodb-php",
-            "version": "v5.20.3",
+            "version": "v5.20.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "6b0637c8e87998811a81f6789e20e8ddcc7f19cb"
+                "reference": "0e5243790c5a02a88b0dfe78c390fe795ad2d672"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/6b0637c8e87998811a81f6789e20e8ddcc7f19cb",
-                "reference": "6b0637c8e87998811a81f6789e20e8ddcc7f19cb",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/0e5243790c5a02a88b0dfe78c390fe795ad2d672",
+                "reference": "0e5243790c5a02a88b0dfe78c390fe795ad2d672",
                 "shasum": ""
             },
             "require": {
@@ -32,7 +32,7 @@
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause",
-                "LGPL-2.1"
+                "LGPL-2.1-or-later"
             ],
             "authors": [
                 {
@@ -50,7 +50,7 @@
                 }
             ],
             "description": "ADOdb is a PHP database abstraction layer library",
-            "homepage": "http://adodb.sourceforge.net/",
+            "homepage": "http://adodb.org/",
             "keywords": [
                 "abstraction",
                 "database",
@@ -58,7 +58,7 @@
                 "library",
                 "php"
             ],
-            "time": "2016-01-01T22:50:00+00:00"
+            "time": "2018-03-30T17:31:04+00:00"
         }
     ],
     "packages-dev": [
