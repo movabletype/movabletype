@@ -37,6 +37,7 @@ my $data;
     local $/ = undef;
     $data = ( YAML::Tiny::Load(<DATA>) )[0];
 }
+MT::Component::__deep_localize_labels( $mt, $data ); # make labels CODE
 $mt->component('core')->registry->{themes} = $data;
 
 ## create theme instance.
@@ -114,7 +115,7 @@ for my $lang (qw/en_us ja en_us/) {
                 {   blog_id         => $tmpl->blog_id,
                     content_type_id => $tmpl->content_type_id,
                     type            => 'date_and_time',
-                    name            => 'datetime',
+                    name            => $theme->translate('Date and Time'),
                 }
             ) or die 'cannot load datetime field';
             is( MT->model('templatemap')->count(
@@ -132,7 +133,7 @@ for my $lang (qw/en_us ja en_us/) {
                 {   blog_id         => $tmpl->blog_id,
                     content_type_id => $tmpl->content_type_id,
                     type            => 'categories',
-                    name            => 'categories 1',
+                    name            => $theme->translate('Category'),
                 }
             ) or die 'cannot load category1 field';
             is( MT->model('templatemap')->count(
@@ -477,7 +478,7 @@ for my $lang (qw/en_us ja en_us/) {
 
             subtest 'date_and_time field' => sub {
                 my $f = $test_content_type->fields->[4];
-                is( $f->{options}{label},         'datetime' );
+                is( $f->{options}{label},         $theme->translate('Date and Time') );
                 is( $f->{options}{description},   'datetime field' );
                 is( $f->{type},                   'date_and_time' );
                 is( $f->{options}{required},      0 );
@@ -657,7 +658,7 @@ for my $lang (qw/en_us ja en_us/) {
 
             subtest 'categories field (1)' => sub {
                 my $f = $test_content_type->fields->[17];
-                is( $f->{options}{label},        'categories 1' );
+                is( $f->{options}{label},        $theme->translate('Category') );
                 is( $f->{options}{description},  'categories field 1' );
                 is( $f->{type},                  'categories' );
                 is( $f->{options}{required},     1 );
@@ -798,6 +799,7 @@ MyTheme:
     name: my_theme
     label: My Theme
     thumbnail: my_thumbnail.png
+    class: blog
     l10n_lexicon:
         ja:
             category description.: カテゴリの説明
@@ -840,13 +842,13 @@ MyTheme:
                                     file_template: "%y/%m/%d/%b/%i"
                                     build_type: 2
                                     preferred: 0
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                 ct_cat1:
                                     archive_type: ContentType
                                     file_template: "%-c/%-f"
                                     build_type: 3
                                     preferred: 0
-                                    category_field: categories 1
+                                    category_field: <__trans phrase="Category">
                                 ct_cat2:
                                     archive_type: ContentType
                                     file_template: "%y/%m/%-f/%-c"
@@ -858,8 +860,8 @@ MyTheme:
                                     file_template: "%m/%-f/%-c"
                                     build_type: 1
                                     preferred: 0
-                                    datetime_field: datetime
-                                    category_field: categories 1
+                                    datetime_field: <__trans phrase="Date and Time">
+                                    category_field: <__trans phrase="Category">
                     ct_archive:
                         content_type_listing:
                             label: 'Content Type Listing'
@@ -869,7 +871,7 @@ MyTheme:
                                     archive_type: ContentType-Daily
                                     file_template: "%y/%m/%d/%f"
                                     build_type: 1
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                 ct_weekly:
                                     archive_type: ContentType-Weekly
                                     file_template: "%y/%m/%d-week/%i"
@@ -878,7 +880,7 @@ MyTheme:
                                     archive_type: ContentType-Monthly
                                     file_template: "%y/%m/%i"
                                     build_type: 3
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                 ct_yearly:
                                     archive_type: ContentType-Yearly
                                     file_template: "%y/%i"
@@ -897,7 +899,7 @@ MyTheme:
                                     archive_type: ContentType-Author-Daily
                                     file_template: "author/%-a/%y/%m/%d/%f"
                                     build_type: 0
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                 ct_author_weekly:
                                     archive_type: ContentType-Author-Weekly
                                     file_template: "author/%-a/%y/%m/%d-week/%f"
@@ -906,7 +908,7 @@ MyTheme:
                                     archive_type: ContentType-Author-Monthly
                                     file_template: "author/%-a/%y/%m/%f"
                                     build_type: 3
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                 ct_author_yearly:
                                     archive_type: ContentType-Author-Yearly
                                     file_template: "author/%-a/%y/%f"
@@ -916,29 +918,29 @@ MyTheme:
                                     archive_type: ContentType-Category
                                     file_template: "%-c/%i"
                                     build_type: 1
-                                    category_field: categories 1
+                                    category_field: <__trans phrase="Category">
                                 ct_cat_daily:
                                     archive_type: ContentType-Category-Daily
                                     file_template: "%-c/%y/%m/%d/%i"
                                     build_type: 0
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                     category_field: categories 2
                                 ct_cat_weekly:
                                     archive_type: ContentType-Category-Weekly
                                     file_template: "%-c/%y/%m/%d-week/%i"
                                     build_type: 2
-                                    category_field: categories 1
+                                    category_field: <__trans phrase="Category">
                                 ct_cat_monthly:
                                     archive_type: ContentType-Category-Monthly
                                     file_template: "%-c/%y/%m/%i"
                                     build_type: 3
-                                    datetime_field: datetime
+                                    datetime_field: <__trans phrase="Date and Time">
                                     category_field: categories 2
                                 ct_cat_yearly:
                                     archive_type: ContentType-Category-Yearly
                                     file_template: "%-c/%y/%i"
                                     build_type: 4
-                                    category_field: categories 1
+                                    category_field: <__trans phrase="Category">
         core_configs:
             component: core
             importer: default_prefs
@@ -1018,7 +1020,7 @@ MyTheme:
                         required: 1
                         display: optional
                         initial_value: https://example.com
-                      - label: datetime
+                      - label: <__trans phrase="Date and Time">
                         description: <__trans phrase="datetime field">
                         type: date_and_time
                         required: 0
@@ -1150,7 +1152,7 @@ MyTheme:
                         initial_value: |
                             akasatana
                             hamayarawa
-                      - label: categories 1
+                      - label: <__trans phrase="Category">
                         description: <__trans phrase="categories field 1">
                         type: categories
                         required: 1
