@@ -1,0 +1,24 @@
+{
+    "name": "movabletype/movabletype",
+    "scripts": {
+        "post-update-cmd": [
+            "rm -f php/extlib/adodb5/.gitattributes",
+            "rm -f php/extlib/adodb5/.gitignore",
+            "rm -f php/extlib/adodb5/drivers/adodb-text.inc.php",
+            "rm -rf php/extlib/adodb5/replicate/",
+            "rm -rf php/extlib/adodb5/scripts/"
+        ]
+    },
+    "require-dev": {
+        "oomphinc/composer-installers-extender": "^1.1"
+    },
+    "require": {
+        "adodb/adodb-php": "5.20.3"
+    },
+    "extra": {
+        "installer-types": ["library"],
+        "installer-paths": {
+            "php/extlib/adodb5/": ["adodb/adodb-php"]
+        }
+    }
+}
