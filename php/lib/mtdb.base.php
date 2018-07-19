@@ -3973,8 +3973,8 @@ abstract class MTDatabase {
                             content_type_id = \"$str\"
                             $blog_filter";
                 $result = $this->db()->SelectLimit($sql);
-                if ($result->EOF) return null;
-            } else {
+            }
+            if (!isset($result) || $result->EOF) {
                 $sql = "select
                             mt_content_type.*
                         from mt_content_type
