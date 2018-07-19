@@ -160,6 +160,9 @@ themes/broken_blog_theme
 #?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTA ^addons/AWS.pack
 #?package=MTA ^plugins/P-M-SizeLimit
+#?package=MTA ^mt-cp.cgi
+#?package=MTA ^addons/Community.pack
+#?package=MTA ^mt-static/addons/Community.pack
 
 #?package=MTAAWS ^COPYING
 #?package=MTAAWS ^COPYRIGHT
