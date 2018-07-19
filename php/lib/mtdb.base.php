@@ -1827,7 +1827,7 @@ abstract class MTDatabase {
         {
             $category_set_id = 0;
         }
-        if (isset($category_set_id) && $category_set_id > 0) {
+        if (isset($category_set_id) && !isset($args['with_category_set'])) {
             $category_set_filter = "and category_category_set_id = $category_set_id";
         }
         elseif (isset($args['with_category_set'])) {
