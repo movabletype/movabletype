@@ -3979,7 +3979,7 @@ abstract class MTDatabase {
                             mt_content_type.*
                         from mt_content_type
                         where
-                            content_type_unique_id = \"$str\"
+                            content_type_unique_id = '$str'
                             $blog_filter";
                 $result = $this->db()->SelectLimit($sql);
                 if ($result->EOF) {
@@ -3987,7 +3987,7 @@ abstract class MTDatabase {
                                 mt_content_type.*
                             from mt_content_type
                             where
-                                content_type_name = \"$str\"
+                                content_type_name = '$str'
                                 $blog_filter";
                     $result = $this->db()->SelectLimit($sql);
                 }
