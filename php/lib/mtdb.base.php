@@ -467,10 +467,18 @@ abstract class MTDatabase {
         if (isset($args['blog_id'])) {
             $blog_filter = 'and templatemap_blog_id = ' . intval($args['blog_id']);
         }
+        if (isset($args['preferred'])) {
+            $preferred_filter = 'and templatemap_is_preferred = ' . intval($args['preferred']);
+        }
+        if (isset($args['build_type'])) {
+            $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
+        }
 
         $where = "1 = 1
                   $blog_filter
                   $type_filter
+                  $preferred_filter
+                  $build_type_filter
                   order by templatemap_archive_type";
 
         require_once('class.mt_templatemap.php');
@@ -1819,8 +1827,11 @@ abstract class MTDatabase {
         {
             $category_set_id = 0;
         }
-        if (isset($category_set_id)) {
+        if (isset($category_set_id) && $category_set_id > 0) {
             $category_set_filter = "and category_category_set_id = $category_set_id";
+        }
+        elseif (isset($args['with_category_set'])) {
+            $category_set_filter = "and category_category_set_id > 0";
         }
 
         $sql = "
