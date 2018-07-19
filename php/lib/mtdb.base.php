@@ -3970,7 +3970,7 @@ abstract class MTDatabase {
                             mt_content_type.*
                         from mt_content_type
                         where
-                            content_type_id = \"$str\"
+                            content_type_id = $str
                             $blog_filter";
                 $result = $this->db()->SelectLimit($sql);
             }
