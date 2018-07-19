@@ -341,24 +341,27 @@ sub rebuild {
                     ) or return;
                 }
                 else {
-                    my @cat_cfs = MT::ContentField->load(
+                    my @cats;
+                    my @cat_cf_ids = map { $_->id } MT::ContentField->load(
                         {   type            => 'categories',
                             content_type_id => $content_data->content_type_id,
-                        }
+                        },
+                        { fetchonly => { id => 1 } },
                     );
-                    my @cats;
-                    foreach my $cat_cf (@cat_cfs) {
-                        my @obj_cats = MT::ObjectCategory->load(
-                            {   object_ds => 'content_data',
-                                object_id => $content_data->id,
-                                cf_id     => $cat_cf->id,
-                            }
+                    if (@cat_cf_ids) {
+                        @cats = MT::Category->load(
+                            { category_set_id => { op => '>', value => 0 } },
+                            {   join => MT::ObjectCategory->join_on(
+                                    undef,
+                                    {   category_id => \'= category_id',
+                                        object_ds   => 'content_data',
+                                        object_id   => $content_data->id,
+                                        cf_id       => \@cat_cf_ids,
+                                    },
+                                ),
+                                unique => 1,
+                            },
                         );
-                        foreach my $obj_cat (@obj_cats) {
-                            my ($cat)
-                                = MT::Category->load( $obj_cat->category_id );
-                            push @cats, $cat if $cat;
-                        }
                     }
                     @cats = (undef)
                         if !@cats && !$archiver->contenttype_category_based;
