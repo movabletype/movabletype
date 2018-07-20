@@ -24,6 +24,9 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     } elseif ($at == 'Individual' || $at == 'Page') {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('EntryPermalink', $args);
+    } elseif ($at == 'ContentType') {
+        $args['archive_type'] or $args['archive_type'] = $at;
+        return $ctx->tag('ContentPermalink', $args);
     } elseif ($at == 'Category') {
         return $ctx->tag('CategoryArchiveLink', $args);
     }

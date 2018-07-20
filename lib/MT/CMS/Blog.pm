@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}      = $app->param('no_writedir');
-    $param{no_cachedir}      = $app->param('no_cachedir');
-    $param{no_writecache}    = $app->param('no_writecache');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -2566,8 +2566,10 @@ sub update_publishing_profile {
             {   blog_id => $blog->id,
 
                 # FIXME: enumeration of types
-                type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category' ],
+                type => [
+                    'index',    'archive', 'individual', 'page',
+                    'category', 'ct',      'ct_archive'
+                ],
             }
         );
         for my $tmpl (@templates) {
@@ -2589,8 +2591,10 @@ sub update_publishing_profile {
             {   blog_id => $blog->id,
 
                 # FIXME: enumeration of types
-                type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category' ],
+                type => [
+                    'index',    'archive', 'individual', 'page',
+                    'category', 'ct',      'ct_archive'
+                ],
             }
         );
         for my $tmpl (@templates) {
@@ -3630,7 +3634,7 @@ sub _determine_total {
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            ( $obj_class eq 'entry' ) ? ( class => 'entry' ) : (),
+            class   => $obj_class,
             (   $archiver->contenttype_author_based && $content_type_id
                 ? ( content_type_id => $content_type_id )
                 : ()

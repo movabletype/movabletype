@@ -467,10 +467,18 @@ abstract class MTDatabase {
         if (isset($args['blog_id'])) {
             $blog_filter = 'and templatemap_blog_id = ' . intval($args['blog_id']);
         }
+        if (isset($args['preferred'])) {
+            $preferred_filter = 'and templatemap_is_preferred = ' . intval($args['preferred']);
+        }
+        if (isset($args['build_type'])) {
+            $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
+        }
 
         $where = "1 = 1
                   $blog_filter
                   $type_filter
+                  $preferred_filter
+                  $build_type_filter
                   order by templatemap_archive_type";
 
         require_once('class.mt_templatemap.php');
@@ -1819,8 +1827,11 @@ abstract class MTDatabase {
         {
             $category_set_id = 0;
         }
-        if (isset($category_set_id)) {
+        if (isset($category_set_id) && !isset($args['with_category_set'])) {
             $category_set_filter = "and category_category_set_id = $category_set_id";
+        }
+        elseif (isset($args['with_category_set'])) {
+            $category_set_filter = "and category_category_set_id > 0";
         }
 
         $sql = "
@@ -4013,6 +4024,21 @@ abstract class MTDatabase {
         return $content_types;
     }
 
+    function fetch_content($cid) {
+        if ( isset( $this->_cd_id_cache[$cid] ) && !empty( $this->_cd_id_cache[$cid] ) ) {
+            return $this->_cd_id_cache[$cid];
+        }
+        require_once("class.mt_content_data.php");
+        $cd = New ContentData;
+        $cd ->Load( $cid );
+        if ( !empty( $cd) ) {
+            $this->_cd_id_cache[$cid] = $cd;
+            return $cd;
+        } else {
+            return null;
+        }
+    }
+
     public function fetch_contents($args, $content_type_id, &$total_count = NULL) {
         require_once('class.mt_content_data.php');
         $extras = array();
@@ -4053,7 +4079,6 @@ abstract class MTDatabase {
         # automatically include offset if in request
         if ($args['offset'] == 'auto') {
             $args['offset'] = 0;
-            #if ($args['limit'] || $args['lastn']) {
             if ($args['limit']) {
                 if (intval($_REQUEST['offset']) > 0) {
                     $args['offset'] = intval($_REQUEST['offset']);

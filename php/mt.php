@@ -585,6 +585,7 @@ class MT {
         $cat = $data->fileinfo_category_id;
         $auth = $data->fileinfo_author_id;
         $entry_id = $data->fileinfo_entry_id;
+        $cd_id = $data->fileinfo_cd_id;
         $blog_id = $data->fileinfo_blog_id;
         $blog = $data->blog();
         if ($at == 'index') {
@@ -675,6 +676,12 @@ class MT {
                 $ctx->stash('current_timestamp', $entry->entry_authored_on);
             }
 
+            if (isset($cd_id) && ($cd_id) && $at == 'ContentType') {
+                $cd = $mtdb->fetch_content($cd_id);
+                $ctx->stash('content', $cd);
+                $ctx->stash('current_timestamp', $cd->cd_authored_on);
+            }
+
             if ($at == 'Category') {
                 $vars =& $ctx->__stash['vars'];
                 $vars['archive_class']            = "category-archive";
@@ -746,18 +753,31 @@ class MT {
 
     function resolve_url($path, $build_type = 3) {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
-        if ( isset($data)
-            && isset($data->fileinfo_entry_id)
-            && is_numeric($data->fileinfo_entry_id)
-        ) {
-            $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
-                $entry = $this->db->fetch_page($data->fileinfo_entry_id);
-            } else {
-                $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
+        if (isset($data)) {
+            if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
+                if ( isset($data->fileinfo_cd_id)
+                    && is_numeric($data->fileinfo_cd_id)
+                ) {
+                    $tmpl_map = $data->templatemap();
+                    $cd = $this->db->fetch_content($data->fileinfo_cd_id);
+                    if (!isset($cd) || $cd->cd_status != 2)
+                        return;
+                }
             }
-            if (!isset($entry) || $entry->entry_status != 2)
-                return;
+            else {
+                if ( isset($data->fileinfo_entry_id)
+                    && is_numeric($data->fileinfo_entry_id)
+                ) {
+                    $tmpl_map = $data->templatemap();
+                    if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
+                        $entry = $this->db->fetch_page($data->fileinfo_entry_id);
+                    } else {
+                        $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
+                    }
+                    if (!isset($entry) || $entry->entry_status != 2)
+                        return;
+                }
+            }
         }
         return $data;
     }
