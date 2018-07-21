@@ -4041,10 +4041,10 @@ abstract class MTDatabase {
     public function fetch_contents($args, $content_type_id, &$total_count = NULL) {
         require_once('class.mt_content_data.php');
         $extras = array();
+        $mt = MT::get_instance();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and cd_blog_id ' . $sql;
-            $mt = MT::get_instance();
             $ctx = $mt->context();
             $blog = $ctx->stash('blog');
             if ( !empty( $blog ) )
@@ -4328,11 +4328,52 @@ abstract class MTDatabase {
                     }
                 }
                 else {
-                    $data_type = $mt->config('content_field_types')[$cf->cf_type]['data_type'];
-                    $join  = 'join mt_cf_idx as cf_idx_' . $cf->cf_unique_id;
-                    $join .= ' on content_field_id = ' . $cf->cf_id;
-                    $quote = $data_type == 'integer' || $data_type == 'float' ? '' : '\'';
-                    $join .= " and value_$data_type = $quote$value$quote\n";
+                    $alias = 'cf_idx_' . $cf->cf_unique_id;
+                    if ($type === 'content_type')
+                        $data_type = 'integer';
+                    elseif ($type === 'single_line_text')
+                        $data_type = 'varchar';
+                    elseif ($type === 'multi_line_text')
+                        $data_type = 'text';
+                    elseif ($type === 'number')
+                        $data_type = 'double';
+                    elseif ($type === 'url')
+                        $data_type = 'text';
+                    elseif ($type === 'date_time')
+                        $data_type = 'datetime';
+                    elseif ($type === 'date')
+                        $data_type = 'datetime';
+                    elseif ($type === 'time')
+                        $data_type = 'datetime';
+                    elseif ($type === 'select_box')
+                        $data_type = 'varchar';
+                    elseif ($type === 'radio_button')
+                        $data_type = 'varchar';
+                    elseif ($type === 'check_box')
+                        $data_type = 'varchar';
+                    elseif ($type === 'asset')
+                        $data_type = 'integer';
+                    elseif ($type === 'audio')
+                        $data_type = 'integer';
+                    elseif ($type === 'video')
+                        $data_type = 'integer';
+                    elseif ($type === 'image')
+                        $data_type = 'integer';
+                    elseif ($type === 'embedded_text')
+                        $data_type = 'text';
+                    elseif ($type === 'categories')
+                        $data_type = 'integer';
+                    elseif ($type === 'tags')
+                        $data_type = 'integer';
+                    elseif ($type === 'list')
+                        $data_type = 'varchar';
+                    elseif ($type === 'table')
+                        $data_type = 'text';
+                    $join  = 'join mt_cf_idx as ' . $alias;
+                    $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $cf->cf_id;
+                    $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
+                    $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
+                    $join .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
                     $join_clause .= $join;
                 }
             }
@@ -4521,10 +4562,10 @@ abstract class MTDatabase {
         if (!isset($blog_id)) return null;
 
         if (isset($args['name'])) {
-            $name_filter .= 'and cf_name = ' . $args['name'];
+            $name_filter .= 'and cf_name = \'' . $args['name'] . '\'';
         }
         if (isset($args['unique_id'])) {
-            $unique_id_filter = 'cnd f_unique_id = ' . $args['unique_id'];
+            $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
         }
         $sql = "select *
                   from mt_cf
@@ -4534,11 +4575,14 @@ abstract class MTDatabase {
         $result = $this->db()->SelectLimit($sql);
         if ($result->EOF) return null;
 
+        $field_names = array_keys($result->fields);
+
         $content_fields = array();
         while (!$result->EOF) {
+            require_once('class.mt_content_field.php');
             $cf = new ContentField;
             foreach($field_names as $key) {
-  	            $key = strtolower($key);
+  	        $key = strtolower($key);
                 $cf->$key = $result->fields($key);
             }
             $result->MoveNext();
