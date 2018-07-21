@@ -2847,7 +2847,6 @@ abstract class MTDatabase {
         return $placement->Find($where, false, false, $extras);
     }
 
-
     public function fetch_objecttags($args) {
         $id_list = '';
         if (isset($args['tag_id']))
@@ -4115,7 +4114,7 @@ abstract class MTDatabase {
             $ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
         }
 
-        # special case for selecting a particular entry
+        # special case for selecting a particular content
         if (isset($args['id'])) {
             $content_filter = 'and cd_id = '.$args['id'];
             $start = ''; $end = ''; $limit = 1; $blog_filter = ''; $day_filter = '';
@@ -4127,7 +4126,7 @@ abstract class MTDatabase {
 
         if (count($content_list) && ($content_filter == '')) {
             $content_list = implode(",", array_keys($content_list));
-            # set a reasonable cap on the entry list cache. if
+            # set a reasonable cap on the content list cache. if
             # user is selecting something too big, then they'll
             # just have to wait through a scan.
             if (strlen($content_list) < 2048)
@@ -4227,27 +4226,118 @@ abstract class MTDatabase {
             $limit = 0; $offset = 0;
         }
 
+        $join_clause = '';
         if (count($fields)) {
-            $meta_join_num = 1;
-            $content_meta_info = ContentData::get_meta_info('cd');
-            if (!empty($content_meta_info)) {
-                foreach ($fields as $name => $value) {
-                    if (isset($content_meta_info['field.'.$name])) {
-                        $meta_col = $content_meta_info['field.'.$name];
-                        $value = $this->escape($value);
-                        $table = "mt_cd_meta cd_meta$meta_join_num";
-                        $extras['join'][$table] = array(
-                            'condition' => "(cd_meta$meta_join_num.cd_meta_cd_id = cd_id
-                                and cd_meta$meta_join_num.cd_meta_type = 'field.$name'
-                                and cd_meta$meta_join_num.cd_meta_$meta_col='$value')\n"
-                            );
-                        $meta_join_num++;
+            foreach ($fields as $key => $value) {
+                $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'name' => $key));
+                if (!isset($cfs))
+                    $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'unique_id' => $key));
+                if (!isset($cfs)) continue;
+                
+                $cf = $cfs[0];
+                $type = $cf->cf_type;
+
+                if ($type === 'categories') {
+                    $category_arg = $value;
+                    require_once("MTUtil.php");
+                    if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
+                        $not_clause = false;
+                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, $cat_class);
+                        if (empty($cats)) {
+                            return null;
+                        } else {
+                            $category_arg = '';
+                            foreach ($cats as $cat) {
+                                if ($category_arg != '')
+                                    $category_arg .= ' OR ';
+                                $category_arg .= '#' . $cat->category_id;
+                            }
+                        }
+                    } else {
+                        $not_clause = preg_match('/\bNOT\b/i', $category_arg);
+                        if ($blog_ctx_arg)
+                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                        else
+                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
                     }
+
+                    if (!empty($cats)) {
+                        $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
+                        if ($cexpr) {
+                            $cmap = array();
+                            $cat_list = array();
+                            foreach ($cats as $cat)
+                                $cat_list[] = $cat->category_id;
+                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list));
+                            if (!empty($ol)) {
+                                foreach ($ol as $o) {
+                                    $cmap[$o->objectcategory_object_id][$o->objectcategory_category_id]++;
+                                    if (!$not_clause)
+                                        $content_list[$o->objectcategory_oject_id] = 1;
+                                }
+                            }
+                            #$ctx['p'] =& $cmap;
+                            $filters[] = $cexpr;
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                elseif ($type === 'tags') {
+                    $tag_arg = $value;
+                    require_once("MTUtil.php");
+                    $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
+
+                    $include_private = 0;
+                    $tag_array = tag_split($tag_arg);
+                    foreach ($tag_array as $tag) {
+                        $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                        if ($tag_body && (substr($tag_body,0,1) == '@')) {
+                            $include_private = 1;
+                        }
+                    }
+                    if (isset($blog_ctx_arg))
+                        $tags = $this->fetch_content_tags(array_merge($blog_ctx_arg, array('tag' => $tag_arg, 'include_private' => $include_private)));
+                    else
+                        $tags = $this->fetch_content_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private));
+                    if (!is_array($tags)) $tags = array();
+                    $cexpr = create_tag_expr_function($tag_arg, $tags);
+
+                    if ($cexpr) {
+                        $tmap = array();
+                        $tag_list = array();
+                        foreach ($tags as $tag) {
+                            $tag_list[] = $tag->tag_id;
+                        }
+                        if (isset($blog_ctx_arg))
+                            $ot = $this->fetch_objecttags(array_merge($blog_ctx_arg, array('tag_id' => $tag_list, 'datasource' => 'content_data')));
+                        else
+                            $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'content_data', 'blog_id' => $blog_id));
+
+                        if ($ot) {
+                            foreach ($ot as $o) {
+                                $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
+                                if (!$not_clause)
+                                    $cd_list[$o->objecttag_object_id] = 1;
+                            }
+                        }
+                        #$ctx['t'] =& $tmap;
+                        $filters[] = $cexpr;
+                    } else {
+                        return null;
+                    }
+                }
+                else {
+                    $data_type = $mt->config('content_field_types')[$cf->cf_type]['data_type'];
+                    $join  = 'join mt_cf_idx as cf_idx_' . $cf->cf_unique_id;
+                    $join .= ' on content_field_id = ' . $cf->cf_id;
+                    $quote = $data_type == 'integer' || $data_type == 'float' ? '' : '\'';
+                    $join .= " and value_$data_type = $quote$value$quote\n";
+                    $join_clause .= $join;
                 }
             }
         }
 
-        $join_clause = '';
         if (isset($extras['join'])) {
             $joins = $extras['join'];
             $keys = array_keys($joins);
@@ -4415,6 +4505,178 @@ abstract class MTDatabase {
         }
 
         return $contents;
+    }
+
+    public function fetch_content_fields($args) {
+        if (isset($args['blog_id'])) {
+            $blog_id = $args['blog_id'];
+        }
+        else {
+            $mt = MT::get_instance();
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty( $blog ) )
+                $blog_id = $blog->blog_id;
+        }
+        if (!isset($blog_id)) return null;
+
+        if (isset($args['name'])) {
+            $name_filter .= 'and cf_name = ' . $args['name'];
+        }
+        if (isset($args['unique_id'])) {
+            $unique_id_filter = 'cnd f_unique_id = ' . $args['unique_id'];
+        }
+        $sql = "select *
+                  from mt_cf
+                 where cf_blog_id = $blog_id
+                   $name_filter
+                   $unique_id_filter";
+        $result = $this->db()->SelectLimit($sql);
+        if ($result->EOF) return null;
+
+        $content_fields = array();
+        while (!$result->EOF) {
+            $cf = new ContentField;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $cf->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cf)) break;
+
+            $cf->cf_modified_on = $this->db2ts($cf->cf_modified_on);
+            $content_fields[] = $cf;
+        }
+
+        return $content_fields;
+    }
+
+    public function fetch_objectcategory($args) {
+        $id_list = '';
+        if (isset($args['category_id']))
+            $id_list = implode(',', $args['category_id']);
+        if (empty($id_list))
+            return;
+
+        $blog_filter = $this->include_exclude_blogs($args);
+        if ($blog_filter != '')
+            $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
+
+        $extras = array();
+        $datasource = 'content_data';
+        $extras['join'] = array(
+            'mt_cd' => array(
+                'condition' => 'cd_id = objecttag_object_id'
+                )
+            );
+        $object_filter = 'and cd_status = 2';
+
+        require_once('class.mt_objectcategory.php');
+        $ocat = new ObjectCategory;
+
+        $where = "objectcategory_object_datasource ='$datasource'
+                and objectcategory_category_id in ($id_list)
+                $blog_filter
+                $object_filter";
+
+        return $ocat->Find($where, false, false, $extras);
+    }
+
+    public function fetch_content_tags($args) {
+        # load tags
+
+        $class = 'content_data';
+        $cacheable 
+            = empty( $args['tags'] )
+            && empty( $args['tag'] )
+            && empty( $args['include_private'] );
+
+        if (isset($args['cd_id'])) {
+            if ($cacheable) {
+                if (isset($this->_cd_tag_cache[$args['cd_id']])) {
+                    return $this->_cd_tag_cache[$args['cd_id']];
+                }
+            }
+            $cd_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['cd_id']).')';
+        }
+
+        $blog_filter = $this->include_exclude_blogs($args);
+        if ($blog_filter == '' and isset($args['blog_id'])) {
+            if ($cacheable) {
+                if (!isset($args['cd_id'])) {
+                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
+                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
+                    }
+                }
+            }
+            $blog_filter = ' = '. intval($args['blog_id']);
+        }
+        if ($blog_filter != '') 
+            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+
+        if (empty($args['include_private'])) {
+            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
+        }
+        if (! empty($args['tags'])) {
+            $tag_list = '';
+            require_once("MTUtil.php");
+            $tag_array = tag_split($args['tags']);
+            foreach ($tag_array as $tag) {
+                if ($tag_list != '') $tag_list .= ',';
+                $tag_list .= "'" . $this->escape($tag) . "'";
+            }
+            if ($tag_list != '') {
+                $tag_filter = 'and (tag_name in (' . $tag_list . '))';
+                $private_filter = '';
+            }
+        }
+
+        $sort_col = isset($args['sort_by']) ? $args['sort_by'] : 'name';
+        $sort_col = "tag_$sort_col";
+        if (isset($args['sort_order']) and $args['sort_order'] == 'descend') {
+            $order = 'desc';
+        } else {
+            $order = 'asc';
+        }
+        $id_order = '';
+        if ($sort_col == 'tag_name' || $sort_col == 'name') {
+            $sort_col = 'lower(tag_name)';
+        }else{
+            $id_order = ', lower(tag_name)';
+        }
+
+        $sql = "
+            select tag_id, tag_name, count(*) as tag_count
+             from mt_tag, mt_objecttag, mt_cd
+             where objecttag_tag_id = tag_id
+               and cd_id = objecttag_object_id and objecttag_object_datasource='content_data'
+               and cd_status = 2
+                   $blog_filter
+                   $tag_filter
+                   $cd_filter
+                   $private_filter
+            group by tag_id, tag_name
+            order by $sort_col $order $id_order, tag_id desc";
+        $rs = $this->db()->SelectLimit($sql);
+
+        require_once('class.mt_tag.php');
+        $tags = array();
+        while(!$rs->EOF) {
+            $tag = new Tag;
+            $tag->tag_id = $rs->Fields('tag_id');
+            $tag->tag_name = $rs->Fields('tag_name');
+            $tag->tag_count = $rs->Fields('tag_count');
+            $tags[] = $tag;
+            $rs->MoveNext();
+        }
+        if ($cacheable) {
+            if ($args['cd_id'])
+                $this->_cd_tag_cache[$args['cd_id']] = $tags;
+            elseif (!$args['cd_id'])
+                $this->_blog_tag_cache[$args['blog_id'].":$class"] = $tags;
+        }
+        return $tags;
     }
 }
 ?>
