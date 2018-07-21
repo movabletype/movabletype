@@ -4329,46 +4329,11 @@ abstract class MTDatabase {
                 }
                 else {
                     $alias = 'cf_idx_' . $cf->cf_unique_id;
-                    if ($type === 'content_type')
-                        $data_type = 'integer';
-                    elseif ($type === 'single_line_text')
-                        $data_type = 'varchar';
-                    elseif ($type === 'multi_line_text')
-                        $data_type = 'text';
-                    elseif ($type === 'number')
-                        $data_type = 'double';
-                    elseif ($type === 'url')
-                        $data_type = 'text';
-                    elseif ($type === 'date_time')
-                        $data_type = 'datetime';
-                    elseif ($type === 'date')
-                        $data_type = 'datetime';
-                    elseif ($type === 'time')
-                        $data_type = 'datetime';
-                    elseif ($type === 'select_box')
-                        $data_type = 'varchar';
-                    elseif ($type === 'radio_button')
-                        $data_type = 'varchar';
-                    elseif ($type === 'check_box')
-                        $data_type = 'varchar';
-                    elseif ($type === 'asset')
-                        $data_type = 'integer';
-                    elseif ($type === 'audio')
-                        $data_type = 'integer';
-                    elseif ($type === 'video')
-                        $data_type = 'integer';
-                    elseif ($type === 'image')
-                        $data_type = 'integer';
-                    elseif ($type === 'embedded_text')
-                        $data_type = 'text';
-                    elseif ($type === 'categories')
-                        $data_type = 'integer';
-                    elseif ($type === 'tags')
-                        $data_type = 'integer';
-                    elseif ($type === 'list')
-                        $data_type = 'varchar';
-                    elseif ($type === 'table')
-                        $data_type = 'text';
+
+                    require_once "content_field_type_lib.php";
+                    $cf_type = ContentFieldTypeFactory::get_type($type);
+                    $data_type = $cf_type->get_data_type();
+
                     $join  = 'join mt_cf_idx as ' . $alias;
                     $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $cf->cf_id;
                     $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
