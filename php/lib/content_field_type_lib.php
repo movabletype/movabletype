@@ -58,7 +58,7 @@ class ContentFieldTypeFactory {
         return ContentFieldTypeFactory::$_types[$cf_type]; 
     }
 
-    public static function add_types($cf_type, $class) {
+    public static function add_type($cf_type, $class) {
         if (empty($cf_type) or empty($class))
             return null;
 
