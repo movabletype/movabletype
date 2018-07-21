@@ -393,3 +393,10 @@ test single line text 4
 --- expected
 Content is not found.
 
+=== MT:Contents with "field:unique_id" modifier
+--- template
+<mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 1">
+<mt:ContentID>
+</mt:Contents>
+--- expected
+1
