@@ -401,3 +401,14 @@ Content is not found.
 </mt:Contents>
 --- expected
 1
+
+=== MT:Contents with sort_by="field:hoge" modifier
+--- template
+<mt:Contents blog_id="1" content_type="test content type 1" sort_by="field:date and time" sort_order="ascend">
+<mt:ContentID></mt:Contents>
+--- expected
+5
+4
+3
+2
+1
