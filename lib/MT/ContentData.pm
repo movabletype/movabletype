@@ -1504,14 +1504,15 @@ sub field_categories {
     $self->cache_property(
         "field_categories:$content_field_id",
         sub {
-            my $category_ids = $self->data->{$content_field_id} or return;
-            return if ref $category_ids eq 'ARRAY' && !@$category_ids;
-            return MT::Category->load(
+            my $category_ids = $self->data->{$content_field_id} or return [];
+            return [] if ref $category_ids eq 'ARRAY' && !@$category_ids;
+            my @cats = MT::Category->load(
                 {   id              => $category_ids,
                     blog_id         => $self->blog_id,
                     category_set_id => { not => 0 },
                 },
             );
+            \@cats;
         }
     );
 }
