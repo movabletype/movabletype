@@ -126,6 +126,8 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             } else {
                 $next_content_created_on = '';
             }
+            $content_type = $content->content_type();
+            $ctx->stash('content_type', $content_type);
             $ctx->stash('content', $content);
             $ctx->stash('current_timestamp', $content->cd_authored_on);
             $ctx->stash('current_timestamp_end', null);
