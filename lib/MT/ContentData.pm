@@ -80,10 +80,11 @@ __PACKAGE__->install_properties(
                 label      => 'Unpublish Date',
                 revisioned => 1,
             },
-            'revision'          => 'integer meta',
-            'convert_breaks'    => 'string meta',
-            'block_editor_data' => 'text meta',
-            'week_number'       => 'integer',
+            'revision'            => 'integer meta',
+            'convert_breaks'      => 'string meta',    # obsolete
+            'blob_convert_breaks' => 'blob meta',
+            'block_editor_data'   => 'text meta',
+            'week_number'         => 'integer',
         },
         indexes => {
             content_type_id => 1,
@@ -2037,6 +2038,18 @@ sub pack_revision {
     my $values = $self->SUPER::pack_revision(@_);
     $values->{data} = $self->data;
     $values;
+}
+
+sub convert_breaks {
+    my $self = shift;
+    if (@_) {
+        $self->blob_convert_breaks(@_);
+    }
+    else {
+        defined $self->blob_convert_breaks
+            ? $self->blob_convert_breaks
+            : $self->meta('convert_breaks');
+    }
 }
 
 1;
