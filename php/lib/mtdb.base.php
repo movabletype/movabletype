@@ -4180,8 +4180,39 @@ abstract class MTDatabase {
         if (isset($args['offset']))
             $offset = $args['offset'];
 
-        if (isset($args['limit']) || isset($args['offset'])) {
-            if (isset($args['sort_by'])) {
+        $join_clause = '';
+
+        if (isset($args['sort_by'])) {
+            if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+                $key= $m[1];
+                $cfs = $this->fetch_content_fields(array(
+                    'blog_id' => $blog_id,
+                    'name' => $key
+                ));
+                if (!isset($cfs))
+                    $cfs = $this->fetch_content_fields(array(
+                        'blog_id' => $blog_id,
+                        'unique_id' => $key
+                    ));
+                if (isset($cfs)) {
+                    $cf = $cfs[0];
+                    $type = $cf->cf_type;
+                    require_once "content_field_type_lib.php";
+                    $cf_type = ContentFieldTypeFactory::get_type($type);
+
+                    $alias = 'cf_idx_' . $cf->cf_unique_id;
+
+                    $data_type = $cf_type->get_data_type();
+                    $join  = "join mt_cf_idx as $alias";
+                    $join .= " on $alias.cf_idx_content_field_id = " . $cf->cf_id;
+                    $join .= " and $alias.cf_idx_content_data_id = cd_id\n";
+                    $join_clause .= $join;
+
+                    $sort_field = "$alias.cf_idx_value_$data_type";
+                }
+                if ($sort_field) $no_resort = 1;
+            }
+            else {
                 if ($args['sort_by'] == 'authored_on') {
                     $sort_field = 'cd_authored_on';
                 } elseif ($args['sort_by'] == 'modified_on') {
@@ -4202,12 +4233,9 @@ abstract class MTDatabase {
                 }
                 if ($sort_field) $no_resort = 1;
             }
-            else {
-                $sort_field = 'cd_authored_on'; 
-            }
-        } else {
+        }
+        else {
             $sort_field = 'cd_authored_on'; 
-            $no_resort = 0;
         }
 
         if ($sort_field) {
@@ -4226,7 +4254,6 @@ abstract class MTDatabase {
             $limit = 0; $offset = 0;
         }
 
-        $join_clause = '';
         if (count($fields)) {
             foreach ($fields as $key => $value) {
                 $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'name' => $key));

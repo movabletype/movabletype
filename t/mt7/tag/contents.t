@@ -16,6 +16,7 @@ BEGIN {
 use MT::Test::Tag;
 
 plan tests => 2 * blocks;
+
 # plan tests => 1 * blocks;
 
 use MT;
@@ -395,8 +396,19 @@ Content is not found.
 
 === MT:Contents with "field:unique_id" modifier
 --- template
-<mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 1">
+<mt:Contents blog_id="1" content_type="test content type 1" field:[% cf1_uid %]="test single line text 1">
 <mt:ContentID>
 </mt:Contents>
 --- expected
+1
+
+=== MT:Contents with sort_by="field:hoge" modifier
+--- template
+<mt:Contents blog_id="1" content_type="test content type 1" sort_by="field:date and time" sort_order="ascend">
+<mt:ContentID></mt:Contents>
+--- expected
+5
+4
+3
+2
 1
