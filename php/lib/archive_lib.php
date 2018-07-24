@@ -986,16 +986,12 @@ class AuthorBasedArchiver implements ArchiveType {
         return $array;
     }
 
-    public static function set_template_params() {
+    public function template_params() {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
         $vars =& $ctx->__stash['vars'];
         $vars += AuthorBasedArchiver::get_template_params();
-    }
-
-    public function template_params() {
-        $this->set_template_params();
     }
 
     public function is_date_based() {
@@ -1108,7 +1104,7 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
     }
 
     public function template_params() {
-        AuthorBasedArchiver::set_template_params();
+        AuthorBasedArchiver::template_params();
         parent::template_params();
     }
 
@@ -1680,16 +1676,12 @@ class CategoryArchiver implements ArchiveType {
         return $array;
     }
 
-    public static function set_template_params() {
+    public function template_params() {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
         $vars =& $ctx->__stash['vars'];
         $vars += CategoryArchiver::get_template_params();
-    }
-
-    public function template_params() {
-        $this->set_template_params();
     }
 
     public function is_date_based() {
@@ -3115,15 +3107,11 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $array;
     }
 
-    public static function set_template_params() {
+    public function template_params() {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorArchiver::get_template_params();
-    }
-
-    public function template_params() {
-        $this->set_template_params();
     }
 
     public function is_date_based() {
@@ -3236,7 +3224,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
     }
 
     public function template_params() {
-        ContentTypeAuthorArchiver::set_template_params();
+        ContentTypeAuthorArchiver::template_params();
         parent::template_params();
     }
 
@@ -3844,15 +3832,11 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return $array;
     }
 
-    public static function set_template_params() {
+    public function template_params() {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryArchiver::get_template_params();
-    }
-
-    public function template_params() {
-        $this->set_template_params();
     }
 
     public function is_date_based() {
