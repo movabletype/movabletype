@@ -9,7 +9,7 @@ function smarty_function_mtcontenttypename($args, &$ctx) {
     $content_type = $ctx->stash('content_type');
     if (!isset($content_type))
         return $ctx->error($ctx->mt->translate(
-            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentTypeID" ));
+            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentTypeName" ));
     return $content_type->name;
 }
 ?>
