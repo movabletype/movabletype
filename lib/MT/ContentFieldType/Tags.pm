@@ -22,7 +22,9 @@ sub field_html_params {
 
     my $tag_names;
     if (@value) {
-        if ( $app->param('reedit') ) {
+
+        # use non-numerical values (user input) if any
+        if ( $app->param('reedit') && grep !/^[0-9]+$/, @value ) {
             $tag_names = join $tag_delim, @value;
         }
         else {
@@ -33,6 +35,11 @@ sub field_html_params {
                 $tag_hash{ $tag->id } = $tag->name;
             }
             my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
+
+            # non-id numerical values must have been user input
+            if ( !@tag_names and $app->param('reedit') ) {
+                @tag_names = @value;
+            }
             $tag_names = join $tag_delim, @tag_names;
         }
     }
