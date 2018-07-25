@@ -420,3 +420,11 @@ Content is not found.
 </mt:Contents>
 --- expected
 2
+
+=== MT:Contents with tag
+--- template
+<mt:Contents blog_id="1" field:[% cf3_uid %]="tag2">
+<mt:ContentID>
+</mt:Contents>
+--- expected
+4

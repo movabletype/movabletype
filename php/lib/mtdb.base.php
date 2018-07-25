@@ -916,7 +916,7 @@ abstract class MTDatabase {
             }
 
            if (!empty($cats)) {
-               $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
+               $cexpr = create_cat_expr_function($category_arg, $cats, 'entry', array('children' => $args['include_subcategories']));
                if ($cexpr) {
                    $cmap = array();
                    $cat_list = array();
@@ -942,7 +942,7 @@ abstract class MTDatabase {
             if (!empty($cat)) {
                 $cats = array($cat);
                 $cmap = array();
-                $cexpr = create_cat_expr_function($cat->category_label, $cats, array('children' => $args['include_subcategories']));
+                $cexpr = create_cat_expr_function($cat->category_label, $cats, 'entry', array('children' => $args['include_subcategories']));
                 $pl = $this->fetch_placements(array('category_id' => array($cat->category_id)));
                 if (!empty($pl)) {
                     foreach ($pl as $p) {
@@ -2887,6 +2887,15 @@ abstract class MTDatabase {
                     'condition' => 'asset_id = objecttag_object_id'
                     )
                 );
+        }
+        elseif (isset($args['datasource']) && strtolower($args['datasource']) == 'content_data') {
+            $datasource = $args['datasource'];
+            $extras['join'] = array(
+                'mt_cd' => array(
+                    'condition' => 'cd_id = objecttag_object_id'
+                    )
+                );
+            $object_filter = 'and cd_status = 2';
         } else {
             $datasource = 'entry';
             $extras['join'] = array(
@@ -4310,7 +4319,7 @@ abstract class MTDatabase {
                     }
 
                     if (!empty($cats)) {
-                        $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories'], 'content_type' => 1));
+                        $cexpr = create_cat_expr_function($category_arg, $cats, 'cd', array('children' => $args['include_subcategories'], 'content_type' => 1));
                         if ($cexpr) {
                             $cmap = array();
                             $cat_list = array();
@@ -4349,7 +4358,7 @@ abstract class MTDatabase {
                     else
                         $tags = $this->fetch_content_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private));
                     if (!is_array($tags)) $tags = array();
-                    $cexpr = create_tag_expr_function($tag_arg, $tags);
+                    $cexpr = create_tag_expr_function($tag_arg, $tags, 'cd');
 
                     if ($cexpr) {
                         $tmap = array();
