@@ -1200,7 +1200,7 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
 	    $cats = array_values($cats_used);
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
-    $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["o"]) ? $c["o"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
+    $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
     $fn = create_function('&$o,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid category filter: $orig_expr";

@@ -930,7 +930,7 @@ abstract class MTDatabase {
                                $entry_list[$p->placement_entry_id] = 1;
                        }
                    }
-                   $ctx['p'] =& $cmap;
+                   $ctx['c'] =& $cmap;
                    $filters[] = $cexpr;
                } else {
                    return null;
@@ -948,7 +948,7 @@ abstract class MTDatabase {
                     foreach ($pl as $p) {
                         $cmap[$p->placement_entry_id][$p->placement_category_id]++;
                     }
-                    $ctx['p'] =& $cmap;
+                    $ctx['c'] =& $cmap;
                     $filters[] = $cexpr;
                 } else {
                     # this category have no entries (or pages)
@@ -4333,7 +4333,7 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            $ctx['o'] =& $cmap;
+                            $ctx['c'] =& $cmap;
                             $filters[] = $cexpr;
                         } else {
                             return null;
