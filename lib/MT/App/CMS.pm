@@ -1484,9 +1484,8 @@ sub core_list_actions {
         },
         'category_set' => '$Core::MT::CMS::CategorySet::list_actions',
         'content_type' => '$Core::MT::CMS::ContentType::list_actions',
-        %{ MT::CMS::ContentData::make_list_actions() },
-
-        'group' => {
+        'content_data' => '$Core::MT::CMS::ContentData::list_actions',
+        'group'        => {
             'delete_group' => {
                 label                   => 'Delete',
                 order                   => 100,

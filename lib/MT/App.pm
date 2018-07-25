@@ -283,6 +283,8 @@ sub list_actions {
     my $app = shift;
     my ( $type, @param ) = @_;
 
+    $type = 'content_data' if $type =~ /^content_data\.content_data_[0-9]+$/;
+
     my $actions = $app->registry( "list_actions", $type ) or return;
     my @actions;
     foreach my $a ( keys %$actions ) {

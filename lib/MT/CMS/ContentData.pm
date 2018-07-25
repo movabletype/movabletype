@@ -932,9 +932,8 @@ sub make_content_actions {
     $content_actions;
 }
 
-sub make_list_actions {
-    my $common_actions = {
-        'publish' => {
+sub list_actions {
+    {   'publish' => {
             label      => 'Publish',
             code       => '$Core::MT::CMS::Blog::rebuild_new_phase',
             mode       => 'rebuild_new_phase',
@@ -970,13 +969,6 @@ sub make_list_actions {
             },
         },
     };
-    my $iter = MT::ContentType->load_iter;
-    my $list_actions = +{ content_data => $common_actions };
-    while ( my $ct = $iter->() ) {
-        my $key = 'content_data.content_data_' . $ct->id;
-        $list_actions->{$key} = $common_actions;
-    }
-    $list_actions;
 }
 
 sub _check_permission {
