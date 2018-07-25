@@ -3068,7 +3068,7 @@ use vars qw( @ISA %Lexicon );
 	'100 rows' => '100件',
 	'200 rows' => '200件',
 	'Column' => '表示項目',
-	'User Display Option is disabled now.' => 'ユーザーに寄る表示オプションの変更は無効になっています',
+	'User Display Option is disabled now.' => 'ユーザーによる表示オプションの変更は無効になっています',
 
 ## mt-static/js/listing/tag/list-actions.tag
 	'More actions...' => 'アクション...',

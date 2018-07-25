@@ -541,7 +541,10 @@ sub rebuild_content_data {
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
                     for my $cat (
-                        $content_data->field_categories( $map->cat_field_id )
+                        @{  $content_data->field_categories(
+                                $map->cat_field_id
+                            )
+                        }
                         )
                     {
                         $mt->_rebuild_content_archive_type(
@@ -685,9 +688,10 @@ sub rebuild_content_data {
 
                     for my $map (@maps) {
                         for my $cat (
-                            $content_data->field_categories(
-                                $map->cat_field_id
-                            )
+                            @{  $content_data->field_categories(
+                                    $map->cat_field_id
+                                )
+                            }
                             )
                         {
 
