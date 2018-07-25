@@ -284,18 +284,6 @@ sub list_properties {
         }
     }
 
-    my $common_props = MT->registry( 'list_properties', '__common' );
-    if ($common_props) {
-        for my $key ( keys %$common_props ) {
-            next if $props{$key};
-            my $prop = MT::ListProperty->instance( $cls, $key );
-            if ( $prop->has('condition') ) {
-                next unless $prop->condition;
-            }
-            $props{$key} = $prop if $prop;
-        }
-    }
-
     if ( $cls =~ /^content_data\.content_data_[0-9]+$/ ) {
         my $content_data_common_props
             = MT->registry( 'list_properties', 'content_data' );
@@ -307,6 +295,18 @@ sub list_properties {
                 }
                 $props{$key} = $prop if $prop;
             }
+        }
+    }
+
+    my $common_props = MT->registry( 'list_properties', '__common' );
+    if ($common_props) {
+        for my $key ( keys %$common_props ) {
+            next if $props{$key};
+            my $prop = MT::ListProperty->instance( $cls, $key );
+            if ( $prop->has('condition') ) {
+                next unless $prop->condition;
+            }
+            $props{$key} = $prop if $prop;
         }
     }
 
