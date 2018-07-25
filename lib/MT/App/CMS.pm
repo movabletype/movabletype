@@ -1484,9 +1484,8 @@ sub core_list_actions {
         },
         'category_set' => '$Core::MT::CMS::CategorySet::list_actions',
         'content_type' => '$Core::MT::CMS::ContentType::list_actions',
-        %{ MT::CMS::ContentData::make_list_actions() },
-
-        'group' => {
+        'content_data' => '$Core::MT::CMS::ContentData::list_actions',
+        'group'        => {
             'delete_group' => {
                 label                   => 'Delete',
                 order                   => 100,
@@ -2331,7 +2330,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2340,7 +2339,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
