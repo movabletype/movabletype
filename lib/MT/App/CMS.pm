@@ -2331,7 +2331,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2340,7 +2340,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
