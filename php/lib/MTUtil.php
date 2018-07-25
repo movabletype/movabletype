@@ -1097,7 +1097,7 @@ function create_expr_exception($m) {
         return $m[1];
 }
 
-function create_cat_expr_function($expr, &$cats, $param) {
+function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) {
     $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
@@ -1200,8 +1200,8 @@ function create_cat_expr_function($expr, &$cats, $param) {
 	    $cats = array_values($cats_used);
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
-    $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
-    $fn = create_function('&$e,&$c', $expr);
+    $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
+    $fn = create_function('&$o,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
@@ -1307,8 +1307,8 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # Create a PHP-blessed function of that code and return it
     # if all is well.  This function will be used later to 
     # test for existence of specified tags in entries.
-    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return (' . $result . ');';
-    $fn = create_function('&$e,&$c', $expr);
+    $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
+    $fn = create_function('&$o,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;

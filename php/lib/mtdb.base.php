@@ -916,7 +916,7 @@ abstract class MTDatabase {
             }
 
            if (!empty($cats)) {
-               $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
+               $cexpr = create_cat_expr_function($category_arg, $cats, 'entry', array('children' => $args['include_subcategories']));
                if ($cexpr) {
                    $cmap = array();
                    $cat_list = array();
@@ -930,7 +930,7 @@ abstract class MTDatabase {
                                $entry_list[$p->placement_entry_id] = 1;
                        }
                    }
-                   $ctx['p'] =& $cmap;
+                   $ctx['c'] =& $cmap;
                    $filters[] = $cexpr;
                } else {
                    return null;
@@ -942,13 +942,13 @@ abstract class MTDatabase {
             if (!empty($cat)) {
                 $cats = array($cat);
                 $cmap = array();
-                $cexpr = create_cat_expr_function($cat->category_label, $cats, array('children' => $args['include_subcategories']));
+                $cexpr = create_cat_expr_function($cat->category_label, $cats, 'entry', array('children' => $args['include_subcategories']));
                 $pl = $this->fetch_placements(array('category_id' => array($cat->category_id)));
                 if (!empty($pl)) {
                     foreach ($pl as $p) {
                         $cmap[$p->placement_entry_id][$p->placement_category_id]++;
                     }
-                    $ctx['p'] =& $cmap;
+                    $ctx['c'] =& $cmap;
                     $filters[] = $cexpr;
                 } else {
                     # this category have no entries (or pages)
@@ -1793,21 +1793,42 @@ abstract class MTDatabase {
         }
 
         $count_column = 'placement_id';
-        if ($args['show_empty']) {
-            $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
-            if (isset($args['entry_id'])) {
-                $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.intval($args['entry_id']);
+        if (!isset($args['category_set_id']) || $args['category_set_id'] !== '> 0') {
+            if ($args['show_empty']) {
+                $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
+                if (isset($args['entry_id'])) {
+                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.intval($args['entry_id']);
+                } else {
+                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_status = 2';
+                }
+                $count_column = 'entry_id';
             } else {
-                $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_status = 2';
+                $join_clause = ', mt_entry, mt_placement';
+                $cat_filter .= ' and placement_category_id = category_id';
+                if (isset($args['entry_id'])) {
+                    $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.intval($args['entry_id']);
+                } else {
+                    $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
+                }
             }
-            $count_column = 'entry_id';
-        } else {
-            $join_clause = ', mt_entry, mt_placement';
-            $cat_filter .= ' and placement_category_id = category_id';
-            if (isset($args['entry_id'])) {
-                $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.intval($args['entry_id']);
+        }
+        else {
+            if ($args['show_empty']) {
+                $join_clause = 'left outer join mt_objectcategory on objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if (isset($args['content_id'])) {
+                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.intval($args['content_id']);
+                } else {
+                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_status = 2';
+                }
+                $count_column = 'cd_id';
             } else {
-                $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
+                $join_clause = ', mt_cd, mt_objectcategory';
+                $cat_filter .= ' and objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if (isset($args['content_id'])) {
+                    $entry_filter = ' and objectcategory_object_id = cd_id and objectcategory_object_id = '.intval($args['content_id']);
+                } else {
+                    $entry_filter = ' and objectcategory_object_id = cd_id and cd_status = 2';
+                }
             }
         }
 
@@ -1819,7 +1840,7 @@ abstract class MTDatabase {
         $class_filter = " and category_class='$class'";
 
         if (isset($args['category_set_id'])) {
-            if ($args['category_set_id'] !== '*') {
+            if ($args['category_set_id'] !== '*' && $args['category_set_id'] !== '> 0') {
                 $category_set_id = intval($args['category_set_id']);
             }
         } else if (!isset($args['category_id'])
@@ -1827,10 +1848,10 @@ abstract class MTDatabase {
         {
             $category_set_id = 0;
         }
-        if (isset($category_set_id) && !isset($args['with_category_set'])) {
+        if (isset($category_set_id)) {
             $category_set_filter = "and category_category_set_id = $category_set_id";
         }
-        elseif (isset($args['with_category_set'])) {
+        elseif ($args['category_set_id'] === '> 0') {
             $category_set_filter = "and category_category_set_id > 0";
         }
 
@@ -2866,6 +2887,15 @@ abstract class MTDatabase {
                     'condition' => 'asset_id = objecttag_object_id'
                     )
                 );
+        }
+        elseif (isset($args['datasource']) && strtolower($args['datasource']) == 'content_data') {
+            $datasource = $args['datasource'];
+            $extras['join'] = array(
+                'mt_cd' => array(
+                    'condition' => 'cd_id = objecttag_object_id'
+                    )
+                );
+            $object_filter = 'and cd_status = 2';
         } else {
             $datasource = 'entry';
             $extras['join'] = array(
@@ -4269,7 +4299,7 @@ abstract class MTDatabase {
                     require_once("MTUtil.php");
                     if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
                         $not_clause = false;
-                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, $cat_class);
+                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', '> 0');
                         if (empty($cats)) {
                             return null;
                         } else {
@@ -4283,13 +4313,13 @@ abstract class MTDatabase {
                     } else {
                         $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                         if ($blog_ctx_arg)
-                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0')));
                         else
-                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
+                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0'));
                     }
 
                     if (!empty($cats)) {
-                        $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
+                        $cexpr = create_cat_expr_function($category_arg, $cats, 'cd', array('children' => $args['include_subcategories'], 'content_type' => 1));
                         if ($cexpr) {
                             $cmap = array();
                             $cat_list = array();
@@ -4303,7 +4333,7 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            #$ctx['p'] =& $cmap;
+                            $ctx['c'] =& $cmap;
                             $filters[] = $cexpr;
                         } else {
                             return null;
@@ -4328,7 +4358,7 @@ abstract class MTDatabase {
                     else
                         $tags = $this->fetch_content_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private));
                     if (!is_array($tags)) $tags = array();
-                    $cexpr = create_tag_expr_function($tag_arg, $tags);
+                    $cexpr = create_tag_expr_function($tag_arg, $tags, 'cd');
 
                     if ($cexpr) {
                         $tmap = array();
@@ -4348,7 +4378,7 @@ abstract class MTDatabase {
                                     $cd_list[$o->objecttag_object_id] = 1;
                             }
                         }
-                        #$ctx['t'] =& $tmap;
+                        $ctx['t'] =& $tmap;
                         $filters[] = $cexpr;
                     } else {
                         return null;
@@ -4603,7 +4633,7 @@ abstract class MTDatabase {
         $datasource = 'content_data';
         $extras['join'] = array(
             'mt_cd' => array(
-                'condition' => 'cd_id = objecttag_object_id'
+                'condition' => 'cd_id = objectcategory_object_id'
                 )
             );
         $object_filter = 'and cd_status = 2';
@@ -4611,7 +4641,7 @@ abstract class MTDatabase {
         require_once('class.mt_objectcategory.php');
         $ocat = new ObjectCategory;
 
-        $where = "objectcategory_object_datasource ='$datasource'
+        $where = "objectcategory_object_ds = '$datasource'
                 and objectcategory_category_id in ($id_list)
                 $blog_filter
                 $object_filter";
