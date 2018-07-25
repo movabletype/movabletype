@@ -4062,13 +4062,12 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = 0;
+            $cat_set_id or $cat_set_id = '> 0';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id,
-                'with_category_set' => 1
+                'category_set_id' => $cat_set_id
             ));
         }
 
@@ -4189,13 +4188,12 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = 0;
+            $cat_set_id or $cat_set_id = '> 0';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id,
-                'with_category_set' => 1
+                'category_set_id' => $cat_set_id
             ));
         }
 
@@ -4319,13 +4317,12 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = 0;
+            $cat_set_id or $cat_set_id = '> 0';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id,
-                'with_category_set' => 1
+                'category_set_id' => $cat_set_id
             ));
         }
 
@@ -4462,13 +4459,12 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = 0;
+            $cat_set_id or $cat_set_id = '> 0';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id,
-                'with_category_set' => 1
+                'category_set_id' => $cat_set_id
             ));
         }
 

@@ -1200,8 +1200,14 @@ function create_cat_expr_function($expr, &$cats, $param) {
 	    $cats = array_values($cats_used);
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
-    $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
-    $fn = create_function('&$e,&$c', $expr);
+    if (isset($param['content_type'])) {
+        $expr = '$pm = array_key_exists($cd->cd_id, $c["o"]) ? $c["o"][$cd->cd_id] : array(); return (' . $expr . ');';
+        $fn = create_function('&$cd,&$c', $expr);
+    }
+    else {
+        $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
+        $fn = create_function('&$e,&$c', $expr);
+    }
     if ($fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
