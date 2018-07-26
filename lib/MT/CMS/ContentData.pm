@@ -1523,10 +1523,11 @@ sub _build_content_data_preview {
             };
     }
 
+    my $serialized_data = JSON::encode_json( $content_data->data );
     push @data,
         {
         data_name  => 'serialized_data',
-        data_value => $content_data->column('data'),
+        data_value => $serialized_data,
         };
 
     $param{content_data_loop} = \@data;
