@@ -4173,8 +4173,47 @@ abstract class MTDatabase {
             $author_filter = "and cd_author_id = '" . $args['author_id'] . "'";
         }
 
+        $join_clause = '';
+
         if (isset($args['days']) && !$date_filter) {
-            $day_filter = 'and ' . $this->limit_by_day_sql('cd_authored_on', intval($args['days']));
+            $dt_field    = 'cd_authored_on';
+            $dt_field_id = 0;
+            if ( $arg = $args['date_field'] ) {
+                if (   $arg === 'authored_on'
+                    || $arg === 'modified_on'
+                    || $arg === 'created_on' )
+                {
+                    $dt_field = 'cd' . $arg;
+                }
+                else {
+                    if (preg_match('/^[0-9]+$/', $arg))
+                        $date_cfs = $this->fetch_content_fields(array('id' => $arg));
+                    if (!isset($date_cfs))
+                        $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                    if (!isset($date_cfs))
+                        $date_cfs = $this->fetch_content_fields(array('name' => $arg));
+                    if (isset($date_cfs)) {
+                        $date_cf = $date_cfs[0];
+                        $dt_field_id = $date_cf->cf_id;
+                        $type = $date_cf->cf_type;
+                    }
+                }
+            }
+            if (isset($date_cf)) {
+                $alias = 'cf_idx_' . $date_cf->cf_unique_id;
+
+                require_once "content_field_type_lib.php";
+                $cf_type = ContentFieldTypeFactory::get_type($type);
+                $data_type = $cf_type->get_data_type();
+
+                $dt_field = "$alias.cf_idx_value_$data_type";
+
+                $join  = 'join mt_cf_idx as ' . $alias;
+                $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $date_cf->cf_id;
+                $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
+                $join_clause .= $join;
+            }
+            $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
         } elseif (isset($args['limit'])) {
             if (!isset($args['id'])) $limit = $args['limit'];
         } else {
@@ -4209,8 +4248,6 @@ abstract class MTDatabase {
 
         if (isset($args['offset']))
             $offset = $args['offset'];
-
-        $join_clause = '';
 
         if (isset($args['sort_by'])) {
             if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
@@ -4414,6 +4451,10 @@ abstract class MTDatabase {
             }
         }
 
+        if (isset($args['unique_id'])) {
+            $unique_id_filter = 'and cd_unique_id = \'' . $args['unique_id'] . '\'';
+        }
+
         $sql = "select
                     mt_cd.*
                 from mt_cd
@@ -4426,9 +4467,7 @@ abstract class MTDatabase {
                     $author_filter
                     $date_filter
                     $day_filter
-                    $class_filter
-                    $max_comment_filter
-                    $min_comment_filter";
+                    $unique_id_filter";
         if ($sort_field) {
             $sql .= "order by $sort_field $base_order";
             if ($sort_field == 'cd_authored_on') {
