@@ -1418,12 +1418,12 @@ sub _default_sort {
             },
             sort      => 'value_' . $prop->data_type,
             direction => delete $args->{direction},
-            unique    => 1,
         },
     );
-
     $args->{joins} ||= [];
     push @{ $args->{joins} }, $cf_idx_join;
+
+    $args->{unique} = 1;
 
     return;
 }
