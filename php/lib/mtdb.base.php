@@ -4451,6 +4451,10 @@ abstract class MTDatabase {
             }
         }
 
+        if (isset($args['unique_id'])) {
+            $unique_id_filter = 'and cd_unique_id = \'' . $args['unique_id'] . '\'';
+        }
+
         $sql = "select
                     mt_cd.*
                 from mt_cd
@@ -4463,9 +4467,7 @@ abstract class MTDatabase {
                     $author_filter
                     $date_filter
                     $day_filter
-                    $class_filter
-                    $max_comment_filter
-                    $min_comment_filter";
+                    $unique_id_filter";
         if ($sort_field) {
             $sql .= "order by $sort_field $base_order";
             if ($sort_field == 'cd_authored_on') {

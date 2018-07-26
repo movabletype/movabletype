@@ -390,8 +390,6 @@ test single line text 4
 
 
 === MT:Contents with Unique ID
---- skip_php
-1
 --- template
 <mt:Contents unique_id="[% cd4_uid %]" glue=","><mt:ContentID></mt:Contents>
 --- expected
