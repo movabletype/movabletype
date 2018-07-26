@@ -15,8 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -42,9 +41,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -99,7 +98,7 @@ $vars->{ct3_uid}  = $ct3->unique_id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -142,7 +141,7 @@ __END__
 === MT::ContentsCount with content_type modifier and wrong name
 --- template
 <mt:ContentsCount content_type="test content type 5">
---- error
+--- expected_error
 No Content Type could be found.
 
 === MT::ContentsCount with plural
