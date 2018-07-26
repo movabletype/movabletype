@@ -16,7 +16,7 @@ class ContentData extends BaseObject
     protected $_prefix = "cd_";
     protected $_has_meta = true;
 
-    public function label( $label ) {
+    public function label() {
         if ( $this->id ){
             $ct = $this->content_type();
             if ( $ct->data_label ) {
