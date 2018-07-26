@@ -1418,6 +1418,7 @@ sub _default_sort {
             },
             sort      => 'value_' . $prop->data_type,
             direction => delete $args->{direction},
+            unique    => 1,
         },
     );
     $args->{joins} ||= [];
