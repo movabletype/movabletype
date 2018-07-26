@@ -71,7 +71,7 @@ sub _content_type_registry {
                 base    => '__virtual.integer',
                 col     => 'value_integer',
                 display => 'none',
-                terms => '$Core::MT::ContentFieldType::ContentType::temrs_id',
+                terms => '$Core::MT::ContentFieldType::ContentType::terms_id',
             },
         },
         options_validation_handler =>
