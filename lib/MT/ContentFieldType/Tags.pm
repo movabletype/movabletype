@@ -22,11 +22,18 @@ sub field_html_params {
 
     my $tag_names;
     if (@value) {
-        my %tag_hash;    # id => name
-        my $iter = MT::Tag->load_iter( { id => \@value },
-            { fetchonly => [ 'id', 'name' ] } );
-        while ( my $tag = $iter->() ) {
-            $tag_hash{ $tag->id } = $tag->name;
+        if ( $app->param('reedit') && !$app->param('had_error') ) {
+            $tag_names = join $tag_delim, @value;
+        }
+        else {
+            my %tag_hash;    # id => name
+            my $iter = MT::Tag->load_iter( { id => \@value },
+                { fetchonly => [ 'id', 'name' ] } );
+            while ( my $tag = $iter->() ) {
+                $tag_hash{ $tag->id } = $tag->name;
+            }
+            my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
+            $tag_names = join $tag_delim, @tag_names;
         }
         my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
         $tag_names = join $tag_delim, @tag_names;

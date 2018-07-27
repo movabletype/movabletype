@@ -100,6 +100,7 @@ sub edit {
         if ($data) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
+        $app->param( had_error => 1 ) if $param->{err_msg};
     }
     else {
         $app->param( '_type', 'content_data' );
