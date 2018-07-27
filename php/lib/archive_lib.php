@@ -64,6 +64,27 @@ function _get_join_on($ctx, $at, $blog_id, $cat) {
     return array ($dt_target_col, $cat_target_col, $join_on); 
 }
 
+function _get_content_type_filter($args) {
+    $mt = MT::get_instance();
+    $ctx =& $mt->context();
+    if (isset($args['content_type']) && $args['content_type']) {
+        if (is_numeric($args['content_type'])) {
+            $content_type_filter = 'and cd_content_type_id = ' . $args['content_type'];
+        }
+        else {
+            $content_types = $mt->db()->fetch_content_types($args);
+            if (isset($content_types)) {
+                $content_type = $content_types[0];
+                $content_type_filter = 'and cd_content_type_id = ' . $content_type->id;
+            }
+        }
+    }
+    elseif ($ctx->stash('content_type')) {
+        $content_type_filter = 'and cd_content_type_id = ' . $ctx->stash('content_type')->id;
+    }
+    return $content_type_filter;
+}
+
 interface ArchiveType {
     public function get_label($args = null);
     public function get_title($args);
@@ -3075,7 +3096,10 @@ class ContentTypeAuthorArchiver implements ArchiveType {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
-        $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+        $order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
+
+        $content_type_filter = _get_content_type_filter($args);
+
         $sql = "
             select count(*) as cd_count,
                    cd_author_id,
@@ -3084,6 +3108,7 @@ class ContentTypeAuthorArchiver implements ArchiveType {
                    join mt_author on cd_author_id = author_id
              where cd_blog_id = $blog_id
                and cd_status = 2
+               $content_type_filter
              group by
                    cd_author_id,
                    author_name
