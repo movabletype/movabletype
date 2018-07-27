@@ -26,7 +26,7 @@ function smarty_function_mtcontentscount($args, &$ctx)
         }
         require_once('class.mt_content_data.php');
         $ct = new ContentData();
-        $count = $ct->count(['where' => $where]);
+        $count = $ct->count(array('where' => $where));
     }
     return $ctx->count_format($count, $args);
 }
