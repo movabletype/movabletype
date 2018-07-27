@@ -4208,7 +4208,7 @@ abstract class MTDatabase {
 
                 $dt_field = "$alias.cf_idx_value_$data_type";
 
-                $join  = 'join mt_cf_idx as ' . $alias;
+                $join  = 'join mt_cf_idx ' . $alias;
                 $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $date_cf->cf_id;
                 $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
                 $join_clause .= $join;
@@ -4270,7 +4270,7 @@ abstract class MTDatabase {
                     $alias = 'cf_idx_' . $cf->cf_unique_id;
 
                     $data_type = $cf_type->get_data_type();
-                    $join  = "join mt_cf_idx as $alias";
+                    $join  = "join mt_cf_idx $alias";
                     $join .= " on $alias.cf_idx_content_field_id = " . $cf->cf_id;
                     $join .= " and $alias.cf_idx_content_data_id = cd_id\n";
                     $join_clause .= $join;
@@ -4428,7 +4428,7 @@ abstract class MTDatabase {
                     $cf_type = ContentFieldTypeFactory::get_type($type);
                     $data_type = $cf_type->get_data_type();
 
-                    $join  = 'join mt_cf_idx as ' . $alias;
+                    $join  = 'join mt_cf_idx ' . $alias;
                     $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $cf->cf_id;
                     $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
