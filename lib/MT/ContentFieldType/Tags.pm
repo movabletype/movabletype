@@ -35,8 +35,6 @@ sub field_html_params {
             my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
             $tag_names = join $tag_delim, @tag_names;
         }
-        my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
-        $tag_names = join $tag_delim, @tag_names;
     }
 
     my $options = $field_data->{options};
