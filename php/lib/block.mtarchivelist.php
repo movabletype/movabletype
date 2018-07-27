@@ -72,7 +72,7 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
 
         $grp = $archive_list_results[$i];
         $ar->prepare_list($grp);
-        if ($at == 'Individual' || $at == 'Page') {
+        if ($at == 'Individual' || $at == 'Page' || $at == 'ContentType') {
             $cnt = 1;
         } else {
             $cnt = array_shift($grp);
@@ -80,6 +80,10 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         if ($at == 'Individual' || $at == 'Page' ) {
             $entry = $ctx->stash('entry');
             $start = $end = $entry->entry_authored_on;
+        }
+        elseif ($at == 'ContentType') {
+            $cd = $ctx->stash('content');
+            $start = $end = $cd->cd_authored_on;
         } else {
             list($start, $end) = $ar->get_range($grp);
         }
