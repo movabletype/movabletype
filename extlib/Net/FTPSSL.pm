@@ -1,7 +1,7 @@
 # File    : Net::FTPSSL
 # Author  : cleach <cleach at cpan dot org>
 # Created : 01 March 2005
-# Version : 0.39
+# Version : 0.40
 # Revision: -Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 cleach Exp -
 
 package Net::FTPSSL;
@@ -88,7 +88,7 @@ my $debug_log_msg;  # Used if Debug is turned on
 
 
 BEGIN {
-    $VERSION = "0.39";              # The version of this module!
+    $VERSION = "0.40";              # The version of this module!
 
     my $type = "IO::Socket::SSL";
     $ipv6 = 0;                      # Assume IPv4 only ...
@@ -2610,12 +2610,13 @@ sub _mfmt {
   # Convert it into YYYYMMDDHHMMSS format (GM Time) [ gmtime() vs localtime() ]
   my ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst);
 
+  # Using perl's built-in functions here. (years offset of 1900.)
   if ( $GMT_flag ) {
-     # Use GMT Time  [ gmtime() vs localtime() ]
+     # Use GMT Time  [ gmtime() vs timegm() ]
      ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst) =
                   gmtime ( $timestamp );
   } else {
-     # Use Local Time  [ gmtime() vs localtime() ]
+     # Use Local Time  [ localtime() vs timelocal() ]
      ($sec, $min, $hr, $day, $mon, $yr, $wday, $yday, $isdst) =
                   localtime ( $timestamp );
   }
@@ -2699,12 +2700,14 @@ sub _mdtm {
           $time_str =~ m/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/ ) {
         my ($yr, $mon, $day, $hr, $min, $sec) = ($1, $2, $3, $4, $5, $6);
 
+        # Using Time::Local functions here.
+        # (Not a true inverse of the built-in funcs with regards to the year.)
         if ( $GMT_flag ) {
-           # Use GMT Time  [ timegm() vs timelocal() ]
-           $timestamp = timegm ( $sec, $min, $hr, $day, $mon - 1, $yr - 1900 );
+           # Use GMT Time  [ timegm() vs gmtime() ]
+           $timestamp = timegm ( $sec, $min, $hr, $day, $mon - 1, $yr );
         } else {
-           # Use Local Time  [ timegm() vs timelocal() ]
-           $timestamp = timelocal ( $sec, $min, $hr, $day, $mon - 1, $yr - 1900 );
+           # Use Local Time  [ timelocal() vs localtime() ]
+           $timestamp = timelocal ( $sec, $min, $hr, $day, $mon - 1, $yr );
         }
      }
   }
@@ -4325,7 +4328,7 @@ __END__
 
 Net::FTPSSL - A FTP over TLS/SSL class
 
-=head1 VERSION 0.39
+=head1 VERSION 0.40
 
 Z<>
 
@@ -5213,14 +5216,14 @@ collection of modules (libnet).
 
 Please report any bugs with a FTPS log file created via options B<Debug=E<gt>1>
 and B<DebugLogFile=E<gt>"file.txt"> along with your sample code at
-L<http://search.cpan.org/~cleach/Net-FTPSSL-0.39/FTPSSL.pm> or
+L<http://search.cpan.org/~cleach/Net-FTPSSL-0.40/FTPSSL.pm> or
 L<https://metacpan.org/pod/Net::FTPSSL>.
 
 Patches are appreciated when a log file and sample code are also provided.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 - 2017 Curtis Leach. All rights reserved.
+Copyright (c) 2009 - 2018 Curtis Leach. All rights reserved.
 
 Copyright (c) 2005 Marco Dalla Stella. All rights reserved.
 
