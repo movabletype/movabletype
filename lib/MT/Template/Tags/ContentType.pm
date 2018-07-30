@@ -352,7 +352,7 @@ sub _hdlr_contents {
                         { content_field_id => $cf->id },
                         {   sort      => 'value_' . $data_type,
                             direction => $args->{sort_order} || 'descend',
-                            alias     => 'cf_idx_' . $cf->unique_id
+                            alias     => 'cf_idx_' . $cf->id
                         }
                     );
                     if ( $args{join} ) {
@@ -599,7 +599,7 @@ sub _hdlr_contents {
                         {   content_field_id      => $cf->id,
                             'value_' . $data_type => $value,
                         },
-                        { alias => 'cf_idx_' . $cf->unique_id }
+                        { alias => 'cf_idx_' . $cf->id }
                     );
                     if ( $args{join} ) {
                         push @{ $args{joins} }, $args{join};
