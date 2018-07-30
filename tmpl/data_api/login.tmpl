@@ -159,14 +159,14 @@ jQuery(function($) {
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
   <div class="row align-items-center actions-bar actions-bar-login">
-    <div id="forget-password" class="col-8">
+    <div id="forget-password" class="col">
     <mt:if name="can_recover_password">
       <a href="<mt:var name="mt_url">?__mode=start_recover">
         <__trans phrase="Forgot your password?">
       </a>
     </mt:if>
     </div>
-    <div class="col-4 text-right">
+    <div class="col-auto text-right">
       <button
          type="submit"
          id="sign-in-button"
