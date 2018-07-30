@@ -4200,7 +4200,7 @@ abstract class MTDatabase {
                 }
             }
             if (isset($date_cf)) {
-                $alias = 'cf_idx_' . $date_cf->cf_unique_id;
+                $alias = 'cf_idx_' . $date_cf->id;
 
                 require_once "content_field_type_lib.php";
                 $cf_type = ContentFieldTypeFactory::get_type($type);
@@ -4267,7 +4267,7 @@ abstract class MTDatabase {
                     require_once "content_field_type_lib.php";
                     $cf_type = ContentFieldTypeFactory::get_type($type);
 
-                    $alias = 'cf_idx_' . $cf->cf_unique_id;
+                    $alias = 'cf_idx_' . $cf->id;
 
                     $data_type = $cf_type->get_data_type();
                     $join  = "join mt_cf_idx $alias";
@@ -4422,7 +4422,7 @@ abstract class MTDatabase {
                     }
                 }
                 else {
-                    $alias = 'cf_idx_' . $cf->cf_unique_id;
+                    $alias = 'cf_idx_' . $cf->id;
 
                     require_once "content_field_type_lib.php";
                     $cf_type = ContentFieldTypeFactory::get_type($type);
