@@ -2373,12 +2373,16 @@ class ContentTypeArchiver implements ArchiveType {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
+        $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+
+        $content_type_filter = _get_content_type_filter($args);
 
         $sql = "
                 cd_blog_id = $blog_id
                 and cd_status = 2
+                $content_type_filter
                 order by cd_authored_on $order";
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
@@ -2653,6 +2657,8 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $inside = $ctx->stash('inside_archive_list');
@@ -2680,6 +2686,7 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        $year_ext,
                        $month_ext,
@@ -2777,6 +2784,8 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $inside = $ctx->stash('inside_archive_list');
@@ -2798,6 +2807,7 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by cd_week_number
                  order by cd_week_number $order";
 
@@ -2871,6 +2881,8 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $inside = $ctx->stash('inside_archive_list');
@@ -2896,6 +2908,7 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        $year_ext,
                        $month_ext
@@ -2971,10 +2984,13 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
+        $ctx =& $mt->context();
 
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+
+        $content_type_filter = _get_content_type_filter($args);
 
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
@@ -2987,6 +3003,7 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
                   $join_on
                  where cd_blog_id = $blog_id
                    and cd_status = 2
+                   $content_type_filter
                  group by
                        $year_ext
                  order by
@@ -3095,6 +3112,7 @@ class ContentTypeAuthorArchiver implements ArchiveType {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
+        $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
@@ -3333,6 +3351,8 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -3354,6 +3374,7 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
              where cd_blog_id = $blog_id
                    and cd_status = 2
                    $author_filter
+                   $content_type_filter
              group by
                    $year_ext,
                    cd_author_id,
@@ -3433,6 +3454,8 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -3471,6 +3494,7 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
                and cd_status = 2
                $date_filter
                $author_filter
+               $content_type_filter
              group by
                    $year_ext,
                    $month_ext,
@@ -3550,6 +3574,8 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -3590,6 +3616,7 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
                    and cd_status = 2
                    $date_filter
                    $author_filter
+                   $content_type_filter
              group by
                    $year_ext,
                    $month_ext,
@@ -3679,6 +3706,8 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
+        $content_type_filter = _get_content_type_filter($args);
+
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -3717,6 +3746,7 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
                and cd_status = 2
                $date_filter
                $author_filter
+               $content_type_filter
              group by
                    cd_week_number,
                    cd_author_id,
@@ -3823,8 +3853,12 @@ class ContentTypeCategoryArchiver implements ArchiveType {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
+        $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+
+        $content_type_filter = _get_content_type_filter($args);
+
         $sql = "
             select count(*) as cd_count,
                    cd_author_id,
@@ -3833,6 +3867,7 @@ class ContentTypeCategoryArchiver implements ArchiveType {
                    join mt_author on cd_author_id = author_id
              where cd_blog_id = $blog_id
                and cd_status = 2
+               $content_type_filter
              group by
                    cd_author_id,
                    author_name
@@ -4060,6 +4095,8 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
+        $content_type_filter = _get_content_type_filter($args);
+
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -4109,6 +4146,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        $year_ext,
                        $cat_target_col
@@ -4186,6 +4224,8 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
+        $content_type_filter = _get_content_type_filter($args);
+
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -4237,6 +4277,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        $year_ext,
                        $month_ext,
@@ -4315,6 +4356,8 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
+        $content_type_filter = _get_content_type_filter($args);
+
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -4367,6 +4410,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        $year_ext,
                        $month_ext,
@@ -4457,6 +4501,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
+        $content_type_filter = _get_content_type_filter($args);
+
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -4503,6 +4549,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
+                   $content_type_filter
                  group by
                        cd_week_number,
                        $cat_target_col
