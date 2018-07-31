@@ -25,7 +25,7 @@ jQuery('button.remove-widget').mtRemoveWidget();
 <mt:setvartemplate name="select_widget_form">
 <mt:var name="widget_options" value="0">
 <mt:setvarblock name="add_widget_form">
-<form method="POST" action="<mt:var name="script_url">" class="listing form-inline">
+<form method="POST" action="<mt:var name="script_url">" class="listing form-inline d-none d-md-flex">
   <input type="hidden" name="__mode" value="update_widget_prefs" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
