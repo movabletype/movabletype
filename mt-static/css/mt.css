@@ -515,16 +515,16 @@ mark,
   list-style: none;
 }
 
-.list-inline {
+.list-inline, .mt-footer__links {
   padding-left: 0;
   list-style: none;
 }
 
-.list-inline-item {
+.list-inline-item, .mt-footer__links li {
   display: inline-block;
 }
 
-.list-inline-item:not(:last-child) {
+.list-inline-item:not(:last-child), .mt-footer__links li:not(:last-child) {
   margin-right: 5px;
 }
 
@@ -679,14 +679,14 @@ pre code {
   margin-left: 0;
 }
 
-.no-gutters > .col, .mt-draggable > .col, .mt-contentfield .mt-collapse__container > .col, .no-gutters > .mt-productHeader, .mt-draggable > .mt-productHeader, .mt-contentfield .mt-collapse__container > .mt-productHeader, .no-gutters > .mt-mainContent, .mt-draggable > .mt-mainContent, .mt-contentfield .mt-collapse__container > .mt-mainContent, .no-gutters > .mt-mainContent--scrollable, .mt-draggable > .mt-mainContent--scrollable, .mt-contentfield .mt-collapse__container > .mt-mainContent--scrollable, .no-gutters > .mt-footer, .mt-draggable > .mt-footer, .mt-contentfield .mt-collapse__container > .mt-footer, .no-gutters > .mt-widget__data, .mt-draggable > .mt-widget__data, .mt-contentfield .mt-collapse__container > .mt-widget__data,
+.no-gutters > .col, .mt-draggable > .col, .mt-contentfield .mt-collapse__container > .col, .no-gutters > .mt-productHeader, .mt-draggable > .mt-productHeader, .mt-contentfield .mt-collapse__container > .mt-productHeader, .no-gutters > .mt-widget__data, .mt-draggable > .mt-widget__data, .mt-contentfield .mt-collapse__container > .mt-widget__data,
 .no-gutters > [class*="col-"], .mt-draggable > [class*="col-"], .mt-contentfield .mt-collapse__container > [class*="col-"] {
   padding-right: 0;
   padding-left: 0;
 }
 
-.col-1, .col-2, .mt-primaryNavigation, .mt-primaryNavigation__sites, .mt-dashboardPanel, .col-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .mt-productHeader, .mt-mainContent, .mt-mainContent--scrollable, .mt-footer, .mt-widget__data,
-.col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
+.col-1, .col-2, .mt-primaryNavigation, .mt-primaryNavigation__sites, .mt-dashboardPanel, .col-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .mt-mainContent, .mt-mainContent--scrollable, .col, .mt-productHeader, .mt-widget__data,
+.col-auto, .mt-footer, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
 .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg,
 .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl,
@@ -698,7 +698,7 @@ pre code {
   padding-left: 14px;
 }
 
-.col, .mt-productHeader, .mt-mainContent, .mt-mainContent--scrollable, .mt-footer, .mt-widget__data {
+.col, .mt-productHeader, .mt-widget__data {
   -ms-flex-preferred-size: 0;
       flex-basis: 0;
   -webkit-box-flex: 1;
@@ -707,7 +707,7 @@ pre code {
   max-width: 100%;
 }
 
-.col-auto {
+.col-auto, .mt-footer {
   -webkit-box-flex: 0;
       -ms-flex: 0 0 auto;
           flex: 0 0 auto;
@@ -792,7 +792,7 @@ pre code {
   max-width: 91.666667%;
 }
 
-.col-12 {
+.col-12, .mt-mainContent, .mt-mainContent--scrollable {
   -webkit-box-flex: 0;
       -ms-flex: 0 0 100%;
           flex: 0 0 100%;
@@ -1135,7 +1135,7 @@ pre code {
 }
 
 @media (min-width: 768px) {
-  .col-md {
+  .col-md, .mt-mainContent, .mt-mainContent--scrollable, .mt-footer {
     -ms-flex-preferred-size: 0;
         flex-basis: 0;
     -webkit-box-flex: 1;
@@ -2224,7 +2224,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
   margin-left: -5px;
 }
 
-.form-row > .col, .form-row > .mt-productHeader, .form-row > .mt-mainContent, .form-row > .mt-mainContent--scrollable, .form-row > .mt-footer, .form-row > .mt-widget__data,
+.form-row > .col, .form-row > .mt-productHeader, .form-row > .mt-widget__data,
 .form-row > [class*="col-"] {
   padding-right: 5px;
   padding-left: 5px;
@@ -6321,7 +6321,7 @@ button.bg-dark:focus {
   content: "";
 }
 
-.d-none {
+.d-none, .mt-breadcrumb {
   display: none !important;
 }
 
@@ -6405,7 +6405,7 @@ button.bg-dark:focus {
   .d-md-inline-block {
     display: inline-block !important;
   }
-  .d-md-block {
+  .d-md-block, .mt-breadcrumb {
     display: block !important;
   }
   .d-md-table {
@@ -7804,7 +7804,8 @@ button.bg-dark:focus {
 }
 
 .mr-auto,
-.mx-auto {
+.mx-auto,
+.mt-footer {
   margin-right: auto !important;
 }
 
@@ -7814,7 +7815,8 @@ button.bg-dark:focus {
 }
 
 .ml-auto,
-.mx-auto {
+.mx-auto,
+.mt-footer {
   margin-left: auto !important;
 }
 
@@ -9680,16 +9682,42 @@ li {
 /* Footer Navigation */
 .mt-footer {
   padding: 1rem;
-  border-top: 1px solid #CACACA;
+  border: 0;
+  text-align: center;
 }
 
-.mt-footer .list-inline {
-  margin-bottom: 0.5rem;
+@media (min-width: 768px) {
+  .mt-footer {
+    border-top: 1px solid #CACACA;
+    text-align: left;
+  }
+  .mt-footer .list-inline, .mt-footer .mt-footer__links {
+    margin-bottom: 0.5rem;
+  }
+  .mt-footer .list-inline-item, .mt-footer .mt-footer__links li, .mt-footer__links .mt-footer li {
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
 }
 
-.mt-footer .list-inline-item {
-  margin-bottom: 0;
-  margin-right: 1rem;
+.mt-footer__links {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mt-footer__links {
+    display: block;
+  }
+}
+
+.mt-footer__installedAddons {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mt-footer__installedAddons {
+    display: inline;
+  }
 }
 
 /* Single Column */
@@ -10138,7 +10166,7 @@ fieldset.form-group {
   border-bottom: 0;
 }
 
-.mt-widget--site .col .row, .mt-widget--site .mt-productHeader .row, .mt-widget--site .mt-mainContent .row, .mt-widget--site .mt-mainContent--scrollable .row, .mt-widget--site .mt-footer .row, .mt-widget--site .mt-widget__data .row, .mt-widget--site .col .mt-primaryNavigation__header, .mt-widget--site .mt-productHeader .mt-primaryNavigation__header, .mt-widget--site .mt-mainContent .mt-primaryNavigation__header, .mt-widget--site .mt-mainContent--scrollable .mt-primaryNavigation__header, .mt-widget--site .mt-footer .mt-primaryNavigation__header, .mt-widget--site .mt-widget__data .mt-primaryNavigation__header, .mt-widget--site .col .mt-primaryNavigation__header--invert, .mt-widget--site .mt-productHeader .mt-primaryNavigation__header--invert, .mt-widget--site .mt-mainContent .mt-primaryNavigation__header--invert, .mt-widget--site .mt-mainContent--scrollable .mt-primaryNavigation__header--invert, .mt-widget--site .mt-footer .mt-primaryNavigation__header--invert, .mt-widget--site .mt-widget__data .mt-primaryNavigation__header--invert {
+.mt-widget--site .col .row, .mt-widget--site .mt-productHeader .row, .mt-widget--site .mt-widget__data .row, .mt-widget--site .col .mt-primaryNavigation__header, .mt-widget--site .mt-productHeader .mt-primaryNavigation__header, .mt-widget--site .mt-widget__data .mt-primaryNavigation__header, .mt-widget--site .col .mt-primaryNavigation__header--invert, .mt-widget--site .mt-productHeader .mt-primaryNavigation__header--invert, .mt-widget--site .mt-widget__data .mt-primaryNavigation__header--invert {
   margin-left: 0;
   margin-right: 0;
 }
@@ -10186,7 +10214,7 @@ fieldset.form-group {
   margin: 0 .5rem 0 0;
 }
 
-.mt-draggable .col-auto:first-of-type .mt-icon, .mt-draggable .col-auto:first-of-type .mt-icon--primary, .mt-draggable .col-auto:first-of-type .mt-icon--secondary, .mt-draggable .col-auto:first-of-type .mt-icon--success, .mt-draggable .col-auto:first-of-type .mt-icon--info, .mt-draggable .col-auto:first-of-type .mt-icon--warning, .mt-draggable .col-auto:first-of-type .mt-icon--danger, .mt-draggable .col-auto:first-of-type .mt-icon--inverse {
+.mt-draggable .col-auto:first-of-type .mt-icon, .mt-draggable .mt-footer:first-of-type .mt-icon, .mt-draggable .col-auto:first-of-type .mt-icon--primary, .mt-draggable .mt-footer:first-of-type .mt-icon--primary, .mt-draggable .col-auto:first-of-type .mt-icon--secondary, .mt-draggable .mt-footer:first-of-type .mt-icon--secondary, .mt-draggable .col-auto:first-of-type .mt-icon--success, .mt-draggable .mt-footer:first-of-type .mt-icon--success, .mt-draggable .col-auto:first-of-type .mt-icon--info, .mt-draggable .mt-footer:first-of-type .mt-icon--info, .mt-draggable .col-auto:first-of-type .mt-icon--warning, .mt-draggable .mt-footer:first-of-type .mt-icon--warning, .mt-draggable .col-auto:first-of-type .mt-icon--danger, .mt-draggable .mt-footer:first-of-type .mt-icon--danger, .mt-draggable .col-auto:first-of-type .mt-icon--inverse, .mt-draggable .mt-footer:first-of-type .mt-icon--inverse {
   fill: #A5A5A5;
 }
 
