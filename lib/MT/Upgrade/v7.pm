@@ -164,6 +164,15 @@ sub upgrade_functions {
                 code => sub { },    # It's OK only to save category_set.
             },
         },
+        'v7_add_mobile_site_list_dashboard_widget' => {
+            version_limit => '7.0045',
+            priority      => 5.1,
+            updater       => {
+                type  => 'author',
+                label => 'Adding site list dashboard widget for mobile...',
+                code  => \&_v7_add_mobile_site_list_dashboard_widget,
+            },
+        },
     };
 }
 
@@ -1399,6 +1408,21 @@ sub _v7_migrate_max_length_option_of_single_line_text {
         $ct->fields($fields);
         $ct->save;
     }
+}
+
+sub _v7_add_mobile_site_list_dashboard_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+    for my $key ( keys %$widgets ) {
+        next unless $key =~ /^dashboard:(?:user|blog):/;
+        $widgets->{$key}{site_list_for_mobile} = {
+            order => 50,
+            set   => 'main',
+        };
+    }
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;
