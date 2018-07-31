@@ -2036,7 +2036,7 @@ abstract class MTDatabase {
             $args['need_entry'] = 0;
         if (!isset($args['need_entry']))
             $args['need_entry'] = 1;
-        if ($args['need_entry']) {
+        if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_entry'] = array(
                     'condition' => "author_id = entry_author_id"
                 );
@@ -2692,6 +2692,35 @@ abstract class MTDatabase {
         require_once('class.mt_entry.php');
         $entry = new Entry;
         $result = $entry->count(array('where' => $where));
+        return $result;
+    }
+
+    function author_content_count($args) {
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and cd_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        }
+        $author_filter = '';
+        if (isset($args['author_id'])) {
+            $author_id = intval($args['author_id']);
+            $author_filter = 'and cd_author_id = ' . $author_id;
+        }
+        $content_type_filter = '';
+        if (isset($args['content_type_id'])) {
+            $content_type_id = intval($args['content_type_id']);
+            $content_type_filter = 'and cd_content_type_id = ' . $content_type_id;
+        }
+
+        $where = "cd_status = 2
+                  $content_type_filter
+                  $blog_filter
+                  $author_filter";
+
+        require_once('class.mt_content_data.php');
+        $cd = new ContentData;
+        $result = $cd->count(array('where' => $where));
         return $result;
     }
 
