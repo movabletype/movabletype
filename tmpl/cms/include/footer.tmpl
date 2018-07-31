@@ -14,7 +14,7 @@
     </div>
   </mt:if>
 
-    <ul class="list-inline">
+    <ul class="mt-footer__links list-inline">
       <li class="list-inline-item">
         <a href="<__trans phrase="https://www.movabletype.org">">
           <__trans phrase="MovableType.org">
@@ -52,17 +52,19 @@
         <MT_TRANS phrase="Copyright &copy; 2001 Six Apart. All Rights Reserved."><br>
         <__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_release_version_id">">
 <mt:if name="packs_installed">
-        <__trans phrase="with">:
+        <span class="mt-footer__installedAddons">
+          <__trans phrase="with">:
   <mt:loop name="packs_installed" glue=", ">
     <mt:if name="link">
-        <a href="<mt:var name="link" escape="html">">
+          <a href="<mt:var name="link" escape="html">">
     </mt:if>
-          <mt:var name="label" escape="html">
-          <mt:var name="version" escape="html">
+            <mt:var name="label" escape="html">
+            <mt:var name="version" escape="html">
     <mt:if name="link">
-        </a>
+          </a>
     </mt:if>
   </mt:loop>
+        </span>
 </mt:if>
       </small>
     </p>
