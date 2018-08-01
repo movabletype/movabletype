@@ -8,6 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
+    diag 'Force ignoring fixture because of failing test on first day on month';
+    $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }

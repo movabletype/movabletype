@@ -13,6 +13,9 @@ BEGIN {
 
 our $test_env;
 BEGIN {
+    diag 'Force ignoring fixture because of failing test on first day on month';
+    $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+
     $test_env = MT::Test::Env->new(
         ThemesDirectory => 'TEST_ROOT/themes/',
     );
