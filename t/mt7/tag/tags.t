@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -38,9 +38,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -139,7 +139,7 @@ $vars->{ct_id}   = $ct->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -170,13 +170,13 @@ tag2:2,tag1:1
 === mt:Tags with wrong content_type
 --- template
 <mt:Tags top="20" type="content_type" content_type="aaa" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
---- error
+--- expected_error
 No Content Type could be found.
 
 === mt:Tags with wrong type
 --- template
 <mt:Tags type="entry" content_type="[% ct_uid %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
---- error
+--- expected_error
 content_type modifier cannot be used with type "entry".
 
 === mt:Tags without type

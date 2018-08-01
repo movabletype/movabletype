@@ -10,6 +10,12 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
 
+        if (isset($args['content_type']) && isset($args['type']) && $args['type'] != 'content_type') {
+            $repeat = 0;
+            return $ctx->error($ctx->mt->translate(
+                'content_type modifier cannot be used with type "[_1]".', $args['type'] ));
+        }
+
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
@@ -38,12 +44,24 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $type = 'entry';
         if (isset($args['type'])) {
             $type = strtolower($args['type']);
+        } elseif (isset($args['content_type'])) {
+            $type = 'content_type';
         }
         if ('page' == $type) {
             $args['class'] = 'page';
             $tags = $ctx->mt->db()->fetch_entry_tags($args);
         } elseif ('asset' == $type) {
             $tags = $ctx->mt->db()->fetch_asset_tags($args);
+        } elseif ('content_type' == $type) {
+            $ctypes = $ctx->mt->db()->fetch_content_types($args);
+            if ($ctypes) {
+                $mapper = function ($ct) { return $ct->id; };
+                $args['content_type_id'] = array_map($mapper, $ctypes);
+            } else {
+                $repeat = 0;
+                return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+            }
+            $tags = $ctx->mt->db()->fetch_content_tags($args);
         } else {
             $args['class'] = 'entry';
             $tags = $ctx->mt->db()->fetch_entry_tags($args);
