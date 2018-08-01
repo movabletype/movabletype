@@ -4822,12 +4822,8 @@ abstract class MTDatabase {
         }
         if (isset($args['content_type'])) {
             $content_types = $this->fetch_content_types($args);
-            if ($content_types) {
-                foreach ($content_types as $content_type) {
-                    $content_type_filter .= " and cd_content_type_id = " . $content_type->id;
-                }
-            } else {
-                return $ctx->error($ctx->mt->translate("No Content Type could be found."));
+            foreach ($content_types as $content_type) {
+                $content_type_filter .= " and cd_content_type_id = " . $content_type->id;
             }
         }
         
