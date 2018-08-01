@@ -4749,6 +4749,15 @@ abstract class MTDatabase {
         if ($blog_filter != '') 
             $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
 
+        $ct_filter = '';
+        if (isset($args['content_type_id'])) {
+            if (count($args['content_type_id'] > 1)) {
+                $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+            } else {
+                $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'];
+            }
+        }
+
         if (empty($args['include_private'])) {
             $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
         }
@@ -4789,6 +4798,7 @@ abstract class MTDatabase {
                    $blog_filter
                    $tag_filter
                    $cd_filter
+                   $ct_filter
                    $private_filter
             group by tag_id, tag_name
             order by $sort_col $order $id_order, tag_id desc";

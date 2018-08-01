@@ -102,6 +102,8 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
     my ( $blog_id, $template, $text, $extra ) = @_;
     $text ||= '';
 
+    $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
+
     my $test_script = <<PHP;
 <?php
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
