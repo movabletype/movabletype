@@ -1,0 +1,49 @@
+<mt:loop name="sites">
+<div class="mt-table--outline d-md-none mb-5">
+  <table class="table mt-table mb-0" style="table-layout: fixed;">
+    <thead>
+      <th class="p-4">
+        <h3 class="my-0 text-truncate">
+          <a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
+            <mt:var name="site_name" escape="html">
+          </a>
+        </h3>
+  <mt:if name="parent_site_name">
+        <p class="font-weight-normal mt-2 mb-0 text-truncate">
+          <__trans phrase="(on [_1])" params="<mt:var name="parent_site_name" escape="html">">
+        </p>
+  </mt:if>
+        <p class="font-weight-normal mt-5 mb-0 text-truncate">
+          <a href="<mt:var name="site_url">" target="_blank">
+            <mt:var name="site_url">
+          </a>
+        </p>
+      </th>
+    </head>
+    <tbody>
+  <mt:if name="content_types">
+    <mt:loop name="content_types">
+      <tr>
+        <td class="p-4 text-truncate">
+      <mt:if name="can_list">
+          <a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">">
+            <mt:var name="name" escape="html">
+          </a>
+      <mt:else>
+          <mt:var name="name" escape="html">
+      </mt:if>
+        </td>
+      </tr>
+    </mt:loop>
+  <mt:else>
+      <tr>
+        <td class="p-4">
+          <__trans phrase="No Content Type could be found.">
+        </td>
+      </tr>
+  </mt:if>
+    </tbody>
+  </table>
+</div>
+</mt:loop>
+
