@@ -4783,5 +4783,33 @@ abstract class MTDatabase {
         }
         return $tags;
     }
+    
+    public function content_count($args){
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and cd_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        }
+        if (isset($args['content_type'])) {
+            $content_types = $this->fetch_content_types($args);
+            if ($content_types) {
+                foreach ($content_types as $content_type) {
+                    $content_type_filter .= " and cd_content_type_id = " . $content_type->id;
+                }
+            } else {
+                return $ctx->error($ctx->mt->translate("No Content Type could be found."));
+            }
+        }
+        
+        $where = "cd_status = 2
+                  $blog_filter
+                  $content_type_filter";
+
+        require_once('class.mt_content_data.php');
+        $ct = new ContentData();
+        $count = $ct->count(array('where' => $where));
+        return $count;
+    }
 }
 ?>

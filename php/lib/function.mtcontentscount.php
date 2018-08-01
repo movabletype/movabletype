@@ -12,21 +12,13 @@ function smarty_function_mtcontentscount($args, &$ctx)
     if (isset($contents)) {
         $count = count($contents);
     } else {
-        $where = "cd_blog_id  = " . $ctx->stash('blog_id');
-        $where .= " AND cd_status  = 2";
-        if ($args['content_type']) {
+        if (isset($args['content_type'])) {
             $content_types = $ctx->mt->db()->fetch_content_types($args);
-            if ($content_types) {
-                foreach ($content_types as $content_type) {
-                    $where .= " AND cd_content_type_id = " . $content_type->id;
-                }
-            } else {
+            if (!$content_types) {
                 return $ctx->error($ctx->mt->translate("No Content Type could be found."));
             }
         }
-        require_once('class.mt_content_data.php');
-        $ct = new ContentData();
-        $count = $ct->count(array('where' => $where));
+        $count = $ctx->mt->db()->content_count($args);
     }
     return $ctx->count_format($count, $args);
 }
