@@ -1,9 +1,9 @@
 <mt:loop name="sites">
 <div class="mt-table--outline d-md-none mb-5">
-  <table class="table mt-table mb-0">
+  <table class="table mt-table mb-0" style="table-layout: fixed;">
     <thead>
-      <th class="p-4">
-        <div class="h3 mt-0 mb-5">
+      <th class="p-4 text-truncate">
+        <div class="h3 mt-0 mb-5 text-truncate">
           <a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
             <mt:var name="site_name" escape="html">
           </a>
@@ -17,7 +17,7 @@
   <mt:if name="content_types">
     <mt:loop name="content_types">
       <tr>
-        <td class="p-4">
+        <td class="p-4 text-truncate">
       <mt:if name="can_list">
           <a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">">
             <mt:var name="name" escape="html">
