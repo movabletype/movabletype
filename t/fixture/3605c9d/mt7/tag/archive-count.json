@@ -548,7 +548,7 @@
             "1",
             null,
             "__NOW__",
-            "686cc87599fc5dfbb62c4b21507e4f31fe3f32fa",
+            "6ba1d194f5c2b6cc4e841c8270d6420c374da716",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "1",
@@ -558,7 +558,7 @@
             "__NOW__",
             "1",
             "2",
-            "841b873c419f5c0c484fa7727b5409c8fa9e4d3e",
+            "fc2ed42bfcae6517f6ab40d914322012376ccc15",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -569,7 +569,7 @@
             "1",
             null,
             "__NOW__",
-            "686cc87599fc5dfbb62c4b21507e4f31fe3f32fa",
+            "6ba1d194f5c2b6cc4e841c8270d6420c374da716",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "2",
@@ -577,9 +577,9 @@
             null,
             null,
             "__NOW__",
+            "5",
             "2",
-            "2",
-            "1ea6e6b33ba8d2951bff2a602474c7c93a9b3839",
+            "966783efd2724d7552a6d68d9890def70ada72fb",
             "2017-05-31 16:36:00",
             "201839"
          ],
@@ -590,7 +590,7 @@
             "1",
             null,
             "__NOW__",
-            "686cc87599fc5dfbb62c4b21507e4f31fe3f32fa",
+            "6ba1d194f5c2b6cc4e841c8270d6420c374da716",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -598,9 +598,9 @@
             null,
             null,
             "__NOW__",
-            "7",
+            "5",
             "2",
-            "ce5339b9b6e7dff302d013fcf154fc099ec88ecf",
+            "54fdc1d50ac3e740658dcd7467b7a62ef92652e2",
             "2017-05-31 16:36:00",
             "201939"
          ],
@@ -611,7 +611,7 @@
             "2",
             null,
             "__NOW__",
-            "4bfce90778ee40c63004aadd3dcfd4077e565397",
+            "1888bb2bf44fdbe9166962672103f5acb960ec91",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "4",
@@ -619,9 +619,9 @@
             null,
             null,
             "__NOW__",
-            "8",
+            "4",
             "2",
-            "8927fe0f38fc04da1bbc33740383a1eb0f86ccc6",
+            "28ea44fcad57bb2b67281ca040cb1f9dcfbfd6fb",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -661,7 +661,7 @@
             null,
             null,
             "categories",
-            "f82d256821fcbdd3618de7786845491d22bc4c5e"
+            "6535bb746f9d3397a9847622eda196f2699d3662"
          ],
          [
             "2",
@@ -678,7 +678,7 @@
             null,
             null,
             "categories",
-            "020b39f16451f74c9060b2471014dd9ef204ce23"
+            "f2aef81cafd71ceb9dd758820035c9c9e2ccf9ab"
          ]
       ]
    },
@@ -778,7 +778,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0044\n",
+            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0045\n",
             "1"
          ]
       ]
@@ -811,7 +811,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "686cc87599fc5dfbb62c4b21507e4f31fe3f32fa",
+            "6ba1d194f5c2b6cc4e841c8270d6420c374da716",
             null,
             null
          ],
@@ -826,7 +826,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "4bfce90778ee40c63004aadd3dcfd4077e565397",
+            "1888bb2bf44fdbe9166962672103f5acb960ec91",
             null,
             null
          ]
@@ -2509,5 +2509,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0044; formattedtext 1.00"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0045; formattedtext 1.00"
 }
