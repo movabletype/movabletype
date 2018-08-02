@@ -38,7 +38,13 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $ctx->stash('current_archive_type', $at);
         ## If we are producing a Category archive list, don't bother to
         ## handle it here--instead hand it over to <MTCategories>.
-        if ($at == 'Category') {
+        if ($at == 'Category' || $at === 'ContentType-Category') {
+            if ($at === 'ContentType-Category') {
+                $category_set = $ctx->stash('category_set');
+                if (!isset($category_set))
+                    return $ctx->error("No Category Set could be found.");
+                $args['category_set_id'] = $category_set->category_set_id;
+            }
             require_once("block.mtcategories.php");
             return smarty_block_mtcategories($args, $content, $ctx, $repeat);
         }
@@ -60,7 +66,13 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $archive_list_results = $ctx->stash('_archive_list_results');
         $i = $ctx->stash('_archive_list_num');
     }
-    if ($at == 'Category') {
+    if ($at == 'Category' || $at === 'ContentType-Category') {
+        if ($at === 'ContentType-Category') {
+            $category_set = $ctx->stash('category_set');
+            if (!isset($category_set))
+                return $ctx->error("No Category Set could be found.");
+            $args['category_set_id'] = $category_set->category_set_id;
+        }
         $content = smarty_block_mtcategories($args, $content, $ctx, $repeat);
         if (!$repeat)
             $ctx->restore($localvars);
