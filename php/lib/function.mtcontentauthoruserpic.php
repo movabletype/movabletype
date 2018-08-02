@@ -33,8 +33,9 @@ function smarty_function_mtcontentauthoruserpic($args, &$ctx) {
     } else {
         $size = $width;
     }
-    if (!$size) {
-        $mt = MT::get_instance();
+
+    $mt = MT::get_instance();
+    if (!$size || $size > $mt->config('UserpicThumbnailSize')) {
         $size = $mt->config('UserpicThumbnailSize');
     }
 

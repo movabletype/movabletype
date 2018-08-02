@@ -1119,7 +1119,7 @@ ms@2.0.0:
 
 "mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#de8aae6d99152011f1e13082f52ce8f1709ad1b8"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#2fd388df79abdb057bf0870930043c22f7e58989"
   dependencies:
     bootstrap "4.0.0"
     winston "^2.3.1"
@@ -1976,8 +1976,8 @@ window-size@0.1.0:
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
 
 winston@^2.3.1:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.2.tgz#3ca01f763116fc48db61053b7544e750431f8db0"
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/winston/-/winston-2.4.3.tgz#7a9fdab371b6d3d9b63a592947846d856948c517"
   dependencies:
     async "~1.0.0"
     colors "1.0.x"

@@ -22,7 +22,7 @@ sub field_html_params {
 
     my $tag_names;
     if (@value) {
-        if ( $app->param('reedit') ) {
+        if ( $app->param('reedit') && !$app->param('had_error') ) {
             $tag_names = join $tag_delim, @value;
         }
         else {

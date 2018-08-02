@@ -475,6 +475,17 @@ sub core_widgets {
             order    => 100,
             default  => 1,
         },
+        site_list_for_mobile => {
+            label    => 'Site List for Mobile',
+            template => 'widget/site_list_for_mobile.tmpl',
+            handler  => "${pkg}Dashboard::site_list_widget",
+            singular => 1,
+            set      => 'main',
+            view     => [ 'user', 'website', 'blog' ],
+            order    => 50,
+            default  => 1,
+            mobile   => 1,
+        },
     };
 
     return $core_widgets;

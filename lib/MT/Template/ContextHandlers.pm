@@ -3307,8 +3307,19 @@ EOT
         $widget_class = "mt-widget--panel";
     }
 
+    my $bootstrap_display_class = '';
+    my $widget_mobile           = $ctx->var('widget_mobile');
+    if ( defined $widget_mobile ) {
+        if ($widget_mobile) {
+            $bootstrap_display_class = 'd-md-none';
+        }
+        else {
+            $bootstrap_display_class = 'd-none d-md-block';
+        }
+    }
+
     my $widget = <<"EOT";
-<div id="$id" class="$widget_class $class">
+<div id="$id" class="$widget_class $class $bootstrap_display_class">
   <h2 class="mt-widget__title">
     $widget_header
     $header_action

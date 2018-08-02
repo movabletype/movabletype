@@ -32,6 +32,7 @@ class MTViewer extends SmartyBC {
         'mthassubfolders' => 1,
         'mthasparentfolders' => 1,
         'mthasparentfolder' => 1,
+        'mtauthorhascontent' => 1,
         'mtauthorhasentry' => 1,
         'mtauthorhaspage' => 1,
         'mtwebsitehasblog' => 1,

@@ -316,6 +316,10 @@ sub _expected_default_widgets {
                 order => 100,
                 set   => 'main',
             },
+            site_list_for_mobile => {
+                order => 50,
+                set   => 'main',
+            },
         },
         website => {
             activity_log => {
@@ -324,6 +328,10 @@ sub _expected_default_widgets {
             },
             site_list => {
                 order => 100,
+                set   => 'main',
+            },
+            site_list_for_mobile => {
+                order => 50,
                 set   => 'main',
             },
             site_stats => {
@@ -338,6 +346,10 @@ sub _expected_default_widgets {
             },
             site_list => {
                 order => 100,
+                set   => 'main',
+            },
+            site_list_for_mobile => {
+                order => 50,
                 set   => 'main',
             },
             site_stats => {
