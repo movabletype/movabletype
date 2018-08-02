@@ -208,11 +208,13 @@ sub _hdlr_archives {
     ## handle it here--instead hand it over to <MTCategories>.
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
-    if ( $at eq 'ContentType-Category' ) {
+    if ( $at =~ /^ContentType-Category/ ) {
         my $category_set = $ctx->stash('category_set')
             or return $ctx->_no_category_set_error();
         $args->{category_set_id} = $category_set->id;
-        return $ctx->invoke_handler( 'categories', $args, $cond );
+        if ( $at eq 'ContentType-Category' ) {
+            return $ctx->invoke_handler( 'categories', $args, $cond );
+        }
     }
     my %args;
     my $sort_order

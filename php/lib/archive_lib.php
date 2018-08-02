@@ -49,8 +49,9 @@ function _get_join_on($ctx, $at, $blog_id, $cat) {
             $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
         }
         else {
-            $join_on  = "join mt_cf_idx on cd_id = cf_idx_content_data_id and cf_idx_content_field_id = $cat_field_id";
-            $join_on += " and cat_cf_idx.cf_idx_value_integer = $cat_id";
+            $join_on  = "join mt_cf_idx cat_cf_idx on cd_id = cat_cf_idx.cf_idx_content_data_id";
+            $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
+            $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id";
             $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
         }
     }
@@ -3851,33 +3852,7 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return true;
     }
 
-    protected function get_archive_list_data($args) {
-        $mt = MT::get_instance();
-        $ctx =& $mt->context();
-        $blog_id = $args['blog_id'];
-        $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
-
-        $content_type_filter = _get_content_type_filter($args);
-
-        $sql = "
-            select count(*) as cd_count,
-                   cd_author_id,
-                   author_name
-              from mt_cd
-                   join mt_author on cd_author_id = author_id
-             where cd_blog_id = $blog_id
-               and cd_status = 2
-               $content_type_filter
-             group by
-                   cd_author_id,
-                   author_name
-             order by
-                   author_name $order";
-        $limit = isset($args['lastn']) ? $args['lastn'] : -1;
-        $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-        return empty($results) ? null : $results->GetArray();
-    }
+    protected function get_archive_list_data($args) { echo('get_archive_list_data'); return true; }
 
     public function get_template_params() {
         $array = array(

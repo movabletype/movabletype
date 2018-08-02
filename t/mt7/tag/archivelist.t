@@ -36,14 +36,14 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 my $blog
     = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
-$blog->archive_type('ContentType-Author,ContentType-Category');
+$blog->archive_type('ContentType-Author,ContentType-Category,ContentType-Category-Monthly');
 $blog->save;
 
 my $content_type_01 = MT::Test::Permission->make_content_type(
@@ -66,6 +66,44 @@ my $author_02 = MT::Test::Permission->make_author(
     nickname => 'Masahiro Yanagida',
 );
 
+my $category_set = MT::Test::Permission->make_category_set(
+    blog_id => $content_type_01->blog_id,
+    name    => 'test category set',
+);
+my $cf_category = MT::Test::Permission->make_content_field(
+    blog_id            => $content_type_01->blog_id,
+    content_type_id    => $content_type_01->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
+);
+my $category1 = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category1',
+);
+my $category2 = MT::Test::Permission->make_category(
+    blog_id         => $category_set->blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category2',
+);
+
+my $fields = [
+    {   id      => $cf_category->id,
+        order   => 15,
+        type    => $cf_category->type,
+        options => {
+            label        => $cf_category->name,
+            category_set => $category_set->id,
+            multiple     => 1,
+            max          => 5,
+            min          => 1,
+        },
+    },
+];
+$content_type_01->fields($fields);
+$content_type_01->save or die $content_type_01->errstr;
+
 my $content_data_01 = MT::Test::Permission->make_content_data(
     blog_id         => $blog->id,
     content_type_id => $content_type_01->id,
@@ -73,6 +111,9 @@ my $content_data_01 = MT::Test::Permission->make_content_data(
     authored_on     => '20170927112314',
     identifier      => 'mtarchivelist-test-data 01',
     author_id       => $author_01->id,
+    data            => {
+        $cf_category->id => [ $category2->id ],
+    },
 );
 
 my $content_data_02 = MT::Test::Permission->make_content_data(
@@ -91,6 +132,41 @@ my $content_data_03 = MT::Test::Permission->make_content_data(
     authored_on     => '20170927112314',
     identifier      => 'mtarchivelist-test-data 02',
     author_id       => $author_02->id,
+);
+
+my $template = MT::Test::Permission->make_template(
+    blog_id         => $blog->id,
+    content_type_id => $content_type_01->id,
+    name            => 'ContentType Test 01',
+    type            => 'ct_archive',
+    text            => 'test 01',
+);
+
+my $map_01 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category',
+    file_template => '%-c/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
+    build_type    => 3,
+);
+my $map_02 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Author',
+    file_template => 'author/%-a/%f',
+    is_preferred  => 1,
+    build_type    => 3,
+);
+my $map_03 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category-Monthly',
+    file_template => '%-c/%y/%m/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
+    build_type    => 3,
 );
 
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
@@ -148,3 +224,34 @@ __END__
 --- expected
 1
 
+=== mt:ArchiveList type="ContentType-Category"
+--- skip_php
+1
+--- template
+<mt:ArchiveList type="ContentType-Category" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList>
+--- expected_error
+No Category Set could be found.
+
+=== mt:ArchiveList type="ContentType-Category-Monthly"
+--- skip_php
+1
+--- template
+<mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList>
+--- expected_error
+No Category Set could be found.
+
+=== mt:ArchiveList type="ContentType-Category" with category_set
+--- skip_php
+1
+--- template
+<mt:CategorySets><mt:ArchiveList type="ContentType-Category" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList></mt:CategorySets>
+--- expected
+1
+
+=== mt:ArchiveList type="ContentType-Category-Monthly" with category_set
+--- skip_php
+1
+--- template
+<mt:CategorySets><mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList></mt:CategorySets>
+--- expected
+1
