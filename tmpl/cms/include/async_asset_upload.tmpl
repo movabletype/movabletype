@@ -632,13 +632,19 @@ function uploadFile( formData, uploadBlock ) {
     cache: false,
     data: formData
   }).done( function(data){
-    if ( data.error ) {
-      // An eror occurrs
-      uploadBlock.setError( data.error );
+    if ( !data || data.error || !data.result ) {
+      // An eror occurs
+      var error = (data && data.error) ? data.error : '<__trans phrase="Unknown error occurred.">';
+      uploadBlock.setError( error );
     }
     else if ( data.result.cancel ) {
       // Cancelled by server
       uploadBlock.setCancelResult( data.result.cancel );
+    }
+    else if ( !data.result.asset ) {
+      // An eror occurs
+      var error = '<__trans phrase="Unknown error occurred.">';
+      uploadBlock.setError( error );
     }
     else {
       // Success
