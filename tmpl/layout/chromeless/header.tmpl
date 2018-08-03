@@ -29,7 +29,7 @@
 
     <mt:unless name="no_brand">
     <div class="row">
-      <div id="brand" class="col-12 text-center text-md-left">
+      <div id="brand" class="col-12<mt:unless name="screen_type" eq="popup-screen"> text-center text-md-left</mt:unless>">
         <img alt="Movable Type" src="<mt:var name="static_uri">images/logo-fullname-color.svg" width="238" height="52" />
       </div>
     </div>
