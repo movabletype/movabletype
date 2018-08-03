@@ -7,7 +7,7 @@
 
 require_once "archive_lib.php";
 function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
-    $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author'), common_loop_vars());
+    $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author', 'content_type'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $at = $args['type'];
@@ -35,6 +35,14 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         }
 
         $ctx->localize($localvars);
+
+        if (isset($args['content_type'])) {
+            $content_types = $ctx->mt->db()->fetch_content_types($args);
+            if ($content_types) {
+                $ctx->stash('content_type', $content_types[0]);
+            }
+        }
+
         $ctx->stash('current_archive_type', $at);
         ## If we are producing a Category archive list, don't bother to
         ## handle it here--instead hand it over to <MTCategories>.

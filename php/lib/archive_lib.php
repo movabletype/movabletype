@@ -25,7 +25,7 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     return $archiver->archive_prev_next($args, $content, $repeat, $tag, $at);
 }
 
-function _get_join_on($ctx, $at, $blog_id, $cat) {
+function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
     $maps = $ctx->mt->db()->fetch_templatemap(
         array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
     if (isset($maps)) {
@@ -59,9 +59,10 @@ function _get_join_on($ctx, $at, $blog_id, $cat) {
         $join_on = "join mt_cf_idx on cd_id = cf_idx_content_data_id and cf_idx_content_field_id = $dt_field_id";
         $dt_target_col = 'cf_idx_value_datetime';
     }
-    else {
+
+    if (!isset($dt_target_col))
         $dt_target_col = 'cd_authored_on';
-    }
+
     return array ($dt_target_col, $cat_target_col, $join_on); 
 }
 
@@ -70,6 +71,9 @@ function _get_content_type_filter($args) {
     $ctx =& $mt->context();
     if (isset($args['content_type']) && $args['content_type']) {
         if (is_numeric($args['content_type'])) {
+            $content_type = $mt->db()->fetch_content_type($args['content_type']);
+        }
+        if (isset($content_type)) {
             $content_type_filter = 'and cd_content_type_id = ' . $args['content_type'];
         }
         else {
@@ -3852,7 +3856,7 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return true;
     }
 
-    protected function get_archive_list_data($args) { echo('get_archive_list_data'); return true; }
+    protected function get_archive_list_data($args) { return true; }
 
     public function get_template_params() {
         $array = array(
@@ -4083,7 +4087,10 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = '> 0';
+            if (!isset($cat_set_id)) {
+                $category_set = $ctx->stash('category_set');
+                $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
+            }
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4094,46 +4101,53 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
 
         $categories = array();
         foreach ( $cats as $cat ) {
-            list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat);
-
-            $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
-
-            $inside = $ctx->stash('inside_archive_list');
-            if (!isset($inside)) {
-              $inside = false;
+            $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $cat_field_ids = array();
+            foreach ( $objectcategories as $objectcategory ) {
+                $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            if ($inside) {
-                $ts = $ctx->stash('current_timestamp');
-                $tsend = $ctx->stash('current_timestamp_end');
-                if ($ts && $tsend) {
-                    $ts = $mt->db()->ts2db($ts);
-                    $tsend = $mt->db()->ts2db($tsend);
-                    $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
+
+                $inside = $ctx->stash('inside_archive_list');
+                if (!isset($inside)) {
+                  $inside = false;
                 }
-            }
+                if ($inside) {
+                    $ts = $ctx->stash('current_timestamp');
+                    $tsend = $ctx->stash('current_timestamp_end');
+                    if ($ts && $tsend) {
+                        $ts = $mt->db()->ts2db($ts);
+                        $tsend = $mt->db()->ts2db($tsend);
+                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                    }
+                }
 
-            $sql = "
-                select count(*) as cd_count,
-                       $year_ext as y,
-                       $cat_target_col
-                  from mt_cd
-                  $join_on
-                 where cd_blog_id = $blog_id
-                   and cd_status = 2
-                   $date_filter
-                   $content_type_filter
-                 group by
-                       $year_ext,
-                       $cat_target_col
-                 order by
-                       $cat_target_col $cat_order,
-                       $year_ext $order";
-            $limit = isset($args['lastn']) ? $args['lastn'] : -1;
-            $offset = isset($args['offset']) ? $args['offset'] : -1;
-            $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-            if (!empty($results)) {
-                $array = $results->GetArray();
-                $categories = array_merge($categories, $array);
+                $sql = "
+                    select count(*) as cd_count,
+                           $year_ext as y,
+                           $cat_target_col
+                      from mt_cd
+                      $join_on
+                     where cd_blog_id = $blog_id
+                       and cd_status = 2
+                       $date_filter
+                       $content_type_filter
+                     group by
+                           $year_ext,
+                           $cat_target_col
+                     order by
+                           $cat_target_col $cat_order,
+                           $year_ext $order";
+                $limit = isset($args['lastn']) ? $args['lastn'] : -1;
+                $offset = isset($args['offset']) ? $args['offset'] : -1;
+                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                if (!empty($results)) {
+                    $array = $results->GetArray();
+                    $categories = array_merge($categories, $array);
+                }
             }
         }
         return $categories;
@@ -4212,7 +4226,10 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = '> 0';
+            if (!isset($cat_set_id)) {
+                $category_set = $ctx->stash('category_set');
+                $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
+            }
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4223,50 +4240,57 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
 
         $categories = array();
         foreach ( $cats as $cat ) {
-            list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat);
-
-            $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
-            $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
-
-            $index = $ctx->stash('index_archive');
-            $inside = $ctx->stash('inside_archive_list');
-            if (!isset($inside)) {
-              $inside = false;
+            $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $cat_field_ids = array();
+            foreach ( $objectcategories as $objectcategory ) {
+                $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            if ($inside) {
-                $ts = $ctx->stash('current_timestamp');
-                $tsend = $ctx->stash('current_timestamp_end');
-                if ($ts && $tsend) {
-                    $ts = $mt->db()->ts2db($ts);
-                    $tsend = $mt->db()->ts2db($tsend);
-                    $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
+                $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
+
+                $index = $ctx->stash('index_archive');
+                $inside = $ctx->stash('inside_archive_list');
+                if (!isset($inside)) {
+                  $inside = false;
                 }
-            }
-            $sql = "
-                select count(*) as cd_count,
-                       $year_ext as y,
-                       $month_ext as m,
-                       $cat_target_col
-                  from mt_cd
-                  $join_on
-                 where cd_blog_id = $blog_id
-                   and cd_status = 2
-                   $date_filter
-                   $content_type_filter
-                 group by
-                       $year_ext,
-                       $month_ext,
-                       $cat_target_col
-                 order by
-                       $cat_target_col $cat_order,
-                       $year_ext $order,
-                       $month_ext $order";
-            $limit = isset($args['lastn']) ? $args['lastn'] : -1;
-            $offset = isset($args['offset']) ? $args['offset'] : -1;
-            $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-            if (!empty($results)) {
-                $array = $results->GetArray();
-                $categories = array_merge($categories, $array);
+                if ($inside) {
+                    $ts = $ctx->stash('current_timestamp');
+                    $tsend = $ctx->stash('current_timestamp_end');
+                    if ($ts && $tsend) {
+                        $ts = $mt->db()->ts2db($ts);
+                        $tsend = $mt->db()->ts2db($tsend);
+                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                    }
+                }
+                $sql = "
+                    select count(*) as cd_count,
+                           $year_ext as y,
+                           $month_ext as m,
+                           $cat_target_col
+                      from mt_cd
+                      $join_on
+                     where cd_blog_id = $blog_id
+                       and cd_status = 2
+                       $date_filter
+                       $content_type_filter
+                     group by
+                           $year_ext,
+                           $month_ext,
+                           $cat_target_col
+                     order by
+                           $cat_target_col $cat_order,
+                           $year_ext $order,
+                           $month_ext $order";
+                $limit = isset($args['lastn']) ? $args['lastn'] : -1;
+                $offset = isset($args['offset']) ? $args['offset'] : -1;
+                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                if (!empty($results)) {
+                    $array = $results->GetArray();
+                    $categories = array_merge($categories, $array);
+                }
             }
         }
         return $categories;
@@ -4344,7 +4368,10 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = '> 0';
+            if (!isset($cat_set_id)) {
+                $category_set = $ctx->stash('category_set');
+                $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
+            }
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4355,53 +4382,60 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
 
         $categories = array();
         foreach ( $cats as $cat ) {
-            list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat);
-
-            $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
-            $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
-            $day_ext = $mt->db()->apply_extract_date('day', $dt_target_col);
-
-            $inside = $ctx->stash('inside_archive_list');
-            if (!isset($inside)) {
-                $inside = false;
+            $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $cat_field_ids = array();
+            foreach ( $objectcategories as $objectcategory ) {
+                $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            if ($inside) {
-                $ts = $ctx->stash('current_timestamp');
-                $tsend = $ctx->stash('current_timestamp_end');
-                if ($ts && $tsend) {
-                    $ts = $mt->db()->ts2db($ts);
-                    $tsend = $mt->db()->ts2db($tsend);
-                    $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
+                $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
+                $day_ext = $mt->db()->apply_extract_date('day', $dt_target_col);
+
+                $inside = $ctx->stash('inside_archive_list');
+                if (!isset($inside)) {
+                    $inside = false;
                 }
-            }
-            $sql = "
-                select count(*) as cd_count,
-                       $year_ext as y,
-                       $month_ext as m,
-                       $day_ext as d,
-                       $cat_target_col
-                  from mt_cd
-                  $join_on
-                 where cd_blog_id = $blog_id
-                   and cd_status = 2
-                   $date_filter
-                   $content_type_filter
-                 group by
-                       $year_ext,
-                       $month_ext,
-                       $day_ext,
-                       $cat_target_col
-                 order by
-                       $cat_target_col $cat_order,
-                       $year_ext $order,
-                       $month_ext $order,
-                       $day_ext $order";
-            $limit = isset($args['lastn']) ? $args['lastn'] : -1;
-            $offset = isset($args['offset']) ? $args['offset'] : -1;
-            $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-            if (!empty($results)) {
-                $array = $results->GetArray();
-                $categories = array_merge($categories, $array);
+                if ($inside) {
+                    $ts = $ctx->stash('current_timestamp');
+                    $tsend = $ctx->stash('current_timestamp_end');
+                    if ($ts && $tsend) {
+                        $ts = $mt->db()->ts2db($ts);
+                        $tsend = $mt->db()->ts2db($tsend);
+                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                    }
+                }
+                $sql = "
+                    select count(*) as cd_count,
+                           $year_ext as y,
+                           $month_ext as m,
+                           $day_ext as d,
+                           $cat_target_col
+                      from mt_cd
+                      $join_on
+                     where cd_blog_id = $blog_id
+                       and cd_status = 2
+                       $date_filter
+                       $content_type_filter
+                     group by
+                           $year_ext,
+                           $month_ext,
+                           $day_ext,
+                           $cat_target_col
+                     order by
+                           $cat_target_col $cat_order,
+                           $year_ext $order,
+                           $month_ext $order,
+                           $day_ext $order";
+                $limit = isset($args['lastn']) ? $args['lastn'] : -1;
+                $offset = isset($args['offset']) ? $args['offset'] : -1;
+                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                if (!empty($results)) {
+                    $array = $results->GetArray();
+                    $categories = array_merge($categories, $array);
+                }
             }
         }
         return $categories;
@@ -4489,7 +4523,10 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         }
         else {
             $cat_set_id = $args['category_set_id'];
-            $cat_set_id or $cat_set_id = '> 0';
+            if (!isset($cat_set_id)) {
+                $category_set = $ctx->stash('category_set');
+                $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
+            }
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4500,43 +4537,50 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
 
         $categories = array();
         foreach ( $cats as $cat ) {
-            list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat);
+            $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $cat_field_ids = array();
+            foreach ( $objectcategories as $objectcategory ) {
+                $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
+            }
+            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
 
-            $inside = $ctx->stash('inside_archive_list');
-            if (!isset($inside)) {
-              $inside = false;
-            }
-            if ($inside) {
-                $ts = $ctx->stash('current_timestamp');
-                $tsend = $ctx->stash('current_timestamp_end');
-                if ($ts && $tsend) {
-                    $ts = $mt->db()->ts2db($ts);
-                    $tsend = $mt->db()->ts2db($tsend);
-                    $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                $inside = $ctx->stash('inside_archive_list');
+                if (!isset($inside)) {
+                  $inside = false;
                 }
-            }
-            $sql = "
-                select count(*) as cd_count,
-                       cd_week_number,
-                       $cat_target_col
-                  from mt_cd
-                  $join_on
-                 where cd_blog_id = $blog_id
-                   and cd_status = 2
-                   $date_filter
-                   $content_type_filter
-                 group by
-                       cd_week_number,
-                       $cat_target_col
-                 order by
-                       $cat_target_col $cat_order,
-                       cd_week_number $order";
-            $limit = isset($args['lastn']) ? $args['lastn'] : -1;
-            $offset = isset($args['offset']) ? $args['offset'] : -1;
-            $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-            if (!empty($results)) {
-                $array = $results->GetArray();
-                $categories = array_merge($categories, $array);
+                if ($inside) {
+                    $ts = $ctx->stash('current_timestamp');
+                    $tsend = $ctx->stash('current_timestamp_end');
+                    if ($ts && $tsend) {
+                        $ts = $mt->db()->ts2db($ts);
+                        $tsend = $mt->db()->ts2db($tsend);
+                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                    }
+                }
+                $sql = "
+                    select count(*) as cd_count,
+                           cd_week_number,
+                           $cat_target_col
+                      from mt_cd
+                      $join_on
+                     where cd_blog_id = $blog_id
+                       and cd_status = 2
+                       $date_filter
+                       $content_type_filter
+                     group by
+                           cd_week_number,
+                           $cat_target_col
+                     order by
+                           $cat_target_col $cat_order,
+                           cd_week_number $order";
+                $limit = isset($args['lastn']) ? $args['lastn'] : -1;
+                $offset = isset($args['offset']) ? $args['offset'] : -1;
+                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                if (!empty($results)) {
+                    $array = $results->GetArray();
+                    $categories = array_merge($categories, $array);
+                }
             }
         }
         return $categories;

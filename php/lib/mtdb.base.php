@@ -1792,8 +1792,7 @@ abstract class MTDatabase {
            }
         }
 
-        $count_column = 'placement_id';
-        if (!isset($args['category_set_id']) || $args['category_set_id'] !== '> 0') {
+        if (!isset($args['category_set_id']) || $args['category_set_id'] === '> 0') {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
                 if (isset($args['entry_id'])) {
@@ -1810,6 +1809,7 @@ abstract class MTDatabase {
                 } else {
                     $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
                 }
+                $count_column = 'placement_id';
             }
         }
         else {
@@ -1829,6 +1829,7 @@ abstract class MTDatabase {
                 } else {
                     $entry_filter = ' and objectcategory_object_id = cd_id and cd_status = 2';
                 }
+                $count_column = 'objectcategory_id';
             }
         }
 
