@@ -241,16 +241,12 @@ No Category Set could be found.
 No Category Set could be found.
 
 === mt:ArchiveList type="ContentType-Category" with category_set
---- skip_php
-1
 --- template
 <mt:CategorySets><mt:ArchiveList type="ContentType-Category" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList></mt:CategorySets>
 --- expected
 1
 
 === mt:ArchiveList type="ContentType-Category-Monthly" with category_set
---- skip_php
-1
 --- template
 <mt:CategorySets><mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList></mt:CategorySets>
 --- expected

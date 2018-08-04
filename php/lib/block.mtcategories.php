@@ -8,7 +8,7 @@
 function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
-    $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
+    $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', 'contents', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -41,6 +41,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $category = $categories[$counter];
         $ctx->stash('category', $category);
         $ctx->stash('entries', null);
+        $ctx->stash('contents', null);
         $ctx->stash('_categories_counter', $counter + 1);
         $ctx->stash('blog_id', $category->category_blog_id);
         $ctx->stash('ArchiveListHeader', $counter == 0);
