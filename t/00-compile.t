@@ -149,6 +149,7 @@ use_ok('MT::BackupRestore::ContentTypePermission');
 use_ok('MT::CMS::CategorySet');
 use_ok('MT::CMS::ContentData');
 use_ok('MT::CMS::ContentType');
+use_ok('MT::CMS::Mobile');
 use_ok('MT::CategorySet');
 use_ok('MT::ContentData');
 use_ok('MT::ContentField');
