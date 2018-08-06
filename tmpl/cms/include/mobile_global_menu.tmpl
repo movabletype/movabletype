@@ -75,7 +75,7 @@
 </mt:if>
         </li>
         <li class="mt-mobileGlobalMenu__menu">
-          <a href="#">
+          <a href="javascript:void(0);" onclick="changeToPCView();">
             <__trans phrase="PC View">
           </a>
         </li>
@@ -140,3 +140,32 @@ jQuery(window).on('load resize', function () {
   $dropdownMenu.width(globalMenuWidth * 0.8);
 });
 </mt:setvarblock>
+
+<script>
+  function updateViewport() {
+    jQuery('meta[name=viewport]').attr('content', 'width=1200, initial-scale=0.25');
+  }
+
+  function closeMobileGlobalMenu() {
+    jQuery('.mt-mobileGlobalMenu__dropdownMenu').dropdown('toggle');
+  }
+
+  function changeToPCView() {
+    jQuery.ajax({
+      type: 'POST',
+      url: '<mt:var name="script_url">',
+      dataType: 'json',
+      data: {
+        __mode: 'change_to_pc_view'
+      }
+    }).done(function () {
+      updateViewport();
+      closeMobileGlobalMenu();
+    });
+  }
+
+  var pcView = <mt:var name="pc_view" escape="js"> ? true : false;
+  if (pcView) {
+    updateViewport();
+  }
+</script>
