@@ -13,7 +13,7 @@ function smarty_function_mtarchivetitle($args, &$ctx) {
     } elseif (isset($args['archive_type'])) {
         $at = $args['archive_type'];
     }
-    if ($at == 'Category') {
+    if ($at == 'Category' || $at == 'ContentType-Category') {
          $title = $ctx->tag('CategoryLabel', $args);
          if ( !empty( $title )) {
              $title = encode_html( strip_tags( $title ));
