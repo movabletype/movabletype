@@ -41,7 +41,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.0.4',                '__PRODUCT_VERSION_ID__',
+        '7.0.4',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -2134,6 +2134,7 @@ sub set_default_tmpl_params {
         if ( my $author = $mt->user ) {
             $param->{author_id}   = $author->id;
             $param->{author_name} = $author->name;
+            $param->{pc_view}     = $mt->session('pc_view') ? 1 : 0;
         }
         ## We do this in load_tmpl because show_error and login don't call
         ## build_page; so we need to set these variables here.

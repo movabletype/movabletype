@@ -394,6 +394,11 @@ sub core_methods {
         'dialog_select_group_user' => "${pkg}Group::dialog_select_group_user",
         'view_group'               => "${pkg}Group::view_group",
         'edit_group'               => "${pkg}Group::view_group",
+
+        'change_to_pc_view' => {
+            code     => "${pkg}Mobile::change_to_pc_view",
+            app_mode => 'JSON',
+        },
     };
 }
 

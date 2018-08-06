@@ -1119,7 +1119,7 @@ ms@2.0.0:
 
 "mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#2fd388df79abdb057bf0870930043c22f7e58989"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#1384c0c4f091a3f285f83b7af7eb5c672a775ff4"
   dependencies:
     bootstrap "4.0.0"
     winston "^2.3.1"
