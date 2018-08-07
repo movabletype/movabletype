@@ -473,17 +473,33 @@ abstract class MTDatabase {
         if (isset($args['build_type'])) {
             $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
         }
+        if (isset($args['content_type'])) {
+            $content_types = $this->fetch_content_types(array('content_type' => $args['content_type']));
+            if (isset($content_types)) {
+                $content_type = $content_types[0];
+                $extras['join'] = array(
+                    'mt_template' => array(
+                        'condition' => "template_id = templatemap_template_id"
+                        )
+                    );
+                $content_type_filter = 'and template_content_type_id = ' . intval($content_type->id);
+            }
+            else {
+                return '';
+            }
+        }
 
         $where = "1 = 1
                   $blog_filter
                   $type_filter
                   $preferred_filter
                   $build_type_filter
+                  $content_type_filter
                   order by templatemap_archive_type";
 
         require_once('class.mt_templatemap.php');
         $tmap = new TemplateMap;
-        $result = $tmap->Find($where);
+        $result = $tmap->Find($where, false, false, $extras);
         return $result;
     }
 

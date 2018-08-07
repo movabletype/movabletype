@@ -17,7 +17,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         $at_exists = preg_match("/,$at,/", $blog_at);
         if ($at_exists) {
             $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog->blog_id));
+                array('type' => $at, 'blog_id' => $blog->blog_id, 'content_type' => $args['content_type']));
             if (!empty($maps)) {
                 foreach ($maps as $map) {
                     if ($map->templatemap_build_type != 0 )
