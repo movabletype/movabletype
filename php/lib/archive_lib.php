@@ -3072,6 +3072,10 @@ class ContentTypeAuthorArchiver implements ArchiveType {
             if ( !empty( $entry ) ) {
                 $author = $entry->author();
             }
+            $content = $ctx->stash('content');
+            if ( !empty( $content ) ) {
+                $author = $content->author();
+            }
         }
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
