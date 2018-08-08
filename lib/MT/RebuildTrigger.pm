@@ -108,8 +108,7 @@ sub class_label {
 sub get_config_value {
     my $self = shift;
     my ( $var, $blog_id ) = @_;
-
-    my $blog = MT->model('blog')->load($blog_id);
+    my $target_blog = MT->model('blog')->load($blog_id);
     my $target_blog_id = $var == TARGET_BLOG() ? $blog_id : 0;
     my @rebuild_triggers
         = MT->model('rebuild_trigger')
@@ -120,16 +119,11 @@ sub get_config_value {
         next unless $target eq $var;
         my @blog_ids = ();
         if ( $target == TARGET_ALL() ) {
-            my @websites = MT->model('website')->load();
-            my @blogs    = MT->model('blog')->load();
-            @blog_ids = map { $_->id } @websites;
-            push @blog_ids, map { $_->id } @blogs;
+            push @blog_ids, $rt->blog_id;
         }
         elsif ( $target == TARGET_BLOGS_IN_WEBSITE() ) {
-            next if $blog->is_blog();
-            my @child_blogs = @{ $blog->blogs() };
-            push @blog_ids, $blog->id;
-            push @blog_ids, map { $_->id } @child_blogs;
+            push @blog_ids, $rt->blog_id
+                if $target_blog->id == $rt->blog_id;
         }
         else {
             push @blog_ids, $rt->blog_id;
@@ -486,9 +480,8 @@ sub _post_content_common {
     }
 
     if ( my $website = $blog->website ) {
-        my $blog_id = $website->id;
         my $d
-            = $self->get_config_value( TARGET_BLOGS_IN_WEBSITE(), $blog_id );
+            = $self->get_config_value( TARGET_BLOGS_IN_WEBSITE(), $website->id );
         $code->($d);
     }
 }
