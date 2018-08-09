@@ -265,6 +265,8 @@ abstract class BaseObject extends ADOdb_Active_Record
                             $mt = MT::get_instance();
                             $value = preg_replace("/^BIN:/", "", $value);
                             $value = $mt->db()->unserialize($value);
+                        } elseif (preg_match("/^ASC:/", $value)) {
+                            $value = preg_replace("/^ASC:/", "", $value);
                         }
                     }
                     break;
@@ -361,6 +363,8 @@ abstract class BaseObject extends ADOdb_Active_Record
                                 $mt = MT::get_instance();
                                 $value = preg_replace("/^BIN:/", "", $value);
                                 $value = $mt->db()->unserialize($value);
+                            } elseif (preg_match("/^ASC:/", $value)) {
+                                $value = preg_replace("/^ASC:/", "", $value);
                             }
                         }
                         break;
