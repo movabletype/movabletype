@@ -599,6 +599,9 @@ abstract class MTDatabase {
 
             require_once('MTUtil.php');
             $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
+            if (substr($blog_url, -1, 1) == '/' && substr($finfo->fileinfo_url, 0, 1) == '/') {
+                $blog_url = substr_replace($blog_url, "", -1);
+            }
             $url = $blog_url . $finfo->fileinfo_url;
             $url = _strip_index($url, $blog);
             $this->_archive_link_cache[$ts.';'.$at] = $url;
