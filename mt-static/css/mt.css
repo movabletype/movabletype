@@ -9920,6 +9920,10 @@ li {
 }
 
 /* Mobile Primary Menu */
+.mt-mobilePrimaryMenu {
+  padding-bottom: 1rem !important;
+}
+
 .mt-mobilePrimaryMenu.show .mt-mobilePrimaryMenu__dropdownMenuButton {
   background-color: #CACACA;
 }
@@ -10180,6 +10184,10 @@ fieldset.form-group {
 }
 
 /* Tables */
+.mt-table {
+  margin-bottom: 0;
+}
+
 .mt-table th, .mt-table td {
   padding: .8rem;
 }
