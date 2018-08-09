@@ -96,7 +96,7 @@ sub html {
     while ( my $cd = $iter->() ) {
         $child_cd{ $cd->id } = $cd;
     }
-    my @child_cd = map { $child_cd{$_} } @child_cd_ids;
+    my @child_cd = grep {$_} map { $child_cd{$_} } @child_cd_ids;
 
     my @cd_links;
     for my $cd (@child_cd) {
