@@ -10185,7 +10185,7 @@ fieldset.form-group {
 
 /* Tables */
 .mt-table {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
 }
 
 .mt-table th, .mt-table td {
