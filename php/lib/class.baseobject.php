@@ -260,10 +260,12 @@ abstract class BaseObject extends ADOdb_Active_Record
                 $col_name = $obj->_prefix . 'meta_' . $f;
                 $value = $meta->$col_name;
                 if (!is_null($value)) {
-                    if (preg_match("/^BIN:SERG/", $value)) {
-                        $mt = MT::get_instance();
-                        $value = preg_replace("/^BIN:/", "", $value);
-                        $value = $mt->db()->unserialize($value);
+                    if ($f == "vblob") {
+                        if (preg_match("/^BIN:SERG/", $value)) {
+                            $mt = MT::get_instance();
+                            $value = preg_replace("/^BIN:/", "", $value);
+                            $value = $mt->db()->unserialize($value);
+                        }
                     }
                     break;
                 }
@@ -354,10 +356,12 @@ abstract class BaseObject extends ADOdb_Active_Record
                     $col_name = $obj->_prefix . 'meta_' . $f;
                     $value = $meta->$col_name;
                     if (!is_null($value)) {
-                        if (preg_match("/^BIN:SERG/", $value)) {
-                            $mt = MT::get_instance();
-                            $value = preg_replace("/^BIN:/", "", $value);
-                            $value = $mt->db()->unserialize($value);
+                        if ($f == "vblob") {
+                            if (preg_match("/^BIN:SERG/", $value)) {
+                                $mt = MT::get_instance();
+                                $value = preg_replace("/^BIN:/", "", $value);
+                                $value = $mt->db()->unserialize($value);
+                            }
                         }
                         break;
                     }
