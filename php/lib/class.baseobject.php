@@ -20,13 +20,22 @@ abstract class BaseObject extends ADOdb_Active_Record
         'author' => array(
             'widgets' => 'vblob',
             'favorite_blogs' => 'vblob',
+            'favorite_websites' => 'vblob',
+            'favorite_sites' => 'vblob',
             'password_reset' => 'vchar',
             'password_reset_expires' => 'vchar',
-            'password_reset_return_to' => 'vchar'
+            'password_reset_return_to' => 'vchar',
+            'list_prefs' => 'vblob',
+            'lockout_recover_salt' => 'vchar'
             ),
         'asset' => array(
             'image_width' => 'vinteger',
-            'image_height' => 'vinteger'
+            'image_height' => 'vinteger',
+            'image_metadata' => 'vblob'
+            ),
+        'entry' => array(
+            'junk_log' => 'vstring',
+            'revision' => 'vinteger'
             ),
         'template' => array(
             'last_rebuild_time' => 'vinteger',
@@ -36,7 +45,8 @@ abstract class BaseObject extends ADOdb_Active_Record
             'cache_expire_interval' => 'vinteger',
             'cache_expire_event' => 'vchar',
             'cache_path' => 'vchar',
-            'modulesets' => 'vchar'
+            'modulesets' => 'vchar',
+            'revision' => 'vinteger'
             ),
         'blog' => array(
             'image_default_wrap_text' => 'vinteger',
@@ -58,8 +68,32 @@ abstract class BaseObject extends ADOdb_Active_Record
             'template_set' => 'vchar',
             'page_layout' => 'vchar',
             'include_system' => 'vchar',
-            'include_cache' => 'vinteger'
-            )
+            'include_cache' => 'vinteger',
+            'max_revisions_entry' => 'vinteger',
+            'max_revisions_cd' => 'vinteger',
+            'max_revisions_template' => 'vinteger',
+            'theme_export_settings' => 'vblob',
+            'category_order' => 'vchar',
+            'folder_order' => 'vchar',
+            'publish_empty_archive' => 'vinteger',
+            'upload_destination' => 'vinteger',
+            'extra_path' => 'vchar',
+            'operation_if_exists' => 'vinteger',
+            'normalize_orientation' => 'vinteger',
+            'auto_rename_non_ascii' => 'vinteger',
+            'blog_content_accessible' => 'vinteger',
+            'default_mt_sites_action' => 'vinteger',
+            'default_mt_sites_sites' => 'vchar'
+            ),
+        'category' => array(
+            'show_fields' => 'vchar',
+            ),
+        'cd' => array(
+            'revision' => 'vinteger',
+            'convert_breaks' => 'vchar',
+            'blob_convert_breaks' => 'vblob',
+            'block_editor_data' => 'vchar'
+            ),
         );
     private $_meta_fields = array(
         'vchar',
