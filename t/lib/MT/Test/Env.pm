@@ -447,6 +447,11 @@ sub load_schema_and_fixture {
             my $data = $fixture->{$table};
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
+            for my $bind_value (@bind) {
+                if ($bind_value && $bind_value =~ /^BIN:SERG/) {
+                    $bind_value =~ s/(.)/sprintf('0x%02x', ord($1))/ge;
+                }
+            }
             $sql =~ s/\n/ /g;
             $dbh->do( $sql, undef, @bind );
         }
