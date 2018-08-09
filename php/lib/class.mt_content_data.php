@@ -64,8 +64,8 @@ class ContentData extends BaseObject
       $cf->Load($where);
       return $cf;
     }
-
 }
 
-
+// Relations
+ADODB_Active_Record::ClassHasMany('ContentData', 'mt_cd_meta','cd_meta_cd_id');
 ?>
