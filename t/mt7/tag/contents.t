@@ -43,9 +43,9 @@ sub var {
 }
 
 filters {
-    template       => [qw( var chomp )],
-    expected       => [qw( var chomp )],
-    expected_error => [qw( var chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
+    error    => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture('db');
