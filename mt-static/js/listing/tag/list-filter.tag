@@ -546,7 +546,7 @@
                   <a href="#" onclick={ applyFilter }>
                     { label }
                   </a>
-                  <div class="float-right">
+                  <div class="float-right d-none d-md-block">
                     <a href="#" onclick={ startEditingFilter }>[{ trans( 'rename' ) }]</a>
                     <a href="#" class="d-inline-block" onclick={ removeFilter }>
                       <ss title={ trans('Remove') }
@@ -569,10 +569,10 @@
                   </div>
                 </div>
               </li>
-              <li class="filter line">
+              <li class="filter line d-none d-md-list-item">
                 <a href="#"
                   id="new_filter"
-                  class="icon-mini-left addnew create-new apply-link d-inline-block"
+                  class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                   onclick={ createNewFilter }
                 >
                   <ss title={ trans('Add') }
