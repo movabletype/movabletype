@@ -83,6 +83,10 @@ abstract class MTDatabase {
         return $order;
     }
 
+    public function binary_column( $column ) {
+        return $column;
+    }
+
     public function SelectLimit($sql, $limit = -1, $offset = -1) {
         return $this->conn->SelectLimit($sql, $limit, $offset);
     }
