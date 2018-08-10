@@ -325,8 +325,6 @@ test single line text 1
 
 
 === MT:Contents with sort_by content field
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>

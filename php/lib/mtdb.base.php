@@ -4261,10 +4261,10 @@ abstract class MTDatabase {
 
                 $dt_field = "$alias.cf_idx_value_$data_type";
 
-                $join  = 'join mt_cf_idx ' . $alias;
-                $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $date_cf->cf_id;
-                $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
-                $join_clause .= $join;
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $date_cf->cf_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id";
+                $extras['join'][$join_table] = array('condition' => $join_condition);
             }
             $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
         } elseif (isset($args['limit'])) {
@@ -4323,10 +4323,10 @@ abstract class MTDatabase {
                     $alias = 'cf_idx_' . $cf->id;
 
                     $data_type = $cf_type->get_data_type();
-                    $join  = "join mt_cf_idx $alias";
-                    $join .= " on $alias.cf_idx_content_field_id = " . $cf->cf_id;
-                    $join .= " and $alias.cf_idx_content_data_id = cd_id\n";
-                    $join_clause .= $join;
+                    $join_table = "mt_cf_idx $alias";
+                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                      " and $alias.cf_idx_content_data_id = cd_id";
+                    $extras['join'][$join_table] = array('condition' => $join_condition);
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
                 }
@@ -4374,6 +4374,7 @@ abstract class MTDatabase {
             $limit = 0; $offset = 0;
         }
 
+        $field_filter = '';
         if (count($fields)) {
             foreach ($fields as $key => $value) {
                 $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'name' => $key));
@@ -4481,12 +4482,13 @@ abstract class MTDatabase {
                     $cf_type = ContentFieldTypeFactory::get_type($type);
                     $data_type = $cf_type->get_data_type();
 
-                    $join  = 'join mt_cf_idx ' . $alias;
-                    $join .= ' on ' . $alias. '.cf_idx_content_field_id = ' . $cf->cf_id;
-                    $join .= ' and ' . $alias. '.cf_idx_content_data_id = cd_id';
+                    $join_table = "mt_cf_idx $alias";
+                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                      " and $alias.cf_idx_content_data_id = cd_id";
+                    $extras['join'][$join_table] = array('condition' => $join_condition);
+
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
-                    $join .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
-                    $join_clause .= $join;
+                    $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
                 }
             }
         }
@@ -4520,6 +4522,7 @@ abstract class MTDatabase {
                     $author_filter
                     $date_filter
                     $day_filter
+                    $field_filter
                     $unique_id_filter";
         if ($sort_field) {
             $sql .= "order by $sort_field $base_order";
@@ -4536,7 +4539,7 @@ abstract class MTDatabase {
         if ($limit <= 0) $limit = -1;
         if ($offset <= 0) $offset = -1;
         $result = $this->db()->SelectLimit($sql, $limit, $offset);
-        if ($result->EOF) return null;
+        if (!$result || $result->EOF) return null;
 
         $field_names = array_keys($result->fields);
 
