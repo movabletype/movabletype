@@ -12,7 +12,7 @@ interface ContentFieldType {
 class ContentFieldTypeFactory {
     private static $_content_field_types = array(
         'content_type'     => 'ContentTypeRegistry',
-        'single_line_text' => 'SilgleLineEditRegistry',
+        'single_line_text' => 'SingleLineEditRegistry',
         'multi_line_text'  => 'MultiLineTextRegistry',
         'number'           => 'NumberRegistry',
         'url'              => 'URLRegistry',
@@ -73,7 +73,7 @@ class ContentTypeRegistry implements ContentFieldType {
     }
 }
 
-class SilgleLineEditRegistry implements ContentFieldType {
+class SingleLineEditRegistry implements ContentFieldType {
     public function get_data_type($args = null) {
         return 'varchar';
     }
