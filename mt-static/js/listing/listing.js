@@ -730,7 +730,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-3"> <div data-is="list-actions" if="{opts.useActions}" class="col-12"> </div> </div> <div class="row mb-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-12"></div> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-3"> <div data-is="list-actions" if="{opts.useActions}" class="col-12"> </div> </div> <div class="row mb-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-auto mx-auto"></div> </div>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
