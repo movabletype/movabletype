@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="row" hide={ opts.store.count == 0 }>
-    <div data-is="list-pagination" class="col-auto mx-auto"></div>
+    <virtual data-is="list-pagination"></virtual>
   </div>
 
   <script>
