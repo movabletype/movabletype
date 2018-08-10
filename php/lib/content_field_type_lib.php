@@ -9,6 +9,7 @@ interface ContentFieldType {
     public function get_label($args = null);
     public function get_data_type($args = null);
     public function get_field_value($value, &$ctx, &$args);
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat);
 }
 
 class ContentFieldTypeFactory {
@@ -69,6 +70,95 @@ class ContentFieldTypeFactory {
     }
 }
 
+class ContentFieldTypeTagHandler {
+    public static function _default ($value, &$args, &$res, &$ctx, &$repeat) {
+        $ctx->__stash['vars']['__value__'] = $value;
+        $ctx->stash('ContentFieldHeader', 1);
+        $ctx->stash('ContentFieldFooter', 1);
+    }
+
+    public static function multiple ($value, &$args, &$res, &$ctx, &$repeat) {
+        if (isset($value)) {
+            $values = is_array($value) ? $value : array($value);
+        }
+        $field_data = $ctx->stash('_content_field_data');
+        $option_values = $field_data['options']['values'];
+        if (!$option_values) $option_values = array();
+        foreach($option_values as $opt_v) {
+            $label[$opt_v['value']] = $opt_v['label'];
+        }
+
+        $coounter_max = $ctx->stash('_content_field_counter_max');
+        if (!$counter_max) {
+            $counter_max = $ctx->__stash['_content_field_counter_max'] = count($values);
+        }
+        $counter = $ctx->stash('_content_field_counter');
+
+        $v = $values[$counter];
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = $count == $counter_max;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__key__'] = $label[$v];
+        $ctx->__stash['vars']['__value__'] = $v;
+        $ctx->stash('ContentFieldHeader', $count == 1);
+        $ctx->stash('ContentFieldFooter', $count == $counter_max);
+        if (isset($args['glue'])) $res = $res . $args['glue'];
+    }
+
+    public static function asset ($value, &$args, &$res, &$ctx, &$repeat) {
+        $values = $ctx->stash('_content_field_values');
+        if (empty($values)) {
+            $bind_values = is_array($value) ? $value : array($value);
+            if (!count($bind_values)) $bind_values = array(0);
+            $bind_value_count = count($bind_values);
+            if ($bind_value_count > 1) {
+                $placeholders = implode(",", array_fill(0, $bind_value_count, "?"));
+                $where = "asset_id IN ($placeholders)";
+            } else {
+                $where = "asset_id = ?";
+            }
+            $where = $where . " AND asset_parent IS NULL";
+
+            require_once("class.mt_asset.php");
+            $asset_class = new Asset;
+            $assets = $asset_class->Find($where, $bind_values);
+
+            $map = array();
+            foreach($assets as $asset) {
+                $map[$asset->id] = $asset;
+            }
+            $values = array();
+            foreach($bind_values as $v) {
+                array_push($values, $map[$v]);
+            }
+
+            $ctx->stash('_assets', $values);
+            $ctx->stash('_assets_counter', 0);
+            $ctx->stash('_content_field_values', $values);
+            $ctx->stash('_content_field_counter_max', count($values));
+        }
+
+        $counter = $ctx->stash('_content_field_counter');
+        $counter_max = $ctx->stash('_content_field_counter_max');
+        $count = $counter + 1;
+
+        $ctx->stash('ContentFieldHeader', $count == 1);
+        $ctx->stash('ContentFieldFooter', $count == $counter_max);
+
+        if (!isset($args['sort_by']) && !isset($args['sort_order']))
+            $args['sort_order'] = 'none';
+
+        if (!isset($res)) $res = ''; # skip assets initialization
+
+        require_once("block.mtassets.php");
+        smarty_block_mtassets($args, $res, $ctx, $repeat);
+        if (isset($args['glue'])) $res = $res . $args['glue'];
+    }
+}
+
 class ContentTypeRegistry implements ContentFieldType {
     public function get_label($args = null) {
         return 'Content Type';
@@ -81,6 +171,57 @@ class ContentTypeRegistry implements ContentFieldType {
         return $content
             ? $content->label || $ctx->mt->translate( 'No Label (ID:[_1])', $content->id )
             : '';
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        $values = $ctx->stash('_content_field_values');
+        if (empty($values)) {
+            $field_data = $ctx->stash('content_field_data');
+            $source = $field_data['options']['source'];
+            if (!$source) $source = 0;
+
+            require_once("class.mt_content_type.php");
+            $content_type_class = new ContentType;
+            $content_type = $content_type_class->Load($source);
+            if (!$content_type)
+                return $ctx->error( $ctx->mt->translate('No Content Type could be found.') );
+            $content_data = $ctx->stash('content');
+            if (!$content_data)
+                return $ctx->error( $ctx->mt->translate("You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentField" ) );
+
+            $data = $content_data->data;
+            if (isset($data))
+                $data = $ctx->mt->db()->unserialize($data);
+            $raw_ids = $data[$field_data['id']];
+            $ids = is_array($raw_ids) ? $raw_ids : array($raw_ids);
+            if (empty($ids)) $ids = array(0);
+            $ids_count = count($ids);
+
+            require_once("class.mt_content_data.php");
+            $content_data_class = new ContentData;
+            if ($ids_count > 1) {
+                $placeholders = implode(",", array_fill(0, $ids_count, "?"));
+                $where = "cd_id IN ($placeholders)";
+            } else {
+                $where = "cd_id = ?";
+            }
+            $values = $content_data_class->Find($where, $ids);
+
+            $ctx->stash('_content_field_values', $values);
+            $ctx->stash('_content_field_counter_max', count($values));
+            $ctx->stash('parent_content', $ctx->stash('content'));
+            $ctx->stash('parent_content_type', $ctx->stash('content_type'));
+            $ctx->stash('content_type', $content_type);
+            $ctx->stash('contents', $values);
+        }
+
+        $counter = $ctx->stash('_content_field_counter');
+        $counter_max = $ctx->stash('_content_field_counter_max');
+        $count = $counter + 1;
+
+        if (!isset($res)) $res = ''; # skip assets initialization
+
+        require_once("block.mtcontents.php");
+        smarty_block_mtcontents($args, $res, $ctx, $repeat);
     }
 }
 
@@ -96,6 +237,9 @@ class SingleLineEditRegistry implements ContentFieldType {
         return $args['words']
             ? first_n_text($value, $args['words'])
             : $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -140,6 +284,9 @@ class MultiLineTextRegistry implements ContentFieldType {
 
         return $value;
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class NumberRegistry implements ContentFieldType {
@@ -151,6 +298,9 @@ class NumberRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -164,6 +314,9 @@ class URLRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class DateAndTimeRegistry implements ContentFieldType {
@@ -176,6 +329,9 @@ class DateAndTimeRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         $args['ts'] = $value;
         return $ctx->_hdlr_date($args, $ctx);
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -193,6 +349,9 @@ class DateOnlyRegistry implements ContentFieldType {
         }
         return $ctx->_hdlr_date($args, $ctx);
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class TimeOnlyRegistry implements ContentFieldType {
@@ -209,6 +368,9 @@ class TimeOnlyRegistry implements ContentFieldType {
         }
         return $ctx->_hdlr_date($args, $ctx);
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class SelectBoxRegistry implements ContentFieldType {
@@ -220,6 +382,9 @@ class SelectBoxRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::multiple($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -233,6 +398,9 @@ class RadioButtonRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::multiple($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class CheckBoxesRegistry implements ContentFieldType {
@@ -244,6 +412,9 @@ class CheckBoxesRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::multiple($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -258,6 +429,9 @@ class AssetRegistry implements ContentFieldType {
         $asset = $ctx->stash('asset');
         return $asset ? $asset->id : '';
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::asset($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class AssetAudioRegistry implements ContentFieldType {
@@ -270,6 +444,9 @@ class AssetAudioRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         $asset = $ctx->stash('asset');
         return $asset ? $asset->id : '';
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::asset($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -284,6 +461,9 @@ class AssetVideoRegistry implements ContentFieldType {
         $asset = $ctx->stash('asset');
         return $asset ? $asset->id : '';
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::asset($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class AssetImageRegistry implements ContentFieldType {
@@ -297,6 +477,9 @@ class AssetImageRegistry implements ContentFieldType {
         $asset = $ctx->stash('asset');
         return $asset ? $asset->id : '';
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::asset($value, $args, $res, $ctx, $repeat);
+    }
 }
 
 class EmbeddedTextRegistry implements ContentFieldType {
@@ -308,6 +491,9 @@ class EmbeddedTextRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 
@@ -322,6 +508,92 @@ class CategoriesRegistry implements ContentFieldType {
         $category = $ctx->stash('category');
         return $category ? $category->id : '';
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        $values = $ctx->stash('_content_field_values');
+        if (empty($values)) {
+            $field_data = $ctx->stash('_content_field_data');
+            $category_set_id = $field_data['options']['category_set'];
+            if (!$category_set_id)
+                return $ctx->error( $ctx->mt->translate('No category_set setting in content field type.') );
+            $where = "category_category_set_id = $category_set_id";
+
+            require_once("class.mt_category.php");
+            $category_class = new Category;
+
+            $extra = array();
+            $bind_values = is_array($value) ? $value : array($value);
+            if (isset($args['lastn'])) {
+                if ($args['lastn'] > 0) {
+                    $extra['limit'] = $args['lastn'];
+                    if (!isset($args['sort']))
+                        $bind_values = array_slice($bind_values, 0, $args['lastn']);
+                } else {
+                    $bind_values = array();
+                }
+            }
+
+            if (!count($bind_values)) {
+                $bind_values = array(0);
+            }
+            $bind_value_count = count($bind_values);
+            if ($bind_value_count > 1) {
+                $placeholders = implode(",", array_fill(0, $bind_value_count, "?"));
+                $where = $where . " and category_id IN ($placeholders)";
+            } else {
+                $where = $where . " and category_id = ?";
+            }
+            if (isset($args['sort'])) {
+                $sort_by = "category_" . strtolower($args['sort']);
+                if ($category_class->has_column($sort_by)) {
+                    $tableinfo =& $category_class->TableInfo();
+                    if ($tableinfo->flds[$sort_by]->type == "CLOB") {
+                        $sort_by = $ctx->mt->db()->decorate_column($sort_by);
+                    }
+                    $where = $where . " order by $sort_by";
+                    if (isset($args['sort_order']) && $args['sort_order'] == 'descend') {
+                        $where = $where . " desc";
+                    }
+                }
+            }
+
+            $categories = $category_class->Find($where, $bind_values, false, $extra);
+
+            $values = array();
+            if (isset($args['sort'])) {
+                $values = $categories;
+            } else {
+                $map = array();
+                foreach($categories as $cat) {
+                    $map[$cat->id] = $cat;
+                }
+                foreach($bind_values as $v) {
+                    array_push($values, $map[$v]);
+                }
+            }
+
+            $category_class->bulk_load_meta($values);
+
+            $ctx->stash('_content_field_values', $values);
+            $ctx->stash('_content_field_counter_max', count($values));
+        }
+
+        $counter = $ctx->stash('_content_field_counter');
+        $counter_max = $ctx->stash('_content_field_counter_max');
+
+        $v = $values[$counter];
+        $count = $counter + 1;
+        $ctx->stash('category', $v);
+        $ctx->stash('blog_id', $v->blog_id);
+        $ctx->stash('blog', $v->blog());
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = $count == $counter_max;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->stash('ContentFieldHeader', $count == 1);
+        $ctx->stash('ContentFieldFooter', $count == $counter_max);
+        if (isset($args['glue'])) $res = $res . $args['glue'];
+    }
 }
 
 class TagsRegistry implements ContentFieldType {
@@ -335,6 +607,63 @@ class TagsRegistry implements ContentFieldType {
         $tag = $ctx->stash('Tag');
         return $tag ? $tag->id : '';
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        $is_preview = $ctx->mt->mode() == 'preview_content_data';
+
+        $values = $ctx->stash('_content_field_values');
+        if (empty($values)) {
+            $column = $is_preview ? $ctx->mt->db()->binary_column("tag_name") : "tag_id";
+
+            $bind_values = is_array($value) ? $value : array($value);
+            if (!count($bind_values)) $bind_values = array(0);
+            $bind_value_count = count($bind_values);
+            if ($bind_value_count > 1) {
+                $placeholders = implode(",", array_fill(0, $bind_value_count, "?"));
+                $where = "$column IN ($placeholders)";
+            } else {
+                $where = "$column = ?";
+            }
+
+            require_once("class.mt_tag.php");
+            $tag_class = new Tag;
+            $tags = $tag_class->Find($where, $bind_values);
+
+            foreach($tags as $tag) {
+                $key = $is_preview ? $tag->name : $tag->id;
+                $map[$key] = $tag;
+            }
+
+            $values = array();
+            foreach($bind_values as $v) {
+                $tag = $map[$v];
+                if (!$tag && $is_preview && isset($args['include_private']) && $args['include_private']) {
+                    $is_private = preg_match('/^\@/', $v) ? 1 : 0;
+                    $tag = new Tag;
+                    $tag->name($v);
+                    $tag->is_private($is_private);
+                }
+                if ($tag) array_push($values, $tag);
+            }
+
+            $ctx->stash('_content_field_values', $values);
+            $ctx->stash('_content_field_counter_max', count($values));
+        }
+
+        $counter = $ctx->stash('_content_field_counter');
+        $counter_max = $ctx->stash('_content_field_counter_max');
+
+        $v = $values[$counter];
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__first__'] = $count == 1;
+        $ctx->__stash['vars']['__last__'] = $count == $counter_max;
+        $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['Tag'] = $v;
+        $ctx->__stash['ContentFieldHeader'] = $count == 1;
+        $ctx->__stash['ContentFieldFooter'] = $count == $counter_max;
+        if (isset($args['glue'])) $res = $res . $args['glue'];
+    }
 }
 
 class ListRegistry implements ContentFieldType {
@@ -347,6 +676,28 @@ class ListRegistry implements ContentFieldType {
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
     }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        $values = is_array($value) ? $value : array($value);
+
+        $counter = $ctx->stash('_content_field_counter');
+        $counter_max = $ctx->stash('_content_field_counter_max');
+        if (!$counter_max) {
+            $counter_max = count($values);
+            $ctx->stash('_content_field_counter_max', $counter_max);
+        }
+
+        $v = $values[$counter];
+        $count = $counter + 1;
+        $ctx->__stash['vars']['__first__']   = $count == 1;
+        $ctx->__stash['vars']['__last__']    = ($count == count($values));
+        $ctx->__stash['vars']['__odd__']     = ($count % 2) == 1;
+        $ctx->__stash['vars']['__even__']    = ($count % 2) == 0;
+        $ctx->__stash['vars']['__counter__'] = $count;
+        $ctx->__stash['vars']['__value__']   = $v;
+        $ctx->__stash['ContentFieldHeader']  = $count == 1;
+        $ctx->__stash['ContentFieldFooter']  = ($count == count($values));
+        if (isset($args['glue'])) $res = $res . $args['glue'];
+    }
 }
 
 class TablesRegistry implements ContentFieldType {
@@ -358,6 +709,13 @@ class TablesRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         return $value;
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        if (!isset($value)) $value = '';
+        $table = "<table>\n$value\n</table>";
+        $ctx->__stash['vars']['__value__'] = $table;
+        $ctx->stash('ContentFieldHeader', 1);
+        $ctx->stash('ContentFieldFooter', 1);
     }
 }
 
