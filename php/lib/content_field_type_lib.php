@@ -6,6 +6,7 @@
 # $Id$
 
 interface ContentFieldType {
+    public function get_label($args = null);
     public function get_data_type($args = null);
 }
 
@@ -68,120 +69,180 @@ class ContentFieldTypeFactory {
 }
 
 class ContentTypeRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Content Type';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class SingleLineEditRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Single Line Text';
+    }
     public function get_data_type($args = null) {
         return 'varchar';
     }
 }
 
 class MultiLineTextRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Multi Line Text';
+    }
     public function get_data_type($args = null) {
         return 'text';
     }
 }
 
 class NumberRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Number';
+    }
     public function get_data_type($args = null) {
         return 'double';
     }
 }
 
 class URLRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'URL';
+    }
     public function get_data_type($args = null) {
         return 'text';
     }
 }
 
 class DateAndTimeRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Date and Time';
+    }
     public function get_data_type($args = null) {
         return 'datetime';
     }
 }
 
 class DateOnlyRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Date';
+    }
     public function get_data_type($args = null) {
         return 'date';
     }
 }
 
 class TimeOnlyRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Time';
+    }
     public function get_data_type($args = null) {
         return 'time';
     }
 }
 
 class SelectBoxRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Select Box';
+    }
     public function get_data_type($args = null) {
         return 'varchar';
     }
 }
 
 class RadioButtonRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Radio Button';
+    }
     public function get_data_type($args = null) {
         return 'varchar';
     }
 }
 
 class CheckBoxesRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Checkboxes';
+    }
     public function get_data_type($args = null) {
         return 'varchar';
     }
 }
 
 class AssetRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Asset';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class AssetAudioRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Audio Asset';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class AssetVideoRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Video Asset';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class AssetImageRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Image Asset';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class EmbeddedTextRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Embedded Text';
+    }
     public function get_data_type($args = null) {
         return 'text';
     }
 }
 
 class CategoriesRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Categories';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class TagsRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Tags';
+    }
     public function get_data_type($args = null) {
         return 'integer';
     }
 }
 
 class ListRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return '__LIST_FIELD_LABEL';
+    }
     public function get_data_type($args = null) {
         return 'varchar';
     }
 }
 
 class TablesRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Table';
+    }
     public function get_data_type($args = null) {
         return 'text';
     }
