@@ -4853,6 +4853,7 @@ abstract class MTDatabase {
                 $ct->Load($where);
             }
             if (is_null($ct->id)) {
+                $str = $this->escape($str);
                 $where = "content_type_unique_id = '$str'";
                 $ct->Load($where);
                 if (is_null($ct->id)) {
