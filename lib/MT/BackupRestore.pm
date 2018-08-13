@@ -1871,7 +1871,10 @@ package MT::TemplateMap;
 sub parents {
     my $obj = shift;
     {   blog_id     => [ MT->model('blog'), MT->model('website') ],
-        template_id => MT->model('template')
+        template_id => MT->model('template'),
+        cat_field_id =>
+            { class => MT->model('content_field'), optional => 1 },
+        dt_field_id => { class => MT->model('content_field'), optional => 1 },
     };
 }
 
