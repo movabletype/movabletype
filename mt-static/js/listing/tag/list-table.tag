@@ -17,7 +17,9 @@
 
 <list-table-header>
   <tr>
-    <th class="mt-table__control">
+    <th if={ listTop.opts.hasListActions }
+      class="mt-table__control"
+    >
       <div class="custom-control custom-checkbox">
         <input type="checkbox"
           class="custom-control-input"
@@ -114,7 +116,7 @@
 </list-table-body>
 
 <list-table-row>
-  <td>
+  <td if={ listTop.opts.hasListActions }>
     <div class="custom-control custom-checkbox" if={ opts.object[0] }>
       <input type="checkbox"
         name="id"
