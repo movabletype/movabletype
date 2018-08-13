@@ -4842,6 +4842,29 @@ abstract class MTDatabase {
         }
         return $tags;
     }
+    public function fetch_content_type_id($args){
+        require_once('class.mt_content_type.php');
+
+        $ct = new ContentType;
+        if (isset($args['content_type'])) {
+            $str = $args['content_type'];
+            if (ctype_digit($str)) {
+                $where = "content_type_id = $str";
+                $ct->Load($where);
+            }
+            if (is_null($ct->id)) {
+                $str = $this->escape($str);
+                $where = "content_type_unique_id = '$str'";
+                $ct->Load($where);
+                if (is_null($ct->id)) {
+                    $where = "content_type_name = '$str'";
+                    $ct->Load($where);
+                }
+                if (is_null($ct->id)) return null;
+            }
+        }
+        return $ct->id;
+    }
     
     public function content_count($args){
         if ($sql = $this->include_exclude_blogs($args)) {
@@ -4850,16 +4873,14 @@ abstract class MTDatabase {
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and cd_blog_id = ' . $blog_id;
         }
+        $where = "cd_status = 2
+                  $blog_filter";
         if (isset($args['content_type'])) {
-            $content_types = $this->fetch_content_types($args);
-            foreach ($content_types as $content_type) {
-                $content_type_filter .= " and cd_content_type_id = " . $content_type->id;
+            $content_type_id = $this->fetch_content_type_id($args);
+            if($content_type_id){
+              $where .= " and cd_content_type_id = $content_type_id";
             }
         }
-        
-        $where = "cd_status = 2
-                  $blog_filter
-                  $content_type_filter";
 
         require_once('class.mt_content_data.php');
         $ct = new ContentData();
