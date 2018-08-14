@@ -717,7 +717,7 @@ riot.tag2('list-pagination-for-pc', '<ul class="pagination d-none d-md-flex"> <l
     this.mixin('listPagination')
 });
 
-riot.tag2('list-pagination', '<div class="col-auto mx-auto"> <nav aria-label="{store.listClient.objectType + \' list\'}"> <virtual data-is="list-pagination-for-pc"></virtual> <virtual data-is="list-pagination-for-mobile"></virtual> </nav> <div>', '', '', function(opts) {
+riot.tag2('list-pagination', '<div class="col-auto mx-auto"> <nav aria-label="{store.listClient.objectType + \' list\'}"> <virtual data-is="list-pagination-for-pc"></virtual> <virtual data-is="list-pagination-for-mobile"></virtual> </nav> </div>', '', '', function(opts) {
     this.mixin('listTop')
 
     riot.mixin('listPagination', {

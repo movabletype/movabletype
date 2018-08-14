@@ -4,7 +4,7 @@
       <virtual data-is="list-pagination-for-pc"></virtual>
       <virtual data-is="list-pagination-for-mobile"></virtual>
     </nav>
-  <div>
+  </div>
 
   <script>
     this.mixin('listTop')
