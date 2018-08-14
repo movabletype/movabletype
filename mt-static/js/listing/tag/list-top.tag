@@ -76,5 +76,9 @@
       var objectType = opts.objectTypeForTableClass || opts.objectType
       return 'list-' + objectType
     }
-  </script>
+
+    isMobileView() {
+      return jQuery(window).width() < 768
+    }
+   </script>
 </list-top>

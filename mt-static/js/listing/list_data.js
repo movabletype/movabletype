@@ -122,6 +122,14 @@
     }
   };
 
+  ListData.prototype.getListEnd = function () {
+    return (this.page - 1) * this.limit + this.objects.length;
+  };
+
+  ListData.prototype.getListStart = function () {
+    return (this.page - 1) * this.limit + 1;
+  };
+
   ListData.prototype.getNewFilterLabel = function (objectLabel) {
     var temp_base = 1;
     var temp;
