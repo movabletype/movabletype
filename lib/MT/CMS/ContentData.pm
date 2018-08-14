@@ -989,7 +989,7 @@ sub _check_permission {
     my $terms = {
         author_id   => $app->user->id,
         permissions => \'IS NOT NULL',
-        $app->blog ? ( blog_id => $app->blog->id ) : (),
+        $app->blog ? ( blog_id => [ 0, $app->blog->id ] ) : (),
     };
 
     return 0 unless MT->model('permission')->count($terms);
