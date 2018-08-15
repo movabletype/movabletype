@@ -85,5 +85,9 @@ class MTDatabasemysql extends MTDatabase {
             }
         }
     }
+
+    function binary_column($column) {
+        return 'binary(' . $column .')';
+    }
 }
 ?>

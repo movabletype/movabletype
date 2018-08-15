@@ -58,6 +58,11 @@ class MTViewer extends SmartyBC {
         'mtpingsheader' => 1,
         'mtsubcatisfirst' => 1,
         'mtsubcatislast' => 1,
+        'mtcontentfieldsheader' => 1,
+        'mtcontentfieldsfooter' => 1,
+        'mtcontentfieldheader' => 1,
+        'mtcontentfieldfooter' => 1,
+        'mtcontentfield' => 1,
     );
     var $sanitized = array(
         'mtcommentauthor' => 1,
