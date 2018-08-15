@@ -44,11 +44,13 @@ sub core_backup_instructions {
     # and/or special instructions.
     # Every other class will have the order of '500'.
     return {
-        'website'      => { 'order' => 350 },
-        'blog'         => { 'order' => 400 },
-        'author'       => { 'order' => 420 },
-        'category_set' => { 'order' => 490 },
-        'content_type' => { 'order' => 490 },
+        'website'       => { 'order' => 350 },
+        'blog'          => { 'order' => 400 },
+        'author'        => { 'order' => 420 },
+        'category_set'  => { 'order' => 480 },
+        'content_type'  => { 'order' => 480 },
+        'cf'            => { 'order' => 490 },
+        'content_field' => { 'order' => 490 },
 
         # These 'association' classes should be backed up
         # after the object classes.
@@ -58,11 +60,9 @@ sub core_backup_instructions {
         'filter'      => { 'order' => 510 },
 
         # Ping should be backed up after Trackback.
-        'tbping'        => { 'order' => 520 },
-        'ping'          => { 'order' => 520 },
-        'ping_cat'      => { 'order' => 520 },
-        'cf'            => { 'order' => 520 },
-        'content_field' => { 'order' => 520 },
+        'tbping'   => { 'order' => 520 },
+        'ping'     => { 'order' => 520 },
+        'ping_cat' => { 'order' => 520 },
 
         # Comment should be backed up after TBPing
         # because saving a comment ultimately triggers
@@ -1871,7 +1871,10 @@ package MT::TemplateMap;
 sub parents {
     my $obj = shift;
     {   blog_id     => [ MT->model('blog'), MT->model('website') ],
-        template_id => MT->model('template')
+        template_id => MT->model('template'),
+        cat_field_id =>
+            { class => MT->model('content_field'), optional => 1 },
+        dt_field_id => { class => MT->model('content_field'), optional => 1 },
     };
 }
 
