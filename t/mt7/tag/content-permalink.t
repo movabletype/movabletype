@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -174,6 +174,39 @@ $test_env->prepare_fixture(
             is_preferred  => 1,
             cat_field_id  => $cf_category->id,
         );
+
+        my $file_01 = MT::Test::Permission->make_fileinfo(
+            archive_type => 'ContentType',
+            blog_id      => $blog->id,
+            cd_id     => $content_data_01->id,
+            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/2017/09/mtcontentpermalink-test-data-01.html'),
+            template_id    => $template_01->id,
+            templatemap_id => $map_01->id,
+            url            => '/2017/09/mtcontentpermalink-test-data-01.html',
+            virtual        => 1,
+        );
+
+        my $file_02 = MT::Test::Permission->make_fileinfo(
+            archive_type => 'ContentType',
+            blog_id      => $blog->id,
+            cd_id     => $content_data_02->id,
+            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/2017/09/mtcontentpermalink-test-data-02/index.html'),
+            template_id    => $template_02->id,
+            templatemap_id => $map_02->id,
+            url            => '/2017/09/mtcontentpermalink-test-data-02/index.html',
+            virtual        => 1,
+        );
+
+        my $file_03 = MT::Test::Permission->make_fileinfo(
+            archive_type => 'ContentType',
+            blog_id      => $blog->id,
+            cd_id     => $content_data_03->id,
+            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/category/mtcontentpermalink-test-data-03.html'),
+            template_id    => $template_03->id,
+            templatemap_id => $map_03->id,
+            url            => '/category/mtcontentpermalink-test-data-03.html',
+            virtual        => 1,
+        );
     }
 );
 
@@ -191,6 +224,8 @@ $vars->{content_type_02_unique_id} = $content_type_02->unique_id;
 $vars->{content_type_03_unique_id} = $content_type_03->unique_id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
+
+MT::Test::Tag->run_php_tests( $blog->id );
 
 __END__
 
