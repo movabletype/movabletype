@@ -486,7 +486,7 @@
             "1",
             null,
             "__NOW__",
-            "be64e7a99a4267be0bfe7a613c894ba74901fa46",
+            "f3549a65fc149ea32e724512a8abdae204b60717",
             "0",
             null,
             "1",
@@ -494,9 +494,9 @@
             null,
             null,
             "__NOW__",
-            "4",
+            "0",
             "2",
-            "0f3599cf3a35f9605ab2910fb21872e38c842438",
+            "e42b5b0deec8d489d5d9c8219f73842147aae4e6",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -507,7 +507,7 @@
             "2",
             null,
             "__NOW__",
-            "c6419883347031d8fd8620dc72f9183a591afa57",
+            "fd36e7137c503136bbfbb46f93c73e971a404c7e",
             "0",
             null,
             "2",
@@ -515,9 +515,9 @@
             null,
             null,
             "__NOW__",
-            "9",
+            "4",
             "2",
-            "46050d245ff23b14a43985e36c3b7e4a05d7f227",
+            "345d1c6e9e0a69f1acac5d91430747dfee1cbcb8",
             "2017-05-31 16:36:00",
             "201739"
          ],
@@ -528,7 +528,7 @@
             "3",
             null,
             "__NOW__",
-            "156b6767d8085020de7147ec7d0243c3ce09fbff",
+            "1b1f3df9c47e3af6076cf418977ea0a9dcdcb37e",
             "0",
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             "3",
@@ -538,7 +538,7 @@
             "__NOW__",
             "9",
             "2",
-            "7479eb7fc6b509853113da8b282267198a03a433",
+            "b19a6382238788582b24b15c380ef3d349810a13",
             "2017-05-31 16:36:00",
             "201739"
          ]
@@ -578,7 +578,7 @@
             null,
             null,
             "categories",
-            "fba2de817b313e5ca9fd85969a0553f5398a2e17"
+            "9e753b341c445a7c82e3669a598792a0ee0fe42a"
          ]
       ]
    },
@@ -660,7 +660,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "be64e7a99a4267be0bfe7a613c894ba74901fa46",
+            "f3549a65fc149ea32e724512a8abdae204b60717",
             null,
             null
          ],
@@ -675,7 +675,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "c6419883347031d8fd8620dc72f9183a591afa57",
+            "fd36e7137c503136bbfbb46f93c73e971a404c7e",
             null,
             null
          ],
@@ -690,9 +690,73 @@
             null,
             "__NOW__",
             "test content type 03",
-            "156b6767d8085020de7147ec7d0243c3ce09fbff",
+            "1b1f3df9c47e3af6076cf418977ea0a9dcdcb37e",
             null,
             null
+         ]
+      ]
+   },
+   "mt_fileinfo" : {
+      "cols" : [
+         "fileinfo_archive_type",
+         "fileinfo_author_id",
+         "fileinfo_blog_id",
+         "fileinfo_category_id",
+         "fileinfo_cd_id",
+         "fileinfo_entry_id",
+         "fileinfo_file_path",
+         "fileinfo_id",
+         "fileinfo_startdate",
+         "fileinfo_template_id",
+         "fileinfo_templatemap_id",
+         "fileinfo_url",
+         "fileinfo_virtual"
+      ],
+      "rows" : [
+         [
+            "ContentType",
+            null,
+            "2",
+            null,
+            "1",
+            null,
+            "test/archives/2017/09/mtcontentpermalink-test-data-01.html",
+            "1",
+            null,
+            "58",
+            "5",
+            "/2017/09/mtcontentpermalink-test-data-01.html",
+            "1"
+         ],
+         [
+            "ContentType",
+            null,
+            "2",
+            null,
+            "2",
+            null,
+            "test/archives/2017/09/mtcontentpermalink-test-data-02/index.html",
+            "2",
+            null,
+            "59",
+            "6",
+            "/2017/09/mtcontentpermalink-test-data-02/index.html",
+            "1"
+         ],
+         [
+            "ContentType",
+            null,
+            "2",
+            null,
+            "3",
+            null,
+            "test/archives/category/mtcontentpermalink-test-data-03.html",
+            "3",
+            null,
+            "60",
+            "7",
+            "/category/mtcontentpermalink-test-data-03.html",
+            "1"
          ]
       ]
    },
