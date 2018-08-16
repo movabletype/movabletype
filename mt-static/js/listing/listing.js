@@ -792,7 +792,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     }.bind(this)
 });
 
-riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-none: !listTop.opts.hasMobilePulldownActions,       d-md-table-cell: !listTop.opts.hasMobilePulldownActions}"> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" data-id="{index}" class="{classes(index)}" content="{content}"> </td>', '', '', function(opts) {
+riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-none: !listTop.opts.hasMobilePulldownActions,       d-md-table-cell: !listTop.opts.hasMobilePulldownActions}"> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{classes(index)}" content="{content}"> </td>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.classes = function(index) {

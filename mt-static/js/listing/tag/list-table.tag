@@ -182,7 +182,6 @@
   <td data-is="list-table-column"
     each={ content, index in opts.object }
     if={ index > 0 }
-    data-id={ index }
     class={ classes(index) }
     content={ content }>
   </td>
