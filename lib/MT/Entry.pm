@@ -738,6 +738,24 @@ sub list_props {
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
         },
+        __mobile => {
+            alternative_label => 'No Name',
+            col               => 'title',
+            display           => 'force',
+            filter_editable   => 0,
+            html              => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $title        = $prop->common_label_html(@_);
+                my $status_icon  = $obj->status_icon;
+                my $publish_date = $obj->_publish_date_for_listing($app);
+                return qq{
+                    <div class="title mb-2">$title</div>
+                    <span class="status mr-3">$status_icon</span>
+                    <span class="publish-date font-weight-light">$publish_date</span>
+                };
+            },
+        },
     };
 }
 
@@ -1769,6 +1787,76 @@ sub set_values {
     else {
         $obj->unpublished_on( $values->{'unpublished_on'}, $args );
     }
+}
+
+sub status_icon {
+    my $self                    = shift;
+    my $status_class            = $self->_status_class;
+    my $status_icon_color_class = $self->_status_icon_color_class;
+    my $status_icon_id          = $self->_status_icon_id;
+    my $static_uri              = MT->static_path;
+    return '' unless $status_icon_id;
+    return qq{
+        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+          <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
+        </svg>
+    };
+}
+
+sub _status_class {
+    my $self   = shift;
+    my $status = $self->status;
+    return
+          $status == MT::Entry::HOLD()      ? 'Draft'
+        : $status == MT::Entry::RELEASE()   ? 'Published'
+        : $status == MT::Entry::REVIEW()    ? 'Review'
+        : $status == MT::Entry::FUTURE()    ? 'Future'
+        : $status == MT::Entry::JUNK()      ? 'Junk'
+        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
+        :                                     '';
+}
+
+sub _status_icon_id {
+    my $self   = shift;
+    my $status = $self->status;
+    return
+          $status == MT::Entry::HOLD()      ? 'ic_draft'
+        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
+        : $status == MT::Entry::REVIEW()    ? 'ic_error'
+        : $status == MT::Entry::FUTURE()    ? 'ic_clock'
+        : $status == MT::Entry::JUNK()      ? 'ic_error'
+        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
+        :                                     '';
+}
+
+sub _status_icon_color_class {
+    my $self   = shift;
+    my $status = $self->status;
+    return
+          $status == MT::Entry::HOLD()      ? ''
+        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
+        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
+        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
+        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
+        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
+        :                                     '';
+}
+
+sub _publish_date_for_listing {
+    my $self        = shift;
+    my ($app)       = @_;
+    my $ts          = $self->authored_on;
+    my $date_format = $app->LISTING_DATE_FORMAT;
+    my $blog        = $app->blog;
+    my $is_relative
+        = ( $app->user->date_format || 'relative' ) eq 'relative'
+        ? 1
+        : 0;
+    return
+        $is_relative ? MT::Util::relative_date( $ts, time, $blog )
+        : MT::Util::format_ts( $date_format, $ts, $blog,
+        $app->user ? $app->user->preferred_language
+        : undef );
 }
 
 # Register entry post-save callback for rebuild triggers
