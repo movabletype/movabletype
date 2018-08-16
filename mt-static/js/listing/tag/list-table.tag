@@ -50,6 +50,7 @@
     <th each={ store.columns }
       scope="col"
       if={ checked && id != '__mobile' }
+      data-id={ id }
       class={
         primary: primary,
         sortable: sortable,
