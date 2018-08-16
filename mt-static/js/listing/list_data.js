@@ -130,6 +130,22 @@
     return (this.page - 1) * this.limit + 1;
   };
 
+  ListData.prototype.getMobileColumnIndex = function () {
+    var mobileColumnIndex = -1;
+    var hasMobileColumn = false;
+    this.columns.some(function (column) {
+      if (!column.checked) {
+        return false;
+      }
+      mobileColumnIndex++;
+      if (column.id == '__mobile') {
+        hasMobileColumn = true;
+        return true;
+      }
+    });
+    return hasMobileColumn ? mobileColumnIndex : -1;
+  };
+
   ListData.prototype.getNewFilterLabel = function (objectLabel) {
     var temp_base = 1;
     var temp;
@@ -154,6 +170,10 @@
       });
     });
     return returnSubField;
+  };
+
+  ListData.prototype.hasMobileColumn = function () {
+    return this.getMobileColumnIndex() > -1;
   };
 
   ListData.prototype.hasSystemFilter = function () {

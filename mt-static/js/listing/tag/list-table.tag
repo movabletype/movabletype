@@ -49,8 +49,7 @@
     </th>
     <th each={ store.columns }
       scope="col"
-      if={ checked }
-      data-id={ id }
+      if={ checked && id != '__mobile' }
       class={
         primary: primary,
         sortable: sortable,
@@ -183,6 +182,7 @@
   <td data-is="list-table-column"
     each={ content, index in opts.object }
     if={ index > 0 }
+    data-id={ index }
     class={ classes(index) }
     content={ content }>
   </td>
@@ -191,17 +191,29 @@
     this.mixin('listTop')
 
     classes(index) {
-      if (index == 0) return
       var columnIndex = this.columnIndex(index)
       var nameClass = this.store.columns[columnIndex].id
-      var nonPrimaryColumnClasses = this.store.columns[columnIndex].primary ? '' : 'd-none d-md-table-cell'
-      if (nonPrimaryColumnClasses.length > 0) {
-        return nameClass + ' ' + nonPrimaryColumnClasses
+      var classes
+      if (this.store.hasMobileColumn()) {
+        if (this.store.getMobileColumnIndex() == index) {
+          classes = 'd-md-none'
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      } else {
+        if (this.store.columns[columnIndex].primary) {
+          classes = ''
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      }
+      if (classes.length > 0) {
+        return nameClass + ' ' + classes
       } else {
         return nameClass
       }
     }
-     columnIndex(index) {
+    columnIndex(index) {
       if (this.store.columns[0].id == 'id' && !this.store.columns[0].checked) {
         return index + 1
       } else {

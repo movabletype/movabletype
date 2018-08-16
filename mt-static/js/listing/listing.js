@@ -762,7 +762,7 @@ riot.tag2('list-table-header', '<virtual data-is="list-table-header-for-pc"></vi
     })
 });
 
-riot.tag2('list-table-header-for-pc', '<tr class="d-none d-md-table-row"> <th if="{listTop.opts.hasListActions}" class="mt-table__control"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="select-all" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <label class="custom-control-label" for="select-all"><span class="sr-only">{trans(\'Select All\')}</span></label> </div> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> <raw content="{label}"></raw> </a> <raw if="{!sortable}" content="{label}"></raw> </th> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header-for-pc', '<tr class="d-none d-md-table-row"> <th if="{listTop.opts.hasListActions}" class="mt-table__control"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="select-all" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <label class="custom-control-label" for="select-all"><span class="sr-only">{trans(\'Select All\')}</span></label> </div> </th> <th each="{store.columns}" scope="col" if="{checked && id != \'__mobile\'}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> <raw content="{label}"></raw> </a> <raw if="{!sortable}" content="{label}"></raw> </th> </tr>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listTableHeader')
 });
@@ -792,21 +792,33 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     }.bind(this)
 });
 
-riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-none: !listTop.opts.hasMobilePulldownActions,       d-md-table-cell: !listTop.opts.hasMobilePulldownActions}"> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{classes(index)}" content="{content}"> </td>', '', '', function(opts) {
+riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-none: !listTop.opts.hasMobilePulldownActions,       d-md-table-cell: !listTop.opts.hasMobilePulldownActions}"> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" data-id="{index}" class="{classes(index)}" content="{content}"> </td>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.classes = function(index) {
-      if (index == 0) return
       var columnIndex = this.columnIndex(index)
       var nameClass = this.store.columns[columnIndex].id
-      var nonPrimaryColumnClasses = this.store.columns[columnIndex].primary ? '' : 'd-none d-md-table-cell'
-      if (nonPrimaryColumnClasses.length > 0) {
-        return nameClass + ' ' + nonPrimaryColumnClasses
+      var classes
+      if (this.store.hasMobileColumn()) {
+        if (this.store.getMobileColumnIndex() == index) {
+          classes = 'd-md-none'
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      } else {
+        if (this.store.columns[columnIndex].primary) {
+          classes = ''
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      }
+      if (classes.length > 0) {
+        return nameClass + ' ' + classes
       } else {
         return nameClass
       }
     }.bind(this)
-     this.columnIndex = function(index) {
+    this.columnIndex = function(index) {
       if (this.store.columns[0].id == 'id' && !this.store.columns[0].checked) {
         return index + 1
       } else {
