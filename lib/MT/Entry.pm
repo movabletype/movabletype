@@ -1792,59 +1792,6 @@ sub set_values {
     }
 }
 
-sub status_icon {
-    my $self                    = shift;
-    my $status_class            = $self->_status_class;
-    my $status_icon_color_class = $self->_status_icon_color_class;
-    my $status_icon_id          = $self->_status_icon_id;
-    my $static_uri              = MT->static_path;
-    return '' unless $status_icon_id;
-    return qq{
-        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-          <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
-        </svg>
-    };
-}
-
-sub _status_class {
-    my $self   = shift;
-    my $status = $self->status;
-    return
-          $status == MT::Entry::HOLD()      ? 'Draft'
-        : $status == MT::Entry::RELEASE()   ? 'Published'
-        : $status == MT::Entry::REVIEW()    ? 'Review'
-        : $status == MT::Entry::FUTURE()    ? 'Future'
-        : $status == MT::Entry::JUNK()      ? 'Junk'
-        : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
-        :                                     '';
-}
-
-sub _status_icon_id {
-    my $self   = shift;
-    my $status = $self->status;
-    return
-          $status == MT::Entry::HOLD()      ? 'ic_draft'
-        : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
-        : $status == MT::Entry::REVIEW()    ? 'ic_error'
-        : $status == MT::Entry::FUTURE()    ? 'ic_clock'
-        : $status == MT::Entry::JUNK()      ? 'ic_error'
-        : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
-        :                                     '';
-}
-
-sub _status_icon_color_class {
-    my $self   = shift;
-    my $status = $self->status;
-    return
-          $status == MT::Entry::HOLD()      ? ''
-        : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
-        : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
-        : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
-        : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
-        : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
-        :                                     '';
-}
-
 # Register entry post-save callback for rebuild triggers
 MT->add_callback(
     'cms_post_save.entry', 10,
