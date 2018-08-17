@@ -741,6 +741,7 @@ sub list_props {
         __mobile => {
             alternative_label => 'No Name',
             col               => 'title',
+            date_col          => 'authored_on',
             display           => 'force',
             filter_editable   => 0,
             html              => sub {
@@ -748,7 +749,7 @@ sub list_props {
                 my ( $obj, $app ) = @_;
                 my $title        = $prop->common_label_html(@_);
                 my $status_icon  = $obj->status_icon;
-                my $publish_date = $obj->_publish_date_for_listing($app);
+                my $publish_date = $obj->_date_for_listing($app, $prop->date_col);
                 return qq{
                     <div class="title mb-2">$title</div>
                     <span class="status mr-3">$status_icon</span>
@@ -1842,10 +1843,10 @@ sub _status_icon_color_class {
         :                                     '';
 }
 
-sub _publish_date_for_listing {
+sub _date_for_listing {
     my $self        = shift;
-    my ($app)       = @_;
-    my $ts          = $self->authored_on;
+    my ($app, $date_col)       = @_;
+    my $ts          = $self->$date_col;
     my $date_format = $app->LISTING_DATE_FORMAT;
     my $blog        = $app->blog;
     my $is_relative
