@@ -32,7 +32,8 @@ our @EXPORT_OK
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
-    encode_json build_upload_destination is_mod_perl1 asset_from_url );
+    encode_json build_upload_destination is_mod_perl1 asset_from_url
+    date_for_listing );
 
 {
     my $Has_Weaken;
@@ -3020,6 +3021,22 @@ sub asset_from_url {
     );
 
     $asset;
+}
+
+sub date_for_listing {
+    my ( $ts, $app ) = @_;
+    $app ||= MT->instance;
+    my $date_format = $app->LISTING_DATE_FORMAT;
+    my $blog        = $app->blog;
+    my $is_relative
+        = ( $app->user->date_format || 'relative' ) eq 'relative'
+        ? 1
+        : 0;
+    return
+        $is_relative ? MT::Util::relative_date( $ts, time, $blog )
+        : MT::Util::format_ts( $date_format, $ts, $blog,
+        $app->user ? $app->user->preferred_language
+        : undef );
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

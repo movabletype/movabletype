@@ -747,13 +747,15 @@ sub list_props {
             html              => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $title        = $prop->common_label_html(@_);
-                my $status_icon  = $obj->status_icon;
-                my $publish_date = $obj->_date_for_listing($app, $prop->date_col);
+                my $title       = $prop->common_label_html(@_);
+                my $status_icon = $obj->status_icon;
+                my $date_col    = $prop->date_col;
+                my $date
+                    = MT::Util::date_for_listing( $obj->$date_col, $app );
                 return qq{
                     <div class="title mb-2">$title</div>
                     <span class="status mr-3">$status_icon</span>
-                    <span class="publish-date font-weight-light">$publish_date</span>
+                    <span class="date font-weight-light">$date</span>
                 };
             },
         },
@@ -1841,23 +1843,6 @@ sub _status_icon_color_class {
         : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
         : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
         :                                     '';
-}
-
-sub _date_for_listing {
-    my $self        = shift;
-    my ($app, $date_col)       = @_;
-    my $ts          = $self->$date_col;
-    my $date_format = $app->LISTING_DATE_FORMAT;
-    my $blog        = $app->blog;
-    my $is_relative
-        = ( $app->user->date_format || 'relative' ) eq 'relative'
-        ? 1
-        : 0;
-    return
-        $is_relative ? MT::Util::relative_date( $ts, time, $blog )
-        : MT::Util::format_ts( $date_format, $ts, $blog,
-        $app->user ? $app->user->preferred_language
-        : undef );
 }
 
 # Register entry post-save callback for rebuild triggers
