@@ -260,7 +260,8 @@ sub save {
     my $self = shift;
 
     my $content_field_types = MT->registry('content_field_types');
-    my $content_type        = $self->content_type
+    $self->clear_cache('content_type');
+    my $content_type = $self->content_type
         or return $self->error( MT->translate('Invalid content type') );
 
     unless ( $self->id ) {
