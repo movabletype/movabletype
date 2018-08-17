@@ -1527,7 +1527,7 @@ sub _rebuild_content_archive_type {
             if ( $param{Category} ) {
                 my $join = MT->model('content_field')->join_on(
                     undef,
-                    {   cat_field_id => \'= cf_id',
+                    {   id => \'= templatemap_cat_field_id',
                         related_cat_set_id =>
                             $param{Category}->category_set_id || 0,
                     },
