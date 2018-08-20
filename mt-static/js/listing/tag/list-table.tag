@@ -133,8 +133,8 @@
   </tr>
   <tr data-is="list-table-row"
     each={ obj, index in store.objects }
-    onclick={ parent.toggleRow }
-    class={ obj.checked ? 'mt-table__highlight' : '' }
+    onclick={ parent.clickRow }
+    class={ (obj.checked || obj.clicked) ? 'mt-table__highlight' : '' }
     data-index={ index }
     checked={ obj.checked }
     object={ obj.object }
@@ -144,12 +144,24 @@
   <script>
     this.mixin('listTop')
 
-    toggleRow(e) {
+    clickRow(e) {
+      this.store.trigger('reset_all_clicked_rows');
+
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
-      if (this.listTop.isMobileView() && jQuery(e.target).parents('[data-is=list-table-column]').length > 0) {
-        return false
+      if (this.listTop.isMobileView()) {
+        var $mobileColumn
+        if (e.target.dataset.is == 'list-table-column') {
+          $mobileColumn = jQuery(e.target)
+        } else {
+          $mobileColumn = jQuery(e.target).parents('[data-is=list-table-column]');
+        }
+        if ($mobileColumn.length > 0 && $mobileColumn.find('a').length > 0) {
+          $mobileColumn.find('a')[0].click()
+          this.store.trigger('click_row', e.currentTarget.dataset.index)
+          return false
+        }
       }
       e.preventDefault()
       e.stopPropagation()

@@ -39,6 +39,11 @@
       this.trigger('refresh_view');
     });
 
+    this.on('click_row', function (rowIndex) {
+      this.clickRow(rowIndex);
+      this.trigger('refresh_view');
+    });
+
     this.on('create_new_filter', function () {
       this.createNewFilter();
       this.trigger('refresh_view');
@@ -65,6 +70,11 @@
 
     this.on('rename_filter_by_id', function (filterId, filterLabel) {
       this.renameFilter(filterId, filterLabel);
+    });
+
+    this.on('reset_all_clicked_rows', function () {
+      this.resetAllClickedRows();
+      this.trigger('refresh_view');
     });
 
     this.on('reset_columns', function () {

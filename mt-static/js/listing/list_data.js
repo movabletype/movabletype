@@ -62,6 +62,14 @@
     this.checkedAllRows = nextState;
   };
 
+  ListData.prototype.clickRow = function (rowIndex) {
+    var object = this.objects[rowIndex];
+    if (!object.object[0]) {
+      return;
+    }
+    object.clicked = true;
+  };
+
   ListData.prototype.createNewFilter = function (filterLabel) {
     this.currentFilter = {
       items: [],
@@ -212,6 +220,12 @@
 
   ListData.prototype.removeFilterItemContent = function (itemIndex, contentIndex) {
     this.currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+  };
+
+  ListData.prototype.resetAllClickedRows = function () {
+    this.objects.forEach(function (object) {
+      object.clicked = false;
+    });
   };
 
   ListData.prototype.setFilter = function (filter) {

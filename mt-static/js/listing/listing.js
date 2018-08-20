@@ -772,15 +772,27 @@ riot.tag2('list-table-header-for-mobile', '<tr if="{store.count}" class="d-md-no
     this.mixin('listTableHeader')
 });
 
-riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.toggleRow}" class="{obj.checked ? \'mt-table__highlight\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
+riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.clickRow}" class="{(obj.checked || obj.clicked) ? \'mt-table__highlight\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
-    this.toggleRow = function(e) {
+    this.clickRow = function(e) {
+      this.store.trigger('reset_all_clicked_rows');
+
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
-      if (this.listTop.isMobileView() && jQuery(e.target).parents('[data-is=list-table-column]').length > 0) {
-        return false
+      if (this.listTop.isMobileView()) {
+        var $mobileColumn
+        if (e.target.dataset.is == 'list-table-column') {
+          $mobileColumn = jQuery(e.target)
+        } else {
+          $mobileColumn = jQuery(e.target).parents('[data-is=list-table-column]');
+        }
+        if ($mobileColumn.length > 0 && $mobileColumn.find('a').length > 0) {
+          $mobileColumn.find('a')[0].click()
+          this.store.trigger('click_row', e.currentTarget.dataset.index)
+          return false
+        }
       }
       e.preventDefault()
       e.stopPropagation()
