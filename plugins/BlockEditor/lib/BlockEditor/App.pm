@@ -154,6 +154,7 @@ sub pre_save_content_data {
     my ( $cb, $app, $content_data, $org_obj ) = @_;
     my $block_editor_data = $app->param('block_editor_data');
     $content_data->block_editor_data($block_editor_data);
+    1;
 }
 
 =head
