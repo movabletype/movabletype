@@ -23,6 +23,8 @@
   <div class="row" hide={ opts.store.count == 0 }>
     <virtual data-is="list-pagination"></virtual>
   </div>
+  <virtual data-is="display-options-for-mobile">
+  </virtual>
 
   <script>
     riot.mixin('listTop', {
@@ -36,6 +38,12 @@
         }
       }
     })
+    riot.mixin('displayOptions', {
+      changeLimit: function(e) {
+        this.store.trigger('update_limit', this.refs.limit.value)
+      }
+    })
+
     this.mixin('listTop')
 
     var self = this

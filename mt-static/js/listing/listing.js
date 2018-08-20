@@ -1,3 +1,7 @@
+riot.tag2('display-options-for-mobile', '<div class="row"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div> </div> </div>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('displayOptions')
+});
 riot.tag2('display-options', '<div class="row"> <div class="col-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail" aria-expanded="false" aria-controls="display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
 });
@@ -12,10 +16,7 @@ riot.tag2('display-options-detail', '<div id="display-options-detail" class="col
 
 riot.tag2('display-options-limit', '<div class="field-header"> <label>{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div>', '', '', function(opts) {
     this.mixin('listTop')
-
-    this.changeLimit = function(e) {
-      this.store.trigger('update_limit', this.refs.limit.value)
-    }.bind(this)
+    this.mixin('displayOptions')
 });
 
 riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div if="{listTop.opts.disableUserDispOption}" class="alert alert-warning"> {trans(\'User Display Option is disabled now.\')} </div> <div if="{!listTop.opts.disableUserDispOption}" class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}"> <label class="custom-control-label" for="{column.id}"> <raw content="{column.label}"></raw> </label> </div> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" disabled="{disabled: !column.checked}" checked="{subField.checked}" onchange="{toggleSubField}"> <label class="custom-control-label" for="{subField.id}">{subField.label}</label> </div> </li> </virtual> </ul> </div>', '', '', function(opts) {
@@ -848,7 +849,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-5 mb-md-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-5 mb-md-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
@@ -860,6 +861,12 @@ riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-opti
         }
       }
     })
+    riot.mixin('displayOptions', {
+      changeLimit: function(e) {
+        this.store.trigger('update_limit', this.refs.limit.value)
+      }
+    })
+
     this.mixin('listTop')
 
     var self = this
