@@ -779,7 +779,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
-      if (this.listTop.isMobileView() && e.target.dataset.is) {
+      if (this.listTop.isMobileView() && jQuery(e.target).parents('[data-is=list-table-column]').length > 0) {
         return false
       }
       e.preventDefault()
