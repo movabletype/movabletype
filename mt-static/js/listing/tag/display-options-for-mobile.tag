@@ -1,5 +1,5 @@
 <display-options-for-mobile>
-  <div class="row">
+  <div class="row d-md-none">
     <div class="col-auto mx-auto">
       <div class="form-inline">
         <label for="row-for-mobile">{ trans('Show') + ':' }</label>
