@@ -22,6 +22,7 @@ use MT::Test;
 use MT::Test::Permission;
 
 use MT::ContentStatus;
+use MT::ContentPublisher;
 
 my $vars = {};
 
@@ -41,6 +42,18 @@ filters {
     expected => [qw( var chomp )],
     error    => [qw( chomp )],
 };
+my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
+
+my @archive_types = (
+    'ContentType',                 'ContentType-Daily',
+    'ContentType-Weekly',          'ContentType-Monthly',
+    'ContentType-Yearly',          'ContentType-Author',
+    'ContentType-Author-Daily',    'ContentType-Author-Weekly',
+    'ContentType-Author-Monthly',  'ContentType-Author-Yearly',
+    'ContentType-Category',        'ContentType-Category-Daily',
+    'ContentType-Category-Weekly', 'ContentType-Category-Monthly',
+    'ContentType-Category-Yearly',
+);
 
 $test_env->prepare_fixture(
     sub {
@@ -48,7 +61,8 @@ $test_env->prepare_fixture(
 
         my $blog = MT::Test::Permission->make_blog( name => 'my blog', );
         $blog->archive_url('/::/test/archives/');
-        $blog->archive_type('ContentType');
+        my $archive_types = join ',', @archive_types;
+        $blog->archive_type($archive_types);
         $blog->save;
 
         my $content_type_01 = MT::Test::Permission->make_content_type(
@@ -175,38 +189,44 @@ $test_env->prepare_fixture(
             cat_field_id  => $cf_category->id,
         );
 
-        my $file_01 = MT::Test::Permission->make_fileinfo(
-            archive_type => 'ContentType',
-            blog_id      => $blog->id,
-            cd_id     => $content_data_01->id,
-            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/2017/09/mtcontentpermalink-test-data-01.html'),
-            template_id    => $template_01->id,
-            templatemap_id => $map_01->id,
-            url            => '/2017/09/mtcontentpermalink-test-data-01.html',
-            virtual        => 1,
-        );
+        for my $content_type (
+            ( $content_type_01, $content_type_02, $content_type_03 ) )
+        {
+            my $tmpl_archive = MT::Test::Permission->make_template(
+                blog_id         => $blog->id,
+                content_type_id => $content_type->id,
+                name            => $content_type->name . ' archive_tmpl',
+                type            => 'ct_archive',
+                text            => 'test ct_archive ' . $content_type->name,
+            );
+            foreach my $type (@archive_types) {
+                next if($type =~ /^ContentType$/);
+                next if ( $type =~ /Category/ && $content_type != $content_type_03 );
+                my $archiver = $publisher->archiver($type);
+                my $tmpls    = $archiver->default_archive_templates;
+                my ($default) = grep { $_->{default} } @$tmpls;
 
-        my $file_02 = MT::Test::Permission->make_fileinfo(
-            archive_type => 'ContentType',
-            blog_id      => $blog->id,
-            cd_id     => $content_data_02->id,
-            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/2017/09/mtcontentpermalink-test-data-02/index.html'),
-            template_id    => $template_02->id,
-            templatemap_id => $map_02->id,
-            url            => '/2017/09/mtcontentpermalink-test-data-02/index.html',
-            virtual        => 1,
-        );
+                my $tmpl_map = MT::Test::Permission->make_templatemap(
+                    blog_id       => $blog->id,
+                    archive_type  => $type,
+                    build_type    => MT::PublishOption::DYNAMIC(),
+                    is_preferred  => 1,
+                    template_id   => $tmpl_archive->id,
+                    file_template => $default->{template},
+                    dt_field_id   => 0,
+                );
 
-        my $file_03 = MT::Test::Permission->make_fileinfo(
-            archive_type => 'ContentType',
-            blog_id      => $blog->id,
-            cd_id     => $content_data_03->id,
-            file_path => MT::Util::caturl($blog->website()->site_path() , 'test/archives', '/category/mtcontentpermalink-test-data-03.html'),
-            template_id    => $template_03->id,
-            templatemap_id => $map_03->id,
-            url            => '/category/mtcontentpermalink-test-data-03.html',
-            virtual        => 1,
-        );
+                if ( $type =~ /Category/ ) {
+                    $tmpl_map->cat_field_id( $cf_category->id );
+                    $tmpl_map->save;
+                }
+            }
+        }
+        my $mt = MT->new or die MT->errstr;
+        $mt->rebuild(
+            BlogID => $blog->id,
+            Force  => 1
+        ) || print "Rebuild error: ", $mt->errstr;
     }
 );
 
@@ -261,3 +281,128 @@ __END__
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink></mt:Contents>
 --- expected
 /test/archives/category/mtcontentpermalink-test-data-03.html
+
+=== MT::ContentPermalink archive_type="ContentType"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType">
+</mt:Contents>
+--- expected
+/test/archives/category/mtcontentpermalink-test-data-03.html
+/test/archives/2017/09/mtcontentpermalink-test-data-02/
+/test/archives/2017/09/mtcontentpermalink-test-data-01.html
+
+=== MT::ContentPermalink archive_type="ContentType-Daily"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Daily">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/27/#000003
+/test/archives/2017/09/27/#000002
+/test/archives/2017/09/27/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Weekly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/24-week/#000003
+/test/archives/2017/09/24-week/#000002
+/test/archives/2017/09/24-week/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Monthly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/#000003
+/test/archives/2017/09/#000002
+/test/archives/2017/09/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Yearly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/2017/#000003
+/test/archives/2017/#000002
+/test/archives/2017/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/#000003
+/test/archives/author/authorce2f3/#000002
+/test/archives/author/authorce2f3/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Daily"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Daily">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/27/#000003
+/test/archives/author/authorce2f3/2017/09/27/#000002
+/test/archives/author/authorce2f3/2017/09/27/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Weekly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/24-week/#000003
+/test/archives/author/authorce2f3/2017/09/24-week/#000002
+/test/archives/author/authorce2f3/2017/09/24-week/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Monthly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/#000003
+/test/archives/author/authorce2f3/2017/09/#000002
+/test/archives/author/authorce2f3/2017/09/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Yearly"
+--- template
+<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/#000003
+/test/archives/author/authorce2f3/2017/#000002
+/test/archives/author/authorce2f3/2017/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Category"
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category">
+</mt:Contents>
+--- expected
+/test/archives/category/#000003
+
+=== MT::ContentPermalink archive_type="ContentType-Category-Daily"
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Daily">
+</mt:Contents>
+--- expected
+/test/archives/category/2017/09/27/#000003
+
+=== MT::ContentPermalink archive_type="ContentType-Category-Weekly"
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/category/2017/09/24-week/#000003
+
+=== MT::ContentPermalink archive_type="ContentType-Category-Monthly"
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/category/2017/09/#000003
+
+=== MT::ContentPermalink archive_type="ContentType-Category-Yearly"
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/category/2017/#000003

@@ -113,32 +113,30 @@ class Blog extends BaseObject
     }
 
     function archive_url() {
+        require_once('MTUtil.php');
         $url = $this->site_url();
         $site = $this->website();
         if (!empty($site))
             $url = $site->site_url();
 
-        if ( empty($this->blog_archive_url) ) {
+        if ( empty($this->blog_archive_url) )
             return $this->site_url();
-        } else {
-            if(preg_match('/^(https?):\/\/(.+)\/$/', $this->archive_url))
-                return $this->archive_url;
 
-            $paths = $this->_raw_url($this->archive_url);
-            if ( count($paths) > 1 ) {
-                if($paths[0]){
-                    $url = preg_replace('/^(https?):\/\/(.+)\/$/', '$1://$paths[0]/$2/', $url);
-                }
-                if($paths[1]){
-                    $url = $url . $paths[1];
-                }
+        if(preg_match('/^https?:\/\//', $this->blog_archive_url))
+            return $this->blog_archive_url;
+
+        $paths = $this->_raw_url($this->blog_archive_url);
+        if ( $paths ) {
+            if( $paths[0] ){
+                $url = preg_replace('/^(https?):\/\/(.+)\/$/', "$1://$paths[0]$2/", $url);
             }
-            else {
-                $url = $site->blog_site_url . $paths[0];
+            if($paths[1]){
+                $url = caturl(array($url, $paths[1]));
             }
-            $url = preg_replace('/\/$/', '', $url);
         }
-
+        else {
+            $url = caturl(array($url, $this->blog_archive_url));
+        }
         return $url;
     }
 }

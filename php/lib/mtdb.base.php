@@ -4902,11 +4902,12 @@ abstract class MTDatabase {
             $filter = '';
 
             if (preg_match('/Category/', $at)) {
-                $extras['join']['mt_placement'] = array(
-                    'condition' => "fileinfo_category_id = placement_category_id"
-                    );
-                $filter = " and placement_entry_id = $cid
-                           and placement_is_primary = 1";
+                $extras['join']['mt_objectcategory'] = array(
+                    'condition' => "fileinfo_category_id = objectcategory_category_id"
+                );
+                $filter = " and objectcategory_object_ds = \"content_data\"";
+                $filter .= " and objectcategory_object_id = $cid";
+                $filter .= " and objectcategory_is_primary = 1";
             }
 
             $content = $this->fetch_content($cid);
@@ -4929,10 +4930,10 @@ abstract class MTDatabase {
                 $filter .= " and fileinfo_startdate = '$ts'";
             }
             if (preg_match('/Author/', $at)) {
-                $filter .= " and fileinfo_author_id = ". $entry->entry_author_id;
+                $filter .= " and fileinfo_author_id = ". $content->author_id;
             }
 
-            $where .= "templatemap_archive_type = '$at'
+            $where .= "templatemap_archive_type = \"$at\"
                        and templatemap_is_preferred = 1
                        $filter";
             if (isset($args['blog_id']))
@@ -4950,8 +4951,12 @@ abstract class MTDatabase {
                 $blog_url = $blog->site_url();
 
             require_once('MTUtil.php');
-            $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
-            $url = $blog_url . $finfo->fileinfo_url;
+            if(preg_match('/https?/',$blog_url)){
+                $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
+                $url = caturl(array($blog_url, $finfo->fileinfo_url));
+            } else {
+                $url = $finfo->fileinfo_url;
+            }
             if(!isset($args['with_index']) || !$args['with_index'] ){
                 $url = _strip_index($url, $blog);
             }
