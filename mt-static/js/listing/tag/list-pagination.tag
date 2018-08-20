@@ -1,5 +1,9 @@
 <list-pagination>
-  <div class="col-auto mx-auto">
+  <div class={
+    col-auto: true,
+    mx-auto: true,
+    w-100: hasMoreThanFivePages()
+  }>
     <nav aria-label={ store.listClient.objectType + ' list' }>
       <virtual data-is="list-pagination-for-pc"></virtual>
       <virtual data-is="list-pagination-for-mobile"></virtual>
@@ -7,9 +11,10 @@
   </div>
 
   <script>
-    this.mixin('listTop')
-
     riot.mixin('listPagination', {
+      hasMoreThanFivePages: function () {
+        return this.store.pageMax >= 5;
+      },
       movePage: function (e) {
         if (e.currentTarget.disabled) {
             return false
@@ -32,5 +37,8 @@
         return false
       }
     })
+
+    this.mixin('listTop')
+    this.mixin('listPagination')
   </script>
 </list-pagination>
