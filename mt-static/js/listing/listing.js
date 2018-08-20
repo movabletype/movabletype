@@ -1,3 +1,7 @@
+riot.tag2('display-options-for-mobile', '<div class="row d-md-none"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div> </div> </div>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('displayOptions')
+});
 riot.tag2('display-options', '<div class="row"> <div class="col-12"> <button class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#display-options-detail" aria-expanded="false" aria-controls="display-options-detail"> {trans(\'Display Options\')} </button> </div> </div> <div class="row"> <div data-is="display-options-detail" class="col-12"></div> </div>', '', '', function(opts) {
     this.mixin('listTop')
 });
@@ -12,10 +16,7 @@ riot.tag2('display-options-detail', '<div id="display-options-detail" class="col
 
 riot.tag2('display-options-limit', '<div class="field-header"> <label>{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div>', '', '', function(opts) {
     this.mixin('listTop')
-
-    this.changeLimit = function(e) {
-      this.store.trigger('update_limit', this.refs.limit.value)
-    }.bind(this)
+    this.mixin('displayOptions')
 });
 
 riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div if="{listTop.opts.disableUserDispOption}" class="alert alert-warning"> {trans(\'User Display Option is disabled now.\')} </div> <div if="{!listTop.opts.disableUserDispOption}" class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}"> <label class="custom-control-label" for="{column.id}"> <raw content="{column.label}"></raw> </label> </div> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" disabled="{disabled: !column.checked}" checked="{subField.checked}" onchange="{toggleSubField}"> <label class="custom-control-label" for="{subField.id}">{subField.label}</label> </div> </li> </virtual> </ul> </div>', '', '', function(opts) {
@@ -30,142 +31,188 @@ riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\
     }.bind(this)
 });
 
-riot.tag2('list-actions', '<button each="{action, key in listTop.opts.buttonActions}" class="btn btn-default mr-2" data-action-id="{key}" onclick="{doAction}"> {action.label} </button> <div if="{listTop.opts.hasListActions && listTop.opts.hasPulldownActions}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'More actions...\')} </button> <div class="dropdown-menu"> <a each="{action, key in listTop.opts.listActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{Object.keys(listTop.opts.moreListActions).length > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in listTop.opts.moreListActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
+riot.tag2('list-actions-for-mobile', '<div if="{hasActionForMobile()}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'Select action\')} </button> <div class="dropdown-menu"> <a each="{action, key in buttonActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <a each="{action, key in listActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{moreListActionsForMobile() > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in moreListActionsForMobile()}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
+    this.mixin('listActions')
 
-    this.selectedActionId = null
-    this.selectedAction = null
+    this.buttonActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.buttonActions)
+    }.bind(this)
 
-    this.doAction = function(e) {
-      this.selectedActionId = e.target.dataset.actionId
-      this.selectedAction = this.getAction(this.selectedActionId)
-      this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
+    this.listActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.listActions)
+    }.bind(this)
 
-      var args = {}
+    this.moreListActionsForMobile = function() {
+      return this._getActionsForMobile(this.listTop.opts.moreListActions)
+    }.bind(this)
 
-      if (!this.checkCount()) {
-        return false
-      }
-
-      if (this.selectedAction.input) {
-        var input = prompt(this.selectedAction.input)
-        if (input) {
-          args.itemsetActionInput = input
-        } else {
-          return false
+    this._getActionsForMobile = function(actions) {
+      var mobileActions = {}
+      Object.keys(actions).forEach(function (key) {
+        var action = actions[key]
+        if (action.mobile) {
+          mobileActions[key] = action
         }
-      }
-
-      if (!this.selectedAction.no_prompt) {
-        if (this.selectedAction.continue_prompt) {
-          if (!confirm(this.selectedAction.continue_prompt)) {
-            return false
-          }
-        } else {
-          if (!confirm(this.getConfirmMessage())) {
-            return false
-          }
-        }
-      }
-
-      var requestArgs = this.generateRequestArguments(args)
-
-      if (this.selectedAction.xhr) {
-      } else if (this.selectedAction.dialog) {
-        var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
-        requestData.dialog = 1
-        var url = ScriptURI + '?' + jQuery.param(requestData, true)
-        jQuery.fn.mtModal.open(url, { large: true });
-      } else {
-        this.sendRequest(requestArgs)
-      }
+      })
+      return mobileActions
     }.bind(this)
 
-    this.sendRequest = function(postArgs) {
-      this.listTop.opts.listActionClient.post(postArgs)
-    }.bind(this)
-
-    this.generateRequestArguments = function(args) {
-      return jQuery.extend({
-        action: this.selectedAction,
-        actionName: this.selectedActionId,
-        allSelected: this.store.checkedAllRows,
-        ids: this.store.getCheckedRowIds()
-      }, args)
-    }.bind(this)
-
-    this.getAction = function(actionId) {
-      return this.listTop.opts.buttonActions[actionId]
-        || this.listTop.opts.listActions[actionId]
-        || this.listTop.opts.moreListActions[actionId]
-        || null;
-    }.bind(this)
-
-    this.getCheckedRowCount = function() {
-      return this.store.getCheckedRowCount()
-    }.bind(this)
-
-    this.checkCount = function() {
-      var checkedRowCount = this.getCheckedRowCount()
-
-      if (checkedRowCount == 0) {
-        this.alertNoSelectedError()
-        return false
-      }
-      if (this.selectedAction.min && checkedRowCount < this.selectedAction.min) {
-        this.alertMinimumError()
-        return false
-      }
-      if (this.selectedAction.max && checkedRowCount > this.selectedAction.max) {
-        this.alertMaximumError()
-        return false
-      }
-      return true
-    }.bind(this)
-
-    this.alertNoSelectedError = function() {
-      alert(trans(
-        'You did not select any [_1] to [_2].',
-        this.listTop.opts.plural,
-        this.selectedActionPhrase
-      ))
-    }.bind(this)
-
-    this.alertMinimumError = function() {
-      alert(trans(
-        'You can only act upon a minimum of [_1] [_2].',
-        this.selectedAction.min,
-        this.listTop.opts.plural
-      ))
-    }.bind(this)
-
-    this.alertMaximumError = function() {
-      alert(trans(
-        'You can only act upon a maximum of [_1] [_2].',
-        this.selectedAction.max,
-        this.listTop.opts.plural
-      ))
-    }.bind(this)
-
-    this.getConfirmMessage = function() {
-      var checkedRowCount = this.getCheckedRowCount()
-
-      if (checkedRowCount == 1) {
-        return trans(
-          'Are you sure you want to [_2] this [_1]?',
-          this.listTop.opts.singular,
-          this.selectedActionPhrase
-        )
-      } else {
-        return trans(
-          'Are you sure you want to [_3] the [_1] selected [_2]?',
-          checkedRowCount,
-          this.listTop.opts.plural,
-          this.selectedActionPhrase
-        );
-      }
+    this.hasActionForMobile = function() {
+      var mobileActionCount = Object.keys(this.buttonActionsForMobile()).length
+        + Object.keys(this.listActionsForMobile()).length
+        + Object.keys(this.moreListActionsForMobile()).length
+      return mobileActionCount > 0
     }.bind(this)
 });
+
+
+riot.tag2('list-actions-for-pc', '<button each="{action, key in listTop.opts.buttonActions}" class="btn btn-default mr-2" data-action-id="{key}" onclick="{doAction}"> {action.label} </button> <div if="{listTop.opts.hasPulldownActions}" class="btn-group"> <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"> {trans(\'More actions...\')} </button> <div class="dropdown-menu"> <a each="{action, key in listTop.opts.listActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> <h6 if="{Object.keys(listTop.opts.moreListActions).length > 0}" class="dropdown-header"> {trans(\'Plugin Actions\')} </h6> <a each="{action, key in listTop.opts.moreListActions}" class="dropdown-item" href="javascript:void(0);" data-action-id="{key}" onclick="{doAction}"> {action.label} </a> </div> </div>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('listActions')
+});
+
+riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none d-md-block"></div> <div data-is="list-actions-for-mobile" class="col d-md-none"></div>', '', '', function(opts) {
+    this.mixin('listTop')
+
+    riot.mixin('listActions', {
+      init: function () {
+        this.selectedActionId = null
+        this.selectedAction = null
+      },
+
+      doAction: function (e) {
+        this.selectedActionId = e.target.dataset.actionId
+        this.selectedAction = this.getAction(this.selectedActionId)
+        this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
+
+        var args = {}
+
+        if (!this.checkCount()) {
+          return false
+        }
+
+        if (this.selectedAction.input) {
+          var input = prompt(this.selectedAction.input)
+          if (input) {
+            args.itemsetActionInput = input
+          } else {
+            return false
+          }
+        }
+
+        if (!this.selectedAction.no_prompt) {
+          if (this.selectedAction.continue_prompt) {
+            if (!confirm(this.selectedAction.continue_prompt)) {
+              return false
+            }
+          } else {
+            if (!confirm(this.getConfirmMessage())) {
+              return false
+            }
+          }
+        }
+
+        var requestArgs = this.generateRequestArguments(args)
+
+        if (this.selectedAction.xhr) {
+        } else if (this.selectedAction.dialog) {
+          var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
+          requestData.dialog = 1
+          var url = ScriptURI + '?' + jQuery.param(requestData, true)
+          jQuery.fn.mtModal.open(url, { large: true });
+        } else {
+          this.sendRequest(requestArgs)
+        }
+      },
+
+      sendRequest: function (postArgs) {
+        this.listTop.opts.listActionClient.post(postArgs)
+      },
+
+      generateRequestArguments: function (args) {
+        return jQuery.extend({
+          action: this.selectedAction,
+          actionName: this.selectedActionId,
+          allSelected: this.store.checkedAllRows,
+          ids: this.store.getCheckedRowIds()
+        }, args)
+      },
+
+      getAction: function (actionId) {
+        return this.listTop.opts.buttonActions[actionId]
+          || this.listTop.opts.listActions[actionId]
+          || this.listTop.opts.moreListActions[actionId]
+          || null;
+      },
+
+      getCheckedRowCount: function () {
+        return this.store.getCheckedRowCount()
+      },
+
+      checkCount: function () {
+        var checkedRowCount = this.getCheckedRowCount()
+
+        if (checkedRowCount == 0) {
+          this.alertNoSelectedError()
+          return false
+        }
+        if (this.selectedAction.min && checkedRowCount < this.selectedAction.min) {
+          this.alertMinimumError()
+          return false
+        }
+        if (this.selectedAction.max && checkedRowCount > this.selectedAction.max) {
+          this.alertMaximumError()
+          return false
+        }
+        return true
+      },
+
+      alertNoSelectedError: function () {
+        alert(trans(
+          'You did not select any [_1] to [_2].',
+          this.listTop.opts.plural,
+          this.selectedActionPhrase
+        ))
+      },
+
+      alertMinimumError: function () {
+        alert(trans(
+          'You can only act upon a minimum of [_1] [_2].',
+          this.selectedAction.min,
+          this.listTop.opts.plural
+        ))
+      },
+
+      alertMaximumError: function () {
+        alert(trans(
+          'You can only act upon a maximum of [_1] [_2].',
+          this.selectedAction.max,
+          this.listTop.opts.plural
+        ))
+      },
+
+      getConfirmMessage: function () {
+        var checkedRowCount = this.getCheckedRowCount()
+
+        if (checkedRowCount == 1) {
+          return trans(
+            'Are you sure you want to [_2] this [_1]?',
+            this.listTop.opts.singular,
+            this.selectedActionPhrase
+          )
+        } else {
+          return trans(
+            'Are you sure you want to [_3] the [_1] selected [_2]?',
+            checkedRowCount,
+            this.listTop.opts.plural,
+            this.selectedActionPhrase
+          );
+        }
+      }
+    })
+});
+
 
 riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header"></div> <div id="list-filter-collapse" class="collapse"> <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3"> </div> </div>', '', '', function(opts) {
     riot.mixin('listFilterTop', {
@@ -361,7 +408,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
     }.bind(this)
 });
 
-riot.tag2('list-filter-header', '<div class="row"> <div class="col-11"> <ul class="list-inline"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="col-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#list-filter-collapse" aria-expanded="false" aria-controls="list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-header', '<div class="row"> <div class="col-12 col-md-11"> <ul class="list-inline mb-0"> <li class="list-inline-item"> {trans(\'Filter:\')} </li> <li class="list-inline-item"> <a href="#" id="opener" data-toggle="modal" data-target="#select-filter"> <u>{trans( listFilterTop.currentFilter.label )}</u> </a> <virtual data-is="list-filter-select-modal"></virtual> </li> <li class="list-inline-item"> <a href="#" id="allpass-filter" if="{listFilterTop.isAllpassFilter() == false}" onclick="{resetFilter}"> [ {trans( \'Reset Filter\' )} ] </a> </li> </ul> </div> <div class="d-none d-md-block col-md-1"> <button id="toggle-filter-detail" class="btn btn-default dropdown-toggle float-right" data-toggle="collapse" data-target="#list-filter-collapse" aria-expanded="false" aria-controls="list-filter-collapse"></button> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
@@ -529,7 +576,7 @@ riot.tag2('list-filter-item-field', '<virtual></virtual>', '', '', function(opts
     this.setValues()
 });
 
-riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter" tabindex="-1"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">{trans( \'Select Filter\' )}</h5> <button type="button" class="close" data-dismiss="modal"><span>×</span></button> </div> <div class="modal-body"> <div class="filter-list-block"> <h6 class="filter-list-label">{trans( \'My Filters\' )}</h6> <ul id="user-filters" class="list-unstyled editable"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗1⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <virtual if="{!parent.isEditingFilter[id]}"> <a href="#" onclick="{applyFilter}"> {label} </a> <div class="float-right"> <a href="#" onclick="{startEditingFilter}">[{trans( \'rename\' )}]</a> <a href="#" class="d-inline-block" onclick="{removeFilter}"> <ss title="{trans(\'Remove\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_trash\'}"> </ss> </a> </div> </virtual> <div class="form-inline" if="{parent.isEditingFilter[id]}"> <div class="form-group form-group-sm"> <input type="text" class="form-control rename-filter-input" riot-value="{label}" ref="label"> <button class="btn btn-default form-control" onclick="{renameFilter}"> {trans(\'Save\')} </button> <button class="btn btn-default form-control" onclick="{stopEditingFilter}"> {trans(\'Cancel\')} </button> </div> </div> </li> <li class="filter line"> <a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link d-inline-block" onclick="{createNewFilter}"> <ss title="{trans(\'Add\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_add\'}"> </ss> {trans( \'Create New\' )} </a> </li> </ul> </div> <div class="filter-list-block" if="{store.hasSystemFilter()}"> <h6 class="filter-list-label">{trans( \'Built in Filters\' )}</h6> <ul id="built-in-filters" class="list-unstyled"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗0⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <a href="#" onclick="{applyFilter}"> {label} </a> </li> </ul> </div> </div> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter" tabindex="-1"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">{trans( \'Select Filter\' )}</h5> <button type="button" class="close" data-dismiss="modal"><span>×</span></button> </div> <div class="modal-body"> <div class="filter-list-block"> <h6 class="filter-list-label">{trans( \'My Filters\' )}</h6> <ul id="user-filters" class="list-unstyled editable"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗1⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <virtual if="{!parent.isEditingFilter[id]}"> <a href="#" onclick="{applyFilter}"> {label} </a> <div class="float-right d-none d-md-block"> <a href="#" onclick="{startEditingFilter}">[{trans( \'rename\' )}]</a> <a href="#" class="d-inline-block" onclick="{removeFilter}"> <ss title="{trans(\'Remove\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_trash\'}"> </ss> </a> </div> </virtual> <div class="form-inline" if="{parent.isEditingFilter[id]}"> <div class="form-group form-group-sm"> <input type="text" class="form-control rename-filter-input" riot-value="{label}" ref="label"> <button class="btn btn-default form-control" onclick="{renameFilter}"> {trans(\'Save\')} </button> <button class="btn btn-default form-control" onclick="{stopEditingFilter}"> {trans(\'Cancel\')} </button> </div> </div> </li> <li class="filter line d-none d-md-list-item"> <a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link d-md-inline-block" onclick="{createNewFilter}"> <ss title="{trans(\'Add\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_add\'}"> </ss> {trans( \'Create New\' )} </a> </li> </ul> </div> <div class="filter-list-block" if="{store.hasSystemFilter()}"> <h6 class="filter-list-label">{trans( \'Built in Filters\' )}</h6> <ul id="built-in-filters" class="list-unstyled"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗0⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <a href="#" onclick="{applyFilter}"> {label} </a> </li> </ul> </div> </div> </div> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
@@ -662,55 +709,96 @@ riot.tag2('list-filter-save-modal', '<div id="save-filter" class="modal fade" ta
 });
 
 
-riot.tag2('list-pagination', '<nav aria-label="{store.listClient.objectType + \' list\'}"> <ul class="pagination"> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> {trans(\'Previous\')} </a> </li> <virtual if="{store.page - 2 >= 1}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{1}" onclick="{movePage}"> 1 </a> </li> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <li if="{store.page - 1 >= 1}" class="{\'page-item\': true, \'first-last\': store.page - 1 == 1}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="page-item active"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{\'page-item\': true, \'first-last\': store.page + 1 == store.pageMax}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <virtual if="{store.page + 2 <= store.pageMax}"> <li class="page-item" aria-hidden="true"> ... </li> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{store.pageMax}" onclick="{movePage}"> {store.pageMax} </a> </li> </virtual> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} </a> </li> </ul> </nav>', '', '', function(opts) {
+riot.tag2('list-pagination-for-mobile', '<ul class="pagination__mobile d-md-none"> <li class="{page-item: true,       mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> <ss title="{trans(\'Previous\')}" class="mt-icon--inverse mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_tri-left\'}"> </ss> </a> </li> <li if="{store.page - 4 >= 1 && store.pageMax - store.page < 1}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 4}" onclick="{movePage}"> {store.page - 4} </a> </li> <li if="{store.page - 3 >= 1 && store.pageMax - store.page < 2}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 3}" onclick="{movePage}"> {store.page - 3} </a> </li> <li if="{store.page - 2 >= 1}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 2}" onclick="{movePage}"> {store.page - 2} </a> </li> <li if="{store.page - 1 >= 1}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="{page-item: true,       active: true,       mr-auto: hasMoreThanFivePages()}"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <li if="{store.page + 2 <= store.pageMax}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 2}" onclick="{movePage}"> {store.page + 2} </a> </li> <li if="{store.page + 3 <= store.pageMax && store.page <= 2}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 3}" onclick="{movePage}"> {store.page + 3} </a> </li> <li if="{store.page + 4 <= store.pageMax && store.page <= 1}" class="{page-item: true,         mr-auto: hasMoreThanFivePages()}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 4}" onclick="{movePage}"> {store.page + 4} </a> </li> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> <ss title="{trans(\'Next\')}" class="mt-icon--inverse mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_tri-right\'}"> </ss> </a> </li> </ul>', '', '', function(opts) {
     this.mixin('listTop')
+    this.mixin('listPagination')
+});
 
-    this.movePage = function(e) {
-      if (e.currentTarget.disabled) {
-        return false
-      }
+riot.tag2('list-pagination-for-pc', '<ul class="pagination d-none d-md-flex"> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> {trans(\'Previous\')} </a> </li> <virtual if="{store.page - 2 >= 1}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{1}" onclick="{movePage}"> 1 </a> </li> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <li if="{store.page - 1 >= 1}" class="{\'page-item\': true, \'first-last\': store.page - 1 == 1}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="page-item active"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{\'page-item\': true, \'first-last\': store.page + 1 == store.pageMax}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <virtual if="{store.page + 2 <= store.pageMax}"> <li class="page-item" aria-hidden="true"> ... </li> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{store.pageMax}" onclick="{movePage}"> {store.pageMax} </a> </li> </virtual> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} </a> </li> </ul>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('listPagination')
+});
 
-      var nextPage
-      if (e.target.tagName == "INPUT") {
-        if (e.which != 13) {
-          return false
+riot.tag2('list-pagination', '<div class="{col-auto: true,     mx-auto: true,     w-100: hasMoreThanFivePages()}"> <nav aria-label="{store.listClient.objectType + \' list\'}"> <virtual data-is="list-pagination-for-pc"></virtual> <virtual data-is="list-pagination-for-mobile"></virtual> </nav> </div>', '', '', function(opts) {
+    riot.mixin('listPagination', {
+      hasMoreThanFivePages: function () {
+        return this.store.pageMax >= 5;
+      },
+      movePage: function (e) {
+        if (e.currentTarget.disabled) {
+            return false
         }
-        nextPage = Number(e.target.value)
-      } else {
-        nextPage = Number(e.currentTarget.dataset.page)
-      }
-      if (!nextPage) {
+
+        var nextPage
+        if (e.target.tagName == "INPUT") {
+            if (e.which != 13) {
+            return false
+            }
+            nextPage = Number(e.target.value)
+        } else {
+            nextPage = Number(e.currentTarget.dataset.page)
+        }
+        if (!nextPage) {
+            return false
+        }
+        var moveToPagination = true
+        this.store.trigger('move_page', nextPage, moveToPagination)
         return false
       }
-      var moveToPagination = true
-      this.store.trigger('move_page', nextPage, moveToPagination)
-      return false
-    }.bind(this)
+    })
+
+    this.mixin('listTop')
+    this.mixin('listPagination')
 });
 
 riot.tag2('list-table', '<thead data-is="list-table-header"></thead> <tbody if="{store.isLoading}"> <tr> <td colspan="{store.columns.length + 1}"> {trans(\'Loading...\')} </td> </tr> </tbody> <tbody data-is="list-table-body" if="{!store.isLoading && store.objects}"> </tbody>', '', '', function(opts) {
     this.mixin('listTop')
 });
 
-riot.tag2('list-table-header', '<tr> <th class="mt-table__control"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="select-all" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <label class="custom-control-label" for="select-all"><span class="sr-only">{trans(\'Select All\')}</span></label> </div> </th> <th each="{store.columns}" scope="col" if="{checked}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> <raw content="{label}"></raw> </a> <raw if="{!sortable}" content="{label}"></raw> </th> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header', '<virtual data-is="list-table-header-for-pc"></virtual> <virtual data-is="list-table-header-for-mobile"></virtual>', '', '', function(opts) {
     this.mixin('listTop')
-
-    this.toggleAllRowsOnPage = function(e) {
-      this.store.trigger('toggle_all_rows_on_page')
-    }.bind(this)
-
-    this.toggleSortColumn = function(e) {
-      var columnId = e.currentTarget.parentElement.dataset.id
-      this.store.trigger('toggle_sort_column', columnId)
-    }.bind(this)
+    riot.mixin('listTableHeader', {
+      toggleAllRowsOnPage: function (e) {
+        this.store.trigger('toggle_all_rows_on_page')
+      },
+      toggleSortColumn: function (e) {
+        var columnId = e.currentTarget.parentElement.dataset.id
+        this.store.trigger('toggle_sort_column', columnId)
+      }
+    })
 });
 
-riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.toggleRow}" class="{obj.checked ? \'mt-table__highlight\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
+riot.tag2('list-table-header-for-pc', '<tr class="d-none d-md-table-row"> <th if="{listTop.opts.hasListActions}" class="mt-table__control"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="select-all" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <label class="custom-control-label" for="select-all"><span class="sr-only">{trans(\'Select All\')}</span></label> </div> </th> <th each="{store.columns}" scope="col" if="{checked && id != \'__mobile\'}" data-id="{id}" class="{primary: primary,         sortable: sortable,         sorted: parent.store.sortBy == id}"> <a href="javascript:void(0)" if="{sortable}" onclick="{toggleSortColumn}" class="{mt-table__ascend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'ascend\',           mt-table__descend: sortable && parent.store.sortBy == id && parent.store.sortOrder == \'descend\'}"> <raw content="{label}"></raw> </a> <raw if="{!sortable}" content="{label}"></raw> </th> </tr>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('listTableHeader')
+});
+
+riot.tag2('list-table-header-for-mobile', '<tr if="{store.count}" class="d-md-none"> <th if="{listTop.opts.hasMobilePulldownActions}" class="mt-table__control"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="select-all" checked="{store.checkedAllRowsOnPage}" onchange="{toggleAllRowsOnPage}"> <label class="custom-control-label" for="select-all"><span class="sr-only">{trans(\'Select All\')}</span></label> </div> </th> <th scope="col"> <span if="{listTop.opts.hasMobilePulldownActions}" onclick="{toggleAllRowsOnPage}"> {trans(\'All\')} </span> <span class="float-right"> {trans(\'[_1] &ndash; [_2] of [_3]\', store.getListStart(), store.getListEnd(), store.count)} </span> </th> </tr>', '', '', function(opts) {
+    this.mixin('listTop')
+    this.mixin('listTableHeader')
+});
+
+riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan="{store.columns.length + 1}"> {trans(\'No [_1] could be found.\', listTop.opts.zeroStateLabel)} </td> </tr> <tr style="background-color: #ffffff;" if="{store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> <a href="javascript:void(0);" onclick="{checkAllRows}"> {trans(\'Select all [_1] items\', store.count)} </a> </td> </tr> <tr class="success" if="{store.pageMax > 1 && store.checkedAllRows}"> <td colspan="{store.objects.length + 1}"> {trans(\'All [_1] items are selected\', store.count)} </td> </tr> <tr data-is="list-table-row" each="{obj, index in store.objects}" onclick="{parent.clickRow}" class="{(obj.checked || obj.clicked) ? \'mt-table__highlight\' : \'\'}" data-index="{index}" checked="{obj.checked}" object="{obj.object}"> </tr>', '', '', function(opts) {
     this.mixin('listTop')
 
-    this.toggleRow = function(e) {
+    this.clickRow = function(e) {
+      this.store.trigger('reset_all_clicked_rows');
+
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
+      }
+      if (this.listTop.isMobileView()) {
+        var $mobileColumn
+        if (e.target.dataset.is == 'list-table-column') {
+          $mobileColumn = jQuery(e.target)
+        } else {
+          $mobileColumn = jQuery(e.target).parents('[data-is=list-table-column]');
+        }
+        if ($mobileColumn.length > 0 && $mobileColumn.find('a').length > 0) {
+          $mobileColumn.find('a')[0].click()
+          this.store.trigger('click_row', e.currentTarget.dataset.index)
+          return false
+        }
       }
       e.preventDefault()
       e.stopPropagation()
@@ -722,15 +810,46 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
     }.bind(this)
 });
 
-riot.tag2('list-table-row', '<td> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{(parent.store.columns[0].id == \'id\' && !parent.store.columns[0].checked)       ? parent.store.columns[index+1].id       : parent.store.columns[index].id}" content="{content}"> </td>', '', '', function(opts) {
+riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-none: !listTop.opts.hasMobilePulldownActions,       d-md-table-cell: !listTop.opts.hasMobilePulldownActions}"> <div class="custom-control custom-checkbox" if="{opts.object[0]}"> <input type="checkbox" name="id" class="custom-control-input" id="{\'select_\' + opts.object[0]}" riot-value="{opts.object[0]}" checked="{opts.checked}"> <span class="custom-control-indicator"></span> <label class="custom-control-label" for="{\'select_\' + opts.object[0]}"><span class="sr-only">{trans(\'Select\')}</span></label> </div> </td> <td data-is="list-table-column" each="{content, index in opts.object}" if="{index > 0}" class="{classes(index)}" content="{content}"> </td>', '', '', function(opts) {
     this.mixin('listTop')
+
+    this.classes = function(index) {
+      var columnIndex = this.columnIndex(index)
+      var nameClass = this.store.columns[columnIndex].id
+      var classes
+      if (this.store.hasMobileColumn()) {
+        if (this.store.getMobileColumnIndex() == index) {
+          classes = 'd-md-none'
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      } else {
+        if (this.store.columns[columnIndex].primary) {
+          classes = ''
+        } else {
+          classes = 'd-none d-md-table-cell'
+        }
+      }
+      if (classes.length > 0) {
+        return nameClass + ' ' + classes
+      } else {
+        return nameClass
+      }
+    }.bind(this)
+    this.columnIndex = function(index) {
+      if (this.store.columns[0].id == 'id' && !this.store.columns[0].checked) {
+        return index + 1
+      } else {
+        return index
+      }
+    }.bind(this)
 });
 
 riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div class="row mb-3"> <div data-is="list-actions" if="{opts.useActions}" class="col-12"> </div> </div> <div class="row mb-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <div data-is="list-pagination" class="col-12"></div> </div>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div class="row mb-5 mb-md-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
@@ -742,6 +861,12 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
         }
       }
     })
+    riot.mixin('displayOptions', {
+      changeLimit: function(e) {
+        this.store.trigger('update_limit', this.refs.limit.value)
+      }
+    })
+
     this.mixin('listTop')
 
     var self = this
@@ -781,6 +906,10 @@ riot.tag2('list-top', '<div class="mb-3" data-is="display-options"></div> <div c
     this.tableClass = function() {
       var objectType = opts.objectTypeForTableClass || opts.objectType
       return 'list-' + objectType
+    }.bind(this)
+
+    this.isMobileView = function() {
+      return jQuery(window).width() < 768
     }.bind(this)
 });
 

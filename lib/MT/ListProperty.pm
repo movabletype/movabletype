@@ -353,13 +353,17 @@ sub make_common_label_html {
         = $obj->has_column('blog_id') ? $obj->blog_id
         : $app->blog                  ? $app->blog->id
         :                               0;
-    my $type      = $obj->class_type;
+    my $type
+        = $obj->isa('MT::ContentData') ? 'content_data' : $obj->class_type;
     my $edit_link = $app->uri(
         mode => 'view',
         args => {
             _type   => $type,
             id      => $id,
             blog_id => $blog_id,
+            $obj->isa('MT::ContentData')
+            ? ( content_type_id => $obj->content_type_id )
+            : (),
         },
     );
 

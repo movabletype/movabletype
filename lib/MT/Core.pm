@@ -1669,18 +1669,6 @@ BEGIN {
                 view                => [ 'website', 'blog' ],
                 primary             => 'name',
             },
-            content_data => {
-                object_label        => 'Content Data',
-                object_label_plural => 'Content Data',
-                object_type         => 'content_data',
-                condition           => sub {0},
-                data_api_condition  => sub {1},
-                scope_mode          => 'this',
-                use_filters         => 0,
-                view                => [ 'website', 'blog' ],
-                primary             => 'id',
-                default_sort_key    => 'modified_on',
-            },
             group => {
                 object_label     => 'Group',
                 default_sort_key => 'name',

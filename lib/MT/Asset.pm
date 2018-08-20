@@ -112,6 +112,9 @@ sub list_props {
                         = $is_userpic{ $obj->id }
                         ? q{<span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>}
                         : '';
+                    my $created_on
+                        = MT::Util::date_for_listing( $obj->created_on,
+                        $app );
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
                         if (   $obj->has_thumbnail
@@ -168,9 +171,23 @@ sub list_props {
                                 ( $thumb_size - $thumbnail_height ) / 2 );
 
                             push @rows, qq{
-                                <div class="pull-left">
+                                <div class="pull-left d-none d-md-inline">
                                     <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
+                                </div>
+                                <div class="d-md-none row">
+                                    <div class="col-auto mb-2 pl-0">
+                                        <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    </div>
+                                    <div class="col pl-0">
+                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
+                                    </div>
+                                    <div class="col-12 pl-0">
+                                        <span class="font-weight-light">
+                                            $created_on
+                                        </span>
+                                        $userpic_sticker
+                                    </div>
                                 </div>
                             };
                         }
@@ -181,7 +198,7 @@ sub list_props {
                                     </div>
                                 };
                             push @rows, qq{
-                                <div class="pull-left d-inline">
+                                <div class="pull-left d-none d-md-inline">
                                     <div class="mt-user">
                                         $svg
                                         <div class="mt-user__badge--warning">
@@ -192,6 +209,27 @@ sub list_props {
                                     </div>
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
+                                <div class="d-md-none row">
+                                    <div class="col-auto mb-2 pl-0">
+                                        <div class="mt-user">
+                                            $svg
+                                            <div class="mt-user__badge--warning">
+                                                <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                                    <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col pl-0">
+                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
+                                    </div>
+                                    <div class="col-12 pl-0">
+                                        <span class="font-weight-light">
+                                            $created_on
+                                        </span>
+                                        $userpic_sticker
+                                    </div>
+                                </div>
                             };
                         }
                         else {
@@ -201,9 +239,23 @@ sub list_props {
                                     </div>
                                 };
                             push @rows, qq{
-                                <div class="pull-left d-inline">
+                                <div class="pull-left d-none d-md-inline">
                                     $svg
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
+                                </div>
+                                <div class="d-md-none row">
+                                    <div class="col-auto mb-2 pl-0">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                    </div>
+                                    <div class="col pl-0">
+                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
+                                    </div>
+                                    <div class="col-12 pl-0">
+                                        <span class="font-weight-light">
+                                            $created_on
+                                        </span>
+                                        $userpic_sticker
+                                    </div>
                                 </div>
                             };
                         }
@@ -215,7 +267,7 @@ sub list_props {
                                 </div>
                             };
                         push @rows, qq{
-                            <div class="pull-left d-inline">
+                            <div class="pull-left d-none d-md-inline">
                                 <div class="mt-user">
                                     $svg
                                     <div class="mt-user__badge--warning">
@@ -225,6 +277,27 @@ sub list_props {
                                     </div>
                                 </div>
                                 <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
+                            </div>
+                            <div class="d-md-none row">
+                                <div class="col-auto mb-2 pl-0">
+                                    <div class="mt-user">
+                                        $svg
+                                        <div class="mt-user__badge--warning">
+                                            <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col pl-0">
+                                    <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
+                                </div>
+                                <div class="col-12 pl-0">
+                                    <span class="font-weight-light">
+                                        $created_on
+                                    </span>
+                                    $userpic_sticker
+                                </div>
                             </div>
                         };
                     }

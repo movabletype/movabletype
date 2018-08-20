@@ -62,6 +62,14 @@
     this.checkedAllRows = nextState;
   };
 
+  ListData.prototype.clickRow = function (rowIndex) {
+    var object = this.objects[rowIndex];
+    if (!object.object[0]) {
+      return;
+    }
+    object.clicked = true;
+  };
+
   ListData.prototype.createNewFilter = function (filterLabel) {
     this.currentFilter = {
       items: [],
@@ -122,6 +130,30 @@
     }
   };
 
+  ListData.prototype.getListEnd = function () {
+    return (this.page - 1) * this.limit + this.objects.length;
+  };
+
+  ListData.prototype.getListStart = function () {
+    return (this.page - 1) * this.limit + 1;
+  };
+
+  ListData.prototype.getMobileColumnIndex = function () {
+    var mobileColumnIndex = -1;
+    var hasMobileColumn = false;
+    this.columns.some(function (column) {
+      if (!column.checked) {
+        return false;
+      }
+      mobileColumnIndex++;
+      if (column.id == '__mobile') {
+        hasMobileColumn = true;
+        return true;
+      }
+    });
+    return hasMobileColumn ? mobileColumnIndex : -1;
+  };
+
   ListData.prototype.getNewFilterLabel = function (objectLabel) {
     var temp_base = 1;
     var temp;
@@ -146,6 +178,10 @@
       });
     });
     return returnSubField;
+  };
+
+  ListData.prototype.hasMobileColumn = function () {
+    return this.getMobileColumnIndex() > -1;
   };
 
   ListData.prototype.hasSystemFilter = function () {
@@ -184,6 +220,12 @@
 
   ListData.prototype.removeFilterItemContent = function (itemIndex, contentIndex) {
     this.currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+  };
+
+  ListData.prototype.resetAllClickedRows = function () {
+    this.objects.forEach(function (object) {
+      object.clicked = false;
+    });
   };
 
   ListData.prototype.setFilter = function (filter) {

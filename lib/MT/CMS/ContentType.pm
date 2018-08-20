@@ -890,7 +890,7 @@ sub _make_content_data_listing_screens {
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
-            primary          => 'id',
+            primary          => 'label',
             default_sort_key => 'modified_on',
             screen_label     => sub {
                 MT->translate( 'Manage [_1]', $ct->name );

@@ -10,6 +10,10 @@ use warnings;
 
 use MT::EntryStatus qw(:all);
 
+use Exporter 'import';
+
+our @EXPORT_OK = qw( status_icon );
+
 1;
 __END__
 

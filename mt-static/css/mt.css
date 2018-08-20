@@ -5036,7 +5036,7 @@ tbody.collapse.show {
   color: #868e96;
 }
 
-.pagination {
+.pagination, .pagination__mobile {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -9250,6 +9250,7 @@ Icons
 Thumbnails
 User Badge
 Pagination
+  Mobile Pagination
 Suggestion
 Progress Bar
 Adjustments
@@ -10952,11 +10953,11 @@ a:hover .mt-icon--secondary {
 }
 
 /* Pagination */
-.pagination, .pagination-sm, .pagination-lg {
+.pagination, .pagination__mobile, .pagination-sm, .pagination-lg {
   border-radius: 0;
 }
 
-.pagination .page-item:first-child .page-link, .pagination .page-item:last-child .page-link, .pagination-sm .page-item:first-child .page-link, .pagination-sm .page-item:last-child .page-link, .pagination-lg .page-item:first-child .page-link, .pagination-lg .page-item:last-child .page-link {
+.pagination .page-item:first-child .page-link, .pagination__mobile .page-item:first-child .page-link, .pagination .page-item:last-child .page-link, .pagination__mobile .page-item:last-child .page-link, .pagination-sm .page-item:first-child .page-link, .pagination-sm .page-item:last-child .page-link, .pagination-lg .page-item:first-child .page-link, .pagination-lg .page-item:last-child .page-link {
   border-radius: 0;
 }
 
@@ -10983,6 +10984,10 @@ a:hover .mt-icon--secondary {
   width: 9px;
 }
 
+.page-item:last-child {
+  margin-right: 0;
+}
+
 .page-item:last-child .page-link {
   margin-right: 0;
   margin-left: 0;
@@ -11002,6 +11007,26 @@ a:hover .mt-icon--secondary {
 .page-item.first-last .page-link {
   color: #595959;
   border-color: #E0E0E0;
+}
+
+/* Mobile Pagination */
+.pagination__mobile .page-item .page-link {
+  border: 1px solid #E0E0E0;
+  color: #595959;
+  height: 100%;
+}
+
+.pagination__mobile .page-item:first-child .page-link, .pagination__mobile .page-item:last-child .page-link {
+  background-color: #004B9A;
+  border-color: #004B9A;
+}
+
+.pagination__mobile .page-item:first-child .page-link:before, .pagination__mobile .page-item:first-child .page-link:after, .pagination__mobile .page-item:last-child .page-link:before, .pagination__mobile .page-item:last-child .page-link:after {
+  content: none;
+}
+
+.pagination__mobile .page-item.active .page-link {
+  background-color: #5FBCEB;
 }
 
 /* Suggestion */

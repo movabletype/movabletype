@@ -3878,8 +3878,11 @@ sub load_list_actions {
         $param->{all_actions}       = $all_actions;
         $param->{has_pulldown_actions}
             = ( @plugin_actions || @core_actions ) ? 1 : 0;
+        $param->{has_mobile_pulldown_actions}
+            = ( grep { $_->{mobile} } @$all_actions )
+            ? 1
+            : 0;
         $param->{has_list_actions} = scalar @$all_actions;
-
     }
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;
