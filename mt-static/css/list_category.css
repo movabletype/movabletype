@@ -66,3 +66,21 @@
 .highlight {
   background-color: #e6f2f4;
 }
+
+#itemlist {
+    max-width: 80px;
+}
+
+#area-action input[type=text] {
+    max-width: 120px;
+}
+
+@media (min-width: 768px) {
+    #itemlist {
+        max-width: 200px;
+    }
+
+    #area-action input[type=text] {
+        max-width: 200px;
+    }
+}
