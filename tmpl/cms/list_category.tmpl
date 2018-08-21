@@ -943,6 +943,16 @@ function bulkUpdateCategories() {
   return false;
 }
 
+jQuery('#root').on('click touch', '.mt-draggable', function () {
+  if (jQuery(window).width() >= 768) {
+    return;
+  }
+  var $editLink = jQuery(this).find('.item-label a');
+  if ($editLink.length > 0) {
+    $editLink.get(0).click();
+  }
+});
+
   <mt:if name="is_category_set">
 jQuery('#set_name').keyup(function() {
   setDirty(true);
