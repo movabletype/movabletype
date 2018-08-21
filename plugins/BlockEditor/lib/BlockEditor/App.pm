@@ -152,8 +152,10 @@ sub data_load_handler {
 
 sub pre_save_content_data {
     my ( $cb, $app, $content_data, $org_obj ) = @_;
+    return 1 unless $app->mode eq 'save';
     my $block_editor_data = $app->param('block_editor_data');
     $content_data->block_editor_data($block_editor_data);
+    1;
 }
 
 =head
