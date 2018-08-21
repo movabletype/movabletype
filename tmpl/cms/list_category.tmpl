@@ -278,7 +278,7 @@ function createItem(id, parent, label, basename, number) {
     line += '<span class="item-basename mr-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl"></span>';
   <mt:unless name="is_category_set">
-  line += ' <span class="count float-right mr-2">'+number+'</span>';
+  line += ' <span class="count float-right d-none d-md-block mr-2">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+' sortable-item mt-draggable" draggable="true" aria-grabbed="false"></div>');
   $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" strip_linefeeds="1"></div>');
