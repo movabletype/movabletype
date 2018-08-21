@@ -46,8 +46,11 @@
     display: none;
     margin-left: 10px;
 }
-.sortable-item.on .item-ctrl {
-    display: inline-block;
+
+@media (min-width: 768px) {
+    .sortable-item.on .item-ctrl {
+        display: inline-block;
+    }
 }
 
 .highlight {
