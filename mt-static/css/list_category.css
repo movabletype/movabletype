@@ -47,8 +47,18 @@
     margin-left: 10px;
 }
 
+.sortable-item .item-label,
+.sortable-item .item-basename {
+    display: block;
+}
+
 @media (min-width: 768px) {
     .sortable-item.on .item-ctrl {
+        display: inline-block;
+    }
+
+    .sortable-item .item-label,
+    .sortable-item .item-basename {
         display: inline-block;
     }
 }
