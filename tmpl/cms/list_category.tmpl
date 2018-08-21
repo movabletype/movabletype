@@ -286,9 +286,13 @@ function createItem(id, parent, label, basename, number) {
   return $item;
 }
 
+function isMobileView() {
+  return jQuery(window).width() < 768;
+}
+
 function setMaxWidth($items) {
   var maxWidth;
-  if (jQuery(window).width() < 768) {
+  if (isMobileView()) {
     maxWidth = jQuery(window).width() - 110;
   } else {
     maxWidth = (jQuery(window).width() - 580) / 2;
@@ -568,6 +572,7 @@ function initMoving() {
     distance: 3,
     opacity: 0.8,
     placeholder: 'ui-state-highlight',
+    scrollSpeed: isMobileView() ? 10 : 20,
     start: function(event, ui) {
       var $item = jQuery(ui.item);
       $item.attr('aria-grabbed', true);
@@ -956,7 +961,7 @@ function bulkUpdateCategories() {
 }
 
 jQuery('#root').on('click touch', '.mt-draggable', function () {
-  if (jQuery(window).width() >= 768) {
+  if (!isMobileView()) {
     return;
   }
   var $editLink = jQuery(this).find('.item-label a');
