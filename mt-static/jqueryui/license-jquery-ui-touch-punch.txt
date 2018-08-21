@@ -1,0 +1,4 @@
+jQuery UI Touch Punch is under the MIT or GPL Version 2 licenses.
+http://touchpunch.furf.com/
+https://opensource.org/licenses/MIT
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
