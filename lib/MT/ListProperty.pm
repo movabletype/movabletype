@@ -344,7 +344,7 @@ sub common_label_html {
 }
 
 sub make_common_label_html {
-    my ( $obj, $app, $col, $alt_label ) = @_;
+    my ( $obj, $app, $col, $alt_label, $no_link ) = @_;
     my $id    = $obj->id;
     my $label = $obj->$col;
     $label = '' if !defined $label;
@@ -370,7 +370,11 @@ sub make_common_label_html {
     if ( defined $label && $label ne '' ) {
         my $can_double_encode = 1;
         $label = MT::Util::encode_html( $label, $can_double_encode );
-        return qq{<a href="$edit_link">$label</a>};
+        return $no_link ? $label : qq{<a href="$edit_link">$label</a>};
+    }
+    elsif ($no_link) {
+        return MT->translate( '[_1] (id:[_2])',
+            $alt_label ? $alt_label : 'No ' . $label, $id, );
     }
     else {
         return MT->translate(
