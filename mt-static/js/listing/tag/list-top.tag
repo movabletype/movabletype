@@ -1,6 +1,6 @@
 <list-top>
   <div class="d-none d-md-block mb-3" data-is="display-options"></div>
-  <div class="row mb-5 mb-md-3">
+  <div id="actions-bar-top" class="row mb-5 mb-md-3">
     <virtual data-is="list-actions"
       if={ opts.useActions }
     ></virtual>

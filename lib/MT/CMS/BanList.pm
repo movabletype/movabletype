@@ -23,20 +23,15 @@ sub save_filter {
     my ($app) = @_;
     my $ip    = $app->param('ip');
     $ip =~ s/(^\s+|\s+$)//g;
-    return $eh->error(
-        MT->translate("You did not enter an IP address to ban.") )
-        if ( '' eq $ip );
+    return $eh->error('empty') if ( '' eq $ip );
     my $blog_id = $app->param('blog_id');
     require MT::IPBanList;
     my $existing
         = MT::IPBanList->load( { 'ip' => $ip, 'blog_id' => $blog_id } );
-    my $id = $app->param('id');
+    my $id = $app->param('id') || 0;
 
     if ( $existing && ( !$id || $existing->id != $id ) ) {
-        return $eh->error(
-            $app->translate(
-                "The IP you entered is already banned for this blog.")
-        );
+        return $eh->error('duplicated');
     }
     return 1;
 }
