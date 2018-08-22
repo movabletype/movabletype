@@ -270,7 +270,7 @@ class MultiLineTextRegistry implements ContentFieldType {
         $field_data = $ctx->stash('content_field_data');
         if ($convert_breaks) {
             $filters = is_array($convert_breaks)
-                ? $convert_breaks[$field_data['id']]
+                ? $convert_breaks[$field_data['id']] ? 'convert_breaks' : ''
                 : '__default__';
 
             require_once("MTUtil.php");
