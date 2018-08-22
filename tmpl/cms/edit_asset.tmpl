@@ -334,13 +334,15 @@ jQuery(window).load( init );
            label_class="top-label"
            label="<__trans phrase="Embed Asset">"
            label_for="asset-url">
-          <mt:var name="url" escape="html">
-          <a href="<mt:var name="url" escape="html">" class="button d-inline-block" target="_blank">
-            <mtapp:svgicon id="ic_permalink" title="View" color="secondary">
-          </a>
-          <a href="javascript:void(0);" class="button d-inline-block" id="btn-copy-url">
-            <mtapp:svgicon id="ic_duplicate" title="Copy" color="secondary">
-          </a>
+          <div class="text-wrap">
+            <mt:var name="url" escape="html">
+            <a href="<mt:var name="url" escape="html">" class="button d-inline-block" target="_blank">
+              <mtapp:svgicon id="ic_permalink" title="View" color="secondary">
+            </a>
+            <a href="javascript:void(0);" class="button d-inline-block" id="btn-copy-url">
+              <mtapp:svgicon id="ic_duplicate" title="Copy" color="secondary">
+            </a>
+          </div>
         </mtapp:setting>
       </div>
     </fieldset>
