@@ -77,8 +77,10 @@ class Blog extends BaseObject
     }
 
     function _raw_url($url) {
-        $raw_url = preg_split( '/\/::\//', $url );
-        return $raw_url;
+        if( list( $subdomain, $path ) = preg_split( '/\/::\//', $url ) ){
+            return array( $subdomain, $path );
+        }
+        return $url;
     }
 
     function site_url() {
@@ -126,7 +128,7 @@ class Blog extends BaseObject
             return $this->blog_archive_url;
 
         $paths = $this->_raw_url($this->blog_archive_url);
-        if ( $paths ) {
+        if ( count($paths) == 2 ) {
             if( $paths[0] ){
                 $url = preg_replace('/^(https?):\/\/(.+)\/$/', "$1://$paths[0]$2/", $url);
             }
@@ -135,7 +137,7 @@ class Blog extends BaseObject
             }
         }
         else {
-            $url = caturl(array($url, $this->blog_archive_url));
+            $url = caturl(array($url, $paths[0]));
         }
         return $url;
     }

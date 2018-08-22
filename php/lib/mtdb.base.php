@@ -4905,7 +4905,7 @@ abstract class MTDatabase {
                 $extras['join']['mt_objectcategory'] = array(
                     'condition' => "fileinfo_category_id = objectcategory_category_id"
                 );
-                $filter = " and objectcategory_object_ds = \"content_data\"";
+                $filter = " and objectcategory_object_ds = 'content_data'";
                 $filter .= " and objectcategory_object_id = $cid";
                 $filter .= " and objectcategory_is_primary = 1";
             }
@@ -4933,7 +4933,7 @@ abstract class MTDatabase {
                 $filter .= " and fileinfo_author_id = ". $content->author_id;
             }
 
-            $where .= "templatemap_archive_type = \"$at\"
+            $where .= "templatemap_archive_type = '$at'
                        and templatemap_is_preferred = 1
                        $filter";
             if (isset($args['blog_id']))
