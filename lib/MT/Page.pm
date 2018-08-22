@@ -172,6 +172,10 @@ sub list_props {
             display         => 'none',
             filter_editable => 0,
         },
+        __mobile => {
+            base     => 'entry.__mobile',
+            date_col => 'modified_on',
+        },
     };
 }
 

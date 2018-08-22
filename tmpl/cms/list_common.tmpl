@@ -74,7 +74,7 @@
   <div data-is="list-top"></div>
 
   <mt:if name="listing_footer_content">
-  <div class="row">
+  <div class="row d-none d-md-flex">
     <div class="col-12">
       <div class="card">
         <ul id="listing-footer" class="footer-links mod list-group list-group-flush">
@@ -106,8 +106,13 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-actions-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-pc.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-pagination-for-mobile.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -183,6 +188,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
   };
   </mt:loop>
 
@@ -200,6 +206,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
   };
   </mt:loop>
 
@@ -217,6 +224,7 @@ jQuery.event.special.listReady = {
     <mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>
     <mt:if name="xhr">, xhr:true</mt:if>
     <mt:if name="label">, label: '<mt:var name="label" escape="js">'</mt:if>
+    <mt:if name="mobile">, mobile: true</mt:if>
     };
   </mt:loop>
 
@@ -230,6 +238,12 @@ jQuery.event.special.listReady = {
   var hasPulldownActions = true;
   <mt:else>
   var hasPulldownActions = false;
+  </mt:if>
+
+  <mt:if name="has_mobile_pulldown_actions">
+  var hasMobilePulldownActions = true;
+  <mt:else>
+  var hasMobilePulldownActions = false;
   </mt:if>
 
   <mt:if name="use_actions">
@@ -305,6 +319,7 @@ jQuery.event.special.listReady = {
       buttonActions: buttonActions,
       hasListActions: hasListActions,
       hasPulldownActions: hasPulldownActions,
+      hasMobilePulldownActions: hasMobilePulldownActions,
       listActions: listActions,
       moreListActions: moreListActions,
       plural: plural,

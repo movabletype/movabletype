@@ -1502,24 +1502,38 @@ sub _rebuild_content_archive_type {
             || MT->instance->request( '__cached_maps', {} );
         my $cache_key = join ':',
             (
-            $at, $blog->id,
-            ( $content_data ? $content_data->content_type_id : 0 )
+            $at,
+            $blog->id,
+            ( $content_data ? $content_data->content_type_id : 0 ),
+            (     $param{Category} && $param{Category}->category_set_id
+                ? $param{Category}->category_set_id
+                : 0
+            ),
             );
         if ( my $maps = $cached_maps->{$cache_key} ) {
             @map = @$maps;
         }
         else {
-            my $args
-                = $content_data && !$param{TemplateID}
-                ? {
-                'join' => MT::Template->join_on(
+            my @joins;
+            if ( $content_data && !$param{TemplateID} ) {
+                my $join = MT::Template->join_on(
                     undef,
                     {   'id'              => \'= templatemap_template_id',
                         'content_type_id' => $content_data->content_type_id,
                     }
-                )
-                }
-                : undef;
+                );
+                push @joins, $join;
+            }
+            if ( $param{Category} ) {
+                my $join = MT->model('content_field')->join_on(
+                    undef,
+                    {   id => \'= templatemap_cat_field_id',
+                        related_cat_set_id =>
+                            $param{Category}->category_set_id || 0,
+                    },
+                );
+                push @joins, $join;
+            }
             @map = MT::TemplateMap->load(
                 {   archive_type => $at,
                     blog_id      => $blog->id,
@@ -1527,7 +1541,7 @@ sub _rebuild_content_archive_type {
                     ? ( template_id => $param{TemplateID} )
                     : ()
                 },
-                $args
+                @joins ? { joins => \@joins } : (),
             );
             $cached_maps->{$cache_key} = \@map;
         }

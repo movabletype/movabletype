@@ -982,6 +982,13 @@ class MT {
     function get_current_blog_id() {
         return $this->blog_id;
     }
+
+    function mode() {
+        $mode = $_GET['__mode'];
+        if (!isset($mode)) $mode = 'default';
+        preg_replace('/[<>"\']/', '', $mode);
+        return $mode;
+    }
 }
 
 function is_valid_email($addr) {

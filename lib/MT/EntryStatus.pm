@@ -12,14 +12,14 @@ use Exporter 'import';
 
 our @EXPORT_OK = qw(
     HOLD RELEASE REVIEW FUTURE JUNK UNPUBLISH
-    status_text status_int
+    status_text status_int status_icon
 );
 our %EXPORT_TAGS = (
     constants => [qw(HOLD RELEASE FUTURE)],
     all       => [
         qw(
             HOLD RELEASE REVIEW FUTURE JUNK UNPUBLISH
-            status_text status_int
+            status_text status_int status_icon
             )
     ]
 );
@@ -52,6 +52,57 @@ sub status_int {
         : $s eq 'spam'      ? JUNK
         : $s eq 'unpublish' ? UNPUBLISH
         :                     undef;
+}
+
+sub status_icon {
+    my $self                    = shift;
+    my $status                  = $self->status;
+    my $status_class            = _status_class($status);
+    my $status_icon_color_class = _status_icon_color_class($status);
+    my $status_icon_id          = _status_icon_id($status);
+    my $static_uri              = MT->static_path;
+    return '' unless $status_icon_id;
+    return qq{
+        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+          <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
+        </svg>
+    };
+}
+
+sub _status_class {
+    my $status = $_[0];
+    return
+          $status == HOLD      ? 'Draft'
+        : $status == RELEASE   ? 'Published'
+        : $status == REVIEW    ? 'Review'
+        : $status == FUTURE    ? 'Future'
+        : $status == JUNK      ? 'Junk'
+        : $status == UNPUBLISH ? 'Unpublish'
+        :                        '';
+}
+
+sub _status_icon_id {
+    my $status = $_[0];
+    return
+          $status == HOLD      ? 'ic_draft'
+        : $status == RELEASE   ? 'ic_checkbox'
+        : $status == REVIEW    ? 'ic_error'
+        : $status == FUTURE    ? 'ic_clock'
+        : $status == JUNK      ? 'ic_error'
+        : $status == UNPUBLISH ? 'ic_stop'
+        :                        '';
+}
+
+sub _status_icon_color_class {
+    my $status = $_[0];
+    return
+          $status == HOLD      ? ''
+        : $status == RELEASE   ? ' mt-icon--success'
+        : $status == REVIEW    ? ' mt-icon--warning'
+        : $status == FUTURE    ? ' mt-icon--info'
+        : $status == JUNK      ? ' mt-icon--warning'
+        : $status == UNPUBLISH ? ' mt-icon--danger'
+        :                        '';
 }
 
 1;

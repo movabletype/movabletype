@@ -43,9 +43,9 @@ sub var {
 }
 
 filters {
-    template       => [qw( var chomp )],
-    expected       => [qw( var chomp )],
-    expected_error => [qw( var chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
+    error    => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture('db');
@@ -278,8 +278,6 @@ aaaaa
 aaaaa
 
 === MT:Contents with content_type modifier and wrong blog_id
---- skip_php
-1
 --- template
 <mt:Contents content_type="test content type 1" blog_ids="2">a</mt:Contents>
 --- error
@@ -310,8 +308,6 @@ aaaaa
 54321
 
 === MT:Contents with sort_by content field
---- skip_php
-1
 --- template
 <mt:Contents content_type="test content type 1" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -329,8 +325,6 @@ test single line text 1
 
 
 === MT:Contents with sort_by content field
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -340,8 +334,6 @@ test single line text 3
 
 
 === MT:Contents with category
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
@@ -351,8 +343,6 @@ test single line text 2
 
 
 === MT:Contents with tag
---- skip_php
-1
 --- template
 <mt:Contents blog_id="1" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>

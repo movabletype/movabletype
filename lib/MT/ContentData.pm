@@ -21,7 +21,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
-use MT::ContentStatus;
+use MT::ContentStatus qw(status_icon);
 use MT::ContentType;
 use MT::ContentType::UniqueID;
 use MT::ObjectAsset;
@@ -260,7 +260,8 @@ sub save {
     my $self = shift;
 
     my $content_field_types = MT->registry('content_field_types');
-    my $content_type        = $self->content_type
+    $self->clear_cache('content_type');
+    my $content_type = $self->content_type
         or return $self->error( MT->translate('Invalid content type') );
 
     unless ( $self->id ) {
@@ -1153,6 +1154,7 @@ sub make_list_props {
             author_status => { base    => 'entry.author_status' },
             blog_name     => { display => 'none', filter_editable => 0 },
             current_context => { filter_editable => 0 },
+            __mobile => { base => 'entry.__mobile', col => 'label' },
             %{$field_list_props},
         };
         if ( $content_type->_get_tag_field_ids ) {

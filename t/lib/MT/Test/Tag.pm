@@ -87,6 +87,8 @@ SKIP: {
                 my $expected
                     = $block->expected_error
                     ? $block->expected_error
+                    : $block->error
+                    ? $block->error
                     : $block->expected;
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;

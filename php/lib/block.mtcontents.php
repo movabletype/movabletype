@@ -194,8 +194,7 @@ function _get_content_type( $ctx, $args ) {
     }
 
     return $not_found
-        ? $ctx->mt->translate( "Content Type was not found. Blog ID: [_1]",
-        array( join( ',', $not_found ) ) )
+        ? $ctx->mt->translate( "No Content Type could be found." )
         : $content_types;
 }
 ?>
