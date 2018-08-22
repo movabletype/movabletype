@@ -279,7 +279,7 @@ jQuery(window).load( init );
             <mt:if name="asset_type" eq="image">
               <mt:unless name="file_is_missing">
                 <mt:if name="has_thumbnail">
-          <div class="image-editor">
+          <div class="image-editor d-none d-md-block">
             <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button btn btn-default mt-modal-open" data-mt-modal-large>
               <__trans phrase="Edit Image">
             </a>
