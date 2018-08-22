@@ -9344,6 +9344,11 @@ li {
   color: #F4F4F4;
 }
 
+.text-wrap {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
 /* Basic Layout */
 .mt-develperPreview {
   background: #004B9A;
