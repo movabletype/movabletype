@@ -571,6 +571,7 @@ function initMoving() {
   jQuery('.sortable').sortable({
     delay: isMobileView() ? 100 : 0,
     distance: 3,
+    handle: '.col-auto',
     opacity: 0.8,
     placeholder: 'ui-state-highlight',
     scrollSpeed: isMobileView() ? 10 : 20,
