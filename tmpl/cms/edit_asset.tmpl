@@ -239,20 +239,20 @@ jQuery(window).load( init );
       <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
       <mt:unless name="file_is_missing">
         <mt:if name="has_thumbnail">
-        <div class="col-auto asset-preview-thumb picture small">
+        <div class="col-12 col-md-auto asset-preview-thumb picture small">
           <div class="thumbnail">
             <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
           </div>
         </div>
         <mt:elseif name="asset_type" ne="image">
-        <div class="col-auto asset-type-icon picture small">
+        <div class="col-12 col-md-auto asset-type-icon picture small">
           <div class="mt-thumbnail">
             <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
           </div>
         </div>
         </mt:if>
       </mt:unless>
-        <div class="col">
+        <div class="col-12 col-md mt-5 mt-md-0">
           <div class="asset-metadata">
             <ul class="list-unstyled metadata">
               <li class="metadata-item asset-name text-wrap">
