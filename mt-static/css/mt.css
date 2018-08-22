@@ -685,7 +685,7 @@ pre code {
   padding-left: 0;
 }
 
-.col-1, .col-2, .mt-dashboardPanel, .col-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .mt-mainContent, .mt-mainContent--scrollable, .col, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-widget__data,
+.col-1, .col-2, .mt-dashboardPanel, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .mt-mainContent, .mt-mainContent--scrollable, .col, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-widget__data,
 .col-auto, .mt-footer, .mt-mobileGlobalMenu__dropdown, .mt-mobileGlobalMenu__menuActions, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
 .col-sm-auto, .col-md-1, .col-md-2, .mt-primaryNavigation, .mt-primaryNavigation__sites, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
 .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg,
@@ -729,7 +729,7 @@ pre code {
   max-width: 16.666667%;
 }
 
-.col-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
+.col-3 {
   -webkit-box-flex: 0;
       -ms-flex: 0 0 25%;
           flex: 0 0 25%;
@@ -792,7 +792,7 @@ pre code {
   max-width: 91.666667%;
 }
 
-.col-12, .mt-mainContent, .mt-mainContent--scrollable {
+.col-12, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .mt-mainContent, .mt-mainContent--scrollable {
   -webkit-box-flex: 0;
       -ms-flex: 0 0 100%;
           flex: 0 0 100%;
@@ -1162,7 +1162,7 @@ pre code {
             flex: 0 0 16.666667%;
     max-width: 16.666667%;
   }
-  .col-md-3 {
+  .col-md-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
     -webkit-box-flex: 0;
         -ms-flex: 0 0 25%;
             flex: 0 0 25%;
@@ -9344,6 +9344,11 @@ li {
   color: #F4F4F4;
 }
 
+.text-wrap {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
 /* Basic Layout */
 .mt-develperPreview {
   background: #004B9A;
@@ -9697,10 +9702,20 @@ li {
 
 /* Secondary Panel */
 .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
-  padding-bottom: 4rem;
   padding-top: 1rem;
-  max-width: 400px;
+  padding-bottom: 2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   background: #F4F4F4;
+}
+
+@media (min-width: 768px) {
+  .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
+    max-width: 400px;
+    padding-bottom: 4rem;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 .mt-secondaryPanel--scrollable {
