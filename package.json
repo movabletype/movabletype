@@ -11,8 +11,9 @@
     "build-riot-listing": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
     "build-riot-contenttype": "riot mt-static/js/contenttype/tag mt-static/js/contenttype/contenttype.js",
     "build-riot-ss": "cd mt-static/riot-ss && yarn && yarn build",
-    "copy": "yarn copy-bootstrap && yarn copy-popper && yarn copy-riot && yarn rename-riot-compiler && yarn copy-svg4everybody && yarn copy-mt-data-api-sdk && yarn copy-mt7-style-guide",
+    "copy": "yarn copy-bootstrap && yarn copy-jquery-ui-touch-punch && yarn copy-popper && yarn copy-riot && yarn rename-riot-compiler && yarn copy-svg4everybody && yarn copy-mt-data-api-sdk && yarn copy-mt7-style-guide",
     "copy-bootstrap": "cp -rf node_modules/bootstrap/dist/* mt-static/bootstrap/",
+    "copy-jquery-ui-touch-punch": "cp -rf node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.* mt-static/jqueryui/",
     "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
     "copy-riot": "cd node_modules/riot && cp -f LICENSE.txt riot.js riot.min.js riot+compiler.js riot+compiler.min.js ../../mt-static/riot/",
     "rename-riot-compiler": "cd mt-static/riot && mv riot+compiler.js riot-compiler.js && mv riot+compiler.min.js riot-compiler.min.js",
@@ -35,6 +36,7 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "dependencies": {
+    "jquery-ui-touch-punch": "^0.2.3",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git#develop",
     "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
     "popper.js": "^1.12.1",

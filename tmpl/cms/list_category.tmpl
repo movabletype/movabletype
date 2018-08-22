@@ -32,7 +32,7 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
 
 <mt:setvarblock name="list_categories_block">
-      <div id="area-action" class="mb-3 form-inline mod sortable-header">
+      <div id="area-action" class="mb-5 mb-md-3 form-inline mod sortable-header">
         <select id="itemlist" name="itemlist" class="mr-2 custom-select form-control disabled" disabled="disabled">
           <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
         </select>
@@ -118,6 +118,14 @@
 <mt:ignore>
 <link rel="stylesheet" href="<mt:var name="static_uri">css/sortable.css" />
 </mt:ignore>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
@@ -265,17 +273,32 @@ jQuery('div#area-action input[name=category_label]').focus( function() {
 
 // id and parent should be numbers
 function createItem(id, parent, label, basename, number) {
-  var line = '<span class="item-label mr-2">'+label+'</span>';
+  var line = '<span class="item-label text-truncate mr-2">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename mr-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
-  line += ' <span class="item-ctrl"></span>';
+    line += '<span class="item-basename text-truncate mr-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
+  line += ' <span class="item-ctrl text-truncate"></span>';
   <mt:unless name="is_category_set">
-  line += ' <span class="count float-right mr-2">'+number+'</span>';
+  line += ' <span class="count float-right d-none d-md-block mr-2">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+' sortable-item mt-draggable" draggable="true" aria-grabbed="false"></div>');
   $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" strip_linefeeds="1"></div>');
   $item.append(jQuery('<div class="col"></div>').append(line));
   return $item;
+}
+
+function isMobileView() {
+  return jQuery(window).width() < 768;
+}
+
+function setMaxWidth($items) {
+  var maxWidth;
+  if (isMobileView()) {
+    maxWidth = jQuery(window).width() - 110;
+  } else {
+    maxWidth = (jQuery(window).width() - 580) / 2;
+  }
+  $items.find('.item-label').css('max-width', maxWidth + 'px');
+  $items.find('.item-basename').css('max-width', maxWidth + 'px');
 }
 
 function initItem($item) {
@@ -290,9 +313,9 @@ function initItem($item) {
     .addClass('sortable-item mt-draggable');
   $item.find('.item-ctrl, .edit-form').remove();
 <mt:if name="is_category_set">
-  $item.children('.col').append('<span class="item-ctrl" />');
+  $item.children('.col').append('<span class="item-ctrl text-truncate" />');
 <mt:else>
-  jQuery('<span class="item-ctrl" />').insertBefore($item.find('.count'));
+  jQuery('<span class="item-ctrl text-truncate" />').insertBefore($item.find('.count'));
 </mt:if>
 
   jQuery('<a href="#" class="item-action edit-link clickable mr-2"><__trans phrase="Rename" escape="js"></a>')
@@ -397,6 +420,7 @@ function initItem($item) {
       removeItems(id);
     });
   setHoverAction($item);
+  setMaxWidth($item);
 }
 
 // parent and id should be numbers
@@ -545,9 +569,12 @@ function initMoving() {
   var place;
   var original_class;
   jQuery('.sortable').sortable({
+    delay: isMobileView() ? 100 : 0,
     distance: 3,
+    handle: '.col-auto',
     opacity: 0.8,
     placeholder: 'ui-state-highlight',
+    scrollSpeed: isMobileView() ? 10 : 20,
     start: function(event, ui) {
       var $item = jQuery(ui.item);
       $item.attr('aria-grabbed', true);
@@ -934,6 +961,25 @@ function bulkUpdateCategories() {
   });
   return false;
 }
+
+jQuery('#root').on('click', '.mt-draggable', function (e) {
+  if (!isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $editLink = jQuery(this).find('.item-label a');
+  if ($editLink.length > 0) {
+    $editLink.get(0).click();
+    return false;
+  }
+});
+
+jQuery(window).on('resize', function () {
+  var $items = jQuery('.sortable-item');
+  setMaxWidth($items);
+});
 
   <mt:if name="is_category_set">
 jQuery('#set_name').keyup(function() {

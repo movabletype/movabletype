@@ -2347,7 +2347,6 @@ sub core_menus {
             permission => 'manage_category_set',
             args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
-            mobile     => 1,
         },
 
         %{ MT::CMS::ContentData::make_menus() },
