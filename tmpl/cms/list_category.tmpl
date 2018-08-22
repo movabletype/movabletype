@@ -962,13 +962,17 @@ function bulkUpdateCategories() {
   return false;
 }
 
-jQuery('#root').on('click touch', '.mt-draggable', function () {
+jQuery('#root').on('click', '.mt-draggable', function (e) {
   if (!isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
     return;
   }
   var $editLink = jQuery(this).find('.item-label a');
   if ($editLink.length > 0) {
     $editLink.get(0).click();
+    return false;
   }
 });
 
