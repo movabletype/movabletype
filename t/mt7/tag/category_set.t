@@ -82,7 +82,7 @@ $test_env->prepare_fixture(
             blog_id => $blog->id,
             name    => 'test category set 01',
         );
-
+        
         my $category_set_02 = MT::Test::Permission->make_category_set(
             blog_id => $blog->id,
             name    => 'test category set 02',
@@ -104,6 +104,12 @@ $test_env->prepare_fixture(
             category_set_id => $category_set_02->id,
             label           => 'Category 02',
         );
+
+        $cf_category_01->related_cat_set_id($category_set_01->id);
+        $cf_category_01->save;
+
+        $cf_category_02->related_cat_set_id($category_set_02->id);
+        $cf_category_02->save;
 
         my $fields_01 = [
             {   id      => $cf_category_01->id,
@@ -185,24 +191,24 @@ test category set 01
 <mt:CategorySets content_type="[% content_type_02_unique_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 02
---- skip_php
-1
 
 === mt:CategorySets label="Set Content Type ID"
 --- template
 <mt:CategorySets content_type="[% content_type_02_id %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 02
---- skip_php
-1
 
 === mt:CategorySets label="Set Content Type Name"
 --- template
 <mt:CategorySets blog_id="[% blog_id %]" content_type="[% content_type_01_name %]"><mt:CategorySetName></mt:CategorySets>
 --- expected
 test category set 01
---- skip_php
-1
+
+=== mt:CategorySets label="Set Non Exisit Content Type"
+--- template
+<mt:CategorySets blog_id="[% blog_id %]" content_type="non-exisitent name"><mt:CategorySetName></mt:CategorySets>
+--- expected
+test category set 01test category set 02
 
 === mt:CategorySets label="Set Category Set Name"
 --- template

@@ -537,7 +537,7 @@
             "0",
             null,
             "__NOW__",
-            "0",
+            "1",
             "1",
             null,
             "__NOW__",
@@ -549,7 +549,7 @@
             "0",
             null,
             "__NOW__",
-            "0",
+            "1",
             "2",
             null,
             "__NOW__",
@@ -600,11 +600,11 @@
             null,
             "__NOW__",
             "Category Field 01",
-            null,
+            "1",
             null,
             null,
             "categories",
-            "05e5874ad8be80c48203fb3499ad82a0ee32933a"
+            "c287ec17e79ca60f643be5fcd27d95b99ee2a106"
          ],
          [
             "2",
@@ -617,11 +617,11 @@
             null,
             "__NOW__",
             "Category Field 02",
-            null,
+            "2",
             null,
             null,
             "categories",
-            "f7ee3cbb64f452681dcd72dde640e107cda9d75e"
+            "d8238b2d78aba462de6af3dc3d2b91a6fc55480a"
          ]
       ]
    },
@@ -665,7 +665,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "91eedf0853061f911b00f28d424cd0e35c3850b9",
+            "1b0b153c832059df45b10874d5ac57335e671095",
             null,
             null
          ],
@@ -680,7 +680,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "57393bf73c61175a242547ceda29d01d0b18e151",
+            "9c0ea362d7d27d6596d94ec3d7bbc3fa0f62659c",
             null,
             null
          ]

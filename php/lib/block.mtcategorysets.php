@@ -37,8 +37,15 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 return $ctx->error('No Category set could be found.');
             }
         } else {
-            if ($content_type) {
-                // not implemented yet
+            $content_types = $ctx->mt->db()->fetch_content_types($args);
+            if ($content_types) {
+                $category_sets = $ctx->mt->db()->fetch_category_sets(array(
+                    'blog_id' => $blog_id,
+                    'content_type' => $args['content_type'],
+                ));
+                if ($cs && count($cs) == 0) {
+                    return $ctx->error('No Category set could be found.');
+                }
             } else {
                 if ($blog_id) {
                     $category_sets = $ctx->mt->db()->fetch_category_sets(array(
