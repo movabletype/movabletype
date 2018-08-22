@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
-    $localvars = array(array('content_field_data', '_contents_fields_counter','ContentFieldsHeader','ContentFieldsFooter'), common_loop_vars());
+    $localvars = array(array('content_field_data', '_content_fields_counter','_content_fields_counter_max', '_content_fields_unserialized', 'ContentFieldsHeader','ContentFieldsFooter'), common_loop_vars());
 
     if (!isset($res)) {
         $ctx->localize($localvars);
@@ -17,21 +17,28 @@ function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
         require_once('content_field_type_lib.php');
 
         $counter = 0;
+        $ctx->stash('_content_fields_counter', $counter);
+
+        $content_type = $ctx->stash('content_type');
+        if (!is_object($content_type))
+            return $ctx->error($ctx->mt->translate('No Content Type could be found.') );
+
+        $content_fields = $content_type->fields;
+        if (isset($content_fields)) {
+            $content_fields = $ctx->mt->db()->unserialize($content_fields);
+        }
+        $ctx->stash('_content_fields_unserialized', $content_fields);
+
+        $counter_max = count($content_fields);
+        $ctx->stash('_content_fields_counter_max', $counter_max);
     } else {
         $counter = $ctx->stash('_content_fields_counter');
+        $counter_max = $ctx->stash('_content_fields_counter_max');
+        $content_type = $ctx->stash('content_type');
+        $content_fields = $ctx->stash('_content_fields_unserialized');
     }
 
-    $content_type = $ctx->stash('content_type');
-    if (!is_object($content_type))
-        return $ctx->error($ctx->mt->translate('No Content Type could be found.') );
-
-
-    $content_fields = $content_type->fields;
-    if (isset($content_fields)) {
-        $content_fields = $ctx->mt->db()->unserialize($content_fields);
-    }
-
-    if ($counter < count($content_fields)) {
+    if ($counter < $counter_max) {
         $content_field = $content_fields[$counter];
         $count = $counter + 1;
         $ctx->stash('_content_fields_counter', $count);
