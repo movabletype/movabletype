@@ -776,14 +776,14 @@ $.fn.mtEditInput = function(options) {
             $input = $('input#'+id);
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
-                .before('<span class="'+id+'-text"></span>')
+                .before('<span class="'+id+'-text mr-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
-                .before('<span class="'+id+'-text"></span>')
+                .before('<span class="'+id+'-text mr-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
