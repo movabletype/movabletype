@@ -199,7 +199,8 @@
       <img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
     </mt:if>
     <mt:if name="commenter_url">
-      <a href="<mt:var name="commenter_url">" class="commenter-link"><mt:var name="author" escape="html"></a>
+      <a href="<mt:var name="commenter_url">" class="commenter-link d-none d-md-inline"><mt:var name="author" escape="html"></a>
+      <span class="d-md-none"><mt:var name="author" escape="html"></span>
     <mt:else>
       <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
     </mt:if>
