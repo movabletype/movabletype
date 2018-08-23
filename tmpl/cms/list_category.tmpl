@@ -286,13 +286,9 @@ function createItem(id, parent, label, basename, number) {
   return $item;
 }
 
-function isMobileView() {
-  return jQuery(window).width() < 768;
-}
-
 function setMaxWidth($items) {
   var maxWidth;
-  if (isMobileView()) {
+  if (MT.Util.isMobileView()) {
     maxWidth = jQuery(window).width() - 110;
   } else {
     maxWidth = (jQuery(window).width() - 580) / 2;
@@ -569,12 +565,12 @@ function initMoving() {
   var place;
   var original_class;
   jQuery('.sortable').sortable({
-    delay: isMobileView() ? 100 : 0,
+    delay: MT.Util.isMobileView() ? 100 : 0,
     distance: 3,
     handle: '.col-auto',
     opacity: 0.8,
     placeholder: 'ui-state-highlight',
-    scrollSpeed: isMobileView() ? 10 : 20,
+    scrollSpeed: MT.Util.isMobileView() ? 10 : 20,
     start: function(event, ui) {
       var $item = jQuery(ui.item);
       $item.attr('aria-grabbed', true);
@@ -963,7 +959,7 @@ function bulkUpdateCategories() {
 }
 
 jQuery('#root').on('click', '.mt-draggable', function (e) {
-  if (!isMobileView()) {
+  if (!MT.Util.isMobileView()) {
     return;
   }
   if (e.target.tagName == 'A') {

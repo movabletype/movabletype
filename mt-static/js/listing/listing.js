@@ -787,7 +787,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
-      if (this.listTop.isMobileView()) {
+      if (MT.Util.isMobileView()) {
         var $mobileColumn
         if (e.target.dataset.is == 'list-table-column') {
           $mobileColumn = jQuery(e.target)
@@ -906,10 +906,6 @@ riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-opti
     this.tableClass = function() {
       var objectType = opts.objectTypeForTableClass || opts.objectType
       return 'list-' + objectType
-    }.bind(this)
-
-    this.isMobileView = function() {
-      return jQuery(window).width() < 768
     }.bind(this)
 });
 
