@@ -10713,9 +10713,15 @@ fieldset.form-group {
 }
 
 .modal-body {
-  max-height: 34rem;
+  max-height: 22rem;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .modal-body {
+    max-height: 34rem;
+  }
 }
 
 .modal-footer {
