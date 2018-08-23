@@ -440,4 +440,8 @@
       && ( year % 100 != 0 || year % 400 == 0 );
   };
 
+  MT.Util.isMobileView = function () {
+      return jQuery(window.top).width() < 768;
+  };
+
 })(window);

@@ -150,7 +150,7 @@
       if (e.target.tagName == 'A' || e.target.tagName == 'IMG' || e.target.tagName == 'svg') {
         return false
       }
-      if (this.listTop.isMobileView()) {
+      if (MT.Util.isMobileView()) {
         var $mobileColumn
         if (e.target.dataset.is == 'list-table-column') {
           $mobileColumn = jQuery(e.target)
