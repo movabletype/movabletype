@@ -448,14 +448,14 @@ function createUploadBlock () {
   this.uploadBlockPanel = jQuery('<div class="card mb-1"><div class="card-block px-4 py-2"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col w-50 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-auto text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
 
   this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
 
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
-  this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
+  this.thumbnail    = jQuery('<div class="upload-thubmnail text-truncate"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
 
   this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
