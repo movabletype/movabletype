@@ -752,4 +752,18 @@ jQuery('#upload-asset-panel').on('changePanel', function() {
 });
 </mt:if>
 jQuery('form').find('input:visible').first().focus();
+
+jQuery('#upload-progress').on('click', '.card', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $editLink = jQuery(this).find('a');
+  if ($editLink.length > 0) {
+    $editLink.get(0).click();
+    return false;
+  }
+});
 </mt:setvarblock>
