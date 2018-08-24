@@ -1233,7 +1233,7 @@ sub _make_label_html {
 
     my $permalink  = MT::Util::encode_html( $obj->permalink );
     my $static_uri = MT->static_path;
-    my $view_link  = $status == MT::ContentStatus::RELEASE()
+    my $view_link  = ( $status == MT::ContentStatus::RELEASE() && $permalink )
         ? qq{
             <span class="view-link">
               <a href="$permalink" class="d-inline-block" target="_blank">
