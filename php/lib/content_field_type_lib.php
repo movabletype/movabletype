@@ -212,6 +212,7 @@ class ContentTypeRegistry implements ContentFieldType {
             $ctx->stash('parent_content_type', $ctx->stash('content_type'));
             $ctx->stash('content_type', $content_type);
             $ctx->stash('contents', $values);
+            $ctx->stash('_contents_counter', 0);
         }
 
         $counter = $ctx->stash('_content_field_counter');
