@@ -180,9 +180,9 @@ class ContentTypeRegistry implements ContentFieldType {
             if (!$source) $source = 0;
 
             require_once("class.mt_content_type.php");
-            $content_type_class = new ContentType;
-            $content_type = $content_type_class->Load($source);
-            if (!$content_type)
+            $content_type = new ContentType;
+            $loaded = $content_type->Load($source);
+            if (!$loaded)
                 return $ctx->error( $ctx->mt->translate('No Content Type could be found.') );
             $content_data = $ctx->stash('content');
             if (!$content_data)
@@ -212,11 +212,14 @@ class ContentTypeRegistry implements ContentFieldType {
             $ctx->stash('parent_content_type', $ctx->stash('content_type'));
             $ctx->stash('content_type', $content_type);
             $ctx->stash('contents', $values);
+            $ctx->stash('_contents_counter', 0);
         }
 
         $counter = $ctx->stash('_content_field_counter');
         $counter_max = $ctx->stash('_content_field_counter_max');
         $count = $counter + 1;
+        $ctx->stash('ContentFieldHeader', $count == 1);
+        $ctx->stash('ContentFieldFooter', ($count == $counter_max));
 
         if (!isset($res)) $res = ''; # skip assets initialization
 
@@ -273,8 +276,10 @@ class MultiLineTextRegistry implements ContentFieldType {
                 ? $convert_breaks[$field_data['id']]
                 : '__default__';
 
-            require_once("MTUtil.php");
-            $value = apply_text_filter($ctx, $value, $filters);
+            if ($filters) {
+                require_once("MTUtil.php");
+                $value = apply_text_filter($ctx, $value, $filters);
+            }
         }
 
         if (isset($args['words'])) {
