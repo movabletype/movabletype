@@ -218,6 +218,8 @@ class ContentTypeRegistry implements ContentFieldType {
         $counter = $ctx->stash('_content_field_counter');
         $counter_max = $ctx->stash('_content_field_counter_max');
         $count = $counter + 1;
+        $ctx->stash('ContentFieldHeader', $count == 1);
+        $ctx->stash('ContentFieldFooter', ($count == $counter_max));
 
         if (!isset($res)) $res = ''; # skip assets initialization
 
