@@ -51,6 +51,16 @@ $test_env->prepare_fixture(
             name    => 'test content data',
             blog_id => $blog_id,
         );
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'Content Type',
+            blog_id => $blog_id,
+        );
+        my $cf_content_type = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct2->id,
+            name            => 'content type',
+            type            => 'content_type',
+        );
         my $cf_single_line_text = MT::Test::Permission->make_content_field(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -353,9 +363,44 @@ $test_env->prepare_fixture(
                 },
                 unique_id => $cf_image->unique_id,
             },
+            {   id        => $cf_content_type->id,
+                order     => 17,
+                type      => $cf_content_type->type,
+                options   => {
+                    label  => $cf_content_type->name,
+                    source => $ct2->id,
+                },
+                unique_id => $cf_content_type->unique_id,
+            },
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
+        $ct2->fields(
+            [
+            {   id        => $cf_single_line_text->id,
+                order     => 1,
+                type      => $cf_single_line_text->type,
+                options   => { label => $cf_single_line_text->name },
+                unique_id => $cf_single_line_text->unique_id,
+            },
+            {   id        => $cf_single_line_text_no_data->id,
+                order     => 1,
+                type      => $cf_single_line_text_no_data->type,
+                options   => { label => $cf_single_line_text_no_data->name },
+                unique_id => $cf_single_line_text_no_data->unique_id,
+            },
+            ]
+        );
+        $ct2->save or die $ct2->errstr;
+        my $cd2 = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct2->id,
+            author_id       => 1,
+            data            => {
+                $cf_single_line_text->id         => 'test single line text2',
+                $cf_multi_line_text->id => "test multi line text\naaaaa2",
+            },
+        );
         my $cd = MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -380,6 +425,7 @@ $test_env->prepare_fixture(
                 $cf_tag->id      => [ $tag2->id,      $tag1->id ],
                 $cf_category->id => [ $category2->id, $category1->id ],
                 $cf_image->id    => [ $image1->id,    $image2->id ],
+                $cf_content_type->id => [ $cd2->id ],
             },
         );
     }
@@ -649,6 +695,16 @@ Sample Image 1
 Sample Image 2
 Footer
 
+=== mt:ContentField content_field="content_type"
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="content type"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+test single line text2
+Footer
+
 === mt:ContentFieldLabel
 --- template
 <mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
@@ -671,6 +727,7 @@ tables
 tags
 categories
 asset_image
+content type
 
 === mt:ContentFieldType
 --- template
@@ -694,3 +751,4 @@ tables
 tags
 categories
 asset_image
+content_type
