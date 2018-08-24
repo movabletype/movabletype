@@ -299,7 +299,8 @@ sub list_props {
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
                 my $static_uri = MT->static_path;
-                my $view_link  = $obj->status == MT::Entry::RELEASE()
+                my $view_link
+                    = ( $obj->status == MT::Entry::RELEASE() && $permalink )
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" class="d-inline-block" target="_blank">
