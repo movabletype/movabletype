@@ -674,13 +674,13 @@ pre code {
   margin-left: -14px;
 }
 
-.no-gutters, .mt-draggable, .mt-contentfield .mt-collapse__container {
+.no-gutters, .mt-draggable, .mt-draggable--entryField, .mt-contentfield .mt-collapse__container {
   margin-right: 0;
   margin-left: 0;
 }
 
-.no-gutters > .col, .mt-draggable > .col, .mt-contentfield .mt-collapse__container > .col, .no-gutters > .mt-productHeader, .mt-draggable > .mt-productHeader, .mt-contentfield .mt-collapse__container > .mt-productHeader, .no-gutters > .mt-mobileGlobalMenu__name, .mt-draggable > .mt-mobileGlobalMenu__name, .mt-contentfield .mt-collapse__container > .mt-mobileGlobalMenu__name, .no-gutters > .mt-mobileGlobalMenu__name--invert, .mt-draggable > .mt-mobileGlobalMenu__name--invert, .mt-contentfield .mt-collapse__container > .mt-mobileGlobalMenu__name--invert, .no-gutters > .mt-widget__data, .mt-draggable > .mt-widget__data, .mt-contentfield .mt-collapse__container > .mt-widget__data,
-.no-gutters > [class*="col-"], .mt-draggable > [class*="col-"], .mt-contentfield .mt-collapse__container > [class*="col-"] {
+.no-gutters > .col, .mt-draggable > .col, .mt-draggable--entryField > .col, .mt-contentfield .mt-collapse__container > .col, .no-gutters > .mt-productHeader, .mt-draggable > .mt-productHeader, .mt-draggable--entryField > .mt-productHeader, .mt-contentfield .mt-collapse__container > .mt-productHeader, .no-gutters > .mt-mobileGlobalMenu__name, .mt-draggable > .mt-mobileGlobalMenu__name, .mt-draggable--entryField > .mt-mobileGlobalMenu__name, .mt-contentfield .mt-collapse__container > .mt-mobileGlobalMenu__name, .no-gutters > .mt-mobileGlobalMenu__name--invert, .mt-draggable > .mt-mobileGlobalMenu__name--invert, .mt-draggable--entryField > .mt-mobileGlobalMenu__name--invert, .mt-contentfield .mt-collapse__container > .mt-mobileGlobalMenu__name--invert, .no-gutters > .mt-widget__data, .mt-draggable > .mt-widget__data, .mt-draggable--entryField > .mt-widget__data, .mt-contentfield .mt-collapse__container > .mt-widget__data,
+.no-gutters > [class*="col-"], .mt-draggable > [class*="col-"], .mt-draggable--entryField > [class*="col-"], .mt-contentfield .mt-collapse__container > [class*="col-"] {
   padding-right: 0;
   padding-left: 0;
 }
@@ -6404,7 +6404,7 @@ button.bg-dark:focus {
   display: table-cell !important;
 }
 
-.d-flex, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-mobileGlobalMenu__menuActions, .mt-draggable, .mt-contentfield .mt-collapse__container, .mt-collapse__container, .modal-description, .modal-selections, .modal-rebuildtriggers {
+.d-flex, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-mobileGlobalMenu__menuActions, .mt-draggable, .mt-draggable--entryField, .mt-contentfield .mt-collapse__container, .mt-collapse__container, .modal-description, .modal-selections, .modal-rebuildtriggers {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -10428,7 +10428,7 @@ fieldset.form-group {
 }
 
 /* Draggable */
-.mt-draggable {
+.mt-draggable, .mt-draggable--entryField {
   margin: 0 0 2px 0;
   padding: 0.5rem 0.5rem 0.5rem 0;
   -webkit-box-orient: horizontal;
@@ -10442,15 +10442,15 @@ fieldset.form-group {
   cursor: move;
 }
 
-.mt-draggable .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable .mt-icon--inverse, .mt-draggable .mt-icon--secondary {
+.mt-draggable .mt-icon, .mt-draggable--entryField .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable--entryField .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable--entryField .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable--entryField .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable--entryField .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable--entryField .mt-icon--danger, .mt-draggable .mt-icon--inverse, .mt-draggable--entryField .mt-icon--inverse, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary {
   margin: 0 .5rem 0 0;
 }
 
-.mt-draggable .col-auto:first-of-type .mt-icon, .mt-draggable .mt-footer:first-of-type .mt-icon, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon, .mt-draggable .col-auto:first-of-type .mt-icon--primary, .mt-draggable .mt-footer:first-of-type .mt-icon--primary, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--primary, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--primary, .mt-draggable .col-auto:first-of-type .mt-icon--secondary, .mt-draggable .mt-footer:first-of-type .mt-icon--secondary, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--secondary, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--secondary, .mt-draggable .col-auto:first-of-type .mt-icon--success, .mt-draggable .mt-footer:first-of-type .mt-icon--success, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--success, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--success, .mt-draggable .col-auto:first-of-type .mt-icon--info, .mt-draggable .mt-footer:first-of-type .mt-icon--info, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--info, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--info, .mt-draggable .col-auto:first-of-type .mt-icon--warning, .mt-draggable .mt-footer:first-of-type .mt-icon--warning, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--warning, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--warning, .mt-draggable .col-auto:first-of-type .mt-icon--danger, .mt-draggable .mt-footer:first-of-type .mt-icon--danger, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--danger, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--danger, .mt-draggable .col-auto:first-of-type .mt-icon--inverse, .mt-draggable .mt-footer:first-of-type .mt-icon--inverse, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--inverse, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--inverse {
+.mt-draggable .col-auto:first-of-type .mt-icon, .mt-draggable--entryField .col-auto:first-of-type .mt-icon, .mt-draggable .mt-footer:first-of-type .mt-icon, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon, .mt-draggable .col-auto:first-of-type .mt-icon--primary, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--primary, .mt-draggable .mt-footer:first-of-type .mt-icon--primary, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--primary, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--primary, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--primary, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--primary, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--primary, .mt-draggable .col-auto:first-of-type .mt-icon--secondary, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--secondary, .mt-draggable .mt-footer:first-of-type .mt-icon--secondary, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--secondary, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--secondary, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--secondary, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--secondary, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--secondary, .mt-draggable .col-auto:first-of-type .mt-icon--success, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--success, .mt-draggable .mt-footer:first-of-type .mt-icon--success, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--success, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--success, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--success, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--success, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--success, .mt-draggable .col-auto:first-of-type .mt-icon--info, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--info, .mt-draggable .mt-footer:first-of-type .mt-icon--info, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--info, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--info, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--info, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--info, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--info, .mt-draggable .col-auto:first-of-type .mt-icon--warning, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--warning, .mt-draggable .mt-footer:first-of-type .mt-icon--warning, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--warning, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--warning, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--warning, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--warning, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--warning, .mt-draggable .col-auto:first-of-type .mt-icon--danger, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--danger, .mt-draggable .mt-footer:first-of-type .mt-icon--danger, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--danger, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--danger, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--danger, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--danger, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--danger, .mt-draggable .col-auto:first-of-type .mt-icon--inverse, .mt-draggable--entryField .col-auto:first-of-type .mt-icon--inverse, .mt-draggable .mt-footer:first-of-type .mt-icon--inverse, .mt-draggable--entryField .mt-footer:first-of-type .mt-icon--inverse, .mt-draggable .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--inverse, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown:first-of-type .mt-icon--inverse, .mt-draggable .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--inverse, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions:first-of-type .mt-icon--inverse {
   fill: #A5A5A5;
 }
 
-.mt-draggable[aria-grabbed="true"] {
+.mt-draggable[aria-grabbed="true"], [aria-grabbed="true"].mt-draggable--entryField {
   border-color: #5FBCEB;
   font-weight: bold;
 }
@@ -10497,6 +10497,22 @@ fieldset.form-group {
   margin-top: 1rem;
   padding: 1rem 1rem 0.5rem 1rem;
   border-top: 1px solid #A5A5A5;
+}
+
+@media (max-width: 767.98px) {
+  .mt-draggable--entryField {
+    border: 0;
+    padding-right: 0;
+  }
+  .mt-draggable--entryField .col-auto, .mt-draggable--entryField .mt-footer, .mt-draggable--entryField .mt-mobileGlobalMenu__dropdown, .mt-draggable--entryField .mt-mobileGlobalMenu__menuActions {
+    display: none;
+  }
+  .mt-draggable--entryField .col label, .mt-draggable--entryField .mt-productHeader label, .mt-draggable--entryField .mt-mobileGlobalMenu__name label, .mt-draggable--entryField .mt-mobileGlobalMenu__name--invert label, .mt-draggable--entryField .mt-widget__data label {
+    font-weight: 600;
+  }
+  .mt-draggable--entryField .mt-draggable__content {
+    padding: 0;
+  }
 }
 
 /* Collapse */
@@ -10582,22 +10598,22 @@ fieldset.form-group {
   margin-top: 0.5rem;
 }
 
-.mt-collapse .mt-icon--secondary, .mt-contentfield .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--secondary, .mt-contentblock .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary {
+.mt-collapse .mt-icon--secondary, .mt-contentfield .mt-icon--secondary, .mt-collapse--contentblock .mt-icon--secondary, .mt-contentblock .mt-icon--secondary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-archivemapping .mt-icon--secondary, .mt-pluginpanel .mt-icon--secondary, .mt-contentfield .mt-icon--secondary {
   margin: 0 .5rem 0 0;
   -webkit-transition: 0.2s ease-in-out;
   transition: 0.2s ease-in-out;
 }
 
-.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse--contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon {
+.mt-collapse .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon, .mt-collapse--contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentblock .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable .mt-icon--secondary.mt-pluginpanel__icon, .mt-draggable--entryField .mt-icon--secondary.mt-pluginpanel__icon, .mt-archivemapping .mt-icon--secondary.mt-pluginpanel__icon, .mt-pluginpanel .mt-icon--secondary.mt-pluginpanel__icon, .mt-contentfield .mt-icon--secondary.mt-pluginpanel__icon {
   margin: 0 0.2rem 0 0;
 }
 
-.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable a[aria-expanded="false"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="false"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="false"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="false"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="false"] .mt-icon--secondary {
   -webkit-transform: rotate(180deg);
           transform: rotate(180deg);
 }
 
-.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary {
+.mt-collapse a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary, .mt-collapse--contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-contentblock a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable a[aria-expanded="true"] .mt-icon--secondary, .mt-draggable--entryField a[aria-expanded="true"] .mt-icon--secondary, .mt-archivemapping a[aria-expanded="true"] .mt-icon--secondary, .mt-pluginpanel a[aria-expanded="true"] .mt-icon--secondary, .mt-contentfield a[aria-expanded="true"] .mt-icon--secondary {
   -webkit-transform: rotate(0deg);
           transform: rotate(0deg);
 }
