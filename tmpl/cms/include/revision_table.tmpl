@@ -14,7 +14,7 @@
     <mt:if name="object_type" like="(entry|page|content_data)">
       <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
     </mt:if>
-      <th class="head created-by"><span class="col-label"><__trans phrase="Saved By"></span></th>
+      <th class="head created-by d-none d-md-table-cell"><span class="col-label"><__trans phrase="Saved By"></span></th>
     <mt:loop name="more_column_headers">
       <mt:var name="__value__">
     </mt:loop>
@@ -45,7 +45,7 @@
       </mt:if>
       </td>
     </mt:if>
-      <td class="created-by"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
+      <td class="created-by d-none d-md-table-cell"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
     <mt:loop name="more_columns">
       <mt:var name="__value__">
     </mt:loop>
