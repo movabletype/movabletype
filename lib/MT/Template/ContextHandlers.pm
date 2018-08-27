@@ -5836,8 +5836,9 @@ sub _hdlr_static_path {
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
-            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+            if( my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)| ){
+                $path = $blog_domain . $path;
+            }
         }
     }
     $path .= '/' unless $path =~ m!/$!;

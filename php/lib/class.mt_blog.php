@@ -76,6 +76,13 @@ class Blog extends BaseObject
         return $path;
     }
 
+    function _raw_url($url) {
+        if( list( $subdomain, $path ) = preg_split( '/\/::\//', $url ) ){
+            return array( $subdomain, $path );
+        }
+        return $url;
+    }
+
     function site_url() {
         $site = $this->website();
         $path = '';
@@ -108,32 +115,34 @@ class Blog extends BaseObject
     }
 
     function archive_url() {
-        $path = '';
-        if ( empty($this->blog_archive_url) ) {
-            $path = $this->site_url();
-        } else {
-            $site = $this->website();
-            if (empty($site))
-                $this->site_url();
-            else {
-                preg_match('/^(https?):\/\/(.+)\/$/', $site->blog_site_url, $matches);
-                if ( count($matches) > 1 ) {
-                    $site_url = preg_split( '/\/::\//', $this->blog_archive_url );
-                    if ( count($site_url) > 0 )
-                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
-                    else
-                        $path = $site->blog_site_url . $this->blog_archive_url;
-                }
-                else {
-                    $path = $site->blog_site_url . $this->blog_archive_url;
-                }
+        require_once('MTUtil.php');
+        $url = $this->site_url();
+        $site = $this->website();
+        if (!empty($site))
+            $url = $site->site_url();
+
+        if ( empty($this->blog_archive_url) )
+            return $this->site_url();
+
+        if(preg_match('/^https?:\/\//', $this->blog_archive_url))
+            return $this->blog_archive_url;
+
+        $paths = $this->_raw_url($this->blog_archive_url);
+        if ( count($paths) == 2 ) {
+            if( $paths[0] ){
+                $url = preg_replace('/^(https?):\/\/(.+)\/$/', "$1://$paths[0]$2/", $url);
+            }
+            if($paths[1]){
+                $url = caturl(array($url, $paths[1]));
             }
         }
-
-        return $path;
+        else {
+            $url = caturl(array($url, $paths[0]));
+        }
+        return $url;
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Blog', 'mt_blog_meta','blog_meta_blog_id');	
+ADODB_Active_Record::ClassHasMany('Blog', 'mt_blog_meta','blog_meta_blog_id');
 ?>

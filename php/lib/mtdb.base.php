@@ -37,6 +37,7 @@ abstract class MTDatabase {
     protected $_author_id_cache = array();
     protected $_category_set_id_cache = array();
     protected $_rebuild_trigger_cache = array();
+    protected $_content_link_cache = array();
 
 
     // Construction
@@ -4893,6 +4894,88 @@ abstract class MTDatabase {
         $ct = new ContentData();
         $count = $ct->count(array('where' => $where));
         return $count;
+    }
+
+    public function content_link($cid, $at = "ContentType", $args = null) {
+        $cid = intval($cid);
+        if (isset($this->_content_link_cache[$cid.';'.$at])) {
+            $url = $this->_content_link_cache[$cid.';'.$at];
+        } else {
+            $extras['join'] = array(
+                'mt_templatemap' => array(
+                    'condition' => "templatemap_id = fileinfo_templatemap_id"
+                    )
+                );
+            $filter = '';
+
+            if (preg_match('/Category/', $at)) {
+                $extras['join']['mt_objectcategory'] = array(
+                    'condition' => "fileinfo_category_id = objectcategory_category_id"
+                );
+                $filter = " and objectcategory_object_ds = 'content_data'";
+                $filter .= " and objectcategory_object_id = $cid";
+                $filter .= " and objectcategory_is_primary = 1";
+            }
+
+            $content = $this->fetch_content($cid);
+
+            $ts = $this->db2ts($content->authored_on);
+            if (preg_match('/Monthly$/', $at)) {
+                $ts = substr($ts, 0, 6) . '01000000';
+            } elseif (preg_match('/Daily$/', $at)) {
+                $ts = substr($ts, 0, 8) . '000000';
+            } elseif (preg_match('/Weekly$/', $at)) {
+                require_once("MTUtil.php");
+                list($ws, $we) = start_end_week($ts);
+                $ts = $ws;
+            } elseif (preg_match('/Yearly$/', $at)) {
+                $ts = substr($ts, 0, 4) . '0101000000';
+            } elseif ($at == 'ContentType') {
+                $filter .= " and fileinfo_cd_id = $cid";
+            }
+            if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
+                $filter .= " and fileinfo_startdate = '$ts'";
+            }
+            if (preg_match('/Author/', $at)) {
+                $filter .= " and fileinfo_author_id = ". $content->author_id;
+            }
+
+            $where .= "templatemap_archive_type = '$at'
+                       and templatemap_is_preferred = 1
+                       $filter";
+            if (isset($args['blog_id']))
+                $where .= " and fileinfo_blog_id = " . $args['blog_id'];
+            require_once('class.mt_fileinfo.php');
+            $finfo = new FileInfo;
+            $infos = $finfo->Find($where, false, false, $extras);
+            if (empty($infos))
+                return null;
+
+            $finfo = $infos[0];
+            $blog = $finfo->blog();
+            $blog_url = $blog->archive_url();
+            if (empty($blog_url))
+                $blog_url = $blog->site_url();
+
+            require_once('MTUtil.php');
+            if(preg_match('/https?/',$blog_url)){
+                $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
+                $url = caturl(array($blog_url, $finfo->fileinfo_url));
+            } else {
+                $url = $finfo->fileinfo_url;
+            }
+            if(!isset($args['with_index']) || !$args['with_index'] ){
+                $url = _strip_index($url, $blog);
+            }
+            $this->_content_link_cache[$cid.';'.$at] = $url;
+        }
+
+        if ( $at != 'ContentType' && (!$args || !isset($args['no_anchor'])) ) {
+            $url .= '#' . (!$args || isset($args['valid_html']) ? 'a' : '') .
+                    sprintf("%06d", $cid);
+        }
+
+        return $url;
     }
 }
 ?>
