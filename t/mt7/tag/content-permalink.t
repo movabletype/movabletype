@@ -257,7 +257,20 @@ $test_env->prepare_fixture(
             archive_type  => 'ContentType',
             file_template => '%y/%m/%-f',
             is_preferred  => 1,
+            cat_field_id  => $cf_category2->id,
         );
+
+        my $mt = MT->new or die MT->errstr;
+        for my $map (
+            ( $map_01, $map_02, $map_03, $map_04 ) )
+        {
+            $mt->rebuild(
+                BlogID => $map->blog_id,
+                Force  => 1,
+                ArchiveType => $map->archive_type,
+                TemplateMap => ($map),
+            ) || diag "Rebuild error: ", $mt->errstr;
+        }
 
         for my $content_type (
             ( $content_type_01, $content_type_02, $content_type_03, $content_type_04 ) )
@@ -294,17 +307,15 @@ $test_env->prepare_fixture(
                     }
                     $tmpl_map->save;
                 }
+                $mt->rebuild(
+                    BlogID => $content_type->blog_id,
+                    Force  => 1,
+                    ArchiveType => $type,
+                    TemplateMap => ($tmpl_map),
+                ) || diag "Rebuild error: ", $mt->errstr;
+
             }
         }
-        my $mt = MT->new or die MT->errstr;
-        $mt->rebuild(
-            BlogID => $blog->id,
-            Force  => 1
-        ) || print "Rebuild error: ", $mt->errstr;
-        $mt->rebuild(
-            BlogID => $website->id,
-            Force  => 1
-        ) || print "Rebuild error: ", $mt->errstr;
     }
 );
 
