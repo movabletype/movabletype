@@ -444,4 +444,11 @@
       return jQuery(window.top).width() < 768;
   };
 
+  MT.Util.isIosDevice = function () {
+      var userAgent = window.navigator.userAgent;
+      return userAgent.indexOf('iPhone') != -1
+          || userAgent.indexOf('iPad') != -1
+          || userAgent.indexOf('iPod touch') != -1;
+  };
+
 })(window);

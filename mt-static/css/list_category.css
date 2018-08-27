@@ -68,11 +68,11 @@
 }
 
 #itemlist {
-    max-width: 80px;
+    max-width: 100px;
 }
 
-#area-action input[type=text] {
-    max-width: 120px;
+#area-action .category-label {
+    max-width: 130px;
 }
 
 @media (min-width: 768px) {
@@ -80,7 +80,7 @@
         max-width: 200px;
     }
 
-    #area-action input[type=text] {
+    #area-action .category-list {
         max-width: 200px;
     }
 }
