@@ -1449,7 +1449,7 @@ div.mce-notification-error {
 <mt:if name="field_html">
 
   <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-    <div class="mt-draggable" draggable="true" aria-grabbed="false">
+    <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
       <div class="col-auto field-header">
         <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
       </div>
@@ -1574,7 +1574,7 @@ div.mce-notification-error {
     </mt:if>
 
     <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1599,7 +1599,7 @@ div.mce-notification-error {
   <mt:else eq="excerpt">
 
     <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1616,7 +1616,7 @@ div.mce-notification-error {
   <mt:else eq="keywords">
 
     <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1739,6 +1739,11 @@ div.mce-notification-error {
         jQuery('#entry_prefs').val('Custom');
         sendEntryPrefs();
     });
+
+    jQuery(window).on('resize load', function () {
+      var nextDraggable = MT.Util.isMobileView() ? 'false' : 'true';
+      jQuery('#sortable .mt-draggable--entryField').attr('draggable', nextDraggable);
+    })
 
 </mt:setvarblock>
 
