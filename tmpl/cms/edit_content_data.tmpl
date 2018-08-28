@@ -91,17 +91,35 @@
   <div class="status">
   <mt:unless name="new_object">
     <mt:if name="status_draft">
-    <span class="icon-left-wide icon-draft"><__trans phrase="Unpublished (Draft)"></span>
+    <span class="icon-left-wide icon-draft">
+      <mtapp:svgicon id="ic_draft" title="<__trans phrase="Unpublished (Draft)">" size="sm">
+      <__trans phrase="Unpublished (Draft)">
+    </span>
     <mt:else name="status_review">
-    <span class="icon-left-wide icon-warning"><__trans phrase="Unpublished (Review)"></span>
+    <span class="icon-left-wide icon-warning">
+      <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Review)">" color="warning" size="sm">
+      <__trans phrase="Unpublished (Review)">
+    </span>
     <mt:else name="status_future">
-    <span class="icon-left-wide icon-future"><__trans phrase="Scheduled"></span>
+    <span class="icon-left-wide icon-future">
+      <mtapp:svgicon id="ic_clock" title="<__trans phrase="Scheduled">" color="info" size="sm">
+      <__trans phrase="Scheduled">
+    </span>
     <mt:else name="status_publish">
-    <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
+    <span class="icon-left-wide icon-success">
+      <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" color="success" size="sm">
+      <__trans phrase="Published">
+    </span>
     <mt:else name="status_spam">
-    <span class="icon-left-wide icon-spam"><__trans phrase="Unpublished (Spam)"></span>
+    <span class="icon-left-wide icon-spam">
+      <mtapp:svgicon id="ic_error" title="<__trans phrase="Unpublished (Spam)">" color="warning" size="sm">
+      <__trans phrase="Unpublished (Spam)">
+    </span>
     <mt:else name="status_unpublish">
-    <span class="icon-left-wide icon-unpublish"><__trans phrase="Unpublished (End)"></span>
+    <span class="icon-left-wide icon-unpublish">
+      <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublished (End)">" color="danger" size="sm">
+      <__trans phrase="Unpublished (End)">
+    </span>
     </mt:if>
   </mt:unless>
   </div>
