@@ -1505,6 +1505,7 @@ sub _build_content_data_preview {
         content_type_id
         convert_breaks
         ct_unique_id
+        data_label
         id
         identifier
         status
