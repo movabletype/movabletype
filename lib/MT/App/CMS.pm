@@ -3525,6 +3525,7 @@ sub build_user_menus {
     $param->{user_menu_id} ||= $user_id;
     $param->{user_menu_user} = $menu_user;
     my $active = $param->{active_user_menu};
+    $active = '' unless defined $active;
     $param->{is_me} ||= $login_user->id == $user_id;
     my $reg_menus = $app->registry('user_menus');
     my $menus = $app->filter_conditional_list( $reg_menus, $app, $param );
