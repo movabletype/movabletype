@@ -94,10 +94,10 @@ sub edit {
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
-        unless ( ref $data ) {
+        if ( $data && !ref $data ) {
             $data = JSON::decode_json($data);
         }
-        if ($data) {
+        if ( $data && ref $data eq 'HASH' ) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
         $app->param( had_error => 1 ) if $param->{err_msg};
