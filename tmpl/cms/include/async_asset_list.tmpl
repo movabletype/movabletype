@@ -454,6 +454,20 @@ jQuery('.actions-bar button.primary').click(function() {
   jQuery('#select_asset input[name="id"]').val(ids.join(','));
 })
 
+jQuery('#asset-table').on('click', 'td.cb', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  var $input = jQuery(this).find('div.custom-checkbox input');
+  var checked = $input.attr('checked');
+  if (checked) {
+    $input.removeAttr('checked');
+  } else {
+    $input.attr('checked', 'checked');
+  }
+  return false;
+});
+
 jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
