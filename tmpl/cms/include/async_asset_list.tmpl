@@ -39,7 +39,8 @@
           <__trans phrase="Loading...">
         </div>
         <nav aria-label="Asset List" class="col-auto mx-auto mt-3">
-          <ul class="pagination"></ul>
+          <ul class="pagination d-none d-md-flex"></ul>
+          <ul class="pagination__mobile d-md-none"></ul>
         </nav>
 </mt:setvarblock>
 
@@ -131,6 +132,7 @@ var currentPage = 1;
 function loadAssetList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
   jQuery('ul.pagination').hide();
+  jQuery('ul.pagination__mobile').hide();
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
@@ -185,6 +187,7 @@ function loadAssetList(offset) {
         jQuery('#asset-table').append(data.html);
         if (data.pager) {
           renderPagination(data.pager);
+          renderPaginationForMobile(data.pager);
         }
         else {
           canPaginate = false;
@@ -195,6 +198,7 @@ function loadAssetList(offset) {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPaginate) {
         jQuery('ul.pagination').show();
+        jQuery('ul.pagination__mobile').show();
       }
       jQuery('#asset-class').removeAttr("disabled");
       jQuery('#search').removeAttr("disabled");
@@ -261,9 +265,6 @@ function renderPagination(pager) {
     last = (maxPage-1) * pager.limit;
   }
 
-  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
-  jQuery('#page-status').text(page_status);
-
   $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
   if (page - 2 >= 1) {
@@ -316,6 +317,94 @@ function renderPagination(pager) {
     loadAssetList(last);
     return false;
   });
+}
+
+function renderPaginationForMobile(pager) {
+  var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  var start = page > 1 ? pager.offset + 1 : 1;
+  var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
+
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page - 1, false)
+  );
+  if (page - 4 >= 1 && pageMax - page < 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 4)
+    );
+  }
+  if (page - 3 >= 1 && pageMax - page < 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 3)
+    );
+  }
+  if (page - 2 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 2)
+    );
+  }
+  if (page - 1 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 1)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLink(page, true)
+  );
+  if (page + 1 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 1)
+    );
+  }
+  if (page + 2 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 2)
+    );
+  }
+  if (page + 3 <= maxPage && page <= 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 3)
+    );
+  }
+  if (page + 4 <= maxPage && page <= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 4)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page + 1, true)
+  );
+
+  jQuery('.pagination__mobile a.page-link').on('click', function () {
+    var nextPage = this.dataset.mtNextPage || this.text;
+    if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+      saveChecked(page);
+      loadAssetList((nextPage - 1) * pager.limit);
+    }
+    return false;
+  });
+}
+
+function generateMobilePageLink(page, current) {
+  if (current) {
+    return '<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+  } else {
+    return '<li class="page-item"><a href="#" class="page-link">' + page + '</a></li>';
+  }
+}
+
+function generateMobilePageLinkTriangle(page, next) {
+  var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+  return '<li class="page-item"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + ( page + 1 ) + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }
 
 function saveChecked(page) {
