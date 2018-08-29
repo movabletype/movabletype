@@ -503,6 +503,20 @@ sub save {
         my $status = $app->param('status');
         $content_data->status($status);
     }
+
+    my $filter_result
+        = $app->run_callbacks( 'cms_save_filter.content_data', $app );
+
+    if ( !$filter_result ) {
+        my %param = ();
+        $param{err_msg}     = $app->errstr;
+        $param{return_args} = $app->param('return_args');
+        $app->param( '_type',           'content_data' );
+        $app->param( 'reedit',          1 );
+        $app->param( 'serialized_data', $data );
+        return $app->forward( "view_content_data", \%param );
+    }
+
     if ( ( $content_data->status || 0 ) != MT::ContentStatus::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
             return $app->error(
