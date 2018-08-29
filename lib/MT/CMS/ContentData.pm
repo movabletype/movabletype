@@ -432,7 +432,11 @@ sub save {
     my $convert_breaks = {};
     my $data           = {};
     if ( $app->param('from_preview') ) {
-        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        $data = $app->param('serialized_data');
+        if ( $data && !ref $data ) {
+            $data = JSON::decode_json($data);
+        }
+        $data ||= {};
     }
     else {
         foreach my $f (@$field_data) {
