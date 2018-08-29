@@ -16,7 +16,7 @@
 
 <mt:setvarblock name="modal_body">
 <div class="row">
-  <div id="content-body-left" class="col-2">
+  <div id="content-body-left" class="col-2 d-none d-md-block">
     <div>
       <ul class="nav nav-pills flex-column">
   <mt:if name="can_upload">
@@ -35,7 +35,20 @@
     </div>
   </div>
 
-  <div id="content-body-right" class="col-10">
+  <div id="content-body-top-for-mobile" class="col-12 d-md-none mb-5">
+    <div class="btn-group w-100" role="group">
+  <mt:if name="can_upload">
+      <a href="#upload-asset-panel" class="btn btn-primary w-100 top-menu-item" data-panel-id="#upload-asset-panel">
+        <__trans phrase="Upload">
+      </a>
+  </mt:if>
+      <a href="#list-asset-panel" class="btn w-100 top-menu-item <mt:if name="can_upload">btn-default<mt:else>btn-primary</mt:if>" data-panel-id="#list-asset-panel">
+        <__trans phrase="Library">
+      </a>
+    </div>
+  </div>
+
+  <div id="content-body-right" class="col-12 col-md-10">
     <div id="content-body-right-body" class="tab-content">
 
   <mt:if name="can_upload">
@@ -127,6 +140,20 @@ jQuery('.left-menu-item').click( function() {
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
+});
+
+jQuery('.top-menu-item').on('click', function () {
+  var panelIdSelector = jQuery(this).data('panelId');
+  jQuery('a.left-menu-item[href=' + panelIdSelector + ']').click();
+
+  jQuery('a.top-menu-item.btn-primary')
+    .removeClass('btn-primary')
+    .addClass('btn-default');
+  jQuery(this)
+    .removeClass('btn-default')
+    .addClass('btn-primary');
+
+  return false;
 });
 
 jQuery('.actions-bar button.primary').click(function() {
