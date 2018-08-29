@@ -1500,7 +1500,6 @@ sub _build_content_data_preview {
     $param{status} = $content_data->status;
 
     my @cols = qw(
-        author_id
         blog_id
         content_type_id
         convert_breaks
