@@ -54,7 +54,10 @@
             <th class="head si file-status" scope="col">
               <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
             </th>
-            <th class="head primary string" scope="col"><span class="col-label"><__trans phrase="label"></span></th>
+            <th class="head primary string" scope="col">
+              <span class="col-label"><__trans phrase="label"></span>
+              <span id="page-status" class="float-right d-md-none"></span>
+            </th>
           </thead>
 </mt:unless>
           <tbody>
@@ -259,6 +262,7 @@ function renderPagination(pager) {
   }
 
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
 
   $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
