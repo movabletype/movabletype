@@ -361,6 +361,20 @@ jQuery('.actions-bar button.primary').click(function() {
   jQuery('#select_asset input[name="id"]').val(ids.join(','));
 })
 
+jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $link = jQuery(this).parents('tr').find('a');
+  if ($link.length > 0) {
+    $link.get(0).click();
+    return false;
+  }
+});
+
 // Initial loading
 loadAssetList(0);
 

@@ -12,6 +12,11 @@
 <mt:setvarblock name="js_include" append="1">
   <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
