@@ -50,7 +50,7 @@ sub field_html_params {
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
-        unless ( ref $data ) {
+        if ( $data && !ref $data ) {
             $data = JSON::decode_json($data);
         }
     }
