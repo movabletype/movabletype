@@ -94,10 +94,10 @@ sub edit {
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
-        unless ( ref $data ) {
+        if ( $data && !ref $data ) {
             $data = JSON::decode_json($data);
         }
-        if ($data) {
+        if ( $data && ref $data eq 'HASH' ) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
         $app->param( had_error => 1 ) if $param->{err_msg};
@@ -432,7 +432,11 @@ sub save {
     my $convert_breaks = {};
     my $data           = {};
     if ( $app->param('from_preview') ) {
-        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        $data = $app->param('serialized_data');
+        if ( $data && !ref $data ) {
+            $data = JSON::decode_json($data);
+        }
+        $data ||= {};
     }
     else {
         foreach my $f (@$field_data) {
