@@ -2,10 +2,10 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
 <mt:unless name="filter" eq="userpic">
-<div style="float: left; margin-right: 15px;">
+<div class="float-md-left mr-4 mb-3">
   <form action="" method="get" id="modal-type-filter" class="form-inline">
     <span class="mr-3"><__trans phrase="Asset Type: "></span>
-    <select name="asset-class" id="asset-class" class="custom-select form-control">
+    <select name="asset-class" id="asset-class" class="custom-select form-control w-50">
       <option value="">
         <__trans phrase="All Types">
       </option>
@@ -38,7 +38,7 @@
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
           <__trans phrase="Loading...">
         </div>
-        <nav aria-label="Asset List" class="mt-3">
+        <nav aria-label="Asset List" class="col-auto mx-auto mt-3">
           <ul class="pagination"></ul>
         </nav>
 </mt:setvarblock>
@@ -109,7 +109,7 @@
         </table>
       </div>
     </div>
-    <div id="actions-bar" class="float-right line">
+    <div id="actions-bar" class="row line">
   <mt:var name="list_actions">
     </div>
   </div>
