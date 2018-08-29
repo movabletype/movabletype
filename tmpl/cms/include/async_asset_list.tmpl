@@ -277,7 +277,7 @@ function renderPagination(pager) {
     $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
   }
 
-  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>');
 
   if (page + 1 <= maxPage) {
     var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
