@@ -223,7 +223,7 @@ function loadAssetList(offset) {
 }
 
 function renderPagination(pager) {
-  var $e = jQuery('.pagination').empty();
+  var $pagination = jQuery('.pagination').empty();
 
   if ( pager.rows == 0 ) {
     return;
@@ -264,31 +264,31 @@ function renderPagination(pager) {
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
   jQuery('#page-status').text(page_status);
 
-  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
   if (page - 2 >= 1) {
-    $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
-    $e.append('<li class="page-item" aria-hidden="true">...</li>');
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
   if (page - 1 >= 1) {
     var firstLastClass = page - 1 == 1 ? ' first-last' : '';
-    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
   }
 
-  $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
 
   if (page + 1 <= maxPage) {
     var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
-    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
   }
 
   if (page + 2 <= maxPage) {
-    $e.append('<li class="page-item" aria-hidden="true">...</li>');
-    $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
   }
 
-  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
 
   jQuery('a.start').click(function() {
     saveChecked(page);
