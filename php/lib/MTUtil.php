@@ -1750,4 +1750,23 @@ function normalize_language($language, $locale, $ietf) {
     return $language;
 }
 
+function caturl($paths){
+    if (!is_array($paths)) return '';
+
+    $url = array_shift($paths);
+    foreach ($paths as $u) {
+        if(!$u) continue;
+        if(!$url){
+            $url = $u;
+            continue;
+        }
+        $u = preg_replace( '/^\//', '', $u );
+        if(!preg_match('/\/$/', $url, $matches))
+            $url .= '/';
+        $url .= $u;
+    }
+    return $url;
+}
+
+
 ?>

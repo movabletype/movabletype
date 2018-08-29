@@ -10264,6 +10264,10 @@ fieldset.form-group {
   background: #E3F2F4;
 }
 
+.mt-table__highlight--current {
+  background: #FFFDE5;
+}
+
 .mt-table__sort, .mt-table__descend, .mt-table__ascend {
   display: block;
   color: #212529;

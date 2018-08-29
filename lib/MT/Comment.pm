@@ -249,7 +249,9 @@ sub permalink {
     my $id    = $self->id;
     my $entry = $self->entry;
     if ( $id && $entry ) {
-        $entry->archive_url . '#comment-' . $id;
+        my $archive_url = $entry->archive_url;
+        $archive_url = '' unless defined $archive_url;
+        $archive_url . '#comment-' . $id;
     }
     else {
         '#';
