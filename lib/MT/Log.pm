@@ -202,10 +202,28 @@ sub list_props {
                 );
                 my @options;
                 while ( my ( $count, $class ) = $iter->() ) {
+                    my $label = $class;
+                    if ( my ($content_type_id)
+                        = $class =~ /^content_data_([0-9]+)$/ )
+                    {
+                        my $content_type = MT->model('content_type')
+                            ->load($content_type_id);
+                        my $site
+                            = $content_type ? $content_type->blog : undef;
+                        my $site_name
+                            = $site
+                            ? defined $site->name
+                                ? $site->name
+                                : MT->translate('*Site/Child Site deleted*')
+                            : '';
+                        $label
+                            = $content_type->name . ' (' . $site->name . ')'
+                            if $content_type;
+                    }
                     push @options,
                         {
-                          label => $class
-                        ? MT->translate($class)
+                          label => $label
+                        ? MT->translate($label)
                         : MT->translate('none'),
                         value => $class ? $class : '',
                         };
