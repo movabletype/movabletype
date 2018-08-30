@@ -503,12 +503,10 @@ sub edit {
         }
         push @{ $param->{text_filters} },
             {
-            filter_key           => $filter,
-            filter_label         => $filters->{$filter}{label},
-            filter_selected      => $entry_filters{$filter},
-            filter_docs          => $filters->{$filter}{docs},
-            filter_pc_filter     => $filters->{$filter}{pc_filter},
-            filter_mobile_filter => $filters->{$filter}{mobile_filter},
+            filter_key      => $filter,
+            filter_label    => $filters->{$filter}{label},
+            filter_selected => $entry_filters{$filter},
+            filter_docs     => $filters->{$filter}{docs},
             };
     }
     $param->{text_filters} = [ sort { $a->{filter_key} cmp $b->{filter_key} }
@@ -776,15 +774,7 @@ sub _build_entry_preview {
     MT::Util::translate_naughty_words($entry);
 
     my $convert_breaks = $app->param('convert_breaks');
-    my $text_filter = $app->registry( 'text_filters', $convert_breaks );
-    if ( $text_filter && $text_filter->{convert_when_save} ) {
-        $entry->convert_breaks( $text_filter->{mobile_filter}
-                || $text_filter->{pc_filter}
-                || $convert_breaks );
-    }
-    else {
-        $entry->convert_breaks($convert_breaks);
-    }
+    $entry->convert_breaks($convert_breaks);
 
     my @data = ( { data_name => 'author_id', data_value => $user_id } );
     $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
@@ -1179,16 +1169,6 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
-
-    my $text_filter
-        = $app->registry( 'text_filters', $values{convert_breaks} );
-    if ( $text_filter && $text_filter->{convert_when_save} ) {
-        $values{convert_breaks}
-            = $text_filter->{mobile_filter}
-            || $text_filter->{pc_filter}
-            || $values{convert_breaks};
-    }
-
     $obj->set_values( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')

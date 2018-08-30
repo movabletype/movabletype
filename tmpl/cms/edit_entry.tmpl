@@ -985,13 +985,13 @@ div.mce-notification-error {
       }
 
       <mt:unless name="editors">
-      function changedTextFormat(e, noConfirm) {
+      function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
 
           changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
 
-          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
+          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -1042,13 +1042,13 @@ div.mce-notification-error {
           }
       }
       <mt:else>
-      function changedTextFormat(e, noConfirm) {
+      function changedTextFormat() {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
 
           changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
 
-          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
+          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -1482,9 +1482,7 @@ div.mce-notification-error {
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
-              <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_pc_filter"> class="d-md-none" data-mt-pc-filter="<mt:var name="filter_pc_filter" escape="html">"<mt:elseif name="filter_mobile_filter"> class="d-none d-md-block" data-mt-mobile-filter="<mt:var name="filter_mobile_filter" escape="html">"</mt:if><mt:if name="filter_selected"> selected="selected"</mt:if>>
-                <$mt:var name="filter_label" escape="html"$>
-              </option>
+              <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
             </mt:loop>
             </select>
             <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1509,9 +1507,7 @@ div.mce-notification-error {
       class="d-md-none">
       <select name="convert_breaks" id="convert_breaks_for_mobile" class="custom-select form-control">
       <mt:loop name="text_filters">
-        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_pc_filter"> class="d-md-none" data-mt-pc-filter="<mt:var name="filter_pc_filter" escape="html">"<mt:elseif name="filter_mobile_filter"> class="d-none d-md-block" data-mt-mobile-filter="<mt:var name="filter_mobile_filter" escape="html">"</mt:if><mt:if name="filter_selected"> selected="selected"</mt:if>>
-          <$mt:var name="filter_label" escape="html"$>
-        </option>
+        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
       </mt:loop>
       </select>
       <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1711,30 +1707,6 @@ div.mce-notification-error {
       var nextDraggable = MT.Util.isMobileView() ? 'false' : 'true';
       jQuery('#sortable .mt-draggable--entryField').attr('draggable', nextDraggable);
     })
-
-    jQuery(window).on('resize load', function () {
-      var $formats = jQuery('#convert_breaks');
-      var $selectedFormat = $formats.find('option:selected');
-      var mtMobileFilter = $selectedFormat.data('mtMobileFilter');
-      var mtPcFilter = $selectedFormat.data('mtPcFilter');
-      if (!mtMobileFilter && !mtPcFilter) {
-        return;
-      }
-      if (MT.Util.isMobileView()) {
-        if (!mtMobileFilter) {
-          return;
-        }
-        var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-        $mobileFormats.val(mtMobileFilter);
-        $mobileFormats.trigger('change', true);
-      } else {
-        if (!mtPcFilter) {
-          return;
-        }
-        $formats.val(mtPcFilter);
-        $formats.trigger('change', true);
-      }
-    });
 
 </mt:setvarblock>
 
