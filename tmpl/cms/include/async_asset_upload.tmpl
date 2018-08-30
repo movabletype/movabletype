@@ -765,7 +765,7 @@ jQuery('#upload-asset-panel').on('changePanel', function() {
   }
 });
 </mt:if>
-jQuery('form').find('input:visible').first().focus();
+window.top.document.activeElement.blur();
 
 jQuery('#upload-progress').on('click', '.card', function (e) {
   if (!MT.Util.isMobileView()) {
