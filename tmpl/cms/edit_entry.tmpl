@@ -1720,18 +1720,27 @@ div.mce-notification-error {
 
     jQuery(window).on('resize load', function () {
       var $formats = jQuery('#convert_breaks');
+      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
       var selectedFormat = $formats.find('option:selected').val();
-      if (selectedFormat != 'richtext' && selectedFormat != '_richtext') {
-        return;
-      }
       if (MT.Util.isMobileView()) {
+        $formats.find('option[value=richtext]').attr('disabled', 'disabled');
+        $mobileFormats.find('option[value=richtext]').attr('disabled', 'disabled');
+
+        $formats.find('option[value=_richtext]').removeAttr('disabled');
+        $mobileFormats.find('option[value=_richtext]').removeAttr('disabled');
+
         if (selectedFormat != 'richtext') {
           return;
         }
-        var $mobileFormats = jQuery('#convert_breaks_for_mobile');
         $mobileFormats.val('_richtext');
         $mobileFormats.trigger('change', true);
       } else {
+        $formats.find('option[value=richtext]').removeAttr('disabled')
+        $mobileFormats.find('option[value=richtext]').removeAttr('disabled');
+
+        $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
+        $mobileFormats.find('option[value=_richtext]').attr('disabled', 'disabled');
+
         if (selectedFormat != '_richtext') {
           return;
         }
