@@ -985,13 +985,13 @@ div.mce-notification-error {
       }
 
       <mt:unless name="editors">
-      function changedTextFormat() {
+      function changedTextFormat(e, noConfirm) {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
 
           changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
 
-          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -1042,13 +1042,13 @@ div.mce-notification-error {
           }
       }
       <mt:else>
-      function changedTextFormat() {
+      function changedTextFormat(e, noConfirm) {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
 
           changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
 
-          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -1482,7 +1482,12 @@ div.mce-notification-error {
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
+              <mt:if name="filter_key" eq="richtext">
+              <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+              <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+              <mt:else>
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+              </mt:if>
             </mt:loop>
             </select>
             <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1507,7 +1512,12 @@ div.mce-notification-error {
       class="d-md-none">
       <select name="convert_breaks" id="convert_breaks_for_mobile" class="custom-select form-control">
       <mt:loop name="text_filters">
+        <mt:if name="filter_key" eq="richtext">
+        <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+        <mt:else>
         <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:if>
       </mt:loop>
       </select>
       <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1706,7 +1716,29 @@ div.mce-notification-error {
     jQuery(window).on('resize load', function () {
       var nextDraggable = MT.Util.isMobileView() ? 'false' : 'true';
       jQuery('#sortable .mt-draggable--entryField').attr('draggable', nextDraggable);
-    })
+    });
+
+    jQuery(window).on('resize load', function () {
+      var $formats = jQuery('#convert_breaks');
+      var selectedFormat = $formats.find('option:selected').val();
+      if (selectedFormat != 'richtext' && selectedFormat != '_richtext') {
+        return;
+      }
+      if (MT.Util.isMobileView()) {
+        if (selectedFormat != 'richtext') {
+          return;
+        }
+        var $mobileFormats = jQuery('#convert_breaks_for_mobile');
+        $mobileFormats.val('_richtext');
+        $mobileFormats.trigger('change', true);
+      } else {
+        if (selectedFormat != '_richtext') {
+          return;
+        }
+        $formats.val('richtext');
+        $formats.trigger('change', true);
+      }
+    });
 
 </mt:setvarblock>
 
