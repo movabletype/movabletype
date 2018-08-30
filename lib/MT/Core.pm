@@ -2342,6 +2342,17 @@ BEGIN {
                     my ($type) = @_;
                     return 1 if $type && ( $type ne 'comment' );
                 },
+                mobile_filter => 'richtext_mobile',
+            },
+            'richtext_mobile' => {
+                label     => 'Rich Text(HTML mode)',
+                handler   => 'MT::Util::rich_text_transform',
+                condition => sub {
+                    my ($type) = @_;
+                    return 1 if $type && ( $type ne 'comment' );
+                },
+                convert_when_save => 1,
+                pc_filter         => 'richtext',
             },
         },
         richtext_editors => {
