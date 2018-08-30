@@ -2024,8 +2024,8 @@ sub open_batch_editor {
 
     # Loading objects
     my $iter = $pkg->load_iter(
-        { class => $type, id => \@ids, blog_id => \@blog_ids },
-        { sort => 'authored_on', direction => 'descend' }
+        { class => $type,         id        => \@ids, blog_id => \@blog_ids },
+        { sort  => 'authored_on', direction => 'descend' }
     );
 
     my $list_pref = $app->list_pref($type);
