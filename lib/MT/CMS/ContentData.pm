@@ -1302,6 +1302,7 @@ sub _create_temp_content_data {
     my $id              = $app->param('id');
     my $blog_id         = $app->param('blog_id');
     my $content_type_id = $app->param('content_type_id');
+    my $label           = $app->param('data_label');
 
     return $app->errtrans('Invalid request.')
         unless $blog_id && $content_type_id;
@@ -1331,6 +1332,7 @@ sub _create_temp_content_data {
         $app->user );
 
     $content_data->status( scalar $app->param('status') );
+    $content_data->label($label);
 
     my $content_field_types = $app->registry('content_field_types');
     my $content_type        = $content_data->content_type;
