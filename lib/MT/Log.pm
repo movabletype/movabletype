@@ -214,10 +214,9 @@ sub list_props {
                             = $site
                             ? defined $site->name
                                 ? $site->name
-                                : MT->translate('*Site/Child Site deleted*')
-                            : '';
-                        $label
-                            = $content_type->name . ' (' . $site->name . ')'
+                                : 'blog_id: ' . $site->id
+                            : MT->translate('*Site/Child Site deleted*');
+                        $label = $content_type->name . " ($site_name)"
                             if $content_type;
                     }
                     push @options,
