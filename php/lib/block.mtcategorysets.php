@@ -44,16 +44,15 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 $repeat = false;
                 return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
             }
-            foreach ( $content_types as $content_type ) {
-                $content_fields = $content_type->fields;
-                if (isset($content_fields)) {
-                    $content_fields = $ctx->mt->db()->unserialize($content_fields);
-                }
-                foreach($content_fields as $f){
-                    if ( $f['type'] == 'categories' ) {
-                        $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
-                        $category_sets[] = $cs;
-                    }
+            $content_type = $content_types[0];
+            $content_fields = $content_type->fields;
+            if (isset($content_fields)) {
+                $content_fields = $ctx->mt->db()->unserialize($content_fields);
+            }
+            foreach($content_fields as $f){
+                if ( $f['type'] == 'categories' ) {
+                    $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
+                    $category_sets[] = $cs;
                 }
             }
         } else {
@@ -88,6 +87,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $ctx->stash('category_set', $cs);
         $ctx->stash('blog', $cs->blog());
         $ctx->stash('blog_id', $cs->blog_id);
+        if($content_type)
+            $ctx->stash('content_type', $content_type);
+
         if (!empty($glue) && !empty($content)) {
             if ($out) {
                 $content = $glue . $content;
