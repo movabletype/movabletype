@@ -833,6 +833,10 @@ div.mce-notification-error {
 }
 
 @media (max-width: 767.98px) {
+    #entry-category-widget h2 {
+        line-height: 2.2;
+    }
+
     #category-selector-list .list-item,
     #folder-selector-list .list-item {
         padding: 0.5rem;
@@ -1756,6 +1760,15 @@ div.mce-notification-error {
       }
     });
 
+    jQuery(window).on('resize load', function () {
+      var $categoryToggleLinks = jQuery('a.toggle-link');
+      var buttonClasses = 'btn btn-default';
+      if (MT.Util.isMobileView()) {
+        $categoryToggleLinks.addClass(buttonClasses);
+      } else {
+        $categoryToggleLinks.removeClass(buttonClasses);
+      }
+    });
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
