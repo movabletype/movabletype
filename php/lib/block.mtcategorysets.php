@@ -38,25 +38,28 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 $repeat = false;
                 return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
-        } elseif( isset($args['content_type']) && !empty($args['content_type']) ) {
-            $content_types = $ctx->mt->db()->fetch_content_types($args);
-            if(!$content_types || count($content_types) == 0) {
-                $repeat = false;
-                return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+        } else { 
+            if( isset($args['content_type']) && !empty($args['content_type']) ) {
+                $content_types = $ctx->mt->db()->fetch_content_types($args);
+                if(!$content_types || count($content_types) == 0) {
+                    $repeat = false;
+                    return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+                }
+                $content_type = $content_types[0];
             }
-            $content_type = $content_types[0];
-            $content_fields = $content_type->fields;
-            if (isset($content_fields)) {
-                $content_fields = $ctx->mt->db()->unserialize($content_fields);
-            }
-            foreach($content_fields as $f){
-                if ( $f['type'] == 'categories' ) {
-                    $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
-                    $category_sets[] = $cs;
+            if($content_type){
+                $content_fields = $content_type->fields;
+                if (isset($content_fields)) {
+                    $content_fields = $ctx->mt->db()->unserialize($content_fields);
+                }
+                foreach($content_fields as $f){
+                    if ( $f['type'] == 'categories' ) {
+                        $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
+                        $category_sets[] = $cs;
+                    }
                 }
             }
-        } else {
-            if( $blog_id ){
+            if( !isset($category_sets) && $blog_id ){
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
                 )); 

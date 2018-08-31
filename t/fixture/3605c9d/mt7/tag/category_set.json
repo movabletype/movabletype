@@ -570,6 +570,73 @@
          ]
       ]
    },
+   "mt_cd" : {
+      "cols" : [
+         "cd_author_id",
+         "cd_authored_on",
+         "cd_blog_id",
+         "cd_content_type_id",
+         "cd_created_by",
+         "cd_created_on",
+         "cd_ct_unique_id",
+         "cd_current_revision",
+         "cd_data",
+         "cd_id",
+         "cd_identifier",
+         "cd_label",
+         "cd_modified_by",
+         "cd_modified_on",
+         "cd_random",
+         "cd_status",
+         "cd_unique_id",
+         "cd_unpublished_on",
+         "cd_week_number"
+      ],
+      "rows" : [
+         [
+            "1",
+            "2017-09-27 11:23:14",
+            "2",
+            "1",
+            null,
+            "__NOW__",
+            "ad0dda30d292f02c4939cc34f2722908742fc7e3",
+            "0",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            "1",
+            "mtcontent_type-context-test-data-01",
+            null,
+            null,
+            "__NOW__",
+            "7",
+            "2",
+            "1ba77c9820147f365ea99889da7114862d211e08",
+            "2017-05-31 16:36:00",
+            "201739"
+         ],
+         [
+            "1",
+            "2017-09-27 11:23:14",
+            "2",
+            "2",
+            null,
+            "__NOW__",
+            "0871aaa07143ccb19d46fd074bbdddb7b0d3727f",
+            "0",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
+            "2",
+            "mtcontent_type-context-test-data-02",
+            null,
+            null,
+            "__NOW__",
+            "1",
+            "2",
+            "1d97115c1e2fa0c8e012008cbdbbba156126dc7a",
+            "2017-05-31 16:36:00",
+            "201739"
+         ]
+      ]
+   },
    "mt_cf" : {
       "cols" : [
          "cf_blog_id",
@@ -604,7 +671,7 @@
             null,
             null,
             "categories",
-            "f519534f14f77b3df631952483007d2c2492cb82"
+            "df74a79b11feba5429b8a8afcc262bd104dd5211"
          ],
          [
             "2",
@@ -621,7 +688,62 @@
             null,
             null,
             "categories",
-            "23e3bff35a7ef7452b6d3c2bc9284620e4edfe0b"
+            "8d4275ab958a154acce14c9cbbcfecda51498062"
+         ]
+      ]
+   },
+   "mt_cf_idx" : {
+      "cols" : [
+         "cf_idx_content_data_id",
+         "cf_idx_content_field_id",
+         "cf_idx_content_type_id",
+         "cf_idx_created_by",
+         "cf_idx_created_on",
+         "cf_idx_id",
+         "cf_idx_modified_by",
+         "cf_idx_modified_on",
+         "cf_idx_value_blob",
+         "cf_idx_value_datetime",
+         "cf_idx_value_double",
+         "cf_idx_value_float",
+         "cf_idx_value_integer",
+         "cf_idx_value_text",
+         "cf_idx_value_varchar"
+      ],
+      "rows" : [
+         [
+            "1",
+            "1",
+            "1",
+            null,
+            "__NOW__",
+            "1",
+            null,
+            "__NOW__",
+            null,
+            null,
+            null,
+            null,
+            "1",
+            null,
+            null
+         ],
+         [
+            "2",
+            "2",
+            "2",
+            null,
+            "__NOW__",
+            "2",
+            null,
+            "__NOW__",
+            null,
+            null,
+            null,
+            null,
+            "2",
+            null,
+            null
          ]
       ]
    },
@@ -665,7 +787,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "15b1890067cef83885ff9c04066dff08b1a15972",
+            "ad0dda30d292f02c4939cc34f2722908742fc7e3",
             null,
             null
          ],
@@ -680,9 +802,40 @@
             null,
             "__NOW__",
             "test content type 02",
-            "45cd9274b0bd83ee4b346a399587e1e992284baa",
+            "0871aaa07143ccb19d46fd074bbdddb7b0d3727f",
             null,
             null
+         ]
+      ]
+   },
+   "mt_objectcategory" : {
+      "cols" : [
+         "objectcategory_blog_id",
+         "objectcategory_category_id",
+         "objectcategory_cf_id",
+         "objectcategory_id",
+         "objectcategory_is_primary",
+         "objectcategory_object_ds",
+         "objectcategory_object_id"
+      ],
+      "rows" : [
+         [
+            "2",
+            "1",
+            "1",
+            "1",
+            "1",
+            "content_data",
+            "1"
+         ],
+         [
+            "2",
+            "2",
+            "2",
+            "2",
+            "1",
+            "content_data",
+            "2"
          ]
       ]
    },

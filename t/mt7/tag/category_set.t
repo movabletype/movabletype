@@ -144,6 +144,27 @@ $test_env->prepare_fixture(
 
         $content_type_02->fields($fields_02);
         $content_type_02->save or die $content_type_02->errstr;
+
+        
+        my $content_data_01 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_01->id,
+            status          => MT::ContentStatus::RELEASE(),
+            authored_on     => '20170927112314',
+            identifier      => 'mtcontent_type-context-test-data-01',
+            data            => { $cf_category_01->id => [ $category_01->id ], }
+        );
+        
+        my $content_data_02 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_02->id,
+            status          => MT::ContentStatus::RELEASE(),
+            authored_on     => '20170927112314',
+            identifier      => 'mtcontent_type-context-test-data-02',
+            data            => { $cf_category_02->id => [ $category_02->id ], }
+        );
+
+
     }
 );
 
@@ -256,3 +277,15 @@ No Content Type could be found.
 <mt:CategorySets blog_id="[% blog_id %]" content_type="[% content_type_02_unique_id %]9999"><mt:CategorySetName></mt:CategorySets>
 --- expected_error  
 No Content Type could be found.
+
+=== mt:CategorySets content_type context
+--- template
+<mt:Contents content_type="[% content_type_01_name %]"><mt:CategorySets><mt:CategorySetName></mt:CategorySets></mt:Contents>
+--- expected
+test category set 01
+
+=== mt:CategorySets content_type context
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:CategorySets><mt:CategorySetName></mt:CategorySets></mt:Contents>
+--- expected
+test category set 02

@@ -65,8 +65,11 @@ sub _hdlr_category_sets {
         return $ctx->_no_category_set_error() unless $category_set;
         push @category_sets, $category_set if $category_set;
     }
-    elsif ( $args->{content_type} ) {
+    else {
         $content_type = $ctx->get_content_type_context( $args, $cond );
+        if( $args->{content_type} && !$content_type ) {
+            return;
+        }
         if ($content_type) {
             my @set_ids;
             foreach my $f ( @{ $content_type->fields } ) {
@@ -78,12 +81,7 @@ sub _hdlr_category_sets {
                 = MT->model('category_set')->load( { id => [@set_ids] } )
                 if @set_ids;
         }
-        else {
-            return $ctx->_no_content_type_error();
-        }
-    }
-    else {
-        if( $blog_id ){
+        if( $blog_id && scalar(@category_sets) == 0 ){
             @category_sets
                 = MT->model('category_set')->load( { blog_id => $blog_id } );
         }
