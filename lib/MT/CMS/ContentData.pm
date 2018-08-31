@@ -1584,6 +1584,7 @@ sub _build_content_data_preview {
 
     $param{object_type}  = 'content_data';
     $param{object_label} = $content_type->name;
+    $param{title}        = $content_data->label;
 
     my $rev_numbers = $app->param('rev_numbers') || '';
     my $collision = $app->param('collision');
