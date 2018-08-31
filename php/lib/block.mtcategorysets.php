@@ -23,8 +23,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
         if (isset($args['id']) && !empty($args['id'])) {
             $cs = $ctx->mt->db()->fetch_category_set($args['id']);
-            if (!cs) {
-                return $ctx->error('No Category set could be found.');
+            if (is_null($cs->id)) {
+                $repeat = false;
+                return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
             $category_sets = array($cs);
         } elseif (isset($args['name']) && !empty($args['name'])) {
@@ -33,25 +34,33 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 'name'    => $args['name'],
                 'limit'   => 1,
             ));
-            if ($cs && count($cs) == 0) {
-                return $ctx->error('No Category set could be found.');
+            if (!$category_sets || count($category_sets) == 0) {
+                $repeat = false;
+                return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
+            }
+        } elseif( isset($args['content_type']) && !empty($args['content_type']) ) {
+            $content_types = $ctx->mt->db()->fetch_content_types($args);
+            if(!$content_types || count($content_types) == 0) {
+                $repeat = false;
+                return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+            }
+            foreach ( $content_types as $content_type ) {
+                $content_fields = $content_type->fields;
+                if (isset($content_fields)) {
+                    $content_fields = $ctx->mt->db()->unserialize($content_fields);
+                }
+                foreach($content_fields as $f){
+                    if ( $f['type'] == 'categories' ) {
+                        $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
+                        $category_sets[] = $cs;
+                    }
+                }
             }
         } else {
-            $content_types = $ctx->mt->db()->fetch_content_types($args);
-            if ($content_types) {
+            if( $blog_id ){
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
-                    'content_type' => $args['content_type'],
-                ));
-                if ($cs && count($cs) == 0) {
-                    return $ctx->error('No Category set could be found.');
-                }
-            } else {
-                if ($blog_id) {
-                    $category_sets = $ctx->mt->db()->fetch_category_sets(array(
-                        'blog_id' => $blog_id
-                    ));
-                }
+                )); 
             }
         }
         $ctx->stash('category_sets', $category_sets);
