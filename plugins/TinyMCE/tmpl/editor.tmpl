@@ -6,12 +6,7 @@
 </mt:if>
 <script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/lib/js/adapter.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript">
-jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
-</script>
-</mt:setvarblock>
-
-<mt:setvarblock name="jq_js_include" append="1">
-jQuery(window).on('load resize', function () {
+function toggleTinyMCEMenus() {
   var hasNoMobileButtons = function ($container) {
     return $container.has('.mce-ico.mce-i-newdocument').length == 0
       && $container.has('.mce-ico.mce-i-image').length == 0
@@ -37,7 +32,14 @@ jQuery(window).on('load resize', function () {
 
     $visibleContainersInMobile.first().removeClass('border-left-0');
   }
-});
+}
+MT.Editor.TinyMCE.config.setup = toggleTinyMCEMenus;
+jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('load resize', toggleTinyMCEMenus);
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
