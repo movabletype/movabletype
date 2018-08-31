@@ -33,13 +33,13 @@ function toggleTinyMCEMenus() {
     $visibleContainersInMobile.first().removeClass('border-left-0');
   }
 }
-MT.Editor.TinyMCE.config.setup = toggleTinyMCEMenus;
+MT.Editor.TinyMCE.config.init_instance_callback = toggleTinyMCEMenus;
 jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
 </script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery(window).on('load resize', toggleTinyMCEMenus);
+jQuery(window).on('resize', toggleTinyMCEMenus);
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
