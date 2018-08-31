@@ -289,6 +289,9 @@ sub list_properties {
             = MT->registry( 'list_properties', 'content_data' );
         if ($content_data_common_props) {
             for my $key ( keys %$content_data_common_props ) {
+                next
+                    if $content_data_common_props->{$key}{plugin}
+                    ->isa('MT::Core');
                 my $prop = MT::ListProperty->instance( 'content_data', $key );
                 if ( $prop->has('condition') ) {
                     next unless $prop->condition;
