@@ -94,6 +94,14 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     box-sizing: border-box;
     border-radius: 0;
 }
+@media (max-width: 767.98px) {
+    #editor-content textarea,
+    .editor-content textarea {
+        height: auto;
+        min-height: 160px;
+    }
+}
+
 #editor-content textarea:hover,
 #editor-content textarea:focus,
 .editor-content textarea:hover,

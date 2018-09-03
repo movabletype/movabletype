@@ -176,6 +176,21 @@
 .field-buttons-formatting > span {
   display: inline-block;
 }
+
+@media (max-width: 767.98px) {
+  .editor-toolbar span:not(.add-enclosure) {
+    display: none;
+  }
+  .editor-toolbar .button {
+    height: 32px;
+    width: 32px;
+  }
+  .editor-toolbar .button,
+  .editor-toolbar .button:hover {
+    background-size: 24px;
+  }
+}
+
 /* toggle */
 .editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg,
 .editor-mode-iframe .editor-toolbar .button.command-toggle-wysiwyg:hover,

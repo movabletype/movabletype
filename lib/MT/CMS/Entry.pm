@@ -774,7 +774,8 @@ sub _build_entry_preview {
     MT::Util::translate_naughty_words($entry);
 
     my $convert_breaks = $app->param('convert_breaks');
-    $entry->convert_breaks($convert_breaks);
+    $entry->convert_breaks(
+        $convert_breaks eq '_richtext' ? 'richtext' : $convert_breaks );
 
     my @data = ( { data_name => 'author_id', data_value => $user_id } );
     $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
@@ -1169,6 +1170,8 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
+    $values{convert_breaks} = 'richtext'
+        if $values{convert_breaks} eq '_richtext';
     $obj->set_values( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
@@ -2024,8 +2027,8 @@ sub open_batch_editor {
 
     # Loading objects
     my $iter = $pkg->load_iter(
-        { class => $type, id => \@ids, blog_id => \@blog_ids },
-        { sort => 'authored_on', direction => 'descend' }
+        { class => $type,         id        => \@ids, blog_id => \@blog_ids },
+        { sort  => 'authored_on', direction => 'descend' }
     );
 
     my $list_pref = $app->list_pref($type);

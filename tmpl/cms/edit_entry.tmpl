@@ -234,6 +234,26 @@
     </div>
   </div>
 </mt:if>
+<mt:unless name="new_object">
+  <mt:if name="use_revision">
+  <mtapp:statusmsg
+     id="mobile-status"
+     class="info d-md-none"
+     can_close="0">
+    <mt:if name="rev_date">
+    <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
+    <br>
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+      <__trans phrase="View revisions">
+    </a>
+    <mt:else>
+    <p class="zero-state">
+      <__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">">
+    </p>
+    </mt:if>
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
 </div>
 </mt:setvarblock>
 
@@ -305,7 +325,7 @@
                     <mtapp:svgicon id="ic_fav" size="sm" color="success" title="Primary">
                     <strong>[#= label #]</strong>
                     &nbsp;
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
                       <span>
                         <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
                       </span>
@@ -328,7 +348,7 @@
                     </a>
                   </mt:if>
                     &nbsp;
-                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-inline-block" title="[#|h trans("Remove") #]">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
                       <span>
                         <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
                       </span>
@@ -675,7 +695,7 @@
 </div>
 
 <mt:if name="enabled_plugins{CommentsTrackback}">
-<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
+<div id="feedback-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
@@ -744,7 +764,7 @@
 </mt:if>
 
 <mt:if name="object_type" like="(entry|page)">
-<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
+<div id="assets-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
   <mtapp:widget
      id="asset_container"
@@ -810,6 +830,17 @@ div.mce-notification-error {
 #category-selector-list a:hover,
 #category-list a:hover {
     text-decoration: none;
+}
+
+@media (max-width: 767.98px) {
+    #entry-category-widget h2 {
+        line-height: 2.2;
+    }
+
+    #category-selector-list .list-item,
+    #folder-selector-list .list-item {
+        padding: 0.5rem;
+    }
 }
 
 #category-selector-list .list-item.odd,
@@ -954,11 +985,24 @@ div.mce-notification-error {
           app.setEditorIframeHTML();
       }
 
+      function changeTextFormatOfOtherForm(currentFormId, selectedIndex) {
+          var otherForm;
+          if (currentFormId == 'convert_breaks') {
+              otherForm = document.getElementById('convert_breaks_for_mobile');
+          } else {
+              otherForm = document.getElementById('convert_breaks');
+          }
+          otherForm.options[selectedIndex].selected = true;
+      }
+
       <mt:unless name="editors">
-      function changedTextFormat() {
+      function changedTextFormat(e, noConfirm) {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
-          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+
+          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
+
+          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -970,15 +1014,17 @@ div.mce-notification-error {
                   return;
               }
           }
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              jQuery('#formatting-help-link').removeClass('disabled');
-          } else {
-              jQuery('#formatting-help-link').addClass('disabled');
-          }
+          var convertBreaks = document.forms['entry_form'].convert_breaks;
+          convertBreaks.forEach(function (s) {
+              var key = s.options[s.selectedIndex].value;
+              if (url = docs[key]) {
+                  if (url.indexOf('http://') == -1)
+                      url = HelpBaseURI + url;
+                  jQuery('#formatting-help-link').removeClass('disabled');
+              } else {
+                  jQuery('#formatting-help-link').addClass('disabled');
+              }
+          });
 
           if (cur_text_format == 'richtext') {
               // changing to plaintext editor
@@ -1007,10 +1053,13 @@ div.mce-notification-error {
           }
       }
       <mt:else>
-      function changedTextFormat() {
+      function changedTextFormat(e, noConfirm) {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
-          if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+
+          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
+
+          if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
                   // revert selection
@@ -1022,15 +1071,17 @@ div.mce-notification-error {
                   return;
               }
           }
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              jQuery('#formatting-help-link').removeClass('disabled');
-          } else {
-              jQuery('#formatting-help-link').addClass('disabled');
-          }
+          var convertBreaks = document.forms['entry_form'].convert_breaks;
+          convertBreaks.forEach(function (s) {
+              var key = s.options[s.selectedIndex].value;
+              if (url = docs[key]) {
+                  if (url.indexOf('http://') == -1)
+                      url = HelpBaseURI + url;
+                  jQuery('#formatting-help-link').removeClass('disabled');
+              } else {
+                  jQuery('#formatting-help-link').addClass('disabled');
+              }
+          });
 
           if (option == 'richtext') {
               app.saveHTML(false);
@@ -1151,18 +1202,6 @@ div.mce-notification-error {
       <mt:loop name="text_filters">
       docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
       </mt:loop>
-      function openTFDocs() {
-          var s = document.forms['entry_form'].convert_breaks;
-          var key = s.options[s.selectedIndex].value;
-          if (url = docs[key]) {
-              if (url.indexOf('http://') == -1)
-                  url = HelpBaseURI + url;
-              window.open(url, 'manual', 'width=450,height=550,scrollbars=yes,status=yes,resizable=yes');
-          } else {
-              return false;
-              // return openManual('entries', 'entry_text_formatting');
-          }
-      }
 
       function toggleFile() {
           var fld = getByID("basename");
@@ -1195,7 +1234,7 @@ div.mce-notification-error {
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
           <mt:unless name="id">jQuery('#title').focus();</mt:unless>
-          jQuery('#convert_breaks').change(changedTextFormat);
+          jQuery('#convert_breaks, #convert_breaks_for_mobile').change(changedTextFormat);
       }
 
       var tagPos = 0;
@@ -1361,7 +1400,7 @@ div.mce-notification-error {
 
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
-  <div class="btn-group mb-4 w-100" role="group">
+  <div class="btn-group mb-4 w-100 d-none d-md-inline-flex" role="group">
     <mt:if name="previous_entry_id">
       <a class="btn btn-default w-50" href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev"></a>
     <mt:else>
@@ -1384,7 +1423,7 @@ div.mce-notification-error {
 <mt:if name="field_html">
 
   <div id="<mt:var name="field_id">-field" class="mt-3 field sort-enabled<mt:if name="required"> required</mt:if>"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-    <div class="mt-draggable" draggable="true" aria-grabbed="false">
+    <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
       <div class="col-auto field-header">
         <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
       </div>
@@ -1418,6 +1457,7 @@ div.mce-notification-error {
       <mt:if name="entry_permalink">
         <mtapp:setting
            id="permalink"
+           class="d-none d-md-block"
            label="Permalink"
            show_label="0"
            label_class="no-header"
@@ -1440,7 +1480,7 @@ div.mce-notification-error {
 
   <mt:else eq="text">
     <mt:section id="text">
-    <div id="text-field" class="mod field">
+    <div id="text-field" class="mod field mb-5">
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
@@ -1449,11 +1489,16 @@ div.mce-notification-error {
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks" class="form-inline">
+          <div id="field-convert_breaks" class="form-inline d-none d-md-block">
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
+              <mt:if name="filter_key" eq="richtext">
+              <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+              <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+              <mt:else>
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+              </mt:if>
             </mt:loop>
             </select>
             <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1471,6 +1516,33 @@ div.mce-notification-error {
       </div>
       <mt:include name="include/editor.tmpl">
     </div>
+
+    <mtapp:setting
+      id="convert_breaks_for_mobile"
+      label="<__trans phrase="Format">"
+      class="d-md-none">
+      <select name="convert_breaks" id="convert_breaks_for_mobile" class="custom-select form-control">
+      <mt:loop name="text_filters">
+        <mt:if name="filter_key" eq="richtext">
+        <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+        <mt:else>
+        <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:if>
+      </mt:loop>
+      </select>
+      <$mt:setvar name="show_formatting_help" value="1"$>
+      <mt:if name="convert_breaks" eq="richtext">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="0">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+      <mt:if name="convert_breaks" eq="__default__">
+      <$mt:setvar name="show_formatting_help" value="0"$>
+      </mt:if>
+    </mtapp:setting>
+
     </mt:section>
 
   <mt:else eq="tags">
@@ -1486,7 +1558,7 @@ div.mce-notification-error {
     </mt:if>
 
     <div id="tags-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1511,7 +1583,7 @@ div.mce-notification-error {
   <mt:else eq="excerpt">
 
     <div id="excerpt-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1528,7 +1600,7 @@ div.mce-notification-error {
   <mt:else eq="keywords">
 
     <div id="keywords-field" class="mt-3 field sort-enabled"<mt:unless name="show_field"> style="display: none;"</mt:unless>>
-      <div class="mt-draggable" draggable="true" aria-grabbed="false">
+      <div class="mt-draggable--entryField" draggable="true" aria-grabbed="false">
         <div class="col-auto field-header">
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
@@ -1548,7 +1620,7 @@ div.mce-notification-error {
 <!-- / Sortable --></div>
 
 
-  <div id="quickpost" class="mt-3">
+  <div id="quickpost" class="mt-3 d-none d-md-block">
     <p><mt:var name="quickpost_js"></p>
   </div>
 
@@ -1652,6 +1724,51 @@ div.mce-notification-error {
         sendEntryPrefs();
     });
 
+    jQuery(window).on('resize load', function () {
+      var nextDraggable = MT.Util.isMobileView() ? 'false' : 'true';
+      jQuery('#sortable .mt-draggable--entryField').attr('draggable', nextDraggable);
+    });
+
+    jQuery(window).on('resize load', function () {
+      var $formats = jQuery('#convert_breaks');
+      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
+      var selectedFormat = $formats.find('option:selected').val();
+      if (MT.Util.isMobileView()) {
+        $formats.find('option[value=richtext]').attr('disabled', 'disabled');
+        $mobileFormats.find('option[value=richtext]').attr('disabled', 'disabled');
+
+        $formats.find('option[value=_richtext]').removeAttr('disabled');
+        $mobileFormats.find('option[value=_richtext]').removeAttr('disabled');
+
+        if (selectedFormat != 'richtext') {
+          return;
+        }
+        $mobileFormats.val('_richtext');
+        $mobileFormats.trigger('change', true);
+      } else {
+        $formats.find('option[value=richtext]').removeAttr('disabled')
+        $mobileFormats.find('option[value=richtext]').removeAttr('disabled');
+
+        $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
+        $mobileFormats.find('option[value=_richtext]').attr('disabled', 'disabled');
+
+        if (selectedFormat != '_richtext') {
+          return;
+        }
+        $formats.val('richtext');
+        $formats.trigger('change', true);
+      }
+    });
+
+    jQuery(window).on('resize load', function () {
+      var $categoryToggleLinks = jQuery('a.toggle-link');
+      var buttonClasses = 'btn btn-default';
+      if (MT.Util.isMobileView()) {
+        $categoryToggleLinks.addClass(buttonClasses);
+      } else {
+        $categoryToggleLinks.removeClass(buttonClasses);
+      }
+    });
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
