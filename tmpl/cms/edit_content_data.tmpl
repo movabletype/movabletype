@@ -502,7 +502,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       <mt:elseif name="data_type" eq="varchar">
   <input type="text" name="content-field-<mt:var name="content_field_id">" class="form-control text long html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>/>
       <mt:elseif name="data_type" eq="text">
-  <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
+  <textarea name="content-field-<mt:var name="content_field_id">" class="form-control text high html5-form content-field" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value"></textarea>
       <mt:elseif name="data_type" eq="integer">
   <input type="number" name="content-field-<mt:var name="content_field_id">" class="form-control text short html5-form content-field" value="<mt:var name="value">" mt:watch-change="1" mt:raw-name="1" <mt:if name="options{required}">required</mt:if> <mt:if name="options{max_value}" ne="">max="<mt:var name="options{max_value}" escape="html">"</mt:if> <mt:if name="options{min_value}" ne="">min="<mt:var name="options{min_value}" escape="html">"</mt:if>/>
       <mt:elseif name="data_type" eq="float">
