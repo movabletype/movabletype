@@ -459,11 +459,11 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
     return;
   }
   var $input = jQuery(this).find('div.custom-checkbox input');
-  var checked = $input.attr('checked');
+  var checked = $input.prop('checked');
   if (checked) {
     $input.removeAttr('checked');
   } else {
-    $input.attr('checked', 'checked');
+    $input.prop('checked', 'checked');
   }
   $input.change();
   return false;
