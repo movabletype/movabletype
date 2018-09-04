@@ -554,7 +554,7 @@ function createUploadBlock () {
       .attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">')
       .attr('class', 'd-inline-block')
       .append('<mtapp:svgicon id="ic_edit" title="Edit" size="sm" strip_linefeeds="1">')
-      .append('<span class="ml-2"><__trans phrase="Edit"><span>')
+      .append('<span class="ml-2"><__trans phrase="Edit"></span>')
       .appendTo(this.editAsset);
     editLink.mtModal({ large: true });
     this.editAsset.show();
