@@ -174,12 +174,12 @@ h1.dialog-title {
 </fieldset>
 
 <p class="d-md-none">
-  <a class="btn btn-link pl-0" data-toggle="collapse" href="#uploadSettings" aria-expanded="true" aria-controls="uploadSettings">
+  <a id="uploadSettingsLink" class="btn btn-link pl-0" href="javascript:void(0);" aria-expanded="true" aria-controls="uploadSettings" onclick="toggleUploadSettings(); return false;">
     <__trans phrase="Upload Settings">
   </a>
 </p>
 
-<div id="uploadSettings" class="collapse show">
+<div id="uploadSettings">
 
   <fieldset class="form-group">
     <legend class="h3"><__trans phrase="Upload Destination"></legend>
@@ -569,7 +569,8 @@ function uploadFiles(files, items) {
     }
 
     if (MT.Util.isMobileView()) {
-        jQuery('#uploadSettings').collapse('hide');
+        jQuery('#uploadSettings').hide();
+        jQuery('#uploadSettingsLink').attr('aria-expanded', 'false');
     }
 
 <mt:if name="can_multi">
@@ -711,6 +712,16 @@ function uploadFile( formData, uploadBlock ) {
 
   uploadBlock.setCancelUpload(xhr);
   return d.promise();
+}
+
+function toggleUploadSettings() {
+  var $link = jQuery('#uploadSettingsLink');
+  jQuery('#uploadSettings').toggle();
+  if (jQuery('#uploadSettings:visible').length > 0) {
+    $link.attr('aria-expanded', 'true');
+  } else {
+    $link.attr('aria-expanded', 'false');
+  }
 }
 /* ]]> */
 </script>
