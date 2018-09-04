@@ -458,14 +458,11 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
   }
-  var $input = jQuery(this).find('div.custom-checkbox input');
-  var checked = $input.prop('checked');
-  if (checked) {
-    $input.removeAttr('checked');
-  } else {
-    $input.prop('checked', 'checked');
+  if (e.target.tagName == 'INPUT') {
+    return;
   }
-  $input.change();
+  var $input = jQuery(this).find('div.custom-checkbox input');
+  $input.click();
   return false;
 });
 
