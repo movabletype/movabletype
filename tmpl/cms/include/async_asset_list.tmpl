@@ -204,7 +204,7 @@ function loadAssetList(offset) {
       jQuery('#search').removeAttr("disabled");
       jQuery('#search-button').removeAttr("disabled");
 
-      jQuery('table.listing-table tbody tr input[name="id"]').on('click', function(){
+      jQuery('table.listing-table tbody tr input[name="id"]').on('change', function(){
         if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
           // Enable submit button
           jQuery('.actions-bar button.primary')
@@ -465,6 +465,7 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   } else {
     $input.attr('checked', 'checked');
   }
+  $input.change();
   return false;
 });
 
