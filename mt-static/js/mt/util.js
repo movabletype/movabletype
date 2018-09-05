@@ -444,4 +444,9 @@
       return jQuery(window.top).width() < 768;
   };
 
+  // copy from mt-static/js/editor/editor.js
+  MT.Util.isIos = function () {
+      return window.navigator.userAgent.match(/i(Phone|Pad|Pod)/);
+  };
+
 })(window);

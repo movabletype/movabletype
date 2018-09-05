@@ -475,11 +475,19 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
   }
-  if (e.target.tagName == 'INPUT') {
+  if (e.target.tagName == 'INPUT' && e.target.type == 'checkbox') {
     return;
   }
   var $input = jQuery(this).find('div.custom-checkbox input');
   $input.click();
+
+  // DOM change is not applied until scrolling .modal-body on iOS
+  if (MT.Util.isIos()) {
+    var modalBody = jQuery('.modal-body').get(0);
+    modalBody.scrollBy(0, 1);
+    modalBody.scrollBy(0, -1);
+  }
+
   return false;
 });
 
