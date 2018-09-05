@@ -38,10 +38,12 @@
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
           <__trans phrase="Loading...">
         </div>
-        <nav aria-label="Asset List" class="col-auto mx-auto mt-5 mt-md-3">
-          <ul class="pagination d-none d-md-flex"></ul>
-          <ul class="pagination__mobile d-md-none"></ul>
-        </nav>
+        <div class="col-auto mx-auto mt-5 mt-md-3">
+          <nav aria-label="Asset List">
+            <ul class="pagination d-none d-md-flex"></ul>
+            <ul class="pagination__mobile d-md-none"></ul>
+          </nav>
+        </div>
 </mt:setvarblock>
 
 <div id="listing" class="listing line has-filter mt-5 mt-md-3">
@@ -125,6 +127,15 @@
 
 <mt:setvarblock name="jq_js_include" append="1">
 isModal = getByID("list-assets-dialog");
+
+function toggleClassOfPaginationContainer() {
+  var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+  if (MT.Util.isMobileView() && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+    $paginationContainer.addClass('w-100');
+  } else {
+    $paginationContainer.removeClass('w-100');
+  }
+}
 
 var checked = [];
 var currentPage = 1;
@@ -218,7 +229,9 @@ function loadAssetList(offset) {
             .addClass('disabled');
         }
         saveChecked(currentPage);
-      })
+      });
+
+      toggleClassOfPaginationContainer();
     },
     error: function(xhr, status, error) {
       console.log('error: ' + status + ":" + error);
@@ -334,54 +347,56 @@ function renderPaginationForMobile(pager) {
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
   jQuery('#page-status').text(page_status);
 
+  var setMrAuto = maxPage >= 5;
+
   $paginationMobile.append(
-    generateMobilePageLinkTriangle(page - 1, false)
+    generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
   );
   if (page - 4 >= 1 && maxPage - page < 1) {
     $paginationMobile.append(
-      generateMobilePageLink(page - 4)
+      generateMobilePageLink(page - 4, setMrAuto)
     );
   }
   if (page - 3 >= 1 && maxPage - page < 2) {
     $paginationMobile.append(
-      generateMobilePageLink(page - 3)
+      generateMobilePageLink(page - 3, setMrAuto)
     );
   }
   if (page - 2 >= 1) {
     $paginationMobile.append(
-      generateMobilePageLink(page - 2)
+      generateMobilePageLink(page - 2, setMrAuto)
     );
   }
   if (page - 1 >= 1) {
     $paginationMobile.append(
-      generateMobilePageLink(page - 1)
+      generateMobilePageLink(page - 1, setMrAuto)
     );
   }
   $paginationMobile.append(
-    generateMobilePageLink(page, true)
+    generateMobilePageLink(page, setMrAuto, true)
   );
   if (page + 1 <= maxPage) {
     $paginationMobile.append(
-      generateMobilePageLink(page + 1)
+      generateMobilePageLink(page + 1, setMrAuto)
     );
   }
   if (page + 2 <= maxPage) {
     $paginationMobile.append(
-      generateMobilePageLink(page + 2)
+      generateMobilePageLink(page + 2, setMrAuto)
     );
   }
   if (page + 3 <= maxPage && page <= 2) {
     $paginationMobile.append(
-      generateMobilePageLink(page + 3)
+      generateMobilePageLink(page + 3, setMrAuto)
     );
   }
   if (page + 4 <= maxPage && page <= 1) {
     $paginationMobile.append(
-      generateMobilePageLink(page + 4)
+      generateMobilePageLink(page + 4, setMrAuto)
     );
   }
   $paginationMobile.append(
-    generateMobilePageLinkTriangle(page + 1, true)
+    generateMobilePageLinkTriangle(page + 1, false, true)
   );
 
   jQuery('.pagination__mobile a.page-link').on('click', function () {
@@ -394,17 +409,19 @@ function renderPaginationForMobile(pager) {
   });
 }
 
-function generateMobilePageLink(page, current) {
+function generateMobilePageLink(page, setMrAuto, current) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
   if (current) {
-    return '<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
   } else {
-    return '<li class="page-item"><a href="#" class="page-link">' + page + '</a></li>';
+    return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
   }
 }
 
-function generateMobilePageLinkTriangle(page, next) {
+function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
   var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
-  return '<li class="page-item"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }
 
 function saveChecked(page) {
@@ -479,6 +496,8 @@ jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
     return false;
   }
 });
+
+jQuery(window).on('resize', toggleClassOfPaginationContainer);
 
 // Initial loading
 loadAssetList(0);
