@@ -337,12 +337,12 @@ function renderPaginationForMobile(pager) {
   $paginationMobile.append(
     generateMobilePageLinkTriangle(page - 1, false)
   );
-  if (page - 4 >= 1 && pageMax - page < 1) {
+  if (page - 4 >= 1 && maxPage - page < 1) {
     $paginationMobile.append(
       generateMobilePageLink(page - 4)
     );
   }
-  if (page - 3 >= 1 && pageMax - page < 2) {
+  if (page - 3 >= 1 && maxPage - page < 2) {
     $paginationMobile.append(
       generateMobilePageLink(page - 3)
     );
