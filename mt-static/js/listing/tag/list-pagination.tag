@@ -12,11 +12,11 @@
 
   <script>
     riot.mixin('listPagination', {
-      hasMoreThanFivePages: function () {
+      hasFivePagesOrMore: function () {
         return this.store.pageMax >= 5;
       },
       hasW100Class: function () {
-        return MT.Util.isMobileView() && this.hasMoreThanFivePages();
+        return MT.Util.isMobileView() && this.hasFivePagesOrMore();
       },
       movePage: function (e) {
         if (e.currentTarget.disabled) {
