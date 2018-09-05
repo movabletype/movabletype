@@ -25,12 +25,12 @@ function toggleTinyMCEMenus() {
     $hiddenContainersInMobile.hide();
     $hiddenButtonsInMobile.hide();
 
-    $visibleContainersInMobile.first().addClass('border-left-0');
+    $visibleContainersInMobile.addClass('border-left-0');
   } else {
     $hiddenContainersInMobile.show();
     $hiddenButtonsInMobile.show();
 
-    $visibleContainersInMobile.first().removeClass('border-left-0');
+    $visibleContainersInMobile.removeClass('border-left-0');
   }
 }
 MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
