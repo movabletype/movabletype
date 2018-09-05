@@ -719,10 +719,13 @@ riot.tag2('list-pagination-for-pc', '<ul class="pagination d-none d-md-flex"> <l
     this.mixin('listPagination')
 });
 
-riot.tag2('list-pagination', '<div class="{col-auto: true,     mx-auto: true,     w-100: hasMoreThanFivePages()}"> <nav aria-label="{store.listClient.objectType + \' list\'}"> <virtual data-is="list-pagination-for-pc"></virtual> <virtual data-is="list-pagination-for-mobile"></virtual> </nav> </div>', '', '', function(opts) {
+riot.tag2('list-pagination', '<div class="{col-auto: true,     mx-auto: true,     w-100: hasW100Class()}"> <nav aria-label="{store.listClient.objectType + \' list\'}"> <virtual data-is="list-pagination-for-pc"></virtual> <virtual data-is="list-pagination-for-mobile"></virtual> </nav> </div>', '', '', function(opts) {
     riot.mixin('listPagination', {
       hasMoreThanFivePages: function () {
         return this.store.pageMax >= 5;
+      },
+      hasW100Class: function () {
+        return MT.Util.isMobileView() && this.hasMoreThanFivePages();
       },
       movePage: function (e) {
         if (e.currentTarget.disabled) {

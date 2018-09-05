@@ -2,7 +2,7 @@
   <div class={
     col-auto: true,
     mx-auto: true,
-    w-100: hasMoreThanFivePages()
+    w-100: hasW100Class()
   }>
     <nav aria-label={ store.listClient.objectType + ' list' }>
       <virtual data-is="list-pagination-for-pc"></virtual>
@@ -14,6 +14,9 @@
     riot.mixin('listPagination', {
       hasMoreThanFivePages: function () {
         return this.store.pageMax >= 5;
+      },
+      hasW100Class: function () {
+        return MT.Util.isMobileView() && this.hasMoreThanFivePages();
       },
       movePage: function (e) {
         if (e.currentTarget.disabled) {
