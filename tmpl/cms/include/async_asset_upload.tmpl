@@ -791,4 +791,11 @@ jQuery('#upload-progress').on('click', '.card', function (e) {
     return false;
   }
 });
+
+// Prevent to expand modal width after uploading on iOS.
+if (MT.Util.isMobileView()) {
+  jQuery(window).on('load orientationchange', function () {
+    jQuery('#upload-progress').width(jQuery(top.window).width() * 0.8);
+  });
+}
 </mt:setvarblock>
