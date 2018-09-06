@@ -1,10 +1,14 @@
 <div id="asset-field-<mt:var name="content_field_id" escape="html">" class="asset-field-container content-field" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="asset_loop">
-  <div class="mt-draggable" draggable="true" aria-grabbed="false">
+  <div class="mt-draggable"<mt:if name="multiple"> draggable="true" aria-grabbed="false"</mt:if>>
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="asset_id" escape="html">">
     <div class="col-auto">
+  <mt:if name="multiple">
       <mtapp:svgicon id="ic_move" title="Draggable">
+  <mt:else>
+      <mtapp:svgicon id="ic_blank" title="Blank">
+  </mt:if>
     </div>
     <div class="col">
   <mt:if name="asset_type" eq="audio">
@@ -151,7 +155,7 @@ jQuery('.asset-field-container').on('click', 'a.remove', function () {
 
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('#asset-field-<mt:var name="content_field_id" escape="html">').sortable({
-  items: 'div.mt-draggable',
+  items: 'div.mt-draggable[draggable=true][aria-grabbed]',
   placeholder: 'placeholder',
   distance: 3,
   opacity: 0.8,
