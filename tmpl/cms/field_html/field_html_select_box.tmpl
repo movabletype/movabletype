@@ -4,3 +4,19 @@
   <option value="<mt:var name="v">" <mt:var name="selected">><mt:var name="l" escape="html"></option>
 </mt:loop>
 </select>
+
+<mt:unless name="loaded_select_box_field_css">
+  <mt:setvar name="loaded_select_box_field_css" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+@media (min-width: 768px) {
+  select.content-field.multiple-select {
+    min-width: 10em;
+    min-height: 10em;
+  }
+}
+</style>
+  </mt:setvarblock>
+</mt:unless>
+
