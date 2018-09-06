@@ -475,10 +475,10 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
   }
-  if (e.target.tagName == 'INPUT' && e.target.type == 'checkbox') {
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
     return;
   }
-  var $input = jQuery(this).find('div.custom-checkbox input');
+  var $input = jQuery(this).find('div.custom-checkbox input, div.custom-radio input');
   $input.click();
 
   // DOM change is not applied until scrolling .modal-body on iOS
