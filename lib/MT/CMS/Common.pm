@@ -593,7 +593,9 @@ sub save {
         if (   $obj->type eq 'archive'
             || $obj->type eq 'category'
             || $obj->type eq 'page'
-            || $obj->type eq 'individual' )
+            || $obj->type eq 'individual'
+            || $obj->type eq 'ct'
+            || $obj->type eq 'ct_archive' )
         {
             my $static_maps = delete $app->{static_dynamic_maps};
             require MT::TemplateMap;

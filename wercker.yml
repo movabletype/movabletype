@@ -3,12 +3,6 @@ box: masiuchi/docker-mt-test:trusty-full
 build:
   steps:
     - script:
-        name: Remove skip test
-        code: |
-          rm t/34-sqlite.t
-          rm t/90-podcoverage.t
-          rm plugins/MultiBlog/t/02.tags.t
-    - script:
         name: Install CPAN modules
         code: |
           cpm install -g --test --cpanfile=t/cpanfile

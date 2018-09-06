@@ -2452,7 +2452,7 @@ use vars qw( @ISA %Lexicon );
 	'Contributor' => 'ライター',
 	'Can create entries, edit their own entries, and comment.' => '記事の作成、各自の記事とコメントを編集できます。',
 	'Content Designer' => 'コンテンツデザイナ',
-	'Can manage content types, content data and category sets.' => 'コンテンツタイプ、コンテンツデータ、カテゴリセットの偏執と管理ができます。',
+	'Can manage content types, content data and category sets.' => 'コンテンツタイプ、コンテンツデータ、カテゴリセットの編集と管理ができます。',
 	'__ROLE_STATUS' => '利用状況',
 
 ## lib/MT/Scorable.pm

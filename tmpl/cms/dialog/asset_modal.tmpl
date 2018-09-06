@@ -2,11 +2,11 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
 <mt:if name="filter_val" eq="image">
-  <mt:setvarblock name="page_title"><__trans phrase="Upload new image"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Insert Image Asset"></mt:setvarblock>
 <mt:elseif name="is_image">
-  <mt:setvarblock name="page_title"><__trans phrase="Upload new image"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Insert Image Asset"></mt:setvarblock>
 <mt:else>
-  <mt:setvarblock name="page_title"><__trans phrase="Upload new asset"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Insert Asset Link"></mt:setvarblock>
 </mt:if>
 
 <mt:setvarblock name="js_include" append="1">
@@ -40,18 +40,18 @@
     </div>
   </div>
 
+  <mt:if name="can_upload">
   <div id="content-body-top-for-mobile" class="col-12 d-md-none mb-5">
     <div class="btn-group w-100" role="group">
-  <mt:if name="can_upload">
       <a href="#upload-asset-panel" class="btn btn-primary w-100 top-menu-item" data-panel-id="#upload-asset-panel">
         <__trans phrase="Upload">
       </a>
-  </mt:if>
       <a href="#list-asset-panel" class="btn w-100 top-menu-item <mt:if name="can_upload">btn-default<mt:else>btn-primary</mt:if>" data-panel-id="#list-asset-panel">
         <__trans phrase="Library">
       </a>
     </div>
   </div>
+  </mt:if>
 
   <div id="content-body-right" class="col-12 col-md-10">
     <div id="content-body-right-body" class="tab-content">

@@ -2833,10 +2833,19 @@ MT.App.CategorySelector = new Class( Component, {
         jQuery(this.catFormMovable).hide();
         this.catInput.value = '';
 
+        var blogId;
+        jQuery(app.form).find('input[name=blog_id]').each(function (index, element) {
+          blogId = element.value;
+          return !blogId;
+        });
+        if (!blogId) {
+          blogId = jQuery('#blog-id').attr('value') || 0;
+        }
+
         var args = {
             __mode: this.isTag ? "js_add_tag" : "js_add_category",
             magic_token: app.form["magic_token"].value,
-            blog_id: app.form["blog_id"].value || DOM.getElement("blog-id").value,
+            blog_id: blogId,
             category_set_id: this.categorySetId,
             parent: parseInt( this.parentID ),
             _type: this.categorySetId ? 'category' : this.type
