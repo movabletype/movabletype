@@ -1192,7 +1192,8 @@ sub rebuild_file {
 
     if ( $archiver->category_based ) {
         $category = $args{Category};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Category')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Category' )
             unless $args{Category};
         $category = MT::Category->load($category)
             unless ref $category;
@@ -1201,7 +1202,8 @@ sub rebuild_file {
     }
     if ( $archiver->entry_based ) {
         $entry = $args{Entry};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Entry')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
@@ -1213,7 +1215,8 @@ sub rebuild_file {
         # Date-based archive type
         $start = $args{StartDate};
         $end   = $args{EndDate};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'StartDate')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'StartDate' )
             unless $args{StartDate};
         $ctx->var( 'datebased_archive', 1 );
     }
@@ -1221,7 +1224,8 @@ sub rebuild_file {
 
         # author based archive type
         $author = $args{Author};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Author')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Author' )
             unless $args{Author};
         require MT::Author;
         $author = MT::Author->load($author)
