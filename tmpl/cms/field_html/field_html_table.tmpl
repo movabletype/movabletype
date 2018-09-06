@@ -7,8 +7,8 @@
   <mt:var name="loaded_tables_field_css" value="1">
 
   <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css">
-<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css?v=<mt:var name="mt_version_id" escape="html">">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css?v=<mt:var name="mt_version_id" escape="html">">
 
 <style type="text/css">
 .a-table-btn-group-list > .a-table-btn-list:first-child,
@@ -34,7 +34,7 @@
   </mt:setvarblock>
 
   <mt:setvarblock name="js_include" append="1">
-<script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
+<script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">"></script>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
