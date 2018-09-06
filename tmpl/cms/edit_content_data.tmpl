@@ -395,6 +395,12 @@ div.mce-notification-error {
   <!--// this MUST loaded after mt.js // -->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
+
   <script>
   function toggleFile() {
       var fld = getByID("basename");
