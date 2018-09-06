@@ -188,6 +188,7 @@ jQuery('.asset-field-container').on('click', '.mobile-remove-asset', function (e
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('#asset-field-<mt:var name="content_field_id" escape="html">').sortable({
   items: 'div.mt-draggable[draggable=true][aria-grabbed]',
+  handle: MT.Util.isMobileView() ? '.col-auto:first' : false,
   placeholder: 'placeholder',
   distance: 3,
   opacity: 0.8,
