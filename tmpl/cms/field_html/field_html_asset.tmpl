@@ -58,7 +58,7 @@
           </ul>
         </div>
       </div>
-      <div class="row border-top pt-4 d-md-none">
+      <div class="row mobile-remove-asset border-top pt-4 d-md-none">
         <div class="col-auto mx-auto">
           <a href="javascript:void(0)" class="remove">
             <__trans phrase="Remove">
@@ -169,6 +169,17 @@ jQuery('.asset-field-container').on('click', 'a.remove', function () {
   log('found dirty form');
   app.setDirty();
 
+  return false;
+});
+
+jQuery('.asset-field-container').on('click', '.mobile-remove-asset', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  jQuery(this).find('a.remove').click();
   return false;
 });
   </mt:setvarblock>
