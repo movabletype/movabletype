@@ -1,4 +1,4 @@
-<div id="asset-field-<mt:var name="content_field_id" escape="html">" class="asset-field-container content-field" style="margin-top: 5px; margin-bottom: 5px" <mt:var name="required"> <mt:var name="multiple">>
+<div id="asset-field-<mt:var name="content_field_id" escape="html">" class="asset-field-container content-field" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="asset_loop">
   <div class="mt-draggable" draggable="true" aria-grabbed="false">
@@ -81,7 +81,12 @@
   <mt:var name="loaded_asset_field_js" value="1">
 
   <mt:setvarblock name="css_include" append="1">
-<style>
+<style type="text/css">
+.asset-field-container {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
 .asset-field-container div:not(:first-child).alert {
   display: none;
 }
