@@ -10443,6 +10443,9 @@ fieldset.form-group {
       flex-shrink: 0;
   border: 1px solid #A5A5A5;
   border-radius: 0.25rem;
+}
+
+.mt-draggable[draggable="true"], [draggable="true"].mt-draggable--entryField, .mt-draggable[aria-grabbed], [aria-grabbed].mt-draggable--entryField {
   cursor: move;
 }
 
