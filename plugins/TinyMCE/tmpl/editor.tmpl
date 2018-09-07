@@ -25,12 +25,12 @@ function toggleTinyMCEMenus() {
     $hiddenContainersInMobile.hide();
     $hiddenButtonsInMobile.hide();
 
-    $visibleContainersInMobile.first().addClass('border-left-0');
+    $visibleContainersInMobile.addClass('border-left-0');
   } else {
     $hiddenContainersInMobile.show();
     $hiddenButtonsInMobile.show();
 
-    $visibleContainersInMobile.first().removeClass('border-left-0');
+    $visibleContainersInMobile.removeClass('border-left-0');
   }
 }
 MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
@@ -143,10 +143,13 @@ jQuery(window).on('resize', toggleTinyMCEMenus);
 
 @media (max-width: 767.98px) {
   .mce-container.mce-flow-layout-item.mce-btn-group .mce-widget.mce-btn button {
-    padding: 8px 10px;
+    margin: 4px 8px;
+    padding: 0;
   }
   .mce-ico {
     background-size: 24px!important;
+    height: 24px!important;
+    width: 24px!important;
   }
 }
 </style>

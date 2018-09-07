@@ -4091,7 +4091,6 @@ ul.asset-list .asset-type-video {
 }
 .preview-layout {
     width: 100%;
-    min-width: 900px;
     height: 100%;
     margin: 0;
     padding: 0;

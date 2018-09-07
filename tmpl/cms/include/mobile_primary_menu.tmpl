@@ -1,7 +1,11 @@
 <div id="mobilePrimaryMenu" class="mt-mobilePrimaryMenu">
+<mt:unless name="is_full_screen">
+  <mt:if name="top_nav_loop">
   <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <mtapp:svgicon id="ic_menuhamburger" title="Open primary menu">
   </button>
+  </mt:if>
+</mt:unless>
   <span class="mt-mobilePrimaryMenu__name">
     <mt:var name="page_title">
   </span>
