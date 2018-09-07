@@ -4666,6 +4666,195 @@ abstract class MTDatabase {
         return $contents;
     }
 
+    public function fetch_next_prev_content($direction, $args) {
+        require_once('class.mt_content_data.php');
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $obj = $ctx->stash('content');
+        if( $direction !== 'next' && $direction !== 'previous' )
+            return undef;
+        $next = $direction === 'next' ? 1 : 0;
+
+        if (isset($args['by_author'])) {
+            $author_id = $obj->author_id;
+            $author_filter = "and cd_author_id = $author_id";
+        }
+
+        if ( $arg = $args['category_field'] ) {
+            if (preg_match('/^[0-9]+$/', $arg))
+                $cf = $this->fetch_content_field($arg);
+            if (!isset($cf)) {
+                $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                if (!isset($cfs))
+                    $cfs = $this->fetch_content_fields(array('name' => $arg));
+                if (isset($cfs)) $cf = $cfs[0];
+            }
+            if (isset($cf)) $cat_field_id = $cf->id;
+            $obj_cats = $this->fetch_objectcategories(array('object_id' => $obj->id, 'category_field_id' => $cat_field_id));
+            foreach ($obj_cats as $obj_cat) {
+                if ($obj_cat->is_primary)
+                    $category_id = $obj_cat->category_id;
+            }
+        }
+
+        if ( $arg = $args['date_field'] ) {
+            if (   $arg === 'authored_on'
+                || $arg === 'modified_on'
+                || $arg === 'created_on' )
+            {
+                $by = $arg;
+            }
+            else {
+                if (preg_match('/^[0-9]+$/', $arg))
+                    $cf = $this->fetch_content_field($arg);
+                if (!isset($cf)) {
+                    $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                    if (!isset($cfs))
+                        $cfs = $this->fetch_content_fields(array('name' => $arg));
+                    if (isset($cfs)) $cf = $cfs[0];
+                }
+                if (isset($cf)) $dt_field_id = $cf->id;
+            }
+        }
+        else {
+            $map = $this->fetch_templatemap(array(
+                'type'         => 'ContentType',
+                'preferred'    => 1,
+                'build_type'   => 3,
+                'content_type' => $obj->id
+            ));
+            if (isset($map))
+                $dt_field_id = $map->dt_field_id;
+        }
+        if (isset($dt_field_id)) {
+            $data = $obj->data();
+            $date_field_value = $this->ts2db($data[$dt_field_id]);
+        }
+
+        $label = '__' . $direction;
+        if (isset($author_id))
+            $label .= ':author=' . $author_id;
+        if (isset($by))
+            $label .= ':by_' . $by;
+        if (isset($cat_field_id))
+            $label .= ":category_field_id=$cat_field_id:category_id=$category_id";
+        if (isset($dt_field_id))
+            $label .= ":date_field_id=$dt_field_id";
+        if (isset($obj->$label))
+            return $obj->$label;
+
+        $args = Array();
+
+        if ($cat_field_id) {
+            $joins;
+            if (isset($category_id)) {
+                $joins .= "join mt_cf_idx as cat_cf_idx";
+                $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
+                $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
+            }
+            else {
+                $joins .= "left join mt_cf_idx as cat_cf_idx";
+                $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
+                $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
+            }
+        }
+
+        if ($dt_field_id) {
+            $desc = $next ? 'ASC' : 'DESC';
+            $op   = $next ? '>'   : '<';
+
+            if (!empty($joins)) $joins .= ' ';
+            $joins .= "join mt_cf_idx as dt_cf_idx";
+            $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
+            $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
+            $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
+            $order_by = "order by dt_cf_idx.cf_idx_value_datetime $desc, dt_cf_idx.cf_idx_id $desc";
+        }
+
+        if (!isset($by)) $by = 'authored_on';
+
+        $blog_id         = $obj->blog_id;
+        $content_type_id = $obj->content_type_id;
+
+        $sql = "
+            select *
+             from mt_cd
+                  $joins
+             where cd_blog_id = '$blog_id'
+               and cd_content_type_id = '$content_type_id'
+               and cd_status = '2'";
+
+        if ($dt_field_id) {
+            $sql .= "
+                   $author_filter
+                $order_by";
+            $result = $this->db()->SelectLimit($sql, 1, false);
+            if (!$result || $result->EOF) return null;
+        }
+        else {
+            $desc = $next ? 'ASC' : 'DESC';
+            $op   = $next ? '>'   : '<';
+            $by_value = $this->ts2db($obj->$by);
+            $id       = $obj->id;
+
+            $sql .= "
+                   and cd_$by $op '$by_value'
+                   $author_filter
+                 order by cd_$by $desc, cd_id $desc";
+            $result = $this->db()->SelectLimit($sql, 1, false);
+
+            if (!$result || $result->EOF) {
+                $sql .= "
+                       and cd_$by = '$by_value'
+                       and cd_id $op $id
+                       $author_filter
+                     order by cd_$by $desc, cd_id $desc";
+                $result = $this->db()->SelectLimit($sql, 1, false);
+                if (!$result || $result->EOF) return null;
+            }
+        }
+
+        $field_names = array_keys($result->fields);
+        $contents    = array();
+
+        while (!$result->EOF) {
+            $cd = new ContentData;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $cd->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cd)) break;
+
+            $cd->cd_authored_on = $this->db2ts($cd->cd_authored_on);
+            $cd->cd_modified_on = $this->db2ts($cd->cd_modified_on);
+            $contents[] = $cd;
+        }
+        ContentData::bulk_load_meta($contents);
+
+        if (isset($contents)) $obj->$label = $contents[0];
+
+        return $contents[0];
+    }
+
+    function fetch_content_field($id) {
+        if ( isset( $this->_content_field_id_cache[$id] ) && !empty( $this->_content_field_id_cache[$id] ) ) {
+            return $this->_content_field_id_cache[$id];
+        }
+        require_once("class.mt_content_field.php");
+        $content_field= New ContentField;
+        $content_field->Load( $id );
+        if ( !empty( $content_field ) ) {
+            $this->_content_field_id_cache[$id] = $content_field;
+            return $content_field;
+        } else {
+            return null;
+        }
+    }
+
     public function fetch_content_fields($args) {
         if (isset($args['blog_id'])) {
             $blog_id = $args['blog_id'];
@@ -4743,6 +4932,27 @@ abstract class MTDatabase {
                 $object_filter";
 
         return $ocat->Find($where, false, false, $extras);
+    }
+
+    public function fetch_objectcategories($args) {
+        if (isset($args['object_id']))
+            $object_id = $args['object_id'];
+        else
+            return undef;
+
+        if (isset($args['category_field_id']))
+            $category_field_id = $args['category_field_id'];
+        else
+            return undef;
+
+        require_once('class.mt_objectcategory.php');
+        $ocat = new ObjectCategory;
+
+        $where = "objectcategory_cf_id = '$category_field_id'
+                  and objectcategory_object_ds = 'content_data'
+                  and objectcategory_object_id = '$object_id'";
+
+        return $ocat = $ocat->Find($where);
     }
 
     public function fetch_content_tags($args) {
