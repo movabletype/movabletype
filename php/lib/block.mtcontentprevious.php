@@ -25,4 +25,3 @@ function smarty_block_mtcontentprevious($args, $res, &$ctx, &$repeat) {
     return $res;
 }
 ?>
-
