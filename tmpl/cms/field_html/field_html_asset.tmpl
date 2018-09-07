@@ -182,6 +182,8 @@ jQuery('.asset-field-container').on('click', '.mobile-remove-asset', function (e
   jQuery(this).find('a.remove').click();
   return false;
 });
+
+window.assetFieldSortableChanged = {};
   </mt:setvarblock>
 </mt:unless>
 
@@ -196,10 +198,26 @@ jQuery('#asset-field-<mt:var name="content_field_id" escape="html">').sortable({
   forcePlaceholderSize: true,
   containment: 'body',
   start: function (event, ui) {
-      ui.item.attr('aria-grabbed', true);
+    ui.item.attr('aria-grabbed', true);
+
+    if (window.assetFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  sort: function (event, ui) {
+    if (window.assetFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  change: function (event, ui) {
+    window.assetFieldSortableChanged[<mt:var name="content_field_id" escape="js">] = true;
   },
   stop: function (event, ui) {
-      ui.item.attr('aria-grabbed', false);
+    ui.item.attr('aria-grabbed', false);
   }
 });
 </mt:setvarblock>
