@@ -887,7 +887,9 @@ sub rebuild_file {
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_author_based;
     }
-    if ( $archiver->contenttype_based ) {
+    if ( $archiver->contenttype_based
+        or ( $archiver->contenttype_group_based and $args{ContentData} ) )
+    {
         $content_data = $args{ContentData};
         die MT->translate( "[_1] archive type requires [_2] parameter",
             $archiver->archive_label, 'ContentData' )
@@ -950,20 +952,28 @@ sub rebuild_file {
     #      the old date-based archive doesn't necessarily get fixed,
     #      but if another comes along it will get corrected
     unless ($finfo) {
+        my $any_contenttype_based = (
+                   $archiver->contenttype_based
+                or $archiver->contenttype_group_based
+        );
+
         my %terms;
         $terms{blog_id}     = $blog->id;
         $terms{category_id} = $category->id
-            if $archiver->category_based;
+            if $archiver->category_based && !$archiver->date_based;
         $terms{author_id} = $author->id
             if $archiver->author_based;
         $terms{entry_id} = $entry->id
             if $archiver->entry_based;
         $terms{startdate} = $start
-            if $archiver->date_based && ( !$archiver->entry_based );
+            if $archiver->date_based
+            && ( !$archiver->entry_based )
+            && ( !$any_contenttype_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
         $terms{cd_id}          = $content_data->id
-            if $archiver->contenttype_based;
+            if $content_data
+            and $any_contenttype_based;
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
@@ -977,7 +987,20 @@ sub rebuild_file {
         }
         else {
          # if the shoe don't fit, remove all shoes and create the perfect shoe
-            foreach (@finfos) { $_->remove(); }
+            foreach (@finfos) {
+                $_->remove();
+                if ( MT->config('DeleteFilesAtRebuild') ) {
+                    $mt->_delete_archive_file(
+                        Blog        => $blog,
+                        File        => $_->file_path,
+                        ArchiveType => $at,
+                        (   $any_contenttype_based && $content_data
+                            ? ( ContentData => $content_data->id )
+                            : ()
+                        ),
+                    );
+                }
+            }
 
             $finfo = MT::FileInfo->set_info_for_url(
                 $rel_url, $file, $at,
@@ -994,7 +1017,7 @@ sub rebuild_file {
                     (          $archiver->author_based
                             && $author ? ( Author => $author->id ) : ()
                     ),
-                    (   $archiver->contenttype_based && $content_data
+                    (   $any_contenttype_based && $content_data
                         ? ( ContentData => $content_data->id )
                         : ()
                     ),
