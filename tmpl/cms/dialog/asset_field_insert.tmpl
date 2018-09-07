@@ -78,7 +78,10 @@ jQuery(document).ready(function () {
          +     '</div>'
          +   '</div>'
          + '</div>';
-    $alert.before(html);
+
+    if ($alert.parent().has('input[value=<mt:var name="asset_id" escape="js">]').length == 0) {
+      $alert.before(html);
+    }
   </mt:loop>
 
   if ($container.data('mtValidator')) {
