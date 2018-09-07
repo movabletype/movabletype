@@ -1025,12 +1025,13 @@ sub do_search_replace {
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids;
+                        my @blog_ids = ( $blog->id );
                         foreach my $b (@blogs) {
                             push @blog_ids, $b->id
                                 if $author->permissions( $b->id )
                                 ->has('administer_site');
                         }
+                        $terms{blog_id} = \@blog_ids;
                     }
                     else {
                         $terms{blog_id} = $blog_id;
@@ -1049,12 +1050,13 @@ sub do_search_replace {
                     )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids;
+                    my @blog_ids = ( $blog->id );
                     foreach my $b (@blogs) {
                         push @blog_ids, $b->id
                             if $author->permissions( $b->id )
                             ->has('administer_site');
                     }
+                    %terms = ( blog_id => \@blog_ids );
                 }
                 else {
                     %terms = ( blog_id => $blog_id );
