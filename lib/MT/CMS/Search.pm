@@ -109,7 +109,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
+                    { sort    => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -609,7 +609,8 @@ sub core_search_apis {
                 }
             },
             'handler' => '$Core::MT::CMS::Group::build_group_table',
-            'results_table_template' => '<mt:include name="include/group_table.tmpl">',
+            'results_table_template' =>
+                '<mt:include name="include/group_table.tmpl">',
             'view' => 'system',
         },
 
@@ -871,7 +872,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
+            { sort    => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -1024,12 +1025,13 @@ sub do_search_replace {
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids;
+                        my @blog_ids = ( $blog->id );
                         foreach my $b (@blogs) {
                             push @blog_ids, $b->id
                                 if $author->permissions( $b->id )
                                 ->has('administer_site');
                         }
+                        $terms{blog_id} = \@blog_ids;
                     }
                     else {
                         $terms{blog_id} = $blog_id;
@@ -1048,12 +1050,13 @@ sub do_search_replace {
                     )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids;
+                    my @blog_ids = ( $blog->id );
                     foreach my $b (@blogs) {
                         push @blog_ids, $b->id
                             if $author->permissions( $b->id )
                             ->has('administer_site');
                     }
+                    %terms = ( blog_id => \@blog_ids );
                 }
                 else {
                     %terms = ( blog_id => $blog_id );

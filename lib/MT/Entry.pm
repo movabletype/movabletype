@@ -1038,6 +1038,7 @@ sub archive_file {
         my %at = map { $_ => 1 } split /,/, $at;
 
         # FIXME: should draw from list of registered archive types
+        $at = '';
         for my $tat (
             qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )
             )
