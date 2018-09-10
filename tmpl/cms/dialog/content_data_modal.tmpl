@@ -100,10 +100,14 @@ jQuery('.actions-bar button.primary').click(function() {
 
   function getCollapseHtml(id, label, previewData) {
     return ''
-      + '<div class="mt-draggable" draggable="true" aria-grabbed="false">'
+      + '<div class="mt-draggable"<mt:if name="can_multi"> draggable="true" aria-grabbed="false"</mt:if>>'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
       +   '<div class="col-auto">'
+<mt:if name="can_multi">
       +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
+<mt:else>
+      +     '<mtapp:svgicon id="ic_blank" title="Blank" strip_linefeeds="1">'
+</mt:if>
       +   '</div>'
       +   '<div class="col">'
       +     label
