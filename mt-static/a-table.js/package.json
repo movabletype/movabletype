@@ -25,6 +25,7 @@
     "clone": "^2.0.0",
     "custom-event-polyfill": "^0.3.0",
     "deep-extend": "^0.5.0",
+    "object-keys": "^1.0.12",
     "zepto-browserify": "^1.1.6-1"
   },
   "devDependencies": {
