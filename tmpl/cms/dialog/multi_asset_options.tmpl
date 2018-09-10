@@ -177,6 +177,10 @@
   jQuery.mtValidateAddMessages({
       '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
   });
+
+  jQuery('input[type=checkbox], input[type=radio]').on('change', function () {
+    MT.Util.refreshModalBodyOnIos();
+  });
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
