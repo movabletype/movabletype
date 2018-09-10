@@ -29,14 +29,14 @@
             <th class="head string" scope="col">
               <span class="col-label"><__trans phrase="Label"></span>
             </th>
-            <th class="head string" scope="col">
+            <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Date Modified"></span>
             </th>
-            <th class="head string" scope="col">
+            <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Author"></span>
             </th>
             <th class="head string" scope="col">
-              <span class="col-label"><__trans phrase="Data"></span>
+              <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
             </th>
           </thead>
 </mt:unless>
@@ -53,13 +53,13 @@
               <td class="content-data-label primary">
                 <mt:var name="label" escape="html">
               </td>
-              <td class="content-data-modified-date">
+              <td class="content-data-modified-date d-none d-md-table-cell">
                 <mt:var name="modified_date" escape="html">
               </td>
-              <td class="content-data-author">
+              <td class="content-data-author d-none d-md-table-cell">
                 <mt:var name="author_name" escape="html">
               </td>
-              <td class="content-data-data">
+              <td class="content-data-data text-right text-md-left">
                 <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
                   <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
                 </a>
