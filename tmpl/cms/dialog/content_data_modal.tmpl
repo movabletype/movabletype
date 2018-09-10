@@ -1,4 +1,8 @@
-<mt:setvar name="page_title" value="<__trans phrase="Select Content Data">">
+<mt:if name="can_multi">
+  <mt:setvarblock name="page_title"><__trans phrase="Add [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="screen_type" value="dialog-screen insert-content-data-dialog">
 
 <mt:setvarblock name="modal_body">
@@ -30,6 +34,14 @@
     </button>
   </form>
 </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.modal-body {
+  max-height: 20rem;
+}
+</style>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
@@ -88,15 +100,19 @@ jQuery('.actions-bar button.primary').click(function() {
 
   function getCollapseHtml(id, label, previewData) {
     return ''
-      + '<div class="mt-draggable" draggable="true" aria-grabbed="false">'
+      + '<div class="mt-draggable"<mt:if name="can_multi"> draggable="true" aria-grabbed="false"</mt:if>>'
       +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
       +   '<div class="col-auto">'
+<mt:if name="can_multi">
       +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
+<mt:else>
+      +     '<mtapp:svgicon id="ic_blank" title="Blank" strip_linefeeds="1">'
+</mt:if>
       +   '</div>'
-      +   '<div class="col">'
+      +   '<div class="col text-wrap">'
       +     label
       +   '</div>'
-      +   '<div class="col-auto mr-3">'
+      +   '<div class="col-auto mr-3 d-none d-md-block">'
       +     '<a href="javascript:void(0)" class="remove">'
       +       '<__trans phrase="Remove">'
       +     '</a>'
@@ -107,10 +123,17 @@ jQuery('.actions-bar button.primary').click(function() {
       +     '</a>'
       +   '</div>'
       +   '<div class="mt-flexBreak"></div>'
-      +   '<div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
-      +     '<div class="row preview-data">'
+      +   '<div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
+      +     '<div class="row py-5 py-md-0 text-wrap preview-data">'
       +       '<div class="col">'
       +         previewData
+      +       '</div>'
+      +     '</div>'
+      +     '<div class="row border-top pt-4 d-md-none">'
+      +       '<div class="col-auto mx-auto">'
+      +         '<a href="javascript:void(0)" class="remove">'
+      +           '<__trans phrase="Remove">'
+      +         '</a>'
       +       '</div>'
       +     '</div>'
       +   '</div>'

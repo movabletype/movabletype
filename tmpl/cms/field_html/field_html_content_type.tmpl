@@ -3,15 +3,19 @@
 <div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
 
 <mt:loop name="content_data_loop">
-  <div class="mt-draggable" draggable="true" aria-grabbed="false">
+  <div class="mt-draggable"<mt:if name="multiple"> draggable="true" aria-grabbed="false"</mt:if>>
     <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
     <div class="col-auto">
+  <mt:if name="multiple">
       <mtapp:svgicon id="ic_move" title="Draggable">
+  <mt:else>
+      <mtapp:svgicon id="ic_blank" title="Blank">
+  </mt:if>
     </div>
-    <div class="col">
+    <div class="col text-wrap">
       <mt:var name="cd_label" escape="html">
     </div>
-    <div class="col-auto mr-3">
+    <div class="col-auto mr-3 d-none d-md-block">
       <a href="javascript:void(0)" class="remove">
         <__trans phrase="Remove">
       </a>
@@ -22,10 +26,17 @@
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
-      <div class="row preview-data">
+    <div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
+      <div class="row py-5 py-md-0 text-wrap preview-data">
         <div class="col">
-          <mt:var name="cd_data">
+          <mt:var name="cd_data" _default="<__trans phrase="No field data.">">
+        </div>
+      </div>
+      <div class="row border-top pt-4 d-md-none">
+        <div class="col-auto mx-auto">
+          <a href="javascript:void(0)" class="remove">
+            <__trans phrase="Remove">
+          </a>
         </div>
       </div>
     </div>
@@ -96,6 +107,8 @@ jQuery('.content-type-field-container').on('click', 'a.remove', function () {
   log('found dirty form');
   app.setDirty();
 });
+
+window.contentTypeFieldSortableChanged = {};
   </mt:setvarblock>
 
   <mt:setvarblock name="css_include" append="1">
@@ -107,7 +120,20 @@ jQuery('.content-type-field-container').on('click', 'a.remove', function () {
 .placeholder {
     border: 1px dashed #c0c6c9;
     background-color: #fbfbfb;
+    margin-bottom: 2px;
     padding: 0.5rem 0;
+}
+
+@media (max-width: 767.98px) {
+    .content-type-field-container .mt-draggable {
+        padding-right: 0;
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:first-child {
+        background-color: #F4F4F4;  /* $gray-lightest */
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:last-child {
+        margin-right: -14px;
+    }
 }
 </style>
   </mt:setvarblock>
@@ -116,18 +142,35 @@ jQuery('.content-type-field-container').on('click', 'a.remove', function () {
 
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('#content-type-field-<mt:var name="content_field_id" escape="html">').sortable({
-  items: 'div.mt-draggable',
+  items: 'div.mt-draggable[draggable=true][aria-grabbed]',
+  handle: MT.Util.isMobileView() ? '.col-auto:first' : false,
   placeholder: 'placeholder',
   distance: 3,
   opacity: 0.8,
   cursor: 'move',
   forcePlaceholderSize: true,
-  containment: 'body',
+  containment: '.mt-mainContent',
   start: function (event, ui) {
-      ui.item.attr('aria-grabbed', true);
+    ui.item.attr('aria-grabbed', true);
+
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  sort: function (event, ui) {
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  change: function (event, ui) {
+    window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">] = true;
   },
   stop: function (event, ui) {
-      ui.item.attr('aria-grabbed', false);
+    ui.item.attr('aria-grabbed', false);
   }
 });
 </mt:setvarblock>

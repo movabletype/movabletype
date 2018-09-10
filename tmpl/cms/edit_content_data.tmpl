@@ -60,6 +60,27 @@
     <mt:var name="err_msg">
   </mtapp:statusmsg>
 </mt:if>
+
+<mt:unless name="new_object">
+  <mt:if name="use_revision">
+  <mtapp:statusmsg
+     id="mobile-status"
+     class="info d-md-none"
+     can_close="0">
+    <mt:if name="rev_date">
+    <__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">">
+    <br>
+    <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id" escape="url"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog mt-modal-open" data-mt-modal-large title="<__trans phrase="View revisions of this [_1]" params="<mt:var name="object_label">">">
+      <__trans phrase="View revisions">
+    </a>
+    <mt:else>
+    <p class="zero-state">
+      <__trans phrase="No revision(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">">
+    </p>
+    </mt:if>
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
 </div>
 </mt:setvarblock>
 
@@ -374,10 +395,11 @@ div.mce-notification-error {
   <!--// this MUST loaded after mt.js // -->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/edit.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
-  <!-- for table field -->
-  <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css">
-  <link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css">
-  <script src="<mt:var name="static_uri">a-table.js/build/a-table.js"></script>
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:else>
+  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
 
   <script>
   function toggleFile() {
@@ -449,6 +471,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <mt:if name="content_data_permalink">
       <mtapp:setting
         id="permalink"
+        class="d-none d-md-block"
         label="Permalink"
         show_label="0"
         label_class="no-header"

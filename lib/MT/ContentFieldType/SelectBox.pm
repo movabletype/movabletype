@@ -51,7 +51,7 @@ sub field_html_params {
     if ( $options->{multiple} ) {
         my $max = $options->{max};
         my $min = $options->{min};
-        $multiple = 'multiple style="min-width: 10em; min-height: 10em"';
+        $multiple = 'multiple';
         $multiple .= qq{ data-mt-max-select="${max}"} if $max;
         $multiple .= qq{ data-mt-min-select="${min}"} if $min;
         $multiple_class = 'multiple-select';

@@ -35,19 +35,38 @@
     display: none;
 }
 
-.mt-suggest {
-    border-radius: 0.25rem;
-    border-top-color: #a5a5a5;
-}
-
 .form-group.add-category-form {
     margin-top: 1rem;
 }
+
+@media (max-width: 767.98px) {
+  .categories-field-container [id^=category-selector-] .list-item {
+    padding: 0.5rem;
+  }
+  .categories-field-container [id^=category-selector-] .list-item:hover {
+    background-color: #e9ecef;
+  }
+}
 </style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('load resize', function () {
+  var $fieldToggleLinks = jQuery('.categories-field-container a[data-toggle=collapse]');
+  if (MT.Util.isMobileView()) {
+    $fieldToggleLinks
+      .removeClass('btn-link')
+      .addClass('btn-default');
+  } else {
+    $fieldToggleLinks
+      .removeClass('btn-default')
+      .addClass('btn-link');
+  }
+});
 </mt:setvarblock>
 </mt:unless>
 
-<div class="group-container">
+<div class="categories-field-container group-container">
 
   <div class="mt-collapse">
     <div class="mt-collapse__container">
@@ -98,7 +117,7 @@
                           <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
                             <mtapp:svgicon id="ic_fav" color="success" title="Primary" size="sm">
                             <strong>[#= label #]</strong>
-                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 d-inline-block delete" title="[#|h trans("Remove") #]">
+                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
                               </span>
@@ -118,7 +137,7 @@
                               </span>
                               [#= label #]
                             </a>
-                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-inline-block" title="[#|h trans("Remove") #]">
+                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
                               </span>
@@ -137,14 +156,14 @@
 
               Template.templates.categorySelectorList<mt:var name="content_field_id" escape="js"> = '<mt:section encode_js="1">
                       [# if ( item.path == null ) item.path = [] #]
-                      <div class="mt-suggest__select" style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
+                      <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                           <div class="custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if>" style="width: [#= 165 - (item.path.length * 10) #]px;">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
                               <label class="custom-control-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
                                   [#|h item.label #]
                               </label>
                           <mt:if name="options{can_add}">
-                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
+                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link d-none d-md-inline"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
                           </mt:if>
                           </div>
                       </div>
@@ -205,7 +224,7 @@
 
           <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
-            <div class="input-group">
+            <div class="input-group d-none d-md-flex">
               <input id="add-category-input-<mt:var name="content_field_id" escape="html">" type="text" class="form-control add-category-input" placeholder="<__trans phrase="Category Name">" aria-label="<__trans phrase="Category Name">">
               <div class="input-group-append">
                 <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></button>

@@ -12,10 +12,16 @@
 </div>
 
   <mt:setvarblock name="list_actions">
-        <div class="indicator"><img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" /> <__trans phrase="Loading..."></div>
-        <nav aria-label="<mt:var name="object_type" escape="html"> list">
-          <ul class="pagination"></ul>
-        </nav>
+        <div class="col indicator">
+          <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" />
+          <__trans phrase="Loading...">
+        </div>
+        <div class="col-auto mx-auto mt-5 mt-md-3">
+          <nav aria-label="<mt:var name="object_type" escape="html"> list">
+            <ul class="pagination d-none d-md-flex"></ul>
+            <ul class="pagination__mobile d-md-none"></ul>
+          </nav>
+        </div>
   </mt:setvarblock>
 
 <div id="listing" class="listing line has-filter">
@@ -29,14 +35,15 @@
             <th class="head string" scope="col">
               <span class="col-label"><__trans phrase="Label"></span>
             </th>
-            <th class="head string" scope="col">
+            <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Date Modified"></span>
             </th>
-            <th class="head string" scope="col">
+            <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Author"></span>
             </th>
             <th class="head string" scope="col">
-              <span class="col-label"><__trans phrase="Data"></span>
+              <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
+              <span id="page-status" class="float-right d-md-none"></span>
             </th>
           </thead>
 </mt:unless>
@@ -53,13 +60,13 @@
               <td class="content-data-label primary">
                 <mt:var name="label" escape="html">
               </td>
-              <td class="content-data-modified-date">
+              <td class="content-data-modified-date d-none d-md-table-cell">
                 <mt:var name="modified_date" escape="html">
               </td>
-              <td class="content-data-author">
+              <td class="content-data-author d-none d-md-table-cell">
                 <mt:var name="author_name" escape="html">
               </td>
-              <td class="content-data-data">
+              <td class="content-data-data text-right text-md-left">
                 <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
                   <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
                 </a>
@@ -68,7 +75,7 @@
             <tr class="content-data-preview-data">
               <td class="p-0" colspan="5">
                 <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
-                  <mt:var name="preview_data">
+                  <mt:var name="preview_data" _default="<__trans phrase="No field data.">">
                 </div>
               </td>
             </tr>
@@ -85,7 +92,7 @@
         </table>
       </div>
     </div>
-    <div id="actions-bar" class="float-right line">
+    <div id="actions-bar" class="row line">
       <mt:var name="list_actions">
     </div>
   </div>
@@ -116,16 +123,26 @@ tr.content-data-preview-data {
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script src="<mt:var name="static_uri">js/list_table.js"></script>
+<script src="<mt:var name="static_uri">js/list_table.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 var checked = [];
 var currentPage = 1;
 
+function toggleClassOfPaginationContainer() {
+  var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+  if (MT.Util.isMobileView() && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+    $paginationContainer.addClass('w-100');
+  } else {
+    $paginationContainer.removeClass('w-100');
+  }
+}
+
 function loadContentDataList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
   jQuery('ul.pagination').hide();
+  jQuery('ul.pagination__mobile').hide();
   jQuery('#search').attr('disabled', 'disabled');
   jQuery('#search-button').attr('disabled', 'disabled');
 
@@ -160,6 +177,7 @@ function loadContentDataList(offset) {
         jQuery('#content-data-table').append(data.html);
         if (data.pager) {
           renderPagination(data.pager);
+          renderPaginationForMobile(data.pager);
         } else {
           canPagenate = false;
         }
@@ -170,6 +188,7 @@ function loadContentDataList(offset) {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPagenate) {
         jQuery('ul.pagination').show();
+        jQuery('ul.pagination__mobile').show();
       }
       jQuery('#search').removeAttr('disabled');
       jQuery('#search-button').removeAttr('disabled');
@@ -188,6 +207,8 @@ function loadContentDataList(offset) {
         }
         saveChecked(currentPage);
       });
+
+      toggleClassOfPaginationContainer();
     },
     error: function(xhr, status, error) {
       console.log('error: ' + status + ':' + error);
@@ -233,8 +254,6 @@ function renderPagination(pager) {
     end = pager.listTotal;
     last = (maxPage-1) * pager.limit;
   }
-
-  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
 
   $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
@@ -290,6 +309,98 @@ function renderPagination(pager) {
   });
 }
 
+function renderPaginationForMobile(pager) {
+  var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  var start = page > 1 ? pager.offset + 1 : 1;
+  var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
+
+  var setMrAuto = maxPage >= 5;
+
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
+  );
+  if (page - 4 >= 1 && maxPage - page < 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 4, setMrAuto)
+    );
+  }
+  if (page - 3 >= 1 && maxPage - page < 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 3, setMrAuto)
+    );
+  }
+  if (page - 2 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 2, setMrAuto)
+    );
+  }
+  if (page - 1 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 1, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLink(page, setMrAuto, true)
+  );
+  if (page + 1 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 1, setMrAuto)
+    );
+  }
+  if (page + 2 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 2, setMrAuto)
+    );
+  }
+  if (page + 3 <= maxPage && page <= 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 3, setMrAuto)
+    );
+  }
+  if (page + 4 <= maxPage && page <= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 4, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page + 1, false, true)
+  );
+
+  jQuery('.pagination__mobile a.page-link').on('click', function () {
+    var nextPage = this.dataset.mtNextPage || this.text;
+    if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+      saveChecked(page);
+      loadContentDataList((nextPage - 1) * pager.limit);
+    }
+    return false;
+  });
+}
+
+function generateMobilePageLink(page, setMrAuto, current) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  if (current) {
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+  } else {
+    return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
+  }
+}
+
+function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
+}
+
 function saveChecked(page) {
   checked[page] = [];
   jQuery('table.listing-table tbody tr input:checked').each(function () {
@@ -335,6 +446,20 @@ jQuery(document).on('show.bs.collapse', 'tr.content-data-preview-data div', func
 
 jQuery(document).on('hidden.bs.collapse', 'tr.content-data-preview-data div', function () {
   jQuery(this).parents('tr').hide();
+});
+
+jQuery(window).on('resize', toggleClassOfPaginationContainer);
+
+jQuery('#content-data-table').on('click', 'td.cb + td.content-data-label', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
+    return;
+  }
+  var $input = jQuery(this).parents('tr').find('input[name=id]');
+  $input.click();
+  return false;
 });
 
 // Initial loading
