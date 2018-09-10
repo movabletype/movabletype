@@ -35,13 +35,17 @@
     display: none;
 }
 
-.mt-suggest {
-    border-radius: 0.25rem;
-    border-top-color: #a5a5a5;
-}
-
 .form-group.add-category-form {
     margin-top: 1rem;
+}
+
+@media (max-width: 767.98px) {
+  .categories-field-container [id^=category-selector-] .list-item {
+    padding: 0.5rem;
+  }
+  .categories-field-container [id^=category-selector-] .list-item:hover {
+    background-color: #e9ecef;
+  }
 }
 </style>
 </mt:setvarblock>
@@ -152,7 +156,7 @@ jQuery(window).on('load resize', function () {
 
               Template.templates.categorySelectorList<mt:var name="content_field_id" escape="js"> = '<mt:section encode_js="1">
                       [# if ( item.path == null ) item.path = [] #]
-                      <div class="mt-suggest__select" style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
+                      <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
                           <div class="custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if>" style="width: [#= 165 - (item.path.length * 10) #]px;">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
                               <label class="custom-control-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
