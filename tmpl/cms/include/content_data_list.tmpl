@@ -450,6 +450,18 @@ jQuery(document).on('hidden.bs.collapse', 'tr.content-data-preview-data div', fu
 
 jQuery(window).on('resize', toggleClassOfPaginationContainer);
 
+jQuery('#content-data-table').on('click', 'td.cb + td.content-data-label', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
+    return;
+  }
+  var $input = jQuery(this).parents('tr').find('input[name=id]');
+  $input.click();
+  return false;
+});
+
 // Initial loading
 loadContentDataList(0);
 </mt:setvarblock>
