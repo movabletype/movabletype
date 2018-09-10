@@ -96,6 +96,8 @@ jQuery('.content-type-field-container').on('click', 'a.remove', function () {
   log('found dirty form');
   app.setDirty();
 });
+
+window.contentTypeFieldSortableChanged = {};
   </mt:setvarblock>
 
   <mt:setvarblock name="css_include" append="1">
@@ -125,10 +127,26 @@ jQuery('#content-type-field-<mt:var name="content_field_id" escape="html">').sor
   forcePlaceholderSize: true,
   containment: '.mt-mainContent',
   start: function (event, ui) {
-      ui.item.attr('aria-grabbed', true);
+    ui.item.attr('aria-grabbed', true);
+
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  sort: function (event, ui) {
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  change: function (event, ui) {
+    window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">] = true;
   },
   stop: function (event, ui) {
-      ui.item.attr('aria-grabbed', false);
+    ui.item.attr('aria-grabbed', false);
   }
 });
 </mt:setvarblock>
