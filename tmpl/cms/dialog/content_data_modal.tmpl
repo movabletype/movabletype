@@ -36,6 +36,14 @@
 </div>
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.modal-body {
+  max-height: 20rem;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:if name="can_add">
 var currentPanel = '#create-content-data-panel';
