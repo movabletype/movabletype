@@ -197,7 +197,7 @@ jQuery('#asset-field-<mt:var name="content_field_id" escape="html">').sortable({
   opacity: 0.8,
   cursor: 'move',
   forcePlaceholderSize: true,
-  containment: 'body',
+  containment: '.mt-mainContent',
   start: function (event, ui) {
     ui.item.attr('aria-grabbed', true);
 
