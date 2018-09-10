@@ -144,7 +144,7 @@
                                   [#|h item.label #]
                               </label>
                           <mt:if name="options{can_add}">
-                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
+                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link d-none d-md-inline"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
                           </mt:if>
                           </div>
                       </div>
@@ -205,7 +205,7 @@
 
           <div id="<mt:if name="options{multiple}">category<mt:else>folder</mt:if>-selector-<mt:var name="content_field_id" escape="html">" class="category-selector hidden" style="display: none;">
           <mt:if name="options{can_add}">
-            <div class="input-group">
+            <div class="input-group d-none d-md-flex">
               <input id="add-category-input-<mt:var name="content_field_id" escape="html">" type="text" class="form-control add-category-input" placeholder="<__trans phrase="Category Name">" aria-label="<__trans phrase="Category Name">">
               <div class="input-group-append">
                 <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">" size="sm"></button>
