@@ -37,6 +37,7 @@
             </th>
             <th class="head string" scope="col">
               <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
+              <span id="page-status" class="float-right d-md-none"></span>
             </th>
           </thead>
 </mt:unless>
@@ -235,6 +236,7 @@ function renderPagination(pager) {
   }
 
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
 
   $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
