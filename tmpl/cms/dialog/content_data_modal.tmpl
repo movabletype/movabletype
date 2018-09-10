@@ -1,4 +1,8 @@
-<mt:setvar name="page_title" value="<__trans phrase="Select Content Data">">
+<mt:if name="can_multi">
+  <mt:setvarblock name="page_title"><__trans phrase="Add [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+</mt:if>
 <mt:setvar name="screen_type" value="dialog-screen insert-content-data-dialog">
 
 <mt:setvarblock name="modal_body">
