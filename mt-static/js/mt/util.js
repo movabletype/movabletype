@@ -449,4 +449,17 @@
       return window.navigator.userAgent.match(/i(Phone|Pad|Pod)/);
   };
 
+  // DOM change is not applied until scrolling .modal-body on iOS
+  MT.Util.refreshModalBodyOnIos = function () {
+      if (!MT.Util.isIos()) {
+        return;
+      }
+      var modalBody = jQuery('.modal-body').get(0);
+      if (!modalBody) {
+        return;
+      }
+      modalBody.scrollBy(0, 1);
+      modalBody.scrollBy(0, -1);
+  };
+
 })(window);
