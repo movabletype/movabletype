@@ -15,7 +15,7 @@
     <div class="col">
       <mt:var name="cd_label" escape="html">
     </div>
-    <div class="col-auto mr-3">
+    <div class="col-auto mr-3 d-none d-md-block">
       <a href="javascript:void(0)" class="remove">
         <__trans phrase="Remove">
       </a>
@@ -26,10 +26,17 @@
       </a>
     </div>
     <div class="mt-flexBreak"></div>
-    <div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
-      <div class="row preview-data">
+    <div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
+      <div class="row py-5 py-md-0 preview-data">
         <div class="col">
           <mt:var name="cd_data" _default="<__trans phrase="No field data.">">
+        </div>
+      </div>
+      <div class="row border-top pt-4 d-md-none">
+        <div class="col-auto mx-auto">
+          <a href="javascript:void(0)" class="remove">
+            <__trans phrase="Remove">
+          </a>
         </div>
       </div>
     </div>
@@ -115,6 +122,18 @@ window.contentTypeFieldSortableChanged = {};
     background-color: #fbfbfb;
     margin-bottom: 2px;
     padding: 0.5rem 0;
+}
+
+@media (max-width: 767.98px) {
+    .content-type-field-container .mt-draggable {
+        padding-right: 0;
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:first-child {
+        background-color: #F4F4F4;  /* $gray-lightest */
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:last-child {
+        margin-right: -14px;
+    }
 }
 </style>
   </mt:setvarblock>
