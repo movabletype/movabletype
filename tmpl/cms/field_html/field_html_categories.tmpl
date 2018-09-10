@@ -45,9 +45,24 @@
 }
 </style>
 </mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('load resize', function () {
+  var $fieldToggleLinks = jQuery('.categories-field-container a[data-toggle=collapse]');
+  if (MT.Util.isMobileView()) {
+    $fieldToggleLinks
+      .removeClass('btn-link')
+      .addClass('btn-default');
+  } else {
+    $fieldToggleLinks
+      .removeClass('btn-default')
+      .addClass('btn-link');
+  }
+});
+</mt:setvarblock>
 </mt:unless>
 
-<div class="group-container">
+<div class="categories-field-container group-container">
 
   <div class="mt-collapse">
     <div class="mt-collapse__container">
