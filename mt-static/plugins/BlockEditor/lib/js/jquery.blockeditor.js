@@ -113,8 +113,7 @@
                 opacity: 0.8,
                 cursor: 'move',
                 forcePlaceholderSize: true,
-                // handle: '.mt-draggable',
-                // handle: '.mt-ic_move',
+                handle: MT.Util.isMobileView() ? '.col-auto:first-child' : false,
                 containment: block_field.parents('.multi_line_text-field-container').get(0),
                 update: function(ev, ui){
                     var order = $(this).sortable("toArray");
