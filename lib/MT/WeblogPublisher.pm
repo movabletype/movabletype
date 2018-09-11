@@ -1917,6 +1917,10 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
+    shift->rebuild_entry_from_fileinfo(@_);
+}
+
+sub rebuild_entry_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
 

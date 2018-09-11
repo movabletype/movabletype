@@ -1040,7 +1040,6 @@ sub make_content_data {
         status         => MT::ContentStatus::RELEASE(),
         author_id      => 1,
         authored_on    => '20170530163600',
-        unpublished_on => '20170531163600',
         %params,
     };
 
