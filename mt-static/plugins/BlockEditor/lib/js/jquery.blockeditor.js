@@ -115,7 +115,7 @@
                 forcePlaceholderSize: true,
                 // handle: '.mt-draggable',
                 // handle: '.mt-ic_move',
-                containment: block_field,
+                containment: block_field.parents('.multi_line_text-field-container').get(0),
                 update: function(ev, ui){
                     var order = $(this).sortable("toArray");
                     manager.set_order(order);
