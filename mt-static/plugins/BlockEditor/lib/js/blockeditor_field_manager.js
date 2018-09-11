@@ -36,7 +36,7 @@
             fields.forEach(function(field, index){
                 var button = $(field.create_button());
                 button.attr('data-blockeditor-type',field.type);
-                button = button.wrapAll('<div class="col col-6 button-col"></div>').parent();
+                button = button.wrapAll('<div class="col-12 col-md-6 pb-3 button-col"></div>').parent();
                 buttons.push(button);
             });
             return buttons;

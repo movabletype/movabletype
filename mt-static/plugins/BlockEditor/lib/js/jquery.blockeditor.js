@@ -87,9 +87,7 @@
         var modal_body = modal.get_body();
         modal_body.append(buttons);
         modal_body.append(button_field);
-        do {
-          modal_body.children(".button-col:lt(2)").wrapAll('<div class="row buttons-wrapper mt-3"></div>')
-        } while (modal_body.children(".button-col").length);
+        modal_body.children(".button-col").wrapAll('<div class="row buttons-wrapper"></div>')
         modal.set_default_actions();
         modal.show();
         // $('.modal-blockeditor').modal();
