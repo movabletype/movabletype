@@ -76,7 +76,8 @@
     <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
     </mt:loop>
   </mt:setvarblock>
-  <mt:setvarblock name="html_head" append="1">
+
+  <mt:setvarblock name="css_include" append="1">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   </mt:setvarblock>
 
