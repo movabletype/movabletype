@@ -218,7 +218,7 @@
           // changing to plaintext editor
           jQuery('#'+editor_id).addClass('editor-plaintext');
 
-          app.editor.setMode(option);
+          app.editor.setMode('textarea');
           app.editor.focus();
       } else if(cur_text_format == 'blockeditor' && option != 'richtext') {
           // changing to plaintext editor
@@ -226,7 +226,7 @@
 
           var html = jQuery('#'+editor_id + '-blockeditor').blockeditor('get_html');
           app.editor.reload();
-          app.editor.setMode(option);
+          app.editor.setMode('textarea');
           app.editor.setHTML(html);
           jQuery('#' + editor_id + '-blockeditor').blockeditor('destroy');
           jQuery('#' + editor_id).parents('.editor-content').show();
