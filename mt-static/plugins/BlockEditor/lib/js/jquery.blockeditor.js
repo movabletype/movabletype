@@ -93,6 +93,8 @@
         // $('.modal-blockeditor').modal();
       });
 
+      window.blockEditorFieldSortableChanged = {};
+
       $('#blockeidor_menus-' + field_id + ' .nav-link').on('click', function(){
           if($(this).hasClass('active')) return;
           var href = $(this).attr('href');
@@ -117,6 +119,22 @@
                 containment: block_field.parents('.multi_line_text-field-container').get(0),
                 start: function (event, ui) {
                     ui.item.attr('aria-grabbed', true);
+
+                    if (window.blockEditorFieldSortableChanged[field_id]) {
+                      ui.helper.offset({
+                        top: ui.helper.offset().top + jQuery('body').scrollTop()
+                      });
+                    }
+                },
+                sort: function (event, ui) {
+                    if (window.blockEditorFieldSortableChanged[field_id]) {
+                      ui.helper.offset({
+                        top: ui.helper.offset().top + jQuery('body').scrollTop()
+                      });
+                    }
+                },
+                change: function (event, ui) {
+                  window.blockEditorFieldSortableChanged[field_id] = true;
                 },
                 update: function(ev, ui){
                     var order = $(this).sortable("toArray");
