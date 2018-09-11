@@ -104,6 +104,7 @@
           $(this).addClass('active');
           if(mode == 'sort'){
               jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
+              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().attr('hidden', '');
               block_field.sortable({
                 items: '.sort-enabled',
                 placeholder: 'placeholder',
@@ -121,6 +122,7 @@
               });
           } else {
               jQuery('#blockeditor_add-' + field_id).removeAttr('hidden');
+              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().removeAttr('hidden');
           }
       });
 
