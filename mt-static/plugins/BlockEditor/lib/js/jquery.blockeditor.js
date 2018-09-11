@@ -115,9 +115,15 @@
                 forcePlaceholderSize: true,
                 handle: MT.Util.isMobileView() ? '.col-auto:first-child' : false,
                 containment: block_field.parents('.multi_line_text-field-container').get(0),
+                start: function (event, ui) {
+                    ui.item.attr('aria-grabbed', true);
+                },
                 update: function(ev, ui){
                     var order = $(this).sortable("toArray");
                     manager.set_order(order);
+                },
+                stop: function (event, ui) {
+                    ui.item.attr('aria-grabbed', false);
                 }
               });
           } else {
