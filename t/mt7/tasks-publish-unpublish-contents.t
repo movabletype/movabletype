@@ -175,6 +175,8 @@ is( -f $monthly_file,     1, 'Published monthly.html' );
 is( -f $category_file,    1, 'Published category.html' );
 is( -f $author_file,      1, 'Published author.html' );
 
+$published_data->unpublished_on(time - 1); $published_data->save;
+
 MT::Test::_run_tasks( ["UnpublishingContent"] );
 
 my $unpublished_data = MT::ContentData->load(1);
