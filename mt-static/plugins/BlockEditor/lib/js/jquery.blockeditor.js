@@ -103,6 +103,7 @@
           $('#blockeidor_menus-' + field_id).find('.nav-link').removeClass('active');
           $(this).addClass('active');
           if(mode == 'sort'){
+              jQuery('#editor-input-content-field-' + field_id + '-blockeditor').find('p:last-child').removeAttr('hidden');
               jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
               jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().attr('hidden', '');
               block_field.sortable({
@@ -121,6 +122,7 @@
                 }
               });
           } else {
+              jQuery('#editor-input-content-field-' + field_id + '-blockeditor > p').attr('hidden', '');
               jQuery('#blockeditor_add-' + field_id).removeAttr('hidden');
               jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().removeAttr('hidden');
           }
