@@ -12,7 +12,7 @@
   <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
     <div class="form-group mb-4">
       <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
-      <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control w-50 convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+      <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
       <mt:loop name="text_filters">
         <mt:if name="filter_key" eq="richtext">
           <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
@@ -79,6 +79,16 @@
 
   <mt:setvarblock name="css_include" append="1">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <style type="text/css">
+.multi_line_text-field-container select.convert_breaks {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .multi_line_text-field-container select.convert_breaks {
+    width: 50%;
+  }
+}
+    </style>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
