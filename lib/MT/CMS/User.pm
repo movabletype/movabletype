@@ -1336,7 +1336,7 @@ PERMCHECK: {
                     code      => $hasher,
                     params    => $params,
                     template  => 'include/listing_panel.tmpl',
-                    pre_build => $type eq 'site' ? $pre_build : (),
+                    $type eq 'site' ? ( pre_build => $pre_build ) : (),
                     $app->param('search') ? ( no_limit => 1 ) : (),
                 }
             );
