@@ -134,6 +134,18 @@ h1.dialog-title {
 #blockeditor-upload-progress .card {
   min-height: 4.5rem;
 }
+
+#destination {
+  max-width: 130px;
+}
+@media (min-width: 768px) {
+  #destination {
+    max-width: initial;
+  }
+}
+#extra_path {
+  width: auto;
+}
 </style>
 
 
@@ -187,7 +199,7 @@ h1.dialog-title {
     </select>
     <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
     <span class="upload-extra-path">
-        / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
+        / <input type="text" name="extra_path" id="extra_path" class="form-control d-inline-block text path" value="<mt:var name="extra_path" escape="html">" />
     </span>
     </mt:if>
     </mtapp:setting>
