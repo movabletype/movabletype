@@ -367,6 +367,8 @@
     box-sizing: border-box;
 }
 #blockeditor-list-asset-panel .img-preview {
+  min-width: 120px;
+  min-height: 120px;
   width: 120px;
   height: 120px;
   position: relative;
@@ -497,7 +499,7 @@
       <mt:setvar name="first" value="1">
       <mt:for var="i" from="0" to="1">
       <div class="row">
-        <mt:for var="x" from="0" to="3">
+        <mt:for var="x" from="0" to="4">
         <div class="col">
             <div class="img-preview">
               <mt:if name="first" eq="1">
