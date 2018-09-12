@@ -338,6 +338,8 @@
       jQuery('#blockeditor-list-asset-panel').show();
       jQuery('#blockeditor-upload-asset-panel').hide();
     }
+
+    jQuery('.modal-blockeditor .modal-body:visible').scrollTop(0);
   }
   jQuery(document).one('click', '.upload_asset', function(){
     change_upload_panel('upload');
