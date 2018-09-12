@@ -3963,10 +3963,11 @@ abstract class MTDatabase {
     }
 
     public function fetch_category_sets($args) {
+        $extras = array();
         if ($args['limit'] && $args['limit'] > 0) {
-            $limit = $args['limit'];
+            $extras['limit'] = $args['limit'];
         } else {
-            $limit = -1;
+            $extras['limit'] = -1;
         }
         if ($args['blog_id'] && $args['blog_id'] > 0) {
             $blog_filter = "and category_set_blog_id = " . $args['blog_id'];
@@ -3978,12 +3979,29 @@ abstract class MTDatabase {
         } else {
             $name_filter = "";
         }
+        if( isset($args['content_type']) ){
+            $content_types = $this->fetch_content_types($args);
+            $ct_ids = array();
+            foreach ($content_types as $ct) {
+                array_push($ct_ids, $ct->id);
+            }
+            if($content_types && count($ct_ids) > 0){
+                $extras['join'] = array(
+                    'mt_cf' => array(
+                        'condition' => "cf_type = 'categories'",
+                    )
+                );
+                $field_filter = " and cf_content_type_id in (" . implode(',', $ct_ids) . ")
+                    and category_set_id = cf_related_cat_set_id";
+            }
+        }
         $where = "1 = 1
                   $blog_filter
-                  $name_filter";
+                  $name_filter
+                  $field_filter";
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        return $category_set->Find($where, $limit);
+        return $category_set->Find($where, false, false, $extras);
     }
 
     private function build_date_filter($args, $field) {
