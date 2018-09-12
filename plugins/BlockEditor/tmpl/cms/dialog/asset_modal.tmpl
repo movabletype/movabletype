@@ -22,6 +22,7 @@
     jQuery('.indicator, #listing-table-overlay').show();
     jQuery('ul.pagination').hide();
     jQuery('ul.pagination__mobile').hide();
+    jQuery('.page-status').hide();
     jQuery('#asset-class').attr("disabled", "disabled");
     jQuery('#search').attr("disabled", "disabled");
     jQuery('#search-button').attr("disabled", "disabled");
@@ -84,6 +85,7 @@
         if (canPaginate) {
           jQuery('ul.pagination').show();
           jQuery('ul.pagination__mobile').show();
+          jQuery('.page-status').show();
         }
         jQuery('#asset-class').removeAttr("disabled");
         jQuery('#search').removeAttr("disabled");
