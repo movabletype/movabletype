@@ -160,6 +160,14 @@ h1.dialog-title {
   </a>
 </fieldset>
 
+<p class="d-md-none">
+  <a class="btn btn-link pl-0" data-toggle="collapse" href="#uploadSettings" aria-expanded="true" aria-controls="uploadSettings">
+    <__trans phrase="Upload Settings">
+  </a>
+</p>
+
+<div id="uploadSettings" class="collapse show">
+
 <fieldset class="form-group">
   <legend class="h3"><__trans phrase="Upload Destination"></legend>
 <mt:unless name="filter" eq="userpic">
@@ -243,6 +251,8 @@ h1.dialog-title {
       </div>
 </mtapp:setting>
 </fieldset>
+
+</div>
 
 </form>
 
@@ -563,6 +573,10 @@ function uploadFiles(files, items) {
     change_upload_panel('upload');
     if (!files || files.length === 0 ) {
         return;
+    }
+
+    if (MT.Util.isMobileView()) {
+        jQuery('#uploadSettings').collapse('hide');
     }
 
     var num_files = 1; // Always 1 file only
