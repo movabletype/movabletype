@@ -145,10 +145,8 @@ sub dialog_list_asset {
                 ),
                 dir_separator => MT::Util::dir_separator,
                 %carry_params,
-                asset_id => $app->param('asset_id')
-                ? $app->param('asset_id')
-                : '',
-                edit => $app->param('edit') ? 1 : 0,
+                asset_id => scalar( $app->param('asset_id') ) || '',
+                edit     => $app->param('edit') ? 1 : 0,
             },
         }
     );
