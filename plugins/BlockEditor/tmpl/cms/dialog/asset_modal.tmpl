@@ -204,7 +204,7 @@
     var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
 
     var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
-    jQuery('#page-status').text(page_status);
+    jQuery('.page-status').text(page_status);
 
     var setMrAuto = maxPage >= 5;
 
@@ -402,7 +402,7 @@
   <div class="border-bottom pb-3">
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="hidden" id="asset-class" name="asset-class" value="image">
-    <div class="form-row align-items-center">
+    <div class="form-row align-items-center w-100">
       <div class="form-group">
         <label class="sr-only" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
@@ -420,6 +420,7 @@
       <div class="form-group">
         <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
       </div>
+      <div class="page-status ml-auto mt-auto mb-0"></div>
     </div>
   </form>
   </div>
@@ -518,6 +519,9 @@
   </mt:if>
   <mt:unless name="json">
 </div>
+      <div class="row">
+        <div class="page-status col-auto ml-auto mr-3"></div>
+      </div>
       <div id="actions-bar" class="row line">
       <mt:var name="list_actions">
       </div>
