@@ -87,12 +87,14 @@ h1.dialog-title {
     font-weight: normal;
 }
 
-#open-file-dialog {
+#open-file-dialog,
+#open-file-dialog-for-mobile {
     padding: 0.3em;
     font-weight: normal;
 }
 
-#open-file-dialog img {
+#open-file-dialog img,
+#open-file-dialog-for-mobile img {
     margin-right: 6pt;
 }
 
@@ -139,12 +141,21 @@ h1.dialog-title {
 
 <fieldset class="form-group text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <a href="javascript:void(0)" id="open-file-dialog" class="d-inline-block">
+  <a href="javascript:void(0)" id="open-file-dialog" class="d-none d-md-inline-block">
     <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload or drag files."></span>
   <mt:else>
     <span><__trans phrase="Choose file to upload or drag file."></span>
+  </mt:if>
+  </a>
+
+  <a href="javascript:void(0)" id="open-file-dialog-for-mobile" class="d-inline-block d-md-none">
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg"><br>
+  <mt:if name="can_multi">
+    <span><__trans phrase="Choose files to upload."></span>
+  <mt:else>
+    <span><__trans phrase="Choose file to upload."></span>
   </mt:if>
   </a>
 </fieldset>
@@ -680,7 +691,7 @@ function uploadFile( formData, uploadBlock ) {
 }
 /* ]]> */
 
-jQuery('#open-file-dialog').click( function() {
+jQuery('#open-file-dialog, #open-file-dialog-for-mobile').click( function() {
   jQuery('#file').click();
   return false;
 });
