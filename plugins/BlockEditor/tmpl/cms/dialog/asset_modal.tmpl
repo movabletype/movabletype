@@ -451,7 +451,6 @@
     <mt:setvar name="row" value="1">
     <mt:loop name="object_loop">
           <!-- <mt:var name="row">:<mt:var name="__counter__"> -->
-          <mt:if name="__counter__" op="%" value="5" eq="0"><div class="row"></mt:if>
           <mt:if name="__first__">
           <div class="row">
             <div class="col">
@@ -464,38 +463,35 @@
             </div>
           </mt:if>
 
-          <div id="asset-<mt:var name="id" escape="html">-card" class="col">
-            <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-            <label class="asset-col">
-              <div class="img-preview">
-                <mt:if name="id">
-                <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
-                <div class="img-overlay">
-                  <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
-                  <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
+            <div id="asset-<mt:var name="id" escape="html">-card" class="col">
+              <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+              <label class="asset-col">
+                <div class="img-preview">
+                  <mt:if name="id">
+                  <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                  <div class="img-overlay">
+                    <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
+                    <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
+                  </div>
+                  </mt:if>
                 </div>
+
+                <mt:if name="id">
+                <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                  <$mt:var name="label" escape="html"$>
+                </p>
                 </mt:if>
-              </div>
-
+              </label>
               <mt:if name="id">
-              <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
-                <$mt:var name="label" escape="html"$>
-              </p>
+              <script>
+                loadImage('<mt:var name="id" escape="js">');
+              </script>
               </mt:if>
-            </label>
-            <mt:if name="id">
-            <script>
-              loadImage('<mt:var name="id" escape="js">');
-            </script>
-            </mt:if>
-          </div>
+            </div>
 
-          <mt:if name="__counter__" eq="4">
-            </div>
-          </mt:if>
-          <mt:if name="__last__">
-            </div>
-          </mt:if>
+        <mt:if name="__last__">
+          </div>
+        </mt:if>
     </mt:loop>
   <mt:else>
       <mt:setvar name="first" value="1">
