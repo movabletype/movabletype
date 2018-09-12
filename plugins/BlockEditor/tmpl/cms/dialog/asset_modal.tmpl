@@ -319,13 +319,15 @@
   </mt:unless>
 
   <mt:setvarblock name="list_actions">
-          <div class="indicator">
+          <div class="col indicator">
             <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
             <__trans phrase="Loading...">
           </div>
-          <nav aria-label="Asset List">
-            <ul class="pagination"></ul>
-          </nav>
+          <div class="col-auto mx-auto mt-5 mt-md-3">
+            <nav aria-label="Asset List">
+              <ul class="pagination"></ul>
+            </nav>
+          </div>
   </mt:setvarblock>
 
   <div id="listing" class="listing line has-filter mt-3">
@@ -408,7 +410,7 @@
   </mt:if>
   <mt:unless name="json">
 </div>
-      <div id="actions-bar" class="float-right line">
+      <div id="actions-bar" class="row line">
       <mt:var name="list_actions">
       </div>
 
