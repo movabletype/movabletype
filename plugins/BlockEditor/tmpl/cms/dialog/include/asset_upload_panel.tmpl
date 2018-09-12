@@ -168,28 +168,28 @@ h1.dialog-title {
 
 <div id="uploadSettings" class="collapse show">
 
-<fieldset class="form-group">
-  <legend class="h3"><__trans phrase="Upload Destination"></legend>
+  <fieldset class="form-group">
+    <legend class="h3"><__trans phrase="Upload Destination"></legend>
 <mt:unless name="filter" eq="userpic">
   <mt:if name="allow_to_change_at_upload">
     <mtapp:setting
-      id="site_path"
-      show_label="0"
-      label_class="top-label"
-      class="form-inline">
-      <mt:if name="destination_loop">
-        <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
-        <mt:loop name="destination_loop">
-          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
-            <mt:var name="label" escape="html">
-          </option>
-        </mt:loop>
-        </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
-        <span class="upload-extra-path">
-          / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
-        </span>
-      </mt:if>
+       id="site_path"
+       show_label="0"
+       label_class="top-label"
+       class="form-inline">
+    <mt:if name="destination_loop">
+      <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
+      <mt:loop name="destination_loop">
+        <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
+          <mt:var name="label" escape="html">
+        </option>
+      </mt:loop>
+    </select>
+    <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
+    <span class="upload-extra-path">
+        / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
+    </span>
+    </mt:if>
     </mtapp:setting>
     <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
@@ -201,56 +201,56 @@ h1.dialog-title {
       </div>
     </div>
   </mt:if>
-</mtunless>
-</fieldset>
+</mt:unless>
+  </fieldset>
 
 <mt:if name="dir_separator">
   <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
 </mt:if>
 
-<fieldset class="form-group">
-<legend class="h3"><__trans phrase="Upload Options"></legend>
-<mtapp:setting
-  id="auto_rename_non_ascii"
-  label="<__trans phrase="Rename filename">"
-  show_label="1">
+  <fieldset class="form-group">
+    <legend class="h3"><__trans phrase="Upload Options"></legend>
+    <mtapp:setting
+       id="auto_rename_non_ascii"
+       label="<__trans phrase="Rename filename">"
+       show_label="1">
       <div class="form-group">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
           <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
         </div>
       </div>
-</mtapp:setting>
-<mtapp:setting
-  id="operation_if_exists"
-  show_label="1"
-  label="<__trans phrase="Operation for a file exists">"
-  label_for="operation_if_exists"
-  label_class="left-label">
-    <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
-      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
-        <__trans phrase="Upload and rename">
-      </option>
-      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>>
-        <__trans phrase="Overwrite existing file">
-      </option>
-      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>>
-        <__trans phrase="Cancel upload">
-      </option>
-    </select>
-</mtapp:setting>
-<mtapp:setting
-  id="normalize_orientation"
-  label="<__trans phrase="Normalize orientation">"
-  show_label="1">
+    </mtapp:setting>
+    <mtapp:setting
+       id="operation_if_exists"
+       show_label="1"
+       label="<__trans phrase="Operation for a file exists">"
+       label_for="operation_if_exists"
+       label_class="left-label">
+      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
+        <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
+          <__trans phrase="Upload and rename">
+        </option>
+        <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>>
+          <__trans phrase="Overwrite existing file">
+        </option>
+        <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>>
+          <__trans phrase="Cancel upload">
+        </option>
+      </select>
+    </mtapp:setting>
+    <mtapp:setting
+       id="normalize_orientation"
+       label="<__trans phrase="Normalize orientation">"
+       show_label="1">
       <div class="form-group">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
           <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
         </div>
       </div>
-</mtapp:setting>
-</fieldset>
+    </mtapp:setting>
+  </fieldset>
 
 </div>
 
