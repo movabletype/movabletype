@@ -186,7 +186,7 @@ sub dialog_asset_modal {
     $param{next_mode}    = $app->param('next_mode');
     $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
     $param{asset_select} = $app->param('asset_select');
-    $param{require_type} = $app->param('require_type');
+    $param{require_type} = 'image';
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
