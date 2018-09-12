@@ -20,8 +20,8 @@
 
   function loadAssetList(offset) {
     jQuery('.indicator, #listing-table-overlay').show();
-    jQuery('ul.pagination').hide();
-    jQuery('ul.pagination__mobile').hide();
+    jQuery('ul.pagination').removeClass('d-md-flex');
+    jQuery('ul.pagination__mobile').addClass('d-none');
     jQuery('.page-status').hide();
     jQuery('#asset-class').attr("disabled", "disabled");
     jQuery('#search').attr("disabled", "disabled");
@@ -83,8 +83,8 @@
       complete: function() {
         jQuery('.indicator, #listing-table-overlay').hide();
         if (canPaginate) {
-          jQuery('ul.pagination').show();
-          jQuery('ul.pagination__mobile').show();
+          jQuery('ul.pagination').addClass('d-md-flex');
+          jQuery('ul.pagination__mobile').removeClass('d-none');
           jQuery('.page-status').show();
         }
         jQuery('#asset-class').removeAttr("disabled");
