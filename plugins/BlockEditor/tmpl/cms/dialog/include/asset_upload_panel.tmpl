@@ -723,5 +723,5 @@ jQuery('#blockeditor-upload-asset-panel').on('changePanel', function() {
   }
 });
 </mt:if>
-jQuery('form').find('input:visible').first().focus();
+window.top.document.activeElement.blur();
 </script>
