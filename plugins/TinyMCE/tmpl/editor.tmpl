@@ -33,10 +33,7 @@ function toggleTinyMCEMenus() {
     $visibleContainersInMobile.removeClass('border-left-0');
   }
 }
-MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
-  inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');
-  toggleTinyMCEMenus();
-};
+MT.Editor.TinyMCE.config.init_instance_callback = toggleTinyMCEMenus;
 jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
 </script>
 </mt:setvarblock>
