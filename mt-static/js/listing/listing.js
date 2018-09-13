@@ -749,6 +749,12 @@ riot.tag2('list-pagination', '<div class="{col-auto: true,     mx-auto: true,   
 
     this.mixin('listTop')
     this.mixin('listPagination')
+
+    var self = this
+
+    jQuery(window.top).on('resize orientationchange', function () {
+      self.update()
+    })
 });
 
 riot.tag2('list-table', '<thead data-is="list-table-header"></thead> <tbody if="{store.isLoading}"> <tr> <td colspan="{store.columns.length + 1}"> {trans(\'Loading...\')} </td> </tr> </tbody> <tbody data-is="list-table-body" if="{!store.isLoading && store.objects}"> </tbody>', '', '', function(opts) {

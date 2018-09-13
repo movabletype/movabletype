@@ -40,5 +40,11 @@
 
     this.mixin('listTop')
     this.mixin('listPagination')
+
+    var self = this
+
+    jQuery(window.top).on('resize orientationchange', function () {
+      self.update()
+    })
   </script>
 </list-pagination>
