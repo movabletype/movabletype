@@ -9256,16 +9256,25 @@ Progress Bar
 Adjustments
 */
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 body {
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   overflow-x: hidden;
   color: #212529;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  body {
+    font-size: 14px;
+  }
 }
 
 /* Typography */
