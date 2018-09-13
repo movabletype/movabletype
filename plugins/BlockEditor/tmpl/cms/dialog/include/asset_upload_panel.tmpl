@@ -87,12 +87,14 @@ h1.dialog-title {
     font-weight: normal;
 }
 
-#open-file-dialog {
+#open-file-dialog,
+#open-file-dialog-for-mobile {
     padding: 0.3em;
     font-weight: normal;
 }
 
-#open-file-dialog img {
+#open-file-dialog img,
+#open-file-dialog-for-mobile img {
     margin-right: 6pt;
 }
 
@@ -132,6 +134,18 @@ h1.dialog-title {
 #blockeditor-upload-progress .card {
   min-height: 4.5rem;
 }
+
+#destination {
+  max-width: 130px;
+}
+@media (min-width: 768px) {
+  #destination {
+    max-width: initial;
+  }
+}
+#extra_path {
+  width: auto;
+}
 </style>
 
 
@@ -139,7 +153,7 @@ h1.dialog-title {
 
 <fieldset class="form-group text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
-  <a href="javascript:void(0)" id="open-file-dialog" class="d-inline-block">
+  <a href="javascript:void(0)" id="open-file-dialog" class="d-none d-md-inline-block">
     <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
   <mt:if name="can_multi">
     <span><__trans phrase="Choose files to upload or drag files."></span>
@@ -147,30 +161,47 @@ h1.dialog-title {
     <span><__trans phrase="Choose file to upload or drag file."></span>
   </mt:if>
   </a>
+
+  <a href="javascript:void(0)" id="open-file-dialog-for-mobile" class="d-inline-block d-md-none">
+    <img src="<mt:var name="static_uri">images/ic_addfiles.svg"><br>
+  <mt:if name="can_multi">
+    <span><__trans phrase="Choose files to upload."></span>
+  <mt:else>
+    <span><__trans phrase="Choose file to upload."></span>
+  </mt:if>
+  </a>
 </fieldset>
 
-<fieldset class="form-group">
-  <legend class="h3"><__trans phrase="Upload Destination"></legend>
+<p class="d-md-none">
+  <a class="btn btn-link pl-0" data-toggle="collapse" href="#uploadSettings" aria-expanded="true" aria-controls="uploadSettings">
+    <__trans phrase="Upload Settings">
+  </a>
+</p>
+
+<div id="uploadSettings" class="collapse show">
+
+  <fieldset class="form-group">
+    <legend class="h3"><__trans phrase="Upload Destination"></legend>
 <mt:unless name="filter" eq="userpic">
   <mt:if name="allow_to_change_at_upload">
     <mtapp:setting
-      id="site_path"
-      show_label="0"
-      label_class="top-label"
-      class="form-inline">
-      <mt:if name="destination_loop">
-        <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
-        <mt:loop name="destination_loop">
-          <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
-            <mt:var name="label" escape="html">
-          </option>
-        </mt:loop>
-        </select>
-        <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
-        <span class="upload-extra-path">
-          / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
-        </span>
-      </mt:if>
+       id="site_path"
+       show_label="0"
+       label_class="top-label"
+       class="form-inline">
+    <mt:if name="destination_loop">
+      <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
+      <mt:loop name="destination_loop">
+        <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
+          <mt:var name="label" escape="html">
+        </option>
+      </mt:loop>
+    </select>
+    <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
+    <span class="upload-extra-path">
+        / <input type="text" name="extra_path" id="extra_path" class="form-control d-inline-block text path" value="<mt:var name="extra_path" escape="html">" />
+    </span>
+    </mt:if>
     </mtapp:setting>
     <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
@@ -182,56 +213,58 @@ h1.dialog-title {
       </div>
     </div>
   </mt:if>
-</mtunless>
-</fieldset>
+</mt:unless>
+  </fieldset>
 
 <mt:if name="dir_separator">
   <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
 </mt:if>
 
-<fieldset class="form-group">
-<legend class="h3"><__trans phrase="Upload Options"></legend>
-<mtapp:setting
-  id="auto_rename_non_ascii"
-  label="<__trans phrase="Rename filename">"
-  show_label="1">
+  <fieldset class="form-group">
+    <legend class="h3"><__trans phrase="Upload Options"></legend>
+    <mtapp:setting
+       id="auto_rename_non_ascii"
+       label="<__trans phrase="Rename filename">"
+       show_label="1">
       <div class="form-group">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
           <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
         </div>
       </div>
-</mtapp:setting>
-<mtapp:setting
-  id="operation_if_exists"
-  show_label="1"
-  label="<__trans phrase="Operation for a file exists">"
-  label_for="operation_if_exists"
-  label_class="left-label">
-    <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
-      <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
-        <__trans phrase="Upload and rename">
-      </option>
-      <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>>
-        <__trans phrase="Overwrite existing file">
-      </option>
-      <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>>
-        <__trans phrase="Cancel upload">
-      </option>
-    </select>
-</mtapp:setting>
-<mtapp:setting
-  id="normalize_orientation"
-  label="<__trans phrase="Normalize orientation">"
-  show_label="1">
+    </mtapp:setting>
+    <mtapp:setting
+       id="operation_if_exists"
+       show_label="1"
+       label="<__trans phrase="Operation for a file exists">"
+       label_for="operation_if_exists"
+       label_class="left-label">
+      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
+        <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
+          <__trans phrase="Upload and rename">
+        </option>
+        <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>>
+          <__trans phrase="Overwrite existing file">
+        </option>
+        <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>>
+          <__trans phrase="Cancel upload">
+        </option>
+      </select>
+    </mtapp:setting>
+    <mtapp:setting
+       id="normalize_orientation"
+       label="<__trans phrase="Normalize orientation">"
+       show_label="1">
       <div class="form-group">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
           <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
         </div>
       </div>
-</mtapp:setting>
-</fieldset>
+    </mtapp:setting>
+  </fieldset>
+
+</div>
 
 </form>
 
@@ -419,14 +452,14 @@ function createUploadBlock () {
   this.uploadBlockPanel = jQuery('<div class="card mb-1"><div class="card-block px-4 py-2"></div></div>');
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
-  this.leftPanel    = jQuery('<div class="col-10 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-2 text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.leftPanel    = jQuery('<div class="col w-50 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-auto text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
 
   this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);
 
   this.filename     = jQuery('<div class="upload-filename"></div>').appendTo(this.leftContent);
-  this.thumbnail    = jQuery('<div class="upload-thubmnail"></div>').appendTo(this.leftContent);
+  this.thumbnail    = jQuery('<div class="upload-thubmnail text-truncate"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
 
   this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
@@ -519,7 +552,7 @@ function createUploadBlock () {
       .attr('href', 'javascript:void(0);')
       .attr('class', 'd-inline-block')
       .append('<mtapp:svgicon id="ic_trash" title="Delete" size="sm" strip_linefeeds="1">')
-      .append('<span class="ml-2"><__trans phrase="Delete"><span>')
+      .append('<span class="ml-2"><__trans phrase="Delete"></span>')
       .appendTo(this.deleteAsset);
     deleteLink.on('click', function(){
       var self = this;
@@ -552,6 +585,10 @@ function uploadFiles(files, items) {
     change_upload_panel('upload');
     if (!files || files.length === 0 ) {
         return;
+    }
+
+    if (MT.Util.isMobileView()) {
+        jQuery('#uploadSettings').collapse('hide');
     }
 
     var num_files = 1; // Always 1 file only
@@ -680,7 +717,7 @@ function uploadFile( formData, uploadBlock ) {
 }
 /* ]]> */
 
-jQuery('#open-file-dialog').click( function() {
+jQuery('#open-file-dialog, #open-file-dialog-for-mobile').click( function() {
   jQuery('#file').click();
   return false;
 });
@@ -723,5 +760,5 @@ jQuery('#blockeditor-upload-asset-panel').on('changePanel', function() {
   }
 });
 </mt:if>
-jQuery('form').find('input:visible').first().focus();
+window.top.document.activeElement.blur();
 </script>

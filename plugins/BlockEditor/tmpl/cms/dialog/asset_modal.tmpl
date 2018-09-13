@@ -6,12 +6,23 @@
 <script>
   isModal = getByID("list-assets-dialog");
 
+  function toggleClassOfPaginationContainer() {
+    var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+    if (MT.Util.isMobileView() && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+      $paginationContainer.addClass('w-100');
+    } else {
+      $paginationContainer.removeClass('w-100');
+    }
+  }
+
   var checked = [];
   var currentPage = 1;
 
   function loadAssetList(offset) {
     jQuery('.indicator, #listing-table-overlay').show();
-    jQuery('ul.pagination').hide();
+    jQuery('ul.pagination').removeClass('d-md-flex');
+    jQuery('ul.pagination__mobile').addClass('d-none');
+    jQuery('.page-status').hide();
     jQuery('#asset-class').attr("disabled", "disabled");
     jQuery('#search').attr("disabled", "disabled");
     jQuery('#search-button').attr("disabled", "disabled");
@@ -62,6 +73,7 @@
           jQuery('#asset-table').append(data.html);
           if (data.pager) {
             renderPagination(data.pager);
+            renderPaginationForMobile(data.pager);
           }
           else {
             canPaginate = false;
@@ -71,12 +83,16 @@
       complete: function() {
         jQuery('.indicator, #listing-table-overlay').hide();
         if (canPaginate) {
-          jQuery('ul.pagination').show();
+          jQuery('ul.pagination').addClass('d-md-flex');
+          jQuery('ul.pagination__mobile').removeClass('d-none');
+          jQuery('.page-status').show();
         }
         jQuery('#asset-class').removeAttr("disabled");
         jQuery('#search').removeAttr("disabled");
         jQuery('#search-button').removeAttr("disabled");
         jQuery(document).trigger('complete_list_asset');
+
+        toggleClassOfPaginationContainer();
       },
       error: function(xhr, status, error) {
         console.log('error: ' + status + ":" + error);
@@ -122,8 +138,6 @@
       end = pager.listTotal;
       last = (maxPage-1) * pager.limit;
     }
-
-    var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
 
     $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
@@ -177,6 +191,98 @@
       loadAssetList(last);
       return false;
     });
+  }
+
+  function renderPaginationForMobile(pager) {
+    var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+    if ( pager.rows == 0 ) {
+      return;
+    }
+
+    var page = parseInt(pager.offset / pager.limit) + 1;
+    var maxPage = Math.ceil(pager.listTotal / pager.limit);
+    var start = page > 1 ? pager.offset + 1 : 1;
+    var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+    var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+    jQuery('.page-status').text(page_status);
+
+    var setMrAuto = maxPage >= 5;
+
+    $paginationMobile.append(
+      generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
+    );
+    if (page - 4 >= 1 && maxPage - page < 1) {
+      $paginationMobile.append(
+        generateMobilePageLink(page - 4, setMrAuto)
+      );
+    }
+    if (page - 3 >= 1 && maxPage - page < 2) {
+      $paginationMobile.append(
+        generateMobilePageLink(page - 3, setMrAuto)
+      );
+    }
+    if (page - 2 >= 1) {
+      $paginationMobile.append(
+        generateMobilePageLink(page - 2, setMrAuto)
+      );
+    }
+    if (page - 1 >= 1) {
+      $paginationMobile.append(
+        generateMobilePageLink(page - 1, setMrAuto)
+      );
+    }
+    $paginationMobile.append(
+      generateMobilePageLink(page, setMrAuto, true)
+    );
+    if (page + 1 <= maxPage) {
+      $paginationMobile.append(
+        generateMobilePageLink(page + 1, setMrAuto)
+      );
+    }
+    if (page + 2 <= maxPage) {
+      $paginationMobile.append(
+        generateMobilePageLink(page + 2, setMrAuto)
+      );
+    }
+    if (page + 3 <= maxPage && page <= 2) {
+      $paginationMobile.append(
+        generateMobilePageLink(page + 3, setMrAuto)
+      );
+    }
+    if (page + 4 <= maxPage && page <= 1) {
+      $paginationMobile.append(
+        generateMobilePageLink(page + 4, setMrAuto)
+      );
+    }
+    $paginationMobile.append(
+      generateMobilePageLinkTriangle(page + 1, false, true)
+    );
+
+    jQuery('.pagination__mobile a.page-link').on('click', function () {
+      var nextPage = this.dataset.mtNextPage || this.text;
+      if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+        saveChecked(page);
+        loadAssetList((nextPage - 1) * pager.limit);
+      }
+      return false;
+    });
+  }
+
+  function generateMobilePageLink(page, setMrAuto, current) {
+    var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+    if (current) {
+      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+    } else {
+      return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
+    }
+  }
+
+  function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+    var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+    var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+    return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
   }
 
   function saveChecked(page) {
@@ -234,11 +340,16 @@
       jQuery('#blockeditor-list-asset-panel').show();
       jQuery('#blockeditor-upload-asset-panel').hide();
     }
+
+    jQuery('.modal-blockeditor .modal-body:visible').scrollTop(0);
   }
   jQuery(document).one('click', '.upload_asset', function(){
     change_upload_panel('upload');
   });
   change_upload_panel('list');
+
+  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+
   // Initial laoading
   loadAssetList(0);
 </script>
@@ -258,6 +369,8 @@
     box-sizing: border-box;
 }
 #blockeditor-list-asset-panel .img-preview {
+  min-width: 120px;
+  min-height: 120px;
   width: 120px;
   height: 120px;
   position: relative;
@@ -295,7 +408,7 @@
   <div class="border-bottom pb-3">
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="hidden" id="asset-class" name="asset-class" value="image">
-    <div class="form-row align-items-center">
+    <div class="form-row align-items-center w-100">
       <div class="form-group">
         <label class="sr-only" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
@@ -313,19 +426,23 @@
       <div class="form-group">
         <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
       </div>
+      <div class="page-status ml-auto mt-auto mb-0"></div>
     </div>
   </form>
   </div>
   </mt:unless>
 
   <mt:setvarblock name="list_actions">
-          <div class="indicator">
+          <div class="col indicator">
             <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
             <__trans phrase="Loading...">
           </div>
-          <nav aria-label="Asset List">
-            <ul class="pagination"></ul>
-          </nav>
+          <div class="col-auto mx-auto mt-5 mt-md-3">
+            <nav aria-label="Asset List">
+              <ul class="pagination d-none d-md-flex"></ul>
+              <ul class="pagination__mobile d-md-none"></ul>
+            </nav>
+          </div>
   </mt:setvarblock>
 
   <div id="listing" class="listing line has-filter mt-3">
@@ -338,7 +455,6 @@
     <mt:setvar name="row" value="1">
     <mt:loop name="object_loop">
           <!-- <mt:var name="row">:<mt:var name="__counter__"> -->
-          <mt:if name="__counter__" op="%" value="5" eq="0"><div class="row"></mt:if>
           <mt:if name="__first__">
           <div class="row">
             <div class="col">
@@ -351,44 +467,41 @@
             </div>
           </mt:if>
 
-          <div id="asset-<mt:var name="id" escape="html">-card" class="col">
-            <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-            <label class="asset-col">
-              <div class="img-preview">
-                <mt:if name="id">
-                <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
-                <div class="img-overlay">
-                  <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
-                  <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
+            <div id="asset-<mt:var name="id" escape="html">-card" class="col">
+              <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+              <label class="asset-col">
+                <div class="img-preview">
+                  <mt:if name="id">
+                  <img src="" id="asset-<mt:var name="id" escape="html">-preview" class="mx-auto" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                  <div class="img-overlay">
+                    <input type="radio" id="asset-<mt:var name="id" escape="html">" name="asset-img-id" value="<mt:var name="id" escape="html">" <mt:if name="asset_id" eq="$id">checked="checked"</mt:if>>
+                    <input type="hidden" id="asset-<mt:var name="id" escape="html">-url" name="asset-img-url" value="<mt:var name="url" escape="html">">
+                  </div>
+                  </mt:if>
                 </div>
+
+                <mt:if name="id">
+                <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
+                  <$mt:var name="label" escape="html"$>
+                </p>
                 </mt:if>
-              </div>
-
+              </label>
               <mt:if name="id">
-              <p class="img-label pt-3 m-0" data-toggle="tooltip" data-container="#asset-<mt:var name="id" escape="html">-card" data-placement="top" title="<$mt:var name="label" escape="html"$>">
-                <$mt:var name="label" escape="html"$>
-              </p>
+              <script>
+                loadImage('<mt:var name="id" escape="js">');
+              </script>
               </mt:if>
-            </label>
-            <mt:if name="id">
-            <script>
-              loadImage('<mt:var name="id" escape="js">');
-            </script>
-            </mt:if>
-          </div>
+            </div>
 
-          <mt:if name="__counter__" eq="4">
-            </div>
-          </mt:if>
-          <mt:if name="__last__">
-            </div>
-          </mt:if>
+        <mt:if name="__last__">
+          </div>
+        </mt:if>
     </mt:loop>
   <mt:else>
       <mt:setvar name="first" value="1">
       <mt:for var="i" from="0" to="1">
       <div class="row">
-        <mt:for var="x" from="0" to="3">
+        <mt:for var="x" from="0" to="4">
         <div class="col">
             <div class="img-preview">
               <mt:if name="first" eq="1">
@@ -408,7 +521,10 @@
   </mt:if>
   <mt:unless name="json">
 </div>
-      <div id="actions-bar" class="float-right line">
+      <div class="row">
+        <div class="page-status col-auto ml-auto mr-3"></div>
+      </div>
+      <div id="actions-bar" class="row line">
       <mt:var name="list_actions">
       </div>
 
@@ -434,7 +550,7 @@
 <div id="blockeditor-asset-option-panel">
   <mt:loop name="options_loop" >
   <div class="row asset-detail-panel" data-asset-id="<mt:var name="id">">
-    <div class="form-group col">
+    <div class="form-group col-12 col-md">
       <mt:if name="thumbnail">
               <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
       <mt:else>

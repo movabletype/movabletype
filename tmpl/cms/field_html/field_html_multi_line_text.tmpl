@@ -17,9 +17,14 @@
     <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
       <div class="form-group mb-4">
         <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
-        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control w-50 convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
         <mt:loop name="text_filters">
+          <mt:if name="filter_key" eq="richtext">
+          <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+          <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+          <mt:else>
           <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+          </mt:if>
         </mt:loop>
         </select>
       </div>
@@ -36,6 +41,19 @@
 
 <mt:unless name="loaded_multi_line_text_field_js">
   <mt:var name="loaded_multi_line_text_field_js" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.multi_line_text-field-container select.convert_breaks {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .multi_line_text-field-container select.convert_breaks {
+    width: 50%;
+  }
+}
+</style>
+  </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
   <mt:if name="editors">
@@ -94,7 +112,7 @@ function convertedText(response) {
     app.editor.reload();
     </mt:unless>
 }
-function changedTextFormat() {
+function changedTextFormat(e, noConfirm) {
     var editor_id = jQuery(this).data('target');
     var form = this.form;
     var option = this.options[this.selectedIndex].value;
@@ -104,7 +122,7 @@ function changedTextFormat() {
     // app.initEditor();
 
     var cur_text_format = jQuery(this).attr('data-orig_text_format');
-    if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+    if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
         // warn user that changing to richtext is not reversible (easily)
         if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
             // revert selection
@@ -199,6 +217,31 @@ function setMultiLineTextData($form) {
     }
   });
 }
+
+jQuery(window).on('load resize', function () {
+  var isMobileView = MT.Util.isMobileView();
+  jQuery('.multi_line_text-field-container select.convert_breaks').each(function (index, element) {
+    var $formats = jQuery(element);
+    var selectedFormat = $formats.find('option:selected').val();
+    if (isMobileView) {
+      $formats.find('option[value=richtext]').attr('disabled', 'disabled');
+      $formats.find('option[value=_richtext]').removeAttr('disabled');
+      if (selectedFormat != 'richtext') {
+        return;
+      }
+      $formats.val('_richtext')
+              .trigger('change', true);
+    } else {
+      $formats.find('option[value=richtext]').removeAttr('disabled');
+      $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
+      if (selectedFormat != '_richtext') {
+        return;
+      }
+      $formats.val('richtext')
+              .trigger('change', true);
+    }
+  });
+});
 
   </mt:setvarblock>
 </mt:Unless>

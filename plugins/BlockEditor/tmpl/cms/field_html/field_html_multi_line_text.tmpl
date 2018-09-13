@@ -4,17 +4,22 @@
     <div class="col">
       <ul class="nav nav-tabs d-flex mb-3" role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
         <mt:if name="options{label}"><li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></label></li></mt:if></mt:if>
-        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev">プレビュー</a></li>
-        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort">並び替え</a></li>
+        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev"><__trans phrase="Preview"></a></li>
+        <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort"><__trans phrase="Sort"></a></li>
       </ul>
     </div>
   </div>
   <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
     <div class="form-group mb-4">
       <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
-      <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="form-control w-50 convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+      <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
       <mt:loop name="text_filters">
+        <mt:if name="filter_key" eq="richtext">
+          <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+          <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+        <mt:else>
         <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+        </mt:if>
       </mt:loop>
       </select>
     </div>
@@ -30,6 +35,7 @@
 
     <mt:ignore>blockeditor-content</mt:ignore>
     <div id="editor-input-content-field-<mt:var name="content_field_id">-blockeditor" class="blockeditor sortable" data-blockeditor-field_id="<mt:var name="content_field_id">" hidden>
+      <p class="text-center mb-0" hidden><__trans phrase="No block in this field."></p>
     </div>
     <div id="blockeditor_add-<mt:var name="content_field_id">" class="pt-3" hidden>
       <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
@@ -62,17 +68,35 @@
 </div>
 
   <mt:setvarblock name="js_include" append="1">
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/modal_window.js"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
     <mt:loop name="blockeditor_fields">
-    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>"></script>
+    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>?v=<mt:var name="mt_version_id" escape="url">"></script>
     </mt:loop>
   </mt:setvarblock>
-  <mt:setvarblock name="html_head" append="1">
+
+  <mt:setvarblock name="css_include" append="1">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <style type="text/css">
+.multi_line_text-field-container select.convert_breaks {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .multi_line_text-field-container select.convert_breaks {
+    width: 50%;
+  }
+}
+
+.multi_line_text-field-container .blockeditor.sortable .placeholder {
+    border: 1px dashed #c0c6c9;
+    background-color: #fbfbfb;
+    margin-bottom: 2px;
+    padding: 0.5rem 0;
+}
+    </style>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
@@ -166,7 +190,7 @@
       app.editor.reload();
       </mt:unless>
   }
-  function changedTextFormat() {
+  function changedTextFormat(e, noConfirm) {
       var editor_id = jQuery(this).data('target');
       var form = this.form;
       var option = this.options[this.selectedIndex].value;
@@ -176,7 +200,7 @@
       // app.initEditor();
 
       var cur_text_format = jQuery(this).attr('data-orig_text_format');
-      if ((cur_text_format != 'richtext') && (option == 'richtext')) {
+      if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
           // warn user that changing to richtext is not reversible (easily)
           if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
               // revert selection
@@ -358,6 +382,31 @@ function setMultiLineTextData($form) {
     }
   });
 }
+
+jQuery(window).on('load resize', function () {
+  var isMobileView = MT.Util.isMobileView();
+  jQuery('.multi_line_text-field-container select.convert_breaks').each(function (index, element) {
+    var $formats = jQuery(element);
+    var selectedFormat = $formats.find('option:selected').val();
+    if (isMobileView) {
+      $formats.find('option[value=richtext]').attr('disabled', 'disabled');
+      $formats.find('option[value=_richtext]').removeAttr('disabled');
+      if (selectedFormat != 'richtext') {
+        return;
+      }
+      $formats.val('_richtext')
+              .trigger('change', true);
+    } else {
+      $formats.find('option[value=richtext]').removeAttr('disabled');
+      $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
+      if (selectedFormat != '_richtext') {
+        return;
+      }
+      $formats.val('richtext')
+              .trigger('change', true);
+    }
+  });
+});
 
   </mt:setvarblock>
 </mt:Unless>

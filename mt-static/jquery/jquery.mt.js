@@ -1762,4 +1762,27 @@ function resizeModal() {
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
 }
 
+var previousView;
+jQuery.setViewTrigger = function () {
+  jQuery(window).on('resize', function () {
+    if (MT.Util.isMobileView()) {
+      if (previousView && previousView == 'mobile') {
+        return;
+      }
+      if (previousView) {
+        jQuery(window).trigger('change_to_mobile_view');
+      }
+      previousView = 'mobile';
+    } else {
+      if (previousView && previousView == 'pc') {
+        return;
+      }
+      if (previousView) {
+        jQuery(window).trigger('change_to_pc_view');
+      }
+      previousView = 'pc';
+    }
+  });
+};
+
 })(jQuery);

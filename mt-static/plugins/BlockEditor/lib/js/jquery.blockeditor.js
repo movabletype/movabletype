@@ -87,13 +87,13 @@
         var modal_body = modal.get_body();
         modal_body.append(buttons);
         modal_body.append(button_field);
-        do {
-          modal_body.children(".button-col:lt(2)").wrapAll('<div class="row buttons-wrapper mt-3"></div>')
-        } while (modal_body.children(".button-col").length);
+        modal_body.children(".button-col").wrapAll('<div class="row buttons-wrapper"></div>')
         modal.set_default_actions();
         modal.show();
         // $('.modal-blockeditor').modal();
       });
+
+      window.blockEditorFieldSortableChanged = {};
 
       $('#blockeidor_menus-' + field_id + ' .nav-link').on('click', function(){
           if($(this).hasClass('active')) return;
@@ -105,7 +105,9 @@
           $('#blockeidor_menus-' + field_id).find('.nav-link').removeClass('active');
           $(this).addClass('active');
           if(mode == 'sort'){
+              jQuery('#editor-input-content-field-' + field_id + '-blockeditor').find('p:last-child').removeAttr('hidden');
               jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
+              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().attr('hidden', '');
               block_field.sortable({
                 items: '.sort-enabled',
                 placeholder: 'placeholder',
@@ -113,16 +115,39 @@
                 opacity: 0.8,
                 cursor: 'move',
                 forcePlaceholderSize: true,
-                // handle: '.mt-draggable',
-                // handle: '.mt-ic_move',
-                containment: block_field,
+                handle: MT.Util.isMobileView() ? '.col-auto:first-child' : false,
+                containment: block_field.parents('.multi_line_text-field-container').get(0),
+                start: function (event, ui) {
+                    ui.item.attr('aria-grabbed', true);
+
+                    if (window.blockEditorFieldSortableChanged[field_id]) {
+                      ui.helper.offset({
+                        top: ui.helper.offset().top + jQuery('body').scrollTop()
+                      });
+                    }
+                },
+                sort: function (event, ui) {
+                    if (window.blockEditorFieldSortableChanged[field_id]) {
+                      ui.helper.offset({
+                        top: ui.helper.offset().top + jQuery('body').scrollTop()
+                      });
+                    }
+                },
+                change: function (event, ui) {
+                  window.blockEditorFieldSortableChanged[field_id] = true;
+                },
                 update: function(ev, ui){
                     var order = $(this).sortable("toArray");
                     manager.set_order(order);
+                },
+                stop: function (event, ui) {
+                    ui.item.attr('aria-grabbed', false);
                 }
               });
           } else {
+              jQuery('#editor-input-content-field-' + field_id + '-blockeditor > p').attr('hidden', '');
               jQuery('#blockeditor_add-' + field_id).removeAttr('hidden');
+              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().removeAttr('hidden');
           }
       });
 
