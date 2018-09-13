@@ -348,7 +348,10 @@
   });
   change_upload_panel('list');
 
-  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+  jQuery(window).on(
+    'change_to_mobile_view change_to_pc_view',
+    toggleClassOfPaginationContainer
+  );
 
   // Initial laoading
   loadAssetList(0);

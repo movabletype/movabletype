@@ -383,7 +383,7 @@ function setMultiLineTextData($form) {
   });
 }
 
-jQuery(window).on('load resize', function () {
+jQuery(window).on('load change_to_mobile_view change_to_pc_view', function () {
   var isMobileView = MT.Util.isMobileView();
   jQuery('.multi_line_text-field-container select.convert_breaks').each(function (index, element) {
     var $formats = jQuery(element);
