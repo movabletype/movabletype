@@ -2,7 +2,7 @@
   <ul class="pagination__mobile d-md-none">
     <li class={
       page-item: true,
-      mr-auto: hasFivePagesOrMore()
+      mr-auto: isTooNarrowWidth()
     }>
       <a href="javascript:void(0);"
         class="page-link"
@@ -21,7 +21,7 @@
     <li if={ store.page - 4 >= 1 && store.pageMax - store.page < 1 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -36,7 +36,7 @@
     <li if={ store.page - 3 >= 1 && store.pageMax - store.page < 2 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -51,7 +51,7 @@
     <li if={ store.page - 2 >= 1 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -66,7 +66,7 @@
     <li if={ store.page - 1 >= 1 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -81,7 +81,7 @@
     <li class={
       page-item: true,
       active: true,
-      mr-auto: hasFivePagesOrMore()
+      mr-auto: isTooNarrowWidth()
     }>
       <a class="page-link">
         { store.page }
@@ -92,7 +92,7 @@
     <li if={ store.page + 1 <= store.pageMax }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -107,7 +107,7 @@
     <li if={ store.page + 2 <= store.pageMax }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -122,7 +122,7 @@
     <li if={ store.page + 3 <= store.pageMax && store.page <= 2 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"
@@ -137,7 +137,7 @@
     <li if={ store.page + 4 <= store.pageMax && store.page <= 1 }
       class={
         page-item: true,
-        mr-auto: hasFivePagesOrMore()
+        mr-auto: isTooNarrowWidth()
       }
     >
       <a href="javascript:void(0);"

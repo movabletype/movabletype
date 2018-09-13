@@ -2,7 +2,7 @@
   <div class={
     col-auto: true,
     mx-auto: true,
-    w-100: hasW100Class()
+    w-100: isTooNarrowWidth()
   }>
     <nav aria-label={ store.listClient.objectType + ' list' }>
       <virtual data-is="list-pagination-for-pc"></virtual>
@@ -12,11 +12,8 @@
 
   <script>
     riot.mixin('listPagination', {
-      hasFivePagesOrMore: function () {
-        return this.store.pageMax >= 5;
-      },
-      hasW100Class: function () {
-        return MT.Util.isMobileView() && this.hasFivePagesOrMore();
+      isTooNarrowWidth: function () {
+        return this.store.pageMax >= 5 && jQuery(window.top).width() < 400;
       },
       movePage: function (e) {
         if (e.currentTarget.disabled) {
