@@ -120,12 +120,16 @@
         },
         _sync_pc_data_to_mobile: function () {
             var $pc_editor = $('#' + this.id + '-text').first();
-            var $mobile_editor = $('#' + this.id + '-text-mobile');
+            var pc_data;
             if ($pc_editor.prop('tagName') == 'TEXTAREA') {
-                $mobile_editor.val( $pc_editor.val() );
+                pc_data = $pc_editor.val();
             } else {
-                $mobile_editor.val( $pc_editor.html() );
+                pc_data = $pc_editor.html();
+                if (pc_data == '<p><br data-mce-bogus="1"></p>') {
+                    return;
+                }
             }
+            $('#' + this.id + '-text-mobile').val(pc_data);
         },
     });
 
