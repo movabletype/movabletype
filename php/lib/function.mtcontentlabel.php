@@ -7,5 +7,5 @@
 function smarty_function_mtcontentlabel($args, &$ctx) {
     $cd = $ctx->stash('content');
 
-    return $cd->label();
+    return isset($cd) ? $cd->label() : '';
 }
