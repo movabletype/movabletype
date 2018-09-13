@@ -8,7 +8,7 @@
 
   function toggleClassOfPaginationContainer() {
     var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
-    if (MT.Util.isMobileView() && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+    if (jQuery(window.top).width() < 400 && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
       $paginationContainer.addClass('w-100');
     } else {
       $paginationContainer.removeClass('w-100');
@@ -208,7 +208,7 @@
     var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
     jQuery('.page-status').text(page_status);
 
-    var setMrAuto = maxPage >= 5;
+    var setMrAuto = jQuery(window.top).width() < 400 && maxPage >= 5;
 
     $paginationMobile.append(
       generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
@@ -348,10 +348,7 @@
   });
   change_upload_panel('list');
 
-  jQuery(window).on(
-    'change_to_mobile_view change_to_pc_view',
-    toggleClassOfPaginationContainer
-  );
+  jQuery(window.top).on('resize orientationchange', toggleClassOfPaginationContainer);
 
   // Initial laoading
   loadAssetList(0);
