@@ -3975,7 +3975,7 @@ abstract class MTDatabase {
             $blog_filter = "";
         }
         if (isset($args['name']) && !empty($args['name'])) {
-            $name_filter = 'and category_set_name = "' . $args['name'] . '"';
+            $name_filter = "and category_set_name = '" . $this->escape($args['name']) . "'";
         } else {
             $name_filter = "";
         }
