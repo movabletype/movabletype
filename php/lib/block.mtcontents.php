@@ -11,9 +11,6 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
     if (!isset($res)) {
         $ctx->localize($localvars);
 
-        require_once('multiblog.php');
-        multiblog_block_wrapper($args, $res, $ctx, $repeat);
-
         $content_type = _get_content_type( $ctx, $args );
         if (!is_object($content_type))
             $ctx->error($content_type);

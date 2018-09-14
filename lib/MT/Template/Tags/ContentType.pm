@@ -56,11 +56,12 @@ sub _hdlr_contents {
     my $blog_id   = $args->{blog_id} || $ctx->stash('blog_id');
     my $blog      = $ctx->stash('blog');
 
-    my ( @filters, %blog_terms, %blog_args, %terms, %args );
-    $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
-        or return $ctx->error( $ctx->errstr );
-    %terms = %blog_terms;
-    %args  = %blog_args;
+    return $ctx->_no_blog_error
+        unless MT->model('blog')->exist( $blog_id || 0 );
+
+    my ( @filters, %terms, %args, %blog_terms, %blog_args );
+    %terms = %blog_terms = ( blog_id => $blog_id );
+    %args = %blog_args;
 
     my $content_type = _get_content_type( $ctx, $args, \%blog_terms );
     return $ctx->error($content_type) unless ref $content_type;
