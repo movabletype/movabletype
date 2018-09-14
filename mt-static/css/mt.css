@@ -9759,6 +9759,13 @@ li {
   padding-right: 2rem;
 }
 
+@media (max-width: 767.98px) {
+  .mt-mainContent, .mt-mainContent--scrollable {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
 .mt-mainContent--scrollable {
   display: -webkit-box;
   display: -ms-flexbox;
