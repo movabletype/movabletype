@@ -130,10 +130,13 @@ isModal = getByID("list-assets-dialog");
 
 function toggleClassOfPaginationContainer() {
   var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
-  if (jQuery(window.top).width() < 400 && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+  var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
+  if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
     $paginationContainer.addClass('w-100');
+    $pageItems.addClass('mr-auto');
   } else {
     $paginationContainer.removeClass('w-100');
+    $pageItems.removeClass('mr-auto');
   }
 }
 
@@ -347,7 +350,7 @@ function renderPaginationForMobile(pager) {
   var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
   jQuery('#page-status').text(page_status);
 
-  var setMrAuto = jQuery(window.top).width() < 400 && maxPage >= 5;
+  var setMrAuto = jQuery(window).width() < 400 && maxPage >= 5;
 
   $paginationMobile.append(
     generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
@@ -500,7 +503,11 @@ jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
   }
 });
 
-jQuery(window.top).on('resize orientationchange', toggleClassOfPaginationContainer);
+if (MT.Util.isIos()) {
+  jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
+} else {
+  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+}
 
 // Initial loading
 loadAssetList(0);

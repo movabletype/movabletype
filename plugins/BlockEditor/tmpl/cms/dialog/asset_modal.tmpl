@@ -8,10 +8,13 @@
 
   function toggleClassOfPaginationContainer() {
     var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
-    if (jQuery(window.top).width() < 400 && $paginationContainer.find('.pagination__mobile .page-item').length >= 7) {
+    var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
+    if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
       $paginationContainer.addClass('w-100');
+      $pageItems.addClass('mr-auto');
     } else {
       $paginationContainer.removeClass('w-100');
+      $pageItems.removeClass('mr-auto');
     }
   }
 
@@ -348,7 +351,11 @@
   });
   change_upload_panel('list');
 
-  jQuery(window.top).on('resize orientationchange', toggleClassOfPaginationContainer);
+  if (MT.Util.isIos()) {
+    jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
+  } else {
+    jQuery(window).on('resize', toggleClassOfPaginationContainer);
+  }
 
   // Initial laoading
   loadAssetList(0);
