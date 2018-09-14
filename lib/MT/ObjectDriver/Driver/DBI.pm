@@ -669,11 +669,12 @@ sub prepare_statement {
                 : $class;
             my $to_table = $driver->table_for($to_class);
             my $j_table  = $driver->table_for($j_class);
+            my $j_alias  = $j_args->{alias};
             if ( 'HASH' eq ref $cond ) {
                 my $dbh = $driver->rw_handle;
                 foreach my $cond_col ( keys %$cond ) {
                     my $col = $driver->_decorate_column_name( $j_class,
-                        $cond_col );
+                        $cond_col, $j_alias );
                     $cond_query .= ' AND ' if $cond_query;
                     my $condition = $cond->{$cond_col};
                     if ( 'SCALAR' eq ref $condition ) {
@@ -688,7 +689,6 @@ sub prepare_statement {
             else {
                 $cond = [$cond] unless ref $cond;
                 my $tuple   = $to_class->primary_key_tuple;
-                my $j_alias = $j_args->{alias};
             COLUMN: foreach my $i ( 0 .. $#$cond ) {
                     next unless defined $cond->[$i];
                     my $t = $tuple->[$i];
@@ -708,7 +708,7 @@ sub prepare_statement {
 
             $stmt->add_join(
                 $to_table,
-                {   table     => $j_table,
+                {   table => $j_alias ? "$j_table $j_alias" : $j_table,
                     condition => $cond_query,
                     type      => $j_args->{type},
                 },
