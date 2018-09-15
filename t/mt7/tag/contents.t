@@ -279,7 +279,7 @@ aaaaa
 
 === MT:Contents with content_type modifier and wrong blog_id
 --- template
-<mt:Contents content_type="test content type 1" blog_ids="2">a</mt:Contents>
+<mt:Contents content_type="test content type 1" blog_id="2">a</mt:Contents>
 --- error
 No Content Type could be found.
 

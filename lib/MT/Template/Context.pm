@@ -1054,6 +1054,18 @@ sub _no_blog_error {
     );
 }
 
+sub _no_site_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of the site;",
+            $tag_name
+        )
+    );
+}
+
 sub _no_comment_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
