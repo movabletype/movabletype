@@ -869,6 +869,12 @@ sub init_content_type {
         $core_list_props->{$key} = $content_data_list_props->{$key};
     }
 
+    my $core_system_filters         = $core->registry('system_filters');
+    my $content_data_system_filters = _make_content_data_system_filters($app);
+    for my $key ( keys %{$content_data_system_filters} ) {
+        $core_system_filters->{$key} = $content_data_system_filters->{$key};
+    }
+
     my $core_tag_list_props = $core->registry( 'list_properties', 'tag' );
     my $tag_list_props = MT->model('content_type')->make_tag_list_props;
     for my $key ( keys %$tag_list_props ) {
@@ -881,6 +887,27 @@ sub init_content_type {
     for my $key ( keys %$tag_system_filters ) {
         $core_tag_system_filters->{$key} = $tag_system_filters->{$key};
     }
+}
+
+sub _make_content_data_system_filters {
+    my ($app) = @_;
+    my $common_system_filters
+        = $app->registry( 'system_filters', 'content_data' );
+    return {}
+        unless $common_system_filters
+        && ref $common_system_filters eq 'HASH'
+        && %$common_system_filters;
+
+    my $system_filters = {};
+    for my $content_type ( @{ $app->model('content_type')->load_all } ) {
+        my $key = 'content_data.content_data_' . $content_type->id;
+        $system_filters->{$key} = {};
+        for my $common_sf_key ( keys %$common_system_filters ) {
+            $system_filters->{$key}{$common_sf_key}
+                = $common_system_filters->{$common_sf_key};
+        }
+    }
+    $system_filters;
 }
 
 sub _make_content_data_listing_screens {
