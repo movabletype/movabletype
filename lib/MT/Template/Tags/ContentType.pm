@@ -56,8 +56,7 @@ sub _hdlr_contents {
     my $blog_id   = $args->{blog_id} || $ctx->stash('blog_id');
     my $blog      = $ctx->stash('blog');
 
-    return $ctx->_no_blog_error
-        unless MT->model('blog')->exist( $blog_id || 0 );
+    return $ctx->_no_site_error unless $blog_id;
 
     my ( @filters, %terms, %args, %blog_terms, %blog_args );
     %terms = %blog_terms = ( blog_id => $blog_id );
