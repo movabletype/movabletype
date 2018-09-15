@@ -975,6 +975,8 @@ sub list_props_for_data_api {
 sub make_list_props {
     my $props = {};
 
+    my $common_list_props = _make_common_list_props();
+
     for my $content_type ( @{ MT::ContentType->load_all } ) {
         my $key   = 'content_data.content_data_' . $content_type->id;
         my $order = 1000;
@@ -1156,6 +1158,7 @@ sub make_list_props {
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
             %{$field_list_props},
+            %{$common_list_props},
         };
         if ( $content_type->_get_tag_field_ids ) {
             $props->{$key}{tags_field} = {
@@ -1428,6 +1431,18 @@ sub _default_sort {
     push @{ $args->{joins} }, $cf_idx_join;
 
     return;
+}
+
+sub _make_common_list_props {
+    my $props = {};
+    my $common_props
+        = MT->registry( 'list_properties', 'content_data' ) || {};
+    for my $key ( keys %$common_props ) {
+        my $prop = $common_props->{$key};
+        next if $prop->{plugin}->isa('MT::Core');
+        $props->{$key} = $prop;
+    }
+    $props;
 }
 
 sub _make_title_html {
