@@ -654,8 +654,9 @@ sub on_upload {
             $ctx->stash( 'image_url',    $url );
             $ctx->stash( 'image_width',  $width );
             $ctx->stash( 'image_height', $height );
-            my $popup       = $tmpl->build($ctx) or die $tmpl->errstr;
-            my $root_path   = $asset->_make_cache_path;
+            my $popup = $tmpl->build($ctx);
+            die $tmpl->errstr unless defined $popup;
+            my $root_path = $asset->_make_cache_path;
             my $pseudo_path = $asset->_make_cache_path( undef, 1 );
             my $abs_file_path
                 = File::Spec->catfile( $root_path, $rel_path . $ext );
