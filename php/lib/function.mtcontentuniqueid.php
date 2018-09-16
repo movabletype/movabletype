@@ -7,9 +7,7 @@
 
 function smarty_function_mtcontentuniqueid($args, &$ctx) {
     $content = $ctx->stash('content');
-    if (!isset($content))
-        return $ctx->error($ctx->mt->translate(
-            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentUniqueID" ));
+    if (!isset($content)) return '';
 
     return $content->unique_id;
 }

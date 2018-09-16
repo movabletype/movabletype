@@ -7,9 +7,7 @@
 
 function smarty_function_mtcategorysetname($args, &$ctx) {
     $category_set = $ctx->stash('category_set');
-    if (!$category_set) {
-        return $ctx->error("No Category Set could be found.");
-    }
+    if (!$category_set) return '';
     return $category_set->name;
 }
 

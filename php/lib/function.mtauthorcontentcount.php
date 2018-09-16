@@ -14,9 +14,7 @@ function smarty_function_mtauthorcontentcount($args, &$ctx) {
         }
     }
 
-    if (empty($author)) {
-        return $ctx->error("No author available");
-    }
+    if (empty($author)) return '';
 
     require_once('multiblog.php');
     multiblog_function_wrapper('mtauthorcontentcount', $args, $ctx);
