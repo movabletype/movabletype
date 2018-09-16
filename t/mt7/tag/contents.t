@@ -271,12 +271,6 @@ aaaaa
 --- expected
 aaaaa
 
-=== MT:Contents with content_type modifier
---- template
-<mt:Contents content_type="test content type 1">a</mt:Contents>
---- expected
-aaaaa
-
 === MT:Contents with content_type modifier and wrong blog_id
 --- template
 <mt:Contents content_type="test content type 1" blog_id="2">a</mt:Contents>
