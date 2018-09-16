@@ -53,8 +53,9 @@ sub _hdlr_contents {
     my $id        = $args->{id};
     my $unique_id = $args->{unique_id};
     my $at        = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id   = $args->{blog_id} || $ctx->stash('blog_id');
-    my $blog      = $ctx->stash('blog');
+    my $blog_id
+        = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
+    my $blog = $ctx->stash('blog');
 
     return $ctx->_no_site_error unless $blog_id;
 
