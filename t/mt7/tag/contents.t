@@ -264,10 +264,10 @@ aaaaa
 --- expected
 aaaaa
 
-=== MT:Contents with ct_unique_id modifier
+=== MT:Contents with content_type="unique_id"
 --- SKIP
 --- template
-<mt:Contents ct_unique_id="[% ct_uid %]">a</mt:Contents>
+<mt:Contents content_type="[% ct_uid %]">a</mt:Contents>
 --- expected
 aaaaa
 
