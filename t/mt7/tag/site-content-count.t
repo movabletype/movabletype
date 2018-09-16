@@ -125,6 +125,8 @@ __END__
 <mt:SiteContentCount content_type="test content type 5">
 --- expected_error
 No Content Type could be found.
+--- skip
+please see MTC-25901 and MTC-25612
 
 === MT::SiteContentCount with plural
 --- template
