@@ -246,12 +246,6 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== MT:Contents without modifier
---- template
-<mt:Contents>a</mt:Contents>
---- expected
-aaaaaa
-
 === MT:Contents with content_type="name"
 --- template
 <mt:Contents content_type="[% ct_name %]">a</mt:Contents>
@@ -304,7 +298,7 @@ aaaaa
 
 === MT:Contents with author
 --- template
-<mt:Contents author="[% cd4_author %]"><mt:ContentID></mt:Contents>
+<mt:Contents content_type="[% ct_uid %]" author="[% cd4_author %]"><mt:ContentID></mt:Contents>
 --- expected
 54321
 
@@ -327,7 +321,7 @@ test single line text 1
 
 === MT:Contents with sort_by content field
 --- template
-<mt:Contents blog_id="1" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf1_uid %]="test single line text 3" sort_by="field:single line text">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
@@ -336,7 +330,7 @@ test single line text 3
 
 === MT:Contents with category
 --- template
-<mt:Contents blog_id="1" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf2_uid %]="category1" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
@@ -345,7 +339,7 @@ test single line text 2
 
 === MT:Contents with tag
 --- template
-<mt:Contents blog_id="1" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf3_uid %]="tag2" sort_by="field:[% cf1_uid %]">
 <mt:ContentField label="single line text"><mt:ContentFieldValue></mt:ContentField>
 </mt:Contents>
 --- expected
@@ -354,14 +348,14 @@ test single line text 4
 
 === MT:Contents with days
 --- template
-<mt:Contents blog_id="1" days="3"><mt:ContentID></mt:Contents>
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" days="3"><mt:ContentID></mt:Contents>
 --- expected
 543
 
 
 === MT:Contents with date_field
 --- template
-<mt:Contents blog_id="1" days="2" date_field="[% date_cf_uid %]"><mt:ContentID></mt:Contents>
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" days="2" date_field="[% date_cf_uid %]"><mt:ContentID></mt:Contents>
 --- expected
 21
 
@@ -388,15 +382,14 @@ test single line text 4
 
 === MT:Contents parameters
 --- template
-<mt:Contents><mt:var name="__counter__">:<mt:if name="__odd__">odd</mt:if><mt:if name="__even__">even</mt:if><mt:if name="__first__"> - first</mt:if><mt:if name="__last__"> - last</mt:if>
+<mt:Contents content_type="[% ct_uid %]"><mt:var name="__counter__">:<mt:if name="__odd__">odd</mt:if><mt:if name="__even__">even</mt:if><mt:if name="__first__"> - first</mt:if><mt:if name="__last__"> - last</mt:if> (ID:<mt:ContentID>)
 </mt:Contents>
 --- expected
-1:odd - first
-2:even
-3:odd
-4:even
-5:odd
-6:even - last
+1:odd - first (ID:5)
+2:even (ID:4)
+3:odd (ID:3)
+4:even (ID:2)
+5:odd - last (ID:1)
 
 === MT:Contents with MT:Else
 --- template
@@ -458,7 +451,7 @@ Content is not found.
 
 === MT:Contents with category
 --- template
-<mt:Contents blog_id="1" field:[% cf2_uid %]="category1">
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf2_uid %]="category1">
 <mt:ContentID>
 </mt:Contents>
 --- expected
@@ -466,7 +459,7 @@ Content is not found.
 
 === MT:Contents with tag
 --- template
-<mt:Contents blog_id="1" field:[% cf3_uid %]="tag2">
+<mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf3_uid %]="tag2">
 <mt:ContentID>
 </mt:Contents>
 --- expected

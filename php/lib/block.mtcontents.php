@@ -166,6 +166,10 @@ function _get_content_type( $ctx, $args ) {
         $template_ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
         if (!$template_ct)
             return;
+    } else if ((!isset($args['id']) || $args['id'] === '')
+        && (!isset($args['unique_id']) || $args['unique_id'] === '')
+        && (!isset($args['content_type']) || $args['content_type'] === '') ) {
+        return $ctx->mt->translate('No Content Type could be found.');
     }
 
     if ( isset($args['content_type']) && $args['content_type'] !== '' ) {

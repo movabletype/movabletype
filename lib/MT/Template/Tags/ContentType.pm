@@ -2043,6 +2043,12 @@ sub _get_content_type {
             = MT->model('content_type')->load( $tmpl->content_type_id );
         return unless $template_ct;
     }
+    elsif (( !defined $args->{id} || $args->{id} eq '' )
+        && ( !defined $args->{unique_id} || $args->{unique_id} eq '' )
+        && ( !defined $args->{content_type} || $args->{content_type} eq '' ) )
+    {
+        return $ctx->_no_content_type_error;
+    }
 
     my @blog_ids = ref $blog_ids ? @$blog_ids : ($blog_ids);
 
