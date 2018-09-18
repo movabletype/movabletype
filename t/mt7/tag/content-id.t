@@ -70,3 +70,5 @@ __END__
 <mt:ContentID>
 --- expected_error
 You used an 'mtContentID' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
+--- skip
+please see MTC-25901 and MTC-25612

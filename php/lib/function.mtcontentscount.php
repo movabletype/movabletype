@@ -14,9 +14,7 @@ function smarty_function_mtcontentscount($args, &$ctx)
     } else {
         if (isset($args['content_type'])) {
             $content_types = $ctx->mt->db()->fetch_content_types($args);
-            if (!$content_types) {
-                return $ctx->error($ctx->mt->translate("No Content Type could be found."));
-            }
+            if (!$content_types) return '';
         }
         $count = $ctx->mt->db()->content_count($args);
     }

@@ -7,10 +7,7 @@
 
 function smarty_function_mtcontentunpublisheddate($args, &$ctx) {
     $content = $ctx->stash('content');
-    if (!isset($content))
-        return $ctx->error($ctx->mt->translate(
-            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentUnpublishedDate" ));
-
+    if (!isset($content)) return '';
 
     $args['ts'] = $content->unpublished_on;
     if( isset($args['ts']) ){

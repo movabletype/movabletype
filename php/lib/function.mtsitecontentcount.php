@@ -13,9 +13,7 @@ function smarty_function_mtsitecontentcount($args, &$ctx)
     $args['blog_id'] = $ctx->stash('blog_id');
     if (isset($args['content_type'])) {
         $content_type_id = $ctx->mt->db()->fetch_content_type_id($args);
-        if (!$content_type_id) {
-            return $ctx->error($ctx->mt->translate("No Content Type could be found."));
-        }
+        if (!$content_type_id) return '';
     }
     $count = $ctx->mt->db()->content_count($args);
     return $ctx->count_format($count, $args);
