@@ -2037,6 +2037,10 @@ sub _get_content_type {
     my @not_found = ();
     my $blog_ids  = $blog_terms->{blog_id};
 
+    if ( my $stash_content_type = $ctx->stash('content_type') ) {
+        return [$stash_content_type];
+    }
+
     my $tmpl = $ctx->stash('template');
     if ( $tmpl && $tmpl->content_type_id ) {
         $template_ct

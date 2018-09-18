@@ -161,6 +161,11 @@ function _get_content_type( $ctx, $args ) {
     $content_types = array();
     $not_found = array();
 
+    $stash_content_type = $ctx->stash('cotnent_type');
+    if ($stash_content_type) {
+        return array($stash_content_type);
+    }
+
     $tmpl = $ctx->stash('template');
     if ( $tmpl && $tmpl->template_content_type_id ) {
         $template_ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
