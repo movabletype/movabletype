@@ -345,15 +345,6 @@ MT::Test::Tag->run_php_tests( $blog->id );
 
 __END__
 
-=== MT::ContentPermalink
---- template
-<mt:Contents><mt:ContentPermalink>
-</mt:Contents>
---- expected
-/test/archives/category/mtcontentpermalink-test-data-03.html
-/test/archives/2017/09/mtcontentpermalink-test-data-02/
-/test/archives/2017/09/mtcontentpermalink-test-data-01.html
-
 === MT::ContentPermalink ContentType 01
 --- template
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink></mt:Contents>
@@ -378,95 +369,215 @@ __END__
 --- expected
 /test/archives/category/mtcontentpermalink-test-data-03.html
 
-=== MT::ContentPermalink archive_type="ContentType"
+=== MT::ContentPermalink archive_type="ContentType" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/mtcontentpermalink-test-data-01.html
+
+=== MT::ContentPermalink archive_type="ContentType" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/mtcontentpermalink-test-data-02/
+
+=== MT::ContentPermalink archive_type="ContentType" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType">
 </mt:Contents>
 --- expected
 /test/archives/category/mtcontentpermalink-test-data-03.html
-/test/archives/2017/09/mtcontentpermalink-test-data-02/
-/test/archives/2017/09/mtcontentpermalink-test-data-01.html
 
-=== MT::ContentPermalink archive_type="ContentType-Daily"
+=== MT::ContentPermalink archive_type="ContentType-Daily" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Daily">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Daily">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/27/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Daily" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Daily">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/27/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Daily" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Daily">
 </mt:Contents>
 --- expected
 /test/archives/2017/09/27/#000003
-/test/archives/2017/09/27/#000002
-/test/archives/2017/09/27/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Weekly"
+=== MT::ContentPermalink archive_type="ContentType-Weekly" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Weekly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/24-week/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Weekly" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/24-week/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Weekly" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Weekly">
 </mt:Contents>
 --- expected
 /test/archives/2017/09/24-week/#000003
-/test/archives/2017/09/24-week/#000002
-/test/archives/2017/09/24-week/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Monthly"
+=== MT::ContentPermalink archive_type="ContentType-Monthly"  ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Monthly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Monthly"  ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/2017/09/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Monthly"  ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Monthly">
 </mt:Contents>
 --- expected
 /test/archives/2017/09/#000003
-/test/archives/2017/09/#000002
-/test/archives/2017/09/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Yearly"
+=== MT::ContentPermalink archive_type="ContentType-Yearly" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Yearly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/2017/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Yearly" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/2017/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Yearly" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Yearly">
 </mt:Contents>
 --- expected
 /test/archives/2017/#000003
-/test/archives/2017/#000002
-/test/archives/2017/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Author"
+=== MT::ContentPermalink archive_type="ContentType-Author" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Author" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
 </mt:Contents>
 --- expected
 /test/archives/author/authorce2f3/#000003
-/test/archives/author/authorce2f3/#000002
-/test/archives/author/authorce2f3/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Author-Daily"
+=== MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Daily">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/27/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/27/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
 </mt:Contents>
 --- expected
 /test/archives/author/authorce2f3/2017/09/27/#000003
-/test/archives/author/authorce2f3/2017/09/27/#000002
-/test/archives/author/authorce2f3/2017/09/27/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Author-Weekly"
+=== MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/24-week/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/24-week/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
 </mt:Contents>
 --- expected
 /test/archives/author/authorce2f3/2017/09/24-week/#000003
-/test/archives/author/authorce2f3/2017/09/24-week/#000002
-/test/archives/author/authorce2f3/2017/09/24-week/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Author-Monthly"
+=== MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/09/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
 </mt:Contents>
 --- expected
 /test/archives/author/authorce2f3/2017/09/#000003
-/test/archives/author/authorce2f3/2017/09/#000002
-/test/archives/author/authorce2f3/2017/09/#000001
 
-=== MT::ContentPermalink archive_type="ContentType-Author-Yearly"
+=== MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 01
 --- template
-<mt:Contents><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
+<mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/#000001
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 02
+--- template
+<mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
+</mt:Contents>
+--- expected
+/test/archives/author/authorce2f3/2017/#000002
+
+=== MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 03
+--- template
+<mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
 </mt:Contents>
 --- expected
 /test/archives/author/authorce2f3/2017/#000003
-/test/archives/author/authorce2f3/2017/#000002
-/test/archives/author/authorce2f3/2017/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Category"
 --- template
@@ -475,28 +586,28 @@ __END__
 --- expected
 /test/archives/category/#000003
 
-=== MT::ContentPermalink archive_type="ContentType-Category-Daily"
+=== MT::ContentPermalink archive_type="ContentType-Category-Daily" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Daily">
 </mt:Contents>
 --- expected
 /test/archives/category/2017/09/27/#000003
 
-=== MT::ContentPermalink archive_type="ContentType-Category-Weekly"
+=== MT::ContentPermalink archive_type="ContentType-Category-Weekly" ConentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Weekly">
 </mt:Contents>
 --- expected
 /test/archives/category/2017/09/24-week/#000003
 
-=== MT::ContentPermalink archive_type="ContentType-Category-Monthly"
+=== MT::ContentPermalink archive_type="ContentType-Category-Monthly" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Monthly">
 </mt:Contents>
 --- expected
 /test/archives/category/2017/09/#000003
 
-=== MT::ContentPermalink archive_type="ContentType-Category-Yearly"
+=== MT::ContentPermalink archive_type="ContentType-Category-Yearly" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Category-Yearly">
 </mt:Contents>

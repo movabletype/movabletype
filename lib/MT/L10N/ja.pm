@@ -2600,7 +2600,7 @@ use vars qw( @ISA %Lexicon );
 	'No Content Field Type could be found.' => 'コンテンツフィールドタイプが見つかりません。',
 	'Invalid tag_handler of [_1].' => '不正な tag_handler です。',
 	'Invalid field_value_handler of [_1].' => '不正な field_value_handler です。',
-	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1_]) でコンテンツタイプが見つかりません。',
+	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',

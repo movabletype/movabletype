@@ -53,8 +53,9 @@ sub _hdlr_contents {
     my $id        = $args->{id};
     my $unique_id = $args->{unique_id};
     my $at        = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id   = $args->{blog_id} || $ctx->stash('blog_id');
-    my $blog      = $ctx->stash('blog');
+    my $blog_id
+        = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
+    my $blog = $ctx->stash('blog');
 
     return $ctx->_no_site_error unless $blog_id;
 
@@ -2036,11 +2037,21 @@ sub _get_content_type {
     my @not_found = ();
     my $blog_ids  = $blog_terms->{blog_id};
 
+    if ( my $stash_content_type = $ctx->stash('content_type') ) {
+        return [$stash_content_type];
+    }
+
     my $tmpl = $ctx->stash('template');
     if ( $tmpl && $tmpl->content_type_id ) {
         $template_ct
             = MT->model('content_type')->load( $tmpl->content_type_id );
         return unless $template_ct;
+    }
+    elsif (( !defined $args->{id} || $args->{id} eq '' )
+        && ( !defined $args->{unique_id} || $args->{unique_id} eq '' )
+        && ( !defined $args->{content_type} || $args->{content_type} eq '' ) )
+    {
+        return $ctx->_no_content_type_error;
     }
 
     my @blog_ids = ref $blog_ids ? @$blog_ids : ($blog_ids);
