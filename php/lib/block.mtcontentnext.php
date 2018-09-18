@@ -7,8 +7,10 @@
 
 require_once("archive_lib.php");
 function smarty_block_mtcontentnext($args, $res, &$ctx, &$repeat) {
+    $localvars = array('content', 'conditional', 'else_content');
+
     if (!isset($res)) {
-        $ctx->localize(array('content', 'conditional', 'else_content'));
+        $ctx->localize($localvars);
         $content = $ctx->stash('content');
         if ($content) {
             $next_content = $ctx->mt->db()->fetch_next_prev_content('next', $args);
@@ -20,7 +22,7 @@ function smarty_block_mtcontentnext($args, $res, &$ctx, &$repeat) {
         if (!$ctx->stash('conditional')) {
             $res = $ctx->stash('else_content');
         }
-        $ctx->restore(array('content', 'conditional', 'else_content'));
+        $ctx->restore($localvars);
     }
     return $res;
 }
