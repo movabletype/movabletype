@@ -4817,19 +4817,19 @@ abstract class MTDatabase {
             $by_value = $this->ts2db($obj->$by);
             $id       = $obj->id;
 
-            $sql .= "
+            $additional_sql = "
                    and cd_$by $op '$by_value'
                    $author_filter
                  order by cd_$by $desc, cd_id $desc";
-            $result = $this->db()->SelectLimit($sql, 1, false);
+            $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
 
             if (!$result || $result->EOF) {
-                $sql .= "
+                $additional_sql = "
                        and cd_$by = '$by_value'
                        and cd_id $op $id
                        $author_filter
                      order by cd_$by $desc, cd_id $desc";
-                $result = $this->db()->SelectLimit($sql, 1, false);
+                $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
                 if (!$result || $result->EOF) return null;
             }
         }
