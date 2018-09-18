@@ -225,7 +225,7 @@ sub tag_handler {
         MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id              => @$value ? $value : 0,
+        id => @$value ? $value : 0,
         category_set_id => $category_set_id,
     };
     my $cat_args = {};
@@ -269,7 +269,7 @@ sub tag_handler {
         else {
             @category_ids = @{$value};
         }
-        @ordered_categories = map { $categories{$_} } @category_ids;
+        @ordered_categories = grep {$_} map { $categories{$_} } @category_ids;
     }
 
     my $res     = '';
