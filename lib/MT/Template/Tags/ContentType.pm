@@ -63,8 +63,8 @@ sub _hdlr_contents {
     %terms = %blog_terms = ( blog_id => $blog_id );
     %args = %blog_args;
 
-    my $content_type = _get_content_type( $ctx, $args, \%blog_terms );
-    return $ctx->error($content_type) unless ref $content_type;
+    my $content_type = _get_content_type( $ctx, $args, \%blog_terms )
+        or return;
     my $content_type_id
         = scalar(@$content_type) == 1
         ? $content_type->[0]->id
@@ -2044,8 +2044,8 @@ sub _get_content_type {
     my $tmpl = $ctx->stash('template');
     if ( $tmpl && $tmpl->content_type_id ) {
         $template_ct
-            = MT->model('content_type')->load( $tmpl->content_type_id );
-        return unless $template_ct;
+            = MT->model('content_type')->load( $tmpl->content_type_id )
+            or return $ctx->_no_conent_type_error;
     }
     elsif (( !defined $args->{id} || $args->{id} eq '' )
         && ( !defined $args->{unique_id} || $args->{unique_id} eq '' )
@@ -2096,10 +2096,16 @@ sub _get_content_type {
         }
     }
 
-    return @not_found
-        ? MT->translate( "Content Type was not found. Blog ID: [_1]",
-        ( join ',', @not_found ) )
-        : \@content_types;
+    if (@not_found) {
+        return $ctx->error(
+            MT->translate(
+                'Content Type was not found. Blog ID: [_1]',
+                join( ',', @not_found ),
+            )
+        );
+    }
+
+    return \@content_types;
 }
 
 1;
