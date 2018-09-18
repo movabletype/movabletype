@@ -269,7 +269,7 @@ sub tag_handler {
         else {
             @category_ids = @{$value};
         }
-        @ordered_categories = map { $categories{$_} } @category_ids;
+        @ordered_categories = grep {$_} map { $categories{$_} } @category_ids;
     }
 
     my $res     = '';
