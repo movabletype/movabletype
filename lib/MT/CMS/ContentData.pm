@@ -1547,7 +1547,8 @@ sub _build_content_data_preview {
     for my $col (@cols) {
         my $data_value = $app->param($col);
         $data_value = 'richtext'
-            if $col eq 'convert_breaks' && $data_value eq '_richtext';
+            if $col eq 'convert_breaks'
+            && ( $data_value || '' ) eq '_richtext';
         push @data,
             {
             data_name  => $col,
