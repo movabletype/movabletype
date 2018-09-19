@@ -1361,6 +1361,12 @@ sub _build_content_data_preview {
     my $id           = $app->param('id');
     my $user_id      = $app->user->id;
 
+    my $ao_date = $app->param('authored_on_date') || '';
+    my $ao_time = $app->param('authored_on_time') || '';
+    my $ao_ts   = $ao_date . $ao_time;
+    $ao_ts =~ s/\D//g;
+    $content_data->authored_on($ao_ts);
+
     my $basename         = $app->param('identifier');
     my $preview_basename = $app->preview_object_basename;
     $content_data->identifier( $basename || $preview_basename );
