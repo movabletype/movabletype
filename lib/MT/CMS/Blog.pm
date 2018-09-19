@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -2041,7 +2041,6 @@ sub post_save {
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
-        $app->cookie_val();
         my ( $x, $y, $remember )
             = split( /::/, $cookies{ $app->user_cookie() }->value );
         my $cookie = $cookies{'commenter_id'};
