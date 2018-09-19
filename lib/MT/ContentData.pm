@@ -2070,13 +2070,6 @@ sub convert_breaks {
     }
 }
 
-sub remove_category_from_all_categories_fields {
-    my $class = shift;
-    my ( $objcat_class, $terms, $args ) = @_;
-    my @objcats = $objcat_class->load( $terms, $args );
-    $class->remove_category_from_categories_field($_) for @objcats;
-}
-
 sub remove_category_from_categories_field {
     my $class = shift;
     my ($objcat) = @_;

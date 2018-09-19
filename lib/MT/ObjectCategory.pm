@@ -71,9 +71,11 @@ __PACKAGE__->add_callback(
     MT->component('core'),
     sub {
         my ( $cb, $class, $terms, $args ) = @_;
-        MT->model('content_data')
-            ->remove_category_from_all_categories_fields( $class, $terms,
-            $args );
+        my @objcats = $class->load( $terms, $args );
+        for my $objcat (@objcats) {
+            MT->model('content_data')
+                ->remove_category_from_categories_field($objcat);
+        }
     },
 );
 
