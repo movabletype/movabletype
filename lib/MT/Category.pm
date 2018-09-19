@@ -45,9 +45,12 @@ __PACKAGE__->install_properties(
         child_of      => 'MT::Blog',
         audit         => 1,
         meta          => 1,
-        child_classes => [ 'MT::Placement', 'MT::Trackback', 'MT::FileInfo' ],
-        datasource    => 'category',
-        primary_key   => 'id',
+        child_classes => [
+            'MT::Placement', 'MT::Trackback',
+            'MT::FileInfo',  'MT::ObjectCategory',
+        ],
+        datasource  => 'category',
+        primary_key => 'id',
     }
 );
 
