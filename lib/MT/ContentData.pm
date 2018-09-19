@@ -2074,17 +2074,20 @@ sub remove_category_from_categories_field {
     my $class = shift;
     my ($objcat) = @_;
     return unless $objcat->cf_id;
-    my $cd = MT->model('content_data')->load( $objcat->object_id || 0 );
+    my $cd = $class->load( $objcat->object_id || 0 );
     return unless $cd;
-    my @old_cat_field_data = @{ $cd->data->{ $objcat->cf_id } || [] };
-    my @new_cat_field_data
-        = grep { $_ != $objcat->category_id } @old_cat_field_data;
-    return if @new_cat_field_data == @old_cat_field_data;
-    my %new_cd_data
-        = ( %{ $cd->data }, $objcat->cf_id => \@new_cat_field_data );
-    $cd->data( \%new_cd_data );
-    $cd->save or do { $MT::DebugMode && warn $cd->errstr };
-    1;
+    $cd->_remove_data_from_field( $objcat->category_id, $objcat->cf_id );
+}
+
+sub _remove_data_from_field {
+    my $self = shift;
+    my ( $remove_data_id, $field_id ) = @_;
+    return unless $remove_data_id && $field_id;
+    my @old_field_data = @{ $self->data->{$field_id} || [] };
+    my @new_field_data = grep { $_ != $remove_data_id } @old_field_data;
+    return unless @new_field_data < @old_field_data;
+    $self->data( { %{ $self->data }, $field_id => \@new_field_data } );
+    $self->save;
 }
 
 1;
