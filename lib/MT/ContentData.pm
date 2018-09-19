@@ -2079,6 +2079,15 @@ sub remove_category_from_categories_field {
     $cd->_remove_data_from_field( $objcat->category_id, $objcat->cf_id );
 }
 
+sub remove_tag_from_tags_field {
+    my $class = shift;
+    my ($objtag) = @_;
+    return unless $objtag->cf_id;
+    my $cd = $class->load( $objtag->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_field( $objtag->tag_id, $objtag->cf_id );
+}
+
 sub _remove_data_from_field {
     my $self = shift;
     my ( $remove_data_id, $field_id ) = @_;
