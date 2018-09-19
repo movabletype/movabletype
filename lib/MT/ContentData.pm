@@ -2070,4 +2070,28 @@ sub convert_breaks {
     }
 }
 
+sub remove_category_from_all_categories_fields {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
+    my @objcats = $class->load( $terms, $args );
+    $class->remove_category_from_categories_field($_) for @objcats;
+}
+
+sub remove_category_from_categories_field {
+    my $class = shift;
+    my ($objcat) = @_;
+    return unless $objcat->cf_id;
+    my $cd = MT->model('content_data')->load( $objcat->object_id || 0 );
+    return unless $cd;
+    my @old_cat_field_data = @{ $cd->data->{ $objcat->cf_id } || [] };
+    my @new_cat_field_data
+        = grep { $_ != $objcat->category_id } @old_cat_field_data;
+    return if @new_cat_field_data == @old_cat_field_data;
+    my %new_cd_data
+        = ( %{ $cd->data }, $objcat->cf_id => \@new_cat_field_data );
+    $cd->data( \%new_cd_data );
+    $cd->save or do { $MT::DebugMode && warn $cd->errstr };
+    1;
+}
+
 1;

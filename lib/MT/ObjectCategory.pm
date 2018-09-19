@@ -54,6 +54,28 @@ sub class_label_plural {
     MT->translate("Category Placements");
 }
 
+__PACKAGE__->add_callback(
+    'post_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $obj, $orig ) = @_;
+        MT->model('content_data')
+            ->remove_category_from_categories_field($obj);
+    },
+);
+
+__PACKAGE__->add_callback(
+    'pre_direct_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $class, $terms, $args ) = @_;
+        MT->model('content_data')
+            ->remove_category_from_all_categories_fields( $terms, $args );
+    },
+);
+
 1;
 __END__
 
