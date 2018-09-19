@@ -385,8 +385,9 @@ sub save {
 
 sub remove {
     my $cat = shift;
-    $cat->remove_children( { key => 'category_id' } );
     if ( ref $cat ) {
+        $cat->remove_children( { key => 'category_id' } );
+
         my $pkg = ref($cat);
 
         # orphan my children up to the root level
