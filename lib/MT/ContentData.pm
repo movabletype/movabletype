@@ -146,16 +146,16 @@ sub remove {
     if ( ref $self && $self->id ) {
         $self->remove_children;
         MT->model('objectasset')
-            ->remove(
+            ->remove_children_multi(
             { object_ds => 'content_data', object_id => $self->id } )
             or do { $MT::DebugMode && warn MT->model('objectasset')->errstr };
         MT->model('objectcategory')
-            ->remove(
+            ->remove_children_multi(
             { object_ds => 'content_data', object_id => $self->id } )
             or
             do { $MT::DebugMode && warn MT->model('objectcategory')->errstr };
         MT->model('objecttag')
-            ->remove(
+            ->remove_children_multi(
             { object_datasource => 'content_data', object_id => $self->id } )
             or do { $MT::DebugMode && warn MT->model('objecttag')->errstr };
     }
