@@ -2088,6 +2088,15 @@ sub remove_tag_from_tags_field {
     $cd->_remove_data_from_field( $objtag->tag_id, $objtag->cf_id );
 }
 
+sub remove_asset_from_asset_field {
+    my $class = shift;
+    my ($objasset) = @_;
+    return unless $objasset->cf_id;
+    my $cd = $class->load( $objasset->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_field( $objasset->asset_id, $objasset->cf_id );
+}
+
 sub _remove_data_from_field {
     my $self = shift;
     my ( $remove_data_id, $field_id ) = @_;
