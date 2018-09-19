@@ -72,7 +72,8 @@ __PACKAGE__->add_callback(
     sub {
         my ( $cb, $class, $terms, $args ) = @_;
         MT->model('content_data')
-            ->remove_category_from_all_categories_fields( $terms, $args );
+            ->remove_category_from_all_categories_fields( $class, $terms,
+            $args );
     },
 );
 
