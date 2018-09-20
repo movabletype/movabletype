@@ -339,7 +339,7 @@ sub _hdlr_contents {
         my $sort_by_cf = 0;
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
-                my ( $prefix, $value ) = split ':', $sort_by;
+                my ( $prefix, $value ) = split ':', $sort_by, 2;
                 my $cf = MT->model('cf')->load(
                     {   name            => $value,
                         content_type_id => $content_type_id,
