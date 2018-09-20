@@ -296,8 +296,7 @@ sub _hdlr_contents {
                     my $date_cf = '';
                     $date_cf = MT->model('cf')->load($arg)
                         if ( $arg =~ /^[0-9]+$/ );
-                    ($date_cf)
-                        = MT->model('cf')->load( { unique_id => $arg } )
+                    $date_cf = MT->model('cf')->load( { unique_id => $arg } )
                         unless ($date_cf);
                     if ($date_cf) {
                         $dt_field_id = $date_cf->id;
@@ -347,7 +346,7 @@ sub _hdlr_contents {
                     }
                 );
                 unless ($cf) {
-                    ($cf) = MT->model('cf')->load( { unique_id => $value } );
+                    $cf = MT->model('cf')->load( { unique_id => $value } );
                 }
                 if ($cf) {
                     my $data_type = MT->registry('content_field_types')
@@ -407,8 +406,7 @@ sub _hdlr_contents {
                     }
                 );
                 unless ($cf) {
-                    ($cf)
-                        = MT->model('cf')->load( { unique_id => $key } );
+                    $cf = MT->model('cf')->load( { unique_id => $key } );
                 }
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
@@ -1559,7 +1557,7 @@ sub _hdlr_content_calendar {
             my $date_cf = '';
             $date_cf = MT->model('cf')->load($arg)
                 if ( $arg =~ /^[0-9]+$/ );
-            ($date_cf) = MT->model('cf')->load( { unique_id => $arg } )
+            $date_cf = MT->model('cf')->load( { unique_id => $arg } )
                 unless ($date_cf);
             $date_cf = MT->model('cf')->load(
                 {   name            => $arg,
@@ -2085,7 +2083,7 @@ sub _get_content_type {
         else {
             if ($template_ct) {
                 my %terms = ( name => $template_ct->name );
-                my ($ct)
+                my $ct
                     = MT->model('content_type')
                     ->load(
                     { name => $template_ct->name, blog_id => $blog_id } );

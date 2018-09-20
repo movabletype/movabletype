@@ -781,7 +781,7 @@ sub _nextprev {
     my ( $category_field_id, $category_id, $date_field_id, $date_field_value,
         $by );
     if ( my $id = delete $terms->{category_field} ) {
-        my ($cf) = MT->model('cf')->load( { unique_id => $id } );
+        my $cf = MT->model('cf')->load( { unique_id => $id } );
         $cf = MT->model('cf')->load($id) unless $cf;
         $cf = MT->model('cf')->load(
             {   name            => $id,
@@ -808,7 +808,7 @@ sub _nextprev {
             $by = $id;
         }
         else {
-            my ($df) = MT->model('cf')->load( { unique_id => $id } );
+            my $df = MT->model('cf')->load( { unique_id => $id } );
             $df = MT->model('cf')->load($id) unless $df;
             $df = MT->model('cf')->load(
                 {   name            => $id,
