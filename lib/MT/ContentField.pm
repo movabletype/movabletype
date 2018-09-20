@@ -49,8 +49,8 @@ __PACKAGE__->install_properties(
 __PACKAGE__->add_callback( 'post_save', 5, MT->component('core'),
     \&_post_save );
 
-__PACKAGE__->add_callback( 'post_remove', 5, MT->component('core'),
-    \&_post_remove );
+__PACKAGE__->add_callback( 'pre_remove', 5, MT->component('core'),
+    \&_pre_remove );
 
 sub class_label {
     MT->translate("Content Field");
@@ -210,7 +210,7 @@ sub _post_save {
     MT->app->reboot;
 }
 
-sub _post_remove {
+sub _pre_remove {
     my ( $cb, $obj, $original ) = @_;
 
     my $content_type = MT::ContentType->load( $obj->content_type_id || 0 );
