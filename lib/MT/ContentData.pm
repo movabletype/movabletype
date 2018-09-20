@@ -132,6 +132,29 @@ MT->add_callback( 'unpublish_past_contents', 10, MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_content_unpub', @_ ); }
 );
 
+__PACKAGE__->add_callback(
+    'post_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $obj, $orig ) = @_;
+        __PACKAGE__->remove_content_data_from_content_type_field($obj);
+    },
+);
+
+__PACKAGE__->add_callback(
+    'pre_direct_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $class, $terms, $args ) = @_;
+        my @cds = $class->load( $terms, $args );
+        for my $cd (@cds) {
+            $class->remove_content_data_from_content_type_field($cd);
+        }
+    },
+);
+
 sub class_label {
     MT->translate("Content Data");
 }
@@ -146,16 +169,16 @@ sub remove {
     if ( ref $self && $self->id ) {
         $self->remove_children;
         MT->model('objectasset')
-            ->remove(
+            ->remove_children_multi(
             { object_ds => 'content_data', object_id => $self->id } )
             or do { $MT::DebugMode && warn MT->model('objectasset')->errstr };
         MT->model('objectcategory')
-            ->remove(
+            ->remove_children_multi(
             { object_ds => 'content_data', object_id => $self->id } )
             or
             do { $MT::DebugMode && warn MT->model('objectcategory')->errstr };
         MT->model('objecttag')
-            ->remove(
+            ->remove_children_multi(
             { object_datasource => 'content_data', object_id => $self->id } )
             or do { $MT::DebugMode && warn MT->model('objecttag')->errstr };
     }
@@ -2068,6 +2091,79 @@ sub convert_breaks {
             ? $self->blob_convert_breaks
             : $self->meta('convert_breaks');
     }
+}
+
+sub remove_category_from_categories_field {
+    my $class = shift;
+    my ($objcat) = @_;
+    return unless $objcat->cf_id;
+    my $cd = $class->load( $objcat->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objcat->category_id, $objcat->cf_id );
+}
+
+sub remove_tag_from_tags_field {
+    my $class = shift;
+    my ($objtag) = @_;
+    return unless $objtag->cf_id;
+    my $cd = $class->load( $objtag->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objtag->tag_id, $objtag->cf_id );
+}
+
+sub remove_asset_from_asset_field {
+    my $class = shift;
+    my ($objasset) = @_;
+    return unless $objasset->cf_id;
+    my $cd = $class->load( $objasset->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objasset->asset_id, $objasset->cf_id );
+}
+
+sub remove_content_data_from_content_type_field {
+    my $class        = shift;
+    my ($remove_cd)  = @_;
+    my @ct_field_ids = map { $_->id } MT->model('content_field')->load(
+        {   type                    => 'content_type',
+            related_content_type_id => $remove_cd->content_type_id,
+        },
+        { fetchonly => { id => 1 } },
+    );
+    return unless @ct_field_ids;
+    my $iter = $class->load_iter(
+        undef,
+        {   join => MT->model('content_field_index')->join_on(
+                undef,
+                {   content_data_id  => \'= cd_id',
+                    content_field_id => \@ct_field_ids,
+                    value_integer    => $remove_cd->id,
+                },
+            ),
+            unique => 1,
+        }
+    );
+    my @update_cds;
+    while ( my $update_cd = $iter->() ) {
+        push @update_cds, $update_cd;
+    }
+    $_->_remove_data_from_fields( $remove_cd->id, \@ct_field_ids )
+        for @update_cds;
+}
+
+sub _remove_data_from_fields {
+    my $self = shift;
+    my ( $remove_data_id, $field_ids ) = @_;
+    return unless $remove_data_id && $field_ids;
+    my @field_ids = ref $field_ids ? @$field_ids : ($field_ids);
+    my $changed;
+    for my $field_id (@field_ids) {
+        my @old_field_data = @{ $self->data->{$field_id} || [] };
+        my @new_field_data = grep { $_ != $remove_data_id } @old_field_data;
+        next unless @new_field_data < @old_field_data;
+        $self->data( { %{ $self->data }, $field_id => \@new_field_data } );
+        $changed = 1;
+    }
+    $self->save if $changed;
 }
 
 1;
