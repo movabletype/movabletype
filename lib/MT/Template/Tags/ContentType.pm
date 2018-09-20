@@ -1491,7 +1491,7 @@ sub _hdlr_content_calendar {
             $cat_set_name    = $category_set->name;
             $category_set_id = $category_set->id;
             my @cat_fields = MT->model('cf')->load(
-                {   blog_id            => $blog_id,
+                {   content_type_id    => $content_type_id,
                     related_cat_set_id => $category_set_id
                 }
             );
@@ -1562,8 +1562,11 @@ sub _hdlr_content_calendar {
                 if ( $arg =~ /^[0-9]+$/ );
             ($date_cf) = MT->model('cf')->load( { unique_id => $arg } )
                 unless ($date_cf);
-            ($date_cf) = MT->model('cf')->load( { name => $arg } )
-                unless ($date_cf);
+            $date_cf = MT->model('cf')->load(
+                {   name            => $arg,
+                    content_type_id => $content_type_id,
+                }
+            ) unless ($date_cf);
             if ($date_cf) {
                 $dt_field_id = $date_cf->id;
             }
