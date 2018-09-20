@@ -4164,7 +4164,7 @@ abstract class MTDatabase {
                 if ( count($content_type_id) > 1 )
                     $content_type_filter = "and cd_content_type_id in (" . implode(',', $content_type_id) . ' )';
                 else
-                    $content_type_filter = "and cd_content_type_id = " . array_shift($content_type_id);
+                    $content_type_filter = "and cd_content_type_id = " . $content_type_id[0];
             } else {
                 $content_type_filter = 'and cd_content_type_id = '.$content_type_id;
             }
