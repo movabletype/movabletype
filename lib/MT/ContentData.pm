@@ -138,6 +138,8 @@ __PACKAGE__->add_callback(
     MT->component('core'),
     sub {
         my ( $cb, $obj, $orig ) = @_;
+        $obj->remove_children;
+        $obj->remove_child_junction_table_records;
         __PACKAGE__->remove_content_data_from_content_type_field($obj);
     },
 );
@@ -150,6 +152,8 @@ __PACKAGE__->add_callback(
         my ( $cb, $class, $terms, $args ) = @_;
         my @cds = $class->load( $terms, $args );
         for my $cd (@cds) {
+            $cd->remove_children;
+            $cd->remove_child_junction_table_records;
             $class->remove_content_data_from_content_type_field($cd);
         }
     },
@@ -161,28 +165,6 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Content Data");
-}
-
-sub remove {
-    my $self = shift;
-    my $ret = $self->SUPER::remove(@_) or return;
-    if ( ref $self && $self->id ) {
-        $self->remove_children;
-        MT->model('objectasset')
-            ->remove_children_multi(
-            { object_ds => 'content_data', object_id => $self->id } )
-            or do { $MT::DebugMode && warn MT->model('objectasset')->errstr };
-        MT->model('objectcategory')
-            ->remove_children_multi(
-            { object_ds => 'content_data', object_id => $self->id } )
-            or
-            do { $MT::DebugMode && warn MT->model('objectcategory')->errstr };
-        MT->model('objecttag')
-            ->remove_children_multi(
-            { object_datasource => 'content_data', object_id => $self->id } )
-            or do { $MT::DebugMode && warn MT->model('objecttag')->errstr };
-    }
-    $ret;
 }
 
 sub to_hash {
@@ -2164,6 +2146,19 @@ sub _remove_data_from_fields {
         $changed = 1;
     }
     $self->save if $changed;
+}
+
+sub remove_child_junction_table_records {
+    my $self = shift;
+    MT->model('objectasset')
+        ->remove_children_multi(
+        { object_ds => 'content_data', object_id => $self->id } );
+    MT->model('objectcategory')
+        ->remove_children_multi(
+        { object_ds => 'content_data', object_id => $self->id } );
+    MT->model('objecttag')
+        ->remove_children_multi(
+        { object_datasource => 'content_data', object_id => $self->id } );
 }
 
 1;
