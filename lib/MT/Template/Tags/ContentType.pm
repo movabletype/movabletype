@@ -1403,12 +1403,11 @@ sub _hdlr_content_calendar {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
 
-    my $cd_terms = {};
-    my $cd_args  = {};
-    $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
+    my ( %cd_terms, %cd_args );
+    $ctx->set_content_type_load_context( $args, $cond, \%cd_terms, \%cd_args )
         or return;
 
-    my $content_type_id = $cd_terms->{content_type_id};
+    my $content_type_id = $cd_terms{content_type_id};
 
     my ($prefix);
     my @ts = MT::Util::offset_time_list( time, $blog_id );
@@ -1589,7 +1588,7 @@ sub _hdlr_content_calendar {
                 alias      => 'dt_cf_idx'
             }
         );
-        push @{ $cd_args->{joins} }, $join;
+        push @{ $cd_args{joins} }, $join;
     }
     if (@cat_field_ids) {
         my $join = MT::ContentFieldIndex->join_on(
@@ -1599,13 +1598,13 @@ sub _hdlr_content_calendar {
             },
             { alias => 'cat_cf_idx' }
         );
-        push @{ $cd_args->{joins} }, $join;
+        push @{ $cd_args{joins} }, $join;
     }
     my $iter = MT::ContentData->load_iter(
         {   blog_id => $blog_id,
             ( !$dt_field_id ? ( $dt_field => [ $start, $end ] ) : () ),
             status => MT::ContentStatus::RELEASE(),
-            %{$cd_terms},
+            %cd_terms,
         },
         {   (   !$dt_field_id
                 ? ( range_incl => { $dt_field => 1 },
@@ -1614,7 +1613,7 @@ sub _hdlr_content_calendar {
                     )
                 : ()
             ),
-            %{$cd_args},
+            %cd_args,
         }
     );
     my @left;
