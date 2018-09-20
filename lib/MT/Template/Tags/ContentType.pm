@@ -341,7 +341,11 @@ sub _hdlr_contents {
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
                 my ( $prefix, $value ) = split ':', $sort_by;
-                my ($cf) = MT->model('cf')->load( { name => $value } );
+                my $cf = MT->model('cf')->load(
+                    {   name            => $value,
+                        content_type_id => $content_type_id,
+                    }
+                );
                 unless ($cf) {
                     ($cf) = MT->model('cf')->load( { unique_id => $value } );
                 }
@@ -397,7 +401,11 @@ sub _hdlr_contents {
         if (%fields) {
             foreach my $key ( keys %fields ) {
                 my $value = $fields{$key};
-                my ($cf) = MT->model('cf')->load( { name => $key } );
+                my $cf    = MT->model('cf')->load(
+                    {   name            => $key,
+                        content_type_id => $content_type_id,
+                    }
+                );
                 unless ($cf) {
                     ($cf)
                         = MT->model('cf')->load( { unique_id => $key } );
