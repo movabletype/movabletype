@@ -1402,6 +1402,14 @@ C<CalendarIfNoContents>.
 sub _hdlr_content_calendar {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
+
+    my $cd_terms = {};
+    my $cd_args  = {};
+    $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
+        or return;
+
+    my $content_type_id = $cd_terms->{content_type_id};
+
     my ($prefix);
     my @ts = MT::Util::offset_time_list( time, $blog_id );
     my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
@@ -1562,10 +1570,6 @@ sub _hdlr_content_calendar {
         }
     }
 
-    my $cd_terms = {};
-    my $cd_args  = {};
-    $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
-        or return;
     if ($dt_field_id) {
         my $join = MT::ContentFieldIndex->join_on(
             'content_data_id',
