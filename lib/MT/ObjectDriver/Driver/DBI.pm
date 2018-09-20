@@ -603,6 +603,7 @@ sub prepare_statement {
 
     ## Implement `join` arg like MT::ObjectDriver, for compatibility.
     my %joined_table = ();
+    my %seen_alias;
     while ( my $join = shift @joins ) {
         my ( $j_class, $j_col, $j_terms, $j_args ) = @$join;
         my $j_unique;
@@ -670,6 +671,9 @@ sub prepare_statement {
             my $to_table = $driver->table_for($to_class);
             my $j_table  = $driver->table_for($j_class);
             my $j_alias  = $j_args->{alias};
+            if ( $j_alias && $seen_alias{$j_alias}++ ) {
+                $j_alias .= '_' . $seen_alias{$j_alias};
+            }
             if ( 'HASH' eq ref $cond ) {
                 my $dbh = $driver->rw_handle;
                 foreach my $cond_col ( keys %$cond ) {
