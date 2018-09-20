@@ -21,16 +21,90 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
+        my @asset_file;
+        for ( 0 .. 2 ) {
+            my $asset = MT::Test::Permission->make_asset(
+                blog_id => $blog_id,
+                class   => 'file',
+            );
+            push @asset_file, $asset;
+        }
+
+        my @tags;
+        for my $name ( 'foo', 'bar', 'baz' ) {
+            my $tag = MT::Test::Permission->make_tag( name => $name );
+            push @tags, $tag;
+        }
+
+        my $category_set
+            = MT::Test::Permission->make_category_set( blog_id => $blog_id );
+        my @categories;
+        for ( 0 .. 2 ) {
+            my $cat = MT::Test::Permission->make_category(
+                blog_id         => $blog_id,
+                category_set_id => $category_set->id,
+            );
+            push @categories, $cat;
+        }
+
         my $child_ct = MT::Test::Permission->make_content_type(
             blog_id => $blog_id,
             name    => 'child',
         );
-        my @child_cds;
-        push @child_cds,
-            MT::Test::Permission->make_content_data(
+        my $asset_field = MT::Test::Permission->make_content_field(
             blog_id         => $blog_id,
             content_type_id => $child_ct->id,
-            ) for 1 .. 3;
+            type            => 'asset',
+            name            => 'asset',
+        );
+        my $tags_field = MT::Test::Permission->make_content_field(
+            blog_id         => $blog_id,
+            content_type_id => $child_ct->id,
+            type            => 'tags',
+            name            => 'tags',
+        );
+        my $categories_field = MT::Test::Permission->make_content_field(
+            blog_id         => $blog_id,
+            content_type_id => $child_ct->id,
+            type            => 'categories',
+            name            => 'categories',
+        );
+        $child_ct->fields(
+            [   {   id        => $asset_field->id,
+                    order     => 1,
+                    type      => $asset_field->type,
+                    options   => { label => $asset_field->name, },
+                    unique_id => $asset_field->unique_id,
+                },
+                {   id        => $tags_field->id,
+                    order     => 2,
+                    type      => $tags_field->type,
+                    options   => { label => $tags_field->name, },
+                    unique_id => $tags_field->unique_id,
+                },
+                {   id        => $categories_field->id,
+                    order     => 3,
+                    type      => $categories_field->type,
+                    options   => { label => $categories_field->name, },
+                    unique_id => $categories_field->unique_id,
+                },
+            ]
+        );
+        $child_ct->save or die $child_ct->errstr;
+        my @child_cds;
+
+        for my $i ( 0 .. 2 ) {
+            my $cd = MT::Test::Permission->make_content_data(
+                blog_id         => $blog_id,
+                content_type_id => $child_ct->id,
+                data            => {
+                    $asset_field->id      => [ $asset_file[$i]->id ],
+                    $tags_field->id       => [ $tags[$i]->id ],
+                    $categories_field->id => [ $categories[$i]->id ],
+                },
+            );
+            push @child_cds, $cd;
+        }
 
         my $parent_ct = MT::Test::Permission->make_content_type(
             blog_id => $blog_id,
@@ -96,6 +170,18 @@ subtest 'initial state' => sub {
         }
     );
     is( scalar @cf_idxes, 3, '3 MT::ContentFieldIndex exist' );
+
+    my @objassets
+        = MT->model('objectasset')->load( { object_ds => 'content_data' } );
+    is( @objassets, 3, '3 MT:::ObjectAsset exist' );
+
+    my @objtags = MT->model('objecttag')
+        ->load( { object_datasource => 'content_data' } );
+    is( @objtags, 3, '3 MT::ObjectTag exist' );
+
+    my @objcats = MT->model('objectcategory')
+        ->load( { object_ds => 'content_data' } );
+    is( @objcats, 3, '3 MT::ObjectCategory exist' );
 };
 
 subtest 'remove content_data by instance method' => sub {
@@ -116,6 +202,18 @@ subtest 'remove content_data by instance method' => sub {
         }
     );
     is( scalar @cf_idxes, 2, '1 MT::ContentFieldIndex has been removed' );
+
+    my @objassets
+        = MT->model('objectasset')->load( { object_ds => 'content_data' } );
+    is( @objassets, 2, '1 MT:::ObjectAsset has been removed' );
+
+    my @objtags = MT->model('objecttag')
+        ->load( { object_datasource => 'content_data' } );
+    is( @objtags, 2, '1 MT::ObjectTag has been removed' );
+
+    my @objcats = MT->model('objectcategory')
+        ->load( { object_ds => 'content_data' } );
+    is( @objcats, 2, '1 MT::ObjectCategory has been removed' );
 };
 
 subtest 'remove content_data by class method' => sub {
@@ -141,6 +239,18 @@ subtest 'remove content_data by class method' => sub {
         }
     );
     is( scalar @cf_idxes, 1, '1 MT::ContentFieldIndex has been removed' );
+
+    my @objassets
+        = MT->model('objectasset')->load( { object_ds => 'content_data' } );
+    is( @objassets, 1, '1 MT:::ObjectAsset has been removed' );
+
+    my @objtags = MT->model('objecttag')
+        ->load( { object_datasource => 'content_data' } );
+    is( @objtags, 1, '1 MT::ObjectTag has been removed' );
+
+    my @objcats = MT->model('objectcategory')
+        ->load( { object_ds => 'content_data' } );
+    is( @objcats, 1, '1 MT::ObjectCategory has been removed' );
 };
 
 done_testing;
