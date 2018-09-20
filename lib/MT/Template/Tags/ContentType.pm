@@ -353,10 +353,15 @@ sub _hdlr_contents {
                         ->{ $cf->type }{data_type};
                     my $join = MT->model('cf_idx')->join_on(
                         'content_data_id',
-                        { content_field_id => $cf->id },
+                        undef,
                         {   sort      => 'value_' . $data_type,
                             direction => $args->{sort_order} || 'descend',
-                            alias     => 'cf_idx_' . $cf->id
+                            alias     => 'cf_idx_' . $cf->id,
+                            type      => 'left',
+                            condition => {
+                                content_data_id  => \'= cd_id',
+                                content_field_id => $cf->id,
+                            },
                         }
                     );
                     if ( $args{join} ) {
