@@ -496,7 +496,7 @@ sub _hdlr_contents {
                                 my $join = MT->model('cf_idx')->join_on(
                                     'content_data_id',
                                     {   content_field_id => $cf->id,
-                                        value_integer    => @cat_ids
+                                        value_integer    => \@cat_ids
                                     },
                                     { alias => 'cat_cf_idx' }
                                 );
