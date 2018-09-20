@@ -4737,6 +4737,9 @@ abstract class MTDatabase {
             return undef;
         $next = $direction === 'next' ? 1 : 0;
 
+        $blog_id         = $obj->blog_id;
+        $content_type_id = $obj->content_type_id;
+
         if (isset($args['by_author'])) {
             $author_id = $obj->author_id;
             $author_filter = "and cd_author_id = $author_id";
@@ -4836,9 +4839,6 @@ abstract class MTDatabase {
         }
 
         if (!isset($by)) $by = 'authored_on';
-
-        $blog_id         = $obj->blog_id;
-        $content_type_id = $obj->content_type_id;
 
         $sql = "
             select *
