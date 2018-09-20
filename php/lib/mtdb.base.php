@@ -4235,7 +4235,7 @@ abstract class MTDatabase {
                 || $arg === 'modified_on'
                 || $arg === 'created_on' )
             {
-                $dt_field = 'cd' . $arg;
+                $dt_field = 'cd_' . $arg;
             }
             else {
                 if (preg_match('/^[0-9]+$/', $arg))
