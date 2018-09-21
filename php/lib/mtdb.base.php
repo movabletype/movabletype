@@ -4245,7 +4245,29 @@ abstract class MTDatabase {
         }
 
         $join_clause = '';
-        
+
+        if (isset($args['current_timestamp']) && isset($args['current_timestamp_end'])) {
+            $map = $mt->db()->fetch_templatemap(array(
+                'blog_id' => $blog_id,
+                'type' => $ctx->stash('current_archive_type'),
+                'preferred' => 1,
+                'build_type' => 3,
+            ));
+            if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
+                $start = intval($args['current_timestamp']);
+                $end   = intval($args['current_timestamp_end']);
+                $alias = 'cf_idx_' . $dt_field_id;
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id" .
+                                  " and $alias.cf_idx_value_datetime >= $start and $alias.cf_idx_value_datetime <= $end";
+                $extras['join'][$join_table] = array('condition' => $join_condition);
+            } else {
+                $dt_field    = 'cd_authored_on';
+                $date_filter = $this->build_date_filter($args, $dt_field);
+            }
+        }
+
         $dt_field    = 'cd_authored_on';
         $dt_field_id = 0;
         if ( $arg = $args['date_field'] ) {
@@ -4282,9 +4304,8 @@ abstract class MTDatabase {
                                   " and $alias.cf_idx_content_data_id = cd_id";
                 $extras['join'][$join_table] = array('condition' => $join_condition);
             }
+            $date_filter = $this->build_date_filter($args, $dt_field);
         }
-
-        $date_filter = $this->build_date_filter($args, $dt_field);
 
         if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
