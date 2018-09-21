@@ -4261,7 +4261,7 @@ abstract class MTDatabase {
                 if (!isset($date_cfs))
                     $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                 if (!isset($date_cfs))
-                    $date_cfs = $this->fetch_content_fields(array('name' => $arg));
+                    $date_cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
                 if (isset($date_cfs)) {
                     $date_cf = $date_cfs[0];
                     $date_cf_id = $date_cf->cf_id;
@@ -4327,7 +4327,7 @@ abstract class MTDatabase {
             if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
                 $key= $m[1];
                 $cfs = $this->fetch_content_fields(array(
-                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
                     'name' => $key
                 ));
                 if (!isset($cfs))
@@ -4440,7 +4440,7 @@ abstract class MTDatabase {
 
         if (count($fields)) {
             foreach ($fields as $key => $value) {
-                $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'name' => $key));
+                $cfs = $this->fetch_content_fields(array('content_type_id' => $content_type_id, 'name' => $key));
                 if (!isset($cfs))
                     $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'unique_id' => $key));
                 if (!isset($cfs)) continue;
@@ -4751,7 +4751,7 @@ abstract class MTDatabase {
             if (!isset($cf)) {
                 $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                 if (!isset($cfs))
-                    $cfs = $this->fetch_content_fields(array('name' => $arg));
+                    $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
                 if (isset($cfs)) $cf = $cfs[0];
             }
             if (isset($cf)) $cat_field_id = $cf->id;
@@ -4775,7 +4775,7 @@ abstract class MTDatabase {
                 if (!isset($cf)) {
                     $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                     if (!isset($cfs))
-                        $cfs = $this->fetch_content_fields(array('name' => $arg));
+                        $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
                     if (isset($cfs)) $cf = $cfs[0];
                 }
                 if (isset($cf)) $dt_field_id = $cf->id;
@@ -4936,12 +4936,24 @@ abstract class MTDatabase {
         if (isset($args['unique_id'])) {
             $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
         }
+        if (isset($args['content_type_id'])) {
+            if (is_array($args['content_type_id'])) {
+                if (count($args['content_type_id']) > 1) {
+                    $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                } else {
+                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
+                }
+            } else {
+                $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
+            }
+        }
         if (isset($args['related_cat_set_id'])) {
             $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
         }
         $sql = "select *
                   from mt_cf
                  where cf_blog_id = $blog_id
+                   $content_type_id_filter
                    $name_filter
                    $unique_id_filter
                    $related_cat_set_id_filter";
