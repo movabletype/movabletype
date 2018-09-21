@@ -109,8 +109,17 @@ sub tag_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
+    my @list_values;
+    if ( defined $values && $values ne '' ) {
+        if ( ref $values eq 'ARRAY' ) {
+            @list_values = @$values;
+        }
+        else {
+            @list_values = ($values);
+        }
+    }
     my $contents = join '',
-        map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
+        map { '<li>' . MT::Util::encode_html($_) . '</li>' } @list_values;
     return "<ul>$contents</ul>";
 }
 
