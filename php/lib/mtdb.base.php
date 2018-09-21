@@ -5066,8 +5066,12 @@ abstract class MTDatabase {
 
         $ct_filter = '';
         if (isset($args['content_type_id'])) {
-            if (count($args['content_type_id'] > 1)) {
-                $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+            if (is_array($args['content_type_id'])) {
+                if (count($args['content_type_id']) > 1) {
+                    $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                } else {
+                    $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'][0];
+                }
             } else {
                 $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'];
             }
