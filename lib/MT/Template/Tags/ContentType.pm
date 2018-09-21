@@ -619,7 +619,7 @@ sub _hdlr_contents {
 
         if ( !@filters ) {
             unless ($sort_by_cf) {
-                if ( $args{sort} eq 'authored_on' ) {
+                if ( $args{sort} and $args{sort} eq 'authored_on' ) {
                     my $dir = $args->{sort_order} || 'descend';
                     $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
                     $args{sort} = [

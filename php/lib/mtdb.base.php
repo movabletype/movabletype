@@ -4144,10 +4144,10 @@ abstract class MTDatabase {
         require_once('class.mt_content_data.php');
         $extras = array();
         $mt = MT::get_instance();
+        $ctx = $mt->context();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and cd_blog_id ' . $sql;
-            $ctx = $mt->context();
             $blog = $ctx->stash('blog');
             if ( !empty( $blog ) )
                 $blog_id = $blog->blog_id;
@@ -4203,7 +4203,7 @@ abstract class MTDatabase {
         }
 
         # a context hash for filter routines
-        $ctx = array();
+        $filter_ctx = array();
         $filters = array();
 
         if (!isset($_REQUEST['content_ids_published'])) {
@@ -4212,7 +4212,7 @@ abstract class MTDatabase {
 
         if (isset($args['unique']) && $args['unique']) {
             $filters[] = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
-            $ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+            $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
         }
 
         # special case for selecting a particular content
@@ -4245,7 +4245,29 @@ abstract class MTDatabase {
         }
 
         $join_clause = '';
-        
+
+        if (isset($args['current_timestamp']) && isset($args['current_timestamp_end'])) {
+            $map = $mt->db()->fetch_templatemap(array(
+                'blog_id' => $blog_id,
+                'type' => $ctx->stash('current_archive_type'),
+                'preferred' => 1,
+                'build_type' => 3,
+            ));
+            if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
+                $start = intval($args['current_timestamp']);
+                $end   = intval($args['current_timestamp_end']);
+                $alias = 'cf_idx_' . $dt_field_id;
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id" .
+                                  " and $alias.cf_idx_value_datetime >= $start and $alias.cf_idx_value_datetime <= $end";
+                $extras['join'][$join_table] = array('condition' => $join_condition);
+            } else {
+                $dt_field    = 'cd_authored_on';
+                $date_filter = $this->build_date_filter($args, $dt_field);
+            }
+        }
+
         $dt_field    = 'cd_authored_on';
         $dt_field_id = 0;
         if ( $arg = $args['date_field'] ) {
@@ -4282,9 +4304,8 @@ abstract class MTDatabase {
                                   " and $alias.cf_idx_content_data_id = cd_id";
                 $extras['join'][$join_table] = array('condition' => $join_condition);
             }
+            $date_filter = $this->build_date_filter($args, $dt_field);
         }
-
-        $date_filter = $this->build_date_filter($args, $dt_field);
 
         if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
@@ -4487,7 +4508,7 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            $ctx['c'] =& $cmap;
+                            $filter_ctx['c'] =& $cmap;
                             $filters[] = $cexpr;
                         } else {
                             return null;
@@ -4532,7 +4553,7 @@ abstract class MTDatabase {
                                     $cd_list[$o->objecttag_object_id] = 1;
                             }
                         }
-                        $ctx['t'] =& $tmap;
+                        $filter_ctx['t'] =& $tmap;
                         $filters[] = $cexpr;
                     } else {
                         return null;
@@ -4623,7 +4644,7 @@ abstract class MTDatabase {
             if (empty($cd)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
-                    if (!$f($cd, $ctx)) {
+                    if (!$f($cd, $filter_ctx)) {
                         continue 2;
                     }
                 }
