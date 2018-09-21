@@ -438,6 +438,7 @@ sub feed_value_handler_multiple {
 
     my $contents = '';
     for my $v (@$values) {
+        next unless defined $v && $v ne '';
         my $encoded_v     = MT::Util::encode_html($v);
         my $encoded_label = MT::Util::encode_html( $value_label_hash{$v} );
         $contents .= "<li>$encoded_label($encoded_v)</li>";
