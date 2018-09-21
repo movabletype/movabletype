@@ -202,6 +202,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if ( $unique_myself ) {
                     $key = "";
                     foreach ( $pkeys as $p ) {
+                        $p = strtolower($p);
                         $key .= $objs[$i]->$p.":";
                     }
                     if (array_key_exists($key, $unique_arr))
