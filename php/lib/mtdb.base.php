@@ -4332,7 +4332,6 @@ abstract class MTDatabase {
                 ));
                 if (!isset($cfs))
                     $cfs = $this->fetch_content_fields(array(
-                        'blog_id' => $blog_id,
                         'unique_id' => $key
                     ));
                 if (isset($cfs)) {
@@ -4442,7 +4441,7 @@ abstract class MTDatabase {
             foreach ($fields as $key => $value) {
                 $cfs = $this->fetch_content_fields(array('content_type_id' => $content_type_id, 'name' => $key));
                 if (!isset($cfs))
-                    $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'unique_id' => $key));
+                    $cfs = $this->fetch_content_fields(array('unique_id' => $key));
                 if (!isset($cfs)) continue;
                 
                 $cf = $cfs[0];
