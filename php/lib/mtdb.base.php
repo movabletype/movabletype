@@ -5142,6 +5142,8 @@ abstract class MTDatabase {
                 $ct->Load($where);
                 if (is_null($ct->id)) {
                     $where = "content_type_name = '$str'";
+                    if (isset($args['blog_id']))
+                        $where .= " and content_type_blog_id = " . intval($args['blog_id']);
                     $ct->Load($where);
                 }
                 if (is_null($ct->id)) return null;
