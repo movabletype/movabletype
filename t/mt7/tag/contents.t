@@ -259,14 +259,12 @@ aaaaa
 aaaaa
 
 === MT:Contents with content_type="unique_id"
---- SKIP
 --- template
 <mt:Contents content_type="[% ct_uid %]">a</mt:Contents>
 --- expected
 aaaaa
 
 === MT:Contents with site_id modifier
---- SKIP
 --- template
 <mt:Contents site_id="1" content_type="[% ct_uid %]">a</mt:Contents>
 --- expected
