@@ -4144,10 +4144,10 @@ abstract class MTDatabase {
         require_once('class.mt_content_data.php');
         $extras = array();
         $mt = MT::get_instance();
+        $ctx = $mt->context();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and cd_blog_id ' . $sql;
-            $ctx = $mt->context();
             $blog = $ctx->stash('blog');
             if ( !empty( $blog ) )
                 $blog_id = $blog->blog_id;
@@ -4203,7 +4203,7 @@ abstract class MTDatabase {
         }
 
         # a context hash for filter routines
-        $ctx = array();
+        $filter_ctx = array();
         $filters = array();
 
         if (!isset($_REQUEST['content_ids_published'])) {
@@ -4212,7 +4212,7 @@ abstract class MTDatabase {
 
         if (isset($args['unique']) && $args['unique']) {
             $filters[] = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
-            $ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+            $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
         }
 
         # special case for selecting a particular content
@@ -4508,7 +4508,7 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            $ctx['c'] =& $cmap;
+                            $filter_ctx['c'] =& $cmap;
                             $filters[] = $cexpr;
                         } else {
                             return null;
@@ -4553,7 +4553,7 @@ abstract class MTDatabase {
                                     $cd_list[$o->objecttag_object_id] = 1;
                             }
                         }
-                        $ctx['t'] =& $tmap;
+                        $filter_ctx['t'] =& $tmap;
                         $filters[] = $cexpr;
                     } else {
                         return null;
@@ -4644,7 +4644,7 @@ abstract class MTDatabase {
             if (empty($cd)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
-                    if (!$f($cd, $ctx)) {
+                    if (!$f($cd, $filter_ctx)) {
                         continue 2;
                     }
                 }
