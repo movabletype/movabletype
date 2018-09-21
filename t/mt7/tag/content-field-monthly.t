@@ -70,6 +70,7 @@ $ct->fields(
             order     => 1,
             type      => $cf_category->type,
             unique_id => $cf_category->unique_id,
+            options   => { category_set => $category_set->id },
         },
         {   id        => $cf_datetime->id,
             label     => 1,
@@ -152,9 +153,17 @@ PHP
 
 __END__
 
-=== content type monthly
+=== content type monthly (content field)
 --- template
 <mt:Contents content_type="test content type"><mt:ContentField content_field="datetime">
 <mt:ContentFieldValue></mt:ContentField></mt:Contents>
 --- expected chomp
+August 31, 2018 12:00 AM
+
+=== content type monthly (content fields/content field)
+--- template
+<mt:Contents content_type="test content type"><mt:ContentFields><mt:ContentField>
+<mt:ContentFieldValue></mt:ContentField></mt:ContentFields></mt:Contents>
+--- expected chomp
+1
 August 31, 2018 12:00 AM
