@@ -91,7 +91,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
 
         $ctx->stash('_contents_glue', $args['glue']);
-        if (($limit > count($contents)) || ($limit == -1)) {
+        if (!$limit || ($limit > count($contents)) || ($limit == -1)) {
             $limit = count($contents);
         }
         $ctx->stash('_contents_limit', $limit);
@@ -104,7 +104,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
     $args['class'] = 'content_data';
 
-    if ($limit ? ($counter < $limit) : ($counter < count($contents))) {
+    if ($counter < $limit) {
         $blog_id = $ctx->stash('blog_id');
         $content = $contents[$counter];
         if (!empty($content)) {
