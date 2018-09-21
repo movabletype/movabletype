@@ -38,71 +38,71 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $limit = $args['limit'];
         if (!ctype_digit($limit) && $limit === 'none')
             $limit = 0;
-        $ctx->stash('_contents_limit', $limit);
         $ctx->stash('__out', false);
+
+        if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
+            $l = 0;
+            if ( $args['limit'] )
+                $l = $args['limit'];
+            $ctx->stash('__pager_limit', $l);
+            if ( $_REQUEST['offset'] )
+                $ctx->stash('__pager_offset', $_REQUEST['offset']);
+        }
+
+        $contents = $ctx->stash('contents');
+
+        if (!isset($contents)) {
+            require_once('archive_lib.php');
+            $at = $ctx->stash('current_archive_type');
+            try {
+                $archiver = ArchiverFactory::get_archiver($at);
+            } catch (Exception $e ) {
+            }
+            if (isset($args['id'])) {
+                $args['content_id'] = $args['id'];
+            }
+            $ts = $ctx->stash('current_timestamp');
+            $tse = $ctx->stash('current_timestamp_end');
+            if ($ts && $tse) {
+                # assign date range if we have both
+                # start and end date
+                $args['current_timestamp'] = $ts;
+                $args['current_timestamp_end'] = $tse;
+            }
+            if (isset($archiver)) {
+                $args['limit'] or $args['limit'] = -1;
+                $archiver->setup_args($args);
+            }
+
+            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+                $total_count = 0;
+            $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
+            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+                $ctx->stash('__pager_total_count', $total_count);
+            $ctx->stash('contents', $contents);
+
+            $ctx->stash('conditional', empty($contents) ? 0 : 1);
+            if (empty($contents)) {
+                $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
+                if (!$repeat)
+                      $ctx->restore($localvars);
+                return $ret;
+            }
+        }
+
+        $ctx->stash('_contents_glue', $args['glue']);
+        if (($limit > count($contents)) || ($limit == -1)) {
+            $limit = count($contents);
+        }
+        $ctx->stash('_contents_limit', $limit);
     } else {
+        $contents = $ctx->stash('contents');
         $limit = $ctx->stash('_contents_limit');
         $counter = $ctx->stash('_contents_counter');
         $out = $ctx->stash('__out');
     }
 
     $args['class'] = 'content_data';
-
-    if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
-        $l = 0;
-        if ( $args['limit'] )
-            $l = $args['limit'];
-        $ctx->stash('__pager_limit', $l);
-        if ( $_REQUEST['offset'] )
-            $ctx->stash('__pager_offset', $_REQUEST['offset']);
-    }
-
-    $contents = $ctx->stash('contents');
-
-    if (!isset($contents)) {
-        require_once('archive_lib.php');
-        $at = $ctx->stash('current_archive_type');
-        try {
-            $archiver = ArchiverFactory::get_archiver($at);
-        } catch (Exception $e ) {
-        }
-        if (isset($args['id'])) {
-            $args['content_id'] = $args['id'];
-        }
-        $ts = $ctx->stash('current_timestamp');
-        $tse = $ctx->stash('current_timestamp_end');
-        if ($ts && $tse) {
-            # assign date range if we have both
-            # start and end date
-            $args['current_timestamp'] = $ts;
-            $args['current_timestamp_end'] = $tse;
-        }
-        if (isset($archiver)) {
-            $args['limit'] or $args['limit'] = -1;
-            $archiver->setup_args($args);
-        }
-
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
-            $total_count = 0;
-        $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
-            $ctx->stash('__pager_total_count', $total_count);
-        $ctx->stash('contents', $contents);
-    }
-
-    $ctx->stash('conditional', empty($contents) ? 0 : 1);
-    if (empty($contents)) {
-        $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
-        if (!$repeat)
-              $ctx->restore($localvars);
-        return $ret;
-    }
-
-    $ctx->stash('_contents_glue', $args['glue']);
-    if (($limit > count($contents)) || ($limit == -1)) {
-        $limit = count($contents);
-        $ctx->stash('_contents_limit', $limit);
-    }
 
     if ($limit ? ($counter < $limit) : ($counter < count($contents))) {
         $blog_id = $ctx->stash('blog_id');
