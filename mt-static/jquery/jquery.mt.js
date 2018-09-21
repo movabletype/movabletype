@@ -1746,18 +1746,22 @@ function openModalWithoutForm(href, opts) {
 function resizeModal() {
   var modalHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
-  if ($iframeContents.find('body .modal-body').length > 0) {
+  var $modalBody = $iframeContents.find('body .modal-body');
+  if ($modalBody.length > 0) {
     modalHeight = $iframeContents.find('body').outerHeight(true);
   } else {
     modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
   }
   if ( MT.Util.isMobileView() ) {
     var mobileScreenHeight = window.top.jQuery(window.top).height();
-    if ( modalHeight > mobileScreenHeight ) {
-      modalHeight = mobileScreenHeight - 30;
+    modalHeight = mobileScreenHeight - 10;
+    var modalBodyHeight = (modalHeight - 130) + 'px';
+    $modalBody.css('max-height', modalBodyHeight);
+  } else {
+    if ( modalHeight < 500 ) {
+      modalHeight = 500;
     }
-  } else if ( modalHeight < 500 ) {
-    modalHeight = 500;
+    $modalBody.css('max-height', '34rem');
   }
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
 }
