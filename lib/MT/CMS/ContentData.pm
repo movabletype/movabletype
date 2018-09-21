@@ -748,8 +748,7 @@ sub delete {
     }
     my $content_type;
     if ($content_type_id) {
-        $content_type = MT::ContentType->load(
-            { id => $content_type_id, blog_id => $blog->id } );
+        $content_type = MT::ContentType->load( { id => $content_type_id } );
     }
     unless ($content_type) {
         return $app->errtrans(
@@ -1169,8 +1168,7 @@ sub validate_content_fields {
 
     my $blog_id = $app->blog ? $app->blog->id : undef;
     my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type = MT::ContentType->load(
-        { id => $content_type_id, blog_id => $blog_id } );
+    my $content_type = MT::ContentType->load( { id => $content_type_id } );
 
     return $app->json_error( $app->translate('Invalid request.') )
         unless $blog_id && $content_type;
