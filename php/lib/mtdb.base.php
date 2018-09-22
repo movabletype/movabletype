@@ -4879,7 +4879,7 @@ abstract class MTDatabase {
         else {
             $desc = $next ? 'ASC' : 'DESC';
             $op   = $next ? '>'   : '<';
-            $by_value = $this->ts2db($obj->$by);
+            $by_value = $this->db2ts($obj->$by);
             $id       = $obj->id;
 
             $additional_sql = "
