@@ -1658,7 +1658,9 @@ function initModal() {
     $iframe.remove();
   });
 
-  window.top.jQuery(window.top).on('resize', resizeModal);
+  window.top.jQuery(window.top).on('resize scroll', function () {
+    setTimeout(resizeModal, 100);
+  });
 }
 
 function openModal(href, opts) {
@@ -1745,25 +1747,34 @@ function openModalWithoutForm(href, opts) {
 
 function resizeModal() {
   var modalHeight;
+  var modalBodyHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
   var $modalBody = $iframeContents.find('body .modal-body');
-  if ($modalBody.length > 0) {
-    modalHeight = $iframeContents.find('body').outerHeight(true);
-  } else {
-    modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
-  }
   if ( MT.Util.isMobileView() ) {
     var mobileScreenHeight = window.top.jQuery(window.top).height();
-    modalHeight = mobileScreenHeight - 10;
-    var modalBodyHeight = (modalHeight - 130) + 'px';
-    $modalBody.css('max-height', modalBodyHeight);
+    if (top.jQuery(top).width() < top.jQuery(top).height()) {
+      modalHeight = mobileScreenHeight - 10;
+    } else {
+      if (MT.Util.isIos()) {
+        modalHeight = mobileScreenHeight;
+      } else {
+        modalHeight = mobileScreenHeight + 50;
+      }
+    }
+    modalBodyHeight = (modalHeight - 130) + 'px';
   } else {
+    if ($modalBody.length > 0) {
+      modalHeight = $iframeContents.find('body').outerHeight(true);
+    } else {
+      modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
+    }
     if ( modalHeight < 500 ) {
       modalHeight = 500;
     }
-    $modalBody.css('max-height', '34rem');
+    modalBodyHeight = '34rem';
   }
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
+  $modalBody.css('max-height', modalBodyHeight);
 }
 
 var previousView;
