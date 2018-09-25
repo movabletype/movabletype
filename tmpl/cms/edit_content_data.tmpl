@@ -326,7 +326,7 @@
          name="status"
          type="submit"
          title="<mt:var name="button_title">"
-         class="publish action primary button btn btn-primary mx-1">
+         class="publish action primary button btn__mobile btn-primary mx-1">
         <mt:var name="button_text">
       </button>
       <button
@@ -334,14 +334,14 @@
          type="submit"
          accesskey="v"
          title="<mt:var name="preview_button_title">"
-         class="preview action button btn btn-default mx-1">
+         class="preview action button btn__mobile btn-default mx-1">
         <__trans phrase="Preview">
       </button>
     </div>
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action mt-4">
+<div class="text-right delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -356,6 +356,20 @@
     <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
+</div>
+<div class="row delete-action d-md-none mt-4">
+  <div class="col">
+    <button class="btn__mobile btn-danger delete mx-1"
+     mt:command="do-remove-items"
+     mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+     mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+     mt:subtype="content_data_<mt:var name="content_type_id" escape="html">"
+     mt:object-type="content_data"
+     mt:blog-id="<mt:var name="blog_id">"
+    >
+      <__trans phrase="Delete">
+    </button>
+  </div>
 </div>
 </mt:if>
 
