@@ -95,7 +95,11 @@ sub login_credentials {
     my $password = $app->param('password');
     my $remember = $app->param('remember') ? 1 : 0;
 
-    if ( length($username) && length($password) ) {
+    if (   defined($username)
+        && length($username)
+        && defined($password)
+        && length($password) )
+    {
         my ( $user, $pass, $remember );
         $user     = $app->param('username');
         $pass     = $app->param('password');
