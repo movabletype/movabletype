@@ -10731,6 +10731,13 @@ fieldset.form-group {
 }
 
 /* Modal */
+@media (max-width: 767.98px) {
+  .modal-dialog {
+    margin: 0.25rem;
+    max-width: 100%;
+  }
+}
+
 .modal-content {
   position: relative;
   border-radius: 0;
