@@ -9772,8 +9772,8 @@ li {
 .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
   padding-top: 1rem;
   padding-bottom: 2rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   background: #F4F4F4;
 }
 
