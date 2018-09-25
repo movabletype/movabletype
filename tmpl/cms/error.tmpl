@@ -25,7 +25,7 @@
    onclick="backSessionHistoryFallback(); <mt:var name="goback">"
    type="submit"
    accesskey="s"
-   class="goback action primary button btn btn-primary">
+   class="goback action primary button btn__mobile btn-primary">
   <mt:var name="value">
 </button>
 </mt:unless>
@@ -40,7 +40,7 @@
 <mt:else>
    onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
 </mt:if>
-   class="action button btn btn-default">
+   class="action button btn__mobile btn-default">
   <mt:var name="label" escape="html">
 </button>
 </mt:loop>

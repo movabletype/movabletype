@@ -74,7 +74,7 @@
     </div>
 
     <div class="row align-items-center actions-bar actions-bar-login">
-      <div class="col">
+      <div class="col order-last order-md-first">
     <mt:if name="can_recover_password">
       <div id="forget-password" class="mb-4">
         <a href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>">
@@ -88,12 +88,12 @@
       </div>
     </mt:if>
       </div>
-      <div class="col-auto text-right">
+      <div class="col-12 col-md-auto order-first order-md-last mb-4 mb-md-0 text-right">
         <button
            type="submit"
            accesskey="s"
            title="<__trans phrase="Sign In (s)">"
-           class="sign-in action primary button btn btn-primary">
+           class="sign-in action primary button btn__mobile btn-primary">
           <__trans phrase="Sign in">
         </button>
       </div>

@@ -73,7 +73,7 @@
    type="submit"
    accesskey="s"
    title="<__trans phrase="Save changes to this comment (s)">"
-   class="save action primary button btn btn-primary">
+   class="save action primary button btn__mobile btn-primary">
   <__trans phrase="Save Changes">
 </button>
 <mt:if name="can_delete_comment">
@@ -82,7 +82,15 @@
    type="submit"
    accesskey="x"
    title="<__trans phrase="Delete this comment (x)">"
-   class="delete action button btn btn-default">
+   class="delete action button btn btn-default d-none d-md-inline-block">
+  <__trans phrase="Delete">
+</button>
+<button
+   onclick="return MT.Util.doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
+   type="submit"
+   accesskey="x"
+   title="<__trans phrase="Delete this comment (x)">"
+   class="delete action button btn__mobile btn-danger d-md-none">
   <__trans phrase="Delete">
 </button>
 </mt:if>
