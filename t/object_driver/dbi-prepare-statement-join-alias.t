@@ -34,4 +34,9 @@ my $join = MT->model('cf_idx')->join_on(
 my ($sql, $bind, $stmt) = $driver->prepare_fetch( MT->model('cd'), undef, { join => $join } );
 like $sql => qr/FROM\s+mt_cd\s+LEFT JOIN\s+mt_cf_idx cf_idx_1\s+ON\s+cf_idx_1.cf_idx_content_data_id = cd_id/;
 
+# duplicated alias
+($sql, $bind, $stmt) = $driver->prepare_fetch( MT->model('cd'), undef, { joins => [$join, $join] } );
+like $sql => qr/FROM\s+mt_cd\s+LEFT JOIN\s+mt_cf_idx cf_idx_1\s+ON\s+cf_idx_1.cf_idx_content_data_id = cd_id/;
+like $sql => qr/LEFT JOIN\s+mt_cf_idx cf_idx_1_2\s+ON\s+cf_idx_1_2.cf_idx_content_data_id = cd_id/;
+
 done_testing;

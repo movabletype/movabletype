@@ -297,10 +297,19 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @tags = MT->model('tag')->load(
-        { id        => @$values ? $values : 0 },
-        { fetchonly => { id => 1, name => 1 } },
-    );
+    my $tag_ids = 0;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            $tag_ids = @$values ? $values : 0;
+        }
+        else {
+            $tag_ids = $values || 0;
+        }
+    }
+    my @tags
+        = MT->model('tag')
+        ->load( { id => $tag_ids }, { fetchonly => { id => 1, name => 1 } },
+        );
     my %name_hash = map { $_->id => $_->name } @tags;
 
     my $contents = '';

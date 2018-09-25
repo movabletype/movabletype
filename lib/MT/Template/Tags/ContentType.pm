@@ -619,7 +619,7 @@ sub _hdlr_contents {
 
         if ( !@filters ) {
             unless ($sort_by_cf) {
-                if ( $args{sort} eq 'authored_on' ) {
+                if ( $args{sort} and $args{sort} eq 'authored_on' ) {
                     my $dir = $args->{sort_order} || 'descend';
                     $dir = ( 'descend' eq $dir ) ? "DESC" : "ASC";
                     $args{sort} = [
@@ -1248,8 +1248,6 @@ currently in context.
 sub _hdlr_site_content_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
-    $ctx->set_blog_load_context( $args, \%terms, \%args )
-        or return $ctx->error( $ctx->errstr );
     $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
         or return;
     $terms{status} = MT::ContentStatus::RELEASE();
@@ -1276,8 +1274,6 @@ sub _hdlr_author_content_count {
     return $ctx->_no_author_error() unless $author;
 
     my ( %terms, %args );
-    $ctx->set_blog_load_context( $args, \%terms, \%args )
-        or return $ctx->error( $ctx->errstr );
     $ctx->set_content_type_load_context( $args, $cond, \%terms, \%args )
         or return;
     $terms{author_id} = $author->id;
