@@ -296,8 +296,7 @@ sub _hdlr_contents {
                     my $date_cf = '';
                     $date_cf = MT->model('cf')->load($arg)
                         if ( $arg =~ /^[0-9]+$/ );
-                    ($date_cf)
-                        = MT->model('cf')->load( { unique_id => $arg } )
+                    $date_cf = MT->model('cf')->load( { unique_id => $arg } )
                         unless ($date_cf);
                     if ($date_cf) {
                         $dt_field_id = $date_cf->id;
@@ -340,20 +339,29 @@ sub _hdlr_contents {
         my $sort_by_cf = 0;
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
-                my ( $prefix, $value ) = split ':', $sort_by;
-                my ($cf) = MT->model('cf')->load( { name => $value } );
+                my ( $prefix, $value ) = split ':', $sort_by, 2;
+                my $cf = MT->model('cf')->load(
+                    {   name            => $value,
+                        content_type_id => $content_type_id,
+                    }
+                );
                 unless ($cf) {
-                    ($cf) = MT->model('cf')->load( { unique_id => $value } );
+                    $cf = MT->model('cf')->load( { unique_id => $value } );
                 }
                 if ($cf) {
                     my $data_type = MT->registry('content_field_types')
                         ->{ $cf->type }{data_type};
                     my $join = MT->model('cf_idx')->join_on(
                         'content_data_id',
-                        { content_field_id => $cf->id },
+                        undef,
                         {   sort      => 'value_' . $data_type,
                             direction => $args->{sort_order} || 'descend',
-                            alias     => 'cf_idx_' . $cf->id
+                            alias     => 'cf_idx_' . $cf->id,
+                            type      => 'left',
+                            condition => {
+                                content_data_id  => \'= cd_id',
+                                content_field_id => $cf->id,
+                            },
                         }
                     );
                     if ( $args{join} ) {
@@ -397,10 +405,13 @@ sub _hdlr_contents {
         if (%fields) {
             foreach my $key ( keys %fields ) {
                 my $value = $fields{$key};
-                my ($cf) = MT->model('cf')->load( { name => $key } );
+                my $cf    = MT->model('cf')->load(
+                    {   name            => $key,
+                        content_type_id => $content_type_id,
+                    }
+                );
                 unless ($cf) {
-                    ($cf)
-                        = MT->model('cf')->load( { unique_id => $key } );
+                    $cf = MT->model('cf')->load( { unique_id => $key } );
                 }
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
@@ -490,7 +501,7 @@ sub _hdlr_contents {
                                 my $join = MT->model('cf_idx')->join_on(
                                     'content_data_id',
                                     {   content_field_id => $cf->id,
-                                        value_integer    => @cat_ids
+                                        value_integer    => \@cat_ids
                                     },
                                     { alias => 'cat_cf_idx' }
                                 );
@@ -1390,6 +1401,13 @@ C<CalendarIfNoContents>.
 sub _hdlr_content_calendar {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
+
+    my ( %cd_terms, %cd_args );
+    $ctx->set_content_type_load_context( $args, $cond, \%cd_terms, \%cd_args )
+        or return;
+
+    my $content_type_id = $cd_terms{content_type_id};
+
     my ($prefix);
     my @ts = MT::Util::offset_time_list( time, $blog_id );
     my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
@@ -1471,7 +1489,7 @@ sub _hdlr_content_calendar {
             $cat_set_name    = $category_set->name;
             $category_set_id = $category_set->id;
             my @cat_fields = MT->model('cf')->load(
-                {   blog_id            => $blog_id,
+                {   content_type_id    => $content_type_id,
                     related_cat_set_id => $category_set_id
                 }
             );
@@ -1540,20 +1558,19 @@ sub _hdlr_content_calendar {
             my $date_cf = '';
             $date_cf = MT->model('cf')->load($arg)
                 if ( $arg =~ /^[0-9]+$/ );
-            ($date_cf) = MT->model('cf')->load( { unique_id => $arg } )
+            $date_cf = MT->model('cf')->load( { unique_id => $arg } )
                 unless ($date_cf);
-            ($date_cf) = MT->model('cf')->load( { name => $arg } )
-                unless ($date_cf);
+            $date_cf = MT->model('cf')->load(
+                {   name            => $arg,
+                    content_type_id => $content_type_id,
+                }
+            ) unless ($date_cf);
             if ($date_cf) {
                 $dt_field_id = $date_cf->id;
             }
         }
     }
 
-    my $cd_terms = {};
-    my $cd_args  = {};
-    $ctx->set_content_type_load_context( $args, $cond, $cd_terms, $cd_args )
-        or return;
     if ($dt_field_id) {
         my $join = MT::ContentFieldIndex->join_on(
             'content_data_id',
@@ -1570,7 +1587,7 @@ sub _hdlr_content_calendar {
                 alias      => 'dt_cf_idx'
             }
         );
-        push @{ $cd_args->{joins} }, $join;
+        push @{ $cd_args{joins} }, $join;
     }
     if (@cat_field_ids) {
         my $join = MT::ContentFieldIndex->join_on(
@@ -1580,13 +1597,13 @@ sub _hdlr_content_calendar {
             },
             { alias => 'cat_cf_idx' }
         );
-        push @{ $cd_args->{joins} }, $join;
+        push @{ $cd_args{joins} }, $join;
     }
     my $iter = MT::ContentData->load_iter(
         {   blog_id => $blog_id,
             ( !$dt_field_id ? ( $dt_field => [ $start, $end ] ) : () ),
             status => MT::ContentStatus::RELEASE(),
-            %{$cd_terms},
+            %cd_terms,
         },
         {   (   !$dt_field_id
                 ? ( range_incl => { $dt_field => 1 },
@@ -1595,7 +1612,7 @@ sub _hdlr_content_calendar {
                     )
                 : ()
             ),
-            %{$cd_args},
+            %cd_args,
         }
     );
     my @left;
@@ -2067,7 +2084,7 @@ sub _get_content_type {
         else {
             if ($template_ct) {
                 my %terms = ( name => $template_ct->name );
-                my ($ct)
+                my $ct
                     = MT->model('content_type')
                     ->load(
                     { name => $template_ct->name, blog_id => $blog_id } );
