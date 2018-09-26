@@ -1367,6 +1367,12 @@ sub _build_content_data_preview {
     $ao_ts =~ s/\D//g;
     $content_data->authored_on($ao_ts);
 
+    my $uo_date = $app->param('unpublished_on_date') || '';
+    my $uo_time = $app->param('unpublished_on_time') || '';
+    my $uo_ts   = $uo_date . $uo_time;
+    $uo_ts =~ s/\D//g;
+    $content_data->unpublished_on($uo_ts);
+
     my $basename         = $app->param('identifier');
     my $preview_basename = $app->preview_object_basename;
     $content_data->identifier( $basename || $preview_basename );
