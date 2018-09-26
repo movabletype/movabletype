@@ -116,7 +116,7 @@ sub start_recover {
     $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl(
         { identifier => 'new_password_reset_form', }, $blog_id );
-    if ( !$tmpl ) {
+    if ( !$tmpl || !_exists_system_tmpl($tmpl) ) {
         $tmpl = $app->load_tmpl('cms/dialog/recover.tmpl');
     }
     $param->{system_template} = 1;
@@ -329,7 +329,7 @@ sub new_password {
     $param->{'blog_id'} = $blog_id if $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password', },
         $blog_id );
-    if ( !$tmpl ) {
+    if ( !$tmpl || !_exists_system_tmpl($tmpl) ) {
         $tmpl = $app->load_tmpl('cms/dialog/new_password.tmpl');
     }
     $param->{system_template} = 1;
@@ -3097,6 +3097,13 @@ sub _log_dirty_restore {
 sub login_json {
     my $app = shift;
     return $app->json_result( { magic_token => $app->current_magic, } );
+}
+
+sub _exists_system_tmpl {
+    my ($tmpl) = @_;
+    my $set = MT->registry('default_templates');
+    my $scope = $tmpl->blog_id ? 'system' : 'global:system';
+    return $set->{$scope}{ $tmpl->identifier } ? 1 : 0;
 }
 
 1;
