@@ -678,7 +678,9 @@ class MT {
 
             if (isset($cd_id) && ($cd_id) && $at == 'ContentType') {
                 $cd = $mtdb->fetch_content($cd_id);
+                $ct = $mtdb->fetch_content_type($cd->content_type_id);
                 $ctx->stash('content', $cd);
+                $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
             }
 
