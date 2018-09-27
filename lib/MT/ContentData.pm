@@ -1171,8 +1171,8 @@ sub make_list_props {
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
             %{$field_list_props},
-            %{$common_list_props},
         };
+        MT::__merge_hash( $props->{$key}, $common_list_props );
         if ( $content_type->_get_tag_field_ids ) {
             $props->{$key}{tags_field} = {
                 base  => '__virtual.tag',
