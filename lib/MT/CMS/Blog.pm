@@ -2044,7 +2044,7 @@ sub post_save {
         my ( $x, $y, $remember )
             = split( /::/, $cookies{ $app->user_cookie() }->value );
         my $cookie = $cookies{'commenter_id'};
-        my $cookie_value = $cookie ? $cookie->value : '';
+        my $cookie_value = $cookie ? $cookie->value : ':';
         my ( $id, $blog_ids ) = split( ':', $cookie_value );
         if ( $blog_ids ne 'S' && $blog_ids ne 'N' ) {
             $blog_ids .= ",'" . $obj->id . "'";
