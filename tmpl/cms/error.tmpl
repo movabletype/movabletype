@@ -1,7 +1,13 @@
 <mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
 <mt:setvar name="complete" value="1">
 <mt:setvar name="error_page" value="1">
-<mt:setvar name="screen_type" value="chromeless-screen">
+<mt:if name="mode" eq="rebuild">
+  <mt:setvar name="screen_type" value="popup-screen">
+<mt:else>
+  <mt:unless name="screen_type">
+    <mt:setvar name="screen_type" value="chromeless-screen">
+  </mt:unless>
+</mt:if>
 
 <mt:setvarblock name="page_content">
 
@@ -25,7 +31,7 @@
    onclick="backSessionHistoryFallback(); <mt:var name="goback">"
    type="submit"
    accesskey="s"
-   class="goback action primary button btn__mobile btn-primary">
+   class="goback action primary button btn btn-primary">
   <mt:var name="value">
 </button>
 </mt:unless>
@@ -40,7 +46,7 @@
 <mt:else>
    onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
 </mt:if>
-   class="action button btn__mobile btn-default">
+   class="action button btn btn-default">
   <mt:var name="label" escape="html">
 </button>
 </mt:loop>
@@ -75,6 +81,21 @@
     if ( window == window.parent && !window.opener && !is_toplevel_new_window() ) {
         jQuery('#close-button').hide();
     }
+
+    jQuery(window).on('change_to_pc_view', function () {
+      if (!MT.Util.isSmartphone()) {
+        jQuery('button').removeClass('btn__mobile').addClass('btn');
+      }
+    });
+    jQuery(window).on('change_to_mobile_view', function () {
+      if (MT.Util.isSmartphone()) {
+        jQuery('button').removeClass('btn').addClass('btn__mobile');
+      }
+    });
+    if (MT.Util.isSmartphone()) {
+      jQuery('button').removeClass('btn').addClass('btn__mobile');
+    }
+
     /* ]]> */
 </script>
 </mt:setvarblock>
