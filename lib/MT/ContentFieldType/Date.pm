@@ -31,9 +31,14 @@ sub field_html_params {
             $app->user ? $app->user->preferred_language : undef );
     }
 
+    my ( $year, $month, $day ) = split '-', $date;
+
     my $required = $field_data->{options}{required} ? 'required' : '';
 
     {   date     => $date,
+        year     => $year,
+        month    => $month,
+        day      => $day,
         required => $required,
     };
 }
@@ -41,7 +46,18 @@ sub field_html_params {
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
-    my $date = $app->param( 'date-' . $id );
+    my $date = '';
+    if ( $app->param('mobile_view') ) {
+        my $year  = $app->param("date-$id-year");
+        my $month = $app->param("date-$id-month");
+        my $day   = $app->param("date-$id-day");
+        if ( $year || $month || $day ) {
+            $date = join '-', $year, $month, $day;
+        }
+    }
+    else {
+        $date = $app->param( 'date-' . $id );
+    }
     $date =~ s/\D//g;
     if ( defined $date && $date ne '' ) {
         return $date . '000000';
