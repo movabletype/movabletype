@@ -449,6 +449,12 @@
       return window.navigator.userAgent.match(/i(Phone|Pad|Pod)/);
   };
 
+  // copy from Chart API
+  MT.Util.isSmartphone = function () {
+      var userAgent = window.navigator ? window.navigator.userAgent : '';
+      return (/android|iphone|ipod|ipad/i).test(userAgent);
+  };
+
   // DOM change is not applied until scrolling .modal-body on iOS
   MT.Util.refreshModalBodyOnIos = function () {
       if (!MT.Util.isIos()) {
@@ -461,5 +467,7 @@
       modalBody.scrollBy(0, 1);
       modalBody.scrollBy(0, -1);
   };
+
+
 
 })(window);
