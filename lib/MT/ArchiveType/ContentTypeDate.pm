@@ -313,6 +313,23 @@ sub make_archive_group_args {
             }
         ];
     }
+    elsif ( $date_type eq 'monthly' ) {
+        $args->{sort} = [
+            {   column => "extract(year from $target_column)",
+                desc   => $order
+            },
+            {   column => "extract(month from $target_column)",
+                desc   => $order
+            }
+        ];
+    }
+    elsif ( $date_type eq 'yearly' ) {
+        $args->{sort} = [
+            {   column => "extract(year from $target_column)",
+                desc   => $order
+            }
+        ];
+    }
     if ( $type eq 'category' ) {
         $args->{joins} = [
             (   $dt_field_id

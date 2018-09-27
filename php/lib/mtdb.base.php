@@ -493,6 +493,14 @@ abstract class MTDatabase {
                 return '';
             }
         }
+        if (isset($args['content_type_id'])) {
+            $extras['join'] = array(
+                'mt_template' => array(
+                    'condition' => "template_id = templatemap_template_id"
+                    )
+                );
+            $content_type_filter = 'and template_content_type_id = ' . intval($args['content_type_id']);
+        }
 
         $where = "1 = 1
                   $blog_filter
@@ -2056,11 +2064,20 @@ abstract class MTDatabase {
             $author_filter .= " and author_name = '".$args['author_name']."'";
         }
 
-        # Adds entry join and filter
-        if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
-            $args['need_entry'] = 0;
-        if (!isset($args['need_entry']))
-            $args['need_entry'] = 1;
+        # Adds entry/cd join and filter
+        $content_type = $ctx->stash('content_type');
+        if (isset($content_type)) {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_content']))
+                $args['need_content'] = 0;
+            if (!isset($args['need_content']))
+                $args['need_content'] = 1;
+        }
+        else {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
+                $args['need_entry'] = 0;
+            if (!isset($args['need_entry']))
+                $args['need_entry'] = 1;
+        }
         if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_entry'] = array(
                     'condition' => "author_id = entry_author_id"
@@ -2069,6 +2086,17 @@ abstract class MTDatabase {
             $entry_filter = " and entry_status = 2";
             if ( $blog_ids )
                 $entry_filter .= " and entry_blog_id " . $blog_ids;
+        }
+        elseif ($args['need_content'] && !(isset($args['id']) || isset($args['username']))) {
+            $extras['join']['mt_cd'] = array(
+                    'condition' => "author_id = cd_author_id"
+                );
+            $extras['distinct'] = 'distinct';
+            $cd_filter = " and cd_status = 2";
+            if ( $blog_ids )
+                $cd_filter .= " and cd_blog_id" . $blog_ids;
+            if (isset($content_type))
+                $cd_filter .= " and cd_content_type_id = " . $content_type->id;
         } else {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
@@ -2277,6 +2305,7 @@ abstract class MTDatabase {
         $where = "1 = 1
                   $author_filter
                   $entry_filter
+                  $cd_filter
                   $sort_filter
                   $order_sql
         ";
@@ -4246,7 +4275,7 @@ abstract class MTDatabase {
 
         $join_clause = '';
 
-        if (isset($args['current_timestamp']) && isset($args['current_timestamp_end'])) {
+        if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
             $map = $mt->db()->fetch_templatemap(array(
                 'blog_id' => $blog_id,
                 'type' => $ctx->stash('current_archive_type'),
@@ -4254,13 +4283,29 @@ abstract class MTDatabase {
                 'build_type' => 3,
             ));
             if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
-                $start = intval($args['current_timestamp']);
-                $end   = intval($args['current_timestamp_end']);
+                $start = isset($args['current_timestamp'])
+                    ? $args['current_timestamp'] : null;
+                $end = isset($args['current_timestamp_end'])
+                    ? $args['current_timestamp_end'] : null;
                 $alias = 'cf_idx_' . $dt_field_id;
+                $field = "$alias.cf_idx_value_datetime";
+                if ($start and $end) {
+                    $start = $this->ts2db($start);
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field between '$start' and '$end'";
+                } elseif ($start) {
+                    $start = $this->ts2db($start);
+                    $field_filter = " and $field >= '$start'";
+                } elseif ($end) {
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field <= '$end'";
+                } else {
+                    return '';
+                }
                 $join_table = "mt_cf_idx $alias";
                 $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
                                   " and $alias.cf_idx_content_data_id = cd_id" .
-                                  " and $alias.cf_idx_value_datetime >= $start and $alias.cf_idx_value_datetime <= $end";
+                                  $field_filter;
                 $extras['join'][$join_table] = array('condition' => $join_condition);
             } else {
                 $dt_field    = 'cd_authored_on';

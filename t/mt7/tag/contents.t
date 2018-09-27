@@ -462,3 +462,9 @@ Content is not found.
 </mt:Contents>
 --- expected
 4
+
+=== MT:Contents with empty
+--- template
+<mt:Contents blog_id="1" glue=","><mt:If name="ContentCount"><mt:ContentID></mtIf></mt:Contents>
+--- expected
+4

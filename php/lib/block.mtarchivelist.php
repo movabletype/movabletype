@@ -6,9 +6,9 @@
 # $Id$
 
 require_once "archive_lib.php";
-function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
     $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author', 'content_type'), common_loop_vars());
-    if (!isset($content)) {
+    if (!isset($res)) {
         $blog = $ctx->stash('blog');
         $at = $args['type'];
         $at or $at = $args['archive_type'];
@@ -81,10 +81,10 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
                 return $ctx->error("No Category Set could be found.");
             $args['category_set_id'] = $category_set->category_set_id;
         }
-        $content = smarty_block_mtcategories($args, $content, $ctx, $repeat);
+        $res = smarty_block_mtcategories($args, $res, $ctx, $repeat);
         if (!$repeat)
             $ctx->restore($localvars);
-        return $content;
+        return $res;
     }
     if ($i < count($archive_list_results)) {
         if (empty($ar))
@@ -127,6 +127,6 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
         $ctx->restore($localvars);
         $repeat = false;
     }
-    return $content;
+    return $res;
 }
 ?>
