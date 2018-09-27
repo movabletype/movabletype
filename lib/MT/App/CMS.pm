@@ -4919,13 +4919,17 @@ sub setup_filtered_ids {
         blog_ids => $blog_ids,
     };
 
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+    my $callback_ds = $ds;
+    if ( $ds =~ m/(.*)\./ ) {
+        $callback_ds = $1;
+    }
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, $opts, [] );
     my $objs = $filter->load_objects(%$opts)
         or die $filter->errstr;
     my %data = ( objects => [ map( [ $_->id ], @$objs ) ] );
-    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%data,
-        $objs );
+    MT->run_callbacks( 'cms_filtered_list_param.' . $callback_ds,
+        $app, \%data, $objs );
     $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
 }
 
