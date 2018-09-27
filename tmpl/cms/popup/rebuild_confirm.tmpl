@@ -55,5 +55,21 @@
 </div>
 </mt:setvarblock>
 
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('change_to_pc_view', function () {
+  if (!MT.Util.isSmartphone()) {
+    jQuery('button').removeClass('btn__mobile').addClass('btn');
+  }
+});
+jQuery(window).on('change_to_mobile_view', function () {
+  if (MT.Util.isSmartphone()) {
+    jQuery('button').removeClass('btn').addClass('btn__mobile');
+  }
+});
+if (MT.Util.isSmartphone()) {
+  jQuery('button').removeClass('btn').addClass('btn__mobile');
+}
+</mt:setvarblock>
+
 <mt:include name="layout/chromeless.tmpl">
 <mt:var name="layout">
