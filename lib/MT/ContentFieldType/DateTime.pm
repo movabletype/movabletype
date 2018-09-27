@@ -32,10 +32,19 @@ sub field_html_params {
             $app->user ? $app->user->preferred_language : undef );
     }
 
+    my ( $year, $month,  $day )    = split '-', $date;
+    my ( $hour, $minute, $second ) = split ':', $time;
+
     my $required = $field_data->{options}{required} ? 'required' : '';
 
     {   date     => $date,
         time     => $time,
+        year     => $year,
+        month    => $month,
+        day      => $day,
+        hour     => $hour,
+        minute   => $minute,
+        second   => $second,
         required => $required,
     };
 }
@@ -43,9 +52,28 @@ sub field_html_params {
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
-    my $date = $app->param( 'date-' . $id );
-    my $time = $app->param( 'time-' . $id );
-    my $ts   = $date . $time;
+    my $date = '';
+    my $time = '';
+    if ( $app->param('mobile_view') ) {
+        my $year  = $app->param("date-$id-year");
+        my $month = $app->param("date-$id-month");
+        my $day   = $app->param("date-$id-day");
+        if ( $year || $month || $day ) {
+            $date = join '-', $year, $month, $day;
+        }
+
+        my $hour   = $app->param("time-$id-hour");
+        my $minute = $app->param("time-$id-minute");
+        my $second = $app->param("time-$id-second");
+        if ( $hour || $minute || $second ) {
+            $time = join ':', $hour, $minute, $second;
+        }
+    }
+    else {
+        $date = $app->param( 'date-' . $id );
+        $time = $app->param( 'time-' . $id );
+    }
+    my $ts = $date . $time;
     $ts =~ s/\D//g;
     return $ts;
 }
