@@ -10,7 +10,8 @@
         ]
     },
     "require-dev": {
-        "oomphinc/composer-installers-extender": "^1.1"
+        "oomphinc/composer-installers-extender": "^1.1",
+        "phpunit/phpunit": "^5.7.27"
     },
     "require": {
         "adodb/adodb-php": "5.20.12"
