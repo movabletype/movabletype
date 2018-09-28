@@ -1065,12 +1065,11 @@ sub has_archive_type {
             }
         );
         if ( defined $content_type && $content_type ne '' && $count ) {
-            my $content_type_obj = MT::ContentType->load(
-                [   { unique_id => $content_type },
-                    -or => { name => $content_type, blog_id => $blog->id },
-                    -or => { id   => $content_type }
-                ]
-            );
+            my $content_type_obj
+                = MT::ContentType->load($content_type)
+                || MT::ContentType->load( { unique_id => $content_type } )
+                || MT::ContentType->load(
+                { name => $content_type, blog_id => $blog->id } );
             if ($content_type_obj) {
                 $count = MT::TemplateMap->count(
                     {   blog_id      => $blog->id,
