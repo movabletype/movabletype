@@ -7,7 +7,8 @@
             "rm -f php/extlib/adodb5/drivers/adodb-text.inc.php",
             "rm -rf php/extlib/adodb5/replicate/",
             "rm -rf php/extlib/adodb5/scripts/"
-        ]
+        ],
+        "test": "phpunit"
     },
     "require-dev": {
         "oomphinc/composer-installers-extender": "^1.1",
