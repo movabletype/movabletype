@@ -95,7 +95,7 @@ abstract class MTDatabase {
     public function unserialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->unserialize($data);
     }
@@ -103,7 +103,7 @@ abstract class MTDatabase {
     public function serialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->serialize($data);
     }
