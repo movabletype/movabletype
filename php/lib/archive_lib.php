@@ -2465,11 +2465,11 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
 
     public function get_archive_link_sql($ts, $at, $args) { return ''; }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $res, &$repeat, $tag, $at) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        $localvars = array('current_timestamp', 'current_timestamp_end', 'entries');
-        if (!isset($content)) {
+        $localvars = array('current_timestamp', 'current_timestamp_end', 'contents');
+        if (!isset($res)) {
             $ctx->localize($localvars);
             $is_prev = $tag == 'archiveprevious';
             $ts = $ctx->stash('current_timestamp');
@@ -2479,9 +2479,26 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
             }
             $order = $is_prev ? 'previous' : 'next';
             $helper = $this->get_helper();
-            if ($content = $this->get_content($ts, $ctx->stash('blog_id'), $at, $order)) {
-                $ctx->stash('entries', array( $content ));
-                list($start, $end) = $helper($content->cd_authored_on);
+            if ($cd = $this->get_content($ts, $ctx->stash('blog_id'), $at, $order, $content_type_id)) {
+                $ctx->stash('contents', array($cd));
+                $maps = $ctx->mt->db()->fetch_templatemap(array(
+                    'type'         => $at,
+                    'preferred'    => 1,
+                    'build_type'   => 3,
+                    'content_type' => $content_type_id
+                ));
+                if (isset($maps)) {
+                    $map = $maps[0];
+                    $dt_field_id = $map->templatemap_dt_field_id;
+                    if ($dt_field_id) {
+                        $data = $cd->data();
+                        $ts = $data[$dt_field_id];
+                    }
+                    else {
+                        $ts = $cd->authored_on;
+                    }
+                }
+                list($start, $end) = $helper($ts);
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
             } else {
@@ -2491,7 +2508,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         } else {
             $ctx->restore($localvars);
         }
-        return $content;
+        return $res;
     }
 
     public function get_archive_list($args) {
@@ -2515,7 +2532,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return array();
     }
 
-    protected function get_content($ts, $blog_id, $at, $order) {
+    protected function get_content($ts, $blog_id, $at, $order, $content_type_id) {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -2528,7 +2545,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;
         $mt = MT::get_instance();
-        list($content) = $mt->db()->fetch_contents($args);
+        list($content) = $mt->db()->fetch_contents($args, $content_type_id);
         return $content;
     }
 
@@ -3110,7 +3127,7 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $author_id = $row['entry_author_id'];
+        $author_id = $row['cd_author_id'];
         $author = $mt->db()->fetch_author($author_id);
         $ctx->stash('author', $author);
     }
@@ -3237,10 +3254,10 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             }
             $order = $is_prev ? 'previous' : 'next';
 
-            if ($entry = $this->get_author_entry($ts, $ctx->stash('blog_id'), $author->author_name, $order)) {
+            if ($content = $this->get_author_content($ts, $ctx->stash('blog_id'), $author->author_name, $order)) {
                 $helper = $this->get_helper();
-                $ctx->stash('entries', array( $entry ));
-                list($start, $end) = $helper($entry->entry_authored_on);
+                $ctx->stash('contents', array( $content ));
+                list($start, $end) = $helper($content->cd_authored_on);
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
                 $ctx->stash('author', $author);
@@ -3254,7 +3271,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $content;
     }
 
-    public function get_author_entry($ts, $blog_id, $auth_name, $order) {
+    public function get_author_content($ts, $blog_id, $auth_name, $order) {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -3269,8 +3286,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         $args['author'] = $auth_name;
 
         $mt = MT::get_instance();
-        list($entry) = $mt->db()->fetch_entries($args);
-        return $entry;
+        list($content) = $mt->db()->fetch_contents($args);
+        return $content;
     }
 
     public function get_template_params() {
@@ -3314,7 +3331,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $author_id = $row['entry_author_id'];
+        $author_id = $row['cd_author_id'];
         $author = $mt->db()->fetch_author($author_id);
         $ctx->stash('author', $author);
     }

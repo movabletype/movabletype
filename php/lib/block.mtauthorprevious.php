@@ -23,7 +23,7 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'start_string' => $name,
                               'lastn' => 1,
                               'blog_id' => $blog_id,
-                              'need_entry' => 1);
+                              'need_content' => 1);
                 list($prev_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($prev_author) {
@@ -31,6 +31,8 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
               $ctx->stash('author', $prev_author);
             } else
               $repeat = false;
+        } else {
+            $repeat = false;
         }
     } else {
         $ctx->restore(array('author'));

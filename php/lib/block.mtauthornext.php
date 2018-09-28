@@ -23,7 +23,7 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'start_string' => $name,
                               'lastn' => 1,
                               'blog_id' => $blog_id,
-                              'need_entry' => 1);
+                              'need_content' => 1);
                 list($next_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($next_author) {

@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -61,6 +61,11 @@ $test_env->prepare_fixture(
         $blog->archive_type(
             'ContentType-Category,ContentType-Author,ContentType-Monthly');
         $blog->save;
+
+        my $perm = MT::Test::Permission->make_permission(
+            blog_id   => $blog->id,
+            author_id => $author2->id,
+        );
 
         my $category_set = MT::Test::Permission->make_category_set(
             blog_id => $blog->id,
@@ -124,6 +129,7 @@ $test_env->prepare_fixture(
         my $cd1 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $ct->id,
+            author_id       => $author1->id,
             data            => {
                 $cat_cf->id  => [ $category1->id ],
                 $date_cf->id => '20180308180500',
@@ -132,6 +138,7 @@ $test_env->prepare_fixture(
         my $cd2 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $ct->id,
+            author_id       => $author1->id,
             data            => {
                 $cat_cf->id  => [ $category2->id ],
                 $date_cf->id => '20180407180500',
@@ -220,6 +227,7 @@ $test_env->prepare_fixture(
         my $cd4 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $ct02->id,
+            author_id       => $author1->id,
             data            => {
                 $cat_cf02->id  => [ $category1->id ],
                 $date_cf02->id => '20180308180500',
@@ -228,6 +236,7 @@ $test_env->prepare_fixture(
         my $cd5 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $ct02->id,
+            author_id       => $author1->id,
             data            => {
                 $cat_cf02->id  => [ $category2->id ],
                 $date_cf02->id => '20180407180500',
@@ -288,67 +297,74 @@ $vars->{content_type_id}        = $content_type->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 
-# MT::Test::Tag->run_php_tests($blog->id);
+my ($template) = MT->model('template')->load({ content_type_id => $content_type->id }); 
+my @maps = MT->model('templatemap')->load({ template_id => $template->id });
+foreach my $map (@maps) {
+    $map->build_type(3);
+    $map->save;
+}
+
+MT::Test::Tag->run_php_tests($blog->id);
 
 __END__
 
 === MT:ArchiveNext with Date Field
 --- template
-<mt:Contents content_type="[% content_type_unique_id %]" glue=","><mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:If></mt:Archives></mt:Contents>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:If></mt:Archives>
 --- expected
-May 2018,April 2018
+May 2018April 2018
 
 === MT:ArchivePrevious with Date Field
 --- template
-<mt:Contents content_type="[% content_type_unique_id %]" glue=","><mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:If></mt:Archives></mt:Contents>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:If></mt:Archives>
 --- expected
-April 2018,March 2018
+April 2018March 2018
 
 === MT:ArchiveNext with Author
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with Author
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
 === MT:ArchiveNext with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
-category2,category3
+category2category3
 
 === MT:ArchivePrevious with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
-category1,category2
+category1category2
 
 === MT:ArchiveNext with name
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with name
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
 === MT:ArchiveNext with id
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchiveNext content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with id
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList glue=","><mt:ArchivePrevious content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
