@@ -1824,7 +1824,7 @@ abstract class MTDatabase {
            }
         }
 
-        if (!isset($args['category_set_id']) || $args['category_set_id'] === 0) {
+        if (!isset($args['category_set_id']) || $args['category_set_id'] == 0) {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
                 if (isset($args['entry_id'])) {

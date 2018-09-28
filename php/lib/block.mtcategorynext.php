@@ -20,12 +20,12 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
             $cat = $e->category();
         }
         else {
-            $c = $ctx->stash('content');
+            $cd = $ctx->stash('content');
         }
         $cat or $cat = $ctx->stash('category');
         $cat or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
-        if ($c) {
+        if ($cd) {
             $needs_contents = $args['contents'];
         }
         else {
@@ -60,7 +60,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
                         continue;
                     }
                 }
-                else if (isset($c) && $cats[$pos]->content_data_count() == 0) {
+                else if (isset($cd) && $cats[$pos]->content_data_count() == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;
@@ -111,14 +111,8 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
     }
 
     $category_set = $ctx->stash('category_set');
-    if (isset($category_set)) {
-        $category_set_id = $category_set->id;
-        $cache_key = "__cat_cache_$blog_id_$parent:$sort_by:$category_set_id";
-    }
-    else {
-        $category_set_id = '> 0';
-        $cache_key = "__cat_cache_$blog_id_$parent:$sort_by:0";
-    }
+    $category_set_id = isset($category_set) ? $category_set->id : 0;
+    $cache_key = "__cat_cache_$blog_id_$parent:$sort_by:$category_set_id";
 
     $cats = $ctx->stash($cache_key);
     if (!$cats) {
@@ -133,7 +127,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
             'class' => $class,
             'sort_order' => $sort_order,
             'sort_by' => $sort_by,
-            'category_set_id' => $category_set_id));
+        ));
         $ctx->stash($cache_key);
     }
     return $cats;
