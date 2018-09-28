@@ -27,11 +27,8 @@ sub apply {
 
     for my $ct_name_or_unique_id ( keys %{$data} ) {
 
-        my $ct = MT::ContentType->load(
-            {   blog_id   => $blog->id,
-                unique_id => $ct_name_or_unique_id
-            }
-        );
+        my $ct
+            = MT::ContentType->load( { unique_id => $ct_name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name => $theme->translate_templatized($ct_name_or_unique_id),

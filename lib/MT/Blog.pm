@@ -490,11 +490,8 @@ sub create_default_templates {
         if ( ( $val->{type} eq 'ct' || $val->{type} eq 'ct_archive' )
             && exists $val->{content_type} )
         {
-            my $ct = MT->model('content_type')->load(
-                {   blog_id   => $blog->id,
-                    unique_id => $val->{content_type},
-                }
-            );
+            my $ct = MT->model('content_type')
+                ->load( { unique_id => $val->{content_type}, } );
             $ct ||= MT->model('content_type')->load(
                 {   blog_id => $blog->id,
                     name    => $val->{content_type},
@@ -1068,12 +1065,11 @@ sub has_archive_type {
             }
         );
         if ( defined $content_type && $content_type ne '' && $count ) {
-            my $content_type_obj = MT::ContentType->load(
-                [   { unique_id => $content_type },
-                    -or => { name => $content_type },
-                    -or => { id   => $content_type }
-                ]
-            );
+            my $content_type_obj
+                = MT::ContentType->load($content_type)
+                || MT::ContentType->load( { unique_id => $content_type } )
+                || MT::ContentType->load(
+                { name => $content_type, blog_id => $blog->id } );
             if ($content_type_obj) {
                 $count = MT::TemplateMap->count(
                     {   blog_id      => $blog->id,

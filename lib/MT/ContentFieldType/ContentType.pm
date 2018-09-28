@@ -171,11 +171,7 @@ sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
-        my $ct = MT::ContentType->load(
-            {   blog_id   => $blog->id,
-                unique_id => $name_or_unique_id,
-            }
-        );
+        my $ct = MT::ContentType->load( { unique_id => $name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name    => $name_or_unique_id,
