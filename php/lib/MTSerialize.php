@@ -9,6 +9,15 @@ global $SERIALIZE_VERSION;
 $SERIALIZE_VERSION = 2;
 
 class MTSerialize {
+    private static $_instance = null;
+
+    public static function get_instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
+    }
+
     function unserialize($frozen) {
         return $this->_thaw_mt_2($frozen);
     }
