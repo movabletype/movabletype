@@ -17,23 +17,39 @@ sub html {
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || '';
 
-    # for initial_value.
-    $value = '' unless defined $value;
-    $value =~ s/[ \-:]//g;
-
-    my $date = '';
-    my $time = '';
-    if ( defined $value && $value ne '' ) {
-        $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
-            $app->user ? $app->user->preferred_language : undef );
-        $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
-            $app->user ? $app->user->preferred_language : undef );
+    my ( $date, $year, $month,  $day );
+    my ( $time, $hour, $minute, $second );
+    if ( $app->param('reedit') ) {
+        my $cf_id = $field_data->{content_field_id};
+        $date   = $app->param("date-$cf_id");
+        $year   = $app->param("date-$cf_id-year");
+        $month  = $app->param("date-$cf_id-month");
+        $day    = $app->param("date-$cf_id-day");
+        $time   = $app->param("time-$cf_id");
+        $hour   = $app->param("time-$cf_id-hour");
+        $minute = $app->param("time-$cf_id-minute");
+        $second = $app->param("time-$cf_id-second");
     }
+    else {
+        my $value = $field_data->{value} || '';
 
-    my ( $year, $month,  $day )    = split '-', $date;
-    my ( $hour, $minute, $second ) = split ':', $time;
+        # for initial_value.
+        $value = '' unless defined $value;
+        $value =~ s/[ \-:]//g;
+
+        $date = '';
+        $time = '';
+        if ( defined $value && $value ne '' ) {
+            $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
+                $app->user ? $app->user->preferred_language : undef );
+        }
+
+        ( $year, $month,  $day )    = split '-', $date;
+        ( $hour, $minute, $second ) = split ':', $time;
+    }
 
     my $required = $field_data->{options}{required} ? 'required' : '';
 
