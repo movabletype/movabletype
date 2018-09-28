@@ -16,22 +16,33 @@ sub html {
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || '';
 
-    my $date = '';
-    if ( defined $value && $value ne '' ) {
+    my ( $date, $year, $month, $day );
+    if ( $app->param('reedit') ) {
+        my $cf_id = $field_data->{content_field_id};
+        $date  = $app->param("date-$cf_id");
+        $year  = $app->param("date-$cf_id-year");
+        $month = $app->param("date-$cf_id-month");
+        $day   = $app->param("date-$cf_id-day");
+    }
+    else {
+        my $value = $field_data->{value} || '';
 
-        # for initial_value.
-        if ( $value =~ /\-/ ) {
-            $value =~ tr/-//d;
-            $value .= '000000';
+        $date = '';
+        if ( defined $value && $value ne '' ) {
+
+            # for initial_value.
+            if ( $value =~ /\-/ ) {
+                $value =~ tr/-//d;
+                $value .= '000000';
+            }
+
+            $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
+                $app->user ? $app->user->preferred_language : undef );
         }
 
-        $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
-            $app->user ? $app->user->preferred_language : undef );
+        ( $year, $month, $day ) = split '-', $date;
     }
-
-    my ( $year, $month, $day ) = split '-', $date;
 
     my $required = $field_data->{options}{required} ? 'required' : '';
 
