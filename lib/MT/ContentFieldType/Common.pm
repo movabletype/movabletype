@@ -155,7 +155,9 @@ sub data_load_handler_asset {
 sub ss_validator_datetime {
     my ( $app, $field_data, $data ) = @_;
 
-    unless ( !defined $data || $data eq '' || MT::Util::is_valid_date($data) )
+    unless ( !defined $data
+        || $data eq ''
+        || ( MT::Util::is_valid_date($data) && length($data) == 14 ) )
     {
         my $field_type  = $field_data->{type};
         my $field_label = $field_data->{options}{label};
