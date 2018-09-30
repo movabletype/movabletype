@@ -5243,9 +5243,9 @@ abstract class MTDatabase {
         $where = "cd_status = 2
                   $blog_filter";
         if (isset($args['content_type'])) {
-            $content_type_id = $this->fetch_content_type_id($args);
-            if($content_type_id){
-              $where .= " and cd_content_type_id = $content_type_id";
+            $content_types = $this->fetch_content_types($args);
+            if ($content_types) {
+                $where .= ' and cd_content_type_id = ' . $content_types[0]->id;
             }
         }
 
