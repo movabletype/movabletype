@@ -92,6 +92,7 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             author_id       => $author->id,
             authored_on     => '20170909130530',
+            label           => 'cd1',
             data            => {
                 $cf_datetime->id => '20170603180500',
                 $cf_category->id => [ $category1->id ],
@@ -102,6 +103,7 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             author_id       => $author->id,
             authored_on     => '20170809130530',
+            label           => 'cd2',
             data            => {
                 $cf_datetime->id => '20170603180500',
                 $cf_category->id => [ $category1->id ],
@@ -112,6 +114,7 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             author_id       => $author->id,
             authored_on     => '20171009130530',
+            label           => 'cd3',
             data            => {
                 $cf_datetime->id => '20170603180500',
                 $cf_category->id => [ $category1->id ],
@@ -122,6 +125,7 @@ $test_env->prepare_fixture(
             content_type_id => $ct->id,
             author_id       => $author2->id,
             authored_on     => '20160909130530',
+            label           => 'cd4',
             data            => { $cf_datetime->id => '20180603180500', },
         );
 
@@ -160,6 +164,7 @@ PRE
             content_type_id => $ct_dummy->id,
             author_id       => $author->id,
             authored_on     => '20170909130530',
+            label           => 'cd5',
             data            => {
                 $cf_datetime->id => '20170603180500',
                 $cf_category->id => [ $category1->id ],
@@ -185,6 +190,7 @@ my $cd = MT::ContentData->load(
         content_type_id => $ct->id,
         author_id       => $author->id,
         authored_on     => '20170909130530',
+        label           => 'cd1',
     }
 );
 
@@ -209,8 +215,8 @@ my $contents_html = {
 };
 my %html = (
     'ContentType' => {
-        ao => 'test content type: 1' . $contents_html->{content_type},
-        cf => 'test content type: 1' . $contents_html->{content_type},
+        ao => 'cd1' . $contents_html->{content_type},
+        cf => 'cd1' . $contents_html->{content_type},
     },
     'ContentType-Daily' => {
         ao => 'September  9, 2017' . $contents_html->{daily_ao},
