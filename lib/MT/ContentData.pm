@@ -1346,7 +1346,7 @@ sub _make_field_list_props {
                     idx_type           => $idx_type,
                     label              => $label,
                     order              => $order,
-                    sort               => \&_default_sort,
+                    bulk_sort          => \&_default_bulk_sort,
                 ),
                 %{ $field_type->{list_props}{$prop_name} },
             };
@@ -1423,27 +1423,44 @@ sub _make_field_list_props {
     $props;
 }
 
-sub _default_sort {
+sub _default_bulk_sort {
     my $prop = shift;
-    my ( $terms, $args ) = @_;
+    my ($objs) = @_;
+    my @sorted_objs;
 
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef, undef,
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            sort      => 'value_' . $prop->data_type,
-            direction => delete $args->{direction},
-            unique    => 1,
-        },
-    );
+    my $data_type = $prop->data_type;
+    my $cf_id     = $prop->content_field_id;
 
-    $args->{joins} ||= [];
-    push @{ $args->{joins} }, $cf_idx_join;
+    if (   $data_type eq 'integer'
+        || $data_type eq 'float'
+        || $data_type eq 'double'
+        || $data_type eq 'datetime' )
+    {
+        @sorted_objs = sort {
+            ( _get_field_first_value( $a->data->{$cf_id} ) || 0 )
+                <=> ( _get_field_first_value( $b->data->{$cf_id} ) || 0 )
+        } @$objs;
+    }
+    else {
+        @sorted_objs = sort {
+            _get_field_first_value( $a->data->{$cf_id} )
+                cmp _get_field_first_value( $b->data->{$cf_id} )
+        } @$objs;
+    }
 
-    return;
+    return @sorted_objs;
+}
+
+sub _get_field_first_value {
+    my $field_data = shift;
+    my $value;
+    if ( ref $field_data eq 'ARRAY' ) {
+        $value = $field_data->[0];
+    }
+    else {
+        $value = $field_data;
+    }
+    return defined $value ? $value : '';
 }
 
 sub _make_common_list_props {
