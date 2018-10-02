@@ -204,7 +204,7 @@ class ContentTypeRegistry implements ContentFieldType {
             $db = $ctx->mt->db()->db();
             if ($ids_count > 1) {
                 $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($ids_count)));
+                $placeholders = implode(",", array_map($func, array_keys($ids)));
                 $where = "cd_id IN ($placeholders)";
             } else {
                 $where = "cd_id = ".$db->Param(0);
