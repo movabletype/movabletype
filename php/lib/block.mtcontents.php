@@ -74,6 +74,18 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                 $archiver->setup_args($args);
             }
 
+            $cat = $ctx->stash('category');
+            if (isset($cat) && $cat->category_class == 'category' && $cat->category_category_set_id > 0) {
+                $args['category_set'] = $cat->category_category_set_id;
+                $templatemap = $ctx->stash('_fileinfo')->templatemap();
+                if ($templatemap) {
+                    $cat_field = $templatemap->cat_field();
+                    if ($cat_field) {
+                        $args['category'] = $cat->label;
+                    }
+                }
+            }
+
             if ( isset($args['offset']) && ($args['offset'] == 'auto') )
                 $total_count = 0;
             $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);

@@ -4454,12 +4454,6 @@ abstract class MTDatabase {
             ) === 'ascend' ? 'asc' : 'desc';
         }
 
-        if (count($filters) || !is_null($total_count)) {
-            $post_select_limit = $limit;
-            $post_select_offset = $offset;
-            $limit = 0; $offset = 0;
-        }
-
         $field_filter = '';
         if(isset($args['category_set'])){
             $id = $args['category_set'];
@@ -4485,7 +4479,7 @@ abstract class MTDatabase {
                 if($cat_fields){
                     $cf = $cat_fields[0];
                     if (isset($args['category'])){
-                        $fields[$cf->unique_id] = $args['category'];
+                        $fields[$cf->cf_name] = $args['category'];
                     } else {
                         $alias = 'cf_idx_' . $cf->id;
                         require_once "content_field_type_lib.php";
@@ -4515,10 +4509,11 @@ abstract class MTDatabase {
 
                 if ($type === 'categories') {
                     $category_arg = $value;
+                    $category_set_id = $cf->cf_related_cat_set_id;
                     require_once("MTUtil.php");
                     if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
                         $not_clause = false;
-                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', '> 0');
+                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', $category_set_id);
                         if (empty($cats)) {
                             return null;
                         } else {
@@ -4532,9 +4527,9 @@ abstract class MTDatabase {
                     } else {
                         $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                         if ($blog_ctx_arg)
-                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0')));
+                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id)));
                         else
-                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0'));
+                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id));
                     }
 
                     if (!empty($cats)) {
@@ -4544,7 +4539,7 @@ abstract class MTDatabase {
                             $cat_list = array();
                             foreach ($cats as $cat)
                                 $cat_list[] = $cat->category_id;
-                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list));
+                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list, 'cf_id' => $cf->cf_id));
                             if (!empty($ol)) {
                                 foreach ($ol as $o) {
                                     $cmap[$o->objectcategory_object_id][$o->objectcategory_category_id]++;
@@ -4619,6 +4614,12 @@ abstract class MTDatabase {
                     $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
                 }
             }
+        }
+
+        if (count($filters) || !is_null($total_count)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
         }
 
         if (isset($extras['join'])) {
@@ -5053,6 +5054,11 @@ abstract class MTDatabase {
         if (empty($id_list))
             return;
 
+        $cf_filter = '';
+        if (isset($args['cf_id']) && is_numeric($args['cf_id'])) {
+            $cf_filter = 'and objectcategory_cf_id = ' . $args['cf_id'];
+        }
+
         $blog_filter = $this->include_exclude_blogs($args);
         if ($blog_filter != '')
             $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
@@ -5072,6 +5078,7 @@ abstract class MTDatabase {
         $where = "objectcategory_object_ds = '$datasource'
                 and objectcategory_category_id in ($id_list)
                 $blog_filter
+                $cf_filter
                 $object_filter";
 
         return $ocat->Find($where, false, false, $extras);
