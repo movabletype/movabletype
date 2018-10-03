@@ -10,12 +10,12 @@
 </mt:if>
 
 <mt:setvarblock name="css_include" append="1">
-<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" />
+<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css?v=<mt:var name="mt_version_id" escape="URL">" />
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mtremovewidget.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
