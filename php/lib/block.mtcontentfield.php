@@ -47,10 +47,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
         if (!is_object($content_type))
             return $ctx->error($ctx->mt->translate('No Content Type could be found.') );
 
-        $content_data = $ctx->stash('parent_content');
-        if (!$content_data) {
-            $content_data = $ctx->stash('content');
-        }
+        $content_data = $ctx->stash('content');
         if (!is_object($content_data))
             return $ctx->error($ctx->mt->translate(
                 "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentField" ));
