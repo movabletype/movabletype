@@ -576,6 +576,7 @@ class MT {
             header("HTTP/1.1 404 Not found");
             return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
         }
+        $ctx->stash('_fileinfo', $data);
 
         $fi_path = $data->fileinfo_url;
         $fid = $data->fileinfo_id;
