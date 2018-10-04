@@ -404,15 +404,20 @@ sub tag_handler {
 
     my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
     my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
-    my @contents
-        = MT->model('content_data')->load( { id => @ids ? \@ids : 0 } );
+    my $iter
+        = MT->model('content_data')->load_iter( { id => @ids ? \@ids : 0 } );
+    my %contents;
+    while ( my $cd = $iter->() ) {
+        $contents{ $cd->id } = $cd;
+    }
+    my @ordered_contents = map { $contents{$_} } @ids;
 
     local $ctx->{__stash}{parent_content}      = $ctx->stash('content');
     local $ctx->{__stash}{parent_content_type} = $ctx->stash('content_type');
 
     local $ctx->{__stash}{content};
     local $ctx->{__stash}{content_type} = $source_content_type;
-    local $ctx->{__stash}{contents}     = \@contents;
+    local $ctx->{__stash}{contents}     = \@ordered_contents;
 
     $ctx->invoke_handler( 'contents', $args, $cond );
 }

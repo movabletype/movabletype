@@ -209,7 +209,16 @@ class ContentTypeRegistry implements ContentFieldType {
             } else {
                 $where = "cd_id = ".$db->Param(0);
             }
-            $values = $content_data_class->Find($where, $ids);
+            $cds = $content_data_class->Find($where, $ids);
+
+            $map = array();
+            foreach ($cds as $cd) {
+                $map[$cd->id] = $cd;
+            }
+            $values = array();
+            foreach ($ids as $id) {
+                $values[] = $map[$id];
+            }
 
             $ctx->stash('_content_field_values', $values);
             $ctx->stash('_content_field_counter_max', count($values));
