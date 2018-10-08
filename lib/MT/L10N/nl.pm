@@ -30,22 +30,57 @@ use vars qw( @ISA %Lexicon );
 	'Author Monthly' => 'per auteur per maand',
 	'Author Daily' => 'per auteur per dag',
 	'Author Weekly' => 'per auteur per week',
+	'Category' => 'Categorie',
 	'Category Yearly' => 'per categorie per jaar',
 	'Category Monthly' => 'per categorie per maand',
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
-	'Category' => 'Categorie',
+	'CONTENTTYPE_ADV' => 'InhoudsType',
+	'CONTENTTYPE-DAILY_ADV' => 'InhoudsType per dag',
+	'CONTENTTYPE-WEEKLY_ADV' => 'InhoudsType per week',
+	'CONTENTTYPE-MONTHLY_ADV' => 'InhoudsType per maand',
+	'CONTENTTYPE-YEARLY_ADV' => 'InhoudsType per jaar',
+	'CONTENTTYPE-AUTHOR_ADV' => 'InhoudsType Auteur',
+	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'InhoudsType Auteur per jaar',
+	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'InhoudsType Auteur per maand',
+	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'InhoudsType Auteur per dag',
+	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'InhoudsType Auteur per week',
+	'CONTENTTYPE-CATEGORY_ADV' => 'InhoudsType Categorie',
+	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'InhoudsType Categorie per jaar',
+	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'InhoudsType Categorie per maand',
+	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'InhoudsType Categorie per dag',
+	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'InhoudsType Categorie per week',
+
+## php/lib/block.mtarchives.php
+	'ArchiveType not found - [_1]' => 'Archieftype niet gevonden - [_1]', # Translate - New
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhascontent.php
 	'No author available' => 'Geen auteur beschikbaar',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
 	'You used an [_1] tag without establishing a date context.' => 'U gebruikte een [_1] tag zonder een datum in context te brengen',
+
+## php/lib/block.mtcategorysets.php
+	'No Category Set could be found.' => 'Er werd geen categorieset gevonden.',
+	'No Content Type could be found.' => 'Er kon geen inhoudstype worden gevonden',
+
+## php/lib/block.mtcontentauthoruserpicasset.php
+	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een inhoudsveld; Misschien plaatste u deze per ongeluk buiten een \'MTContents\' container tag?',
+
+## php/lib/block.mtcontentfield.php
+	'No Content Field could be found.' => 'Er werd geen inhoudsveld gevonden.',
+	'No Content Field Type could be found.' => 'Er kon geen inhoudsveldtype worden gevonden.',
+
+## php/lib/block.mtcontentfields.php
+
+## php/lib/block.mtcontents.php
 
 ## php/lib/block.mtentries.php
 
@@ -65,9 +100,16 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not an array.' => '\'[_1]\' is geen array.',
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' is geen geldige functie.',
 
+## php/lib/block.mttags.php
+	'content_type modifier cannot be used with type "[_1]".' => 'content_type modifier kan niet gebruikt worden met type "[_1]".',
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters shown in the picture above.' => 'Typ de tekens die u ziet in de afbeelding hierboven.',
+
+## php/lib/content_field_type_lib.php
+	'No Label (ID:[_1])' => 'Geen Label (ID:[_1])',
+	'No category_set setting in content field type.' => 'Geen category_set instelling in inhoudsveldtype.',
 
 ## php/lib/function.mtassettype.php
 	'image' => 'afbeelding',
@@ -80,6 +122,62 @@ use vars qw( @ISA %Lexicon );
 	'Video' => 'Video',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcontentauthordisplayname.php
+
+## php/lib/function.mtcontentauthoremail.php
+
+## php/lib/function.mtcontentauthorid.php
+
+## php/lib/function.mtcontentauthorlink.php
+
+## php/lib/function.mtcontentauthorurl.php
+
+## php/lib/function.mtcontentauthorusername.php
+
+## php/lib/function.mtcontentauthoruserpic.php
+
+## php/lib/function.mtcontentauthoruserpicurl.php
+
+## php/lib/function.mtcontentcreateddate.php
+
+## php/lib/function.mtcontentdate.php
+
+## php/lib/function.mtcontentfieldlabel.php
+
+## php/lib/function.mtcontentfieldtype.php
+
+## php/lib/function.mtcontentfieldvalue.php
+
+## php/lib/function.mtcontentid.php
+
+## php/lib/function.mtcontentmodifieddate.php
+
+## php/lib/function.mtcontentpermalink.php
+
+## php/lib/function.mtcontentscount.php
+
+## php/lib/function.mtcontentsitedescription.php
+
+## php/lib/function.mtcontentsiteid.php
+
+## php/lib/function.mtcontentsitename.php
+
+## php/lib/function.mtcontentsiteurl.php
+
+## php/lib/function.mtcontentstatus.php
+
+## php/lib/function.mtcontenttypedescription.php
+
+## php/lib/function.mtcontenttypeid.php
+
+## php/lib/function.mtcontenttypename.php
+
+## php/lib/function.mtcontenttypeuniqueid.php
+
+## php/lib/function.mtcontentuniqueid.php
+
+## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Bericht',
@@ -105,6 +203,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtsetvar.php
+
+## php/lib/function.mtsitecontentcount.php
 
 ## php/lib/function.mttagsearchlink.php
 	'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter',
@@ -155,7 +255,7 @@ use vars qw( @ISA %Lexicon );
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie is vereist om authenticatie via cookies te kunnen gebruiken.',
 	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent is vereist om Movable Type configuratiebestanden te kunnen maken tijdens het gebruik van de installatiewizard.',
 	'Scalar::Util is required for initializing Movable Type application.' => 'Scalar::Util is vereist om de Movable Type applicatie te kunnen initialiseren.',
-	'HTML::Entities is required by CGI.pm' => 'HTML::Entities is vereist door CGI.pm', # Translate - New
+	'HTML::Entities is required by CGI.pm' => 'HTML::Entities is vereist door CGI.pm',
 	'DBI is required to work with most supported databases.' => 'DBI is vereist om te kunnen werken met de meeste ondersteunde databases.',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI en DBD::mysql zijn vereist om gebruikt te kunnen maken van een MySQL database backend.',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI en DBD::Pg zijn vereist om gebruikt te kunnen maken van een PostgreSQL database backend.',
@@ -457,6 +557,7 @@ use vars qw( @ISA %Lexicon );
 	'Some websites were not deleted. You need to delete blogs under the website first.' => 'Sommige websites werden niet verwijderd.  U moet de blogs onder de website eerst verwijderen.',
 
 ## lib/MT/App/CMS.pm
+	'[_1]\'s Group' => 'Groep van [_1]',
 	'Invalid request' => 'Ongeldig verzoek',
 	'Add a user to this [_1]' => 'Gebruiker toevoegen aan deze [_1]',
 	'Are you sure you want to reset the activity log?' => 'Bent u zeker dat u het activiteitenlog wil leegmaken?',
@@ -464,7 +565,10 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_DELETE_USER_EUM' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker tot \'wees\' maakt.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies verwijderen.  Bent u zeker dat u deze gebruiker(s) wenst te verwijderen?\nGebruikers die nog bestaan in de externe directory zullen zichzelf weer kunnen aanmaken.',
 	'_WARNING_DELETE_USER' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies te verwijderen.  Bent u zeker dat u deze gebruiker wenst te verwijderen?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Deze actie zal de sjablonen van de geselecteerde blog(s) terugzetten naar de fabrieksinstellingen. Bent u zeker dat u de sjabonen van de geselecteerde blog(s) wenst te verversen?',
+	'Are you sure you want to delete the selected group(s)?' => 'Bent u zeker dat u de geselecteerde groep(en) wenst te verwijderen?',
+	'Are you sure you want to remove the selected member(s) from the group?' => 'Bent u zeker dat u de geselecteerde leden of het geselcteerde lid wenst te verwijderen uit de groep?',
 	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.org/documentation/',
+	'Groups ([_1])' => 'Groepen ([_1])',
 	'Failed login attempt by user who does not have sign in permission. \'[_1]\' (ID:[_2])' => 'Mislukte aanmeldpoging van gebruiker die geen toestemming heeft om aan te melden. \'[_1]\' (ID:[_2])',
 	'Invalid login.' => 'Ongeldige aanmeldgegevens.',
 	'Cannot load blog (ID:[_1])' => 'Kan blog niet laden (ID:[_1])',
@@ -483,6 +587,7 @@ use vars qw( @ISA %Lexicon );
 	'Updates' => 'Updates',
 	'Activity Log' => 'Activiteitenlog',
 	'Site List' => 'Lijst websites',
+	'Site List for Mobile' => 'Lijst websites voor mobiel gebruik', # Translate - New
 	'Refresh Templates' => 'Sjablonen verversen',
 	'Use Publishing Profile' => 'Publicatieprofiel gebruiken',
 	'Create Role' => 'Rol aanmaken',
@@ -492,6 +597,7 @@ use vars qw( @ISA %Lexicon );
 	'Add IP Address' => 'IP Adres toevoegen',
 	'Add Contact' => 'Contact toevoegen',
 	'Download Address Book (CSV)' => 'Adresboek downloaden (CSV)',
+	'Add user to group' => 'Gebruiker toevoegen aan een groep',
 	'Unpublish Entries' => 'Publicatie ongedaan maken',
 	'Add Tags...' => 'Tags toevoegen',
 	'Tags to add to selected entries' => 'Tags toe te voegen aan geselecteerde berichten',
@@ -529,6 +635,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Sets' => 'Categoriesets',
 	'Assets' => 'Mediabestanden',
 	'Content Types' => 'Inhoudstypes',
+	'Groups' => 'Groepen',
 	'Feedbacks' => 'Reacties',
 	'Roles' => 'Rollen',
 	'Design' => 'Design',
@@ -537,6 +644,7 @@ use vars qw( @ISA %Lexicon );
 	'Tools' => 'Gereedschappen',
 	'Manage' => 'Beheren',
 	'New' => 'Nieuw',
+	'Manage Members' => 'Leden beheren',
 	'Associations' => 'Associaties',
 	'Import' => 'Import',
 	'Export' => 'Export',
@@ -549,14 +657,14 @@ use vars qw( @ISA %Lexicon );
 	'Web Services' => 'Webservices',
 	'Plugins' => 'Plugins',
 	'Rebuild Trigger' => 'Herpublicatievoorwaarde',
-	'IP Banning' => 'IP Blokkering', # Translate - New
+	'IP Banning' => 'IP Blokkering',
 	'User' => 'Gebruiker',
 	'Search & Replace' => 'Zoeken & vervangen',
 	'Import Sites' => 'Sites importeren',
 	'Export Sites' => 'Sites exporteren',
 	'Export Site' => 'Site exporteren',
 	'Export Theme' => 'Thema exporteren',
-	'Address Book' => 'Adresboek', # Translate - New
+	'Address Book' => 'Adresboek',
 	'Asset' => 'Mediabestand',
 	'Website' => 'Website',
 	'Blog' => 'Blog',
@@ -564,7 +672,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'ï¾ƒã�¤ï½¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
-	'Cannot load blog #[_1]' => 'Kan blog niet laden #[_1]', # Translate - New
+	'Cannot load blog #[_1]' => 'Kan blog niet laden #[_1]',
 	'Internal Error: Login user is not initialized.' => 'Interne fout: login gebruiker is niet geïnitialiseerd.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Aanmelding kon niet worden bevestigd wegens een databasefout ([_1])',
 	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Het spijt ons, maar u heeft geen toestemming om toegang te krijgen op blogs of websites van deze installatie.  Als u meent dat dit een fout is, gelieve contact op te nemen met uw Movable Type systeembeheerder.',
@@ -731,47 +839,34 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorDaily.pm
-	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'InhoudsType Auteur per dag',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorMonthly.pm
-	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'InhoudsType Auteur per maand',
 
 ## lib/MT/ArchiveType/ContentTypeAuthor.pm
-	'CONTENTTYPE-AUTHOR_ADV' => 'InhoudsType Auteur',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorWeekly.pm
-	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'InhoudsType Auteur per week',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorYearly.pm
-	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'InhoudsType Auteur per jaar',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryDaily.pm
-	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'InhoudsType Categorie per dag',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryMonthly.pm
-	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'InhoudsType Categorie per maand',
 
 ## lib/MT/ArchiveType/ContentTypeCategory.pm
-	'CONTENTTYPE-CATEGORY_ADV' => 'InhoudsType Categorie',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryWeekly.pm
-	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'InhoudsType Categorie per week',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
-	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'InhoudsType Categorie per jaar',
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'CONTENTTYPE-DAILY_ADV' => 'InhoudsType per dag',
 	'DAILY_ADV' => 'per dag',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'CONTENTTYPE-MONTHLY_ADV' => 'InhoudsType per maand',
 	'MONTHLY_ADV' => 'per maand',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentType.pm
-	'CONTENTTYPE_ADV' => 'InhoudsType',
 	'yyyy/mm/content-basename.html' => 'jjjj/mm/basisnaam-inhoud.html',
 	'yyyy/mm/content_basename.html' => 'jjjj/mm/basisnaam_inhoud.html',
 	'yyyy/mm/content-basename/index.html' => 'jjjj/mm/basisnaam-inhoud/index.html',
@@ -780,22 +875,20 @@ use vars qw( @ISA %Lexicon );
 	'yyyy/mm/dd/content_basename.html' => 'jjjj/mm/dd/basisnaam_inhoud.html',
 	'yyyy/mm/dd/content-basename/index.html' => 'jjjj/mm/basisnaam-inhoud/index.html',
 	'yyyy/mm/dd/content_basename/index.html' => 'jjjj/mm/basisnaam_inhoud/index.html',
-	'author/author-basename/content-basename/index.html' => 'auteur/auteur-basisnaam/inhoud-basisnaam/index.html', # Translate - New
-	'author/author_basename/content_basename/index.html' => 'auteur/auteur_basisnaam/inhoud_basisnaam/index.html', # Translate - New
-	'author/author-basename/content-basename.html' => 'auteur/auteur-basisnaam/inhoud-basisnaam.html', # Translate - New
-	'author/author_basename/content_basename.html' => 'auteur/auteur_basisnaam/inhoud_basisnaam.html', # Translate - New
+	'author/author-basename/content-basename/index.html' => 'auteur/auteur-basisnaam/inhoud-basisnaam/index.html',
+	'author/author_basename/content_basename/index.html' => 'auteur/auteur_basisnaam/inhoud_basisnaam/index.html',
+	'author/author-basename/content-basename.html' => 'auteur/auteur-basisnaam/inhoud-basisnaam.html',
+	'author/author_basename/content_basename.html' => 'auteur/auteur_basisnaam/inhoud_basisnaam.html',
 	'category/sub-category/content-basename.html' => 'categorie/sub-categorie/basisnaam-inhoud.html',
 	'category/sub-category/content-basename/index.html' => 'categorie/sub-categorie/basisnaam-inhoud/index.html',
 	'category/sub_category/content_basename.html' => 'categorie/sub_categorie/basisnaam_inhoud.html',
 	'category/sub_category/content_basename/index.html' => 'categorie/sub_categorie/basisnaam_inhoud/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'CONTENTTYPE-WEEKLY_ADV' => 'InhoudsType per week',
 	'WEEKLY_ADV' => 'per week',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'CONTENTTYPE-YEARLY_ADV' => 'InhoudsType per jaar',
 	'YEARLY_ADV' => 'per jaar',
 	'yyyy/index.html' => 'jjjj/index.html',
 
@@ -879,8 +972,8 @@ use vars qw( @ISA %Lexicon );
 	'Type' => 'Type',
 	'Filename' => 'Bestandsnaam',
 	'File Extension' => 'Bestandsextensie',
-	'Pixel Width' => 'Breedte in pixels', # Translate - Case
-	'Pixel Height' => 'Hoogte in pixels', # Translate - Case
+	'Pixel Width' => 'Breedte in pixels',
+	'Pixel Height' => 'Hoogte in pixels',
 	'Except Userpic' => 'Uitgezonderd gebruikersafbeelding',
 	'Author Status' => 'Status auteur',
 	'Missing File' => 'Ontbrekend bestand',
@@ -892,16 +985,21 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Association.pm
 	'Association' => 'Associatie',
+	'Permissions of group: [_1]' => 'Permissies van groep: [_1]',
+	'Group' => 'Groep',
 	'Permissions with role: [_1]' => 'Permissies met rol: [_1]',
 	'User is [_1]' => 'Gebruiker is [_1]',
 	'Permissions for [_1]' => 'Permissies voor [_1]',
 	'association' => 'associatie',
 	'associations' => 'associaties',
-	'User Name' => 'Gebruikersnaam',
+	'User/Group' => 'Gebruiker/groep',
+	'User/Group Name' => 'Naam gebruiker/groep',
 	'Role' => 'Rol',
 	'Role Name' => 'Naam rol',
 	'Role Detail' => 'Details rol',
 	'Site Name' => 'Sitenaam',
+	'Permissions for Users' => 'Permissies voor gebruikers',
+	'Permissions for Groups' => 'Permissies voor groepen',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Berichten',
@@ -934,7 +1032,7 @@ use vars qw( @ISA %Lexicon );
 	'Userpic' => 'Foto gebruiker',
 	'User Info' => 'Gebruikersinformatie',
 	'__ENTRY_COUNT' => 'Berichten',
-	'Content Data Count' => 'Aantal inhoudsgegevens', # Translate - New
+	'Content Data Count' => 'Aantal inhoudsgegevens',
 	'Created by' => 'Aangemaakt door',
 	'Status' => 'Status',
 	'Website URL' => 'URL website',
@@ -1120,10 +1218,6 @@ use vars qw( @ISA %Lexicon );
 	'Transforming image failed: [_1]' => 'Transformeren afbeelding mislukt: [_1]',
 	'Cannot load asset #[_1]' => 'Kan mediabestand #[_1] niet laden',
 
-## lib/MT/CMS/BanList.pm
-	'You did not enter an IP address to ban.' => 'U vulde geen IP adres in om te verbannen.',
-	'The IP you entered is already banned for this blog.' => 'Het IP adres dat u opgaf is al verbannen van deze weblog.',
-
 ## lib/MT/CMS/Blog.pm
 	q{Cloning child site '[_1]'...} => q{Bezig subsite '[_1]' te klonen...},
 	'Error' => 'Fout',
@@ -1144,7 +1238,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Site' => 'Site publiceren',
 	'Select Child Site' => 'Selecteer subsite',
 	'Selected Child Site' => 'Geselecteerde subsite',
-	'Enter a site name to filter the choices below.' => 'Vul de naam van een site in om de keuzes hieronder te filteren.', # Translate - New
+	'Enter a site name to filter the choices below.' => 'Vul de naam van een site in om de keuzes hieronder te filteren.',
 	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'De \'[_1]\' die hieronder is opgegeven is niet beschrijfbaar door de webserver.  Wijzig de eigenaar van de map of de permissies en probeer opnieuw.',
 	'Blog Root' => 'Blogroot',
 	'Website Root' => 'Website root',
@@ -1229,12 +1323,11 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be dates in the future.' => 'Ongeldige datum \'[_1]\'; \'Publicatie ongedaan op\' datums moeten in de toekomst liggen.',
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => 'Ongeldige datum \'[_1]\'; \'Publicatie ongedaan op\' datums moeten later zijn dan de corresponderende \'Gepubliceerd op\' datum.',
 	'Cannot load content_type #[_1]' => 'Kan content_type #[_1] niet laden',
-	'No Label (ID:[_1])' => 'Geen Label (ID:[_1])',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => 'Nieuwe [_1] \'[_4]\' (ID:[_2]) toegevoegd door gebruiker \'[_3]\'',
 	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_5]\' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker \'[_5]\'',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) bewerkt door gebruiker \'[_3]\'',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) verwijderd door \'[_3]\'',
-	'Create new [_1]' => 'Nieuwe [_1] aanmaken', # Translate - New
+	'Create new [_1]' => 'Nieuwe [_1] aanmaken',
 	'Cannot load template.' => 'Kan sjabloon niet laden.',
 	'Publish error: [_1]' => 'Publicatiefout: [_1]',
 	'Unable to create preview files in this location: [_1]' => 'Kan geen voorbeeldbestanden aanmaken in deze locatie: [_1]',
@@ -1252,7 +1345,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load content type #[_1]' => 'Kan inhoudstype niet laden #[_1]',
 	'The content type name is required.' => 'Naam vereist voor inhoudstype',
 	'The content type name must be shorter than 255 characters.' => 'De naam voor het inhoudstype moet korter zijn dan 255 karakters.',
-	'Name \'[_1]\' is already used.' => 'Naam \'[_1]\' is reeds in gebruik.', # Translate - New
+	'Name \'[_1]\' is already used.' => 'Naam \'[_1]\' is reeds in gebruik.',
 	'Cannot load content field data (ID: [_1])' => 'Kan gegevens inhoudsveld niet laden (ID: [_1])',
 	'Saving content field failed: [_1]' => 'Inhoudsveld opslaan mislukt: [_1]',
 	'Saving content type failed: [_1]' => 'Inhoudstype opslaan mislukt: [_1]',
@@ -1335,6 +1428,23 @@ use vars qw( @ISA %Lexicon );
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Map \'[_1]\' aangemaakt door \'[_2]\'',
 	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Map \'[_1]\' (ID:[_2]) bewerkt door \'[_3]\'',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Map \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
+
+## lib/MT/CMS/Group.pm
+	'Each group must have a name.' => 'Elke groep moet een naam hebben',
+	'Select Users' => 'Gebruikers selecteren',
+	'Users Selected' => 'Gebruikers geselecteerd',
+	'Search Users' => 'Gebruikers zoeken',
+	'Select Groups' => 'Selecteer groepen',
+	'Group Name' => 'Groepsnaam',
+	'Groups Selected' => 'Geselecteerde groepen',
+	'Search Groups' => 'Groepen zoeken',
+	'Add Users to Groups' => 'Gebruikers toevoegen aan groepen',
+	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) verwijderd uit groep \'[_3]\' (ID:[_4]) door \'[_5]\'',
+	'Group load failed: [_1]' => 'Laden groep mislukt: [_1]',
+	'User load failed: [_1]' => 'Laden gebruiker mislukt: [_1]',
+	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) toegevoegd aan groep \'[_3]\' (ID:[_4]) door \'[_5]\'',
+	'Create Group' => 'Groep aanmaken',
+	'Author load failed: [_1]' => 'Laden auteur mislukt: [_1]',
 
 ## lib/MT/CMS/Import.pm
 	'Cannot load site #[_1].' => 'Kan site niet laden #[_1].',
@@ -1437,7 +1547,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'Ongeldige blog',
 	'Global' => 'Globaal',
 	'You must specify a template type when creating a template' => 'U moet een sjabloontype opgeven bij het aanmaken van een sjabloon.',
-	'contnt type' => 'inhoudstype', # Translate - New
+	'contnt type' => 'inhoudstype',
 	'Content Type Archive' => 'Inhoudstypesjabloon',
 	'Create Widget' => 'Widget aanmaken',
 	'Create Template' => 'Sjabloon aanmaken',
@@ -1550,7 +1660,6 @@ use vars qw( @ISA %Lexicon );
 	'MT::Asset#[_1]: ' => 'MT::Asset#[_1]: ',
 	'Some of the actual files for assets could not be imported.' => 'Enkele van de eigenlijke mediabestanden konden niet worden geïmporteerd.',
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => 'Gelieve xml, tar.gz, zip, of manifest te gebruiken als bestandsextensies.',
-	'Unknown file format' => 'Onbekend bestandsformaat',
 	'Some objects were not imported because their parent objects were not imported.' => 'Sommige objecten werden niet geïmporteerd omdat de objecten waar ze van afhingen niet werden geïmporteerd.',
 	'Detailed information is in the activity log.' => 'Gedetailleerde informatie is terug te vinden in het activiteitenlog.',
 	'[_1] has canceled the multiple files import operation prematurely.' => '[_1] heeft de operatie om meerdere bestanden te importeren voortijdig afgebroken.',
@@ -1576,7 +1685,7 @@ use vars qw( @ISA %Lexicon );
 	'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.' => 'Sommige objecten werden niet geïmporteerd omdat de objecten waar ze van afhingen niet werden geïmporteerd.  Meer details in het activiteitenlog.',
 	'[_1] is not a directory.' => '[_1] is geen map.',
 	'Error occurred during import process.' => 'Er deed zich een fout voor tijdens het importproces.',
-	'Some of files could not be imported.' => 'Sommige bestanden konden niet worden geïmporteerd.', # Translate - New
+	'Some of files could not be imported.' => 'Sommige bestanden konden niet worden geïmporteerd.',
 	'Uploaded file was not a valid Movable Type exported manifest file.' => 'Geupload bestand was geen geldig uit Movable Type geëxporteerd manifestbestand.',
 	'Manifest file \'[_1]\' is too large. Please use import directory for importing.' => 'Manifestbestand \'[_1]\' is te groot.  Gelieve de import map te gebruiken om te importeren.',
 	'Site(s) (ID:[_1]) was/were successfully exported by user \'[_2]\'' => 'Site(s) (ID:[_1]) werd(en) met succes geëxporteerd door gebruiker \'[_2]\'',
@@ -1602,7 +1711,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid ID given for personal blog theme.' => 'Ongeldig ID opgegeven voor persoonlijk blogthema.',
 	'Invalid ID given for personal blog clone location ID.' => 'Ongeldig ID opgegeven als locatie ID van kloon van persoonlijke blog',
 	'Minimum password length must be an integer and greater than zero.' => 'Minimale wachtwoordlengte moet een geheel getal groter dan nul zijn.',
-	'If personal blog is set, the personal blog location are required.' => 'Als een persoonlijke blog is ingesteld, dan is de locatie van de persoonlijke blog vereist.',
 	'Select a entry author' => 'Selecteer een berichtauteur',
 	'Select a page author' => 'Selecteer een pagina-auteur',
 	'Selected author' => 'Selecteer auteur',
@@ -1612,14 +1720,11 @@ use vars qw( @ISA %Lexicon );
 	'System Administrator' => 'Systeembeheerder',
 	'(newly created user)' => '(nieuw aangemaakte gebruiker)',
 	'Sites Selected' => 'Geselecteerde sites',
-	'Select Users' => 'Gebruikers selecteren',
-	'Users Selected' => 'Gebruikers geselecteerd',
 	'Select Roles' => 'Selecteer rollen',
 	'Roles Selected' => 'Geselecteerde rollen',
 	'Grant Permissions' => 'Permissies toekennen',
 	'Select Groups And Users' => 'Selecteer groepen en gebruikers',
 	'Groups/Users Selected' => 'Geselecteerde groepen/gebruikers',
-	'User/Group Name' => 'Naam gebruiker/groep',
 	'You cannot delete your own association.' => 'U kunt uw eigen associatie niet verwijderen.',
 	'[_1]\'s Associations' => 'Associaties van [_1]',
 	'You have no permission to delete the user [_1].' => 'U heeft geen rechten om gebruiker [_1] te verwijderen.',
@@ -1673,12 +1778,12 @@ use vars qw( @ISA %Lexicon );
 	'Saving object category failed: [_1]' => 'Opslaan objectcategorie mislukt: [_1]',
 	'Removing object categories failed: [_1]' => 'Verwijderen objectcategorieën mislukt: [_1]',
 	'record does not exist.' => 'record bestaat niet.',
-	'Cannot load content field #[_1]' => 'Kan inhoudsveld niet laden #[_1]', # Translate - New
+	'Cannot load content field #[_1]' => 'Kan inhoudsveld niet laden #[_1]',
 	'Publish Date' => 'Datum publicatie',
 	'Unpublish Date' => 'Einddatum publicatie',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) bestaat niet.',
 	'Contents by [_1]' => 'Inhoud door [_1]',
-	'Tags fields' => 'Tags velden', # Translate - New
+	'Tags fields' => 'Tags velden',
 	'(No label)' => '(geen label)',
 	'Identifier' => 'Identificatie',
 	'Link' => 'Link',
@@ -1689,7 +1794,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'Inhoudsvelden',
-	'Edit [_1] field' => '[_1] veld bewerken', # Translate - New
+	'Edit [_1] field' => '[_1] veld bewerken',
 
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => 'Alle [_1] mediabestanden weergeven',
@@ -1700,7 +1805,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentFieldType/Categories.pm
 	'Invalid Category IDs: [_1] in "[_2]" field.' => 'Ongeldige categorie IDs: [_1] in "[_2]" veld.',
-	'No category_set setting in content field type.' => 'Geen category_set instelling in inhoudsveldtype.',
 	'You must select a source category set.' => 'U moet een cagtegorieset selecteren als bron.',
 	'The source category set is not found in this site.' => 'De broncategorieset werd niet gevonden in deze site.',
 	'There is no category set that can be selected. Please create a category set if you use the Categories field type.' => 'Er is geen categorieset die geselecteerd kan worden.  Gelieve een categorieset aan te maken als u het Categoriën veldtype wil gebruiken.',
@@ -1763,7 +1867,7 @@ use vars qw( @ISA %Lexicon );
 	'Video Asset' => 'Videobestand',
 	'Image Asset' => 'Afbeeldingsbestand',
 	'Embedded Text' => 'Ingebedde tekst',
-	'List' => 'Lijst',
+	'__LIST_FIELD_LABEL' => 'Lijst', # Translate - New
 	'Table' => 'Tabel',
 
 ## lib/MT/ContentFieldType/RadioButton.pm
@@ -1775,8 +1879,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ContentFieldType/SingleLineText.pm
 	'"[_1]" field is too long.' => '"[_1]" veld is te lang',
 	'"[_1]" field is too short.' => '"[_1]" veld is te kort',
-	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and [_3].' => 'Een minimale lengte voor \'[_1]\' ([_2]) moet een positief geheel getal zijn tussen 0 en [_3].', # Translate - New
-	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and [_3].' => 'Een maximale lengte voor \'[_1]\' ([_2]) moet een positief geheel getal zijn tussen 1 en [_3].', # Translate - New
+	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and [_3].' => 'Een minimale lengte voor \'[_1]\' ([_2]) moet een positief geheel getal zijn tussen 0 en [_3].',
+	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and [_3].' => 'Een maximale lengte voor \'[_1]\' ([_2]) moet een positief geheel getal zijn tussen 1 en [_3].',
 	'An initial value for \'[_1]\' ([_2]) must be shorter than [_3] characters' => 'Een beginwaarde voor \'[_1]\' ([_2]) moet korter zijn dan [_3] karakters',
 
 ## lib/MT/ContentFieldType/Table.pm
@@ -1790,7 +1894,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentFieldType/Time.pm
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_3] [_4]',
-	'Invalid time \'[_1]\'; An initial time value be in the format HH:MM:SS.' => 'Ongeldige tijdsaanduiding \'[_1]\'; Een beginwaarde voor de tijd moet volgend formaat hebben UU:MM:SS.', # Translate - New
+	'Invalid time \'[_1]\'; An initial time value be in the format HH:MM:SS.' => 'Ongeldige tijdsaanduiding \'[_1]\'; Een beginwaarde voor de tijd moet volgend formaat hebben UU:MM:SS.',
 
 ## lib/MT/ContentFieldType/URL.pm
 	'Invalid URL in "[_1]" field.' => 'Ongeldige URL in "[_1]" veld.',
@@ -1803,7 +1907,7 @@ use vars qw( @ISA %Lexicon );
 	'Parameter \'[_1]\' is required' => 'Parameter \'[_1]\' is vereist',
 	'Parameter \'[_1]\' is invalid' => 'Parameter \'[_1]\' is ongeldig',
 	'Load of blog \'[_1]\' failed' => 'Laden van blog \'[_1]\' mislukt',
-	'[_1] archive type requires [_2] parameter' => 'Archieftype [_1] vereist een [_2] parameter', # Translate - New
+	'[_1] archive type requires [_2] parameter' => 'Archieftype [_1] vereist een [_2] parameter',
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => 'Er deed zich een fout voor bij het publiceren van [_1] \'[_2]\': [_3]',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het publiceren van datum-gebaseerd archief \'[_1]\': [_2]',
 	'Writing to \'[_1]\' failed: [_2]' => 'Schrijven naar \'[_1]\' mislukt: [_2]',
@@ -1821,7 +1925,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit All Content Data' => 'Alle inhoudsgegevens bewerken',
 	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" (Site: "[_2]" ID: [_3])',
 	'Content Data # [_1] not found.' => 'Inhoudsgegevens # [_1] niet gevonden.',
-	'Tags with [_1]' => 'Tags met [_1]', # Translate - New
+	'Tags with [_1]' => 'Tags met [_1]',
 	'string(40)' => 'string(40)',
 
 ## lib/MT/ContentType/UniqueID.pm
@@ -1882,6 +1986,9 @@ use vars qw( @ISA %Lexicon );
 	'Manage Address Book' => 'Adresboek beheren',
 	'Filter' => 'Filter',
 	'Manage Content Type' => 'Inhoudstype beheren',
+	'Manage Group Members' => 'Groepsleden beheren',
+	'Group Members' => 'Groepsleden',
+	'Group Member' => 'Groepslid',
 	'Convert Line Breaks' => 'Regeleindes omzetten',
 	'Rich Text' => 'Rich text',
 	'Movable Type Default' => 'Movable Type standaardinstelling',
@@ -1978,6 +2085,9 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Entry.pm
 
+## lib/MT/DataAPI/Callback/Group.pm
+	'A parameter "[_1]" is invalid.' => 'Een parameter "[_1]" is ongeldig.',
+
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
 	'Log (ID:[_1]) deleted by \'[_2]\'' => 'Log (ID:[_1]) verwijderd door \'[_2]\'',
@@ -2050,6 +2160,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 
+## lib/MT/DataAPI/Endpoint/v2/Group.pm
+	'Creating group failed: ExternalGroupManagement is enabled.' => 'Groep aanmaken mislukt: ExternalGroupManagement is ingeschakeld.',
+	'Cannot add member to inactive group.' => 'Kan geen lid toevoegen aan inactieve groep.',
+	'Adding member to group failed: [_1]' => 'Lid toevoegen aan groep mislukt: [_1]',
+	'Removing member from group failed: [_1]' => 'Lid verwijderen uit groep mislukt: [_1]',
+	'Group not found' => 'Groep niet gevonden',
+	'Member not found' => 'Lid niet gevonden',
+	'A resource "member" is required.' => 'Een bron ("member") is vereist.',
+
 ## lib/MT/DataAPI/Endpoint/v2/Log.pm
 	'Log message' => 'Logbericht',
 
@@ -2060,6 +2179,7 @@ use vars qw( @ISA %Lexicon );
 	'Granting permission failed: [_1]' => 'Permissie verlenen mislukt: [_1]',
 	'Role not found' => 'Rol niet gevonden',
 	'Revoking permission failed: [_1]' => 'Permissie afnemen mislukt: [_1]',
+	'Association not found' => 'Associatie niet gevonden',
 
 ## lib/MT/DataAPI/Endpoint/v2/Plugin.pm
 	'Plugin not found' => 'Plugin niet gevonden',
@@ -2222,6 +2342,19 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Folder.pm
 
+## lib/MT/Group.pm
+	'Backing up [_1] records:' => 'Er worden [_1] records gebackupt:',
+	'[_1] records backed up.' => '[_1] records gebackupt.',
+	'Groups associated with author: [_1]' => 'Groepen geassocieerd met auteur: [_1]',
+	'Inactive' => 'Inactief',
+	'Members of group: [_1]' => 'Leden van groep: [_1]',
+	'__GROUP_MEMBER_COUNT' => 'Leden',
+	'My Groups' => 'Mijn groepen',
+	'__COMMENT_COUNT' => 'Reacties',
+	'Email' => 'E-mail',
+	'Active Groups' => 'Actieve groepen',
+	'Disabled Groups' => 'Gedeactiveerde groepen',
+
 ## lib/MT/Image/GD.pm
 	'Cannot load GD: [_1]' => 'Kan GD niet laden: [_1]',
 	'Unsupported image file type: [_1]' => 'Niet ondersteund afbeeldingsformaat: [_1]',
@@ -2296,6 +2429,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].',
 	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Kon auto list eigenschap niet initialiseren [_1].[_2]: Kan definitie van kolom [_3] niet vinden.',
 	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'Kon auto list eigenschap niet initialiseren [_1].[_2]: kolomtype niet ondersteund.',
+	'[_1] (id:[_2])' => '[_1] (id:[_2])', # Translate - Case
 
 ## lib/MT/Lockout.pm
 	'Cannot find author for id \'[_1]\'' => 'Kan geen auteur vinden voor id \'[_1]\'',
@@ -2432,7 +2566,7 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type default' => 'Movable Type standaard',
 
 ## lib/MT/RebuildTrigger.pm
-	'Restoring rebuild trigger for blog #[_1]...' => 'Rebuild trigger voor blog #[_1] aan het terugzetten...', # Translate - New
+	'Restoring rebuild trigger for blog #[_1]...' => 'Rebuild trigger voor blog #[_1] aan het terugzetten...',
 	'Restoring Rebuild Trigger for Content Type #[_1]...' => 'Rebuild trigger voor inhoudstype #[_1] aan het terugzetten...',
 
 ## lib/MT/Revisable/Local.pm
@@ -2460,7 +2594,7 @@ use vars qw( @ISA %Lexicon );
 	'Contributor' => 'Redactielid',
 	'Can create entries, edit their own entries, and comment.' => 'Kan berichten aanmaken, eigen berichten bewerken en reageren.',
 	'Content Designer' => 'Inhoudsontwerper',
-	'Can manage content types, content data and category sets.' => 'Kan inhoudstypes, inhoudsgegevesn en categoriesets beheren.', # Translate - New
+	'Can manage content types, content data and category sets.' => 'Kan inhoudstypes, inhoudsgegevesn en categoriesets beheren.',
 	'__ROLE_STATUS' => 'Status',
 
 ## lib/MT/Scorable.pm
@@ -2529,17 +2663,14 @@ use vars qw( @ISA %Lexicon );
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Wanneer het ID van een blog zowel bij include_blogs als exclude_blogs staat, wordt de blog in kwestie uitgesloten.',
 	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => 'U gebruikten een \'[_1]\' tag buiten de context van een auteur; Misschien plaatste u de tag per ongeluk buiten een \'MTAuthors\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een bericht; Misschien plaatste u die tag per ongeluk buiten een \'MTEntries\' container tag?',
-	'No Content Type could be found.' => 'Er kon geen inhoudstype worden gevonden',
-	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een inhoudsveld; Misschien plaatste u deze per ongeluk buiten een \'MTContents\' container tag?',
-	'No Content Field could be found.' => 'Er werd geen inhoudsveld gevonden.',
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van de website; Misschien plaatste u die tag per ongeluk buiten een \'MTWebsites\' container tag?',
 	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => 'U gebruikte een \'[_1]\' tag in de context van een blog die geen deel uitmaakt van een website; Misschien is er een probleem met de gegevens van deze blog?',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van de blog; Misschien plaatste u die tag per ongeluk buiten een \'MTBlogs\' container tag?',
+	'You used an \'[_1]\' tag outside of the context of the site;' => 'U gebruikte een \'[_1]\' tag buiten de context van de site;', # Translate - New
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een reactie; Misschien plaatste u die tag per ongeluik buiten een \'MTComments\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een ping; Mogelijk plaatste u die per ongeluk buiten een \'MTPings\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een mediabestand; Misschien plaatste u dit per ongeluk buiten een \'MTAssets\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of a page; Perhaps you mistakenly placed it outside of a \'MTPages\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een pagina; Misschien plaatste u dit per ongeluk buiten een \'MTPages\' container tag?',
-	'No Category Set could be found.' => 'Er werd geen categorieset gevonden.',
 
 ## lib/MT/TemplateMap.pm
 	'Archive Mapping' => 'Archiefkoppeling',
@@ -2591,7 +2722,6 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] without a author context set up.' => 'U gebruikte een [_1] zonder een auteurscontext op te zetten.',
 
 ## lib/MT/Template/Tags/Blog.pm
-	'MTChildSites tags cannot be nested.' => 'MTChildSites tags kunnen niet genest worden.',
 	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Onbekende "mode" attribuutwaarde: [_1].  Geldige waarden zijn "loop" en "context".',
 
 ## lib/MT/Template/Tags/Calendar.pm
@@ -2608,7 +2738,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] used outside of [_2]' => '[_1] gebruikt buiten [_2]',
 
 ## lib/MT/Template/Tags/ContentType.pm
-	'No Content Field Type could be found.' => 'Er kon geen inhoudsveldtype worden gevonden.',
 	'Invalid tag_handler of [_1].' => 'Ongeldige tag_handler van [_1]',
 	'Invalid field_value_handler of [_1].' => 'Ongeldige field_valule_handler van [_1].',
 	'Content Type was not found. Blog ID: [_1]' => 'Inhoudstype werd niet gevonden.  Blog ID: [_1]',
@@ -2621,14 +2750,12 @@ use vars qw( @ISA %Lexicon );
 	'Specified WidgetSet \'[_1]\' not found.' => 'Opgegeven widgetset \'[_1]\' niet gevonden.',
 
 ## lib/MT/Template/Tags/Tag.pm
-	'content_type modifier cannot be used with type "[_1]".' => 'content_type modifier kan niet gebruikt worden met type "[_1]".', # Translate - New
 
 ## lib/MT/Template/Tags/Website.pm
-	'MTSites tags cannot be nested.' => 'MTSites tags kunnen niet genest worden.',
 
 ## lib/MT/Theme/Category.pm
-	'Failed to save category_order: [_1]' => 'Opslaan van category_order mislukt: [_1]', # Translate - New
-	'Failed to save folder_order: [_1]' => 'Opslaan van folder_order mislukt: [_1]', # Translate - New
+	'Failed to save category_order: [_1]' => 'Opslaan van category_order mislukt: [_1]',
+	'Failed to save folder_order: [_1]' => 'Opslaan van folder_order mislukt: [_1]',
 	'[_1] top level and [_2] sub categories.' => '[_1] hoofdcategoriën en [_2] subcategorieën.',
 	'[_1] top level and [_2] sub folders.' => '[_1] hoofdmappen en [_2] submappen.',
 
@@ -2704,7 +2831,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Upgrade/Core.pm
 	'Upgrading asset path information...' => 'Bezig padinformatie van mediabestanden bij te werken...',
-	'Creating initial user records...' => 'Bezig initiële gebruikersrecords aan te maken...', # Translate - New
+	'Creating initial user records...' => 'Bezig initiële gebruikersrecords aan te maken...',
 	'Error saving record: [_1].' => 'Fout bij opslaan gegevens: [_1].',
 	'Error creating role record: [_1].' => 'Fout bij aanmaken record voor rol: [_1].',
 	'Creating new template: \'[_1]\'.' => 'Nieuw sjabloon wordt aangemaakt: \'[_1]\'.',
@@ -2870,8 +2997,8 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object tags...' => 'Bezig objecttags opnieuw op te bouwen...',
 	'Rebuilding object assets...' => 'Bezig objectmediabestanden opnieuw op te bouwen...',
 	'Rebuilding content field permissions...' => 'Bezig permissies voor inhoudsvelden opnieuw op te bouwen...',
-	'Create a new role for creating a child site...' => 'Bezig nieuwe rol aan te maken om subsites aan te maken...', # Translate - New
-	'Migrating create child site permissions...' => 'Bezig permissies te migreren om subsites aan te maken...', # Translate - New
+	'Create a new role for creating a child site...' => 'Bezig nieuwe rol aan te maken om subsites aan te maken...',
+	'Migrating create child site permissions...' => 'Bezig permissies te migreren om subsites aan te maken...',
 	'Migrating MultiBlog settings...' => 'Bezig met migratie MultiBlog instellingen...',
 	'Migrating fields column of MT::ContentType...' => 'Bezig met migratie van fields kolom van MT::ContentType...',
 	'Migrating data column of MT::ContentData...' => 'Bezig met migratie van data kolom van MT::ContentData...',
@@ -2883,14 +3010,16 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding MT::ContentFieldIndex of embedded_text field...' => 'Bezig met opnieuw opbouwen van MT::ContentFieldIndex van embedded_text veld...',
 	'Rebuilding MT::ContentFieldIndex of url field...' => 'Bezig met opnieuw opbouwen van MT::ContentFieldIndex van url veld...',
 	'Rebuilding MT::ContentFieldIndex of single_line_text field...' => 'Bezig met opnieuw opbouwen van MT::ContentFieldIndex van single_line_text veld...',
-	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Bezig MT::Permission records opnieuw op te bouwen (verwijdering van edit_categories)...', # Translate - New
-	'Cleaning up content field indexes...' => 'Bezig content field indexes op te schonen...', # Translate - New
-	'Cleaning up objectasset records for content data...' => 'Bezig objectasset records voor inhoudsgegevens op te schonen...', # Translate - New
-	'Cleaning up objectcategory records for content data...' => 'Bezig objectcategory records voor inhoudsgegevens op te schonen...', # Translate - New
-	'Cleaning up objecttag records for content data...' => 'Bezig objecttag records voor inhoudsgegevesn op te schonen...', # Translate - New
-	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...', # Translate - New
-	'Migrating Max Length option of Single Line Text fields...' => 'Bezig de opties voor maximale lengte van enkellijnstekstvelden te migreren...', # Translate - New
+	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Bezig MT::Permission records opnieuw op te bouwen (verwijdering van edit_categories)...',
+	'Cleaning up content field indexes...' => 'Bezig content field indexes op te schonen...',
+	'Cleaning up objectasset records for content data...' => 'Bezig objectasset records voor inhoudsgegevens op te schonen...',
+	'Cleaning up objectcategory records for content data...' => 'Bezig objectcategory records voor inhoudsgegevens op te schonen...',
+	'Cleaning up objecttag records for content data...' => 'Bezig objecttag records voor inhoudsgegevesn op te schonen...',
+	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...',
+	'Migrating Max Length option of Single Line Text fields...' => 'Bezig de opties voor maximale lengte van enkellijnstekstvelden te migreren...',
 	'Reset default dashboard widgets...' => 'Standaard dashboard widgets terugzetten...',
+	'Rebuilding Content Type count of Category Sets...' => 'Bezig telling van inhoudstypes van categoriesets opnieuw te publiceren...', # Translate - New
+	'Adding site list dashboard widget for mobile...' => '', # Translate - New
 
 ## lib/MT/Util/Archive.pm
 	'Type must be specified' => 'Type moet worden opgegeven',
@@ -2901,6 +3030,9 @@ use vars qw( @ISA %Lexicon );
 	'Could not read from filehandle.' => 'Kon filehandle niet lezen.',
 	'File [_1] is not a tgz file.' => 'Bestand [_1] is geen tgz bestand.',
 	'File [_1] exists; could not overwrite.' => 'Bestand [_1] bestaat; kon niet worden overschreven.',
+	'[_1] in the archive is not a regular file' => '[_1] in het archief is geen gewoon bestand', # Translate - New
+	'[_1] in the archive is an absolute path' => '[_1] in het archief is een absoluut pad', # Translate - New
+	'[_1] in the archive contains ..' => '[_1] in het archief bevat ..', # Translate - New
 	'Cannot extract from the object' => 'Kan extractie uit object niet uitvoeren',
 	'Cannot write to the object' => 'Kan niet schrijven naar het object',
 	'Both data and file name must be specified.' => 'Zowel data gen bestandsnaam moeten worden opgegeven.',
@@ -2995,9 +3127,23 @@ use vars qw( @ISA %Lexicon );
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Perl module Image::Size is nodig om de breedte en hoogte van opgeladen afbeeldingen te bepalen.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Sjabloonmethodes zijn niet geïmplementeerd wegens het verschil tussen de Blogger API en de Movable Type API.',
 
-## mt-static/addons/Sync.pack/js/cms.js
+## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
+	'A configuration directive is required.' => 'Er is een configuratiedirectief vereist.', # Translate - New
+	'[_1] cannot be updated.' => '[_1] kan niet bijgewerkt worden', # Translate - New
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Hoewel Movable Type [_1] kan bijwerken, kan dit niet via dit scherm.', # Translate - New
+	'[_1] already exists.' => '[_1] bestaat al.', # Translate - New
+	'A configuration value is required.' => 'Een waarde voor deze instelling is nodig.', # Translate - New
+	'The HASH type configuration directive should be in the format of "key=value"' => 'Een configuratiedirectief van het type HASH moet volgend formaat hebben "sleutel=waarde"', # Translate - New
+	'[_1] for [_2] already exists.' => '[_1] voor [_2] bestaat al.', # Translate - New
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
+	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?', # Translate - New
+	'configuration directive' => 'configuratiedirectief', # Translate - New
+
+## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => 'Doorgaan',
 	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen veranderingen op deze pagina die verloren zullen geen.',
+
+## mt-static/addons/Sync.pack/js/cms.js
 
 ## mt-static/chart-api/deps/raphael-min.js
 	'+e.x+' => '+e.x+',
@@ -3084,19 +3230,26 @@ use vars qw( @ISA %Lexicon );
 	'Label "[_1]" is already in use.' => 'Label "[_1]" is al in gebruik',
 	'Are you sure you want to remove filter \'[_1]\'?' => 'Bent u zeker dat u de filter \'[_1]\' wenst te verwijderen?',
 
-## mt-static/js/listing/tag/display-options.tag
-	'Reset defaults' => 'Standaardinstellingen terugzetten',
+## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'Show' => 'Tonen',
 	'25 rows' => '25 rijen',
 	'50 rows' => '50 rijen',
 	'100 rows' => '100 rijen',
 	'200 rows' => '2000 rijen',
+
+## mt-static/js/listing/tag/display-options.tag
+	'Reset defaults' => 'Standaardinstellingen terugzetten',
 	'Column' => 'Kolom',
 	'User Display Option is disabled now.' => 'Gebruikersweergaveopties zijn nu uitgeschakeld',
 
-## mt-static/js/listing/tag/list-actions.tag
-	'More actions...' => 'Meer mogelijkheden...',
+## mt-static/js/listing/tag/list-actions-for-mobile.tag
+	'Select action' => 'Selecteer actie', # Translate - New
 	'Plugin Actions' => 'Plugin-mogelijkheden',
+
+## mt-static/js/listing/tag/list-actions-for-pc.tag
+	'More actions...' => 'Meer mogelijkheden...',
+
+## mt-static/js/listing/tag/list-actions.tag
 
 ## mt-static/js/listing/tag/list-filter.tag
 	'Filter:' => 'Filter:',
@@ -3112,11 +3265,15 @@ use vars qw( @ISA %Lexicon );
 	'Save As' => 'Opslaan als',
 	'Filter Label' => 'Filterlabel',
 
-## mt-static/js/listing/tag/list-pagination.tag
+## mt-static/js/listing/tag/list-pagination-for-mobile.tag
+
+## mt-static/js/listing/tag/list-pagination-for-pc.tag
 
 ## mt-static/js/listing/tag/list-table.tag
 	'Loading...' => 'Laden...',
 	'Select All' => 'Alles selecteren',
+	'All' => 'Alle', # Translate - Case
+	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] van [_3]',
 	'Select all [_1] items' => 'Selecteer alle [_1] items',
 	'All [_1] items are selected' => 'Alle [_1] items zijn geselecteerd',
 	'Select' => 'Selecteren',
@@ -3159,24 +3316,24 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
-	'Embed Code' => 'Insluitcode', # Translate - New
-	'Please enter the embed code here.' => 'Gelieve de insluitcode hier in te geven.', # Translate - New
+	'Embed Code' => 'Insluitcode',
+	'Please enter the embed code here.' => 'Gelieve de insluitcode hier in te geven.',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/header.js
-	'Heading' => 'Hoofding', # Translate - New
-	'Heading Level' => 'Hoofdingsniveau', # Translate - New
-	'Please enter the Header Text here.' => 'Vul hier de tekst voor de hoofding in.', # Translate - New
+	'Heading' => 'Hoofding',
+	'Heading Level' => 'Hoofdingsniveau',
+	'Please enter the Header Text here.' => 'Vul hier de tekst voor de hoofding in.',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/horizon.js
-	'Horizontal Rule' => 'Horizontale lijn', # Translate - New
+	'Horizontal Rule' => 'Horizontale lijn',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/image.js
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/text.js
-	'__TEXT_BLOCK__' => 'Tekst', # Translate - New
+	'__TEXT_BLOCK__' => 'Tekst',
 
 ## mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js
-	'Select a block' => 'Selecteer een blok', # Translate - New
+	'Select a block' => 'Selecteer een blok',
 
 ## mt-static/plugins/BlockEditor/lib/js/modal_window.js
 
@@ -4357,6 +4514,7 @@ use vars qw( @ISA %Lexicon );
 	'You must select a parent site.' => 'U moet een hoofdsite selecteren',
 
 ## tmpl/cms/dialog/asset_edit.tmpl
+	'Edit Asset' => 'Mediabestand bewerken',
 	'Your edited image has been saved.' => 'U bewerkte afbeelding werd opgeslagen.',
 	'Metadata cannot be updated because Metadata in this image seems to be broken.' => 'De metadata kan niet worden bijgewerkt omdat de metadata van deze afbeelding fouten lijkt te bevatten.',
 	'Error creating thumbnail file.' => 'Fout bij aanmaken thumbnailbestand.',
@@ -4373,8 +4531,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/asset_insert.tmpl
 
 ## tmpl/cms/dialog/asset_modal.tmpl
-	'Upload new image' => 'Nieuwe afbeelding upladen',
-	'Upload new asset' => 'Nieuw mediabestand uploaden',
+	'Add Assets' => 'Mediabestanden toevoegen',
+	'Choose Asset' => 'Mediabestanden kiezen',
 	'Library' => 'Bibliotheek',
 	'Next (s)' => 'Volgende (s)',
 	'Insert (s)' => 'Invoegen (s)',
@@ -4416,7 +4574,8 @@ use vars qw( @ISA %Lexicon );
 	'Submit reply (s)' => 'Antwoord ingeven (s)',
 
 ## tmpl/cms/dialog/content_data_modal.tmpl
-	'Select Content Data' => 'Selecteer inhoudsdata',
+	'Add [_1]' => '[_1] toevoegen',
+	'Choose [_1]' => 'Kies [_1]',
 	'Create and Insert' => 'Aanmaken en invoegen',
 
 ## tmpl/cms/dialog/create_association.tmpl
@@ -4425,7 +4584,6 @@ use vars qw( @ISA %Lexicon );
 	'No users exist in this installation. [_1]Create a user</a>' => 'Er bestaan geen gebruikers in deze installatie.[_1]Maak een gebruiker aan</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 	'all' => 'alle',
-	'Groups' => 'Groepen',
 
 ## tmpl/cms/dialog/create_trigger_select_site.tmpl
 
@@ -4438,6 +4596,8 @@ use vars qw( @ISA %Lexicon );
 	'Select Trigger Action' => 'Selecteer triggeractie',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
+
+## tmpl/cms/dialog/dialog_select_group_user.tmpl
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Width' => 'Breedte',
@@ -4486,8 +4646,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Publishing Profile' => 'Publicatieprofiel',
-	'child site' => 'subsite', # Translate - Case
-	'site' => 'site', # Translate - Case
+	'child site' => 'subsite',
+	'site' => 'site',
 	'Choose the profile that best matches the requirements for this [_1].' => 'Kies het profiel dat het beste overeen komt met de vereisten voor deze [_1].',
 	'Static Publishing' => 'Statisch publiceren',
 	'Immediately publish all templates statically.' => 'Alle sjablonen onmiddellijk statisch publiceren',
@@ -4554,9 +4714,6 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to user' => 'Geef site permissies aan gebruiker',
 	'Grant site permission to group' => 'Geef site permissies aan groep',
 
-## tmpl/cms/dialog/select_theme.tmpl
-	'Select Personal child site theme' => 'Selecteer thema voor persoonlijke subsite',
-
 ## tmpl/cms/dialog/start_create_trigger.tmpl
 	'You must select Object Type.' => 'U moet een objecttype kiezen.',
 	'You must select Content Type.' => 'U moet een inhoudstype kiezen.',
@@ -4566,7 +4723,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 
 ## tmpl/cms/edit_asset.tmpl
-	'Edit Asset' => 'Mediabestand bewerken',
 	'Stats' => 'Statistieken',
 	'[_1] - Created by [_2]' => '[_1] - aangemaakt door [_2]',
 	'[_1] - Modified by [_2]' => '[_1] - aangepast door [_2]',
@@ -4712,7 +4868,6 @@ use vars qw( @ISA %Lexicon );
 	'Trust Commenter' => 'Vertrouw reageerder',
 	'Unban Commenter' => 'Ontban reageerder',
 	'Unavailable for OpenID user' => 'Niet beschikbaar voor OpenID gebruiker',
-	'Email' => 'E-mail',
 	'No url in profile' => 'Geen URL in profiel',
 	'View all comments with this URL' => 'Alle reacties met deze URL bekijken',
 	'[_1] no longer exists' => '[_1] bestaat niet meer',
@@ -4727,16 +4882,11 @@ use vars qw( @ISA %Lexicon );
 	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'Een opgeslagen versie van deze inhoudsgegevens werd automatisch opgeslagen [_2]. <a href="[_1]" class="alert-link">Automatisch opgeslagen inhoud terughalen</a>',
 	'An error occurred while trying to recover your saved content data.' => 'Er deed zich een fout voor bij het terughalen van uw opgeslagen inhoudsgegevens.',
 	'This [_1] has been saved.' => 'Deze [_1] werd opgeslagen',
-	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Nog een [_2] aanmaken?</a>', # Translate - New
-	'Unpublished (Draft)' => 'Niet gepubliceerd (klad)',
-	'Unpublished (Review)' => 'Niet gepubliceerd (na te kijken)',
-	'Unpublished (Spam)' => 'Niet gepubliceerd (spam)',
+	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Nog een [_2] aanmaken?</a>',
 	'Revision: <strong>[_1]</strong>' => 'Revisie: <strong>[_1]</strong>',
 	'View revisions of this [_1]' => 'Revisies bekijken van [_1]',
 	'View revisions' => 'Revisies bekijken',
 	'No revision(s) associated with this [_1]' => 'Geen revisies geassociëerd met [_1]',
-	'[_1] - Published by [_2]' => '[_1] - gepubliceerd door [_2]',
-	'[_1] - Edited by [_2]' => '[_1] - bewerkt door [_2]',
 	'Publish this [_1]' => 'Publiceer [_1]',
 	'Draft this [_1]' => 'Maak [_1] klad',
 	'Schedule' => 'Plannen',
@@ -4745,6 +4895,9 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish this [_1]' => 'Maak publicatie van [_1] ongedaan',
 	'Save this [_1]' => '[_1] bewaren',
 	'You must configure this blog before you can publish this content data.' => 'U moet deze blog eerst configureren voor u deze inhoudsgegevens kunt publiceren.',
+	'Unpublished (Draft)' => 'Niet gepubliceerd (klad)',
+	'Unpublished (Review)' => 'Niet gepubliceerd (na te kijken)',
+	'Unpublished (Spam)' => 'Niet gepubliceerd (spam)',
 	'Publish On' => 'Publiceren op',
 	'Published Time' => 'Publicatietijd',
 	'Unpublished Date' => 'Einddatum publicatie',
@@ -4783,8 +4936,8 @@ use vars qw( @ISA %Lexicon );
 	'Contents type settings has been saved.' => 'Instellingen inhoudstype zijn opgeslagen.',
 	'Some content fields were not deleted. You need to delete archive mapping for the content field first.' => 'Sommige inhoudsvelden werden niet verwijderd.  U moet eerst de archiefmappingen voor het inhoudsveld verwijderen.',
 	'Available Content Fields' => 'Beschikbare inhoudsvelden',
-	'Unavailable Content Fields' => 'Niet beschikbare inhoudsvelden', # Translate - New
-	'Reason' => 'Reden', # Translate - New
+	'Unavailable Content Fields' => 'Niet beschikbare inhoudsvelden',
+	'Reason' => 'Reden',
 	'1 or more label-value pairs are required' => '1 of meer label-waarde paren zijn vereist',
 	'This field must be unique in this content type' => 'Dit veld moet uniek zijn binnen dit inhoudstype',
 
@@ -4851,6 +5004,7 @@ use vars qw( @ISA %Lexicon );
 	'Draggable' => 'Sleepbaar',
 	'Share' => 'Delen',
 	'Format:' => 'Formaat:',
+	'Rich Text(HTML mode)' => 'Verrijkte tekst (HTML modus)', # Translate - New
 	q{(comma-delimited list)} => q{(lijst gescheiden met komma's)},
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	q{(delimited by '[_1]')} => q{(gescheiden door '[_1]')},
@@ -4863,6 +5017,25 @@ use vars qw( @ISA %Lexicon );
 	'You must specify a label for the folder.' => 'U moet een naam opgeven voor de map',
 	'Path' => 'Pad',
 	'Save changes to this folder (s)' => 'Wijzigingen aan deze map opslaan (s)',
+
+## tmpl/cms/edit_group.tmpl
+	'Edit Group' => 'Groep bewerken',
+	'This group profile has been updated.' => 'Dit groepsprofiel werd bijgewerkt.',
+	'This group was classified as pending.' => 'Deze groep werd geclassificeerd als in aanvraag.',
+	'This group was classified as disabled.' => 'Deze groep werd geclassificeerd als gedeactiveerd.',
+	'Member ([_1])' => 'Lid ([_1])',
+	'Members ([_1])' => 'Leden ([_1])',
+	'Permission ([_1])' => 'Permissie ([_1])',
+	'Permissions ([_1])' => 'Permissies ([_1])',
+	'LDAP Group ID' => 'LDAP Group ID',
+	'The LDAP directory ID for this group.' => 'Het LDAP directory ID van deze groep',
+	'Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.' => 'Status van deze groep in het systeem.  Een groep deactiveren ontzegt de leden ervan toegang tot het systeem maar behoudt hun inhoud en geschiedenis.',
+	'The name used for identifying this group.' => 'De naam gebruikt om deze groep mee aan te duiden.',
+	'The display name for this group.' => 'De getoonde naam van deze groep.',
+	'The description for this group.' => 'De beschrijving van deze groep.',
+	'Created By' => 'Aangemaakt door',
+	'Created On' => 'Aangemaakt',
+	'Save changes to this field (s)' => 'De wijzigingen aan dit veld opslaan (s)',
 
 ## tmpl/cms/edit_ping.tmpl
 	'Edit Trackback' => 'TrackBack bewerken',
@@ -4905,13 +5078,13 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'Widget bewerken',
-	'Create Index Template' => 'Indexsjabloon aanmaken', # Translate - Case
-	'Create Entry Archive Template' => 'Berichtenarchiefsjabloon aanmaken', # Translate - New
-	'Create Entry Listing Archive Template' => 'Berichtenlijstarchiefsjabloon aanmaken', # Translate - New
-	'Create Page Archive Template' => 'Pagina-archiefsjabloon aanmaken', # Translate - New
-	'Create Content Type Archive Template' => 'Inhoudstypearchiefsjabloon aanmaken', # Translate - New
-	'Create Content Type Listing Archive Template' => 'Inhoudstypelijstarchiefsjabloon aanmaken', # Translate - New
-	'Create Template Module' => 'Sjabloonmodule aanmaken', # Translate - Case
+	'Create Index Template' => 'Indexsjabloon aanmaken',
+	'Create Entry Archive Template' => 'Berichtenarchiefsjabloon aanmaken',
+	'Create Entry Listing Archive Template' => 'Berichtenlijstarchiefsjabloon aanmaken',
+	'Create Page Archive Template' => 'Pagina-archiefsjabloon aanmaken',
+	'Create Content Type Archive Template' => 'Inhoudstypearchiefsjabloon aanmaken',
+	'Create Content Type Listing Archive Template' => 'Inhoudstypelijstarchiefsjabloon aanmaken',
+	'Create Template Module' => 'Sjabloonmodule aanmaken',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => 'Een opgeslagen verise van deze [_1] werd automatisch opgeslagen [_3]. <a href="[_2]" class="alert-link">Automatisch opgeslagen inhoud terughalen</a>',
 	'You have successfully recovered your saved [_1].' => '[_1] met succes teruggehaald.',
 	'An error occurred while trying to recover your saved [_1].' => 'Er deed zich een fout voor bij het terughalen van uw opgeslagen [_1]',
@@ -5018,8 +5191,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/field_html/field_html_asset.tmpl
 	'No Assets' => 'Geen mediabestanden',
 	'No Asset' => 'Geen mediabestand',
-	'Add Assets' => 'Mediabestanden toevoegen',
-	'Choose Asset' => 'Mediabestanden kiezen',
 	'Assets less than or equal to [_1] must be selected' => 'Een aantal mediabestanden kleiner dan of gelijk aan [_1] moet worden geselecteerd',
 	'Assets greater than or equal to [_1] must be selected' => 'Een aantal mediabestanden groter dan of gelijk aan [_1] moet worden geselecteerd',
 	'Only 1 asset can be selected' => 'Slechts één mediabestand kan worden geselecteerd',
@@ -5029,9 +5200,8 @@ use vars qw( @ISA %Lexicon );
 	'Add sub category' => 'Subcategorie toevoegen',
 
 ## tmpl/cms/field_html/field_html_content_type.tmpl
+	'No field data.' => 'Geen veldgegevens.', # Translate - New
 	'No [_1]' => 'Geen [_1]',
-	'Add [_1]' => '[_1] toevoegen',
-	'Choose [_1]' => 'Kies [_1]',
 	'This field is disabled because valid Content Type is not selected in this field.' => 'Dit veld is uitgeschakeld omdat er geen geldig inhoudstype werd geselecteerd in dit veld.',
 	'[_1] less than or equal to [_2] must be selected' => '[_1] kleiner dan of gelijk aan [_2] moet worden geselecteerd',
 	'[_1] greater than or equal to [_2] must be selected' => '[_1] groter dan of gelijk aan [_2] moet worden geselecteerd',
@@ -5118,8 +5288,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/asset_table.tmpl
 	'Delete selected assets (x)' => 'Geselecteerde media verwijderen (x)',
 	'Size' => 'Grootte',
-	'Created By' => 'Aangemaakt door',
-	'Created On' => 'Aangemaakt',
 	'Asset Missing' => 'Ontbrekend mediabestand',
 	'No thumbnail image' => 'Geen thumbnail',
 
@@ -5143,6 +5311,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/async_asset_upload.tmpl
 	'Choose files to upload or drag files.' => 'Kies bestanden om te uploaden of sleep ze hierheen',
 	'Choose file to upload or drag file.' => 'Kies bestand om te uploaden of sleep het hierheen',
+	'Choose files to upload.' => 'Kies bestanden om te uploaden.', # Translate - New
+	'Choose file to upload.' => 'Kies bestand op te uploaden.', # Translate - New
+	'Upload Settings' => 'Instellingen voor uploaden', # Translate - New
 	'Upload Options' => 'Upload opties',
 	'Operation for a file exists' => 'Actie als een bestand al bestaat',
 	'Drag and drop here' => 'Klik en sleep hierheen',
@@ -5289,6 +5460,13 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'with' => 'met',
 
+## tmpl/cms/include/group_table.tmpl
+	'Enable selected group (e)' => 'De geselecteerde groep activeren (e)',
+	'Disable selected group (d)' => 'De geselecteerde groep deactiveren (d)',
+	'group' => 'groep',
+	'groups' => 'groepen',
+	'Remove selected group (d)' => 'De geselecteerde groep verwijderen (d)',
+
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'Hulp',
 	'Search (q)' => 'Zoeken (q)',
@@ -5331,6 +5509,11 @@ use vars qw( @ISA %Lexicon );
 	'Remove selected user(s) (r)' => 'Geselecteerde gebruiker(s) verwijderen (r)',
 	'Remove this role' => 'Verwijder deze rol',
 
+## tmpl/cms/include/mobile_global_menu.tmpl
+	'Select another site...' => 'Selecteer een andere site...',
+	'Select another child site...' => 'Selecteer een andere subsite...',
+	'PC View' => 'PC uitzicht', # Translate - New
+
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Toegevoegd',
 	'Save changes' => 'Wijzigingen opslaan',
@@ -5344,7 +5527,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/pagination.tmpl
 	'First' => 'Eerste',
-	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] van [_3]',
 	'Last' => 'Laatste',
 
 ## tmpl/cms/include/ping_table.tmpl
@@ -5360,8 +5542,6 @@ use vars qw( @ISA %Lexicon );
 	'Open Panel' => 'Paneel openen',
 	'Open Site Menu' => 'Site menu openen',
 	'Close Site Menu' => 'Site menu sluiten',
-	'Select another site...' => 'Selecteer een andere site...',
-	'Select another child site...' => 'Selecteer een andere subsite...',
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'Geen revisies gevonden.',
@@ -5380,6 +5560,10 @@ use vars qw( @ISA %Lexicon );
 	'Select another blog...' => 'Selecteer een andere blog...',
 	'Create Website' => 'Website aanmaken',
 	'Create Blog (on [_1])' => 'Blog aanmaken (op [_1])',
+
+## tmpl/cms/include/status_widget.tmpl
+	'[_1] - Published by [_2]' => '[_1] - gepubliceerd door [_2]',
+	'[_1] - Edited by [_2]' => '[_1] - bewerkt door [_2]',
 
 ## tmpl/cms/include/template_table.tmpl
 	'No content type could be found.' => 'Er werd geen inhoudstype gevonden.',
@@ -5512,6 +5696,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => 'U hebt [_1] toegevoegd aan uw lijst met uitgesloten IP adressen.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'U hebt de geselecteerde IP adressen uit de lijst is verwijderd.',
+	'' => '', # Translate - New
+	'The IP you entered is already banned for this site.' => 'Het IP dat u heeft ingevuld is reeds uitgesloten voor deze site.', # Translate - New
 	'Invalid IP address.' => 'Ongeldig IP adres',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
@@ -5545,6 +5731,20 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/listing/filter_list_header.tmpl
 
+## tmpl/cms/listing/group_list_header.tmpl
+	'You successfully disabled the selected group(s).' => 'U deactiveerde met succes de geselecteerde groep(en).',
+	'You successfully enabled the selected group(s).' => 'U activeerde met succes de geselecteerde groep(en).',
+	'You successfully deleted the groups from the Movable Type system.' => 'U verwijderde met succes de groepen uit het Movable Type systeem.',
+	q{You successfully synchronized the groups' information with the external directory.} => q{U synchroniseerde met succes de groepsinformatie met de externe directory.},
+	q{An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Er deed zich een fout voor tijdens de synchronisatie.  Kijk in het <a href='[_1]'>activiteitenlog</a> voor gedetailleerde informatie.},
+
+## tmpl/cms/listing/group_member_list_header.tmpl
+	'You successfully deleted the users.' => 'U verwijderde met succes de gebruikers.',
+	'You successfully added new users to this group.' => 'U voegde met succes nieuwe gebruikers toe aan deze groep.',
+	q{You successfully synchronized users' information with the external directory.} => q{U synchroniseerde met succes informatie over gebruikers met de externe directory.},
+	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'Sommige ([_1]) van de geselecteerde gebruikers konden niet gereactiveerd worden omdat ze niet langer gevonden worden in LDAP.',
+	'You successfully removed the users from this group.' => 'U verwijderde met succes de gebruikers uit de groep.',
+
 ## tmpl/cms/listing/log_list_header.tmpl
 	'All times are displayed in GMT[_1].' => 'Alle tijdstippen worden getoond in GMT[_1].',
 	'All times are displayed in GMT.' => 'Alle tijdstippen worden getoond in GMT.',
@@ -5552,8 +5752,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/member_list_header.tmpl
 
 ## tmpl/cms/listing/notification_list_header.tmpl
-	'You have updated your contact in your address book.' => 'U heeft uw contact in het adressenboek bijgewerkt.', # Translate - New
-	'You have added new contact to your address book.' => 'U heeft een nieuw contact aan uw adressenboek toegevoegd.', # Translate - New
+	'You have updated your contact in your address book.' => 'U heeft uw contact in het adressenboek bijgewerkt.',
+	'You have added new contact to your address book.' => 'U heeft een nieuw contact aan uw adressenboek toegevoegd.',
 	'You have successfully deleted the selected contacts from your address book.' => 'U heeft met succes de geselecteerde contacten verwijderd uit uw adresboek.',
 
 ## tmpl/cms/listing/ping_list_header.tmpl
@@ -5576,7 +5776,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Show All Templates' => 'Alle sjablonen tonen',
-	'Content type Templates' => 'Inhoudstypesjablonen', # Translate - Case
+	'Content type Templates' => 'Inhoudstypesjablonen',
 	'Publishing Settings' => 'Publicatie-instellingen',
 	'Helpful Tips' => 'Nuttige tips',
 	'To add a widget set to your templates, use the following syntax:' => 'Om een widgetset aan uw sjablonen toe te voegen, gebruikt u volgende syntax:',
@@ -5584,13 +5784,13 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Your templates have been published.' => 'Uw sjablonen werden gepubliceerd.',
 	'Selected template(s) has been copied.' => 'Geselecteerde sjablo(o)n(en) gekopiëerd.',
-	'Select template type' => 'Selecteer sjabloontype', # Translate - New
-	'Entry Archive' => 'Berichtarchief', # Translate - New
-	'Entry Listing Archive' => 'Berichtenlijstarchief', # Translate - New
-	'Page Archive' => 'Pagina-archief', # Translate - New
-	'Content Type Listing Archive' => 'Inhoudstypelijstarchief', # Translate - New
-	'Template Module' => 'Sjabloonmodule', # Translate - New
-	'Create new template (c)' => 'Nieuw sjabloon aanmaken (c)', # Translate - New
+	'Select template type' => 'Selecteer sjabloontype',
+	'Entry Archive' => 'Berichtarchief',
+	'Entry Listing Archive' => 'Berichtenlijstarchief',
+	'Page Archive' => 'Pagina-archief',
+	'Content Type Listing Archive' => 'Inhoudstypelijstarchief',
+	'Template Module' => 'Sjabloonmodule',
+	'Create new template (c)' => 'Nieuw sjabloon aanmaken (c)',
 	'Create' => 'aanmaken',
 	'Delete selected Widget Sets (x)' => 'Geselecteerde widgetsets verwijderen (x)',
 	'No widget sets could be found.' => 'Er werden geen widgetsets gevonden.',
@@ -5748,7 +5948,7 @@ use vars qw( @ISA %Lexicon );
 	'Date/Time Range' => 'Datum/tijd bereik',
 	'Date Range' => 'Bereik wissen',
 	'Reported as Spam?' => 'Rapporteren als spam?',
-	'(search only)' => '(enkel zoeken)', # Translate - New
+	'(search only)' => '(enkel zoeken)',
 	'Field' => 'Veld',
 	'_DATE_FROM' => 'Van',
 	'_DATE_TO' => 'Tot',
@@ -5828,8 +6028,11 @@ use vars qw( @ISA %Lexicon );
 	'Messages from the system' => 'Berichten van het systeem',
 	'warning' => 'waarschuwing',
 
+## tmpl/cms/widget/site_list_for_mobile.tmpl
+
 ## tmpl/cms/widget/site_list.tmpl
 	'Setting' => 'Instelling',
+	'List' => 'Lijst',
 	'Recent Posts' => 'Recente berichten',
 
 ## tmpl/cms/widget/site_stats.tmpl
@@ -5938,7 +6141,6 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Database Type' => 'Databasetype',
 	'Select One...' => 'Selecteer er één...',
-	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Staat uw gewenste database er niet bij?  Kijk bij de <a href="[_1]" target="_blank">Movable Type systeemcontrole</a> of er bijkomende modules nodig zijn.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => '<a href="javascript:void(0)" onclick="[_1]">Klik hier om dit scherm te vernieuwen</a> zodra de installatie voltooid is.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Meer weten over: <a href="[_1]" target="_blank">Database instellen</a>',
@@ -6016,6 +6218,201 @@ use vars qw( @ISA %Lexicon );
 	'Begin' => 'Start!',
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Er bestaat al een configuratiebestand (mt-config.cgi), U kunt <a href="[_1]">aanmelden</a> bij Movable Type.',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Om een nieuw configuratiebestand aan te maken met de Wizard moet u het huidige configuratiebestand verwijderen en deze pagina vernieuwen.',
+
+## addons/Cloud.pack/config.yaml
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
+	'Cloud Services' => 'Clouddiensten', # Translate - New
+	'Basic Authentication' => 'Basic authenticatie', # Translate - New
+	'Redirect' => 'Doorverwijzing', # Translate - New
+	'Auto Update' => 'Automatische Update', # Translate - New
+	'FTPS Password' => 'FTPS Wachtwoord', # Translate - New
+	'SSL Certificates' => 'SSL Certificaat', # Translate - New
+	'IP Restriction' => 'IP Beperking', # Translate - New
+	'Full Restore' => 'Volledig Herstel', # Translate - New
+	'Config Directives' => 'Configuratiedirectieven', # Translate - New
+	'Disk Usage' => 'Schijfgebruik', # Translate - New
+
+## addons/Cloud.pack/lib/Cloud/App/CMS.pm
+	'Owner' => 'Eigenaar', # Translate - New
+	'Creator' => 'Maker', # Translate - New
+	'FTP passowrd for [_1] has successfully been updated.' => 'Het FTP wachtwoord voor [_1] werd met succes bijgewerkt.', # Translate - New
+	'Unable to reset [_1] FTPS password.' => 'Kan FTP wachtwoord voor [_1] niet bijwerken.', # Translate - New
+	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'Bijwerken van [_1] niet gelukt: enkele [_2] werden gewijzigd sinds u dit scherm opende.', # Translate - New
+	'Basic Authentication setting' => 'Instellingen basic authenticatie', # Translate - New
+	'Cannot access to this uri: [_1]' => 'Geen toegang tot deze uri: [_1]', # Translate - New
+	'Basic authentication for site has successfully been updated.' => 'Basic authenticatie voor deze site werd bijgewerkt.', # Translate - New
+	'Unable to update Basic Authentication settings.' => 'Bijwerken basic authenticatie voor deze site niet gelukt.', # Translate - New
+	'Administration Screen Setting' => 'Instelling administratiescherm', # Translate - New
+	'The URL you specified is not available.' => 'De URL die u opgaf is niet beschikbaar.', # Translate - New
+	'Unable to update Admin Screen URL settings.' => 'Bijwerken URL administratiescherm niet gelukt.', # Translate - New
+	'The URL for administration screen has successfully been updated.' => 'De URL voor het administratiescherm werd met succes bijgewerkt.', # Translate - New
+	'Cannot delete basicauth_admin file.' => 'Kan basicauth_admin bestand niet verwijderen.', # Translate - New
+	'Basic authentication for administration screen has successfully been cleared.' => 'Basic authenticatie voor administratiescherm werd met succes leeggemaakt.', # Translate - New
+	'User ID is required.' => 'Gebruikers ID is vereist.', # Translate - New
+	'Password is required.' => 'Wachtwoord is vereist.', # Translate - New
+	'Unable to update basic authentication for administration screen.' => 'Bijwerken basic authenticatie voor administratiescherm mislukt.', # Translate - New
+	'Unable to write temporary file.' => 'Onmogelijk tijdelijk bestand te schrijven.', # Translate - New
+	'Basic authentication for administration screen has successfully been updated.' => 'Basic authenticatie voor administratiescherm met succes bijgewerkt.', # Translate - New
+	'Cannot delete ip_restriction_[_1] file.' => 'Kan ip_restriction_[_1] bestand niet verwijderen.', # Translate - New
+	'IP restriction for administration screen has successfully been cleared.' => 'IP restricties voor administratiescherm met succes leeg gemaakt.', # Translate - New
+	'[_1] is not a valid IP address.' => '[_1] is geen geldig IP adres.', # Translate - New
+	'Unable to write allowed IP addresses file.' => 'Schrijven naar bestand met toegestane IP adressen mislukt.', # Translate - New
+	'IP restriction white list for administration screen  has successfully been updated.' => 'IP restricties whitelist voor administratiescherm met succes bijgewerkt.', # Translate - New
+	'HTTP Redirect' => 'HTTP omleidingen', # Translate - New
+	'HTTP Redirect setting' => 'Instelling voor HTTP omleidingen', # Translate - New
+	'HTTP redirect settings has successfully updated.' => 'Instelling voor HTTP omleiding met succes bijgewerkt.', # Translate - New
+	'Unable to update HTTP Redirect settings.' => 'Kon instelling voor HTTP omleiding niet bijwerken.', # Translate - New
+	'Update SSL Certification' => 'SSL certificaat bijwerken', # Translate - New
+	'__SSL_CERT_UPDATE' => 'bijwerken', # Translate - New
+	'__SSL_CERT_INSTALL' => 'installeren', # Translate - New
+	'Cannot copy default cert file.' => 'Kan standaard cert bestand niet kopiëren.', # Translate - New
+	'Unable to create temporary path: [_1]' => 'Kan tijdelijk pad niet aanmaken: [_1]', # Translate - New
+	'SSL certification has successfully been updated.' => 'SSL certificaat met succes bijgewerkt.', # Translate - New
+	'Unable to update SSL certification.' => 'Kan SSL certificaat niet bijwerken.', # Translate - New
+	'Manage Configuration Directives' => 'Configuratiedirectieven beheren', # Translate - New
+	'Config Directive' => 'Conf. directief', # Translate - New
+	'Movable Type environment settings has successfully been updated.' => 'Omgevingsinstellingen van Movable Type met succes bijgewerkt.', # Translate - New
+	'Restoring Backup Data' => 'Backupgegevens aan het terugzetten', # Translate - New
+	'backup data' => 'backupgegevens', # Translate - New
+	'Invalid backup file name.' => 'Ongeldige bestandsnaam backupbestand.', # Translate - New
+	'Cannot copy backup file to workspace.' => 'Kan backupbestand niet kopiëren naar de werkruimte.', # Translate - New
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website-instellingen niet opslaan omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website niet aanmaken omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
+	'Auto Update Settings' => 'Instellingen voor automatisch bijwerken', # Translate - New
+	'Unable to write AUTOUPDATE file: [_1]' => 'Kon geen AUTOUPDATE bestand schrijven: [_1]', # Translate - New
+	'Auto update settings has successfully been updated.' => 'Instellingen voor automatisch bijwerken werden met succes bijgewerkt.', # Translate - New
+	'IP Restriction Settings' => 'Instellingen voor IP beperkingen', # Translate - New
+	'IP Restriction settings' => 'Instellingen voor IP beperkingen', # Translate - New
+	'Domain, Path and IP addresses are required.' => 'Domein, pad en IP adres zijn vereist.', # Translate - New
+	'\'[_1]\' does not exist.' => '\'[_1]\' bestaat niet', # Translate - New
+	'\'[_1]\' is invalid path.' => '\'[_1]\' is een ongeldig pad', # Translate - New
+	'Unable to create acl path: [_1]' => 'Kon acl pad niet aanmaken: [_1]', # Translate - New
+	'Cannot write to acl directory: [_1]' => 'Kon niet schrijven naar acl map: [_1]', # Translate - New
+	'Cannot write to acl file: [_1]' => 'Kon niet schrijven naar acl bestand: [_1]', # Translate - New
+	'IP restriction for site has successfully been updated.' => 'IP beperkingen voor de site werden met succes bijgewerkt.', # Translate - New
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'Kan instellingen voor toegangsbeperking niet opslaan.  Misschien is het pad of het IP adres dat u invoerde niet geldig.', # Translate - New
+	'Unable to remove acl file.' => 'Kon acl bestand niet verwijderen.', # Translate - New
+
+## addons/Cloud.pack/lib/Cloud/App.pm
+	'Your Movable Type will be automatically updated on [_1].' => 'Uw Movable Type zal automatisch worden bijgewerkt op [_1].', # Translate - New
+	'New version of Movable Type has been released on [_1].' => 'Nieuwe versie van Movable Type werd uitgebracht op [_1].', # Translate - New
+	'Disk usage rate is [_1]%.' => 'Percentage schijfgebruik is [_1]%.', # Translate - New
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Opgeslagen schijfgebruikgegevens vernieuwen.</a>', # Translate - New
+	'An error occurred while reading version information.' => 'Er deed zich een fout voor bij het lezen van de versie-informatie.', # Translate - New
+
+## addons/Cloud.pack/lib/Cloud/Template.pm
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unificeer het bestaan van www. <a href="[_1]">Detail</a>', # Translate - New
+	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.com/documentation/cloud/guide/multi-domain.html', # Translate - New
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'Website\' root of \'Archief\' root werd aangepast.  U moet bestaande inhoud verhuizen.', # Translate - New
+
+## addons/Cloud.pack/lib/Cloud/Upgrade.pm
+	'Disabling any plugins...' => 'Bezig plugins uit te schakelen...', # Translate - New
+
+## addons/Cloud.pack/lib/Cloud/Util.pm
+	'Cannot read resource file.' => 'Kan bronbestand niet laden.', # Translate - New
+	'Cannot get the resource data.' => 'Kan brongegevens niet verkrijgen.', # Translate - New
+	'Unknown CPU type.' => 'Onbekend type CPU', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
+	'Auto update setting have been saved.' => 'Instellingen voor automatisch bijwerken werden opgeslagen.', # Translate - New
+	'Current installed version of Movable Type is the latest version.' => 'Huidige geïnstalleerde versie van Movable Type is de meest recente.', # Translate - New
+	'New version of Movable Type is available.' => 'Nieuwe versie van Movable Type beschikbaar.', # Translate - New
+	'Last Update' => 'Laatste update', # Translate - Case
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] op [_2]', # Translate - New
+	'Available version' => 'Beschikbare versie', # Translate - New
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (uitgebracht op [_2])', # Translate - New
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Uw Movable Type installatie zal automatisch worden bijgewerkt op [_1], zonder rekening te houden met uw instellingen.', # Translate - New
+	'Auto update' => 'Automatisch bijwerken', # Translate - New
+	'Enable	automatic update of Movable Type' => 'Automatisch bijwerken van Movable Type inschakelen', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
+	'Manage Basic Authentication' => 'Basic authenticatie beheren.', # Translate - New
+	'/path/to/authentication' => '/pad/naar/authenticatie', # Translate - New
+	'User ID' => 'Gebruikers ID', # Translate - New
+	'URI is required.' => 'URI is vereist.', # Translate - New
+	'Invalid URI.' => 'Ongeldige URI', # Translate - New
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'Gebruikers ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).', # Translate - New
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'Wachtwoord ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).', # Translate - New
+	'basic authentication setting' => 'instelling voor basic authenticatie', # Translate - New
+	'basic authentication settings' => 'instellingen voor basic authenticatie', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
+	'Configuration directive' => 'Configuratiedirectief', # Translate - New
+	'Configuration value' => 'Configuratiewaarde', # Translate - New
+	'Reference' => 'Referentie', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'Inhoudsbestanden gebruiker', # Translate - New
+	'Buckup Files' => 'Backupbestanden', # Translate - New
+	'Free Disk Space' => 'Vrije schijfruimte', # Translate - New
+	'User Contents' => 'Inhoud gebruiker', # Translate - New
+	'Backup' => 'Backup', # Translate - Case
+	'Others' => 'Andere', # Translate - New
+	'Free' => 'Vrij', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
+	'Reset FTPS Password' => 'FTPS wachtwoord opnieuw instellen', # Translate - New
+	'Please select the account for which you want to reset the password.' => 'Selecteer de account waarvoor u het wachtwoord opnieuw wenst in te stellen.', # Translate - New
+	'Owner Password' => 'Wachtwoord gebruiker', # Translate - New
+	'Creator Password' => 'Wachtwoord aanmaker', # Translate - New
+	'Password has been saved.' => 'Wachtwoord werd opgeslagen.', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
+	'Manage HTTP Redirect' => 'HTTP redirects instellen', # Translate - New
+	'/path/of/redirect' => '/pad/naar/redirect', # Translate - New
+	'http://example.com or /path/to/redirect' => 'http://voorbeeld.com of /pad/naar/redirect', # Translate - New
+	'Redirect URL is required.' => 'Redirect URL is vereist.', # Translate - New
+	'Redirect url is same as URI' => 'Redirect url is identiek aan URI', # Translate - New
+	'HTTP redirect setting' => 'HTTP redirect instelling', # Translate - New
+	'HTTP redirect settings' => 'HTPP redirect instellingen', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
+	'Administration screen settings have been saved.' => 'Instellingen voor administratiescherm zijn opgeslagen.', # Translate - New
+	'Domain name like example.com' => 'Domeinnaam zoals voorbeeld.com', # Translate - New
+	'Path begin with / like /path' => 'Pad begint met /, bijvoorbeeld /pad', # Translate - New
+	'IP addresses that are allowed to access' => 'IP adressen die toestemming hebben voor toegang', # Translate - New
+	'Domain is required.' => 'Domein is vereist.', # Translate - New
+	'"[_1]" does not exist.' => '"[_1]" bestaat niet.', # Translate - New
+	'Invalid Path.' => 'Ongeldig pad.', # Translate - New
+	'This combination of domain and path already exists.' => 'Deze combinatie van domein en pad bestaat al.', # Translate - New
+	'IP is required.' => 'IP is vereist.', # Translate - New
+	'[_1] is invalid IP Address.' => '[_1] is een ongeldig IP adres.', # Translate - New
+	'IP restriction settings' => 'Instellingen voor IP restricties', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_security.tmpl
+	'Administration screen setting have been saved.' => 'nstellingen voor administratiescherm zijn opgeslagen.', # Translate - New
+	'Administration screen url have been reset to default.' => 'URL voor administratiescherm is teruggezet naar de standaardwaarde.', # Translate - New
+	'Admin Screen URL' => 'URL voor administratiescherm', # Translate - New
+	'Protect administration screen by Basic Authentication' => 'Administratiescherm afschermen met basic authenticatie', # Translate - New
+	'Access Restriction' => 'Toegangsrestrictie', # Translate - New
+	'Restricts IP addresses that can access to administration screen.' => 'Beperkt welke IP adressen toegang hebben tot het administratiescherm.', # Translate - New
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Gelieve de IP adressen die toegang moeten krijgen toe te voegen aan bovenstaande lijst.  U kunt meerdere IP adressen invullen gescheiden door komma\'s of line breaks.  Vergeet niet uw huidige IP adres in te geven of het kan zijn dat u toegang verliest tot het administratiescherm.  Voor details.', # Translate - New
+	'Your IP address is [_1].' => 'Uw IP adres is [_1].', # Translate - New
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Beperkt de IP adressen die toegang hebben tot publieke CGI scripts zoals zoekresultaten en de Data API.', # Translate - New
+	'IP address list is required.' => 'Lijst met IP adressen is vereist.', # Translate - New
+	'administration screen' => 'administratiescherm', # Translate - New
+	' and ' => ' en ', # Translate - New
+	'public access CGI' => 'publieke CGI scripts', # Translate - New
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'Uw huidige IP adres is niet inbegrepen in de toegangslijst ([_1]). Bent u zeker dat u geen toegang wenst te geven aan uw huidige IP adres?', # Translate - New
+	'Are you sure you want to save restrict access settings?' => 'Bent u zeker dat u de instellingen voor toegangsbeperking wenst op te slaan?', # Translate - New
+
+## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
+	'Install SSL Certification' => 'SSL certificaat installeren', # Translate - New
+	'SSL certification have been updated.' => 'SSL certificatie werd bijgewerkt.', # Translate - New
+	'SSL certification have been reset to default.' => 'SSL certificatie werd teruggezet naar de standaardinstelling.', # Translate - New
+	'The current server certification is as follows.' => 'De huidige servercertificatie is als volgt.', # Translate - New
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Om het servercertificaat te [_1], gelieve de vereiste informatie in te vullen in volgende velden. Om terug te keren naar het originele certificaat klikt u op de knop 'SSL Certificaat Verwijderen'.  Het wachtwoord voor 'Geheime Sleutel' moet worden vrijgegeven.}, # Translate - New
+	'Server Certification' => 'Servercertificatie', # Translate - New
+	'Secret Key' => 'Geheime Sleutel', # Translate - New
+	'Intermediate Certification' => 'Tussentijdse certificatie', # Translate - New
+	'Remove SSL Certification' => 'SSL Certificaat Verwijderen', # Translate - New
+
+## addons/Cloud.pack/tmpl/full_restore.tmpl
+	'Restoring Full Backup Data' => 'Bezig volledige backupgegevens te herstellen', # Translate - New
+	q{Restored backup data from '[_1]' at [_2]} => q{Voledige backup hersteld van '[_1]' om [_2]}, # Translate - New
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Wanneer gegevens worden hersteld uit een backup zal alle inhoud teruggezet worden naar het moment waarop de backup werd aangemaakt.  Merk op dat alle wijzigingen die werden gemaakt aan de gegevens, inhoud en ontvangen reacties en trackbacks na dit herstelpunt verloren zullen gaan. Bijkomend zal tijdens het terugzetten een automatische backup worden gemaakt van de huidige gegevens.  Nadat herstel is afgerond is het nog mogelijk om terug te keren naar de status van de gegevens voor het herstel werd uitgevoerd.', # Translate - New
+	'Restore' => 'Herstel', # Translate - New
+	'Are you sure you want restore from selected backup file?' => 'Bent u zeker dat u wenst te herstellen uit het geselecteerde backupbestand?', # Translate - New
 
 ## addons/Commercial.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
@@ -6348,40 +6745,17 @@ use vars qw( @ISA %Lexicon );
 	', or press the enter key to %toggle% it' => ', of druk op de enter-toets om het te %schakelen%',
 
 ## addons/Enterprise.pack/app-cms.yaml
-	'Groups ([_1])' => 'Groepen ([_1])',
-	'Are you sure you want to delete the selected group(s)?' => 'Bent u zeker dat u de geselecteerde groep(en) wenst te verwijderen?',
-	'Are you sure you want to remove the selected member(s) from the group?' => 'Bent u zeker dat u de geselecteerde leden of het geselcteerde lid wenst te verwijderen uit de groep?',
-	'[_1]\'s Group' => 'Groep van [_1]',
-	'Manage Members' => 'Leden beheren',
 	'Bulk Author Export' => 'Auteurs exporteren in bulk',
 	'Bulk Author Import' => 'Auteurs importeren in bulk',
 	'Synchronize Users' => 'Gebruikers synchroniseren',
 	'Synchronize Groups' => 'Groepen synchroniseren',
-	'Add user to group' => 'Gebruiker toevoegen aan een groep',
 
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'Deze module is vereist als u LDAP authenticatie wenst te gebruiken.',
 
 ## addons/Enterprise.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
-	'Permissions of group: [_1]' => 'Permissies van groep: [_1]',
-	'Group' => 'Groep',
-	'Groups associated with author: [_1]' => 'Groepen geassocieerd met auteur: [_1]',
-	'Inactive' => 'Inactief',
-	'Members of group: [_1]' => 'Leden van groep: [_1]',
 	'Advanced Pack' => 'Advanced pack',
-	'User/Group' => 'Gebruiker/groep',
-	'__GROUP_MEMBER_COUNT' => 'Leden',
-	'My Groups' => 'Mijn groepen',
-	'Group Name' => 'Groepsnaam',
-	'__COMMENT_COUNT' => 'Reacties',
-	'Manage Group Members' => 'Groepsleden beheren',
-	'Group Members' => 'Groepsleden',
-	'Group Member' => 'Groepslid',
-	'Permissions for Users' => 'Permissies voor gebruikers',
-	'Permissions for Groups' => 'Permissies voor groepen',
-	'Active Groups' => 'Actieve groepen',
-	'Disabled Groups' => 'Gedeactiveerde groepen',
 	'Oracle Database (Recommended)' => 'Oracle database (aangeradenÃ ',
 	'Microsoft SQL Server Database' => 'Microsoft SQL Server database',
 	'Microsoft SQL Server Database UTF-8 support (Recommended)' => 'Microsoft SQL Server Database met UTF-8 ondersteuning (aangeraden)',
@@ -6439,17 +6813,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid display name: [_1]' => 'Ongeldige getoonde naam: [_1]',
 	'Invalid email address: [_1]' => 'Ongeldig e-mail adres: [_1]',
 	'Invalid password: [_1]' => 'Ongeldig wachtwoord: [_1]',
-	'\'Personal Blog Location\' setting is required to create new user blogs.' => '\'Locatie persoonlijke blog\' instelling is vereist om nieuwe gebruikersblogs aan te maken.',
-	'Invalid weblog name: [_1]' => 'Ongeldige weblognaam: [_1]',
-	'Invalid blog URL: [_1]' => 'Ongeldige blog URL: [_1]',
-	'Invalid site root: [_1]' => 'Ongeldige siteroot: [_1]',
-	'Invalid timezone: [_1]' => 'Ongeldige tijdzone: [_1]',
-	'Invalid theme ID: [_1]' => 'Ongeldig thema ID: [_1]',
-	'A theme \'[_1]\' was not found.' => 'Geen \'[_1]\'thema gevonden.',
 	'A user with the same name was found.  The registration was not processed: [_1]' => 'Een gebruiker met dezelfde naam werd gevonden.  De registratie werd niet uitgevoerd: [_1]',
-	'Blog for user \'[_1]\' can not be created.' => 'Blog voor gebruiker \'[_1]\' kon niet worden aangemaakt.',
-	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'Blog \'[_1]\' voor gebruiker \'[_2]\' werd aangemaakt.',
-	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Fout bij toekennen ven weblog administratierechten aan gebruiker \'[_1] (ID: [_2])\' voor weblog \'[_3] (ID: [_4])\'.  Er werd geen geschikte administrator rol gevonden in het systeem.',
 	'Permission granted to user \'[_1]\'' => 'Permissie toegekend aan gebruiker \{[_1]\'',
 	'User \'[_1]\' already exists. The update was not processed: [_2]' => 'Gebruiker  \'[_1]\' bestaat al.  De update werd niet doorgevoerd: [_2]',
 	'User \'[_1]\' not found.  The update was not processed.' => 'Gebruiker  \'[_1]\' niet gevonden.  De update werd niet doorgevoerd.',
@@ -6460,25 +6824,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Movable Type Advanced has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Advanced probeerde net uw account uit te schakelen tijdens synchronisatie met de externe directory.  Er moet een fout zitten in de instellingen voor extern gebruikersbeheer.  Gelieve uw configuratie bij te stellen voor u verder gaat.',
-	'Each group must have a name.' => 'Elke groep moet een naam hebben',
-	'Search Users' => 'Gebruikers zoeken',
-	'Select Groups' => 'Selecteer groepen',
-	'Groups Selected' => 'Geselecteerde groepen',
-	'Search Groups' => 'Groepen zoeken',
-	'Add Users to Groups' => 'Gebruikers toevoegen aan groepen',
-	'Invalid group' => 'Ongeldige groep',
-	'Add Users to Group [_1]' => 'Voeg gebruikers toe aan groep [_1]',
-	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) verwijderd uit groep \'[_3]\' (ID:[_4]) door \'[_5]\'',
-	'Group load failed: [_1]' => 'Laden groep mislukt: [_1]',
-	'User load failed: [_1]' => 'Laden gebruiker mislukt: [_1]',
-	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) toegevoegd aan groep \'[_3]\' (ID:[_4]) door \'[_5]\'',
-	'Users & Groups' => 'Gebruikers & Groepen',
-	'Group Profile' => 'Groepsprofiel',
-	'Author load failed: [_1]' => 'Laden auteur mislukt: [_1]',
-	'Invalid user' => 'Ongeldige gebruiker',
-	'Assign User [_1] to Groups' => 'Gebruiker [_1] toewijzen aan groepen',
-	'Type a group name to filter the choices below.' => 'Tik een groepsnaam in om de onderstaande keuzes te filteren',
 	'Bulk import cannot be used under external user management.' => 'Bulk import kan niet worden gebruikt onder extern gebruikersbeheer.',
+	'Users & Groups' => 'Gebruikers & Groepen',
 	'Bulk management' => 'Bulkbeheer',
 	'No records were found in the file.  Make sure the file uses CRLF as the line-ending characters.' => 'Er werden geen records gevonden in het bestand.  Kijk na of het bestand CRLF gebruiker als einde-regel karakters.',
 	'Registered [quant,_1,user,users], updated [quant,_2,user,users], deleted [quant,_3,user,users].' => '[quant,_1,Gebruiker,Gebruikers] geregistreerd, [quant,_2,gebruiker,gebruikers] bijgewerkt, [quant,_3,gebruiker,gebruikers] verwijderd.',
@@ -6486,20 +6833,7 @@ use vars qw( @ISA %Lexicon );
 	'A user cannot change his/her own username in this environment.' => 'Een gebruiker kan zijn/haar gebruikersnaam niet aanpassen in deze omgeving',
 	'An error occurred when enabling this user.' => 'Er deed zich een fout voor bij het activeren van deze gebruiker.',
 
-## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Callback/Group.pm
-	'A parameter "[_1]" is invalid.' => 'Een parameter "[_1]" is ongeldig.',
-
 ## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Group.pm
-	'Creating group failed: ExternalGroupManagement is enabled.' => 'Groep aanmaken mislukt: ExternalGroupManagement is ingeschakeld.',
-	'Cannot add member to inactive group.' => 'Kan geen lid toevoegen aan inactieve groep.',
-	'Adding member to group failed: [_1]' => 'Lid toevoegen aan groep mislukt: [_1]',
-	'Removing member from group failed: [_1]' => 'Lid verwijderen uit groep mislukt: [_1]',
-	'Group not found' => 'Groep niet gevonden',
-	'Member not found' => 'Lid niet gevonden',
-	'A resource "member" is required.' => 'Een bron ("member") is vereist.',
-
-## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Permission.pm
-	'Association not found' => 'Associatie niet gevonden',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/User.pm
 
@@ -6513,10 +6847,6 @@ use vars qw( @ISA %Lexicon );
 	'Login' => 'Login',
 	'Found' => 'Gevonden',
 	'Not Found' => 'Niet gevonden',
-
-## addons/Enterprise.pack/lib/MT/Group.pm
-	'Backing up [_1] records:' => 'Er worden [_1] records gebackupt:',
-	'[_1] records backed up.' => '[_1] records gebackupt.',
 
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
 	'Invalid LDAPAuthURL scheme: [_1].' => 'Ongeldig LDAPAuthURL schema: [_1].',
@@ -6536,10 +6866,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/tmpl/author_bulk.tmpl
 	'Manage Users in bulk' => 'Gebruikers beheren in bulk',
 	'_USAGE_AUTHORS_2' => 'U kunt gebruikers aanmaken, bewerken en verwijderen in bulk door een CSV-geformatteerd bestand te uploaden dat de juiste instructies en relevante gegevens bevat.',
-	q{New user blog would be created on '[_1]'.} => q{Nieuwe gebruikersblog zou aangemaakt worden onder '[_1]'.},
-	'[_1] Edit</a>' => '[_1] bewerken</a>',
-	q{You must set 'Personal Blog Location' to create a new blog for each new user.} => q{U moet de 'Persoonlijke blog locatie' instellen om een nieuwe blog aan te maken voor elke nieuwe gebruiker.},
-	'[_1] Setting</a>' => '[_1] instelling</a>',
 	'Upload source file' => 'Bronbestand uploaden',
 	'Specify the CSV-formatted source file for upload' => 'Geef het CSV-geformatteerde bronbestand op dat moet worden geupload',
 	'Source File Encoding' => 'Encodering bronbestand',
@@ -6616,54 +6942,6 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
 
-## addons/Enterprise.pack/tmpl/dialog/dialog_select_group_user.tmpl
-
-## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
-	'You need to create some groups.' => 'U moet een paar groepen aanmaken.',
-	q{Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Click here</a> to create a group.} => q{Voor u dit kunt doen, moet u eerst een paar groepen aanmaken. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Klik hier</a> om een groep aan te maken.},
-
-## addons/Enterprise.pack/tmpl/edit_group.tmpl
-	'Edit Group' => 'Groep bewerken',
-	'Create Group' => 'Groep aanmaken',
-	'This group profile has been updated.' => 'Dit groepsprofiel werd bijgewerkt.',
-	'This group was classified as pending.' => 'Deze groep werd geclassificeerd als in aanvraag.',
-	'This group was classified as disabled.' => 'Deze groep werd geclassificeerd als gedeactiveerd.',
-	'Member ([_1])' => 'Lid ([_1])',
-	'Members ([_1])' => 'Leden ([_1])',
-	'Permission ([_1])' => 'Permissie ([_1])',
-	'Permissions ([_1])' => 'Permissies ([_1])',
-	'LDAP Group ID' => 'LDAP Group ID',
-	'The LDAP directory ID for this group.' => 'Het LDAP directory ID van deze groep',
-	'Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.' => 'Status van deze groep in het systeem.  Een groep deactiveren ontzegt de leden ervan toegang tot het systeem maar behoudt hun inhoud en geschiedenis.',
-	'The name used for identifying this group.' => 'De naam gebruikt om deze groep mee aan te duiden.',
-	'The display name for this group.' => 'De getoonde naam van deze groep.',
-	'The description for this group.' => 'De beschrijving van deze groep.',
-	'Save changes to this field (s)' => 'De wijzigingen aan dit veld opslaan (s)',
-
-## addons/Enterprise.pack/tmpl/include/group_table.tmpl
-	'Enable selected group (e)' => 'De geselecteerde groep activeren (e)',
-	'Disable selected group (d)' => 'De geselecteerde groep deactiveren (d)',
-	'group' => 'groep',
-	'groups' => 'groepen',
-	'Remove selected group (d)' => 'De geselecteerde groep verwijderen (d)',
-
-## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
-	'Users &amp; Groups for [_1]' => 'Gebruikers &amp; groepen voor [_1]',
-
-## addons/Enterprise.pack/tmpl/listing/group_list_header.tmpl
-	'You successfully disabled the selected group(s).' => 'U deactiveerde met succes de geselecteerde groep(en).',
-	'You successfully enabled the selected group(s).' => 'U activeerde met succes de geselecteerde groep(en).',
-	'You successfully deleted the groups from the Movable Type system.' => 'U verwijderde met succes de groepen uit het Movable Type systeem.',
-	q{You successfully synchronized the groups' information with the external directory.} => q{U synchroniseerde met succes de groepsinformatie met de externe directory.},
-	q{An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Er deed zich een fout voor tijdens de synchronisatie.  Kijk in het <a href='[_1]'>activiteitenlog</a> voor gedetailleerde informatie.},
-
-## addons/Enterprise.pack/tmpl/listing/group_member_list_header.tmpl
-	'You successfully deleted the users.' => 'U verwijderde met succes de gebruikers.',
-	'You successfully added new users to this group.' => 'U voegde met succes nieuwe gebruikers toe aan deze groep.',
-	q{You successfully synchronized users' information with the external directory.} => q{U synchroniseerde met succes informatie over gebruikers met de externe directory.},
-	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'Sommige ([_1]) van de geselecteerde gebruikers konden niet gereactiveerd worden omdat ze niet langer gevonden worden in LDAP.',
-	'You successfully removed the users from this group.' => 'U verwijderde met succes de gebruikers uit de groep.',
-
 ## addons/Sync.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	'Migrated sync setting' => 'Synchronisatie-instellingen gemigreerd',
@@ -6705,6 +6983,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
+	'Incomplete file copy to Temp Directory.' => 'Onvolledige bestandskopie naar de tijdelijke map', # Translate - New
+	'Failed to remove "[_1]": [_2]' => 'Verwijderen van "[_1]" mislukt: [_2]', # Translate - New
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'Fout tijdens rsync: commando (exitcode [_1]): [_2]',
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
@@ -6788,12 +7068,15 @@ use vars qw( @ISA %Lexicon );
 ## plugins/BlockEditor/lib/BlockEditor/BlockEditorFieldType/Image.pm
 
 ## plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl
+	'Upload new image' => 'Nieuwe afbeelding upladen',
 
 ## plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
+	'Sort' => 'Sorteren', # Translate - New
+	'No block in this field.' => 'Geen blok in dit veld', # Translate - New
 	'Changing to plain text is not possible to return to the block edit.' => 'Na veranderen naar gewone tekst is het niet mogelijk de inhoud terug te brengen naar blok edit modus.',
 	'Changing to block editor is not possible to result return to your current document.' => 'Na veranderen naar de blok editor is niet mogelijk om resultaat terug te brengen naar uw huidige document.',
 
@@ -6894,7 +7177,6 @@ use vars qw( @ISA %Lexicon );
 	'Moderator' => 'Moderator',
 	'Can comment and manage feedback.' => 'Kan reageren en feedback beheren',
 	'Can comment.' => 'Kan reageren.',
-	'__COMMENT_COUNT' => 'Reacties',
 	'Comments on My Entries/Pages' => 'Reacties op mijn berichten/pagina\'s',
 	'Entry/Page Status' => 'Status bericht/pagina',
 	'Date Commented' => 'Datum gereageerd',
@@ -7465,6 +7747,6 @@ richt \'[_4]\'',
 
 );
 
-## New words: 335
+## New words: 1146
 
 1;

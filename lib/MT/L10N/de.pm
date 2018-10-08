@@ -30,22 +30,57 @@ use vars qw( @ISA %Lexicon );
 	'Author Monthly' => 'Autor monatlich',
 	'Author Daily' => 'Autor täglich',
 	'Author Weekly' => 'Autor wöchentlich',
+	'Category' => 'Kategorie',
 	'Category Yearly' => 'Kategorie jährlich',
 	'Category Monthly' => 'Kategorie monatlich',
 	'Category Daily' => 'Kategorie täglich',
 	'Category Weekly' => 'Kategorie wöchentlich',
-	'Category' => 'Kategorie',
+	'CONTENTTYPE_ADV' => 'Inhaltstyparchiv',
+	'CONTENTTYPE-DAILY_ADV' => 'tägliches Inhaltstyparchiv',
+	'CONTENTTYPE-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv',
+	'CONTENTTYPE-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv',
+	'CONTENTTYPE-YEARLY_ADV' => 'jährliches Inhaltstyparchiv',
+	'CONTENTTYPE-AUTHOR_ADV' => 'Inhaltstyparchiv nach Autor',
+	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'jährliches Inhaltstyparchiv nach Autor',
+	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv nach Autor',
+	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'tägliches Inhaltstyparchiv nach Autor',
+	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv nach Autor',
+	'CONTENTTYPE-CATEGORY_ADV' => 'Inhaltstyparchiv nach Kategorie',
+	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'jährliches Inhaltstyparchiv nach Kategorie',
+	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv nach Kategorie',
+	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'tägliches Inhaltstyparchiv nach Kategorie',
+	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv nach Kategorie',
+
+## php/lib/block.mtarchives.php
+	'ArchiveType not found - [_1]' => 'Archivtyp nicht gefunden - [_1]', # Translate - New # OK
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'Sort_by="score" erfordert einen Namespace.',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhascontent.php
 	'No author available' => 'Kein Autor verfügbar',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
 	'You used an [_1] tag without establishing a date context.' => 'Befehl [_1] ohne Datums-Kontext verwendet.',
+
+## php/lib/block.mtcategorysets.php
+	'No Category Set could be found.' => 'Kein Kategorie-Set gefunden.',
+	'No Content Type could be found.' => 'Keine Inhaltstypen gefunden.',
+
+## php/lib/block.mtcontentauthoruserpicasset.php
+	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Inhalte-Kontexts verwendet - &#8222;MTContents&#8220;-Container erforderlich',
+
+## php/lib/block.mtcontentfield.php
+	'No Content Field could be found.' => 'Keine Inhaltsfelder gefunden.',
+	'No Content Field Type could be found.' => 'Keine Felder für Inhaltstypen gefunden.',
+
+## php/lib/block.mtcontentfields.php
+
+## php/lib/block.mtcontents.php
 
 ## php/lib/block.mtentries.php
 
@@ -65,9 +100,16 @@ use vars qw( @ISA %Lexicon );
 	'\'[_1]\' is not an array.' => '&#8222;[_1]&#8220; ist kein Array.',
 	'\'[_1]\' is not a valid function.' => '&#8222;[_1]&#8220; ist keine gültige Funktion.',
 
+## php/lib/block.mttags.php
+	'content_type modifier cannot be used with type "[_1]".' => 'Das Attribut content_type kann nicht mit Typ "[_1]" verwendet werden.',
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters shown in the picture above.' => 'Geben Sie die Zeichen ein, die Sie in obigem Bild sehen.',
+
+## php/lib/content_field_type_lib.php
+	'No Label (ID:[_1])' => 'Keine Bezeichnung (ID:[_1])',
+	'No category_set setting in content field type.' => 'Inhaltsfeld-Typ ohne category_set-Einstellung ',
 
 ## php/lib/function.mtassettype.php
 	'image' => 'Bild',
@@ -80,6 +122,62 @@ use vars qw( @ISA %Lexicon );
 	'Video' => 'Video',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcontentauthordisplayname.php
+
+## php/lib/function.mtcontentauthoremail.php
+
+## php/lib/function.mtcontentauthorid.php
+
+## php/lib/function.mtcontentauthorlink.php
+
+## php/lib/function.mtcontentauthorurl.php
+
+## php/lib/function.mtcontentauthorusername.php
+
+## php/lib/function.mtcontentauthoruserpic.php
+
+## php/lib/function.mtcontentauthoruserpicurl.php
+
+## php/lib/function.mtcontentcreateddate.php
+
+## php/lib/function.mtcontentdate.php
+
+## php/lib/function.mtcontentfieldlabel.php
+
+## php/lib/function.mtcontentfieldtype.php
+
+## php/lib/function.mtcontentfieldvalue.php
+
+## php/lib/function.mtcontentid.php
+
+## php/lib/function.mtcontentmodifieddate.php
+
+## php/lib/function.mtcontentpermalink.php
+
+## php/lib/function.mtcontentscount.php
+
+## php/lib/function.mtcontentsitedescription.php
+
+## php/lib/function.mtcontentsiteid.php
+
+## php/lib/function.mtcontentsitename.php
+
+## php/lib/function.mtcontentsiteurl.php
+
+## php/lib/function.mtcontentstatus.php
+
+## php/lib/function.mtcontenttypedescription.php
+
+## php/lib/function.mtcontenttypeid.php
+
+## php/lib/function.mtcontenttypename.php
+
+## php/lib/function.mtcontenttypeuniqueid.php
+
+## php/lib/function.mtcontentuniqueid.php
+
+## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Eintrag',
@@ -105,6 +203,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtsetvar.php
+
+## php/lib/function.mtsitecontentcount.php
 
 ## php/lib/function.mttagsearchlink.php
 	'Invalid [_1] parameter.' => 'Ungültiger [_1]-Parameter.',
@@ -155,7 +255,7 @@ use vars qw( @ISA %Lexicon );
 	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie ist zur Nutzung der Cookie-Authentifizierung erforderlich.',
 	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgent ist zur Erzeugung von Movable Type-Konfigurationsdateien mit dem Konfigurationsassistenten erforderlich.',
 	'Scalar::Util is required for initializing Movable Type application.' => 'Scalar::Util ist zur Initialisierung von Movable Type erforderlich.',
-	'HTML::Entities is required by CGI.pm' => 'HTML::Entities ist für CGI.pm erforderlich.', # Translate - New # OK
+	'HTML::Entities is required by CGI.pm' => 'HTML::Entities ist für CGI.pm erforderlich.',
 	'DBI is required to work with most supported databases.' => 'DBI ist für die meisten Datenbank-Typen erforderlich.',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI und DBD::mysql sind zur Nutzung von Movable Type mit einer MySQL-Datenbank erforderlich.',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI und DBD::Pg sind zur Nutzung von Movable Type mit einer PostgreSQL-Datenbank erforderlich.',
@@ -457,6 +557,7 @@ use vars qw( @ISA %Lexicon );
 	'Some websites were not deleted. You need to delete blogs under the website first.' => 'Nicht alle Websites gelöscht. Bitte löschen Sie zuerst die zu den jeweiligen Websites gehörende Blogs.',
 
 ## lib/MT/App/CMS.pm
+	'[_1]\'s Group' => 'Gruppen von [_1]',
 	'Invalid request' => 'Ungültige Anfrage',
 	'Add a user to this [_1]' => 'Benutzer zur [_1] hinzufügen',
 	'Are you sure you want to reset the activity log?' => 'Aktivitätsprotokoll wirklich zurücksetzen?',
@@ -464,7 +565,10 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_DELETE_USER_EUM' => 'Die Löschung eines Benutzerkontos kann nicht rückgängig gemacht werden und führt zu verwaisten Einträgen. Um nicht mehr benötigte Benutzerkonten zu entfernen oder um Benutzern den Zugriff auf das System zu entziehen, wird daher empfohlen, die jeweiligen Benutzerkonten nicht zu löschen, sondern zu deaktivieren. Möchten Sie die gewählten Benutzerkonten dennoch löschen? Benutzer können ihre Konten selbst wiederherstellen, solange sie noch in externen Verzeichnissen aufgeführt sind.',
 	'_WARNING_DELETE_USER' => 'Die Löschung eines Benutzerkontos kann nicht rückgängig gemacht werden und führt zu verwaisten Einträgen. Um nicht mehr benötigte Benutzerkonten zu entfernen oder um Benutzern den Zugriff auf das System zu entziehen, wird daher empfohlen, die jeweiligen Benutzerkonten nicht zu löschen, sondern zu deaktivieren. Möchten Sie die gewählten Benutzerkonten dennoch löschen?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Hiermit werden die Vorlagen der gewählten Blogs auf die Standardvorlagen zurückgesetzt. Möchten Sie die Vorlagen der gewählten Blogs wirklich zurücksetzen?',
+	'Are you sure you want to delete the selected group(s)?' => 'Gewählte Gruppe(n) wirklich löschen?',
+	'Are you sure you want to remove the selected member(s) from the group?' => 'Gewählte(n) Benutzer wirklich aus Gruppe entfernen?',
 	'https://www.movabletype.org/documentation/' => 'https://www.movabletype.org/documentation/',
+	'Groups ([_1])' => 'Gruppen ([_1])',
 	'Failed login attempt by user who does not have sign in permission. \'[_1]\' (ID:[_2])' => 'Fehlgeschlagener Anmeldeversuch von Benutzer ohne Anmeldeberechtigung. \'[_1]\' (ID:[_2])',
 	'Invalid login.' => 'Login ungültig.',
 	'Cannot load blog (ID:[_1])' => 'Kann Blog (ID:[_1]) nicht laden',
@@ -482,7 +586,8 @@ use vars qw( @ISA %Lexicon );
 	'Site Stats' => 'Site-Statistik',
 	'Updates' => 'Updates',
 	'Activity Log' => 'Aktivitäten',
-	'Site List' => 'Sites-Liste',
+	'Site List' => 'Site-Liste',
+	'Site List for Mobile' => 'Site-Liste in Mobilansicht', # Translate - New # OK
 	'Refresh Templates' => 'Vorlagen zurücksetzen',
 	'Use Publishing Profile' => 'Veröffentlichungsprofil verwenden',
 	'Create Role' => 'Rolle anlegen',
@@ -492,6 +597,7 @@ use vars qw( @ISA %Lexicon );
 	'Add IP Address' => 'IP-Adresse hinzufüge',
 	'Add Contact' => 'Kontakt hinzufügen',
 	'Download Address Book (CSV)' => 'Adressbuch herunterladen (CSV)',
+	'Add user to group' => 'Benutzer zu Gruppe hinzufügen',
 	'Unpublish Entries' => 'Einträge nicht mehr veröffentlichen',
 	'Add Tags...' => 'Tags hinzufügen...',
 	'Tags to add to selected entries' => 'Gewählte Einträge mit diesen Tags versehen',
@@ -528,6 +634,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Sets' => 'Kategorie-Sets',
 	'Assets' => 'Assets',
 	'Content Types' => 'Inhaltstypen',
+	'Groups' => 'Gruppen',
 	'Feedbacks' => 'Feeback',
 	'Roles' => 'Rollen',
 	'Design' => 'Gestalten',
@@ -536,6 +643,7 @@ use vars qw( @ISA %Lexicon );
 	'Tools' => 'Tools',
 	'Manage' => 'Verwalten',
 	'New' => 'Neu',
+	'Manage Members' => 'Mitglieder verwalten',
 	'Associations' => 'Verknüpfungen',
 	'Import' => 'Importieren',
 	'Export' => 'Exportieren',
@@ -548,14 +656,14 @@ use vars qw( @ISA %Lexicon );
 	'Web Services' => 'Webdienste',
 	'Plugins' => 'Plugins',
 	'Rebuild Trigger' => 'Auslöser für Neuaufbau',
-	'IP Banning' => 'IP-Sperren', # Translate - New # OK
+	'IP Banning' => 'IP-Sperren',
 	'User' => 'Benutzer',
 	'Search & Replace' => 'Suchen & Ersetzen',
 	'Import Sites' => 'Sites importieren',
 	'Export Sites' => 'Sites exportieren',
 	'Export Site' => 'Site exportieren',
 	'Export Theme' => 'Thema exportieren',
-	'Address Book' => 'Adressbuch', # Translate - New # OK
+	'Address Book' => 'Adressbuch',
 	'Asset' => 'Asset',
 	'Website' => 'Website',
 	'Blog' => 'Blog',
@@ -563,7 +671,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Es ist ein Fehler aufgetreten: ungültige Zeichen für Zeichensatz [_1]',
-	'Cannot load blog #[_1]' => 'Konnte Blog #[_1] nicht laden', # Translate - New # OK
+	'Cannot load blog #[_1]' => 'Konnte Blog #[_1] nicht laden',
 	'Internal Error: Login user is not initialized.' => 'Interner Fehler: Login-Benutzer nicht initialisiert.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Der Anmeldevorgang konnte wegen eines Datenbankfehlers nicht abgeschlossen werden ([_1])',
 	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'Sie sind nicht berechtigt, auf Blogs oder Websites dieser Movable-Type-Installation zuzugreifen. Sollte es sich dabei um einen Fehler handeln, wenden Sie sich bitte an Ihren Administrator.',
@@ -730,47 +838,34 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/yyyy/index.html' => 'kategorie/unter_kategorie/jjjj/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorDaily.pm
-	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'tägliches Inhaltstyparchiv nach Autor',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorMonthly.pm
-	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv nach Autor',
 
 ## lib/MT/ArchiveType/ContentTypeAuthor.pm
-	'CONTENTTYPE-AUTHOR_ADV' => 'Inhaltstyparchiv nach Autor',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorWeekly.pm
-	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv nach Autor',
 
 ## lib/MT/ArchiveType/ContentTypeAuthorYearly.pm
-	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'jährliches Inhaltstyparchiv nach Autor',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryDaily.pm
-	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'tägliches Inhaltstyparchiv nach Kategorie',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryMonthly.pm
-	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv nach Kategorie',
 
 ## lib/MT/ArchiveType/ContentTypeCategory.pm
-	'CONTENTTYPE-CATEGORY_ADV' => 'Inhaltstyparchiv nach Kategorie',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryWeekly.pm
-	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv nach Kategorie',
 
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
-	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'jährliches Inhaltstyparchiv nach Kategorie',
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'CONTENTTYPE-DAILY_ADV' => 'tägliches Inhaltstyparchiv',
 	'DAILY_ADV' => 'Tagesarchiv',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/tt/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'CONTENTTYPE-MONTHLY_ADV' => 'monatliches Inhaltstyparchiv',
 	'MONTHLY_ADV' => 'Monatsarchiv',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentType.pm
-	'CONTENTTYPE_ADV' => 'Inhaltstyparchiv',
 	'yyyy/mm/content-basename.html' => 'jjjj/mm/inhalts-basisname.html',
 	'yyyy/mm/content_basename.html' => 'jjjj/mm/inhalts_basisname.html',
 	'yyyy/mm/content-basename/index.html' => 'jjjj/mm/inhalts-basisname/index.html',
@@ -779,22 +874,20 @@ use vars qw( @ISA %Lexicon );
 	'yyyy/mm/dd/content_basename.html' => 'jjjj/mm/tt/inhalts_basisname.html',
 	'yyyy/mm/dd/content-basename/index.html' => 'jjjj/mm/tt/inhalts-basisname/index.html',
 	'yyyy/mm/dd/content_basename/index.html' => 'jjjj/mm/tt/inhalts_basisname/index.html',
-	'author/author-basename/content-basename/index.html' => 'autor/autoren-basisname/inhalts-basisname/index.html', # Translate - New # OK
-	'author/author_basename/content_basename/index.html' => 'autor/autoren_basisname/inhalts_basisname/index.html', # Translate - New # OK
-	'author/author-basename/content-basename.html' => 'autor/autoren-basisname/inhalts-basisname.html', # Translate - New # OK
-	'author/author_basename/content_basename.html' => 'autor/autoren_basisname/inhalts_basisname.html', # Translate - New # OK
+	'author/author-basename/content-basename/index.html' => 'autor/autoren-basisname/inhalts-basisname/index.html',
+	'author/author_basename/content_basename/index.html' => 'autor/autoren_basisname/inhalts_basisname/index.html',
+	'author/author-basename/content-basename.html' => 'autor/autoren-basisname/inhalts-basisname.html',
+	'author/author_basename/content_basename.html' => 'autor/autoren_basisname/inhalts_basisname.html',
 	'category/sub-category/content-basename.html' => 'kategorie/unter-kategorie/inhalts-basisname.html',
 	'category/sub-category/content-basename/index.html' => 'kategorie/unter-kategorie/inhalts-basisname/index.html',
 	'category/sub_category/content_basename.html' => 'kategorie/unter_kategorie/inhalts_basisname.html',
 	'category/sub_category/content_basename/index.html' => 'kategorie/unter_kategorie/inhalts_basisname/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'CONTENTTYPE-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv',
 	'WEEKLY_ADV' => 'Wochenarchiv',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/tag-woche/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'CONTENTTYPE-YEARLY_ADV' => 'jährliches Inhaltstyparchiv',
 	'YEARLY_ADV' => 'Jahresarchiv',
 	'yyyy/index.html' => 'jjjj/index.html',
 
@@ -878,8 +971,8 @@ use vars qw( @ISA %Lexicon );
 	'Type' => 'Typ',
 	'Filename' => 'Dateiname',
 	'File Extension' => 'Dateierweiterung',
-	'Pixel Width' => 'Breite in Pixel', # Translate - Case # OK
-	'Pixel Height' => 'Höhe in Pixel', # Translate - Case # OK
+	'Pixel Width' => 'Breite in Pixel',
+	'Pixel Height' => 'Höhe in Pixel',
 	'Except Userpic' => 'Benutzerbild ausnehmen',
 	'Author Status' => 'Status des Autors',
 	'Missing File' => 'Datei fehlt',
@@ -891,16 +984,21 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Association.pm
 	'Association' => 'Verknüpfung',
+	'Permissions of group: [_1]' => 'Gruppen-Berechtigungen: [_1]',
+	'Group' => 'Gruppe',
 	'Permissions with role: [_1]' => 'Berechtigungen der Rolle [_1]',
 	'User is [_1]' => 'Benutzer ist [_1]',
 	'Permissions for [_1]' => 'Berechtigungen für [_1]',
 	'association' => 'Verknüpfungen',
 	'associations' => 'Verknüpfungen',
-	'User Name' => 'Benutzername',
+	'User/Group' => 'Benutzer/Gruppe',
+	'User/Group Name' => 'Benutzer-/Gruppen-Name',
 	'Role' => 'Rolle',
 	'Role Name' => 'Rollenname',
 	'Role Detail' => 'Rolle-Details',
 	'Site Name' => 'Site-Name',
+	'Permissions for Users' => 'Benutzer-Berechtigungen',
+	'Permissions for Groups' => 'Gruppen-Berechtigungen',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Einträge',
@@ -933,7 +1031,7 @@ use vars qw( @ISA %Lexicon );
 	'Userpic' => 'Benutzerbild',
 	'User Info' => 'Benutzerinfo',
 	'__ENTRY_COUNT' => 'Einträge',
-	'Content Data Count' => 'Anzahl Inhaltsdaten', # Translate - New # OK
+	'Content Data Count' => 'Anzahl Inhaltsdaten',
 	'Created by' => 'Angelegt von',
 	'Status' => 'Status',
 	'Website URL' => 'Website',
@@ -1119,10 +1217,6 @@ use vars qw( @ISA %Lexicon );
 	'Transforming image failed: [_1]' => 'Umformung des Bildes fehlgeschlagen: [_1]',
 	'Cannot load asset #[_1]' => 'Asset #[_1] konnte nicht geladen werden.',
 
-## lib/MT/CMS/BanList.pm
-	'You did not enter an IP address to ban.' => 'Keine IP-Adresse angegeben.',
-	'The IP you entered is already banned for this blog.' => 'Diese IP-Adresse ist für dieses Weblog bereits gesperrt.',
-
 ## lib/MT/CMS/Blog.pm
 	q{Cloning child site '[_1]'...} => q{Klone Untersite '[_1]'...},
 	'Error' => 'Fehler',
@@ -1143,7 +1237,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Site' => 'Site veröffentlichen',
 	'Select Child Site' => 'Untersite wählen',
 	'Selected Child Site' => 'Gewählte Untersite',
-	'Enter a site name to filter the choices below.' => 'Geben Sie einen Sitenamen ein, um die Auswahl einzuschränken.', # Translate - New # OK
+	'Enter a site name to filter the choices below.' => 'Geben Sie einen Sitenamen ein, um die Auswahl einzuschränken.',
 	'The \'[_1]\' provided below is not writable by the web server. Change the directory ownership or permissions and try again.' => 'Der Webserver hat keinen Schreibzugriff auf \'[_1]\'. Bitte vergeben Sie entsprechende Benutzerrechte und versuchen Sie es erneut.',
 	'Blog Root' => 'Blog-Wurzelverzeichnis',
 	'Website Root' => 'Wurzelverzeichnis der Website',
@@ -1228,12 +1322,11 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be dates in the future.' => 'Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunk, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss in der Zukunft liegen.',
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => 'Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.',
 	'Cannot load content_type #[_1]' => 'Konnte content_type #[_1] nicht laden',
-	'No Label (ID:[_1])' => 'Keine Bezeichnung (ID:[_1])',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => '[_3] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' hinzugefügt',
 	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_5]\' von Benutzer \'[_5]\' bearbeitet und Status von [_3] in [_4] geändert',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' bearbeitet',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' gelöscht',
-	'Create new [_1]' => '[_1] anlegen', # Translate - New # OK
+	'Create new [_1]' => '[_1] anlegen',
 	'Cannot load template.' => 'Kann Vorlage nicht laden.',
 	'Publish error: [_1]' => 'Fehler bei der Veröffentlichung: [_1]',
 	'Unable to create preview files in this location: [_1]' => 'Kann Vorschau-Dateien hier nicht erzeugen:',
@@ -1251,7 +1344,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load content type #[_1]' => 'Inhaltstyp #[_1] konnte nicht geladen werden',
 	'The content type name is required.' => 'Bitte geben Sie den Namen des Inhaltstyps ein.',
 	'The content type name must be shorter than 255 characters.' => 'Der Name des Inhaltstyps darf höchstens 255 Zeichen lang sein.',
-	'Name \'[_1]\' is already used.' => 'Der Name \'[_1]\' wird bereits verwendet.', # Translate - New # OK
+	'Name \'[_1]\' is already used.' => 'Der Name \'[_1]\' wird bereits verwendet.',
 	'Cannot load content field data (ID: [_1])' => 'Kann Inhaltsfelder-Daten nicht laden (ID: [_1])',
 	'Saving content field failed: [_1]' => 'Speichern des Inhaltsfelds fehlgeschlagen: [_1]',
 	'Saving content type failed: [_1]' => 'Speichern des Inhaltstyps fehlgeschlagen: [_1]',
@@ -1334,6 +1427,23 @@ use vars qw( @ISA %Lexicon );
 	'Folder \'[_1]\' created by \'[_2]\'' => 'Ordner &#8222;[_1]&#8220; angelegt von &#8222;[_2]&#8220;',
 	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'Ordner &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Ordner &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;',
+
+## lib/MT/CMS/Group.pm
+	'Each group must have a name.' => 'Jede Gruppe muss einen eigenen Namen haben.',
+	'Select Users' => 'Benutzer wählen',
+	'Users Selected' => 'Gewählte Benutzer',
+	'Search Users' => 'Benutzer suchen',
+	'Select Groups' => 'Gruppen auswählen',
+	'Group Name' => 'Gruppenname',
+	'Groups Selected' => 'Gewählte Gruppen',
+	'Search Groups' => 'Gruppen suchen',
+	'Add Users to Groups' => 'Benutzer zu Gruppen hinzufügen',
+	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' aus Gruppe \'[_3]\' (ID:[_4]) entfernt',
+	'Group load failed: [_1]' => 'Fehler beim Laden einer Gruppe:',
+	'User load failed: [_1]' => 'Fehler beim Laden eines Benutzers:',
+	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' zu Gruppe \'[_3]\' (ID:[_4]) hinzugefügt',
+	'Create Group' => 'Gruppe anlegen',
+	'Author load failed: [_1]' => 'Fehler beim Laden eines Autoren: [_1]',
 
 ## lib/MT/CMS/Import.pm
 	'Cannot load site #[_1].' => 'Konnte Site #[_1] nicht laden.',
@@ -1436,7 +1546,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'Ungültiges Blog',
 	'Global' => 'Global',
 	'You must specify a template type when creating a template' => 'Bitte geben Sie den Typ der neuen Vorlage an.',
-	'contnt type' => 'Inhaltstyp', # Translate - New # OK
+	'contnt type' => 'Inhaltstyp',
 	'Content Type Archive' => 'Inhaltstyp-Archiv',
 	'Create Widget' => 'Widget anlegen',
 	'Create Template' => 'Vorlage anlegen',
@@ -1549,7 +1659,6 @@ use vars qw( @ISA %Lexicon );
 	'MT::Asset#[_1]: ' => 'MT::Asset#[_1]: ',
 	'Some of the actual files for assets could not be imported.' => 'Einige Asset-Dateien konnten nicht importiert werden.',
 	'Please use xml, tar.gz, zip, or manifest as a file extension.' => 'Bitte verwenden Sie xml, tar.gz, zip, oder manifest als Dateierweiterung.',
-	'Unknown file format' => 'Unbekanntes Dateiformat',
 	'Some objects were not imported because their parent objects were not imported.' => 'Einige Objekte wurden nicht importiert, weil deren Übergeordneten Objekte nicht importiert wurden.',
 	'Detailed information is in the activity log.' => 'Details finden Sie im Aktivitätsprotokoll.',
 	'[_1] has canceled the multiple files import operation prematurely.' => '[_1] hat den gleichzeitigen Import mehrerer Dateien vorzeitig abgebrochen.',
@@ -1601,7 +1710,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid ID given for personal blog theme.' => 'Ungültige ID für Thema der persönlichen Blogs',
 	'Invalid ID given for personal blog clone location ID.' => 'Ungültige ID für Klonvorlage der persönlichen Blogs',
 	'Minimum password length must be an integer and greater than zero.' => 'Bitte geben Sie als Mindest-Passwortlänge eine ganze Zahl größer null an.',
-	'If personal blog is set, the personal blog location are required.' => 'Zur Erzeugung persönlicher Blogs muss ein Speicherort angegeben werden.',
 	'Select a entry author' => 'Eintragsautor wählen',
 	'Select a page author' => 'Seitenautor wählen',
 	'Selected author' => 'Gewählter Autor',
@@ -1611,14 +1719,11 @@ use vars qw( @ISA %Lexicon );
 	'System Administrator' => 'Systemadministrator',
 	'(newly created user)' => '(neu angelegter Benutzer)',
 	'Sites Selected' => 'Gewählte Sites',
-	'Select Users' => 'Benutzer wählen',
-	'Users Selected' => 'Gewählte Benutzer',
 	'Select Roles' => 'Rollen wählen',
 	'Roles Selected' => 'Gewählte Rollen',
 	'Grant Permissions' => 'Berechtigungen zuweisen',
 	'Select Groups And Users' => 'Gruppen und Benutzer wählen',
 	'Groups/Users Selected' => 'Gewählte Gruppen/Benutzer',
-	'User/Group Name' => 'Benutzer-/Gruppen-Name',
 	'You cannot delete your own association.' => 'Sie können nicht Ihre eigene Verknüpfung löschen.',
 	'[_1]\'s Associations' => 'Verknüpfungen von [_1]',
 	'You have no permission to delete the user [_1].' => 'Keine Berechtigung zum Löschen von Benutzer [_1].',
@@ -1672,12 +1777,12 @@ use vars qw( @ISA %Lexicon );
 	'Saving object category failed: [_1]' => 'Speichern der Kategorie des Objekts fehlgeschlagen: [_1]',
 	'Removing object categories failed: [_1]' => 'Entfernen der Kategorien des Objekts fehlgeschlagen: [_1]',
 	'record does not exist.' => 'Eintrag nicht vorhanden.',
-	'Cannot load content field #[_1]' => 'Konnte Inhaltsfeld #[_1] nicht laden', # Translate - New # OK
+	'Cannot load content field #[_1]' => 'Konnte Inhaltsfeld #[_1] nicht laden',
 	'Publish Date' => 'Zeitpunkt der Veröffentlichung',
 	'Unpublish Date' => 'Zeitpunkt der Zurückziehung',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] (ID: [_2]) nicht vorhanden.',
 	'Contents by [_1]' => 'Inhalte von [_1]',
-	'Tags fields' => 'Tag-Felder', # Translate - New # OK
+	'Tags fields' => 'Tag-Felder',
 	'(No label)' => '(Keine Bezeichnung)',
 	'Identifier' => 'Kennung',
 	'Link' => 'Link',
@@ -1688,7 +1793,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'Inhaltsfelder',
-	'Edit [_1] field' => '[_1]-Feld bearbeiten', # Translate - New # OK
+	'Edit [_1] field' => '[_1]-Feld bearbeiten',
 
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => 'Zeige alle [_1]-Assets',
@@ -1699,7 +1804,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentFieldType/Categories.pm
 	'Invalid Category IDs: [_1] in "[_2]" field.' => 'Ungültige Kategorie-IDs [_1] in "[_2]"-Feld',
-	'No category_set setting in content field type.' => 'Inhaltsfeld-Typ ohne category_set-Einstellung ',
 	'You must select a source category set.' => 'Bitte wählen Sie ein Quell-Kategorie-Set aus.',
 	'The source category set is not found in this site.' => 'Das Quell-Kategorie-Set ist in dieser Site nicht vorhanden.',
 	'There is no category set that can be selected. Please create a category set if you use the Categories field type.' => 'Keine passenden Kategorie gefunden. Legen Sie einen Kategorie an, um Kategorie-Felder verwenden zu können.',
@@ -1762,7 +1866,7 @@ use vars qw( @ISA %Lexicon );
 	'Video Asset' => 'Videodatei',
 	'Image Asset' => 'Bilddatei',
 	'Embedded Text' => 'Eingebetteter Text',
-	'List' => 'Liste',
+	'__LIST_FIELD_LABEL' => 'Liste', # Translate - New # OK
 	'Table' => 'Tabelle',
 
 ## lib/MT/ContentFieldType/RadioButton.pm
@@ -1774,8 +1878,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ContentFieldType/SingleLineText.pm
 	'"[_1]" field is too long.' => 'Feld "[_1]" zu lang.',
 	'"[_1]" field is too short.' => 'Feld "[_2] zu kurz.',
-	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and [_3].' => 'Bitte geben Sie als Mindestlänge von \'[_1]\' ([_2]) eine ganze Zahl zwischen 0 und [_3] an.', # Translate - New # OK
-	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and [_3].' => 'Bitte geben Sie als Höchstlänge von \'[_1]\' ([_2]) eine ganze Zahl zwischen 0 und [_3] an.', # Translate - New # OK
+	'A minimum length number for \'[_1]\' ([_2]) must be a positive integer between 0 and [_3].' => 'Bitte geben Sie als Mindestlänge von \'[_1]\' ([_2]) eine ganze Zahl zwischen 0 und [_3] an.',
+	'A maximum length number for \'[_1]\' ([_2]) must be a positive integer between 1 and [_3].' => 'Bitte geben Sie als Höchstlänge von \'[_1]\' ([_2]) eine ganze Zahl zwischen 0 und [_3] an.',
 	'An initial value for \'[_1]\' ([_2]) must be shorter than [_3] characters' => 'Der Ursprungswert von \'[_1]\' ([_2]) muss kürzer als [_3] Zeichen sein.',
 
 ## lib/MT/ContentFieldType/Table.pm
@@ -1789,7 +1893,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentFieldType/Time.pm
 	'<mt:var name="[_1]"> [_2] [_3] [_4]' => '<mt:var name="[_1]"> [_2] [_3] [_4]',
-	'Invalid time \'[_1]\'; An initial time value be in the format HH:MM:SS.' => 'Zeitangabe \'[_1]\' ungültig. Bitte geben Sie die Ursprungszeit im Format HH:MM:SS an.', # Translate - New # OK
+	'Invalid time \'[_1]\'; An initial time value be in the format HH:MM:SS.' => 'Zeitangabe \'[_1]\' ungültig. Bitte geben Sie die Ursprungszeit im Format HH:MM:SS an.',
 
 ## lib/MT/ContentFieldType/URL.pm
 	'Invalid URL in "[_1]" field.' => 'Ungültige URL im Feld "[_1]".',
@@ -1802,7 +1906,7 @@ use vars qw( @ISA %Lexicon );
 	'Parameter \'[_1]\' is required' => 'Parameter &#8222;[_1]&#8220; erforderlich',
 	'Parameter \'[_1]\' is invalid' => 'Parameter &#8222;[_1]&#8220; ungültig',
 	'Load of blog \'[_1]\' failed' => 'Blog \'[_1]\' konnte nicht geladen werden',
-	'[_1] archive type requires [_2] parameter' => 'Für den Archivtyp [_1] ist das Parameter [_2] erforderlich.', # Translate - New # OK
+	'[_1] archive type requires [_2] parameter' => 'Für den Archivtyp [_1] ist das Parameter [_2] erforderlich.',
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => 'Fehler bei der Veröffentlichung von [_1] &#8222;[_2]&#8220;: [_3]',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Fehler bei Veröffentlichung des Archivs &#8222;[_1]&#8220;: [_2]',
 	'Writing to \'[_1]\' failed: [_2]' => '&#8222;[_1]&#8220; konnte nicht beschrieben werden: [_2]',
@@ -1820,7 +1924,7 @@ use vars qw( @ISA %Lexicon );
 	'Edit All Content Data' => 'Alle Inhaltsdaten bearbeiten',
 	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" (Site: "[_2]" ID: [_3])',
 	'Content Data # [_1] not found.' => 'Inhaltsdaten # [_1] nicht gefunden.',
-	'Tags with [_1]' => 'Tags mit [_1]', # Translate - New # OK
+	'Tags with [_1]' => 'Tags mit [_1]',
 	'string(40)' => 'string(40)',
 
 ## lib/MT/ContentType/UniqueID.pm
@@ -1881,6 +1985,9 @@ use vars qw( @ISA %Lexicon );
 	'Manage Address Book' => 'Adressbuch verwalten',
 	'Filter' => 'Zeigen',
 	'Manage Content Type' => 'Inhaltstyp verwalten',
+	'Manage Group Members' => 'Gruppenmitglieder verwalten',
+	'Group Members' => 'Gruppenmitglieder',
+	'Group Member' => 'Groupmember',
 	'Convert Line Breaks' => 'Zeilenumbrüche konvertieren',
 	'Rich Text' => 'Grafischer Editor',
 	'Movable Type Default' => 'Movable Type-Standard',
@@ -1977,6 +2084,9 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Entry.pm
 
+## lib/MT/DataAPI/Callback/Group.pm
+	'A parameter "[_1]" is invalid.' => 'Parameter "[_1]" ist ungültig.',
+
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'Ungültige author_id: [_1]',
 	'Log (ID:[_1]) deleted by \'[_2]\'' => 'Log (ID:[_1]) gelöscht von \'[_2]\'',
@@ -2049,6 +2159,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Folder.pm
 
+## lib/MT/DataAPI/Endpoint/v2/Group.pm
+	'Creating group failed: ExternalGroupManagement is enabled.' => 'Das Anlegen der Gruppe ist fehlgeschlagen: ExternalGroupmanagement ist aktiv.',
+	'Cannot add member to inactive group.' => 'Zu inaktiven Gruppen können keine Mitglieder hinzugefügt werden.',
+	'Adding member to group failed: [_1]' => 'Hinzufügen des Mitglieds zur Gruppe ist fehlgeschlagen: [_1]',
+	'Removing member from group failed: [_1]' => 'Entfernen des Mitglieds aus der Gruppe ist fehlgeschlagen: [_1]',
+	'Group not found' => 'Gruppe nicht gefunden',
+	'Member not found' => 'Mitglied nicht gefunden',
+	'A resource "member" is required.' => '"member"-Angabe erforderlich.',
+
 ## lib/MT/DataAPI/Endpoint/v2/Log.pm
 	'Log message' => 'Protokolleintrag',
 
@@ -2059,6 +2178,7 @@ use vars qw( @ISA %Lexicon );
 	'Granting permission failed: [_1]' => 'Zuweisen der Berechtigung fehlgeschlagen: [_1]',
 	'Role not found' => 'Rolle nicht gefunden',
 	'Revoking permission failed: [_1]' => 'Entzug der Berechtigung fehlgeschlagen: [_1]',
+	'Association not found' => 'Verknüpfung nicht gefunden',
 
 ## lib/MT/DataAPI/Endpoint/v2/Plugin.pm
 	'Plugin not found' => 'Plugin nicht gefunden',
@@ -2221,6 +2341,19 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Folder.pm
 
+## lib/MT/Group.pm
+	'Backing up [_1] records:' => 'Sichere [_1]-Einträge:',
+	'[_1] records backed up.' => '[_1] Einträge gesichert',
+	'Groups associated with author: [_1]' => 'Mit Autor verknüpfte Gruppen: [_1]',
+	'Inactive' => 'Inaktiv',
+	'Members of group: [_1]' => 'Gruppenmitglieder: [_1]',
+	'__GROUP_MEMBER_COUNT' => 'Mitglieder',
+	'My Groups' => 'Meine Gruppen',
+	'__COMMENT_COUNT' => 'Kommentare',
+	'Email' => 'E-Mail',
+	'Active Groups' => 'Aktive Gruppen',
+	'Disabled Groups' => 'Deaktivierte Gruppen',
+
 ## lib/MT/Image/GD.pm
 	'Cannot load GD: [_1]' => 'GD kann nicht geladen werden: [_1]',
 	'Unsupported image file type: [_1]' => 'Nicht unterstütztes Bildformat: [_1]',
@@ -2295,6 +2428,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot initialize list property [_1].[_2].' => 'Konnte Listeneigenschaft [_1] nicht initialisieren.[_2].',
 	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]: Keine Definition für Spalte [_3] gefunden.',
 	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'Initialisierung der Listeneigenschaft [_1] fehlgeschlagen.[_2]: Der Spaltentyp wird nicht unterstützt.',
+	'[_1] (id:[_2])' => '[_1] (ID:[_2])', # Translate - Case # OK
 
 ## lib/MT/Lockout.pm
 	'Cannot find author for id \'[_1]\'' => 'Kein Autor mit ID [_1] gefunden',
@@ -2431,7 +2565,7 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type default' => 'Movable Type-Standard',
 
 ## lib/MT/RebuildTrigger.pm
-	'Restoring rebuild trigger for blog #[_1]...' => 'Stelle Neuaufbau-Auslöser für Blog #[_1] wieder her...', # Translate - New # OK
+	'Restoring rebuild trigger for blog #[_1]...' => 'Stelle Neuaufbau-Auslöser für Blog #[_1] wieder her...',
 	'Restoring Rebuild Trigger for Content Type #[_1]...' => 'Stelle Neuaufbau-Auslöser für Inhaltstyp #[_1] wieder her...',
 
 ## lib/MT/Revisable/Local.pm
@@ -2459,7 +2593,7 @@ use vars qw( @ISA %Lexicon );
 	'Contributor' => 'Gastautor',
 	'Can create entries, edit their own entries, and comment.' => 'Kann Einträge anlegen, eigene Einträge bearbeiten und kommentieren.',
 	'Content Designer' => 'Content-Designer',
-	'Can manage content types, content data and category sets.' => 'Kann Inhaltstyp, Inhaltsdaten und Kategorie-Set verwalten.', # Translate - New # OK
+	'Can manage content types, content data and category sets.' => 'Kann Inhaltstyp, Inhaltsdaten und Kategorie-Set verwalten.',
 	'__ROLE_STATUS' => 'Status',
 
 ## lib/MT/Scorable.pm
@@ -2528,17 +2662,14 @@ use vars qw( @ISA %Lexicon );
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Wenn die gleichen Blog-ID gleichzeitig in den include_blogs- und exclude_blogs-Attributen eines mt:Entries-Befehls verwendet werden, werden die entsprechenden Blogs ausgeschlossen.',
 	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => 'Sie haben einen &#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Autoren-Kontexts verwendet - &#8222;MTAuthors&#8220;-Container erforderlich',
 	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Eintrags-Kontexts verwendet - &#8222;MTEntries&#8220;-Container erforderlich',
-	'No Content Type could be found.' => 'Keine Inhaltstypen gefunden.',
-	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Inhalte-Kontexts verwendet - &#8222;MTContents&#8220;-Container erforderlich',
-	'No Content Field could be found.' => 'Keine Inhaltsfelder gefunden.',
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Website-Kontexts verwendet - &#8222;MTWebsite&#8220;-Container erforderlich',
 	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => '&#8222;[_1]&#8220;-Vorlagenbefehl in einem Blog ohne zugehörige Website verwendet - möglicherweise ist die Blog-Zuordnung fehlerhaft',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Blog-Kontexts verwendet - &#8222;MTBlogs&#8220;-Container erforderlich',
+	'You used an \'[_1]\' tag outside of the context of the site;' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb des Site-Kontexts verwendet;', # Translate - New # OK
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Kommentar-Kontexts verwendet - &#8222;MTComments&#8220;-Container erforderlich',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Ping-Kontextes verwendet - &#8222;MTPings&#8220;-Container erforderlich.',
 	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Asset-Kontexts verwendet - &#8222;MTAssets&#8220;-Container erforderlich',
 	'You used an \'[_1]\' tag outside of the context of a page; Perhaps you mistakenly placed it outside of a \'MTPages\' container tag?' => '&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Seiten-Kontexts verwendet - &#8222;MTPages&#8220;-Containers erforderlich',
-	'No Category Set could be found.' => 'Kein Kategorie-Set gefunden.',
 
 ## lib/MT/TemplateMap.pm
 	'Archive Mapping' => 'Archiv-Verknüpfung',
@@ -2590,7 +2721,6 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] without a author context set up.' => '[_1] ohne vorhandenen Autorenkontext verwendet.',
 
 ## lib/MT/Template/Tags/Blog.pm
-	'MTChildSites tags cannot be nested.' => 'MTChildSites-Tags können nicht verschachtelt werden.',
 	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'Ungültiges "mode"-Attribut [_1]. Gültige Werte sind "loop" und "context".',
 
 ## lib/MT/Template/Tags/Calendar.pm
@@ -2607,7 +2737,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] used outside of [_2]' => '[_1] außerhalb [_2] verwendet',
 
 ## lib/MT/Template/Tags/ContentType.pm
-	'No Content Field Type could be found.' => 'Keine Felder für Inhaltstypen gefunden.',
 	'Invalid tag_handler of [_1].' => 'tag_handler von [_1] ungültig.',
 	'Invalid field_value_handler of [_1].' => 'field_value_handler von [_1] ungültig.',
 	'Content Type was not found. Blog ID: [_1]' => 'Inhaltstyp nicht gefunden. Blog-ID: [_1]',
@@ -2620,14 +2749,12 @@ use vars qw( @ISA %Lexicon );
 	'Specified WidgetSet \'[_1]\' not found.' => 'Angegebene Widgetgruppe &#8222;[_1]&#8220; nicht gefunden.',
 
 ## lib/MT/Template/Tags/Tag.pm
-	'content_type modifier cannot be used with type "[_1]".' => 'Das Attribut content_type kann nicht mit Typ "[_1]" verwendet werden.', # Translate - New # OK
 
 ## lib/MT/Template/Tags/Website.pm
-	'MTSites tags cannot be nested.' => 'MTSites-Tags können nicht verschachtelt werden',
 
 ## lib/MT/Theme/Category.pm
-	'Failed to save category_order: [_1]' => 'Speichern von category_order fehlgeschlagen: [_1]', # Translate - New # OK
-	'Failed to save folder_order: [_1]' => 'Speichern von folder_order fehlgeschlagen: [_1]', # Translate - New # OK
+	'Failed to save category_order: [_1]' => 'Speichern von category_order fehlgeschlagen: [_1]',
+	'Failed to save folder_order: [_1]' => 'Speichern von folder_order fehlgeschlagen: [_1]',
 	'[_1] top level and [_2] sub categories.' => '[_1] Haupt- und [_2] Unterkategorien',
 	'[_1] top level and [_2] sub folders.' => '[_1] Haupt- und [_2] Unterordner',
 
@@ -2703,7 +2830,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Upgrade/Core.pm
 	'Upgrading asset path information...' => 'Aktualisiere Pfadangaben von Assets...',
-	'Creating initial user records...' => 'Lege Ausgangs-Benutzerdatensätze an...', # Translate - New # OK
+	'Creating initial user records...' => 'Lege Ausgangs-Benutzerdatensätze an...',
 	'Error saving record: [_1].' => 'Fehler beim Speichern eines Datensatzes: [_1].',
 	'Error creating role record: [_1].' => 'Fehler bei der Erstellung eine Rollen-Eintrags: [_1]. ',
 	'Creating new template: \'[_1]\'.' => 'Erzeuge neue Vorlage: &#8222;[_1]&#8220;',
@@ -2869,8 +2996,8 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Rebuilding object assets...' => 'Baue Objekt-Assets neu auf...',
 	'Rebuilding content field permissions...' => 'Baue Inhaltsfelder-Berechtigungen neu auf...',
-	'Create a new role for creating a child site...' => 'Lege neue Berechtigung zum Anlegen von Untersites an...', # Translate - New # OK
-	'Migrating create child site permissions...' => 'Migriere Untersite-Berechtigungen...', # Translate - New # OK
+	'Create a new role for creating a child site...' => 'Lege neue Berechtigung zum Anlegen von Untersites an...',
+	'Migrating create child site permissions...' => 'Migriere Untersite-Berechtigungen...',
 	'Migrating MultiBlog settings...' => 'Migriere MultiBlog-Einstellungen...',
 	'Migrating fields column of MT::ContentType...' => 'Migriere Spalte "fields" von MT::ContentType....',
 	'Migrating data column of MT::ContentData...' => 'Migriere Spalte "data" von MT::ContentData...',
@@ -2882,14 +3009,16 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding MT::ContentFieldIndex of embedded_text field...' => 'Baue MT::ContentFieldIndex von embedded_text-Feld neu auf...',
 	'Rebuilding MT::ContentFieldIndex of url field...' => 'Baue MT::ContentFieldIndex von url-Feld neu auf...',
 	'Rebuilding MT::ContentFieldIndex of single_line_text field...' => 'Baue MT::ContentFieldIndex von single-line-Feld neu auf...',
-	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Baue MT::Permission-Datensätze neu auf (entferne edit_categories)...', # Translate - New # OK
-	'Cleaning up content field indexes...' => 'Räume Inhaltsfeld-Indizes auf...', # Translate - New # OK
-	'Cleaning up objectasset records for content data...' => 'Räume objectasset-Datensätze von Inhaltsdaten auf...', # Translate - New # OK
-	'Cleaning up objectcategory records for content data...' => 'Räume objectcategory-Datensätze von Inhaltsdaten auf...', # Translate - New # OK
-	'Cleaning up objecttag records for content data...' => 'Räume objecttag-Datensätze von Inhaltsdaten auf...', # Translate - New # OK
-	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...', # Translate - New # OK
-	'Migrating Max Length option of Single Line Text fields...' => 'Migriere Längenoption für einzeiligen Textfelder...', # Translate - New # OK
+	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Baue MT::Permission-Datensätze neu auf (entferne edit_categories)...',
+	'Cleaning up content field indexes...' => 'Räume Inhaltsfeld-Indizes auf...',
+	'Cleaning up objectasset records for content data...' => 'Räume objectasset-Datensätze von Inhaltsdaten auf...',
+	'Cleaning up objectcategory records for content data...' => 'Räume objectcategory-Datensätze von Inhaltsdaten auf...',
+	'Cleaning up objecttag records for content data...' => 'Räume objecttag-Datensätze von Inhaltsdaten auf...',
+	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
+	'Migrating Max Length option of Single Line Text fields...' => 'Migriere Längenoption für einzeiligen Textfelder...',
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
+	'Rebuilding Content Type count of Category Sets...' => 'Baue Inhaltstypen-Zähler in Kategorie-Sets neu auf...', # Translate - New # OK
+	'Adding site list dashboard widget for mobile...' => 'Füge Site-Listen-Widget zum Dashboard hin...', # Translate - New # OK
 
 ## lib/MT/Util/Archive.pm
 	'Type must be specified' => 'Typangabe erforderlich',
@@ -2900,6 +3029,9 @@ use vars qw( @ISA %Lexicon );
 	'Could not read from filehandle.' => 'Dateihandle nicht lesbar.',
 	'File [_1] is not a tgz file.' => '[_1] ist keine .tgz-Datei',
 	'File [_1] exists; could not overwrite.' => '[_1] existiert bereits und konnte nicht überschrieben werden',
+	'[_1] in the archive is not a regular file' => '[_1] im Archiv ist keine reguläre Datei', # Translate - New # OK
+	'[_1] in the archive is an absolute path' => '[_1] im Archiv ist ein absoluter Pfad', # Translate - New # OK
+	'[_1] in the archive contains ..' => '[_1] im Archiv enthält ...', # Translate - New # OK
 	'Cannot extract from the object' => 'Kann aus Objekt nicht extrahieren',
 	'Cannot write to the object' => 'Kann Objekt nicht beschreiben',
 	'Both data and file name must be specified.' => 'Sowohl der Daten- als auch der Dateiname müssen angegeben werden.',
@@ -2993,9 +3125,23 @@ use vars qw( @ISA %Lexicon );
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Zur Bestimmung von Höhe und Breite hochgeladener Bilddateien ist das Perl-Modul Image::Size erforderlich.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Funktionen zum Zugriff auf Vorlagen sind auf Grund von Unterschieden zwischen der Blogger-API und der MovableType-API nicht implementiert.',
 
-## mt-static/addons/Sync.pack/js/cms.js
+## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
+	'A configuration directive is required.' => 'Konfigurationsparameter erforderlich.', # Translate - New # OK
+	'[_1] cannot be updated.' => '[_1] kann nicht aktualisiert werden.', # Translate - New # OK
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => '[_1] kann nicht aus dieser Ansicht heraus von Movable Type aktualisiert werden.', # Translate - New # OK
+	'[_1] already exists.' => '[_1] ist bereits vorhanden.', # Translate - New # OK
+	'A configuration value is required.' => 'Konfigurationswert erforderlich.', # Translate - New # OK
+	'The HASH type configuration directive should be in the format of "key=value"' => 'HASH-Konfigurationsparameter sollten im Format "Schlüssel=Wert" angegeben werden.', # Translate - New # OK
+	'[_1] for [_2] already exists.' => '[_1] ist für [_2] bereits vorhanden.', # Translate - New # OK
+	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
+	'Are you sure you want to remove [_1]?' => '[_1] wirklich entfernen?', # Translate - New # OK
+	'configuration directive' => 'Konfigurationsparameter', # Translate - New # OK
+
+## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => 'Weiter',
 	'You have unsaved changes to this page that will be lost.' => 'Es liegen nicht gespeicherte Seitenänderungen vor, die verloren gehen werden.',
+
+## mt-static/addons/Sync.pack/js/cms.js
 
 ## mt-static/chart-api/deps/raphael-min.js
 	'+e.x+' => '+e.x+',
@@ -3082,19 +3228,26 @@ use vars qw( @ISA %Lexicon );
 	'Label "[_1]" is already in use.' => 'Bezeichnung "[_1]" bereits vorhanden.',
 	'Are you sure you want to remove filter \'[_1]\'?' => 'Filter \'[_1]\' wirklich entfernen?',
 
-## mt-static/js/listing/tag/display-options.tag
-	'Reset defaults' => 'Auf Standardeinstellungen zurücksetzen',
+## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'Show' => 'Anzeigen',
 	'25 rows' => '25 Zeilen',
 	'50 rows' => '50 Zeilen',
 	'100 rows' => '100 Zeilen',
 	'200 rows' => '200 Zeilen',
+
+## mt-static/js/listing/tag/display-options.tag
+	'Reset defaults' => 'Auf Standardeinstellungen zurücksetzen',
 	'Column' => 'Spalte',
 	'User Display Option is disabled now.' => 'Anzeigeoptionen für Benutzer deaktiviert.',
 
-## mt-static/js/listing/tag/list-actions.tag
-	'More actions...' => 'Weitere Aktionen...',
+## mt-static/js/listing/tag/list-actions-for-mobile.tag
+	'Select action' => 'Aktion wählen', # Translate - New # OK
 	'Plugin Actions' => 'Plugin-Aktionen',
+
+## mt-static/js/listing/tag/list-actions-for-pc.tag
+	'More actions...' => 'Weitere Aktionen...',
+
+## mt-static/js/listing/tag/list-actions.tag
 
 ## mt-static/js/listing/tag/list-filter.tag
 	'Filter:' => 'Filter:',
@@ -3110,11 +3263,15 @@ use vars qw( @ISA %Lexicon );
 	'Save As' => 'Speichern als',
 	'Filter Label' => 'Filter-Bezeichnung',
 
-## mt-static/js/listing/tag/list-pagination.tag
+## mt-static/js/listing/tag/list-pagination-for-mobile.tag
+
+## mt-static/js/listing/tag/list-pagination-for-pc.tag
 
 ## mt-static/js/listing/tag/list-table.tag
 	'Loading...' => 'Lade...',
 	'Select All' => 'Alle auswählen',
+	'All' => 'Alle', # Translate - Case # OK
+	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] von [_3]',
 	'Select all [_1] items' => 'Alle [_1] Elemente auswählen',
 	'All [_1] items are selected' => 'Alle [_1] Elemente ausgewählt',
 	'Select' => 'Wählen',
@@ -3157,24 +3314,24 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/embed.js
-	'Embed Code' => 'Code einbetten', # Translate - New # OK
-	'Please enter the embed code here.' => 'Bitte geben Sie den einzubettenden Code hier ein.', # Translate - New # OK
+	'Embed Code' => 'Code einbetten',
+	'Please enter the embed code here.' => 'Bitte geben Sie den einzubettenden Code hier ein.',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/header.js
-	'Heading' => 'Überschrift', # Translate - New # OK
-	'Heading Level' => 'Ebene der Überschrift', # Translate - New # OK
-	'Please enter the Header Text here.' => 'Bitte geben Sie die Überschrift hier ein.', # Translate - New # OK
+	'Heading' => 'Überschrift',
+	'Heading Level' => 'Ebene der Überschrift',
+	'Please enter the Header Text here.' => 'Bitte geben Sie die Überschrift hier ein.',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/horizon.js
-	'Horizontal Rule' => 'Horizontale Trennlinie', # Translate - New # OK
+	'Horizontal Rule' => 'Horizontale Trennlinie',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/image.js
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/text.js
-	'__TEXT_BLOCK__' => 'Text', # Translate - New # OK
+	'__TEXT_BLOCK__' => 'Text',
 
 ## mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js
-	'Select a block' => 'Wählen Sie einen Block', # Translate - New # OK
+	'Select a block' => 'Wählen Sie einen Block',
 
 ## mt-static/plugins/BlockEditor/lib/js/modal_window.js
 
@@ -4344,6 +4501,7 @@ use vars qw( @ISA %Lexicon );
 	'You must select a parent site.' => 'Bitte wählen Sie eine Übergeordnete Site.',
 
 ## tmpl/cms/dialog/asset_edit.tmpl
+	'Edit Asset' => 'Asset bearbeiten',
 	'Your edited image has been saved.' => 'Das bearbeitete Bild wurde gespeichert.',
 	'Metadata cannot be updated because Metadata in this image seems to be broken.' => 'Die Metadaten dieses Bildes sind nicht lesbar und können daher nicht aktualisiert werden.',
 	'Error creating thumbnail file.' => 'Fehler beim Erstellen des Vorschaubilds',
@@ -4360,8 +4518,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/asset_insert.tmpl
 
 ## tmpl/cms/dialog/asset_modal.tmpl
-	'Upload new image' => 'Neues Bild hochladen',
-	'Upload new asset' => 'Neues Asset hochladen',
+	'Add Assets' => 'Asset hinzufügen',
+	'Choose Asset' => 'Asset auswählen',
 	'Library' => 'Bibliothek',
 	'Next (s)' => 'Nächstes (s)',
 	'Insert (s)' => 'Einfügen (s)',
@@ -4403,7 +4561,8 @@ use vars qw( @ISA %Lexicon );
 	'Submit reply (s)' => 'Abschicken (s)',
 
 ## tmpl/cms/dialog/content_data_modal.tmpl
-	'Select Content Data' => 'Inhaltsdaten wählen',
+	'Add [_1]' => '[_1] hinzufügen',
+	'Choose [_1]' => '[_1] wählen',
 	'Create and Insert' => 'Anlegen und einfügen',
 
 ## tmpl/cms/dialog/create_association.tmpl
@@ -4412,7 +4571,6 @@ use vars qw( @ISA %Lexicon );
 	'No users exist in this installation. [_1]Create a user</a>' => 'In dieser MT-Installation ist kein Benutzer vorhanden. [_1]Benutzer anlegen</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'In dieser MT-Installation ist kein Blog vorhanden. [_1]Blog anlegen</a>',
 	'all' => 'alle',
-	'Groups' => 'Gruppen',
 
 ## tmpl/cms/dialog/create_trigger_select_site.tmpl
 
@@ -4425,6 +4583,8 @@ use vars qw( @ISA %Lexicon );
 	'Select Trigger Action' => 'Auslöser-Aktion wählen',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
+
+## tmpl/cms/dialog/dialog_select_group_user.tmpl
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Width' => 'Breite',
@@ -4473,8 +4633,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Publishing Profile' => 'Veröffentlichungsprofil',
-	'child site' => 'Untersite', # Translate - Case # OK
-	'site' => 'Site', # Translate - Case # OK
+	'child site' => 'Untersite',
+	'site' => 'Site',
 	'Choose the profile that best matches the requirements for this [_1].' => 'Wählen Sie das Profil, das Ihren Anforderungen  am besten entspricht.',
 	'Static Publishing' => 'Statische Veröffentlichung',
 	'Immediately publish all templates statically.' => 'Alle Vorlagen sofort statisch veröffentlichen.',
@@ -4541,9 +4701,6 @@ use vars qw( @ISA %Lexicon );
 	'Grant site permission to user' => 'Nutzer Berechtigungen für diese Site zuweisen',
 	'Grant site permission to group' => 'Gruppe Berechtigungen für diese Site zuweisen',
 
-## tmpl/cms/dialog/select_theme.tmpl
-	'Select Personal child site theme' => 'Thema der persönlichen Untersite wählen',
-
 ## tmpl/cms/dialog/start_create_trigger.tmpl
 	'You must select Object Type.' => 'Bitte wählen Sie einen Objekttyp.',
 	'You must select Content Type.' => 'Bitten wählen Sie einen Inhaltstyp',
@@ -4553,7 +4710,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 
 ## tmpl/cms/edit_asset.tmpl
-	'Edit Asset' => 'Asset bearbeiten',
 	'Stats' => 'Statistik',
 	'[_1] - Created by [_2]' => 'Angelegt von [_2] [_1]',
 	'[_1] - Modified by [_2]' => '[_1] - Bearbeitet von [_2]',
@@ -4699,7 +4855,6 @@ use vars qw( @ISA %Lexicon );
 	'Trust Commenter' => 'Kommentarautor vertrauen',
 	'Unban Commenter' => 'Kommentarautor nicht mehr sperren',
 	'Unavailable for OpenID user' => 'Nicht verfügbar für OpenID-Nutzer',
-	'Email' => 'E-Mail',
 	'No url in profile' => 'Keine URL im Profil',
 	'View all comments with this URL' => 'Alle Kommentare mit dieser URL anzeigen',
 	'[_1] no longer exists' => '[_1] existiert nicht mehr',
@@ -4714,16 +4869,11 @@ use vars qw( @ISA %Lexicon );
 	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'Inhaltsdaten automatisch gespeichert [_2]. <a href="[_1]">Automatisch gespeicherte Fassung wiederherstellen</a>',
 	'An error occurred while trying to recover your saved content data.' => 'Bei der Wiederherstellung der gespeicherten Fassung ist ein Fehler aufgetreten.',
 	'This [_1] has been saved.' => '[_1] gespeichert.',
-	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Weitere(s) [_2] anlegen?</a>', # Translate - New # OK
-	'Unpublished (Draft)' => 'Unveröffentlicht (Entwurf)',
-	'Unpublished (Review)' => 'Unveröffentlicht (Prüfung)',
-	'Unpublished (Spam)' => 'Unveröffentlicht (Spam)',
+	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Weitere(s) [_2] anlegen?</a>',
 	'Revision: <strong>[_1]</strong>' => 'Revision <strong>[_1]</strong>',
 	'View revisions of this [_1]' => 'Revisionen dieser/dieses [_1] anzeigen',
 	'View revisions' => 'Revisionen anzeigen',
 	'No revision(s) associated with this [_1]' => 'Keine Revision(en) mit dieser/diesem [_1] verknüpft',
-	'[_1] - Published by [_2]' => '[_1] - Veröffentlicht von [_2]',
-	'[_1] - Edited by [_2]' => '[_1] - Bearbeitet von [_2]',
 	'Publish this [_1]' => '[_1] veröffentlichen',
 	'Draft this [_1]' => '[_1] als Entwurf speichern',
 	'Schedule' => 'Zeitplan',
@@ -4732,6 +4882,9 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish this [_1]' => '[_1] nicht mehr veröffentlichen',
 	'Save this [_1]' => '[_1] speichern',
 	'You must configure this blog before you can publish this content data.' => 'Bitte konfigurieren Sie das Blog, bevor Sie diesen Inhalt veröffentlichen.',
+	'Unpublished (Draft)' => 'Unveröffentlicht (Entwurf)',
+	'Unpublished (Review)' => 'Unveröffentlicht (Prüfung)',
+	'Unpublished (Spam)' => 'Unveröffentlicht (Spam)',
 	'Publish On' => 'Veröffentlichen um',
 	'Published Time' => 'Zeitpunkt der Veröffentlichung',
 	'Unpublished Date' => 'Zeitpunkt der Zurückziehung',
@@ -4770,8 +4923,8 @@ use vars qw( @ISA %Lexicon );
 	'Contents type settings has been saved.' => 'Inhaltstyp-Einstellungen gespeichert.',
 	'Some content fields were not deleted. You need to delete archive mapping for the content field first.' => 'Einige Inhaltsfelder wurden nicht gelöscht. Bitte entfernen Sie zuerst ihre Archiv-Verknüpfungen.',
 	'Available Content Fields' => 'Verfügbare Inhaltsfelder',
-	'Unavailable Content Fields' => 'Nicht verfügbare Inhaltsfelder', # Translate - New # OK
-	'Reason' => 'Grund', # Translate - New # OK
+	'Unavailable Content Fields' => 'Nicht verfügbare Inhaltsfelder',
+	'Reason' => 'Grund',
 	'1 or more label-value pairs are required' => 'Mindestens ein Bezeichnung-Wert-Paar erforderlich',
 	'This field must be unique in this content type' => 'Dieses Feld kann in diesem Inhaltstyp nur ein Mal verwendet werden',
 
@@ -4836,6 +4989,7 @@ use vars qw( @ISA %Lexicon );
 	'Draggable' => 'Klick- und ziehbar',
 	'Share' => 'Teilen',
 	'Format:' => 'Formatierung:',
+	'Rich Text(HTML mode)' => 'Rich Text (HTML-Modus)', # Translate - New # OK
 	'(comma-delimited list)' => '(Liste mit Kommatrennung)',
 	'(space-delimited list)' => '(Liste mit Leerzeichentrennung)',
 	q{(delimited by '[_1]')} => q{(Trennung durch &#8222;[_1]&#8220;)},
@@ -4848,6 +5002,25 @@ use vars qw( @ISA %Lexicon );
 	'You must specify a label for the folder.' => 'Sie müssen diesem Ordner eine Bezeichnung geben',
 	'Path' => 'Pfad',
 	'Save changes to this folder (s)' => 'Ordneränderungen speichern (s)',
+
+## tmpl/cms/edit_group.tmpl
+	'Edit Group' => 'Gruppe bearbeiten',
+	'This group profile has been updated.' => 'Gruppenprofil aktualisiert.',
+	'This group was classified as pending.' => 'Gruppe auf wartend gesetzt.',
+	'This group was classified as disabled.' => 'Gruppe deaktiviert.',
+	'Member ([_1])' => 'Mitglied ([_1])',
+	'Members ([_1])' => 'Mitglieder ([_1])',
+	'Permission ([_1])' => 'Berechtigung ([_1])',
+	'Permissions ([_1])' => 'Berechtigungen ([_1])',
+	'LDAP Group ID' => 'LDAP-Gruppen-ID',
+	'The LDAP directory ID for this group.' => 'Die ID dieser Gruppe im LDAP-Verzeichnis',
+	'Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.' => 'Systemweiter Gruppenstatus. Die Deaktivierung einer Gruppe entzieht ihren Mitgliedern den Zugang zum System. Inhalte und Nutzungsverläufe der Mitglieder bleiben jedoch erhalten.',
+	'The name used for identifying this group.' => 'Der zur Idenfifizierung diesser Gruppe verwendete Name',
+	'The display name for this group.' => 'Der Anzeigename dieser Gruppe',
+	'The description for this group.' => 'Die Beschreibung dieser Gruppe.',
+	'Created By' => 'Erstellt von',
+	'Created On' => 'Angelegt',
+	'Save changes to this field (s)' => 'Feld-?nderungen speichern (s)',
 
 ## tmpl/cms/edit_ping.tmpl
 	'Edit Trackback' => 'TrackBack bearbeiten',
@@ -4890,13 +5063,13 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'Widget bearbeiten',
-	'Create Index Template' => 'Indexvorlage anlegen', # Translate - Case # OK
-	'Create Entry Archive Template' => 'Vorlage für Eintrags-Archiv anlegen', # Translate - New # OK
-	'Create Entry Listing Archive Template' => 'Vorlage für Eintrags-Listenarchiv anlegen', # Translate - New # OK
-	'Create Page Archive Template' => 'Vorlage für Seiten-Archiv anlegen', # Translate - New # OK
-	'Create Content Type Archive Template' => 'Vorlage für Inhaltstyp-Archiv anlegen', # Translate - New # OK
-	'Create Content Type Listing Archive Template' => 'Vorlage für Inhaltstyp-Listenarchiv anlegen', # Translate - New # OK
-	'Create Template Module' => 'Vorlagenmodul anlegen', # Translate - Case # OK
+	'Create Index Template' => 'Indexvorlage anlegen',
+	'Create Entry Archive Template' => 'Vorlage für Eintrags-Archiv anlegen',
+	'Create Entry Listing Archive Template' => 'Vorlage für Eintrags-Listenarchiv anlegen',
+	'Create Page Archive Template' => 'Vorlage für Seiten-Archiv anlegen',
+	'Create Content Type Archive Template' => 'Vorlage für Inhaltstyp-Archiv anlegen',
+	'Create Content Type Listing Archive Template' => 'Vorlage für Inhaltstyp-Listenarchiv anlegen',
+	'Create Template Module' => 'Vorlagenmodul anlegen',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => '[_1] automatisch gespeichert [_3]. <a href="[_2]">Automatisch gespeicherte Fassung wiederherstellen</a>',
 	'You have successfully recovered your saved [_1].' => 'Gespeicherte Fassung erfolgreich wiederhergestellt.',
 	'An error occurred while trying to recover your saved [_1].' => 'Bei der Wiederherstellung der gespeicherten Fassung ist ein Fehler aufgetreten.',
@@ -5002,8 +5175,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/field_html/field_html_asset.tmpl
 	'No Assets' => 'Keine Assets',
 	'No Asset' => 'Kein Asset',
-	'Add Assets' => 'Asset hinzufügen',
-	'Choose Asset' => 'Asset auswählen',
 	'Assets less than or equal to [_1] must be selected' => 'Wählen Sie höchstens [_1] Assets',
 	'Assets greater than or equal to [_1] must be selected' => 'Wählen Sie mindestens [_1] Assets',
 	'Only 1 asset can be selected' => 'Wählen Sie genau ein Asset',
@@ -5013,9 +5184,8 @@ use vars qw( @ISA %Lexicon );
 	'Add sub category' => 'Unterkategorie hinzufügen',
 
 ## tmpl/cms/field_html/field_html_content_type.tmpl
+	'No field data.' => 'Keine Feld-Daten.', # Translate - New # OK
 	'No [_1]' => 'Kein [_1]',
-	'Add [_1]' => '[_1] hinzufügen',
-	'Choose [_1]' => '[_1] wählen',
 	'This field is disabled because valid Content Type is not selected in this field.' => 'Dieses Feld ist deaktivieren, da kein gültiger Inhaltstyp gewählt wurde.',
 	'[_1] less than or equal to [_2] must be selected' => 'Wählen Sie höchstens [_1] [_2]',
 	'[_1] greater than or equal to [_2] must be selected' => 'Wählen Sie mindestens [_1] [_2]',
@@ -5102,8 +5272,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/asset_table.tmpl
 	'Delete selected assets (x)' => 'Gewählte Assets löschen (x)',
 	'Size' => 'Größe',
-	'Created By' => 'Erstellt von',
-	'Created On' => 'Angelegt',
 	'Asset Missing' => 'Asset fehlt',
 	'No thumbnail image' => 'Kein Vorschaubild',
 
@@ -5125,8 +5293,11 @@ use vars qw( @ISA %Lexicon );
 	'[_1] - [_2] of [_3]' => '[_1]-[_2] von [_3]',
 
 ## tmpl/cms/include/async_asset_upload.tmpl
-	'Choose files to upload or drag files.' => 'Dateien hierher ziehen oder Dateien auswählen.',
-	'Choose file to upload or drag file.' => 'Datei hierher ziehen oder Datei auswählen.',
+	'Choose files to upload or drag files.' => 'Hochzuladende Dateien hierher ziehen oder Dateien auswählen.', # improved
+	'Choose file to upload or drag file.' => 'Hochzuladende Datei hierher ziehen oder Datei auswählen.', # improved
+	'Choose files to upload.' => 'Hochzuladende Dateien auswählen.', # Translate - New # OK
+	'Choose file to upload.' => 'Hochzuladende Datei auswählen', # Translate - New # OK
+	'Upload Settings' => 'Hochlade-Einstellungen', # Translate - New # OK
 	'Upload Options' => 'Hochlade-Optionen',
 	'Operation for a file exists' => 'Vorgang bei bereits vorhandenen Dateien',
 	'Drag and drop here' => 'Hierhin ziehen und ablegen',
@@ -5273,6 +5444,13 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'with' => 'mit',
 
+## tmpl/cms/include/group_table.tmpl
+	'Enable selected group (e)' => 'Gew?hlte Gruppe aktivieren (e)',
+	'Disable selected group (d)' => 'Gew?hlte Gruppe deaktivieren (d)',
+	'group' => 'Gruppe',
+	'groups' => 'Gruppen',
+	'Remove selected group (d)' => 'Gew?hlte Gruppe entfernen (d)',
+
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'Hilfe',
 	'Search (q)' => 'Suche (q)',
@@ -5315,6 +5493,11 @@ use vars qw( @ISA %Lexicon );
 	'Remove selected user(s) (r)' => 'Gewählte(n) Benutzer entfernen (r)',
 	'Remove this role' => 'Rolle entfernen',
 
+## tmpl/cms/include/mobile_global_menu.tmpl
+	'Select another site...' => 'Andere Site wählen...',
+	'Select another child site...' => 'Andere Untersite wählen...',
+	'PC View' => 'Desktop-Ansicht', # Translate - New # OK
+
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Hinzugefügt am',
 	'Save changes' => 'Änderungen speichern',
@@ -5328,7 +5511,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/pagination.tmpl
 	'First' => 'Anfang',
-	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] von [_3]',
 	'Last' => 'Ende',
 
 ## tmpl/cms/include/ping_table.tmpl
@@ -5344,8 +5526,6 @@ use vars qw( @ISA %Lexicon );
 	'Open Panel' => 'Panel öffnen',
 	'Open Site Menu' => 'Site-Menü öffnen',
 	'Close Site Menu' => 'Site-Menü schließen',
-	'Select another site...' => 'Andere Site wählen...',
-	'Select another child site...' => 'Andere Untersite wählen...',
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'Keine Revisionen vorhanden',
@@ -5364,6 +5544,10 @@ use vars qw( @ISA %Lexicon );
 	'Select another blog...' => 'Anderes Blog wählen',
 	'Create Website' => 'Website anlegen',
 	'Create Blog (on [_1])' => 'Blog anlegen (auf [_1])',
+
+## tmpl/cms/include/status_widget.tmpl
+	'[_1] - Published by [_2]' => '[_1] - Veröffentlicht von [_2]',
+	'[_1] - Edited by [_2]' => '[_1] - Bearbeitet von [_2]',
 
 ## tmpl/cms/include/template_table.tmpl
 	'No content type could be found.' => 'Keine Inhaltstypen gefunden.',
@@ -5496,6 +5680,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => 'Sie haben [_1] zur Liste mit gesperrten IP-Adressen hinzugefügt.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'Sie haben die gewählten IP-Adressen erfolgreich aus der Liste entfernt.',
+	'' => '', # Translate - New # OK
+	'The IP you entered is already banned for this site.' => 'Diese IP-Adresse ist bereits gesperrt.', # Translate - New # OK
 	'Invalid IP address.' => 'Ungültige IP-Adresse.',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
@@ -5529,6 +5715,20 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/listing/filter_list_header.tmpl
 
+## tmpl/cms/listing/group_list_header.tmpl
+	'You successfully disabled the selected group(s).' => 'Gruppe(n) erfolgreich deaktiviert.',
+	'You successfully enabled the selected group(s).' => 'Gruppe(n) erfolgreich aktiviert.',
+	'You successfully deleted the groups from the Movable Type system.' => 'Gruppen erfolgreich aus der Movable Type-Installation gelöscht.',
+	q{You successfully synchronized the groups' information with the external directory.} => q{Gruppendaten erfolgreich mit externem Verzeichnis synchronisiert.},
+	q{An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Bei der Synchronisierung ist ein Fehler aufgetreten. Nähere Informationen finden Sie im <a href='[_1]'>Aktivitätsprotokoll</a>.},
+
+## tmpl/cms/listing/group_member_list_header.tmpl
+	'You successfully deleted the users.' => 'Benutzerkonten erfolgreich gelöscht.',
+	'You successfully added new users to this group.' => 'Benutzer erfolgreich zu Gruppe hinzugefügt.',
+	q{You successfully synchronized users' information with the external directory.} => q{Benutzerdaten erfolgreich mit externem Verzeichnis synchronisiert.},
+	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'Einige ([_2]) der Benutzerkonten wurden nicht wieder aktiviert, da sie nicht mehr im LDAP vorhanden sind.',
+	'You successfully removed the users from this group.' => 'Benutzer erfolgreich aus Gruppe entfernt.',
+
 ## tmpl/cms/listing/log_list_header.tmpl
 	'All times are displayed in GMT[_1].' => 'Alle Zeiten in GMT[_1]',
 	'All times are displayed in GMT.' => 'Alle Zeiten in GMT',
@@ -5536,8 +5736,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/member_list_header.tmpl
 
 ## tmpl/cms/listing/notification_list_header.tmpl
-	'You have updated your contact in your address book.' => 'Kontakt im Adressbuch aktualisiert.', # Translate - New # OK
-	'You have added new contact to your address book.' => 'Neuen Kontakt ins Adressbuch eingetragen.', # Translate - New # OK
+	'You have updated your contact in your address book.' => 'Kontakt im Adressbuch aktualisiert.',
+	'You have added new contact to your address book.' => 'Neuen Kontakt ins Adressbuch eingetragen.',
 	'You have successfully deleted the selected contacts from your address book.' => 'Gewählte Kontakte erfolgreich aus dem Adressbuch gelöscht.',
 
 ## tmpl/cms/listing/ping_list_header.tmpl
@@ -5560,7 +5760,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Show All Templates' => 'Alle Vorlagen anzeigen',
-	'Content type Templates' => 'Inhaltstyp-Vorlagen', # Translate - Case # OK
+	'Content type Templates' => 'Inhaltstyp-Vorlagen',
 	'Publishing Settings' => 'Veröffentlichungs-Einstellungen',
 	'Helpful Tips' => 'Nützliche Hinweise',
 	'To add a widget set to your templates, use the following syntax:' => 'Um eine Widgetgruppe in eine Vorlage einzubinden, verwenden Sie folgenden Code:',
@@ -5568,13 +5768,13 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the checked template(s).' => 'Vorlage(n) erfolgreich gelöscht.',
 	'Your templates have been published.' => 'Die Vorlagen wurden veröffentlicht.',
 	'Selected template(s) has been copied.' => 'Die gewählte(n) Vorlage(n) wurden kopiert.',
-	'Select template type' => 'Inhaltstyp wählen', # Translate - New # OK
-	'Entry Archive' => 'Eintrags-Archiv', # Translate - New # OK
-	'Entry Listing Archive' => 'Eintrags-Listenarchiv', # Translate - New # OK
-	'Page Archive' => 'Seiten-Archiv', # Translate - New # OK
-	'Content Type Listing Archive' => 'Inhaltstyp-Listenarchiv', # Translate - New # OK
-	'Template Module' => 'Vorlagenmodul', # Translate - New # OK
-	'Create new template (c)' => 'Neue Vorlage anlegen (c)', # Translate - New # OK
+	'Select template type' => 'Inhaltstyp wählen',
+	'Entry Archive' => 'Eintrags-Archiv',
+	'Entry Listing Archive' => 'Eintrags-Listenarchiv',
+	'Page Archive' => 'Seiten-Archiv',
+	'Content Type Listing Archive' => 'Inhaltstyp-Listenarchiv',
+	'Template Module' => 'Vorlagenmodul',
+	'Create new template (c)' => 'Neue Vorlage anlegen (c)',
 	'Create' => 'Anlegen',
 	'Delete selected Widget Sets (x)' => 'Gewählte Widget-Gruppen löschen (x)',
 	'No widget sets could be found.' => 'Keine Widgetgruppen gefunden.',
@@ -5732,7 +5932,7 @@ use vars qw( @ISA %Lexicon );
 	'Date/Time Range' => 'Datums-/Zeit-Bereich',
 	'Date Range' => 'Zeitraum eingrenzen',
 	'Reported as Spam?' => 'Als Spam gemeldet?',
-	'(search only)' => '(nur suchen)', # Translate - New # OK
+	'(search only)' => '(nur suchen)',
 	'Field' => 'Feld',
 	'_DATE_FROM' => 'Von',
 	'_DATE_TO' => 'Bis',
@@ -5812,8 +6012,11 @@ use vars qw( @ISA %Lexicon );
 	'Messages from the system' => 'Nachricht vom System',
 	'warning' => 'Warnung',
 
+## tmpl/cms/widget/site_list_for_mobile.tmpl
+
 ## tmpl/cms/widget/site_list.tmpl
 	'Setting' => 'Einstellung',
+	'List' => 'Liste',
 	'Recent Posts' => 'Aktuelle Einträge',
 
 ## tmpl/cms/widget/site_stats.tmpl
@@ -5922,7 +6125,6 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Bitte geben Sie zur Herstellung der Datenkbankverbindung notwendigen Daten ein.',
 	'Database Type' => 'Datenbanktyp',
 	'Select One...' => 'Auswählen...',
-	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Wird Ihr Datenbanksystem nicht aufgeführt? Führen Sie die <a href="[_1]" target="_blank">Movable Type Systemüberprüfung</a> durch, um zu erfahren, ob zusätzliche Module erforderlich sind.',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Klicken Sie nach der Installation <a href="javascript:void(0)" onclick="[_1]">hier, um diese Ansicht zu aktualisieren</a>.',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Mehr über <a href="[_1]" target="blank">Datenbankkonfiguration</a> erfahren',
@@ -6000,6 +6202,201 @@ use vars qw( @ISA %Lexicon );
 	'Begin' => 'Anfangen',
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Es ist bereits eine Konfigurationsdatei (mt-config.cgi) vorhanden. Sie können sich daher sofort <a href="[_1]">bei Movable Type anmelden</a>.',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Um mit dem Konfigurationsassistenten eine neue Konfigurationsdatei zu erzeugen, entfernen Sie die vorhandene Konfigurationsdatei und laden Sie diese Seite neu.',
+
+## addons/Cloud.pack/config.yaml
+	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
+	'Cloud Services' => 'Cloud-Dienste', # Translate - New # OK
+	'Basic Authentication' => 'Basisauthentifizierung', # Translate - New # OK
+	'Redirect' => 'Weiterleitung', # Translate - New # OK
+	'Auto Update' => 'Automatische Updates', # Translate - New # OK
+	'FTPS Password' => 'FTPS-Passwort', # Translate - New # OK
+	'SSL Certificates' => 'SSL-Zertifikate', # Translate - New # OK
+	'IP Restriction' => 'IP-Beschränkung', # Translate - New # OK
+	'Full Restore' => 'Systemwiederherstellung', # Translate - New # OK
+	'Config Directives' => 'Konfigurationsparameter', # Translate - New # OK
+	'Disk Usage' => 'Festplattenbelegung', # Translate - New # OK
+
+## addons/Cloud.pack/lib/Cloud/App/CMS.pm
+	'Owner' => 'Besitzer', # Translate - New # OK
+	'Creator' => 'Ersteller', # Translate - New # OK
+	'FTP passowrd for [_1] has successfully been updated.' => 'FTP-Passwort von [_1] erfolgreich aktualisiert.', # Translate - New # OK
+	'Unable to reset [_1] FTPS password.' => 'FTPS-Passwort [_1] konnte nicht zurückgesetzt werden.', # Translate - New # OK
+	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => '[_1] konnte nicht aktualisiert werden: [_2] wurde geändert, nachdem Sie diese Seite aufgerufen haben.', # Translate - New # OK
+	'Basic Authentication setting' => 'Basisauthentifizierungs-Einstellungen', # Translate - New # OK
+	'Cannot access to this uri: [_1]' => 'Auf die URI kann nicht zugegriffen werden: [_1]', # Translate - New # OK
+	'Basic authentication for site has successfully been updated.' => 'Basisauthentifizierungs-Einstellungen erfolgreich aktualisiert.', # Translate - New # OK
+	'Unable to update Basic Authentication settings.' => 'Die Basisauthentifizierungs-Einstellungen konnten nicht aktualisiert werden', # Translate - New # OK
+	'Administration Screen Setting' => 'Administrationsbereichs-Einstellungen', # Translate - New # OK
+	'The URL you specified is not available.' => 'Die angegebene URL ist nicht verfügbar.', # Translate - New # OK
+	'Unable to update Admin Screen URL settings.' => 'Administrationsbereichs-URL konnte nicht aktualisiert werden.', # Translate - New # OK
+	'The URL for administration screen has successfully been updated.' => 'URL des Administrationsbereichs erfolgreich aktualisiert.', # Translate - New # OK
+	'Cannot delete basicauth_admin file.' => 'basicauth_admin-Datei konnte nicht gelöscht werden', # Translate - New # OK
+	'Basic authentication for administration screen has successfully been cleared.' => 'Basisauthentifizierung für den Administrationsbereich erfolgreich entfernt.', # Translate - New # OK
+	'User ID is required.' => 'Benutzer-ID erforderlich.', # Translate - New # OK
+	'Password is required.' => 'Passwort erfolgreich.', # Translate - New # OK
+	'Unable to update basic authentication for administration screen.' => 'Basisauthentifizierung für Administrationsbereich konnte nicht aktualisiert werden.', # Translate - New # OK
+	'Unable to write temporary file.' => 'Temporäre Datei konnte nicht geschrieben werden.', # Translate - New # OK
+	'Basic authentication for administration screen has successfully been updated.' => 'Basisauthentifizierung für Administrationsbereich erfolgreich aktualisiert.', # Translate - New # OK
+	'Cannot delete ip_restriction_[_1] file.' => 'ip_restriction_[_1]-Datei konnte nicht gelöscht werden.', # Translate - New # OK
+	'IP restriction for administration screen has successfully been cleared.' => 'IP-Beschränkung für Administrationsbereich erfolgreich entfernt.', # Translate - New # OK
+	'[_1] is not a valid IP address.' => '[_1] ist keine gültige IP-Adresse.', # Translate - New # OK
+	'Unable to write allowed IP addresses file.' => 'Die Datei mit den zulässigen IP-Adressen konnte nicht geschrieben werden.', # Translate - New # OK
+	'IP restriction white list for administration screen  has successfully been updated.' => 'Zulässige IP-Adressen für Administrationsbereich erfolgreich aktualisiert.', # Translate - New # OK
+	'HTTP Redirect' => 'HTTP-Weiterleitung', # Translate - New # OK
+	'HTTP Redirect setting' => 'Weiterleitungs-Einstellungen', # Translate - New # OK
+	'HTTP redirect settings has successfully updated.' => 'Weiterleitungs-Einstellungen erfolgreich aktualisiert.', # Translate - New # OK
+	'Unable to update HTTP Redirect settings.' => 'Die Weiterleitungs-Einstellungen konnten nicht aktualisiert werden.', # Translate - New # OK
+	'Update SSL Certification' => 'SSL-Zertifikat aktualisieren', # Translate - New # OK
+	'__SSL_CERT_UPDATE' => 'Aktualisieren', # Translate - New # OK
+	'__SSL_CERT_INSTALL' => 'installieren', # Translate - New # OK
+	'Cannot copy default cert file.' => 'Die Standard-Zertifikats-Datei konnte nicht kopiert werden.', # Translate - New # OK
+	'Unable to create temporary path: [_1]' => 'Temporäre Pfad konnte nicht erzeugt werden: [_1]', # Translate - New # OK
+	'SSL certification has successfully been updated.' => 'SSL-Verschlüsselung wurde erfolgreich aktualisiert.', # Translate - New # OK
+	'Unable to update SSL certification.' => 'SSL-Verschlüsselung konnte nicht aktualisiert werden.', # Translate - New # OK
+	'Manage Configuration Directives' => 'Konfigurationsparameter verwalten', # Translate - New # OK
+	'Config Directive' => 'Konfigurationsparameter', # Translate - New # OK
+	'Movable Type environment settings has successfully been updated.' => 'Umgebungseinstellungen erfolgreich aktualisiert.', # Translate - New # OK
+	'Restoring Backup Data' => 'Stelle Sicherungsdaten wieder her', # Translate - New # OK
+	'backup data' => 'Sicherungsdaten', # Translate - New # OK
+	'Invalid backup file name.' => 'Der Name der Sicherungsdatei ist ungültig.', # Translate - New # OK
+	'Cannot copy backup file to workspace.' => 'Die Sicherungsdatei konnte nicht in den Arbeitsbereich kopiert werden.', # Translate - New # OK
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website-Einstellungen konnten nicht gespeichert werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website konnte nicht angelegt werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
+	'Auto Update Settings' => 'Aktualisierungs-Einstellungen', # Translate - New # OK
+	'Unable to write AUTOUPDATE file: [_1]' => 'Die AUTOUPDATE-Datei konnte nicht geschrieben werden: [_1]', # Translate - New # OK
+	'Auto update settings has successfully been updated.' => 'Aktualisierungs-Einstellungen erfolgreich aktualisiert.', # Translate - New # OK
+	'IP Restriction Settings' => 'IP-Beschränkungs-Einstellungen', # Translate - New # OK
+	'IP Restriction settings' => 'IP-Beschränkungs-Einstellungen', # Translate - New # OK
+	'Domain, Path and IP addresses are required.' => 'Domainname, Pfad und IP-Adressen sind erforderlich.', # Translate - New # OK
+	'\'[_1]\' does not exist.' => '\'[_1]\' existiert nicht.', # Translate - New # OK
+	'\'[_1]\' is invalid path.' => 'Der Pfad \'[_1]\' ist ungültig.', # Translate - New # OK
+	'Unable to create acl path: [_1]' => 'ACL-Pfad konnte nicht angelegt werden: [_1]', # Translate - New # OK
+	'Cannot write to acl directory: [_1]' => 'Kein Schreibzugriff auf ACL-Verzeichnis: [_1]', # Translate - New # OK
+	'Cannot write to acl file: [_1]' => 'Kein Schreibzugriff auf ACL-Datei: [_1]', # Translate - New # OK
+	'IP restriction for site has successfully been updated.' => 'IP-Beschränkung für diese Site wurden erfolgreich aktualisiert.', # Translate - New # OK
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'Die Einstellungen wurden nicht übernommen. Möglicherweise ist eine Pfadangabe oder eine IP-Adresse ungültig.', # Translate - New # OK
+	'Unable to remove acl file.' => 'Die ACL-Datei konnte nicht entfernt werden.', # Translate - New # OK
+
+## addons/Cloud.pack/lib/Cloud/App.pm
+	'Your Movable Type will be automatically updated on [_1].' => 'Ihr Movable Type wird automatisch am [_1] aktualisiert werden.', # Translate - New # OK
+	'New version of Movable Type has been released on [_1].' => 'Eine neue Version von Movable Type ist am [_1] erschienen.', # Translate - New # OK
+	'Disk usage rate is [_1]%.' => 'Festplattenplatz zu [_1]% belegt.', # Translate - New # OK
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Festplattenplatz neu berechnen.</a>', # Translate - New # OK
+	'An error occurred while reading version information.' => 'Versionsangabe konnte nicht abgerufen werden.', # Translate - New # OK
+
+## addons/Cloud.pack/lib/Cloud/Template.pm
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'WWW-Subdomain verwenden. <a href="[_1]">Weitere Informationen</a>', # Translate - New # OK
+	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html', # Translate - New # OK
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Wurzelverezeichnis der Website oder des Archivs geändert. Bitte verschieben Sie die bestehenden Ordner entsprechend.', # Translate - New # OK
+
+## addons/Cloud.pack/lib/Cloud/Upgrade.pm
+	'Disabling any plugins...' => 'Deaktiviere alle Plugins...', # Translate - New # OK
+
+## addons/Cloud.pack/lib/Cloud/Util.pm
+	'Cannot read resource file.' => 'Ressourcen-Datei konnte nicht gelesen werden.', # Translate - New # OK
+	'Cannot get the resource data.' => 'Ressourcen-Daten konnten nicht abgerufen werden.', # Translate - New # OK
+	'Unknown CPU type.' => 'Unbekannter CPU-Typ.', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
+	'Auto update setting have been saved.' => 'Aktualisierungs-Einstellungen gespeichert.', # Translate - New # OK
+	'Current installed version of Movable Type is the latest version.' => 'Diese Movable-Type-Installation ist aktuell.', # Translate - New # OK
+	'New version of Movable Type is available.' => 'Eine neue Version von Movable Type ist verfügbar.', # Translate - New # OK
+	'Last Update' => 'Letzte Aktualisierung', # Translate - Case # OK
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] am [_2]', # Translate - New # OK
+	'Available version' => 'Verfügbare Version', # Translate - New # OK
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (erschienen am [_2])', # Translate - New # OK
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Unabhängig von Ihren Einstellungen wird Ihr Movable Type am [_1] automatisch aktualisiert werden.', # Translate - New # OK
+	'Auto update' => 'Automatisches Update', # Translate - New # OK
+	'Enable	automatic update of Movable Type' => 'Automatische Aktualisierung von Movable Type aktivieren', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
+	'Manage Basic Authentication' => 'Basisauthentifizierung verwalten', # Translate - New # OK
+	'/path/to/authentication' => '/pfad/zur/authentifizierung', # Translate - New # OK
+	'User ID' => 'Benutzer-ID', # Translate - New # OK
+	'URI is required.' => 'URI erforderlich.', # Translate - New # OK
+	'Invalid URI.' => 'Ungültige URI.', # Translate - New # OK
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'Die Benutzer-ID darf keinen Backlash enhalten.', # Translate - New # OK
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'Das Passwort darf keinen Backslash enthalten.', # Translate - New # OK
+	'basic authentication setting' => 'Basisauthentifizierung-Einstellung', # Translate - New # OK
+	'basic authentication settings' => 'Basisauthentifizierungs-Einstellungen', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
+	'Configuration directive' => 'Konfigurationsparameter', # Translate - New # OK
+	'Configuration value' => 'Konfigurationswert', # Translate - New # OK
+	'Reference' => 'Referenz', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'Benutzerdateien', # Translate - New # OK
+	'Buckup Files' => 'Sicherungsdateien', # Translate - New # OK
+	'Free Disk Space' => 'Freier Festplattenplatz', # Translate - New # OK
+	'User Contents' => 'Benutzerinhalte', # Translate - New # OK
+	'Backup' => 'Sicherungen', # Translate - Case # OK
+	'Others' => 'Sonstiges', # Translate - New # OK
+	'Free' => 'Frei', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
+	'Reset FTPS Password' => 'FTPS-Passwort zurücksetzen', # Translate - New # OK
+	'Please select the account for which you want to reset the password.' => 'Bitte wählen Sie das Benutzerkonto, dessen Passwort zurückgesetzt werden soll.', # Translate - New # OK
+	'Owner Password' => 'Besitzer-Passwort', # Translate - New # OK
+	'Creator Password' => 'Ersteller-Passwort', # Translate - New # OK
+	'Password has been saved.' => 'Passwort gespeichert.', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
+	'Manage HTTP Redirect' => 'HTTP-Weiterleitung verwalten', # Translate - New # OK
+	'/path/of/redirect' => '/pfad/der/weiterleitung', # Translate - New # OK
+	'http://example.com or /path/to/redirect' => 'http://beispiel.de oder /pfad/der/weiterleitung', # Translate - New # OK
+	'Redirect URL is required.' => 'Weiterleitungs-URL erforderlich.', # Translate - New # OK
+	'Redirect url is same as URI' => 'Weiterleitungs-URl und URI sind identisch.', # Translate - New # OK
+	'HTTP redirect setting' => 'HTTP-Weiterleitungs-Einstellung', # Translate - New # OK
+	'HTTP redirect settings' => 'HTTP-Weiterleitungs-Einstellungen', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
+	'Administration screen settings have been saved.' => 'Administrationsbereichs-Einstellungen gespeichert.', # Translate - New # OK
+	'Domain name like example.com' => 'Domainname wie beispiel.de', # Translate - New # OK
+	'Path begin with / like /path' => 'Mit / beginnender Pfad wie /pfad', # Translate - New # OK
+	'IP addresses that are allowed to access' => 'IP-Adressen, von denen aus zugegriffen werden darf', # Translate - New # OK
+	'Domain is required.' => 'Domainname erforderlich.', # Translate - New # OK
+	'"[_1]" does not exist.' => '"[_1]" existiert nicht.', # Translate - New # OK
+	'Invalid Path.' => 'Ungültiger Pfad.', # Translate - New # OK
+	'This combination of domain and path already exists.' => 'Diese Domain-Pfad-Kombination existiert bereits.', # Translate - New # OK
+	'IP is required.' => 'IP-Adress erforderlich.', # Translate - New # OK
+	'[_1] is invalid IP Address.' => '[_1] ist keine gültige IP-Adresse.', # Translate - New # OK
+	'IP restriction settings' => 'IP-Beschränkungs-Einstellungen', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_security.tmpl
+	'Administration screen setting have been saved.' => 'Administrationsbereichs-Einstellung gespeichert.', # Translate - New # OK
+	'Administration screen url have been reset to default.' => 'Administrationsbereichs-URL auf Standardwert zurücksetzen.', # Translate - New # OK
+	'Admin Screen URL' => 'Administrationsbereichs-URL', # Translate - New # OK
+	'Protect administration screen by Basic Authentication' => 'Administrationsbereich mit Basisauthentifizierung sichern', # Translate - New # OK
+	'Access Restriction' => 'Zugriffsbeschränkung', # Translate - New # OK
+	'Restricts IP addresses that can access to administration screen.' => 'Beschränkt den Zugriff auf das Administrations-Menü auf bestimmte IP-Adressen.', # Translate - New # OK
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Bitte geben Sie die IP-Adressen an, von denen Zugriff möglich sein soll. Verwenden Sie Kommas oder Zeilenumbrüche zwischen mehreren Adressen. Bitte geben Sie auch die Remote-IP an, die Sie derzeit verwenden. Andersfalls können Sie möglicherweise nicht mehr auf Administrations-Funktionen zugreifen. Weitere Informationen.', # Translate - New # OK
+	'Your IP address is [_1].' => 'Ihre IP-Adrese ist [_1].', # Translate - New # OK
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Begrenzt, von welchen IP-Adressen aus auf öffentliche CGI-Skripte wie Suche und die Data-API zugegriffen werden kann.', # Translate - New # OK
+	'IP address list is required.' => 'IP-Liste erforderlich.', # Translate - New # OK
+	'administration screen' => 'Administrationsbereich', # Translate - New # OK
+	' and ' => ' und ', # Translate - New # OK
+	'public access CGI' => 'öffentliches CGI', # Translate - New # OK
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'Ihre Remote-IP ist nicht in der Liste der zulässigen Adressen enthalten ([_1]). Zugriff von Ihrer atuellen Remote-IP wirklich sperren?', # Translate - New # OK
+	'Are you sure you want to save restrict access settings?' => 'Beschränkungs-Einstellungen wirklich speichern?', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
+	'Install SSL Certification' => 'SSL-Verschlüsselung installieren', # Translate - New # OK
+	'SSL certification have been updated.' => 'SSL-Verschlüsselung aktualisiert.', # Translate - New # OK
+	'SSL certification have been reset to default.' => 'SSL-Verschlüsselung auf Standardwerte zurückgesetzt.', # Translate - New # OK
+	'The current server certification is as follows.' => 'Derzeit ist die Verschlüsselung wie folgt konfiguriert.', # Translate - New # OK
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Um das Server-Zertifikat zu [_1], füllen Sie bitte die folgenden Felder aus. Um zu den ursprünglichen Verschlüsselungs-Einstellungen zurückzukehren, klicken Sie bitte auf 'SSL-Verschlüsselung entfernen'. Bei 'Geheimer Schlüssel' geben Sie bitte die Passphrase an.}, # Translate - New # OK
+	'Server Certification' => 'Server-Zertifikat', # Translate - New # OK
+	'Secret Key' => 'Geheimer Schlüssel', # Translate - New # OK
+	'Intermediate Certification' => 'Zwischenzertifikat', # Translate - New # OK
+	'Remove SSL Certification' => 'SSL-Verschlüsselung entfernen', # Translate - New # OK
+
+## addons/Cloud.pack/tmpl/full_restore.tmpl
+	'Restoring Full Backup Data' => 'Sicherung vollständig wiederherstellen', # Translate - New # OK
+	q{Restored backup data from '[_1]' at [_2]} => q{Sicherungs von '[_1]' um [_2] wiederhergestellt}, # Translate - New # OK
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Bei der Wiederherstellung einer Sicherungsdatei werden alle Inhalte auf den Zeitpunkt zurückgesetzt, an dem die Sicherung erstellt wurde. Alle danach gemachten Änderungen und alle danach eingegangenen Kommentare und TrackBacks werden verworfen. Im Rahmen der Wiederherstellung wird der aktuelle Zustand automatisch gesichert. Sie können also bei Bedarf anschließend zum jetzigen Zustand zurückkehren.', # Translate - New # OK
+	'Restore' => 'Wiederherstellen', # Translate - New # OK
+	'Are you sure you want restore from selected backup file?' => 'Daten aus ausgewählter Sicherungsdatei wirklich wiederherstellen?', # Translate - New # OK
 
 ## addons/Commercial.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
@@ -6355,40 +6752,17 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	', or press the enter key to %toggle% it' => 'oder Enter drücken zum An- oder Abwählen',
 
 ## addons/Enterprise.pack/app-cms.yaml
-	'Groups ([_1])' => 'Gruppen ([_1])',
-	'Are you sure you want to delete the selected group(s)?' => 'Gewählte Gruppe(n) wirklich löschen?',
-	'Are you sure you want to remove the selected member(s) from the group?' => 'Gewählte(n) Benutzer wirklich aus Gruppe entfernen?',
-	'[_1]\'s Group' => 'Gruppen von [_1]',
-	'Manage Members' => 'Mitglieder verwalten',
 	'Bulk Author Export' => 'Stapelexport von Autoren',
 	'Bulk Author Import' => 'Stapelimport von Autoren',
 	'Synchronize Users' => 'Benutzer synchronisieren',
 	'Synchronize Groups' => 'Gruppen synchronisieren',
-	'Add user to group' => 'Benutzer zu Gruppe hinzufügen',
 
 ## addons/Enterprise.pack/app-wizard.yaml
 	'This module is required in order to use the LDAP Authentication.' => 'Dieses Modul ist zur Nutzung der LDAP-Authentifizierung erforderlich.',
 
 ## addons/Enterprise.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
-	'Permissions of group: [_1]' => 'Gruppen-Berechtigungen: [_1]',
-	'Group' => 'Gruppe',
-	'Groups associated with author: [_1]' => 'Mit Autor verknüpfte Gruppen: [_1]',
-	'Inactive' => 'Inaktiv',
-	'Members of group: [_1]' => 'Gruppenmitglieder: [_1]',
 	'Advanced Pack' => 'Advanced-Pack',
-	'User/Group' => 'Benutzer/Gruppe',
-	'__GROUP_MEMBER_COUNT' => 'Mitglieder',
-	'My Groups' => 'Meine Gruppen',
-	'Group Name' => 'Gruppenname',
-	'__COMMENT_COUNT' => 'Kommentare',
-	'Manage Group Members' => 'Gruppenmitglieder verwalten',
-	'Group Members' => 'Gruppenmitglieder',
-	'Group Member' => 'Groupmember',
-	'Permissions for Users' => 'Benutzer-Berechtigungen',
-	'Permissions for Groups' => 'Gruppen-Berechtigungen',
-	'Active Groups' => 'Aktive Gruppen',
-	'Disabled Groups' => 'Deaktivierte Gruppen',
 	'Oracle Database (Recommended)' => 'Oracle-Datenbank (empfohlen)',
 	'Microsoft SQL Server Database' => 'Microsoft SQL Server-Datenbank',
 	'Microsoft SQL Server Database UTF-8 support (Recommended)' => 'Microsoft SQL Server-Datenbank mit UTF-8-Unterstützung (empfohlen)',
@@ -6446,17 +6820,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Invalid display name: [_1]' => 'Ungültiger Anzeigename: [_1]',
 	'Invalid email address: [_1]' => 'Ungültige E-Mail-Adresse: [_1]',
 	'Invalid password: [_1]' => 'Ungültiges Passwort: [_1]',
-	'\'Personal Blog Location\' setting is required to create new user blogs.' => 'Zum Anlegen neuer Benutzerblogs muss in den Einstellungen deren Speicherort angegeben sein.',
-	'Invalid weblog name: [_1]' => 'Ungültiger Weblogname: [_1]',
-	'Invalid blog URL: [_1]' => 'Ungültige Blog-URL: [_1]',
-	'Invalid site root: [_1]' => 'Ungültiges Wurzelverzeichnis: [_1]',
-	'Invalid timezone: [_1]' => 'Ungültige Zeitzone: [_1]',
-	'Invalid theme ID: [_1]' => 'Ungültige Themen-ID: [_1]',
-	'A theme \'[_1]\' was not found.' => 'Thema \'[_1]\' nicht gefunden.',
 	'A user with the same name was found.  The registration was not processed: [_1]' => 'Benutzer mit gleichem Namen gefunden und Konto daher nicht angelegt: [_1]',
-	'Blog for user \'[_1]\' can not be created.' => 'Blog für Benutzer \'[_1]\' kann nicht angelegt werden.',
-	'Blog \'[_1]\' for user \'[_2]\' has been created.' => 'Blog \'[_1]\' für Benutzer \'[_2]\' angelegt.',
-	'Error assigning weblog administration rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable weblog administrator role was found.' => 'Fehler bei der Zuweisung von Blog-Administrationsrechten für Blog \'[_3] (ID: [_4])\' an Benutzer \'[_1] (ID: [_2])\'. Keine geeignete Administratorenrolle gefunden.',
 	'Permission granted to user \'[_1]\'' => 'Berechtigungenga an Benutzer \'[_1]\' vergeben',
 	'User \'[_1]\' already exists. The update was not processed: [_2]' => 'Benutzer \'[_1]\' bereits vorhanden, Konto daher nicht aktualisiert: [_2]',
 	'User \'[_1]\' not found.  The update was not processed.' => 'Benutzer \'[_1]\' nicht gefunden, Konto daher nicht aktualisiert.',
@@ -6467,25 +6831,8 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Movable Type Advanced has just attempted to disable your account during synchronization with the external directory. Some of the external user management settings must be wrong. Please correct your configuration before proceeding.' => 'Movable Type Advanced hat während der Synchronisation versucht, Ihr Benutzerkonto zu deaktivieren. Das deutet auf einen Fehler in der externen Benutzerverwaltung hin. Ãœberprüfen Sie daher die dortigen Einstellungen, bevor Sie Ihre Arbeit in Movable Type forsetzen.',
-	'Each group must have a name.' => 'Jede Gruppe muss einen eigenen Namen haben.',
-	'Search Users' => 'Benutzer suchen',
-	'Select Groups' => 'Gruppen auswählen',
-	'Groups Selected' => 'Gewählte Gruppen',
-	'Search Groups' => 'Gruppen suchen',
-	'Add Users to Groups' => 'Benutzer zu Gruppen hinzufügen',
-	'Invalid group' => 'Ungültige Gruppe',
-	'Add Users to Group [_1]' => 'Benutzer zu Gruppe [_1] hinzufügen',
-	'User \'[_1]\' (ID:[_2]) removed from group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' aus Gruppe \'[_3]\' (ID:[_4]) entfernt',
-	'Group load failed: [_1]' => 'Fehler beim Laden einer Gruppe:',
-	'User load failed: [_1]' => 'Fehler beim Laden eines Benutzers:',
-	'User \'[_1]\' (ID:[_2]) was added to group \'[_3]\' (ID:[_4]) by \'[_5]\'' => 'Benutzer \'[_1]\' (ID:[_2]) von \'[_5]\' zu Gruppe \'[_3]\' (ID:[_4]) hinzugefügt',
-	'Users & Groups' => 'Benutzer und Gruppen',
-	'Group Profile' => 'Gruppenprofile',
-	'Author load failed: [_1]' => 'Fehler beim Laden eines Autoren: [_1]',
-	'Invalid user' => 'Ungültiger Benutzer',
-	'Assign User [_1] to Groups' => 'Gruppen an Benutzer [_1] zuweisen',
-	'Type a group name to filter the choices below.' => 'Geben Sie einen Gruppennamen ein, um die Auswahl einzuschränken.',
 	'Bulk import cannot be used under external user management.' => 'Stapelimport ist bei externer Benutzerverwaltung nicht möglich.',
+	'Users & Groups' => 'Benutzer und Gruppen',
 	'Bulk management' => 'Stapelverwaltung',
 	'No records were found in the file.  Make sure the file uses CRLF as the line-ending characters.' => 'Keine Einträge in Datei gefunden. Bitte stellen Sie sicher, daß für die Zeilenenden CRLF verwendet wird.',
 	'Registered [quant,_1,user,users], updated [quant,_2,user,users], deleted [quant,_3,user,users].' => '[quant,_1,Benutzer] registiert, [quant,_2,Benutzerkonto,Benutzerkonten] aktualisiert, [quant,_3,Benutzerkonto,Benutzerkonten] gelöscht.',
@@ -6493,20 +6840,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'A user cannot change his/her own username in this environment.' => 'Benutzer können ihre eigenen Benutzernamen in diesem Kontext nicht ändern.',
 	'An error occurred when enabling this user.' => 'Bei der Aktivierung dieses Benutzerkontos ist ein Fehler aufgetreten',
 
-## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Callback/Group.pm
-	'A parameter "[_1]" is invalid.' => 'Parameter "[_1]" ist ungültig.',
-
 ## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Group.pm
-	'Creating group failed: ExternalGroupManagement is enabled.' => 'Das Anlegen der Gruppe ist fehlgeschlagen: ExternalGroupmanagement ist aktiv.',
-	'Cannot add member to inactive group.' => 'Zu inaktiven Gruppen können keine Mitglieder hinzugefügt werden.',
-	'Adding member to group failed: [_1]' => 'Hinzufügen des Mitglieds zur Gruppe ist fehlgeschlagen: [_1]',
-	'Removing member from group failed: [_1]' => 'Entfernen des Mitglieds aus der Gruppe ist fehlgeschlagen: [_1]',
-	'Group not found' => 'Gruppe nicht gefunden',
-	'Member not found' => 'Mitglied nicht gefunden',
-	'A resource "member" is required.' => '"member"-Angabe erforderlich.',
-
-## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/Permission.pm
-	'Association not found' => 'Verknüpfung nicht gefunden',
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/DataAPI/Endpoint/v2/User.pm
 
@@ -6520,10 +6854,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Login' => 'Login',
 	'Found' => 'Gefunden',
 	'Not Found' => 'Nicht gefunden',
-
-## addons/Enterprise.pack/lib/MT/Group.pm
-	'Backing up [_1] records:' => 'Sichere [_1]-Einträge:',
-	'[_1] records backed up.' => '[_1] Einträge gesichert',
 
 ## addons/Enterprise.pack/lib/MT/LDAP.pm
 	'Invalid LDAPAuthURL scheme: [_1].' => 'Ungültiges LDAPAuthURL-Schema: [_1].',
@@ -6543,10 +6873,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## addons/Enterprise.pack/tmpl/author_bulk.tmpl
 	'Manage Users in bulk' => 'Benutzerverwaltung im Stapel',
 	'_USAGE_AUTHORS_2' => 'Sie können Benutzerkonto im Stapel anlegen, bearbeiten und löschen, indem Sie CSV-formatierte Steuerungsdatei mit den entsprechenden Daten und Befehlen hochladen.',
-	q{New user blog would be created on '[_1]'.} => q{Neue Benutzerblogs werden auf '[_1]' angelegt.},
-	'[_1] Edit</a>' => '[_1] bearbeiten</a>',
-	q{You must set 'Personal Blog Location' to create a new blog for each new user.} => q{Um für neue Benutzer automatisch neue Blogs anzulegen, legen Sie bitte deren Speicherort fest.},
-	'[_1] Setting</a>' => '[_1]-Einstellungen</a>',
 	'Upload source file' => 'Quelldatei hochladen',
 	'Specify the CSV-formatted source file for upload' => 'Geben Sie die hochzuladende CSV-Quelldatei an',
 	'Source File Encoding' => 'Zeichenkodierung der Quelldatei',
@@ -6623,54 +6949,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## addons/Enterprise.pack/tmpl/create_author_bulk_start.tmpl
 
-## addons/Enterprise.pack/tmpl/dialog/dialog_select_group_user.tmpl
-
-## addons/Enterprise.pack/tmpl/dialog/select_groups.tmpl
-	'You need to create some groups.' => 'Bitte legen Sie einige Gruppen an.',
-	q{Before you can do this, you need to create some groups. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Click here</a> to create a group.} => q{Bitte legen Sie zuerst einige Gruppen an. <a href="javascript:void(0);" onclick="closeDialog('[_1]');">Klicken Sie hier </a> um Gruppen anzulegen.},
-
-## addons/Enterprise.pack/tmpl/edit_group.tmpl
-	'Edit Group' => 'Gruppe bearbeiten',
-	'Create Group' => 'Gruppe anlegen',
-	'This group profile has been updated.' => 'Gruppenprofil aktualisiert.',
-	'This group was classified as pending.' => 'Gruppe auf wartend gesetzt.',
-	'This group was classified as disabled.' => 'Gruppe deaktiviert.',
-	'Member ([_1])' => 'Mitglied ([_1])',
-	'Members ([_1])' => 'Mitglieder ([_1])',
-	'Permission ([_1])' => 'Berechtigung ([_1])',
-	'Permissions ([_1])' => 'Berechtigungen ([_1])',
-	'LDAP Group ID' => 'LDAP-Gruppen-ID',
-	'The LDAP directory ID for this group.' => 'Die ID dieser Gruppe im LDAP-Verzeichnis',
-	'Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.' => 'Systemweiter Gruppenstatus. Die Deaktivierung einer Gruppe entzieht ihren Mitgliedern den Zugang zum System. Inhalte und Nutzungsverläufe der Mitglieder bleiben jedoch erhalten.',
-	'The name used for identifying this group.' => 'Der zur Idenfifizierung diesser Gruppe verwendete Name',
-	'The display name for this group.' => 'Der Anzeigename dieser Gruppe',
-	'The description for this group.' => 'Die Beschreibung dieser Gruppe.',
-	'Save changes to this field (s)' => 'Feld-?nderungen speichern (s)',
-
-## addons/Enterprise.pack/tmpl/include/group_table.tmpl
-	'Enable selected group (e)' => 'Gew?hlte Gruppe aktivieren (e)',
-	'Disable selected group (d)' => 'Gew?hlte Gruppe deaktivieren (d)',
-	'group' => 'Gruppe',
-	'groups' => 'Gruppen',
-	'Remove selected group (d)' => 'Gew?hlte Gruppe entfernen (d)',
-
-## addons/Enterprise.pack/tmpl/include/list_associations/page_title.group.tmpl
-	'Users &amp; Groups for [_1]' => 'Benutzer und Gruppen für [_1]',
-
-## addons/Enterprise.pack/tmpl/listing/group_list_header.tmpl
-	'You successfully disabled the selected group(s).' => 'Gruppe(n) erfolgreich deaktiviert.',
-	'You successfully enabled the selected group(s).' => 'Gruppe(n) erfolgreich aktiviert.',
-	'You successfully deleted the groups from the Movable Type system.' => 'Gruppen erfolgreich aus der Movable Type-Installation gelöscht.',
-	q{You successfully synchronized the groups' information with the external directory.} => q{Gruppendaten erfolgreich mit externem Verzeichnis synchronisiert.},
-	q{An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information.} => q{Bei der Synchronisierung ist ein Fehler aufgetreten. Nähere Informationen finden Sie im <a href='[_1]'>Aktivitätsprotokoll</a>.},
-
-## addons/Enterprise.pack/tmpl/listing/group_member_list_header.tmpl
-	'You successfully deleted the users.' => 'Benutzerkonten erfolgreich gelöscht.',
-	'You successfully added new users to this group.' => 'Benutzer erfolgreich zu Gruppe hinzugefügt.',
-	q{You successfully synchronized users' information with the external directory.} => q{Benutzerdaten erfolgreich mit externem Verzeichnis synchronisiert.},
-	'Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP.' => 'Einige ([_2]) der Benutzerkonten wurden nicht wieder aktiviert, da sie nicht mehr im LDAP vorhanden sind.',
-	'You successfully removed the users from this group.' => 'Benutzer erfolgreich aus Gruppe entfernt.',
-
 ## addons/Sync.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Migrated sync setting' => 'Sync-Einstellungen migriert',
@@ -6712,6 +6990,8 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Das temporäre Verzeichnis [_1] kann nicht beschrieben werden.',
+	'Incomplete file copy to Temp Directory.' => 'Datei unvollständig in das temporäre Verzeichnis kopiert.', # Translate - New # OK
+	'Failed to remove "[_1]": [_2]' => '"[_1]" konnte nicht entfernt werden: [_2]', # Translate - New # OK
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'Es ist ein Rsync-Fehler aufgetreten, Exit-Code [_1]: [_2]',
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
@@ -6795,12 +7075,15 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/BlockEditor/lib/BlockEditor/BlockEditorFieldType/Image.pm
 
 ## plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl
+	'Upload new image' => 'Neues Bild hochladen',
 
 ## plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
+	'Sort' => 'Sortieren', # Translate - New # OK
+	'No block in this field.' => 'Kein Block in diesem Feld.', # Translate - New # OK
 	'Changing to plain text is not possible to return to the block edit.' => 'Nach Wechsel auf unformatierten Text kann nicht zum Block-Editor zurückgekehrt werden.',
 	'Changing to block editor is not possible to result return to your current document.' => 'Nach Wechsel zum Block-Editor kann nicht zurückgewechselt werden.',
 
@@ -6901,7 +7184,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Moderator' => 'Moderator',
 	'Can comment and manage feedback.' => 'Kann kommentieren und Feedback verwalten',
 	'Can comment.' => 'Kann kommentieren',
-	'__COMMENT_COUNT' => 'Kommentare',
 	'Comments on My Entries/Pages' => 'Kommentare zu meinen Einträgen/Seiten',
 	'Entry/Page Status' => 'Eintrags-/Seiten-Status',
 	'Date Commented' => 'Kommentardatum',
@@ -7069,7 +7351,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => 'Textbaustein bearbeiten',
 	'This boilerplate has been saved.' => 'Textbaustein gespeichert',
-	'Save changes to this boilerplate (s)' => 'Ã„nderungen des Textbausteins speichern (s)',
+	'Save changes to this boilerplate (s)' => 'Änderungen des Textbausteins speichern (s)',
 	q{The boilerplate '[_1]' is already in use in this blog.} => q{Der Textbaustein  &#8222;[_1]&#8220; wird in diesem Blog bereits verwendet.},
 
 ## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
@@ -7473,6 +7755,6 @@ itte versuchen Sie es später erneut.',
 
 );
 
-## New words: 328
+## New words: 1146
 
 1;

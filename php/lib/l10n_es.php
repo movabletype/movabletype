@@ -21,22 +21,57 @@ $Lexicon_es = array(
 	'Author Monthly' => 'Mensuales del autor',
 	'Author Daily' => 'Diarios del autor',
 	'Author Weekly' => 'Semanales del autor',
+	'Category' => 'Categoría',
 	'Category Yearly' => 'Categorías anuales',
 	'Category Monthly' => 'Categorías mensuales',
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
-	'Category' => 'Categoría',
+	'CONTENTTYPE_ADV' => 'ContentType',
+	'CONTENTTYPE-DAILY_ADV' => 'ContentType diario',
+	'CONTENTTYPE-WEEKLY_ADV' => 'ContentType semanal',
+	'CONTENTTYPE-MONTHLY_ADV' => 'ContenType mensual',
+	'CONTENTTYPE-YEARLY_ADV' => 'ContentType anual',
+	'CONTENTTYPE-AUTHOR_ADV' => 'ContentType autor',
+	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'ContenType autor anual',
+	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'ContentType autor mensual',
+	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'ContentType autor diario',
+	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'ContentType autor semanal',
+	'CONTENTTYPE-CATEGORY_ADV' => 'ContentType categoría',
+	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'ContentType categoría anual',
+	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'ContentType categoría mensual',
+	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'ContentType categoría diario',
+	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'ContentType categoría semanal',
+
+## php/lib/block.mtarchives.php
+	'ArchiveType not found - [_1]' => 'ArchiveType no encontrado - [_1]', # Translate - New
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" debe usarse junto al espacio de nombres.',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhascontent.php
 	'No author available' => 'Ningún autor disponible',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
 	'You used an [_1] tag without establishing a date context.' => 'Utilizó una etiqueta [_1] sin indicar un contexto de fecha.',
+
+## php/lib/block.mtcategorysets.php
+	'No Category Set could be found.' => 'No se pudo encontrar un conjunto de categorías.',
+	'No Content Type could be found.' => 'No se encontró el tipo de contenido',
+
+## php/lib/block.mtcontentauthoruserpicasset.php
+	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => 'Usó una etiqueta \'[_1]\' fuera del contexto de un contenido. ¿Quizás la situó fuera de una etiqueta contenedora \'MTContents\'?',
+
+## php/lib/block.mtcontentfield.php
+	'No Content Field could be found.' => 'No se pudo encontrar un campo de contenido.',
+	'No Content Field Type could be found.' => 'No se encontró el tipo de campo de contenido.',
+
+## php/lib/block.mtcontentfields.php
+
+## php/lib/block.mtcontents.php
 
 ## php/lib/block.mtentries.php
 
@@ -56,9 +91,16 @@ $Lexicon_es = array(
 	'\'[_1]\' is not an array.' => '\'[_1]\' no es un array.',
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' no es una función válida.',
 
+## php/lib/block.mttags.php
+	'content_type modifier cannot be used with type "[_1]".' => 'No se puede usar el modificador content_type modifier con el tipo "[_1]".',
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters shown in the picture above.' => 'Teclee los caracteres mostrados en la imagen de arriba.',
+
+## php/lib/content_field_type_lib.php
+	'No Label (ID:[_1])' => 'Sin etiqueta (ID:[_1])',
+	'No category_set setting in content field type.' => 'category_set no está configurado en el tipo de campo de contenido.',
 
 ## php/lib/function.mtassettype.php
 	'image' => 'Imagen',
@@ -71,6 +113,62 @@ $Lexicon_es = array(
 	'Video' => 'Vídeo',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcontentauthordisplayname.php
+
+## php/lib/function.mtcontentauthoremail.php
+
+## php/lib/function.mtcontentauthorid.php
+
+## php/lib/function.mtcontentauthorlink.php
+
+## php/lib/function.mtcontentauthorurl.php
+
+## php/lib/function.mtcontentauthorusername.php
+
+## php/lib/function.mtcontentauthoruserpic.php
+
+## php/lib/function.mtcontentauthoruserpicurl.php
+
+## php/lib/function.mtcontentcreateddate.php
+
+## php/lib/function.mtcontentdate.php
+
+## php/lib/function.mtcontentfieldlabel.php
+
+## php/lib/function.mtcontentfieldtype.php
+
+## php/lib/function.mtcontentfieldvalue.php
+
+## php/lib/function.mtcontentid.php
+
+## php/lib/function.mtcontentmodifieddate.php
+
+## php/lib/function.mtcontentpermalink.php
+
+## php/lib/function.mtcontentscount.php
+
+## php/lib/function.mtcontentsitedescription.php
+
+## php/lib/function.mtcontentsiteid.php
+
+## php/lib/function.mtcontentsitename.php
+
+## php/lib/function.mtcontentsiteurl.php
+
+## php/lib/function.mtcontentstatus.php
+
+## php/lib/function.mtcontenttypedescription.php
+
+## php/lib/function.mtcontenttypeid.php
+
+## php/lib/function.mtcontenttypename.php
+
+## php/lib/function.mtcontenttypeuniqueid.php
+
+## php/lib/function.mtcontentuniqueid.php
+
+## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Entrada',
@@ -96,6 +194,8 @@ $Lexicon_es = array(
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtsetvar.php
+
+## php/lib/function.mtsitecontentcount.php
 
 ## php/lib/function.mttagsearchlink.php
 	'Invalid [_1] parameter.' => 'Parámetro [_1] no válido',

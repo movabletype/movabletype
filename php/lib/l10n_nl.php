@@ -21,22 +21,57 @@ $Lexicon_nl = array(
 	'Author Monthly' => 'per auteur per maand',
 	'Author Daily' => 'per auteur per dag',
 	'Author Weekly' => 'per auteur per week',
+	'Category' => 'Categorie',
 	'Category Yearly' => 'per categorie per jaar',
 	'Category Monthly' => 'per categorie per maand',
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
-	'Category' => 'Categorie',
+	'CONTENTTYPE_ADV' => 'InhoudsType',
+	'CONTENTTYPE-DAILY_ADV' => 'InhoudsType per dag',
+	'CONTENTTYPE-WEEKLY_ADV' => 'InhoudsType per week',
+	'CONTENTTYPE-MONTHLY_ADV' => 'InhoudsType per maand',
+	'CONTENTTYPE-YEARLY_ADV' => 'InhoudsType per jaar',
+	'CONTENTTYPE-AUTHOR_ADV' => 'InhoudsType Auteur',
+	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'InhoudsType Auteur per jaar',
+	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'InhoudsType Auteur per maand',
+	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'InhoudsType Auteur per dag',
+	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'InhoudsType Auteur per week',
+	'CONTENTTYPE-CATEGORY_ADV' => 'InhoudsType Categorie',
+	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'InhoudsType Categorie per jaar',
+	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'InhoudsType Categorie per maand',
+	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'InhoudsType Categorie per dag',
+	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'InhoudsType Categorie per week',
+
+## php/lib/block.mtarchives.php
+	'ArchiveType not found - [_1]' => 'Archieftype niet gevonden - [_1]', # Translate - New
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhascontent.php
 	'No author available' => 'Geen auteur beschikbaar',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
 	'You used an [_1] tag without establishing a date context.' => 'U gebruikte een [_1] tag zonder een datum in context te brengen',
+
+## php/lib/block.mtcategorysets.php
+	'No Category Set could be found.' => 'Er werd geen categorieset gevonden.',
+	'No Content Type could be found.' => 'Er kon geen inhoudstype worden gevonden',
+
+## php/lib/block.mtcontentauthoruserpicasset.php
+	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een inhoudsveld; Misschien plaatste u deze per ongeluk buiten een \'MTContents\' container tag?',
+
+## php/lib/block.mtcontentfield.php
+	'No Content Field could be found.' => 'Er werd geen inhoudsveld gevonden.',
+	'No Content Field Type could be found.' => 'Er kon geen inhoudsveldtype worden gevonden.',
+
+## php/lib/block.mtcontentfields.php
+
+## php/lib/block.mtcontents.php
 
 ## php/lib/block.mtentries.php
 
@@ -56,9 +91,16 @@ $Lexicon_nl = array(
 	'\'[_1]\' is not an array.' => '\'[_1]\' is geen array.',
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' is geen geldige functie.',
 
+## php/lib/block.mttags.php
+	'content_type modifier cannot be used with type "[_1]".' => 'content_type modifier kan niet gebruikt worden met type "[_1]".',
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters shown in the picture above.' => 'Typ de tekens die u ziet in de afbeelding hierboven.',
+
+## php/lib/content_field_type_lib.php
+	'No Label (ID:[_1])' => 'Geen Label (ID:[_1])',
+	'No category_set setting in content field type.' => 'Geen category_set instelling in inhoudsveldtype.',
 
 ## php/lib/function.mtassettype.php
 	'image' => 'afbeelding',
@@ -71,6 +113,62 @@ $Lexicon_nl = array(
 	'Video' => 'Video',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcontentauthordisplayname.php
+
+## php/lib/function.mtcontentauthoremail.php
+
+## php/lib/function.mtcontentauthorid.php
+
+## php/lib/function.mtcontentauthorlink.php
+
+## php/lib/function.mtcontentauthorurl.php
+
+## php/lib/function.mtcontentauthorusername.php
+
+## php/lib/function.mtcontentauthoruserpic.php
+
+## php/lib/function.mtcontentauthoruserpicurl.php
+
+## php/lib/function.mtcontentcreateddate.php
+
+## php/lib/function.mtcontentdate.php
+
+## php/lib/function.mtcontentfieldlabel.php
+
+## php/lib/function.mtcontentfieldtype.php
+
+## php/lib/function.mtcontentfieldvalue.php
+
+## php/lib/function.mtcontentid.php
+
+## php/lib/function.mtcontentmodifieddate.php
+
+## php/lib/function.mtcontentpermalink.php
+
+## php/lib/function.mtcontentscount.php
+
+## php/lib/function.mtcontentsitedescription.php
+
+## php/lib/function.mtcontentsiteid.php
+
+## php/lib/function.mtcontentsitename.php
+
+## php/lib/function.mtcontentsiteurl.php
+
+## php/lib/function.mtcontentstatus.php
+
+## php/lib/function.mtcontenttypedescription.php
+
+## php/lib/function.mtcontenttypeid.php
+
+## php/lib/function.mtcontenttypename.php
+
+## php/lib/function.mtcontenttypeuniqueid.php
+
+## php/lib/function.mtcontentuniqueid.php
+
+## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Bericht',
@@ -96,6 +194,8 @@ $Lexicon_nl = array(
 	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtsetvar.php
+
+## php/lib/function.mtsitecontentcount.php
 
 ## php/lib/function.mttagsearchlink.php
 	'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter',
