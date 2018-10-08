@@ -7,13 +7,15 @@
 
 function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
     $localvars = array(
-        array('ContentFieldHeader','ContentFieldFooter','content_field_type','content_field_data'),
-        array('_content_field_counter','_content_field_counter_max','_content_field_values', '_content_field_data'),
-        array('Tag','tag_count','tag_content_count'),
-        array('_assets'),
-        array('category','entries','contents','category_count','blog_id','blog'),
-        array('parent_content','parent_content_type','content','content_type','contents'),
-        array('conditonal','else_content'),
+        array(
+            'ContentFieldHeader','ContentFieldFooter','content_field_type','content_field_data',
+            '_content_field_counter','_content_field_counter_max','_content_field_values', '_content_field_data',
+            'Tag','tag_count','tag_content_count',
+            '_assets',
+            'category','entries','contents','category_count','blog_id','blog',
+            'parent_content','parent_content_type','content','content_type','contents',
+            'conditonal','else_content',
+        ),
         common_loop_vars()
     );
 

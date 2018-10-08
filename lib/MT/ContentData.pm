@@ -132,34 +132,39 @@ MT->add_callback( 'unpublish_past_contents', 10, MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_content_unpub', @_ ); }
 );
 
+__PACKAGE__->add_callback(
+    'post_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $obj, $orig ) = @_;
+        $obj->remove_children;
+        $obj->remove_child_junction_table_records;
+        __PACKAGE__->remove_content_data_from_content_type_field($obj);
+    },
+);
+
+__PACKAGE__->add_callback(
+    'pre_direct_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $class, $terms, $args ) = @_;
+        my @cds = $class->load( $terms, $args );
+        for my $cd (@cds) {
+            $cd->remove_children;
+            $cd->remove_child_junction_table_records;
+            $class->remove_content_data_from_content_type_field($cd);
+        }
+    },
+);
+
 sub class_label {
     MT->translate("Content Data");
 }
 
 sub class_label_plural {
     MT->translate("Content Data");
-}
-
-sub remove {
-    my $self = shift;
-    my $ret = $self->SUPER::remove(@_) or return;
-    if ( ref $self && $self->id ) {
-        $self->remove_children;
-        MT->model('objectasset')
-            ->remove(
-            { object_ds => 'content_data', object_id => $self->id } )
-            or do { $MT::DebugMode && warn MT->model('objectasset')->errstr };
-        MT->model('objectcategory')
-            ->remove(
-            { object_ds => 'content_data', object_id => $self->id } )
-            or
-            do { $MT::DebugMode && warn MT->model('objectcategory')->errstr };
-        MT->model('objecttag')
-            ->remove(
-            { object_datasource => 'content_data', object_id => $self->id } )
-            or do { $MT::DebugMode && warn MT->model('objecttag')->errstr };
-    }
-    $ret;
 }
 
 sub to_hash {
@@ -776,9 +781,13 @@ sub _nextprev {
     my ( $category_field_id, $category_id, $date_field_id, $date_field_value,
         $by );
     if ( my $id = delete $terms->{category_field} ) {
-        my ($cf) = MT->model('cf')->load( { unique_id => $id } );
+        my $cf = MT->model('cf')->load( { unique_id => $id } );
         $cf = MT->model('cf')->load($id) unless $cf;
-        ($cf) = MT->model('cf')->load( { name => $id } ) unless $cf;
+        $cf = MT->model('cf')->load(
+            {   name            => $id,
+                content_type_id => $obj->content_type_id
+            }
+        ) unless $cf;
         $category_field_id = $cf->id if $cf;
         my @obj_cats = MT->model('objectcategory')->load(
             {   cf_id     => $category_field_id,
@@ -799,9 +808,13 @@ sub _nextprev {
             $by = $id;
         }
         else {
-            my ($df) = MT->model('cf')->load( { unique_id => $id } );
+            my $df = MT->model('cf')->load( { unique_id => $id } );
             $df = MT->model('cf')->load($id) unless $df;
-            ($df) = MT->model('cf')->load( { name => $id } ) unless $df;
+            $df = MT->model('cf')->load(
+                {   name            => $id,
+                    content_type_id => $obj->content_type_id
+                }
+            ) unless $df;
             $date_field_id = $df->id if $df;
         }
     }
@@ -1158,8 +1171,8 @@ sub make_list_props {
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
             %{$field_list_props},
-            %{$common_list_props},
         };
+        MT::__merge_hash( $props->{$key}, $common_list_props );
         if ( $content_type->_get_tag_field_ids ) {
             $props->{$key}{tags_field} = {
                 base  => '__virtual.tag',
@@ -1333,7 +1346,7 @@ sub _make_field_list_props {
                     idx_type           => $idx_type,
                     label              => $label,
                     order              => $order,
-                    sort               => \&_default_sort,
+                    bulk_sort          => \&_default_bulk_sort,
                 ),
                 %{ $field_type->{list_props}{$prop_name} },
             };
@@ -1410,27 +1423,44 @@ sub _make_field_list_props {
     $props;
 }
 
-sub _default_sort {
+sub _default_bulk_sort {
     my $prop = shift;
-    my ( $terms, $args ) = @_;
+    my ($objs) = @_;
+    my @sorted_objs;
 
-    my $cf_idx_join = MT::ContentFieldIndex->join_on(
-        undef, undef,
-        {   type      => 'left',
-            condition => {
-                content_data_id  => \'= cd_id',
-                content_field_id => $prop->content_field_id,
-            },
-            sort      => 'value_' . $prop->data_type,
-            direction => delete $args->{direction},
-            unique    => 1,
-        },
-    );
+    my $data_type = $prop->data_type;
+    my $cf_id     = $prop->content_field_id;
 
-    $args->{joins} ||= [];
-    push @{ $args->{joins} }, $cf_idx_join;
+    if (   $data_type eq 'integer'
+        || $data_type eq 'float'
+        || $data_type eq 'double'
+        || $data_type eq 'datetime' )
+    {
+        @sorted_objs = sort {
+            ( _get_field_first_value( $a->data->{$cf_id} ) || 0 )
+                <=> ( _get_field_first_value( $b->data->{$cf_id} ) || 0 )
+        } @$objs;
+    }
+    else {
+        @sorted_objs = sort {
+            _get_field_first_value( $a->data->{$cf_id} )
+                cmp _get_field_first_value( $b->data->{$cf_id} )
+        } @$objs;
+    }
 
-    return;
+    return @sorted_objs;
+}
+
+sub _get_field_first_value {
+    my $field_data = shift;
+    my $value;
+    if ( ref $field_data eq 'ARRAY' ) {
+        $value = $field_data->[0];
+    }
+    else {
+        $value = $field_data;
+    }
+    return defined $value ? $value : '';
 }
 
 sub _make_common_list_props {
@@ -2068,6 +2098,92 @@ sub convert_breaks {
             ? $self->blob_convert_breaks
             : $self->meta('convert_breaks');
     }
+}
+
+sub remove_category_from_categories_field {
+    my $class = shift;
+    my ($objcat) = @_;
+    return unless $objcat->cf_id;
+    my $cd = $class->load( $objcat->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objcat->category_id, $objcat->cf_id );
+}
+
+sub remove_tag_from_tags_field {
+    my $class = shift;
+    my ($objtag) = @_;
+    return unless $objtag->cf_id;
+    my $cd = $class->load( $objtag->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objtag->tag_id, $objtag->cf_id );
+}
+
+sub remove_asset_from_asset_field {
+    my $class = shift;
+    my ($objasset) = @_;
+    return unless $objasset->cf_id;
+    my $cd = $class->load( $objasset->object_id || 0 );
+    return unless $cd;
+    $cd->_remove_data_from_fields( $objasset->asset_id, $objasset->cf_id );
+}
+
+sub remove_content_data_from_content_type_field {
+    my $class        = shift;
+    my ($remove_cd)  = @_;
+    my @ct_field_ids = map { $_->id } MT->model('content_field')->load(
+        {   type                    => 'content_type',
+            related_content_type_id => $remove_cd->content_type_id,
+        },
+        { fetchonly => { id => 1 } },
+    );
+    return unless @ct_field_ids;
+    my $iter = $class->load_iter(
+        undef,
+        {   join => MT->model('content_field_index')->join_on(
+                undef,
+                {   content_data_id  => \'= cd_id',
+                    content_field_id => \@ct_field_ids,
+                    value_integer    => $remove_cd->id,
+                },
+            ),
+            unique => 1,
+        }
+    );
+    my @update_cds;
+    while ( my $update_cd = $iter->() ) {
+        push @update_cds, $update_cd;
+    }
+    $_->_remove_data_from_fields( $remove_cd->id, \@ct_field_ids )
+        for @update_cds;
+}
+
+sub _remove_data_from_fields {
+    my $self = shift;
+    my ( $remove_data_id, $field_ids ) = @_;
+    return unless $remove_data_id && $field_ids;
+    my @field_ids = ref $field_ids ? @$field_ids : ($field_ids);
+    my $changed;
+    for my $field_id (@field_ids) {
+        my @old_field_data = @{ $self->data->{$field_id} || [] };
+        my @new_field_data = grep { $_ != $remove_data_id } @old_field_data;
+        next unless @new_field_data < @old_field_data;
+        $self->data( { %{ $self->data }, $field_id => \@new_field_data } );
+        $changed = 1;
+    }
+    $self->save if $changed;
+}
+
+sub remove_child_junction_table_records {
+    my $self = shift;
+    MT->model('objectasset')
+        ->remove_children_multi(
+        { object_ds => 'content_data', object_id => $self->id } );
+    MT->model('objectcategory')
+        ->remove_children_multi(
+        { object_ds => 'content_data', object_id => $self->id } );
+    MT->model('objecttag')
+        ->remove_children_multi(
+        { object_datasource => 'content_data', object_id => $self->id } );
 }
 
 1;

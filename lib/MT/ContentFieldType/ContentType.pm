@@ -171,11 +171,7 @@ sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
-        my $ct = MT::ContentType->load(
-            {   blog_id   => $blog->id,
-                unique_id => $name_or_unique_id,
-            }
-        );
+        my $ct = MT::ContentType->load( { unique_id => $name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name    => $name_or_unique_id,
@@ -274,7 +270,16 @@ sub field_value_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
-    my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
+    my @cd_ids;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            @cd_ids = @$values;
+        }
+        else {
+            @cd_ids = ($values);
+        }
+    }
+    my $contents = join '', map {"<li>(ID:$_)</li>"} @cd_ids;
     return "<ul>$contents</ul>";
 }
 

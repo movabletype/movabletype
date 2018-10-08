@@ -16,24 +16,40 @@ sub html {
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || '';
 
-    my $date = '';
-    if ( defined $value && $value ne '' ) {
+    my ( $date, $year, $month, $day );
+    if ( $app->param('reedit') ) {
+        my $cf_id = $field_data->{content_field_id};
+        $date  = $app->param("date-$cf_id");
+        $year  = $app->param("date-$cf_id-year");
+        $month = $app->param("date-$cf_id-month");
+        $day   = $app->param("date-$cf_id-day");
+    }
+    else {
+        my $value = $field_data->{value} || '';
 
-        # for initial_value.
-        if ( $value =~ /\-/ ) {
-            $value =~ tr/-//d;
-            $value .= '000000';
+        $date = '';
+        if ( defined $value && $value ne '' ) {
+
+            # for initial_value.
+            if ( $value =~ /\-/ ) {
+                $value =~ tr/-//d;
+                $value .= '000000';
+            }
+
+            $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
+                $app->user ? $app->user->preferred_language : undef );
         }
 
-        $date = MT::Util::format_ts( "%Y-%m-%d", $value, $app->blog,
-            $app->user ? $app->user->preferred_language : undef );
+        ( $year, $month, $day ) = split '-', $date;
     }
 
     my $required = $field_data->{options}{required} ? 'required' : '';
 
     {   date     => $date,
+        year     => $year,
+        month    => $month,
+        day      => $day,
         required => $required,
     };
 }
@@ -41,7 +57,18 @@ sub field_html_params {
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
-    my $date = $app->param( 'date-' . $id );
+    my $date = '';
+    if ( $app->param('mobile_view') ) {
+        my $year  = $app->param("date-$id-year");
+        my $month = $app->param("date-$id-month");
+        my $day   = $app->param("date-$id-day");
+        if ( $year || $month || $day ) {
+            $date = join '-', $year, $month, $day;
+        }
+    }
+    else {
+        $date = $app->param( 'date-' . $id );
+    }
     $date =~ s/\D//g;
     if ( defined $date && $date ne '' ) {
         return $date . '000000';

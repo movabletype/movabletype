@@ -183,6 +183,22 @@ $test_env->prepare_fixture(
             description  => 'Sample photo',
         );
 
+        my $child_ct = MT::Test::Permission->make_content_type(
+            name    => 'test child content data',
+            blog_id => $blog_id,
+        );
+        my $child_cd_01 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $child_ct->id,
+            author_id       => 1,
+        );
+        my $cf_ct = MT::Test::Permission->make_content_field(
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            name            => 'content type',
+            type            => 'content_type',
+        );
+
         my $fields = [
             {   id        => $cf_single_line_text->id,
                 order     => 1,
@@ -322,6 +338,15 @@ $test_env->prepare_fixture(
                     min      => 1,
                 },
             },
+            {   id      => $cf_ct->id,
+                order   => 17,
+                type    => $cf_ct->type,
+                options => {
+                    label    => $cf_ct->name,
+                    multiple => 1,
+                    source   => $child_ct->id,
+                },
+            },
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
@@ -348,6 +373,7 @@ $test_env->prepare_fixture(
                 $cf_tag->id      => [ $tag2->id,      $tag1->id ],
                 $cf_category->id => [ $category2->id, $category1->id ],
                 $cf_image->id    => [ $image1->id,    $image2->id ],
+                $cf_ct->id       => [ $child_cd_01->id ],
             },
         );
         $cd01->convert_breaks(
@@ -409,6 +435,7 @@ Empty
 Empty
 Empty
 Empty
+Empty
 
 === mt:ContentFieldValue no glue
 --- template
@@ -437,6 +464,7 @@ aaabbbccc
 21
 21
 12
+No Label (ID:1)
 
 === mt:ContentFieldValue with glue
 --- template
@@ -465,6 +493,7 @@ aaa,bbb,ccc
 2,1
 2,1
 1,2
+No Label (ID:1)
 
 === mt:ContentFieldValue with convert_breaks
 --- template

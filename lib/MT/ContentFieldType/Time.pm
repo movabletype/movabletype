@@ -17,24 +17,40 @@ sub html {
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || '';
 
-    my $time = '';
-    if ( defined $value && $value ne '' ) {
+    my ( $time, $hour, $minute, $second );
+    if ( $app->param('reedit') ) {
+        my $cf_id = $field_data->{content_field_id};
+        $time   = $app->param("time-$cf_id");
+        $hour   = $app->param("time-$cf_id-hour");
+        $minute = $app->param("time-$cf_id-minute");
+        $second = $app->param("time-$cf_id-second");
+    }
+    else {
+        my $value = $field_data->{value} || '';
 
-        # for initial_value.
-        if ( $value =~ /:/ ) {
-            $value =~ tr/://d;
-            $value = '19700101' . $value;
+        $time = '';
+        if ( defined $value && $value ne '' ) {
+
+            # for initial_value.
+            if ( $value =~ /:/ ) {
+                $value =~ tr/://d;
+                $value = '19700101' . $value;
+            }
+
+            $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
+                $app->user ? $app->user->preferred_language : undef );
         }
 
-        $time = MT::Util::format_ts( "%H:%M:%S", $value, $app->blog,
-            $app->user ? $app->user->preferred_language : undef );
+        ( $hour, $minute, $second ) = split ':', $time;
     }
 
     my $required = $field_data->{options}{required} ? 'required' : '';
 
     {   time     => $time,
+        hour     => $hour,
+        minute   => $minute,
+        second   => $second,
         required => $required,
     };
 }
@@ -42,7 +58,18 @@ sub field_html_params {
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $id   = $field_data->{id};
-    my $time = $app->param( 'time-' . $id );
+    my $time = '';
+    if ( $app->param('mobile_view') ) {
+        my $hour   = $app->param("time-$id-hour");
+        my $minute = $app->param("time-$id-minute");
+        my $second = $app->param("time-$id-second");
+        if ( $hour || $minute || $second ) {
+            $time = join '-', $hour, $minute, $second;
+        }
+    }
+    else {
+        $time = $app->param( 'time-' . $id );
+    }
     $time =~ s/\D//g;
     if ( defined $time && $time ne '' ) {
         return '19700101' . $time;

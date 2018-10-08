@@ -518,12 +518,21 @@ sub set_blog_load_context {
 
 sub set_content_type_load_context {
     my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
+
+    $ctx->set_blog_load_context( $args, $cd_terms, $cd_args )
+        or return $ctx->error( $ctx->errstr );
+
     if ( my $arg = $args->{content_type} ) {
         my $class = MT->model('content_type');
         my $ct;
+        my $blog_id = $cd_terms->{blog_id};
         $ct = $class->load($arg) if ( $arg =~ /^[0-9]+$/ );
         $ct = $class->load( { unique_id => $arg } ) unless $ct;
-        $ct = $class->load( { name      => $arg } ) unless $ct;
+        $ct = $class->load(
+            {   name    => $arg,
+                blog_id => $blog_id,
+            }
+        ) unless $ct;
         return $ctx->_no_content_type_error unless $ct;
         $cd_terms->{content_type_id} = $ct->id;
     }

@@ -38,9 +38,77 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $limit = $args['limit'];
         if (!ctype_digit($limit) && $limit === 'none')
             $limit = 0;
-        $ctx->stash('_contents_limit', $limit);
         $ctx->stash('__out', false);
+
+        if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
+            $l = 0;
+            if ( $args['limit'] )
+                $l = $args['limit'];
+            $ctx->stash('__pager_limit', $l);
+            if ( $_REQUEST['offset'] )
+                $ctx->stash('__pager_offset', $_REQUEST['offset']);
+        }
+
+        $contents = $ctx->stash('contents');
+
+        if (!isset($contents)) {
+            require_once('archive_lib.php');
+            $at = $ctx->stash('current_archive_type');
+            try {
+                $archiver = ArchiverFactory::get_archiver($at);
+            } catch (Exception $e ) {
+            }
+            if (isset($args['id'])) {
+                $args['content_id'] = $args['id'];
+            }
+            $ts = $ctx->stash('current_timestamp');
+            $tse = $ctx->stash('current_timestamp_end');
+            if ($ts && $tse) {
+                # assign date range if we have both
+                # start and end date
+                $args['current_timestamp'] = $ts;
+                $args['current_timestamp_end'] = $tse;
+            }
+            if (isset($archiver)) {
+                $args['limit'] or $args['limit'] = -1;
+                $archiver->setup_args($args);
+            }
+
+            $cat = $ctx->stash('category');
+            if (isset($cat) && $cat->category_class == 'category' && $cat->category_category_set_id > 0) {
+                $args['category_set'] = $cat->category_category_set_id;
+                $templatemap = $ctx->stash('_fileinfo')->templatemap();
+                if ($templatemap) {
+                    $cat_field = $templatemap->cat_field();
+                    if ($cat_field) {
+                        $args['category'] = $cat->label;
+                    }
+                }
+            }
+
+            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+                $total_count = 0;
+            $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
+            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+                $ctx->stash('__pager_total_count', $total_count);
+            $ctx->stash('contents', $contents);
+
+            $ctx->stash('conditional', empty($contents) ? 0 : 1);
+            if (empty($contents)) {
+                $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
+                if (!$repeat)
+                      $ctx->restore($localvars);
+                return $ret;
+            }
+        }
+
+        $ctx->stash('_contents_glue', $args['glue']);
+        if (!$limit || ($limit > count($contents)) || ($limit == -1)) {
+            $limit = count($contents);
+        }
+        $ctx->stash('_contents_limit', $limit);
     } else {
+        $contents = $ctx->stash('contents');
         $limit = $ctx->stash('_contents_limit');
         $counter = $ctx->stash('_contents_counter');
         $out = $ctx->stash('__out');
@@ -48,63 +116,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
     $args['class'] = 'content_data';
 
-    if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
-        $l = 0;
-        if ( $args['limit'] )
-            $l = $args['limit'];
-        $ctx->stash('__pager_limit', $l);
-        if ( $_REQUEST['offset'] )
-            $ctx->stash('__pager_offset', $_REQUEST['offset']);
-    }
-
-    $contents = $ctx->stash('contents');
-
-    if (!isset($contents)) {
-        require_once('archive_lib.php');
-        $at = $ctx->stash('current_archive_type');
-        try {
-            $archiver = ArchiverFactory::get_archiver($at);
-        } catch (Exception $e ) {
-        }
-        if (isset($args['id'])) {
-            $args['content_id'] = $args['id'];
-        }
-        $ts = $ctx->stash('current_timestamp');
-        $tse = $ctx->stash('current_timestamp_end');
-        if ($ts && $tse) {
-            # assign date range if we have both
-            # start and end date
-            $args['current_timestamp'] = $ts;
-            $args['current_timestamp_end'] = $tse;
-        }
-        if (isset($archiver)) {
-            $args['limit'] or $args['limit'] = -1;
-            $archiver->setup_args($args);
-        }
-
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
-            $total_count = 0;
-        $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
-            $ctx->stash('__pager_total_count', $total_count);
-        $ctx->stash('contents', $contents);
-    }
-
-    $ctx->stash('conditional', empty($contents) ? 0 : 1);
-    if (empty($contents)) {
-        $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
-        if (!$repeat)
-              $ctx->restore($localvars);
-        return $ret;
-    }
-
-    $ctx->stash('_contents_glue', $args['glue']);
-    if (($limit > count($contents)) || ($limit == -1)) {
-        $limit = count($contents);
-        $ctx->stash('_contents_limit', $limit);
-    }
-
-    if ($limit ? ($counter < $limit) : ($counter < count($contents))) {
+    if ($counter < $limit) {
         $blog_id = $ctx->stash('blog_id');
         $content = $contents[$counter];
         if (!empty($content)) {
@@ -161,11 +173,20 @@ function _get_content_type( $ctx, $args ) {
     $content_types = array();
     $not_found = array();
 
+    $stash_content_type = $ctx->stash('cotnent_type');
+    if ($stash_content_type) {
+        return array($stash_content_type);
+    }
+
     $tmpl = $ctx->stash('template');
     if ( $tmpl && $tmpl->template_content_type_id ) {
         $template_ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
         if (!$template_ct)
-            return;
+            return $ctx->mt->translate('No Content Type could be found.');
+    } else if ((!isset($args['id']) || $args['id'] === '')
+        && (!isset($args['unique_id']) || $args['unique_id'] === '')
+        && (!isset($args['content_type']) || $args['content_type'] === '') ) {
+        return $ctx->mt->translate('No Content Type could be found.');
     }
 
     if ( isset($args['content_type']) && $args['content_type'] !== '' ) {

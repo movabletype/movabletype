@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -129,10 +129,11 @@ $vars->{ct_uid}    = $ct->unique_id;
 $vars->{ct_name}   = $ct->name;
 $vars->{ct_id}     = $ct->id;
 $vars->{cat_label} = $category2->label;
+$vars->{category_set_id} = $category_set->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -263,6 +264,43 @@ __END__
 === MT::ContentCalendar with category_set
 --- template
 <mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
+
+
+=== MT::ContentCalendar with category_set
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data" category_set="[% category_set_id %]">
 <mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
 --- expected
 1

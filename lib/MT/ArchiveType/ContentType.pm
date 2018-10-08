@@ -61,9 +61,8 @@ sub archive_file {
 }
 
 sub archive_title {
-    my $obj   = shift;
-    my $title = $_[1]->content_type->name . ': ' . $_[1]->id;
-    encode_html( remove_html($title) );
+    my $obj = shift;
+    encode_html( remove_html( $_[1]->label ) );
 }
 
 sub archive_group_iter {

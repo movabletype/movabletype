@@ -87,6 +87,7 @@ sub options_validation_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $value ) = @_;
+    $value = '' unless defined $value && $value ne '';
     return qq{<table border="1">$value</table>};
 }
 

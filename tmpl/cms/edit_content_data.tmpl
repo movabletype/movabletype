@@ -92,6 +92,7 @@
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   <input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">" />
+  <input type="hidden" name="mobile_view" value="" />
   <mt:if name="use_revision">
   <input type="hidden" name="save_revision" id="save_revision" value="1" />
   </mt:if>
@@ -227,8 +228,35 @@
             <mtapp:svgicon id="ic_date" title="<__trans phrase="Published Date">">
           </span>
         </div>
-        <div class="form-group col">
+        <div class="form-group col d-none d-md-block mb-0">
           <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
+        </div>
+        <div class="form-inline col d-md-none">
+          <input type="number" class="form-control html5-form w-25" name="authored_on_year" value="<mt:var name="authored_on_year">" maxlength="4">
+          -
+          <select class="custom-control custom-select w-25" name="authored_on_month">
+            <option value=""></option>
+    <mt:for var="x" from="1" to="12">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$authored_on_month">
+            <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+            <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+          </select>
+          -
+          <select class="custom-control custom-select w-25" name="authored_on_day">
+            <option value=""></option>
+    <mt:for var="x" from="1" to="31">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$authored_on_day">
+            <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+            <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+          </select>
         </div>
       </div>
       <div class="row">
@@ -240,8 +268,45 @@
             <mtapp:svgicon id="ic_time" title="<__trans phrase="Published Time">">
           </span>
         </div>
-        <div class="form-group col">
+        <div class="form-group col d-none d-md-block mb-0">
           <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
+        </div>
+        <div class="form-inline col d-md-none">
+          <select class="custom-control custom-select w-25" name="authored_on_hour">
+            <option value=""></option>
+    <mt:for var="x" from="0" to="23">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$authored_on_hour">
+            <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+            <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+          </select>
+          :
+          <select class="custom-control custom-select w-25" name="authored_on_minute">
+            <option value=""></option>
+    <mt:for var="x" from="0" to="59">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$authored_on_minute">
+            <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+            <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+          </select>
+          :
+          <select class="custom-control custom-select w-25" name="authored_on_second">
+            <option value=""></option>
+    <mt:for var="x" from="0" to="59">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$authored_on_second">
+            <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+            <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+          </select>
         </div>
       </div>
     </div>
@@ -266,8 +331,35 @@
                <mtapp:svgicon id="ic_date" title="<__trans phrase="Unpublished Date">">
              </span>
           </div>
-          <div class="form-group col">
+          <div class="form-group col d-none d-md-block mb-0">
              <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
+          </div>
+          <div class="form-inline col d-md-none">
+            <input type="number" class="form-control html5-form w-25" name="unpublished_on_year" value="<mt:var name="unpublished_on_year">" maxlength="4">
+            -
+            <select class="custom-control custom-select w-25" name="unpublished_on_month">
+              <option value=""></option>
+    <mt:for var="x" from="1" to="12">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$unpublished_on_month">
+              <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+              <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+            </select>
+            -
+            <select class="custom-control custom-select w-25" name="unpublished_on_day">
+              <option value=""></option>
+    <mt:for var="x" from="1" to="31">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$unpublished_on_day">
+              <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+              <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+            </select>
           </div>
         </div>
         <div class="row">
@@ -279,8 +371,45 @@
                <mtapp:svgicon id="ic_time" title="<__trans phrase="Unpublished Time">">
              </span>
           </div>
-          <div class="form-group col">
+          <div class="form-group col d-none d-md-block mb-0">
              <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
+          </div>
+          <div class="form-inline col d-md-none">
+            <select class="custom-control custom-select w-25" name="unpublished_on_hour">
+              <option value=""></option>
+    <mt:for var="x" from="0" to="23">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$unpublished_on_hour">
+              <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+              <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+            </select>
+            :
+            <select class="custom-control custom-select w-25" name="unpublished_on_minute">
+              <option value=""></option>
+    <mt:for var="x" from="0" to="59">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$unpublished_on_minute">
+              <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+              <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+            </select>
+            :
+            <select class="custom-control custom-select w-25" name="unpublished_on_second">
+              <option value=""></option>
+    <mt:for var="x" from="0" to="59">
+      <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+      <mt:if name="y" eq="$unpublished_on_second">
+              <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+      <mt:else>
+              <option value="<mt:var name="y">"><mt:var name="y"></option>
+      </mt:if>
+    </mt:for>
+            </select>
           </div>
         </div>
       </div>
@@ -326,7 +455,7 @@
          name="status"
          type="submit"
          title="<mt:var name="button_title">"
-         class="publish action primary button btn btn-primary mx-1">
+         class="publish action primary button btn__mobile btn-primary mx-1">
         <mt:var name="button_text">
       </button>
       <button
@@ -334,14 +463,14 @@
          type="submit"
          accesskey="v"
          title="<mt:var name="preview_button_title">"
-         class="preview action button btn btn-default mx-1">
+         class="preview action button btn__mobile btn-default mx-1">
         <__trans phrase="Preview">
       </button>
     </div>
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action mt-4">
+<div class="text-right delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -356,6 +485,20 @@
     <mtapp:svgicon id="ic_trash" size="sm" title="$delete_button_title">
     <__trans phrase="Delete">
   </a>
+</div>
+<div class="row delete-action d-md-none mt-4">
+  <div class="col">
+    <button class="btn__mobile btn-danger delete mx-1"
+     mt:command="do-remove-items"
+     mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+     mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+     mt:subtype="content_data_<mt:var name="content_type_id" escape="html">"
+     mt:object-type="content_data"
+     mt:blog-id="<mt:var name="blog_id">"
+    >
+      <__trans phrase="Delete">
+    </button>
+  </div>
 </div>
 </mt:if>
 
@@ -775,6 +918,82 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       }
   }
   setSaveButtonText();
+
+  jQuery(window).on('change_to_mobile_view', function () {
+    jQuery('input[name=mobile_view]').val('1');
+
+    var ao_date = jQuery('input[name=authored_on_date]').val();
+    var ao_year, ao_month, ao_day;
+    [ao_year, ao_month, ao_day] = ao_date.split('-');
+    jQuery('input[name=authored_on_year]').val(ao_year);
+    jQuery('select[name=authored_on_month]').val(ao_month);
+    jQuery('select[name=authored_on_day]').val(ao_day);
+
+    var ao_time = jQuery('input[name=authored_on_time]').val();
+    var ao_hour, ao_minute, ao_second;
+    [ao_hour, ao_minute, ao_second]  = ao_time.split(':');
+    jQuery('select[name=authored_on_hour]').val(ao_hour);
+    jQuery('select[name=authored_on_minute]').val(ao_minute);
+    jQuery('select[name=authored_on_second]').val(ao_second);
+
+    var uo_date = jQuery('input[name=unpublished_on_date]').val();
+    var uo_year, uo_month, uo_day;
+    [uo_year, uo_month, uo_day] = uo_date.split('-');
+    jQuery('input[name=unpublished_on_year]').val(uo_year);
+    jQuery('select[name=unpublished_on_month]').val(uo_month);
+    jQuery('select[name=unpublished_on_day]').val(uo_day);
+
+    var uo_time = jQuery('input[name=unpublished_on_time]').val();
+    var uo_hour, uo_minute, uo_second;
+    [uo_hour, uo_minute, uo_second] = uo_time.split(':');
+    jQuery('select[name=unpublished_on_hour]').val(uo_hour);
+    jQuery('select[name=unpublished_on_minute]').val(uo_minute);
+    jQuery('select[name=unpublished_on_second]').val(uo_second);
+  });
+  jQuery(window).on('change_to_pc_view', function () {
+    jQuery('input[name=mobile_view]').val('');
+
+    var ao_year = jQuery('input[name=authored_on_year]').val();
+    var ao_month = jQuery('select[name=authored_on_month]').val();
+    var ao_day = jQuery('select[name=authored_on_day]').val();
+    var ao_date;
+    if (ao_year || ao_month || ao_day) {
+      ao_date = [ao_year, ao_month, ao_day].join('-');
+      jQuery('input[name=authored_on_date]').val(ao_date);
+    }
+
+    var ao_hour = jQuery('select[name=authored_on_hour]').val();
+    var ao_minute = jQuery('select[name=authored_on_minute]').val();
+    var ao_second = jQuery('select[name=authored_on_second]').val();
+    var ao_time;
+    if (ao_hour || ao_minute || ao_second) {
+      ao_time = [ao_hour, ao_minute, ao_second].join(':');
+      jQuery('input[name=authored_on_time]').val(ao_time);
+    }
+
+    var uo_year = jQuery('input[name=unpublished_on_year]').val();
+    var uo_month = jQuery('select[name=unpublished_on_month]').val();
+    var uo_day = jQuery('select[name=unpublished_on_day]').val();
+    var uo_date;
+    if (uo_year || uo_month || uo_day) {
+      uo_date = [uo_year, uo_month, uo_second].join('-');
+      jQuery('input[name=unpublished_on_date]').val(uo_date);
+    }
+
+    var uo_hour = jQuery('select[name=unpublished_on_hour]').val();
+    var uo_minute = jQuery('select[name=unpublished_on_minute]').val();
+    var uo_second = jQuery('select[name=unpublished_on_second]').val();
+    var uo_time;
+    if (uo_hour || uo_minute || uo_second) {
+      uo_time = [uo_hour, uo_minute, uo_second].join(':');
+      jQuery('input[name=unpublished_on_time]').val(uo_time);
+    }
+  });
+  if (MT.Util.isMobileView()) {
+    jQuery('input[name=mobile_view]').val('1');
+  } else {
+    jQuery('input[name=mobile_view]').val('');
+  }
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

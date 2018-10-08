@@ -170,9 +170,10 @@ class ContentTypeRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         $content = $ctx->stash('content');
-        return $content
-            ? $content->label || $ctx->mt->translate( 'No Label (ID:[_1])', $content->id )
-            : '';
+        if (!$content) return '';
+        return $content->label
+            ? $content->label
+            : $ctx->mt->translate( 'No Label (ID:[_1])', $content->id );
     }
     public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
         $values = $ctx->stash('_content_field_values');
@@ -203,7 +204,7 @@ class ContentTypeRegistry implements ContentFieldType {
             $db = $ctx->mt->db()->db();
             if ($ids_count > 1) {
                 $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($ids_count)));
+                $placeholders = implode(",", array_map($func, array_keys($ids)));
                 $where = "cd_id IN ($placeholders)";
             } else {
                 $where = "cd_id = ".$db->Param(0);
@@ -217,6 +218,7 @@ class ContentTypeRegistry implements ContentFieldType {
             $ctx->stash('content_type', $content_type);
             $ctx->stash('contents', $values);
             $ctx->stash('_contents_counter', 0);
+            $ctx->stash('_contents_limit', count($values));
         }
 
         $counter = $ctx->stash('_content_field_counter');

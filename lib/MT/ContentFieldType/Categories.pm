@@ -225,7 +225,7 @@ sub tag_handler {
         MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id              => @$value ? $value : 0,
+        id => @$value ? $value : 0,
         category_set_id => $category_set_id,
     };
     my $cat_args = {};
@@ -269,7 +269,7 @@ sub tag_handler {
         else {
             @category_ids = @{$value};
         }
-        @ordered_categories = map { $categories{$_} } @category_ids;
+        @ordered_categories = grep {$_} map { $categories{$_} } @category_ids;
     }
 
     my $res     = '';
@@ -416,8 +416,17 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
+    my $cat_ids = 0;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            $cat_ids = @$values ? $values : 0;
+        }
+        else {
+            $cat_ids = $values || 0;
+        }
+    }
     my @categories = MT->model('category')->load(
-        { id        => @$values ? $values : 0 },
+        { id        => $cat_ids },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @categories;

@@ -36,8 +36,9 @@ class ContentData extends BaseObject
         $raw_data = $this->data;
         if ( empty($raw_data) ) return array();
         if ( preg_match( '/^SERG/', $raw_data, $matches ) ) {
-          $mt = MT::get_instance();
-          $this->_data = $mt->db()->unserialize( $raw_data );
+          require_once('MTSerialize.php');
+          $serializer = MTSerialize::get_instance();
+          $this->_data = $serializer->unserialize( $raw_data );
           return $this->_data;
         } else {
           if (function_exists('json_encode')) {

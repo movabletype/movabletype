@@ -521,9 +521,9 @@ sub _hdlr_archive_prev_next {
         };
         if ( $arctype->contenttype_date_based ) {
             my $content_type = $ctx->stash('content_type');
-            my $content_data = $ctx->stash('content');
-            if ( $content_type && $content_data ) {
-                $param->{content_data} = $content_data;
+            if ($content_type) {
+                my $content_data = $ctx->stash('content');
+                $param->{content_data} = $content_data if $content_data;
                 my ($map) = MT::TemplateMap->load(
                     {   blog_id      => $param->{blog_id},
                         archive_type => $at,

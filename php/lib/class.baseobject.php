@@ -202,6 +202,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if ( $unique_myself ) {
                     $key = "";
                     foreach ( $pkeys as $p ) {
+                        $p = strtolower($p);
                         $key .= $objs[$i]->$p.":";
                     }
                     if (array_key_exists($key, $unique_arr))
@@ -284,6 +285,9 @@ abstract class BaseObject extends ADOdb_Active_Record
 
         $obj_type = $obj->object_type();
 
+        require_once('MTSerialize.php');
+        $serializer = MTSerialize::get_instance();
+
         // Parse meta info
         foreach ($meta_info as $meta) {
             $col_name = $obj->_prefix . 'meta_type';
@@ -296,9 +300,8 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if (!is_null($value)) {
                     if ($f == "vblob") {
                         if (preg_match("/^BIN:SERG/", $value)) {
-                            $mt = MT::get_instance();
                             $value = preg_replace("/^BIN:/", "", $value);
-                            $value = $mt->db()->unserialize($value);
+                            $value = $serializer->unserialize($value);
                         } elseif (preg_match("/^ASC:/", $value)) {
                             $value = preg_replace("/^ASC:/", "", $value);
                         }

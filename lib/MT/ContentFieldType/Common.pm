@@ -155,7 +155,9 @@ sub data_load_handler_asset {
 sub ss_validator_datetime {
     my ( $app, $field_data, $data ) = @_;
 
-    unless ( !defined $data || $data eq '' || MT::Util::is_valid_date($data) )
+    unless ( !defined $data
+        || $data eq ''
+        || ( MT::Util::is_valid_date($data) && length($data) == 14 ) )
     {
         my $field_type  = $field_data->{type};
         my $field_label = $field_data->{options}{label};
@@ -438,6 +440,7 @@ sub feed_value_handler_multiple {
 
     my $contents = '';
     for my $v (@$values) {
+        next unless defined $v && $v ne '';
         my $encoded_v     = MT::Util::encode_html($v);
         my $encoded_label = MT::Util::encode_html( $value_label_hash{$v} );
         $contents .= "<li>$encoded_label($encoded_v)</li>";

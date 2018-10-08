@@ -95,7 +95,7 @@ abstract class MTDatabase {
     public function unserialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->unserialize($data);
     }
@@ -103,7 +103,7 @@ abstract class MTDatabase {
     public function serialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->serialize($data);
     }
@@ -492,6 +492,14 @@ abstract class MTDatabase {
             else {
                 return '';
             }
+        }
+        if (isset($args['content_type_id'])) {
+            $extras['join'] = array(
+                'mt_template' => array(
+                    'condition' => "template_id = templatemap_template_id"
+                    )
+                );
+            $content_type_filter = 'and template_content_type_id = ' . intval($args['content_type_id']);
         }
 
         $where = "1 = 1
@@ -1816,7 +1824,7 @@ abstract class MTDatabase {
            }
         }
 
-        if (!isset($args['category_set_id']) || $args['category_set_id'] === 0) {
+        if (!isset($args['category_set_id']) || $args['category_set_id'] == 0) {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
                 if (isset($args['entry_id'])) {
@@ -2056,11 +2064,20 @@ abstract class MTDatabase {
             $author_filter .= " and author_name = '".$args['author_name']."'";
         }
 
-        # Adds entry join and filter
-        if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
-            $args['need_entry'] = 0;
-        if (!isset($args['need_entry']))
-            $args['need_entry'] = 1;
+        # Adds entry/cd join and filter
+        $content_type = $ctx->stash('content_type');
+        if (isset($content_type)) {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_content']))
+                $args['need_content'] = 0;
+            if (!isset($args['need_content']))
+                $args['need_content'] = 1;
+        }
+        else {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
+                $args['need_entry'] = 0;
+            if (!isset($args['need_entry']))
+                $args['need_entry'] = 1;
+        }
         if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_entry'] = array(
                     'condition' => "author_id = entry_author_id"
@@ -2069,6 +2086,17 @@ abstract class MTDatabase {
             $entry_filter = " and entry_status = 2";
             if ( $blog_ids )
                 $entry_filter .= " and entry_blog_id " . $blog_ids;
+        }
+        elseif ($args['need_content'] && !(isset($args['id']) || isset($args['username']))) {
+            $extras['join']['mt_cd'] = array(
+                    'condition' => "author_id = cd_author_id"
+                );
+            $extras['distinct'] = 'distinct';
+            $cd_filter = " and cd_status = 2";
+            if ( $blog_ids )
+                $cd_filter .= " and cd_blog_id" . $blog_ids;
+            if (isset($content_type))
+                $cd_filter .= " and cd_content_type_id = " . $content_type->id;
         } else {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
@@ -2277,6 +2305,7 @@ abstract class MTDatabase {
         $where = "1 = 1
                   $author_filter
                   $entry_filter
+                  $cd_filter
                   $sort_filter
                   $order_sql
         ";
@@ -4144,10 +4173,10 @@ abstract class MTDatabase {
         require_once('class.mt_content_data.php');
         $extras = array();
         $mt = MT::get_instance();
+        $ctx = $mt->context();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and cd_blog_id ' . $sql;
-            $ctx = $mt->context();
             $blog = $ctx->stash('blog');
             if ( !empty( $blog ) )
                 $blog_id = $blog->blog_id;
@@ -4156,7 +4185,6 @@ abstract class MTDatabase {
             $blog_filter = 'and cd_blog_id = ' . $blog_id;
             $blog = $this->fetch_blog($blog_id);
         }
-
         if (empty($blog))
             return null;
 
@@ -4165,7 +4193,7 @@ abstract class MTDatabase {
                 if ( count($content_type_id) > 1 )
                     $content_type_filter = "and cd_content_type_id in (" . implode(',', $content_type_id) . ' )';
                 else
-                    $content_type_filter = "and cd_content_type_id = " . array_shift($content_type_id);
+                    $content_type_filter = "and cd_content_type_id = " . $content_type_id[0];
             } else {
                 $content_type_filter = 'and cd_content_type_id = '.$content_type_id;
             }
@@ -4204,7 +4232,7 @@ abstract class MTDatabase {
         }
 
         # a context hash for filter routines
-        $ctx = array();
+        $filter_ctx = array();
         $filters = array();
 
         if (!isset($_REQUEST['content_ids_published'])) {
@@ -4213,7 +4241,7 @@ abstract class MTDatabase {
 
         if (isset($args['unique']) && $args['unique']) {
             $filters[] = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
-            $ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+            $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
         }
 
         # special case for selecting a particular content
@@ -4247,32 +4275,68 @@ abstract class MTDatabase {
 
         $join_clause = '';
 
-        if (isset($args['days']) && !$date_filter) {
-            $dt_field    = 'cd_authored_on';
-            $dt_field_id = 0;
-            if ( $arg = $args['date_field'] ) {
-                if (   $arg === 'authored_on'
-                    || $arg === 'modified_on'
-                    || $arg === 'created_on' )
-                {
-                    $dt_field = 'cd' . $arg;
+        if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
+            $map = $mt->db()->fetch_templatemap(array(
+                'blog_id' => $blog_id,
+                'type' => $ctx->stash('current_archive_type'),
+                'preferred' => 1,
+                'build_type' => 3,
+            ));
+            if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
+                $start = isset($args['current_timestamp'])
+                    ? $args['current_timestamp'] : null;
+                $end = isset($args['current_timestamp_end'])
+                    ? $args['current_timestamp_end'] : null;
+                $alias = 'cf_idx_' . $dt_field_id;
+                $field = "$alias.cf_idx_value_datetime";
+                if ($start and $end) {
+                    $start = $this->ts2db($start);
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field between '$start' and '$end'";
+                } elseif ($start) {
+                    $start = $this->ts2db($start);
+                    $field_filter = " and $field >= '$start'";
+                } elseif ($end) {
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field <= '$end'";
+                } else {
+                    return '';
                 }
-                else {
-                    if (preg_match('/^[0-9]+$/', $arg))
-                        $date_cfs = $this->fetch_content_fields(array('id' => $arg));
-                    if (!isset($date_cfs))
-                        $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
-                    if (!isset($date_cfs))
-                        $date_cfs = $this->fetch_content_fields(array('name' => $arg));
-                    if (isset($date_cfs)) {
-                        $date_cf = $date_cfs[0];
-                        $dt_field_id = $date_cf->cf_id;
-                        $type = $date_cf->cf_type;
-                    }
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id" .
+                                  $field_filter;
+                $extras['join'][$join_table] = array('condition' => $join_condition);
+            } else {
+                $dt_field    = 'cd_authored_on';
+                $date_filter = $this->build_date_filter($args, $dt_field);
+            }
+        }
+
+        $dt_field    = 'cd_authored_on';
+        $dt_field_id = 0;
+        if ( $arg = $args['date_field'] ) {
+            if (   $arg === 'authored_on'
+                || $arg === 'modified_on'
+                || $arg === 'created_on' )
+            {
+                $dt_field = 'cd_' . $arg;
+            }
+            else {
+                if (preg_match('/^[0-9]+$/', $arg))
+                    $date_cfs = $this->fetch_content_fields(array('id' => $arg));
+                if (!isset($date_cfs))
+                    $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                if (!isset($date_cfs))
+                    $date_cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
+                if (isset($date_cfs)) {
+                    $date_cf = $date_cfs[0];
+                    $date_cf_id = $date_cf->cf_id;
+                    $type = $date_cf->cf_type;
                 }
             }
             if (isset($date_cf)) {
-                $alias = 'cf_idx_' . $date_cf->id;
+                $alias = 'cf_idx_' . $date_cf_id;
 
                 require_once "content_field_type_lib.php";
                 $cf_type = ContentFieldTypeFactory::get_type($type);
@@ -4281,10 +4345,14 @@ abstract class MTDatabase {
                 $dt_field = "$alias.cf_idx_value_$data_type";
 
                 $join_table = "mt_cf_idx $alias";
-                $join_condition = "$alias.cf_idx_content_field_id = " . $date_cf->cf_id .
+                $join_condition = "$alias.cf_idx_content_field_id = " . $date_cf_id .
                                   " and $alias.cf_idx_content_data_id = cd_id";
                 $extras['join'][$join_table] = array('condition' => $join_condition);
             }
+            $date_filter = $this->build_date_filter($args, $dt_field);
+        }
+
+        if (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
         } elseif (isset($args['limit'])) {
             if (!isset($args['id'])) $limit = $args['limit'];
@@ -4325,12 +4393,11 @@ abstract class MTDatabase {
             if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
                 $key= $m[1];
                 $cfs = $this->fetch_content_fields(array(
-                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
                     'name' => $key
                 ));
                 if (!isset($cfs))
                     $cfs = $this->fetch_content_fields(array(
-                        'blog_id' => $blog_id,
                         'unique_id' => $key
                     ));
                 if (isset($cfs)) {
@@ -4345,7 +4412,7 @@ abstract class MTDatabase {
                     $join_table = "mt_cf_idx $alias";
                     $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
                                       " and $alias.cf_idx_content_data_id = cd_id";
-                    $extras['join'][$join_table] = array('condition' => $join_condition);
+                    $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
                 }
@@ -4387,18 +4454,54 @@ abstract class MTDatabase {
             ) === 'ascend' ? 'asc' : 'desc';
         }
 
-        if (count($filters) || !is_null($total_count)) {
-            $post_select_limit = $limit;
-            $post_select_offset = $offset;
-            $limit = 0; $offset = 0;
+        $field_filter = '';
+        if(isset($args['category_set'])){
+            $id = $args['category_set'];
+
+            if(preg_match('/^[0-9]+$/',$id))
+                $category_set = $this->fetch_category_set($id);
+            if(!isset($category_set)){
+                $category_sets = $this->fetch_category_sets(array(
+                    'blog_id' => $blog_id,
+                    'name' => $id,
+                    'limit' => 1,
+                ));
+                if($category_sets)
+                    $category_set = $category_sets[0];
+            }
+            if(isset($category_set)){
+                $category_set_id = $category_set->id;
+                
+                $cat_fields = $this->fetch_content_fields(array(
+                  'blog_id' => $blog_id,
+                  'related_cat_set_id' => $category_set_id,
+                ));
+                if($cat_fields){
+                    $cf = $cat_fields[0];
+                    if (isset($args['category'])){
+                        $fields[$cf->cf_name] = $args['category'];
+                    } else {
+                        $alias = 'cf_idx_' . $cf->id;
+                        require_once "content_field_type_lib.php";
+                        $cf_type = ContentFieldTypeFactory::get_type('categories');
+                        $data_type = $cf_type->get_data_type();
+
+                        $join_table = "mt_cf_idx $alias";
+                        $join_condition = "$alias.cf_idx_content_field_id = " . $cf->id .
+                                          " and $alias.cf_idx_content_data_id = cd_id";
+                        $extras['join'][$join_table] = array('condition' => $join_condition);
+
+                        $field_filter .= " and $alias.cf_idx_value_$data_type = " . $category_set_id . "\n";
+                    }
+                }
+            }
         }
 
-        $field_filter = '';
         if (count($fields)) {
             foreach ($fields as $key => $value) {
-                $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'name' => $key));
+                $cfs = $this->fetch_content_fields(array('content_type_id' => $content_type_id, 'name' => $key));
                 if (!isset($cfs))
-                    $cfs = $this->fetch_content_fields(array('blog_id' => $blog_id, 'unique_id' => $key));
+                    $cfs = $this->fetch_content_fields(array('unique_id' => $key));
                 if (!isset($cfs)) continue;
                 
                 $cf = $cfs[0];
@@ -4406,10 +4509,11 @@ abstract class MTDatabase {
 
                 if ($type === 'categories') {
                     $category_arg = $value;
+                    $category_set_id = $cf->cf_related_cat_set_id;
                     require_once("MTUtil.php");
                     if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
                         $not_clause = false;
-                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', '> 0');
+                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', $category_set_id);
                         if (empty($cats)) {
                             return null;
                         } else {
@@ -4423,9 +4527,9 @@ abstract class MTDatabase {
                     } else {
                         $not_clause = preg_match('/\bNOT\b/i', $category_arg);
                         if ($blog_ctx_arg)
-                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0')));
+                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id)));
                         else
-                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => '> 0'));
+                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id));
                     }
 
                     if (!empty($cats)) {
@@ -4435,7 +4539,7 @@ abstract class MTDatabase {
                             $cat_list = array();
                             foreach ($cats as $cat)
                                 $cat_list[] = $cat->category_id;
-                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list));
+                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list, 'cf_id' => $cf->cf_id));
                             if (!empty($ol)) {
                                 foreach ($ol as $o) {
                                     $cmap[$o->objectcategory_object_id][$o->objectcategory_category_id]++;
@@ -4443,7 +4547,7 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            $ctx['c'] =& $cmap;
+                            $filter_ctx['c'] =& $cmap;
                             $filters[] = $cexpr;
                         } else {
                             return null;
@@ -4488,7 +4592,7 @@ abstract class MTDatabase {
                                     $cd_list[$o->objecttag_object_id] = 1;
                             }
                         }
-                        $ctx['t'] =& $tmap;
+                        $filter_ctx['t'] =& $tmap;
                         $filters[] = $cexpr;
                     } else {
                         return null;
@@ -4510,6 +4614,12 @@ abstract class MTDatabase {
                     $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
                 }
             }
+        }
+
+        if (count($filters) || !is_null($total_count)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
         }
 
         if (isset($extras['join'])) {
@@ -4579,7 +4689,7 @@ abstract class MTDatabase {
             if (empty($cd)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
-                    if (!$f($cd, $ctx)) {
+                    if (!$f($cd, $filter_ctx)) {
                         continue 2;
                     }
                 }
@@ -4693,6 +4803,9 @@ abstract class MTDatabase {
             return undef;
         $next = $direction === 'next' ? 1 : 0;
 
+        $blog_id         = $obj->blog_id;
+        $content_type_id = $obj->content_type_id;
+
         if (isset($args['by_author'])) {
             $author_id = $obj->author_id;
             $author_filter = "and cd_author_id = $author_id";
@@ -4704,7 +4817,7 @@ abstract class MTDatabase {
             if (!isset($cf)) {
                 $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                 if (!isset($cfs))
-                    $cfs = $this->fetch_content_fields(array('name' => $arg));
+                    $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
                 if (isset($cfs)) $cf = $cfs[0];
             }
             if (isset($cf)) $cat_field_id = $cf->id;
@@ -4728,7 +4841,7 @@ abstract class MTDatabase {
                 if (!isset($cf)) {
                     $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                     if (!isset($cfs))
-                        $cfs = $this->fetch_content_fields(array('name' => $arg));
+                        $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
                     if (isset($cfs)) $cf = $cfs[0];
                 }
                 if (isset($cf)) $dt_field_id = $cf->id;
@@ -4793,9 +4906,6 @@ abstract class MTDatabase {
 
         if (!isset($by)) $by = 'authored_on';
 
-        $blog_id         = $obj->blog_id;
-        $content_type_id = $obj->content_type_id;
-
         $sql = "
             select *
              from mt_cd
@@ -4814,22 +4924,22 @@ abstract class MTDatabase {
         else {
             $desc = $next ? 'ASC' : 'DESC';
             $op   = $next ? '>'   : '<';
-            $by_value = $this->ts2db($obj->$by);
+            $by_value = $this->db2ts($obj->$by);
             $id       = $obj->id;
 
-            $sql .= "
+            $additional_sql = "
                    and cd_$by $op '$by_value'
                    $author_filter
                  order by cd_$by $desc, cd_id $desc";
-            $result = $this->db()->SelectLimit($sql, 1, false);
+            $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
 
             if (!$result || $result->EOF) {
-                $sql .= "
+                $additional_sql = "
                        and cd_$by = '$by_value'
                        and cd_id $op $id
                        $author_filter
                      order by cd_$by $desc, cd_id $desc";
-                $result = $this->db()->SelectLimit($sql, 1, false);
+                $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
                 if (!$result || $result->EOF) return null;
             }
         }
@@ -4892,11 +5002,27 @@ abstract class MTDatabase {
         if (isset($args['unique_id'])) {
             $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
         }
+        if (isset($args['content_type_id'])) {
+            if (is_array($args['content_type_id'])) {
+                if (count($args['content_type_id']) > 1) {
+                    $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                } else {
+                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
+                }
+            } else {
+                $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
+            }
+        }
+        if (isset($args['related_cat_set_id'])) {
+            $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
+        }
         $sql = "select *
                   from mt_cf
                  where cf_blog_id = $blog_id
+                   $content_type_id_filter
                    $name_filter
-                   $unique_id_filter";
+                   $unique_id_filter
+                   $related_cat_set_id_filter";
         $result = $this->db()->SelectLimit($sql);
         if ($result->EOF) return null;
 
@@ -4928,6 +5054,11 @@ abstract class MTDatabase {
         if (empty($id_list))
             return;
 
+        $cf_filter = '';
+        if (isset($args['cf_id']) && is_numeric($args['cf_id'])) {
+            $cf_filter = 'and objectcategory_cf_id = ' . $args['cf_id'];
+        }
+
         $blog_filter = $this->include_exclude_blogs($args);
         if ($blog_filter != '')
             $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
@@ -4947,6 +5078,7 @@ abstract class MTDatabase {
         $where = "objectcategory_object_ds = '$datasource'
                 and objectcategory_category_id in ($id_list)
                 $blog_filter
+                $cf_filter
                 $object_filter";
 
         return $ocat->Find($where, false, false, $extras);
@@ -5007,8 +5139,12 @@ abstract class MTDatabase {
 
         $ct_filter = '';
         if (isset($args['content_type_id'])) {
-            if (count($args['content_type_id'] > 1)) {
-                $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+            if (is_array($args['content_type_id'])) {
+                if (count($args['content_type_id']) > 1) {
+                    $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                } else {
+                    $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'][0];
+                }
             } else {
                 $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'];
             }
@@ -5094,6 +5230,8 @@ abstract class MTDatabase {
                 $ct->Load($where);
                 if (is_null($ct->id)) {
                     $where = "content_type_name = '$str'";
+                    if (isset($args['blog_id']))
+                        $where .= " and content_type_blog_id = " . intval($args['blog_id']);
                     $ct->Load($where);
                 }
                 if (is_null($ct->id)) return null;
@@ -5112,9 +5250,9 @@ abstract class MTDatabase {
         $where = "cd_status = 2
                   $blog_filter";
         if (isset($args['content_type'])) {
-            $content_type_id = $this->fetch_content_type_id($args);
-            if($content_type_id){
-              $where .= " and cd_content_type_id = $content_type_id";
+            $content_types = $this->fetch_content_types($args);
+            if ($content_types) {
+                $where .= ' and cd_content_type_id = ' . $content_types[0]->id;
             }
         }
 

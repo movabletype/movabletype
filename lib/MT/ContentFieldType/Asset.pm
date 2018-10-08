@@ -543,8 +543,17 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
+    my $asset_ids = 0;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            $asset_ids = @$values ? $values : 0;
+        }
+        else {
+            $asset_ids = $values || 0;
+        }
+    }
     my @assets = MT->model('asset')->load(
-        { id        => @$values ? $values : 0, class => '*' },
+        { id        => $asset_ids, class => '*' },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @assets;
