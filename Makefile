@@ -130,26 +130,26 @@ check:
 
 lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dists/default.mk
 	mv lib/MT.pm lib/MT.pm.pre
-	sed -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
-	    -e 's!__BUILD_ID__!$(BUILD_VERSION_ID)!g' \
-	    -e 's!__PORTAL_URL__!$(PORTAL_URL)!g' \
-	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
-	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
+	sed -e "s!__PRODUCT_NAME__!$(PRODUCT_NAME)!g" \
+	    -e "s!__BUILD_ID__!$(BUILD_VERSION_ID)!g" \
+	    -e "s!__PORTAL_URL__!$(PORTAL_URL)!g" \
+	    -e "s!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g" \
+	    -e "s!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g" \
 	    lib/MT.pm.pre > lib/MT.pm
 	rm lib/MT.pm.pre
 
 php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv php/mt.php php/mt.php.pre
-	sed -e 's!__PRODUCT_NAME__!$(PRODUCT_NAME)!g' \
-	    -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
-	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
+	sed -e "s!__PRODUCT_NAME__!$(PRODUCT_NAME)!g" \
+	    -e "s!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g" \
+	    -e "s!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g" \
 	    php/mt.php.pre > php/mt.php
 	rm php/mt.php.pre
 
 mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	mv mt-check.cgi mt-check.cgi.pre
-	sed -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
-	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
+	sed -e "s!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g" \
+	    -e "s!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g" \
 	mt-check.cgi.pre > mt-check.cgi
 	rm mt-check.cgi.pre
 	chmod +x mt-check.cgi
@@ -159,10 +159,10 @@ $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 
 version_file:
 	mv VERSIONS VERSIONS.pre
-	sed -e 's!__BUILD_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
-	    -e 's!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g' \
-	    -e 's!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g' \
-	    -e 's!__BUILD_VERSIONS_TRAILER__!$(BUILD_VERSIONS_TRAILER)!g' \
+	sed -e "s!__BUILD_VERSION_ID__!$(BUILD_VERSION_ID)!g" \
+	    -e "s!__BUILD_LANGUAGE__!$(BUILD_LANGUAGE)!g" \
+	    -e "s!__RELEASE_NUMBER__!$(BUILD_RELEASE_NUMBER)!g" \
+	    -e "s!__BUILD_VERSIONS_TRAILER__!$(BUILD_VERSIONS_TRAILER)!g" \
 	VERSIONS.pre > VERSIONS
 	rm VERSIONS.pre
 
