@@ -544,7 +544,11 @@ sub edit {
 
     ## Load text filters if user displays them
     my %entry_filters;
-    if ( defined( my $filter = $app->param('convert_breaks') ) ) {
+    my $filter
+        = $app->param('mobile_view')
+        ? $app->param('convert_breaks_for_mobile')
+        : $app->param('convert_breaks');
+    if ( defined $filter ) {
         my @filters = split /\s*,\s*/, $filter;
         $entry_filters{$_} = 1 for @filters;
     }
@@ -866,7 +870,10 @@ sub _build_entry_preview {
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);
 
-    my $convert_breaks = $app->param('convert_breaks');
+    my $convert_breaks
+        = $app->param('mobile_view')
+        ? $app->param('convert_breaks_for_mobile')
+        : $app->param('convert_breaks');
     $entry->convert_breaks(
         ( $convert_breaks || '' ) eq '_richtext'
         ? 'richtext'
@@ -1266,6 +1273,9 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
+    if ( $app->param('mobile_view') ) {
+        $values{convert_breaks} = $app->param('convert_breaks_for_mobile');
+    }
     $values{convert_breaks} = 'richtext'
         if ( $values{convert_breaks} || '' ) eq '_richtext';
     $obj->set_values( \%values );
