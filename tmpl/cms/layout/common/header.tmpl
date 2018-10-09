@@ -44,7 +44,9 @@
   <mt:var name="html_head">
 
   <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <mt:if name="local_lang_id" ne="en-us">
+  <mt:if name="local_lang_id" eq="en-us">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  <mt:else>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
   </mt:if>
   <mt:unless name="optimize_ui">
