@@ -24,7 +24,8 @@ $js .= `cat mt-static/js/listing/tag/*.tag`;
 $js .= `cat mt-static/js/mt/util.js`;
 $js .= `cat mt-static/js/tc/mixer/display.js`;
 $js .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js`;
-$js .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js`;
+$js
+    .= `cat mt-static/plugins/BlockEditor/lib/js/blockeditor_field_manager.js`;
 $js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/embed.js`;
 $js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/header.js`;
 $js .= `cat mt-static/plugins/BlockEditor/lib/js/fields/horizon.js`;
@@ -35,12 +36,16 @@ $js .= `cat mt-static/plugins/BlockEditor/lib/js/modal_window.js`;
 $js .= `cat mt-static/plugins/FormattedTextForTinyMCE/extension.js`;
 $js .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js`;
 $js .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js`;
+$js
+    .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js`;
 $js .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js`;
-$js .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js`;
+$js
+    .= `cat mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js`;
 $js .= `cat plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl`;
-$js .= `cat plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl`;
-$js .= `cat plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
+$js
+    .= `cat plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl`;
+$js
+    .= `cat plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
 $js .= `cat plugins/BlockEditor/tmpl/cms/include/async_asset_list.tmpl`;
 $js .= `cat plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl`;
 $js .= `cat tmpl/cms/edit_commenter.tmpl`;
@@ -60,7 +65,7 @@ $js .= `cat tmpl/cms/include/content_data_list.tmpl`;
 $js .= `cat tmpl/cms/list_category.tmpl`;
 $js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
 
-my $addon_path = File::Spec->catdir( 'addons' );
+my $addon_path = File::Spec->catdir('addons');
 local *DH;
 my @files;
 my @addons;
@@ -75,7 +80,10 @@ if ( opendir DH, $addon_path ) {
                 my $id    = lc $1;
                 my $type  = $2;
                 next if $type ne 'pack';
-                if ( open my $fh, '<', File::Spec->catfile($full_path, 'make_js_templates') ) {
+                if ( open my $fh,
+                    '<',
+                    File::Spec->catfile( $full_path, 'make_js_templates' ) )
+                {
                     while (<$fh>) {
                         chomp $_;
                         push @files, $_;
@@ -105,34 +113,32 @@ foreach my $lang (qw(ja de nl fr es)) {
         next if $@;
         my $conv;
         $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
-        if ( %$conv ) {
-            $lex = {
-                %$lex,
-                %$conv,
-            };
+        if (%$conv) {
+            $lex = { %$lex, %$conv, };
         }
     }
 
-    my $enc_js = Encode::encode_utf8( $js );
+    my $enc_js = Encode::encode_utf8($js);
     $enc_js =~ s/\\'/\t\t/g;
     my %lexicon;
-    while ($enc_js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
+    while ( $enc_js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g ) {
         my $str = $2;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} ? Encode::encode_utf8( $lex->{$str} ) : $str;
-        $str = encode_js($str);
+        $str   = encode_js($str);
         $local = encode_js($local);
         next if $str eq $local;
-        $str = Encode::decode_utf8( $str );
-        $local = Encode::decode_utf8( $local ) unless Encode::is_utf8( $local );
+        $str = Encode::decode_utf8($str);
+        $local = Encode::decode_utf8($local) unless Encode::is_utf8($local);
         $lexicon{$str} = $local;
     }
 
-    open(my $FOUT, ">", "./mt-static/mt_$lang.js")
+    open( my $FOUT, ">", "./mt-static/mt_$lang.js" )
         or die "failed to open mt-static/mt_$lang.js for writing";
 
     binmode $FOUT, ":utf8";
-    print $FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
+    print $FOUT
+        "/* Movable Type language lexicon for $lang localization. */\n\n";
 
     for my $text ( keys %lexicon ) {
         print $FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
