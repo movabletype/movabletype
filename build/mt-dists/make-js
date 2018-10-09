@@ -133,9 +133,8 @@ foreach my $lang (qw(en_us ja de nl fr es)) {
         $lexicon{$str} = $local;
     }
 
-    my $file_lang = $lang eq 'en_us' ? 'en-us' : $lang;
-    open( my $FOUT, ">", "./mt-static/mt_$file_lang.js" )
-        or die "failed to open mt-static/mt_$file_lang.js for writing";
+    open( my $FOUT, ">", "./mt-static/mt_$lang.js" )
+        or die "failed to open mt-static/mt_$lang.js for writing";
 
     binmode $FOUT, ":utf8";
     print $FOUT

@@ -7,7 +7,8 @@ BUILD_PACKAGE ?= MTOS
 
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
-local_js = mt-static/mt_de.js \
+local_js = mt-static/mt_en_us.js \
+        mt-static/mt_de.js \
         mt-static/mt_fr.js \
         mt-static/mt_nl.js \
         mt-static/mt_ja.js \
