@@ -89,9 +89,7 @@
 </mt:unless>
 <mt:var name="html_head">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<mt:if name="local_lang_id" ne="en-us">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-</mt:if>
 <mt:unless name="optimize_ui">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <mt:else>

@@ -99,7 +99,7 @@ if ( opendir DH, $addon_path ) {
 
 $js .= `cat $_` foreach @files;
 
-foreach my $lang (qw(ja de nl fr es)) {
+foreach my $lang (qw(en_us ja de nl fr es)) {
     eval 'require MT::L10N::' . $lang
         or die "failed to find package MT::L10N::$lang";
 
@@ -133,8 +133,9 @@ foreach my $lang (qw(ja de nl fr es)) {
         $lexicon{$str} = $local;
     }
 
-    open( my $FOUT, ">", "./mt-static/mt_$lang.js" )
-        or die "failed to open mt-static/mt_$lang.js for writing";
+    my $file_lang = $lang eq 'en_us' ? 'en-us' : $lang;
+    open( my $FOUT, ">", "./mt-static/mt_$file_lang.js" )
+        or die "failed to open mt-static/mt_$file_lang.js for writing";
 
     binmode $FOUT, ":utf8";
     print $FOUT
