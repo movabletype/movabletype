@@ -191,11 +191,7 @@ class ContentTypeRegistry implements ContentFieldType {
             if (!$content_data)
                 return $ctx->error( $ctx->mt->translate("You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentField" ) );
 
-            $data = $content_data->data;
-            if (isset($data))
-                $data = $ctx->mt->db()->unserialize($data);
-            $raw_ids = $data[$field_data['id']];
-            $ids = is_array($raw_ids) ? $raw_ids : array($raw_ids);
+            $ids = is_array($value) ? $value : array($value);
             if (empty($ids)) $ids = array(0);
             $ids_count = count($ids);
 
@@ -220,8 +216,11 @@ class ContentTypeRegistry implements ContentFieldType {
                 $values[] = $map[$id];
             }
 
+            $counter = 0;
+            $counter_max = count($values);
+            $ctx->stash('_content_field_counter', $counter);
             $ctx->stash('_content_field_values', $values);
-            $ctx->stash('_content_field_counter_max', count($values));
+            $ctx->stash('_content_field_counter_max', $counter_max);
             $ctx->stash('parent_content', $ctx->stash('content'));
             $ctx->stash('parent_content_type', $ctx->stash('content_type'));
             $ctx->stash('content_type', $content_type);
