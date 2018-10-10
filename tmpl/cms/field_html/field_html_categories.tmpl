@@ -173,7 +173,7 @@ jQuery(window).on('load resize', function () {
               [# div.className="form-group form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a>
               </mt:section>';
 
-              jQuery(document).load(function () {
+              jQuery(window).on('load', function () {
                   var selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
                   var categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\$2"$><mt:else>[]</mt:if>;
 
