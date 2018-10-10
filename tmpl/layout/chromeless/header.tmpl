@@ -12,7 +12,7 @@
   </mt:unless>
   <mt:unless name="screen_type" eq="popup-screen">
     <mt:unless name="screen_type" eq="chromeless-screen">
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css?v=<mt:var name="mt_version_id" escape="URL">" />
     </mt:unless>
   </mt:unless>
   <mt:var name="css_include">
