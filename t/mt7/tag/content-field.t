@@ -384,10 +384,16 @@ $test_env->prepare_fixture(
                 unique_id => $cf_single_line_text->unique_id,
             },
             {   id        => $cf_single_line_text_no_data->id,
-                order     => 1,
+                order     => 2,
                 type      => $cf_single_line_text_no_data->type,
                 options   => { label => $cf_single_line_text_no_data->name },
                 unique_id => $cf_single_line_text_no_data->unique_id,
+            },
+            {   id        => $cf_number->id,
+                order     => 3,
+                type      => $cf_number->type,
+                options   => { label => $cf_number->name },
+                unique_id => $cf_number->unique_id,
             },
             ]
         );
@@ -398,7 +404,8 @@ $test_env->prepare_fixture(
             author_id       => 1,
             data            => {
                 $cf_single_line_text->id         => 'test single line text2',
-                $cf_multi_line_text->id => "test multi line text\naaaaa2",
+                $cf_single_line_text_no_data->id => '',
+                $cf_number->id => '12345',
             },
         );
         my $cd = MT::Test::Permission->make_content_data(
@@ -698,11 +705,15 @@ Footer
 === mt:ContentField content_field="content_type"
 --- template
 <mt:Contents content_type="test content data"><mt:ContentField content_field="content type"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
-<mt:ContentFields><mt:ContentField><mt:ContentFieldValue></mt:ContentField></mt:ContentFields>
+<mt:ContentFields><mt:ContentField><mt:ContentFieldLabel>: <mt:ContentFieldValue></mt:ContentField>
+</mt:ContentFields>
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
 Header
-test single line text2
+single line text: test single line text2
+
+number: 12345
+
 Footer
 
 === mt:ContentFieldLabel
