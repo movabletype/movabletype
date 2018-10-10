@@ -34,7 +34,6 @@ $js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
 $js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
 $js .= `cat mt-static/plugins/FormattedTextForTinyMCE/extension.js`;
 $js .= `cat mt-static/plugins/FormattedTextForTinyMCE/langs/template.js`;
-$js .= `cat plugins/Loupe/tmpl/widget/welcome_to_loupe.tmpl`;
 
 my $addon_path = File::Spec->catdir( 'addons' );
 local *DH;
