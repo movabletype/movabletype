@@ -313,7 +313,7 @@ sub backup_plugin_cb {
 
         my $as_count = 0;
 
-        my $state = MT->translate( 'Backing up [_1] records:', $class );
+        my $state = MT->translate( 'Exporting [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
         while ( my $as = $iter->() ) {
             $out .= $as->to_xml( undef, \@assoc_meta ) . "\n";
@@ -323,7 +323,7 @@ sub backup_plugin_cb {
         }
         $progress->(
             $state . " "
-                . MT->translate( "[_1] records backed up.", $as_count ),
+                . MT->translate( "[_1] records exported...", $as_count ),
             $class->class_type || $class->datasource
         );
     }
@@ -338,7 +338,7 @@ sub backup_plugin_cb {
             @author_meta = MT::Meta->metadata_by_class($class);
         }
 
-        my $state = MT->translate( 'Backing up [_1] records:', $class );
+        my $state = MT->translate( 'Exporting [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
         my $author_count = 0;
 
@@ -356,7 +356,7 @@ sub backup_plugin_cb {
         }
         $progress->(
             $state . " "
-                . MT->translate( "[_1] records backed up.", $author_count ),
+                . MT->translate( "[_1] records exported...", $author_count ),
             $class->class_type || $class->datasource
         );
     }
