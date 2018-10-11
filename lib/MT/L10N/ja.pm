@@ -2350,7 +2350,7 @@ use vars qw( @ISA %Lexicon );
 	'Entries in This Website' => 'ウェブサイトの記事',
 	'Published Entries' => '公開されている記事',
 	'Draft Entries' => '下書きの記事',
-	'Unpublished Entries' => '公開終了にされている記事',
+	'Unpublished Entries' => '公開が終了している記事',
 	'Scheduled Entries' => '日時指定されている記事',
 
 ## lib/MT/FileMgr/DAV.pm
@@ -2548,7 +2548,7 @@ use vars qw( @ISA %Lexicon );
 	'Pages in This Website' => 'ウェブサイトのウェブページ',
 	'Published Pages' => '公開されているウェブページ',
 	'Draft Pages' => '下書きのウェブページ',
-	'Unpublished Pages' => '公開終了にされているウェブページ',
+	'Unpublished Pages' => '公開が終了しているウェブページ',
 	'Scheduled Pages' => '日時指定されているウェブページ',
 
 ## lib/MT/Permission.pm
