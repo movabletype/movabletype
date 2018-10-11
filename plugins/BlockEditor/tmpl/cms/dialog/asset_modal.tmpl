@@ -404,6 +404,12 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
 }
+
+/* for IE11. MTC-25973 */
+#blockeditor-list-asset-panel .col {
+  flex-basis: auto;
+  width: auto;
+}
 </style>
 </mt:unless>
 
