@@ -7753,6 +7753,12 @@ itte versuchen Sie es später erneut.',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Lädt Anhänge von Wordpress-Blogs im Hintergrund herunter. Cronjob erforderlich.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Anhänge (Bilder und Dateien) des importierten Wordpress-Blogs herunterladen.',
 
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Synchronisation ([_1]) mit externem Server ([_2]) erfolgreich gestartet.', # Translate - New # OK
+	'This email is to notify you that synchronization with an external server has been successfully started.' => 'Mit dieser E-Mail wird darauf hingewiesen, dass die Synchronisation mit einem externen Server erfolgreich gestartet wurde.', # Translate - New # OK
+	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Der sofortige Synchronisations-Job wird registriert. Der Job wird bei der nächsten periodischen Ausführung von Aufgaben erledigt.', # Translate - New # OK
+	'Immediate sync job has been registered.' => 'Sofortiger Synchronisations-Job registriert.', # Translate - New # OK
+	'Register immediate sync job' => 'Sofortigen Synchronisations-Job registrieren', # Translate - New # OK
+	'Are you sure you want to register immediate sync job?' => 'Sofortigen Synchronisations-Job wirklich registrieren?', # Translate - New # OK	
 );
 
 ## New words: 1146

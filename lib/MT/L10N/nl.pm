@@ -7298,7 +7298,7 @@ use vars qw( @ISA %Lexicon );
 	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [_2]',
 	'Failed to created commenter.' => 'Aanmaken reageerder mislukt.',
 	'Failed to create a session.' => 'Aanmaken sessie mislukt.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters vereist dat ofwel Crypt::SSLeay of IO::Socket::SSL geÃ¯nstalleerd zijn om met Facebook te kunnen communiceren.',
+	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters vereist dat ofwel Crypt::SSLeay of IO::Socket::SSL geÏnstalleerd zijn om met Facebook te kunnen communiceren.',
 	'Please enter your Facebook App key and secret.' => 'Gelieve uw Facebook App key en secret in te vullen.',
 	'Could not verify this app with Facebook: [_1]' => 'Kon deze app niet verifiÃ«ren bij Facebook: [_1]',
 
@@ -7743,7 +7743,14 @@ richt \'[_4]\'',
 	'Replace with' => 'Vervangen door',
 	'Download attachments' => 'Attachments downloaden',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Vereist het gebruik van een cronjob om attachments van een WordPress blog te downloaden op de achtergrond.',
-	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geÃ¯mporteerde WordPress blog.',
+	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geÏmporteerde WordPress blog.',
+
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Synchronisatie ([_1]) met externe server ([_2]) met succes gestart.', # Translate - New
+    'This email is to notify you that synchronization with an external server has been successfully started.' => 'Deze mail dient om u op de hoogte te brengen dat synchronisatie met een externe server met succes is gestart.', # Translate - New
+    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Onmiddelijke sync job wordt geregistreerd.  Deze job zal worden uitgevoerd de volgende keer dat run-periodic-tasks wordt uitgevoerd.', # Translate - New
+    'Immediate sync job has been registered.' => 'Onmiddelijke sync job wordt geregistreerd.', # Translate - New
+    'Register immediate sync job' => 'Onmiddellijke sync job registreren', # Translate - New
+    'Are you sure you want to register immediate sync job?' => 'Bent u zeker dat u een onmiddellijke sync job wenst te registreren?', # Translate - New
 
 );
 

@@ -7754,7 +7754,13 @@ trada \'[_4]\'',
 	'Download attachments' => 'Descargar adjuntos',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
-
+	
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Se inició la sincronización ([_1]) con un servidor externo ([_2]).', # Translate - New
+    'This email is to notify you that synchronization with an external server has been successfully started.' => 'El propósito de este correo es notificarle que se inició correctamente la sincronización con un servidor externo.', # Translate - New
+    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Se ha registrado un trabajo de sincronización inmediata. Este trabajo se ejecutará en la próxima ejecución de  run-periodic-tasks.', # Translate - New
+    'Immediate sync job has been registered.' => 'Se ha registrado un trabajo de sincronización inmediata.', # Translate - New
+    'Register immediate sync job' => 'Registrar trabajo de sincronización inmediata', # Translate - New
+    'Are you sure you want to register immediate sync job?' => '¿Está seguro de que desea registrar un trabajo de sincronización inmediata?', # Translate - New
 );
 
 ## New words: 1154

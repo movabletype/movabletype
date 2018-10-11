@@ -7774,6 +7774,13 @@ atégorie \'[_4]\'',
 	q{Requires the use of a cron job to download attachments from WordPress powered blog in the background.} => q{L'utilisation d'un cron job est requis pour télécharger en arrière plan les fichiers attachés à un blog WordPress.},
 	q{Download attachments (images and files) from the imported WordPress powered blog.} => q{Télécharger les fichiers attachés d'un blog WordPress (images et autres documents).},
 
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'La synchronization ([_1]) avec un serveur externe ([_2]) a démarré avec succès.', # Translate - New
+    'This email is to notify you that synchronization with an external server has been successfully started.' => 'Ceci est une notification que la synchronization avec un serveur externe a démarré avec succès.', # Translate - New
+    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Une tâche de synchronization immédiate a été programmée. Cette tâche sera exécutée au prochain déclenchement des tâches programmées (run-periodic-tasks).', # Translate - New
+    'Immediate sync job has been registered.' => 'Une tâche de synchronization immédiate a été programmée.', # Translate - New
+    'Register immediate sync job' => 'Programmer une tâche de synchronization immédiate', # Translate - New
+    'Are you sure you want to register immediate sync job?' => 'Voulez-vous programmer cette tâche de synchronization immédiate ?', # Translate - New	
+
 );
 
 ## New words: 1164
