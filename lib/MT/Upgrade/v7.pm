@@ -376,9 +376,13 @@ sub _v7_migrate_privileges {
             = $assoc_class->load_iter(
             { role_id => $website_admin_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
         }
     }
@@ -396,14 +400,22 @@ sub _v7_migrate_privileges {
         my $assoc_iter
             = $assoc_class->load_iter( { role_id => $member_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
             if ( $blog && !$blog->is_blog ) {
                 my @child_blogs = @{ $blog->blogs };
                 foreach my $child_blog (@child_blogs) {
-                    my $author = $assoc->user;
-                    $author->add_role( $site_admin_role, $child_blog );
+                    if ( my $author = $assoc->user ) {
+                        $author->add_role( $site_admin_role, $child_blog );
+                    }
+                    elsif ( my $group = $assoc->group ) {
+                        $group->add_role( $site_admin_role, $child_blog );
+                    }
                 }
             }
         }
@@ -427,9 +439,13 @@ sub _v7_migrate_privileges {
         my $assoc_iter
             = $assoc_class->load_iter( { role_id => $blog_admin_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
         }
 
@@ -534,9 +550,13 @@ sub _v7_migrate_child_site_role {
             = $assoc_class->load_iter(
             { role_id => $child_site_admin_role->id } );
         while ( my $assoc = $iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
             # Child Site Administrator is remove
             $assoc->remove();
