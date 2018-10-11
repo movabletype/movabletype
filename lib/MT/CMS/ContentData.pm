@@ -267,7 +267,7 @@ sub edit {
             = $app->param('unpublished_on_second');
     }
     elsif ( $param->{unpublished_on_time} ) {
-        (   $param->{unpulibhsed_on_hour},
+        (   $param->{unpublished_on_hour},
             $param->{unpublished_on_minute},
             $param->{unpublished_on_second}
         ) = split ':', $param->{unpublished_on_time};

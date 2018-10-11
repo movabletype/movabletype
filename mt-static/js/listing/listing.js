@@ -259,7 +259,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
 
     this.addFilterItem = function(filterType) {
       if (this.isAllpassFilter()) {
-        this.createNewFilter('Unknown Filter')
+        this.createNewFilter(trans('Unknown Filter'))
       }
       this.currentFilter.items.push({ type: filterType })
       this.update()

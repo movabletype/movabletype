@@ -2,7 +2,7 @@
 <div class="step1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script src="<mt:var name="static_uri">js/list_table.js"></script>
+<script src="<mt:var name="static_uri">js/list_table.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <script>
   isModal = getByID("list-assets-dialog");
 
@@ -403,6 +403,12 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   box-sizing: border-box;
+}
+
+/* for IE11. MTC-25973 */
+#blockeditor-list-asset-panel .col {
+  flex-basis: auto;
+  width: auto;
 }
 </style>
 </mt:unless>

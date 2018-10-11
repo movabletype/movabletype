@@ -575,7 +575,7 @@ div.mce-notification-error {
 <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 
 <script type="text/javascript">
 function highlightSwitch(selection) {
@@ -976,7 +976,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     var uo_day = jQuery('select[name=unpublished_on_day]').val();
     var uo_date;
     if (uo_year || uo_month || uo_day) {
-      uo_date = [uo_year, uo_month, uo_second].join('-');
+      uo_date = [uo_year, uo_month, uo_day].join('-');
       jQuery('input[name=unpublished_on_date]').val(uo_date);
     }
 

@@ -759,9 +759,9 @@ jQuery.mtValidateAddMessages({
 </mt:unless>
 <mt:if name="dialog">
 jQuery('#upload-asset-panel').on('changePanel', function() {
-  if(jQuery('#upload-progress').children('.upload-status-block').length > 0) {
+  if(jQuery('#upload-progress').find('.upload-status-block').length > 0) {
     var id = [];
-    jQuery('#upload-progress').children('.upload-status-block').each(function() {
+    jQuery('#upload-progress').find('.upload-status-block').each(function() {
         var asset_id = jQuery(this).attr('data-asset-id');
         if (asset_id) {
           id.push(asset_id);

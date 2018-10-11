@@ -51,7 +51,7 @@
 
     addFilterItem(filterType) {
       if (this.isAllpassFilter()) {
-        this.createNewFilter('Unknown Filter')
+        this.createNewFilter(trans('Unknown Filter'))
       }
       this.currentFilter.items.push({ type: filterType })
       this.update()

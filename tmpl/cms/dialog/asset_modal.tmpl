@@ -153,9 +153,13 @@ jQuery('.left-menu-item').click( function() {
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
+  jQuery(currentPanel).trigger(event);
 });
 
 jQuery('.top-menu-item').on('click', function () {
+  // Make custom event
+  var event = new jQuery.Event('changePanel');
+
   var panelIdSelector = jQuery(this).data('panelId');
   jQuery('a.left-menu-item[href=' + panelIdSelector + ']').click();
 
@@ -165,6 +169,8 @@ jQuery('.top-menu-item').on('click', function () {
   jQuery(this)
     .removeClass('btn-default')
     .addClass('btn-primary');
+
+  jQuery(panelIdSelector).trigger(event);
 
   return false;
 });

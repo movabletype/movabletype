@@ -2,19 +2,19 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mt:unless name="optimize_ui">
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_manager.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/wysiwyg.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/source.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/single.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/multi.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/separator.js"></script>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor/source.js"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_manager.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/wysiwyg.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/source.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/single.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/multi.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/separator.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor/source.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <mt:else>
-<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 </mt:unless>
 <script type="text/javascript">
 (function() {

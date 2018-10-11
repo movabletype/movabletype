@@ -1077,9 +1077,9 @@ div.mce-notification-error {
 
 <mt:setvarblock name="html_head" prepend="1">
   <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/common.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/focus.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript">
     /* <![CDATA[ */
       var orig_text_format;
@@ -1126,22 +1126,10 @@ div.mce-notification-error {
           app.setEditorIframeHTML();
       }
 
-      function changeTextFormatOfOtherForm(currentFormId, selectedIndex) {
-          var otherForm;
-          if (currentFormId == 'convert_breaks') {
-              otherForm = document.getElementById('convert_breaks_for_mobile');
-          } else {
-              otherForm = document.getElementById('convert_breaks');
-          }
-          otherForm.options[selectedIndex].selected = true;
-      }
-
       <mt:unless name="editors">
       function changedTextFormat(e, noConfirm) {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
-
-          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
 
           if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
@@ -1155,17 +1143,15 @@ div.mce-notification-error {
                   return;
               }
           }
-          var convertBreaks = document.forms['entry_form'].convert_breaks;
-          convertBreaks.forEach(function (s) {
-              var key = s.options[s.selectedIndex].value;
-              if (url = docs[key]) {
-                  if (url.indexOf('http://') == -1)
-                      url = HelpBaseURI + url;
-                  jQuery('#formatting-help-link').removeClass('disabled');
-              } else {
-                  jQuery('#formatting-help-link').addClass('disabled');
-              }
-          });
+          var s = document.forms['entry_form'].convert_breaks;
+          var key = s.options[s.selectedIndex].value;
+          if (url = docs[key]) {
+              if (url.indexOf('http://') == -1)
+                  url = HelpBaseURI + url;
+              jQuery('#formatting-help-link').removeClass('disabled');
+          } else {
+              jQuery('#formatting-help-link').addClass('disabled');
+          }
 
           if (cur_text_format == 'richtext') {
               // changing to plaintext editor
@@ -1198,8 +1184,6 @@ div.mce-notification-error {
           var form = this.form;
           var option = this.options[this.selectedIndex].value;
 
-          changeTextFormatOfOtherForm(this.getAttribute('id'), this.selectedIndex);
-
           if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
               // warn user that changing to richtext is not reversible (easily)
               if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
@@ -1212,17 +1196,15 @@ div.mce-notification-error {
                   return;
               }
           }
-          var convertBreaks = document.forms['entry_form'].convert_breaks;
-          convertBreaks.forEach(function (s) {
-              var key = s.options[s.selectedIndex].value;
-              if (url = docs[key]) {
-                  if (url.indexOf('http://') == -1)
-                      url = HelpBaseURI + url;
-                  jQuery('#formatting-help-link').removeClass('disabled');
-              } else {
-                  jQuery('#formatting-help-link').addClass('disabled');
-              }
-          });
+          var s = document.forms['entry_form'].convert_breaks;
+          var key = s.options[s.selectedIndex].value;
+          if (url = docs[key]) {
+              if (url.indexOf('http://') == -1)
+                  url = HelpBaseURI + url;
+              jQuery('#formatting-help-link').removeClass('disabled');
+          } else {
+              jQuery('#formatting-help-link').addClass('disabled');
+          }
 
           if (option == 'richtext') {
               app.saveHTML(false);
@@ -1634,12 +1616,7 @@ div.mce-notification-error {
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
-              <mt:if name="filter_key" eq="richtext">
-              <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-              <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
-              <mt:else>
               <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-              </mt:if>
             </mt:loop>
             </select>
             <$mt:setvar name="show_formatting_help" value="1"$>
@@ -1662,11 +1639,10 @@ div.mce-notification-error {
       id="convert_breaks_for_mobile"
       label="<__trans phrase="Format">"
       class="d-md-none">
-      <select name="convert_breaks" id="convert_breaks_for_mobile" class="custom-select form-control">
+      <select name="convert_breaks_for_mobile" id="convert_breaks_for_mobile" class="custom-select form-control">
       <mt:loop name="text_filters">
         <mt:if name="filter_key" eq="richtext">
-        <option class="d-none d-md-block" value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
-        <option class="d-md-none" value="_richtext"><__trans phrase="Rich Text(HTML mode)"></option>
+        <option value="_richtext"<mt:if name="filter_selected"> selected="selected"</mt:if>><__trans phrase="Rich Text(HTML mode)"></option>
         <mt:else>
         <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
         </mt:if>
@@ -1870,35 +1846,31 @@ div.mce-notification-error {
       jQuery('#sortable .mt-draggable--entryField').attr('draggable', nextDraggable);
     });
 
-    jQuery(window).on('resize load', function () {
+    jQuery(window).on('change_to_mobile_view', function () {
       var $formats = jQuery('#convert_breaks');
       var $mobileFormats = jQuery('#convert_breaks_for_mobile');
-      var selectedFormat = $formats.find('option:selected').val();
-      if (MT.Util.isMobileView()) {
-        $formats.find('option[value=richtext]').attr('disabled', 'disabled');
-        $mobileFormats.find('option[value=richtext]').attr('disabled', 'disabled');
-
-        $formats.find('option[value=_richtext]').removeAttr('disabled');
-        $mobileFormats.find('option[value=_richtext]').removeAttr('disabled');
-
-        if (selectedFormat != 'richtext') {
-          return;
-        }
-        $mobileFormats.val('_richtext');
-        $mobileFormats.trigger('change', true);
-      } else {
-        $formats.find('option[value=richtext]').removeAttr('disabled')
-        $mobileFormats.find('option[value=richtext]').removeAttr('disabled');
-
-        $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
-        $mobileFormats.find('option[value=_richtext]').attr('disabled', 'disabled');
-
-        if (selectedFormat != '_richtext') {
-          return;
-        }
-        $formats.val('richtext');
-        $formats.trigger('change', true);
+      var selectedFormat = $formats.val();
+      if (selectedFormat == 'richtext') {
+        selectedFormat = '_richtext';
       }
+      if (selectedFormat == $mobileFormats.val()) {
+        return;
+      }
+      $mobileFormats.val(selectedFormat);
+      $mobileFormats.trigger('change', true);
+    });
+    jQuery(window).on('change_to_pc_view', function () {
+      var $formats = jQuery('#convert_breaks');
+      var $mobileFormats = jQuery('#convert_breaks_for_mobile');
+      var selectedFormat = $mobileFormats.val();
+      if (selectedFormat == '_richtext') {
+        selectedFormat = 'richtext';
+      }
+      if (selectedFormat == $formats.val()) {
+        return;
+      }
+      $formats.val(selectedFormat);
+      $formats.trigger('change', true);
     });
 
     jQuery(window).on('resize load', function () {
@@ -1968,7 +1940,7 @@ div.mce-notification-error {
       var uo_day = jQuery('select[name=unpublished_on_day]').val();
       var uo_date;
       if (uo_year || uo_month || uo_day) {
-        uo_date = [uo_year, uo_month, uo_second].join('-');
+        uo_date = [uo_year, uo_month, uo_day].join('-');
         jQuery('input[name=unpublished_on_date]').val(uo_date);
       }
 

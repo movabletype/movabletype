@@ -680,7 +680,7 @@ sub _hdlr_contents {
         # page when we didn't request sorting.
         if (   $args->{sort_by}
             || $args->{sort_order}
-            || $ctx->{archive_type} )
+            || ( $ctx->{archive_type} && !$ctx->stash('parent_content') ) )
         {
             my $so
                 = $args->{sort_order}

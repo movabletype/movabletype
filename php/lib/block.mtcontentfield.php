@@ -34,15 +34,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
         multiblog_block_wrapper($args, $res, $ctx, $repeat);
 
         require_once('content_field_type_lib.php');
-    } else {
-        $counter = $ctx->__stash['_content_field_counter'];
-        if (!$counter) $counter = 0;
 
-        $counter_max = $ctx->stash('_content_field_counter_max');
-        if (!$counter_max) $counter_max = 0;
-    }
-
-    if ($counter < $counter_max) {
         $content_type = $ctx->stash('content_type');
         if (!is_object($content_type))
             return $ctx->error($ctx->mt->translate('No Content Type could be found.') );
@@ -110,6 +102,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
             $repeat = true;
             return $res;
         }
+        $ctx->stash('content_field_value', $value);
 
         $field_type = ContentFieldTypeFactory::get_type($field_data['type']);
         if (!$field_type) {
@@ -117,6 +110,21 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
         }
 
         $ctx->stash('content_field_type', $field_type);
+
+    } else {
+        $counter = $ctx->stash('_content_field_counter');
+        if (!$counter) $counter = 0;
+
+        $counter_max = $ctx->stash('_content_field_counter_max');
+        if (!$counter_max) $counter_max = 0;
+
+        $content_type = $ctx->stash('content_type');
+        $content_data = $ctx->stash('content');
+        $field_type   = $ctx->stash('content_field_type');
+        $value        = $ctx->stash('content_field_value');
+    }
+
+    if ($counter < $counter_max) {
 
         $field_type->tag_handler($value, $args, $res, $ctx, $repeat);
         $ctx->stash('_content_field_counter', $counter + 1);
