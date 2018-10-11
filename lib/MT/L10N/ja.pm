@@ -3163,6 +3163,8 @@ use vars qw( @ISA %Lexicon );
 	'This field must be a signed number' => 'このフィールドには符号付き整数を入力してください',
 	'Please input [_1] characters or more' => '[_1]文字以上入力してください',
 
+## mt-static/jquery/jquery.mt.min.js
+
 ## mt-static/js/assetdetail.js
 	'No Preview Available.' => 'プレビューは利用できません。',
 	'Dimensions' => '大きさ',
@@ -3193,6 +3195,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/image_editor/fabric.min.js
 
 ## mt-static/js/listing/list_data.js
+	'Unknown Filter' => '無名のフィルタ',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## mt-static/js/listing/listing.js
@@ -3363,6 +3366,8 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
+
+## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
@@ -5995,7 +6000,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
 	'Configuration directive' => '環境変数',
 	'Configuration value' => '設定値',
-	'Reference' => 'リファレンス', 
+	'Reference' => 'リファレンス',
 
 ## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
 	'User Contents Files' => 'コンテンツファイル',
@@ -7334,5 +7339,7 @@ _4]\'から削除しました。',
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
+
+## New words: 456
 
 1;
