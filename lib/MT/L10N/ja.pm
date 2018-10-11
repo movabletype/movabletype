@@ -4109,7 +4109,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/content_field_type_options/checkboxes.tmpl
 	'Values' => '値',
 	'Selected' => '選択状態',
-	'Value' => 'Value',
+	'Value' => '値',
 	'add' => '追加',
 
 ## tmpl/cms/content_field_type_options/content_type.tmpl
