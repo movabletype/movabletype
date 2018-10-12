@@ -196,7 +196,7 @@
       var option = this.options[this.selectedIndex].value;
       var field_id = editor_id.replace(/editor-input-content-field-/,'');
       var editor_name = editor_id.replace(/editor-input-/, '');
-      app.setEditor(editor_id);
+      app.setEditor(editor_name);
       // app.initEditor();
 
       var cur_text_format = jQuery(this).attr('data-orig_text_format');
