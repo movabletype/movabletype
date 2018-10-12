@@ -3,6 +3,11 @@ table#listing tfoot {
     background-color: #f2f2f2;
 }
 
+table th {
+    min-width: 4rem;
+    max-width: 10rem;
+}
+
 .text {
     border-radius: 2px;
 }

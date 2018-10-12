@@ -54,7 +54,8 @@
       class={
         primary: primary,
         sortable: sortable,
-        sorted: parent.store.sortBy == id
+        sorted: parent.store.sortBy == id,
+        text-truncate: true
       }
     >
       <a href="javascript:void(0)"
