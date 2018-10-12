@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '6.3');
-define('PRODUCT_VERSION', '6.3.7');
+define('PRODUCT_VERSION', '6.3.8');
 define('DATA_API_DEFAULT_VERSION', '3');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 7;
+    $RELEASE_NUMBER = 8;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
