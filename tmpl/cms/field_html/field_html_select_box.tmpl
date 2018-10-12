@@ -1,7 +1,7 @@
 <select name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id">" class="form-control custom-select html5-form content-field <mt:var name="multiple_class">" mt:watch-change="1" mt:raw-name="1" <mt:var name="multiple"> <mt:var name="required">>
 <mt:unless name="multiple"><mt:unless name="required"><option value=""><__trans phrase="Not Selected"></option></mt:unless></mt:unless>
 <mt:loop name="options_values">
-  <option value="<mt:var name="v">" <mt:var name="selected">><mt:var name="l" escape="html"></option>
+  <option value="<mt:var name="v" escape="html">" <mt:var name="selected">><mt:var name="l" escape="html"></option>
 </mt:loop>
 </select>
 

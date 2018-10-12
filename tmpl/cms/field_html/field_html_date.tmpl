@@ -1,9 +1,9 @@
 <div class="date-field-container row">
   <div class="form-group col-auto d-none d-md-block mb-0">
-    <input type="text" name="date-<mt:var name="content_field_id" escape="html">" id="date-<mt:var name="content_field_id" escape="html">" class="date-field form-control text date text-date html5-form content-field" value="<mt:var name="date">" placeholder="YYYY-MM-DD" mt:watch-change="1" mt:raw-name="1" <mt:var name="required">>
+    <input type="text" name="date-<mt:var name="content_field_id" escape="html">" id="date-<mt:var name="content_field_id" escape="html">" class="date-field form-control text date text-date html5-form content-field" value="<mt:var name="date" escape="html">" placeholder="YYYY-MM-DD" mt:watch-change="1" mt:raw-name="1" <mt:var name="required">>
   </div>
   <div class="form-inline col d-md-none">
-    <input type="number" class="date-field-year form-control w-25" name="date-<mt:var name="content_field_id" escape="html">-year" value="<mt:var name="year">" maxlength="4">
+    <input type="number" class="date-field-year form-control w-25" name="date-<mt:var name="content_field_id" escape="html">-year" value="<mt:var name="year" escape="html">" maxlength="4">
     -
     <select class="date-field-month custom-control custom-select w-25" name="date-<mt:var name="content_field_id" escape="html">-month">
       <option value=""></option>
