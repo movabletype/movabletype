@@ -250,7 +250,7 @@
             this.tinymce.execCommand('mtSetStatus', {
                 mode: mode,
                 format: format
-            });
+            }, null, {skip_focus: true});
 
             if (mode == 'source') {
                 if (this.editor !== this.source) {
