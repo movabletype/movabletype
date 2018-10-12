@@ -3206,7 +3206,8 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
-	'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
+'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
+	'One or more fields in the filter item are not filled in properly.' => '1つ以上のフィルター項目が正しく入力されていません。',
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'Show' => '表示項目',

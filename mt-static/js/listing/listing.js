@@ -393,14 +393,8 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
         }
       })
       if ( errors ) {
-        var errorMessage
-        if ( errors > 1 ) {
-          errorMessage = '[_1] Filter Items have field(s) not filled in properly'
-        } else {
-          errorMessage = '[_1] Filter Item has field(s) not filled in properly'
-        }
         this.$validateErrorMessage = this.showMessage(
-          trans(errorMessage, errors ),
+          trans('One or more fields in the filter item are not filled in properly.'),
           'error'
         )
       }
