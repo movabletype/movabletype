@@ -12,7 +12,7 @@
           if={ opts.useFilters }
         >
         </virtual>
-        <div style="overflow-x: scroll">
+        <div style="overflow-x: auto">
           <table data-is="list-table"
             id="{ opts.objectType }-table"
             class="table mt-table { tableClass() }"
