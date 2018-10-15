@@ -2755,8 +2755,8 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
 
         if (is_array($period_start)) {
             require_once('MTUtil.php');
-            $week_yr = substr($period_start['entry_week_number'], 0, 4);
-            $week_num = substr($period_start['entry_week_number'], 4);
+            $week_yr = substr($period_start['week_number'], 0, 4);
+            $week_num = substr($period_start['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
@@ -2789,13 +2789,13 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
             $count = count($results);
 
             require_once("MTUtil.php");
-            $week_yr = substr($results[0]['entry_week_number'], 0, 4);
-            $week_num = substr($results[0]['entry_week_number'], 4);
+            $week_yr = substr($results[0]['week_number'], 0, 4);
+            $week_num = substr($results[0]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
-            $week_yr = substr($results[$count - 1]['entry_week_number'], 0, 4);
-            $week_num = substr($results[$count - 1]['entry_week_number'], 4);
+            $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
+            $week_num = substr($results[$count - 1]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
@@ -2817,25 +2817,26 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
         $inside = $ctx->stash('inside_archive_list');
         if (isset($inside) && $inside) {
             $ts = $ctx->stash('current_timestamp');
-
+            $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
                 $ts = $mt->db()->ts2db($ts);
                 $tsend = $mt->db()->ts2db($tsend);
                 $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
             }
         }
+        $week_number = $dt_target_col === 'authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
 
         $sql = "
                 select count(*) as cd_count,
-                       cd_week_number
+                  $week_number week_number
                   from mt_cd
                   $join_on
                  where cd_blog_id = $blog_id
                    and cd_status = 2
                    $date_filter
                    $content_type_filter
-                 group by cd_week_number
-                 order by cd_week_number $order";
+                 group by $week_number
+                 order by $week_number $order";
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
@@ -3718,8 +3719,8 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
     public function get_range($period_start) {
         if (is_array($period_start)) {
             require_once('MTUtil.php');
-            $week_yr = substr($period_start['entry_week_number'], 0, 4);
-            $week_num = substr($period_start['entry_week_number'], 4);
+            $week_yr = substr($period_start['cd_week_number'], 0, 4);
+            $week_num = substr($period_start['cd_week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
