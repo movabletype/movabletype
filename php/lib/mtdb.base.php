@@ -4406,7 +4406,7 @@ abstract class MTDatabase {
                     require_once "content_field_type_lib.php";
                     $cf_type = ContentFieldTypeFactory::get_type($type);
 
-                    $alias = 'cf_idx_' . $cf->id;
+                    $alias = 'sb_cf_idx_' . $cf->id;
 
                     $data_type = $cf_type->get_data_type();
                     $join_table = "mt_cf_idx $alias";
