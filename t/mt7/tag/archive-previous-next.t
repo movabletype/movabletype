@@ -59,7 +59,7 @@ $test_env->prepare_fixture(
             name      => 'test blog 01',
         );
         $blog->archive_type(
-            'ContentType-Category,ContentType-Author,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly');
+            'ContentType-Category,ContentType-Category-Weekly,ContentType-Author,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly');
         $blog->save;
 
         my $perm = MT::Test::Permission->make_permission(
@@ -209,6 +209,15 @@ $test_env->prepare_fixture(
             is_preferred  => 1,
             dt_field_id   => $date_cf->id,
         );
+        my $map_07 = MT::Test::Permission->make_templatemap(
+            template_id   => $template->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Category-Weekly',
+            file_template => 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf->id,
+            cat_field_id  => $cat_cf->id,
+        );
 
         # ContentType 2
         my $ct02 = MT::Test::Permission->make_content_type(
@@ -330,6 +339,15 @@ $test_env->prepare_fixture(
             file_template => '%y/%i',
             is_preferred  => 1,
             dt_field_id   => $date_cf02->id,
+        );
+        my $map_17 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Category-Weekly',
+            file_template => 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf02->id,
+            cat_field_id  => $cat_cf02->id,
         );
 
     }
