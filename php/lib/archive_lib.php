@@ -55,7 +55,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
             $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
         }
     }
-    elseif (isset($dt_field_id)) {
+    elseif (isset($dt_field_id) && $dt_field_id) {
         $join_on = "join mt_cf_idx on cd_id = cf_idx_content_data_id and cf_idx_content_field_id = $dt_field_id";
         $dt_target_col = 'cf_idx_value_datetime';
     }
@@ -2824,7 +2824,7 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
                 $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
             }
         }
-        $week_number = $dt_target_col === 'authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
+        $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
 
         $sql = "
                 select count(*) as cd_count,
