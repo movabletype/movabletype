@@ -359,7 +359,7 @@ class DateOnlyRegistry implements ContentFieldType {
         return 'Date';
     }
     public function get_data_type($args = null) {
-        return 'date';
+        return 'datetime';
     }
     public function get_field_value($value, &$ctx, &$args) {
         $args['ts'] = $value;
@@ -378,7 +378,7 @@ class TimeOnlyRegistry implements ContentFieldType {
         return 'Time';
     }
     public function get_data_type($args = null) {
-        return 'time';
+        return 'datetime';
     }
     public function get_field_value($value, &$ctx, &$args) {
         $args['ts'] = $value;
