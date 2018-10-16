@@ -3979,25 +3979,46 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $localvars = array('current_timestamp', 'current_timestamp_end', 'entries');
+        $localvars = array('current_timestamp', 'current_timestamp_end', 'contents');
         if (!isset($content)) {
             $ctx->localize($localvars);
             $is_prev = $tag == 'archiveprevious';
+            $blog_id = $ctx->stash('blog_id');
             $ts = $ctx->stash('current_timestamp');
             $category = $ctx->stash('category');
-            if (!$ts || !$category) {
+            if (!isset($category)) {
+                $maps = $ctx->mt->db()->fetch_templatemap(
+                    array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+                if (isset($maps)) {
+                    $map = $maps[0];
+                    $dt_field_id = $map->templatemap_dt_field_id;
+                    $cat_field_id = $map->templatemap_cat_field_id;
+                }
+            }
+            if (!isset($ts) || !isset($dt_field_id) || !isset($cat_field_id)) {
                 return $ctx->error(
                    "You used an <mt$tag> without a date context set up.");
             }
             $order = $is_prev ? 'previous' : 'next';
+            $fetch_args = Array();
+            $fetch_args['date_field'] = $dt_field_id;
+            $fetch_args['category_field'] = $cat_field_id;
 
-            if ($entry = $this->get_categorized_entry($ts, $ctx->stash('blog_id'), $category->category_id, $at, $order)) {
+            if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
+            #if ($cd = $ctx->mt->db()->fetch_next_prev_content($order, $fetch_args)) {
                 $helper = $this->get_helper($at);
-                $ctx->stash('entries', array( $entry ));
-                list($start, $end) = $helper($entry->entry_authored_on);
+                $ctx->stash('contents', array($cd));
+                if (preg_match('/^[0-9]+$/', $dt_field_id)) {
+                    $data = $cd->data();
+                    $ts = $data[$dt_field_id];
+                }
+                else {
+                    $ts = $cd->authored_on;
+                }
+                list($start, $end) = $helper($ts);
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
-                $ctx->stash('category', $category);
+                #$ctx->stash('category', $category);
             } else {
                 $ctx->restore($localvars);
                 $repeat = false;
@@ -4008,7 +4029,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $content;
     }
 
-    protected function get_categorized_entry($ts, $blog_id, $cat_id, $at, $order) {
+    protected function get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order) {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -4023,8 +4044,12 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $args['category_id'] = $cat_id;
 
         $mt = MT::get_instance();
-        list($entry) = $mt->db()->fetch_entries($args);
-        return $entry;
+        $ctx =& $mt->context();
+        $content_type = $ctx->stash('content_type');
+        if (isset($content_type)) $content_type_id = $content_type->content_type_id;
+        $mt = MT::get_instance();
+        list($cd) = $mt->db()->fetch_contents($args, $content_type_id);
+        return $cd;
     }
 
     public function get_template_params() {
@@ -4540,8 +4565,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
 
         if (is_array($period_start)) {
             require_once('MTUtil.php');
-            $week_yr = substr($period_start['cd_week_number'], 0, 4);
-            $week_num = substr($period_start['cd_week_number'], 4);
+            $week_yr = substr($period_start['week_number'], 0, 4);
+            $week_num = substr($period_start['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
@@ -4601,9 +4626,10 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                         $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
                     }
                 }
+                $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'dt_cf_idx.cf_idx_value_integer';
                 $sql = "
                     select count(*) as cd_count,
-                           cd_week_number,
+                           $week_number week_number,
                            $cat_target_col
                       from mt_cd
                       $join_on
@@ -4612,11 +4638,11 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                        $date_filter
                        $content_type_filter
                      group by
-                           cd_week_number,
+                           $week_number,
                            $cat_target_col
                      order by
                            $cat_target_col $cat_order,
-                           cd_week_number $order";
+                           $week_number $order";
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
                 $results = $mt->db()->SelectLimit($sql, $limit, $offset);
