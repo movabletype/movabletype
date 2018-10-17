@@ -4307,6 +4307,9 @@ abstract class MTDatabase {
                                   " and $alias.cf_idx_content_data_id = cd_id" .
                                   $field_filter;
                 $extras['join'][$join_table] = array('condition' => $join_condition);
+                if (isset($args['_current_timestamp_sort']) && $args['_current_timestamp_sort']) {
+                    $sort_field = "$alias.cf_idx_value_datetime";
+                }
             } else {
                 $dt_field    = 'cd_authored_on';
                 $date_filter = $this->build_date_filter($args, $dt_field);
@@ -4389,59 +4392,61 @@ abstract class MTDatabase {
         if (isset($args['offset']))
             $offset = $args['offset'];
 
-        if (isset($args['sort_by'])) {
-            if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
-                $key= $m[1];
-                $cfs = $this->fetch_content_fields(array(
-                    'content_type_id' => $content_type_id,
-                    'name' => $key
-                ));
-                if (!isset($cfs))
+        if (!isset($sort_field)) {
+            if (isset($args['sort_by'])) {
+                if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+                    $key= $m[1];
                     $cfs = $this->fetch_content_fields(array(
-                        'unique_id' => $key
+                        'content_type_id' => $content_type_id,
+                        'name' => $key
                     ));
-                if (isset($cfs)) {
-                    $cf = $cfs[0];
-                    $type = $cf->cf_type;
-                    require_once "content_field_type_lib.php";
-                    $cf_type = ContentFieldTypeFactory::get_type($type);
+                    if (!isset($cfs))
+                        $cfs = $this->fetch_content_fields(array(
+                            'unique_id' => $key
+                        ));
+                    if (isset($cfs)) {
+                        $cf = $cfs[0];
+                        $type = $cf->cf_type;
+                        require_once "content_field_type_lib.php";
+                        $cf_type = ContentFieldTypeFactory::get_type($type);
 
-                    $alias = 'cf_idx_' . $cf->id;
+                        $alias = 'sb_cf_idx_' . $cf->id;
 
-                    $data_type = $cf_type->get_data_type();
-                    $join_table = "mt_cf_idx $alias";
-                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
-                                      " and $alias.cf_idx_content_data_id = cd_id";
-                    $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
+                        $data_type = $cf_type->get_data_type();
+                        $join_table = "mt_cf_idx $alias";
+                        $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                          " and $alias.cf_idx_content_data_id = cd_id";
+                        $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
-                    $sort_field = "$alias.cf_idx_value_$data_type";
+                        $sort_field = "$alias.cf_idx_value_$data_type";
+                    }
+                    if ($sort_field) $no_resort = 1;
                 }
-                if ($sort_field) $no_resort = 1;
+                else {
+                    if ($args['sort_by'] == 'authored_on') {
+                        $sort_field = 'cd_authored_on';
+                    } elseif ($args['sort_by'] == 'modified_on') {
+                        $sort_field = 'cd_modified_on';
+                    } elseif ($args['sort_by'] == 'created_on') {
+                        $sort_field = 'cd_created_on';
+                    } elseif ($args['sort_by'] == 'author_id') {
+                        $sort_field = 'cd_author_id';
+                    } elseif ($args['sort_by'] == 'identifier') {
+                        $sort_field = 'cd_identifier';
+                    } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
+                        $post_sort_limit = $limit ? $limit : 0;
+                        $post_sort_offset = $offset ? $offset : 0;
+                        $limit = 0; $offset = 0;
+                        $no_resort = 0;
+                    } else {
+                        $sort_field = 'cd_' . $args['sort_by'];
+                    }
+                    if ($sort_field) $no_resort = 1;
+                }
             }
             else {
-                if ($args['sort_by'] == 'authored_on') {
-                    $sort_field = 'cd_authored_on';
-                } elseif ($args['sort_by'] == 'modified_on') {
-                    $sort_field = 'cd_modified_on';
-                } elseif ($args['sort_by'] == 'created_on') {
-                    $sort_field = 'cd_created_on';
-                } elseif ($args['sort_by'] == 'author_id') {
-                    $sort_field = 'cd_author_id';
-                } elseif ($args['sort_by'] == 'identifier') {
-                    $sort_field = 'cd_identifier';
-                } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
-                    $post_sort_limit = $limit ? $limit : 0;
-                    $post_sort_offset = $offset ? $offset : 0;
-                    $limit = 0; $offset = 0;
-                    $no_resort = 0;
-                } else {
-                    $sort_field = 'cd_' . $args['sort_by'];
-                }
-                if ($sort_field) $no_resort = 1;
+                $sort_field = 'cd_authored_on';
             }
-        }
-        else {
-            $sort_field = 'cd_authored_on'; 
         }
 
         if ($sort_field) {

@@ -2542,6 +2542,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
             $args['current_timestamp'] = $this->inc_ts($end);
             $args['base_sort_order'] = 'ascend'; # ascending order
         }
+        $args['_current_timestamp_sort'] = true;
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;
         $mt = MT::get_instance();
