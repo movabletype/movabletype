@@ -3244,7 +3244,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $localvars = array('current_timestamp', 'current_timestamp_end', 'entries');
+        $localvars = array('current_timestamp', 'current_timestamp_end', 'contents', 'author');
         if (!isset($content)) {
             $ctx->localize($localvars);
             $is_prev = $tag == 'archiveprevious';
@@ -3255,11 +3255,25 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
                    "You used an <mt$tag> without a date context set up.");
             }
             $order = $is_prev ? 'previous' : 'next';
+            $blog_id = $ctx->stash('blog_id');
+            $maps = $ctx->mt->db()->fetch_templatemap(
+                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+            if (isset($maps)) {
+                $map = $maps[0];
+                $dt_field_id = $map->templatemap_dt_field_id;
+            }
 
-            if ($content = $this->get_author_content($ts, $ctx->stash('blog_id'), $author->author_name, $order)) {
+            if ($content = $this->get_author_content($ts, $blog_id, $author->author_name, $order)) {
                 $helper = $this->get_helper();
                 $ctx->stash('contents', array( $content ));
-                list($start, $end) = $helper($content->cd_authored_on);
+
+                if (isset($dt_field_id) && $dt_field_id) {
+                    $data = $content->data();
+                    list($start, $end) = $helper($data[$dt_field_id]);
+                } else {
+                    list($start, $end) = $helper($content->cd_authored_on);
+                }
+
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
                 $ctx->stash('author', $author);
@@ -3283,6 +3297,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             $args['current_timestamp'] = $this->inc_ts($end);
             $args['base_sort_order'] = 'ascend'; # ascending order
         }
+        $args['_current_timestamp_sort'] = true;
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;
         $args['author'] = $auth_name;
@@ -3720,8 +3735,8 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
     public function get_range($period_start) {
         if (is_array($period_start)) {
             require_once('MTUtil.php');
-            $week_yr = substr($period_start['cd_week_number'], 0, 4);
-            $week_num = substr($period_start['cd_week_number'], 4);
+            $week_yr = substr($period_start['week_number'], 0, 4);
+            $week_num = substr($period_start['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
@@ -3765,10 +3780,11 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
                 $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
             }
         }
+        $week_number = $dt_target_col == 'cd_authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
 
         $sql = "
             select count(*) as record_count,
-                   cd_week_number,
+                   $week_number week_number,
                    cd_author_id,
                    author_name
               from mt_cd
@@ -3780,12 +3796,12 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
                $author_filter
                $content_type_filter
              group by
-                   cd_week_number,
+                   $week_number,
                    cd_author_id,
                    author_name
              order by
                    author_name $auth_order,
-                   cd_week_number $order";
+                   $week_number $order";
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
         $results = $mt->db()->SelectLimit($sql, $limit, $offset);
@@ -3816,13 +3832,13 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
             $count = count($results);
 
             require_once("MTUtil.php");
-            $week_yr = substr($results[0]['cd_week_number'], 0, 4);
-            $week_num = substr($results[0]['cd_week_number'], 4);
+            $week_yr = substr($results[0]['week_number'], 0, 4);
+            $week_num = substr($results[0]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
-            $week_yr = substr($results[$count - 1]['cd_week_number'], 0, 4);
-            $week_num = substr($results[$count - 1]['cd_week_number'], 4);
+            $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
+            $week_num = substr($results[$count - 1]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
