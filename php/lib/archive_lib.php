@@ -4005,7 +4005,6 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $fetch_args['category_field'] = $cat_field_id;
 
             if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
-            #if ($cd = $ctx->mt->db()->fetch_next_prev_content($order, $fetch_args)) {
                 $helper = $this->get_helper($at);
                 $ctx->stash('contents', array($cd));
                 if (preg_match('/^[0-9]+$/', $dt_field_id)) {
@@ -4018,7 +4017,6 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                 list($start, $end) = $helper($ts);
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
-                #$ctx->stash('category', $category);
             } else {
                 $ctx->restore($localvars);
                 $repeat = false;
