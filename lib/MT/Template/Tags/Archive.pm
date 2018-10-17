@@ -465,7 +465,11 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->date_based && $arctype->author_based ) {
+    elsif ($arctype->date_based
+        && $arctype->author_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_author_based )
+    {
         my $param = {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
@@ -481,7 +485,7 @@ sub _hdlr_archive_prev_next {
             ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
             : $ctx->invoke_handler( 'categorynext',     $args, $cond );
     }
-    elsif ( $arctype->author_based ) {
+    elsif ( $arctype->author_based && !$arctype->contenttype_author_based ) {
         if ($is_prev) {
             $ctx->stash( 'tag', 'AuthorPrevious' );
         }
@@ -523,7 +527,16 @@ sub _hdlr_archive_prev_next {
             my $content_type = $ctx->stash('content_type');
             if ($content_type) {
                 my $content_data = $ctx->stash('content');
-                $param->{content_data} = $content_data if $content_data;
+                if ($content_data) {
+                    $param->{content_data} = $content_data;
+                }
+                else {
+                    my $contents = $ctx->stash('contents');
+                    if ( ref $contents eq 'ARRAY' && @$contents ) {
+                        $param->{content_data} = $contents->[0];
+                    }
+                }
+
                 my ($map) = MT::TemplateMap->load(
                     {   blog_id      => $param->{blog_id},
                         archive_type => $at,
