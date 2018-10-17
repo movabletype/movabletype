@@ -76,7 +76,7 @@ sub archive_group_iter {
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     my $content_type_id
         = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
-    unless ($content_type_id) {
+    if ( !$content_type_id && $map ) {
         my $template = MT->model('template')->load( $map->template_id );
         $content_type_id = $template->content_type_id;
     }
