@@ -59,7 +59,7 @@ $test_env->prepare_fixture(
             name      => 'test blog 01',
         );
         $blog->archive_type(
-            'ContentType-Category,ContentType-Author,ContentType-Monthly');
+            'ContentType-Category,ContentType-Author,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly');
         $blog->save;
 
         my $perm = MT::Test::Permission->make_permission(
@@ -132,7 +132,7 @@ $test_env->prepare_fixture(
             author_id       => $author1->id,
             data            => {
                 $cat_cf->id  => [ $category1->id ],
-                $date_cf->id => '20180308180500',
+                $date_cf->id => '20170308180500',
             },
         );
         my $cd2 = MT::Test::Permission->make_content_data(
@@ -150,7 +150,7 @@ $test_env->prepare_fixture(
             author_id       => $author2->id,
             data            => {
                 $cat_cf->id  => [ $category3->id ],
-                $date_cf->id => '20180506180500',
+                $date_cf->id => '20190506180500',
             },
         );
 
@@ -180,8 +180,32 @@ $test_env->prepare_fixture(
         my $map_03 = MT::Test::Permission->make_templatemap(
             template_id   => $template->id,
             blog_id       => $blog->id,
+            archive_type  => 'ContentType-Daily',
+            file_template => '%y/%m/%d/%f',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf->id,
+        );
+        my $map_04 = MT::Test::Permission->make_templatemap(
+            template_id   => $template->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Weekly',
+            file_template => '%y/%m/%d-week/%i',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf->id,
+        );
+        my $map_05 = MT::Test::Permission->make_templatemap(
+            template_id   => $template->id,
+            blog_id       => $blog->id,
             archive_type  => 'ContentType-Monthly',
             file_template => '%y/%m/%i',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf->id,
+        );
+        my $map_06 = MT::Test::Permission->make_templatemap(
+            template_id   => $template->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Yearly',
+            file_template => '%y/%i',
             is_preferred  => 1,
             dt_field_id   => $date_cf->id,
         );
@@ -230,7 +254,7 @@ $test_env->prepare_fixture(
             author_id       => $author1->id,
             data            => {
                 $cat_cf02->id  => [ $category1->id ],
-                $date_cf02->id => '20180308180500',
+                $date_cf02->id => '20170308180500',
             },
         );
         my $cd5 = MT::Test::Permission->make_content_data(
@@ -248,7 +272,7 @@ $test_env->prepare_fixture(
             author_id       => $author2->id,
             data            => {
                 $cat_cf02->id  => [ $category3->id ],
-                $date_cf02->id => '20180506180500',
+                $date_cf02->id => '20190506180500',
             },
         );
 
@@ -260,7 +284,7 @@ $test_env->prepare_fixture(
             text            => 'test 02',
         );
 
-        my $map_04 = MT::Test::Permission->make_templatemap(
+        my $map_11 = MT::Test::Permission->make_templatemap(
             template_id   => $template02->id,
             blog_id       => $blog->id,
             archive_type  => 'ContentType-Category',
@@ -268,18 +292,42 @@ $test_env->prepare_fixture(
             is_preferred  => 1,
             cat_field_id  => $cat_cf02->id,
         );
-        my $map_05 = MT::Test::Permission->make_templatemap(
+        my $map_12 = MT::Test::Permission->make_templatemap(
             template_id   => $template02->id,
             blog_id       => $blog->id,
             archive_type  => 'ContentType-Author',
             file_template => 'author/%-a/%f',
             is_preferred  => 1,
         );
-        my $map_06 = MT::Test::Permission->make_templatemap(
+        my $map_13 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Daily',
+            file_template => '%y/%m/%d/%f',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf02->id,
+        );
+        my $map_14 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Weekly',
+            file_template => '%y/%m/%d-week/%i',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf02->id,
+        );
+        my $map_15 = MT::Test::Permission->make_templatemap(
             template_id   => $template02->id,
             blog_id       => $blog->id,
             archive_type  => 'ContentType-Monthly',
             file_template => '%y/%m/%i',
+            is_preferred  => 1,
+            dt_field_id   => $date_cf02->id,
+        );
+        my $map_16 = MT::Test::Permission->make_templatemap(
+            template_id   => $template02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Yearly',
+            file_template => '%y/%i',
             is_preferred  => 1,
             dt_field_id   => $date_cf02->id,
         );
@@ -310,15 +358,15 @@ __END__
 
 === MT:ArchiveNext with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:If></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><<mt:ArchiveTitle>></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
-May 2018April 2018
+<May  6, 2019><April  7, 2018><May 2019><April 2018><May  5, 2019 - May 11, 2019><April  1, 2018 - April  7, 2018><2019><2018>
 
 === MT:ArchivePrevious with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:If></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><<mt:ArchiveTitle>></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
-April 2018March 2018
+<April  7, 2018><March  8, 2017><April 2018><March 2017><April  1, 2018 - April  7, 2018><March  5, 2017 - March 11, 2017><2018><2017>
 
 === MT:ArchiveNext with Author
 --- template
