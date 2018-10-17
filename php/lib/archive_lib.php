@@ -4081,7 +4081,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $category_id = $row['placement_category_id'];
+        $category_id = $row['category_id'];
         $category = $mt->db()->fetch_category($category_id);
         $ctx->stash('category', $category);
     }
@@ -4180,7 +4180,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $sql = "
                     select count(*) as cd_count,
                            $year_ext as y,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4321,7 +4321,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     select count(*) as cd_count,
                            $year_ext as y,
                            $month_ext as m,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4464,7 +4464,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                            $year_ext as y,
                            $month_ext as m,
                            $day_ext as d,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4613,8 +4613,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'dt_cf_idx.cf_idx_value_integer';
                 $sql = "
                     select count(*) as cd_count,
-                           $week_number week_number,
-                           $cat_target_col
+                           $week_number as week_number,
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
