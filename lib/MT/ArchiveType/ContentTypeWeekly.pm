@@ -70,7 +70,7 @@ sub archive_group_iter {
     unless ($map) {
         ($map) = MT->model('templatemap')->load(
             {   blog_id      => $blog->id,
-                archive_type => 'ContentType-Monthly',
+                archive_type => 'ContentType-Weekly',
                 is_preferred => 1,
             }
         );
