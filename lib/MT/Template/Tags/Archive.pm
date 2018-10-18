@@ -485,7 +485,7 @@ sub _hdlr_archive_prev_next {
             ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
             : $ctx->invoke_handler( 'categorynext',     $args, $cond );
     }
-    elsif ( $arctype->author_based && !$arctype->contenttype_author_based ) {
+    elsif ( $arctype->author_based && !$arctype->date_based ) {
         if ($is_prev) {
             $ctx->stash( 'tag', 'AuthorPrevious' );
         }
