@@ -37,11 +37,11 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
 
     if ($cat) {
         $cat_id = $cat->category_id;
-        if (isset($dt_field_id)) {
-            $join_on  = "join mt_cf_idx as dt_cf_idx";
+        if (isset($dt_field_id) && $dt_field_id) {
+            $join_on  = "join mt_cf_idx dt_cf_idx";
             $join_on .= " on cd_id = dt_cf_idx.cf_idx_content_data_id";
             $join_on .= " and dt_cf_idx.cf_idx_content_field_id = $dt_field_id\n";
-            $join_on .= "join mt_cf_idx as cat_cf_idx";
+            $join_on .= "join mt_cf_idx cat_cf_idx";
             $join_on .= " on cd_id = cat_cf_idx.cf_idx_content_data_id";
             $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
             $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id";
@@ -4004,7 +4004,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
                 $helper = $this->get_helper($at);
                 $ctx->stash('contents', array($cd));
-                if (preg_match('/^[0-9]+$/', $dt_field_id)) {
+                if (preg_match('/^[0-9]+$/', $dt_field_id) && $dt_field_id) {
                     $data = $cd->data();
                     $ts = $data[$dt_field_id];
                 }
@@ -4674,13 +4674,13 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
             $count = count($results);
 
             require_once("MTUtil.php");
-            $week_yr = substr($results[0]['cd_week_number'], 0, 4);
-            $week_num = substr($results[0]['cd_week_number'], 4);
+            $week_yr = substr($results[0]['week_number'], 0, 4);
+            $week_num = substr($results[0]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
-            $week_yr = substr($results[$count - 1]['cd_week_number'], 0, 4);
-            $week_num = substr($results[$count - 1]['cd_week_number'], 4);
+            $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
+            $week_num = substr($results[$count - 1]['week_number'], 4);
             list($y,$m,$d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
