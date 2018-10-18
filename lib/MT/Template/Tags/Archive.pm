@@ -454,7 +454,11 @@ sub _hdlr_archive_prev_next {
         : ( 'previous_archive_entry', 'next_archive_entry' );
 
     my $obj;
-    if ( $arctype->date_based && $arctype->category_based ) {
+    if (   $arctype->date_based
+        && $arctype->category_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_category_based )
+    {
         my $param = {
             ts       => $ctx->{current_timestamp},
             blog_id  => $ctx->stash('blog_id'),
@@ -480,7 +484,7 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->category_based ) {
+    elsif ( $arctype->category_based && !$arctype->contenttype_date_based ) {
         return $is_prev
             ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
             : $ctx->invoke_handler( 'categorynext',     $args, $cond );
@@ -523,7 +527,9 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
-        if ( $arctype->contenttype_date_based ) {
+        if (   $arctype->contenttype_date_based
+            || $arctype->contenttype_category_based )
+        {
             my $content_type = $ctx->stash('content_type');
             if ($content_type) {
                 my $content_data = $ctx->stash('content');
@@ -550,7 +556,10 @@ sub _hdlr_archive_prev_next {
                         ),
                     },
                 );
-                $param->{datetime_field_id} = $map->dt_field_id if $map;
+                $param->{datetime_field_id} = $map->dt_field_id
+                    if $map && $arctype->contenttype_date_based;
+                $param->{category_field_id} = $map->dt_field_id
+                    if $map && $arctype->contenttype_category_based;
             }
         }
         $obj
