@@ -193,8 +193,8 @@ sub archive_group_contents {
         : $ctx->stash('current_timestamp');
     my $author = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    $obj->dated_author_contents( $ctx, 'Author-Monthly', $author, $ts,
-        $limit, $content_type_id );
+    $obj->dated_author_contents( $ctx, 'ContentType-Author-Monthly', $author,
+        $ts, $limit, $content_type_id );
 }
 
 *date_range    = \&MT::ArchiveType::Monthly::date_range;

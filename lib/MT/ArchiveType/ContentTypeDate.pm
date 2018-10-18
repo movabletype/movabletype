@@ -160,9 +160,14 @@ sub dated_author_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map         = $ctx->stash('template_map');
+    my $map = $ctx->stash('template_map') || MT->model('templatemap')->load(
+        {   blog_id      => $blog->id,
+            archive_type => $at,
+            is_preferred => 1,
+        }
+    );
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-    my @contents    = MT::ContentData->load(
+    my @contents = MT::ContentData->load(
         {   blog_id   => $blog->id,
             author_id => $author->id,
             (   $content_type_id ? ( content_type_id => $content_type_id )
