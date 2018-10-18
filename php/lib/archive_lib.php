@@ -3985,15 +3985,12 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $is_prev = $tag == 'archiveprevious';
             $blog_id = $ctx->stash('blog_id');
             $ts = $ctx->stash('current_timestamp');
-            $category = $ctx->stash('category');
-            if (!isset($category)) {
-                $maps = $ctx->mt->db()->fetch_templatemap(
-                    array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
-                if (isset($maps)) {
-                    $map = $maps[0];
-                    $dt_field_id = $map->templatemap_dt_field_id;
-                    $cat_field_id = $map->templatemap_cat_field_id;
-                }
+            $maps = $ctx->mt->db()->fetch_templatemap(
+                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+            if (isset($maps)) {
+                $map = $maps[0];
+                $dt_field_id = $map->templatemap_dt_field_id;
+                $cat_field_id = $map->templatemap_cat_field_id;
             }
             if (!isset($ts) || !isset($dt_field_id) || !isset($cat_field_id)) {
                 return $ctx->error(
