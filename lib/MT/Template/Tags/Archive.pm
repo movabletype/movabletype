@@ -527,6 +527,9 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
+        if ( $arctype->contenttype_author_based ) {
+            $param->{author} = $ctx->stash('author');
+        }
         if (   $arctype->contenttype_date_based
             || $arctype->contenttype_category_based )
         {
