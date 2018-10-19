@@ -125,7 +125,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
             'sort_order' => $sort_order,
             'sort_by' => $sort_by,
         ));
-        $ctx->stash($cache_key);
+        $ctx->stash($cache_key, $cats);
     }
     return $cats;
 }
