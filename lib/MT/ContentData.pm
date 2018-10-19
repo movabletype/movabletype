@@ -1588,7 +1588,7 @@ sub gather_changed_cols {
         }
     }
 
-    $obj->{changed_revisioned_cols} = @$changed_cols ? $changed_cols : undef;
+    $obj->{changed_revisioned_cols} = $changed_cols;
 
     1;
 }
