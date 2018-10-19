@@ -24,22 +24,63 @@ $Lexicon_ja = array(
 	'Author Monthly' => 'ユーザー 月別',
 	'Author Daily' => 'ユーザー 日別',
 	'Author Weekly' => 'ユーザー 週別',
+	'Category' => 'カテゴリ',
 	'Category Yearly' => 'カテゴリ 年別',
 	'Category Monthly' => 'カテゴリ 月別',
 	'Category Daily' => 'カテゴリ 日別',
 	'Category Weekly' => 'カテゴリ 週別',
-	'Category' => 'カテゴリ',
+	'CONTENTTYPE_ADV' => 'コンテンツタイプ別',
+	'CONTENTTYPE-DAILY_ADV' => 'コンテンツタイプ 日別',
+	'CONTENTTYPE-WEEKLY_ADV' => 'コンテンツタイプ 週別',
+	'CONTENTTYPE-MONTHLY_ADV' => 'コンテンツタイプ 月別',
+	'CONTENTTYPE-YEARLY_ADV' => 'コンテンツタイプ 年別',
+	'CONTENTTYPE-AUTHOR_ADV' => 'コンテンツタイプ ユーザー別',
+	'CONTENTTYPE-AUTHOR-YEARLY_ADV' => 'コンテンツタイプ ユーザー 年別',
+	'CONTENTTYPE-AUTHOR-MONTHLY_ADV' => 'コンテンツタイプ ユーザー 月別',
+	'CONTENTTYPE-AUTHOR-DAILY_ADV' => 'コンテンツタイプ ユーザー 日別',
+	'CONTENTTYPE-AUTHOR-WEEKLY_ADV' => 'コンテンツタイプ ユーザー 週別',
+	'CONTENTTYPE-CATEGORY_ADV' => 'コンテンツタイプ カテゴリ別',
+	'CONTENTTYPE-CATEGORY-YEARLY_ADV' => 'コンテンツタイプ カテゴリ 年別',
+	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'コンテンツタイプ カテゴリ 月別',
+	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'コンテンツタイプ カテゴリ 日別',
+	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'コンテンツタイプ カテゴリ 週別',
+
+## php/lib/block.mtarchives.php
+	'ArchiveType not found - [_1]' => 'アーカイブタイプが見つかりません - [_1]',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhascontent.php
 	'No author available' => 'ユーザーが見つかりません。',
+
+## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/block.mtauthorhaspage.php
 
 ## php/lib/block.mtcalendar.php
 	'You used an [_1] tag without establishing a date context.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
+
+## php/lib/block.mtcategorysets.php
+	'No Category Set could be found.' => 'カテゴリセットが見つかりません。',
+	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
+
+## php/lib/block.mtcontentauthoruserpicasset.php
+	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTContentsコンテナタグの外部で使っていませんか?',
+
+## php/lib/block.mtcontentfield.php
+	'No Content Field could be found.' => 'コンテンツフィールドが見つかりません。',
+	'No Content Field Type could be found.' => 'コンテンツフィールドタイプが見つかりません。',
+
+## php/lib/block.mtcontentfields.php
+
+## php/lib/block.mtcontents.php
+
+## php/lib/block.mtcontentscalendar.php
+	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Sun、Mon、Tue、Wed、Thu、Fri、Satのいずれかでなければなりません。',
+	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
+	'Invalid month format: must be YYYYMM' => 'YYYYMM形式でなければなりません。',
+	'No such category \'[_1]\'' => '[_1]というカテゴリはありません。',
 
 ## php/lib/block.mtentries.php
 
@@ -59,9 +100,16 @@ $Lexicon_ja = array(
 	'\'[_1]\' is not an array.' => '[_1]は配列ではありません。',
 	'\'[_1]\' is not a valid function.' => '[_1]という関数はサポートされていません。',
 
+## php/lib/block.mttags.php
+	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters shown in the picture above.' => '画像の中に見える文字を入力してください。',
+
+## php/lib/content_field_type_lib.php
+	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
+	'No category_set setting in content field type.' => 'コンテンっつフィールドにカテゴリセットが設定されていません。',
 
 ## php/lib/function.mtassettype.php
 	'image' => '画像',
@@ -74,6 +122,62 @@ $Lexicon_ja = array(
 	'Video' => 'ビデオ',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcontentauthordisplayname.php
+
+## php/lib/function.mtcontentauthoremail.php
+
+## php/lib/function.mtcontentauthorid.php
+
+## php/lib/function.mtcontentauthorlink.php
+
+## php/lib/function.mtcontentauthorurl.php
+
+## php/lib/function.mtcontentauthorusername.php
+
+## php/lib/function.mtcontentauthoruserpic.php
+
+## php/lib/function.mtcontentauthoruserpicurl.php
+
+## php/lib/function.mtcontentcreateddate.php
+
+## php/lib/function.mtcontentdate.php
+
+## php/lib/function.mtcontentfieldlabel.php
+
+## php/lib/function.mtcontentfieldtype.php
+
+## php/lib/function.mtcontentfieldvalue.php
+
+## php/lib/function.mtcontentid.php
+
+## php/lib/function.mtcontentmodifieddate.php
+
+## php/lib/function.mtcontentpermalink.php
+
+## php/lib/function.mtcontentscount.php
+
+## php/lib/function.mtcontentsitedescription.php
+
+## php/lib/function.mtcontentsiteid.php
+
+## php/lib/function.mtcontentsitename.php
+
+## php/lib/function.mtcontentsiteurl.php
+
+## php/lib/function.mtcontentstatus.php
+
+## php/lib/function.mtcontenttypedescription.php
+
+## php/lib/function.mtcontenttypeid.php
+
+## php/lib/function.mtcontenttypename.php
+
+## php/lib/function.mtcontenttypeuniqueid.php
+
+## php/lib/function.mtcontentuniqueid.php
+
+## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => '記事',
@@ -100,6 +204,8 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtsetvar.php
 
+## php/lib/function.mtsitecontentcount.php
+
 ## php/lib/function.mttagsearchlink.php
 	'Invalid [_1] parameter.' => '[_1]パラメータが不正です。',
 
@@ -112,7 +218,6 @@ $Lexicon_ja = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
-
 
 );
 
