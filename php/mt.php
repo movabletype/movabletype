@@ -757,6 +757,7 @@ class MT {
     function resolve_url($path, $build_type = 3) {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
         if (isset($data)) {
+            $tmpl_map = $data->templatemap();
             if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
                 if ( isset($data->fileinfo_cd_id)
                     && is_numeric($data->fileinfo_cd_id)
@@ -771,7 +772,6 @@ class MT {
                 if ( isset($data->fileinfo_entry_id)
                     && is_numeric($data->fileinfo_entry_id)
                 ) {
-                    $tmpl_map = $data->templatemap();
                     if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
                         $entry = $this->db->fetch_page($data->fileinfo_entry_id);
                     } else {
