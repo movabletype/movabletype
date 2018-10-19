@@ -12,7 +12,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-riot": "^1.1.4",
     "gulp-uglify": "^1.2.0",
-    "lodash": "^3.10.1",
+    "lodash": ">=4.17.5",
     "riot": "^2.2.4",
     "webpack": "^1.11.0"
   },
