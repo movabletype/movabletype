@@ -19,13 +19,10 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if ($e) {
             $cat = $e->category();
         }
-        else {
-            $cd = $ctx->stash('content');
-        }
         $cat or $cat = $ctx->stash('category');
         $cat or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
-        if ($cd) {
+        if ($cat->category_category_set_id) {
             $needs_contents = $args['contents'];
         }
         else {
@@ -53,14 +50,14 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if (isset($pos)) {
             $pos += $step;
             while (($pos >= 0) && ($pos < count($cats))) {
-                if (isset($e) && $cats[$pos]->entry_count() == 0) {
+                if (!$cats[$pos]->category_category_set_id && $cats[$pos]->entry_count() == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;
                         continue;
                     }
                 }
-                else if (isset($cd) && $cats[$pos]->content_data_count() == 0) {
+                else if ($cats[$pos]->category_category_set_id && $cats[$pos]->content_data_count() == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;
