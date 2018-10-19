@@ -542,12 +542,12 @@ abstract class MTDatabase {
         return $config;
     }
 
-    public function category_link($cid) {
+    public function category_link($cid, $at = 'Category') {
         if (isset($this->_cat_link_cache[$cid])) {
             $url = $this->_cat_link_cache[$cid];
         } else {
             $where = "fileinfo_category_id = $cid and
-                      fileinfo_archive_type = 'Category'";
+                      fileinfo_archive_type = '$at'";
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
             $finfos = $finfo->Find($where);
@@ -2645,7 +2645,7 @@ abstract class MTDatabase {
             select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
               from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
              where fileinfo_category_id in ($id_list)
-               and fileinfo_archive_type = 'Category'
+               and (fileinfo_archive_type = 'Category' or fileinfo_archive_type = 'ContentType-Category')
               and A.blog_id = fileinfo_blog_id
                and templatemap_id = fileinfo_templatemap_id
                and templatemap_is_preferred = 1
