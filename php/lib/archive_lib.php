@@ -3994,9 +3994,6 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                    "You used an <mt$tag> without a date context set up.");
             }
             $order = $is_prev ? 'previous' : 'next';
-            $fetch_args = Array();
-            $fetch_args['date_field'] = $dt_field_id;
-            $fetch_args['category_field'] = $cat_field_id;
 
             if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
                 $helper = $this->get_helper($at);
