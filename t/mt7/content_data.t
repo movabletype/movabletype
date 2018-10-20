@@ -167,7 +167,7 @@ subtest 'gather_changed_cols' => sub {
     my $cd_orig = $cd->clone;
 
     $cd->gather_changed_cols($cd_orig);
-    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+    is_deeply( $cd->{changed_revisioned_cols}, [], 'same data column' );
 
     $cd->data( { abc => 1 } );
 
@@ -178,7 +178,7 @@ subtest 'gather_changed_cols' => sub {
     $cd_orig->data( { abc => 1 } );
 
     $cd->gather_changed_cols($cd_orig);
-    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+    is_deeply( $cd->{changed_revisioned_cols}, [], 'same data column' );
 };
 
 done_testing;
