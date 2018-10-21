@@ -499,14 +499,26 @@ sub _hdlr_archive_prev_next {
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
     }
-    elsif ( $arctype->entry_based || $arctype->contenttype_based ) {
-        my $obj_key = $arctype->contenttype_based ? 'content' : 'entry';
-        my $o = $ctx->stash($obj_key);
+    elsif ( $arctype->entry_based ) {
+        my $o = $ctx->stash('entry');
         if ($is_prev) {
             $obj = $o->previous(1);
         }
         else {
             $obj = $o->next(1);
+        }
+    }
+    elsif ( $arctype->contenttype_based ) {
+        my $terms = {
+            status     => 2,               # MT::ContentStatus::RELEASE()
+            date_field => 'authored_on',
+        };
+        my $o = $ctx->stash('content');
+        if ($is_prev) {
+            $obj = $o->previous($terms);
+        }
+        else {
+            $obj = $o->next($terms);
         }
     }
     else {
@@ -561,9 +573,10 @@ sub _hdlr_archive_prev_next {
                 );
                 $param->{datetime_field_id} = $map->dt_field_id
                     if $map && $arctype->contenttype_date_based;
-                if ($arctype->contenttype_category_based) {
+                if ( $arctype->contenttype_category_based ) {
                     $param->{category_field_id} = $map->cat_field_id if $map;
-                    $param->{category_id} = $ctx->stash('category')->id if $ctx->stash('category');
+                    $param->{category_id} = $ctx->stash('category')->id
+                        if $ctx->stash('category');
                 }
             }
         }
@@ -574,16 +587,24 @@ sub _hdlr_archive_prev_next {
     }
     if ($obj) {
         my $builder = $ctx->stash('builder');
-        my $stash_key
-            = $arctype->contenttype_based
-            || $arctype->contenttype_category_based
-            || $arctype->contenttype_author_based
-            || $arctype->contenttype_date_based ? 'contents' : 'entries';
-        local $ctx->{__stash}->{$stash_key} = [$obj];
-
-        my $date_field_data;
+        my ( $stash_key, $stash_key_plural );
         if (   $arctype->contenttype_based
             || $arctype->contenttype_category_based
+            || $arctype->contenttype_author_based
+            || $arctype->contenttype_date_based )
+        {
+            $stash_key        = 'content';
+            $stash_key_plural = 'contents';
+        }
+        else {
+            $stash_key        = 'entry';
+            $stash_key_plural = 'entries';
+        }
+        local $ctx->{__stash}->{$stash_key}        = $obj;
+        local $ctx->{__stash}->{$stash_key_plural} = [$obj];
+
+        my $date_field_data;
+        if (   $arctype->contenttype_category_based
             || $arctype->contenttype_author_based
             || $arctype->contenttype_date_based )
         {
