@@ -69,6 +69,19 @@ $test_env->prepare_fixture(
             name    => 'test category set',
         );
 
+        my $cf_datetime_01 = MT::Test::Permission->make_content_field(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_01->id,
+            name            => 'date and time',
+            type            => 'date_and_time',
+        );
+        my $cf_datetime_02 = MT::Test::Permission->make_content_field(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_02->id,
+            name            => 'date and time',
+            type            => 'date_and_time',
+        );
+
         my $cf_category_01 = MT::Test::Permission->make_content_field(
             blog_id            => $blog->id,
             content_type_id    => $content_type_01->id,
@@ -92,8 +105,14 @@ $test_env->prepare_fixture(
         );
 
         my $fields_01 = [
+            {   id        => $cf_datetime_01->id,
+                order     => 1,
+                type      => $cf_datetime_01->type,
+                options   => { label => $cf_datetime_01->name },
+                unique_id => $cf_datetime_01->unique_id,
+            },
             {   id      => $cf_category_01->id,
-                order   => 1,
+                order   => 2,
                 type    => $cf_category_01->type,
                 options => {
                     label        => $cf_category_01->name,
@@ -106,8 +125,14 @@ $test_env->prepare_fixture(
         ];
 
         my $fields_02 = [
+            {   id        => $cf_datetime_02->id,
+                order     => 1,
+                type      => $cf_datetime_02->type,
+                options   => { label => $cf_datetime_02->name },
+                unique_id => $cf_datetime_02->unique_id,
+            },
             {   id      => $cf_category_02->id,
-                order   => 1,
+                order   => 2,
                 type    => $cf_category_02->type,
                 options => {
                     label        => $cf_category_02->name,
@@ -140,7 +165,10 @@ $test_env->prepare_fixture(
             authored_on     => '20170927112314',
             identifier      => 'mtIfArchiveType-test-data 01',
             author_id       => $author_01->id,
-            data => { $cf_category_01->id => [ $category_01->id ], },
+            data            => {
+                $cf_category_01->id => [ $category_01->id ],
+                $cf_datetime_01->id => '20170701080500',
+            },
         );
 
         my $content_data_02 = MT::Test::Permission->make_content_data(
@@ -150,7 +178,10 @@ $test_env->prepare_fixture(
             authored_on     => '20180927112314',
             identifier      => 'mtIfArchiveType-test-data 02',
             author_id       => $author_01->id,
-            data => { $cf_category_01->id => [ $category_01->id ], },
+            data            => {
+                $cf_category_01->id => [ $category_01->id ],
+                $cf_datetime_01->id => '20180801080500',
+            },
         );
 
         my $content_data_03 = MT::Test::Permission->make_content_data(
@@ -158,9 +189,12 @@ $test_env->prepare_fixture(
             content_type_id => $content_type_01->id,
             status          => MT::ContentStatus::RELEASE(),
             authored_on     => '20190927112314',
-            identifier      => 'mtIfArchiveType-test-data 02',
+            identifier      => 'mtIfArchiveType-test-data 03',
             author_id       => $author_02->id,
-            data => { $cf_category_01->id => [ $category_01->id ], },
+            data            => {
+                $cf_category_01->id => [ $category_01->id ],
+                $cf_datetime_01->id => '20190901080500',
+            },
         );
 
         my $content_data_04 = MT::Test::Permission->make_content_data(
@@ -168,9 +202,45 @@ $test_env->prepare_fixture(
             content_type_id => $content_type_02->id,
             status          => MT::ContentStatus::RELEASE(),
             authored_on     => '20170927112314',
-            identifier      => 'mtIfArchiveType-test-data 02',
+            identifier      => 'mtIfArchiveType-test-data 04',
             author_id       => $author_01->id,
-            data => { $cf_category_02->id => [ $category_01->id ], },
+            data            => {
+                $cf_category_02->id => [ $category_01->id ],
+                $cf_datetime_02->id => '20181010180500',
+            },
+        );
+
+        my $template_01 = MT::Test::Permission->make_template(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_01->id,
+            name            => 'ContentType Test 01',
+            type            => 'ct',
+            text            => 'test 01',
+        );
+        my $template_02 = MT::Test::Permission->make_template(
+            blog_id         => $blog->id,
+            content_type_id => $content_type_02->id,
+            name            => 'ContentType Test 02',
+            type            => 'ct',
+            text            => 'test 02',
+        );
+
+        my $map_01 = MT::Test::Permission->make_templatemap(
+            template_id   => $template_01->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Weekly',
+            file_template => '%y/%m/%d-week/%i',
+            is_preferred  => 1,
+            dt_field_id   => $cf_datetime_01->id,
+        );
+
+        my $map_02 = MT::Test::Permission->make_templatemap(
+            template_id   => $template_02->id,
+            blog_id       => $blog->id,
+            archive_type  => 'ContentType-Weekly',
+            file_template => '%y/%m/%d-week/%i',
+            is_preferred  => 1,
+            dt_field_id   => $cf_datetime_02->id,
         );
     }
 );
@@ -185,6 +255,15 @@ $vars->{content_type_01_name}      = $content_type_01->name;
 $vars->{content_type_01_id}        = $content_type_01->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
+
+my ($template)
+    = MT->model('template')
+    ->load( { content_type_id => $content_type_01->id } );
+my @maps = MT->model('templatemap')->load( { template_id => $template->id } );
+foreach my $map (@maps) {
+    $map->build_type(3);
+    $map->save;
+}
 
 MT::Test::Tag->run_php_tests( $blog->id );
 

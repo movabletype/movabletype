@@ -70,16 +70,28 @@ sub archive_group_iter {
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
     my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
 
-    my $tmpl  = $ctx->stash('template');
     my @data  = ();
     my $count = 0;
 
     my $author = $ctx->stash('author');
 
-    my $map = $ctx->stash('template_map');
+    my $map = $ctx->stash('template_map') || MT->model('templatemap')->load(
+        {   blog_id      => $blog->id,
+            archive_type => 'ContentType-Author-Yearly',
+            is_preferred => 1,
+        }
+    );
     my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     my $content_type_id
         = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+
+    unless ($content_type_id) {
+        my $tmpl = $ctx->stash('template');
+        if ( !$tmpl && $map ) {
+            $tmpl = MT->model('template')->load( $map->template_id );
+        }
+        $content_type_id = $tmpl->content_type_id if $tmpl;
+    }
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
@@ -172,8 +184,8 @@ sub archive_group_contents {
         : $ctx->stash('current_timestamp');
     my $author = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    $obj->dated_author_contents( $ctx, 'Author-Yearly', $author, $ts,
-        $limit, $content_type_id );
+    $obj->dated_author_contents( $ctx, 'ContentType-Author-Yearly', $author,
+        $ts, $limit, $content_type_id );
 }
 
 *date_range    = \&MT::ArchiveType::Yearly::date_range;

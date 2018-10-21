@@ -454,7 +454,11 @@ sub _hdlr_archive_prev_next {
         : ( 'previous_archive_entry', 'next_archive_entry' );
 
     my $obj;
-    if ( $arctype->date_based && $arctype->category_based ) {
+    if (   $arctype->date_based
+        && $arctype->category_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_category_based )
+    {
         my $param = {
             ts       => $ctx->{current_timestamp},
             blog_id  => $ctx->stash('blog_id'),
@@ -465,7 +469,11 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->date_based && $arctype->author_based ) {
+    elsif ($arctype->date_based
+        && $arctype->author_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_author_based )
+    {
         my $param = {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
@@ -476,12 +484,12 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->category_based ) {
+    elsif ( $arctype->category_based && !$arctype->contenttype_date_based ) {
         return $is_prev
             ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
             : $ctx->invoke_handler( 'categorynext',     $args, $cond );
     }
-    elsif ( $arctype->author_based ) {
+    elsif ( $arctype->author_based && !$arctype->date_based ) {
         if ($is_prev) {
             $ctx->stash( 'tag', 'AuthorPrevious' );
         }
@@ -491,14 +499,26 @@ sub _hdlr_archive_prev_next {
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
     }
-    elsif ( $arctype->entry_based || $arctype->contenttype_based ) {
-        my $obj_key = $arctype->contenttype_based ? 'content' : 'entry';
-        my $o = $ctx->stash($obj_key);
+    elsif ( $arctype->entry_based ) {
+        my $o = $ctx->stash('entry');
         if ($is_prev) {
             $obj = $o->previous(1);
         }
         else {
             $obj = $o->next(1);
+        }
+    }
+    elsif ( $arctype->contenttype_based ) {
+        my $terms = {
+            status     => 2,               # MT::ContentStatus::RELEASE()
+            date_field => 'authored_on',
+        };
+        my $o = $ctx->stash('content');
+        if ($is_prev) {
+            $obj = $o->previous($terms);
+        }
+        else {
+            $obj = $o->next($terms);
         }
     }
     else {
@@ -519,11 +539,25 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
-        if ( $arctype->contenttype_date_based ) {
+        if ( $arctype->contenttype_author_based ) {
+            $param->{author} = $ctx->stash('author');
+        }
+        if (   $arctype->contenttype_date_based
+            || $arctype->contenttype_category_based )
+        {
             my $content_type = $ctx->stash('content_type');
             if ($content_type) {
                 my $content_data = $ctx->stash('content');
-                $param->{content_data} = $content_data if $content_data;
+                if ($content_data) {
+                    $param->{content_data} = $content_data;
+                }
+                else {
+                    my $contents = $ctx->stash('contents');
+                    if ( ref $contents eq 'ARRAY' && @$contents ) {
+                        $param->{content_data} = $contents->[0];
+                    }
+                }
+
                 my ($map) = MT::TemplateMap->load(
                     {   blog_id      => $param->{blog_id},
                         archive_type => $at,
@@ -537,7 +571,13 @@ sub _hdlr_archive_prev_next {
                         ),
                     },
                 );
-                $param->{datetime_field_id} = $map->dt_field_id if $map;
+                $param->{datetime_field_id} = $map->dt_field_id
+                    if $map && $arctype->contenttype_date_based;
+                if ( $arctype->contenttype_category_based ) {
+                    $param->{category_field_id} = $map->cat_field_id if $map;
+                    $param->{category_id} = $ctx->stash('category')->id
+                        if $ctx->stash('category');
+                }
             }
         }
         $obj
@@ -547,16 +587,24 @@ sub _hdlr_archive_prev_next {
     }
     if ($obj) {
         my $builder = $ctx->stash('builder');
-        my $stash_key
-            = $arctype->contenttype_based
-            || $arctype->contenttype_category_based
-            || $arctype->contenttype_author_based
-            || $arctype->contenttype_date_based ? 'contents' : 'entries';
-        local $ctx->{__stash}->{$stash_key} = [$obj];
-
-        my $date_field_data;
+        my ( $stash_key, $stash_key_plural );
         if (   $arctype->contenttype_based
             || $arctype->contenttype_category_based
+            || $arctype->contenttype_author_based
+            || $arctype->contenttype_date_based )
+        {
+            $stash_key        = 'content';
+            $stash_key_plural = 'contents';
+        }
+        else {
+            $stash_key        = 'entry';
+            $stash_key_plural = 'entries';
+        }
+        local $ctx->{__stash}->{$stash_key}        = $obj;
+        local $ctx->{__stash}->{$stash_key_plural} = [$obj];
+
+        my $date_field_data;
+        if (   $arctype->contenttype_category_based
             || $arctype->contenttype_author_based
             || $arctype->contenttype_date_based )
         {
