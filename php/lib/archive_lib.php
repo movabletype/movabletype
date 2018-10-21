@@ -3985,15 +3985,12 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $is_prev = $tag == 'archiveprevious';
             $blog_id = $ctx->stash('blog_id');
             $ts = $ctx->stash('current_timestamp');
-            $category = $ctx->stash('category');
-            if (!isset($category)) {
-                $maps = $ctx->mt->db()->fetch_templatemap(
-                    array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
-                if (isset($maps)) {
-                    $map = $maps[0];
-                    $dt_field_id = $map->templatemap_dt_field_id;
-                    $cat_field_id = $map->templatemap_cat_field_id;
-                }
+            $maps = $ctx->mt->db()->fetch_templatemap(
+                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+            if (isset($maps)) {
+                $map = $maps[0];
+                $dt_field_id = $map->templatemap_dt_field_id;
+                $cat_field_id = $map->templatemap_cat_field_id;
             }
             if (!isset($ts) || !isset($dt_field_id) || !isset($cat_field_id)) {
                 return $ctx->error(
@@ -4005,7 +4002,6 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $fetch_args['category_field'] = $cat_field_id;
 
             if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
-            #if ($cd = $ctx->mt->db()->fetch_next_prev_content($order, $fetch_args)) {
                 $helper = $this->get_helper($at);
                 $ctx->stash('contents', array($cd));
                 if (preg_match('/^[0-9]+$/', $dt_field_id)) {
@@ -4018,7 +4014,6 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                 list($start, $end) = $helper($ts);
                 $ctx->stash('current_timestamp', $start);
                 $ctx->stash('current_timestamp_end', $end);
-                #$ctx->stash('category', $category);
             } else {
                 $ctx->restore($localvars);
                 $repeat = false;
@@ -4097,7 +4092,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $category_id = $row['placement_category_id'];
+        $category_id = $row['category_id'];
         $category = $mt->db()->fetch_category($category_id);
         $ctx->stash('category', $category);
     }
@@ -4196,7 +4191,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $sql = "
                     select count(*) as cd_count,
                            $year_ext as y,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4337,7 +4332,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     select count(*) as cd_count,
                            $year_ext as y,
                            $month_ext as m,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4480,7 +4475,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                            $year_ext as y,
                            $month_ext as m,
                            $day_ext as d,
-                           $cat_target_col
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4629,8 +4624,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'dt_cf_idx.cf_idx_value_integer';
                 $sql = "
                     select count(*) as cd_count,
-                           $week_number week_number,
-                           $cat_target_col
+                           $week_number as week_number,
+                           $cat_target_col as category_id
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
