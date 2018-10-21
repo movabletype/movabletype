@@ -35,29 +35,26 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
             $cat_field_id = $map->templatemap_cat_field_id;
     }
 
+    $join_on = '';
+    if (isset($dt_field_id) && $dt_field_id) {
+        $join_on .= "join mt_cf_idx dt_cf_idx";
+        $join_on .= " on cd_id = dt_cf_idx.cf_idx_content_data_id";
+        $join_on .= " and dt_cf_idx.cf_idx_content_field_id = $dt_field_id\n";
+        $dt_target_col = 'dt_cf_idx.cf_idx_value_datetime';
+    }
     if ($cat) {
         $cat_id = $cat->category_id;
-        if (isset($dt_field_id) && $dt_field_id) {
-            $join_on  = "join mt_cf_idx dt_cf_idx";
-            $join_on .= " on cd_id = dt_cf_idx.cf_idx_content_data_id";
-            $join_on .= " and dt_cf_idx.cf_idx_content_field_id = $dt_field_id\n";
-            $join_on .= "join mt_cf_idx cat_cf_idx";
-            $join_on .= " on cd_id = cat_cf_idx.cf_idx_content_data_id";
-            $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
-            $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id";
-            $dt_target_col = 'dt_cf_idx.cf_idx_value_datetime';
-            $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
-        }
-        else {
-            $join_on  = "join mt_cf_idx cat_cf_idx on cd_id = cat_cf_idx.cf_idx_content_data_id";
-            $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
-            $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id";
-            $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
-        }
-    }
-    elseif (isset($dt_field_id) && $dt_field_id) {
-        $join_on = "join mt_cf_idx on cd_id = cf_idx_content_data_id and cf_idx_content_field_id = $dt_field_id";
-        $dt_target_col = 'cf_idx_value_datetime';
+
+        $join_on .= "join mt_cf_idx cat_cf_idx";
+        $join_on .= " on cd_id = cat_cf_idx.cf_idx_content_data_id";
+        $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
+        $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id\n";
+
+        $join_on .= "join mt_category";
+        $join_on .= " on category_id = cat_cf_idx.cf_idx_value_integer";
+        $join_on .= " and category_id = $cat_id";
+
+        $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
     }
 
     if (!isset($dt_target_col))
@@ -4154,11 +4151,14 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
+            $sort_order = $args['sort_order'] || 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id
+                'category_set_id' => $cat_set_id,
+                'sort_by' => 'label',
+                'sort_order' => $sort_order
             ));
         }
 
@@ -4191,7 +4191,8 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $sql = "
                     select count(*) as cd_count,
                            $year_ext as y,
-                           $cat_target_col as category_id
+                           $cat_target_col as category_id,
+                           category_label
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4200,9 +4201,9 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                        $content_type_filter
                      group by
                            $year_ext,
-                           $cat_target_col
+                           category_label
                      order by
-                           $cat_target_col $cat_order,
+                           category_label $cat_order,
                            $year_ext $order";
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
@@ -4293,11 +4294,14 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
+            $sort_order = $args['sort_order'] || 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id
+                'category_set_id' => $cat_set_id,
+                'sort_by' => 'label',
+                'sort_order' => $sort_order
             ));
         }
 
@@ -4332,7 +4336,8 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     select count(*) as cd_count,
                            $year_ext as y,
                            $month_ext as m,
-                           $cat_target_col as category_id
+                           $cat_target_col as category_id,
+                           category_label
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4342,9 +4347,9 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                      group by
                            $year_ext,
                            $month_ext,
-                           $cat_target_col
+                           category_label
                      order by
-                           $cat_target_col $cat_order,
+                           category_label $cat_order,
                            $year_ext $order,
                            $month_ext $order";
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
@@ -4435,11 +4440,14 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
+            $sort_order = $args['sort_order'] || 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id
+                'category_set_id' => $cat_set_id,
+                'sort_by' => 'label',
+                'sort_order' => $sort_order
             ));
         }
 
@@ -4475,7 +4483,8 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                            $year_ext as y,
                            $month_ext as m,
                            $day_ext as d,
-                           $cat_target_col as category_id
+                           $cat_target_col as category_id,
+                           category_label
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4486,9 +4495,9 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                            $year_ext,
                            $month_ext,
                            $day_ext,
-                           $cat_target_col
+                           category_label
                      order by
-                           $cat_target_col $cat_order,
+                           category_label $cat_order,
                            $year_ext $order,
                            $month_ext $order,
                            $day_ext $order";
@@ -4590,11 +4599,14 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
+            $sort_order = $args['sort_order'] || 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
                 'class' => 'category',
-                'category_set_id' => $cat_set_id
+                'category_set_id' => $cat_set_id,
+                'sort_by' => 'label',
+                'sort_order' => $sort_order
             ));
         }
 
@@ -4625,7 +4637,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $sql = "
                     select count(*) as cd_count,
                            $week_number as week_number,
-                           $cat_target_col as category_id
+                           $cat_target_col as category_id,
+                           category_label
                       from mt_cd
                       $join_on
                      where cd_blog_id = $blog_id
@@ -4634,9 +4647,9 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                        $content_type_filter
                      group by
                            $week_number,
-                           $cat_target_col
+                           category_label
                      order by
-                           $cat_target_col $cat_order,
+                           category_label $cat_order,
                            $week_number $order";
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
