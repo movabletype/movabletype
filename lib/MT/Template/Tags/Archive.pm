@@ -561,9 +561,10 @@ sub _hdlr_archive_prev_next {
                 );
                 $param->{datetime_field_id} = $map->dt_field_id
                     if $map && $arctype->contenttype_date_based;
-                if ($arctype->contenttype_category_based) {
+                if ( $arctype->contenttype_category_based ) {
                     $param->{category_field_id} = $map->cat_field_id if $map;
-                    $param->{category_id} = $ctx->stash('category')->id if $ctx->stash('category');
+                    $param->{category_id} = $ctx->stash('category')->id
+                        if $ctx->stash('category');
                 }
             }
         }
