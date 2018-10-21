@@ -575,12 +575,21 @@ sub _hdlr_archive_prev_next {
     }
     if ($obj) {
         my $builder = $ctx->stash('builder');
-        my $stash_key
-            = $arctype->contenttype_based
+        my ( $stash_key, $stash_key_plural );
+        if (   $arctype->contenttype_based
             || $arctype->contenttype_category_based
             || $arctype->contenttype_author_based
-            || $arctype->contenttype_date_based ? 'contents' : 'entries';
-        local $ctx->{__stash}->{$stash_key} = [$obj];
+            || $arctype->contenttype_date_based )
+        {
+            $stash_key        = 'content';
+            $stash_key_plural = 'contents';
+        }
+        else {
+            $stash_key        = 'entry';
+            $stash_key_plural = 'entries';
+        }
+        local $ctx->{__stash}->{$stash_key}        = $obj;
+        local $ctx->{__stash}->{$stash_key_plural} = [$obj];
 
         my $date_field_data;
         if (   $arctype->contenttype_based
