@@ -499,14 +499,26 @@ sub _hdlr_archive_prev_next {
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
     }
-    elsif ( $arctype->entry_based || $arctype->contenttype_based ) {
-        my $obj_key = $arctype->contenttype_based ? 'content' : 'entry';
-        my $o = $ctx->stash($obj_key);
+    elsif ( $arctype->entry_based ) {
+        my $o = $ctx->stash('entry');
         if ($is_prev) {
             $obj = $o->previous(1);
         }
         else {
             $obj = $o->next(1);
+        }
+    }
+    elsif ( $arctype->contenttype_based ) {
+        my $terms = {
+            status     => 2,               # MT::ContentStatus::RELEASE()
+            date_field => 'authored_on',
+        };
+        my $o = $ctx->stash('content');
+        if ($is_prev) {
+            $obj = $o->previous($terms);
+        }
+        else {
+            $obj = $o->next($terms);
         }
     }
     else {
@@ -592,8 +604,7 @@ sub _hdlr_archive_prev_next {
         local $ctx->{__stash}->{$stash_key_plural} = [$obj];
 
         my $date_field_data;
-        if (   $arctype->contenttype_based
-            || $arctype->contenttype_category_based
+        if (   $arctype->contenttype_category_based
             || $arctype->contenttype_author_based
             || $arctype->contenttype_date_based )
         {
