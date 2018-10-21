@@ -3218,15 +3218,15 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         $at or $at = $ctx->stash('current_archive_type');
         $ts = $ctx->stash('current_timestamp');
 
-        if ($at == 'Author-Monthly') {
+        if ($at == 'ContentType-Author-Monthly') {
             $ts = substr($ts, 0, 6) . '01000000';
-        } elseif ($at == 'Author-Daily') {
+        } elseif ($at == 'ContentType-Author-Daily') {
             $ts = substr($ts, 0, 8) . '000000';
-        } elseif ($at == 'Author-Weekly') {
+        } elseif ($at == 'ContentType-Author-Weekly') {
             require_once("MTUtil.php");
             list($ws, $we) = start_end_week($ts);
             $ts = $ws;
-        } elseif ($at == 'Author-Yearly') {
+        } elseif ($at == 'ContentType-Author-Yearly') {
             $ts = substr($ts, 0, 4) . '0101000000';
         } else {
             $ts = '';
@@ -3949,15 +3949,15 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $cat = $ctx->stash('category');
         $cat_id = $cat->category_id;
         if (isset($ts)) {
-            if ($at == 'Category-Monthly') {
+            if ($at == 'ContentType-Category-Monthly') {
                 $ts = substr($ts, 0, 6) . '01000000';
-            } elseif ($at == 'Category-Daily') {
+            } elseif ($at == 'ContentType-Category-Daily') {
                 $ts = substr($ts, 0, 8) . '000000';
-            } elseif ($at == 'Category-Weekly') {
+            } elseif ($at == 'ContentType-Category-Weekly') {
                 require_once("MTUtil.php");
                 list($ws, $we) = start_end_week($ts);
                 $ts = $ws;
-            } elseif ($at == 'Category-Yearly') {
+            } elseif ($at == 'ContentType-Category-Yearly') {
                 $ts = substr($ts, 0, 4) . '0101000000';
             }
             $start_filter = "and fileinfo_startdate = '$ts'";
