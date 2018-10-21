@@ -27,7 +27,11 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     } elseif ($at == 'ContentType') {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('ContentPermalink', $args);
-    } elseif ($at == 'Category') {
+    } elseif ($at == 'Category' || $at == 'ContentType-Category') {
+        if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
+            return $cx->error($ctx->mt->translate('No Category Set could be found.'));
+        }
+        $args['category_set_id'] = $ctx->stash('category_set')->id;
         return $ctx->tag('CategoryArchiveLink', $args);
     }
     $args['blog_id'] = $blog->blog_id;
