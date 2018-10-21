@@ -4512,7 +4512,7 @@ abstract class MTDatabase {
                 $cf = $cfs[0];
                 $type = $cf->cf_type;
 
-                if ($type === 'categories') {
+                if ($type === 'categories' && !(array_key_exists('_no_use_category_filter', $args) && $args['_no_use_category_filter'])) {
                     $category_arg = $value;
                     $category_set_id = $cf->cf_related_cat_set_id;
                     require_once("MTUtil.php");

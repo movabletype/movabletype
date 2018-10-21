@@ -3987,18 +3987,16 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             if (isset($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
-                $cat_field_id = $map->templatemap_cat_field_id;
+                $cat_field = $map->cat_field();
             }
-            if (!isset($ts) || !isset($dt_field_id) || !isset($cat_field_id)) {
+            $category = $ctx->stash('category');
+            if (!(isset($ts) && $ts) || !(isset($cat_field) && $cat_field) || !(isset($category) && $category)) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without context set up.");
             }
             $order = $is_prev ? 'previous' : 'next';
-            $fetch_args = Array();
-            $fetch_args['date_field'] = $dt_field_id;
-            $fetch_args['category_field'] = $cat_field_id;
 
-            if ($cd = $this->get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order)) {
+            if ($cd = $this->get_categorized_content($ts, $blog_id, $cat_field, $category->category_id, $at, $order)) {
                 $helper = $this->get_helper($at);
                 $ctx->stash('contents', array($cd));
                 if (preg_match('/^[0-9]+$/', $dt_field_id) && $dt_field_id) {
@@ -4021,7 +4019,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $content;
     }
 
-    protected function get_categorized_content($ts, $blog_id, $dt_field_id, $cat_field_id, $at, $order) {
+    protected function get_categorized_content($ts, $blog_id, $cat_field, $cat_id, $at, $order) {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -4031,9 +4029,11 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $args['current_timestamp'] = $this->inc_ts($end);
             $args['base_sort_order'] = 'ascend'; # ascending order
         }
+        $args['_current_timestamp_sort'] = true;
         $args['lastn'] = 1;
         $args['blog_id'] = $blog_id;
-        $args['category_id'] = $cat_id;
+        $args['field___' . $cat_field->cf_unique_id] = $cat_id;
+        $args['_no_use_category_filter'] = true;
 
         $mt = MT::get_instance();
         $ctx =& $mt->context();
