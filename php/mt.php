@@ -659,7 +659,7 @@ class MT {
                 $ctx->stash('archive_author', $archive_author);
             }
             if (isset($at)) {
-                if (($at != 'Category') && isset($ts)) {
+                if ($at != 'Category' && $at != 'ContentType-Category' && isset($ts)) {
                     list($ts_start, $ts_end) = $archiver->get_range($ts);
                     $ctx->stash('current_timestamp', $ts_start);
                     $ctx->stash('current_timestamp_end', $ts_end);
