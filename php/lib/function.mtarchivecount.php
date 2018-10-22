@@ -14,7 +14,7 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     }
     $count = 0;
     if ( $ctx->stash('inside_mt_categories') &&
-         !( $isset($archiver) && $archiver->is_date_based() ) ) {
+         !( isset($archiver) && $archiver->is_date_based() ) ) {
         return $ctx->tag('MTCategoryCount', $args);
     } elseif ($count = $ctx->stash('archive_count')) {
         # $count is set
