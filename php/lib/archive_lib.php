@@ -3629,7 +3629,7 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
         $author = $ctx->stash('archive_author');
         $author or $author = $ctx->stash('author');
         if (isset($author)) {
-            $author_filter = " and cd_author_id=".$author['author_id'];
+            $author_filter = " and cd_author_id=".$author->author_id;
         }
 
         $inside = $ctx->stash('inside_archive_list');
