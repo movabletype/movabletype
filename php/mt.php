@@ -684,15 +684,6 @@ class MT {
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
             }
-
-            if ($at == 'Category') {
-                $vars =& $ctx->__stash['vars'];
-                $vars['archive_class']            = "category-archive";
-                $vars['category_archive']         = 1;
-                $vars['archive_template']         = 1;
-                $vars['archive_listing']          = 1;
-                $vars['module_category_archives'] = 1;
-            }
         }
 
         $this->set_canonical_url($ctx, $blog, $data);
