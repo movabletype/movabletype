@@ -1150,7 +1150,7 @@ sub _hdlr_archive_count {
         return $ctx->count_format( $count, $args );
     }
     my $count;
-    if ( defined $at && $at =~ /^ContentType/ ) {
+    if ( ( defined $at && $at =~ /^ContentType/ ) || $ctx->stash('content_type') ) {
         my $c = $ctx->stash('contents');
         $c = [ $ctx->stash('content') ]
             if !$c && $ctx->stash('content');

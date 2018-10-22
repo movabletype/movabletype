@@ -21,7 +21,7 @@ function smarty_function_mtarchivecount($args, &$ctx) {
         return $count;
     }
     $contents = array();
-    if (isset($at) && preg_match('/^ContentType/', $at)) {
+    if ((isset($at) && preg_match('/^ContentType/', $at)) || $ctx->stash('content_type')) {
         $c = $ctx->stash('contents');
         if(!isset($c) && $ctx->stash('content')) {
             $c = $ctx->stash('content') ;
@@ -35,9 +35,9 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     if(is_array($c)){
         $contents = $c;
     }
-    else {
+    elseif ($c) {
         $contents = array( $c );
     }
-    return $ctx->count_format( count($entries), $args);
+    return $ctx->count_format( count($contents), $args);
 }
 ?>
