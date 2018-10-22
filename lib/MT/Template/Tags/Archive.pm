@@ -548,15 +548,7 @@ sub _hdlr_archive_prev_next {
             my $content_type = $ctx->stash('content_type');
             if ($content_type) {
                 my $content_data = $ctx->stash('content');
-                if ($content_data) {
-                    $param->{content_data} = $content_data;
-                }
-                else {
-                    my $contents = $ctx->stash('contents');
-                    if ( ref $contents eq 'ARRAY' && @$contents ) {
-                        $param->{content_data} = $contents->[0];
-                    }
-                }
+                $param->{content_data} = $content_data if $content_data;
 
                 my ($map) = MT::TemplateMap->load(
                     {   blog_id      => $param->{blog_id},
@@ -1150,7 +1142,9 @@ sub _hdlr_archive_count {
         return $ctx->count_format( $count, $args );
     }
     my $count;
-    if ( ( defined $at && $at =~ /^ContentType/ ) || $ctx->stash('content_type') ) {
+    if ( ( defined $at && $at =~ /^ContentType/ )
+        || $ctx->stash('content_type') )
+    {
         my $c = $ctx->stash('contents');
         $c = [ $ctx->stash('content') ]
             if !$c && $ctx->stash('content');
