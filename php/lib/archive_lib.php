@@ -10,10 +10,6 @@ require_once('MTUtil.php');
 function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     $at = $args['archive_type'];
     $at or $at = $ctx->stash('current_archive_type');
-    if ($at == 'Category') {
-        require_once("block.mtcategorynext.php");
-        return smarty_block_mtcategorynext($args, $content, $ctx, $repeat);
-    }
     try {
         $archiver = ArchiverFactory::get_archiver($at);
     } catch (Exception $e) {

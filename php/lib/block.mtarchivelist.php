@@ -25,13 +25,11 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
             return '';
         }
 
-        if ($at != 'Category') {
-            try {
-                $ar = ArchiverFactory::get_archiver($at);
-            } catch (Exception $e) {
-                $repeat = false;
-                return '';
-            }
+        try {
+            $ar = ArchiverFactory::get_archiver($at);
+        } catch (Exception $e) {
+            $repeat = false;
+            return '';
         }
 
         $ctx->localize($localvars);

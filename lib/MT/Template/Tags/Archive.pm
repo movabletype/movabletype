@@ -1149,12 +1149,23 @@ sub _hdlr_archive_count {
     elsif ( my $count = $ctx->stash('archive_count') ) {
         return $ctx->count_format( $count, $args );
     }
-    my $e = $ctx->stash('entries');
-    $e = [ $ctx->stash('entry') ]
-        if !$e && $ctx->stash('entry');
-    my @entries;
-    @entries = @$e if ref($e) eq 'ARRAY';
-    my $count = scalar @entries;
+    my $count;
+    if ( defined $at && $at =~ /^ContentType/ ) {
+        my $c = $ctx->stash('contents');
+        $c = [ $ctx->stash('content') ]
+            if !$c && $ctx->stash('content');
+        my @contents;
+        @contents = @$c if ref($c) eq 'ARRAY';
+        $count = scalar @contents;
+    }
+    else {
+        my $e = $ctx->stash('entries');
+        $e = [ $ctx->stash('entry') ]
+            if !$e && $ctx->stash('entry');
+        my @entries;
+        @entries = @$e if ref($e) eq 'ARRAY';
+        $count = scalar @entries;
+    }
     return $ctx->count_format( $count, $args );
 }
 

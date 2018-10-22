@@ -635,7 +635,7 @@ class MT {
 
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
-            if (isset($at) && ($at != 'Category')) {
+            if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {
                     $archiver = ArchiverFactory::get_archiver($at);
@@ -659,7 +659,7 @@ class MT {
                 $ctx->stash('archive_author', $archive_author);
             }
             if (isset($at)) {
-                if (($at != 'Category') && isset($ts)) {
+                if ($at != 'Category' && $at != 'ContentType-Category' && isset($ts)) {
                     list($ts_start, $ts_end) = $archiver->get_range($ts);
                     $ctx->stash('current_timestamp', $ts_start);
                     $ctx->stash('current_timestamp_end', $ts_end);
@@ -683,15 +683,6 @@ class MT {
                 $ctx->stash('content', $cd);
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
-            }
-
-            if ($at == 'Category') {
-                $vars =& $ctx->__stash['vars'];
-                $vars['archive_class']            = "category-archive";
-                $vars['category_archive']         = 1;
-                $vars['archive_template']         = 1;
-                $vars['archive_listing']          = 1;
-                $vars['module_category_archives'] = 1;
             }
         }
 
