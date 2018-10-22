@@ -635,7 +635,7 @@ class MT {
 
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
-            if (isset($at) && ($at != 'Category')) {
+            if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {
                     $archiver = ArchiverFactory::get_archiver($at);
