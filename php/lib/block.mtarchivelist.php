@@ -61,9 +61,13 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
                     $cs->Load('category_set_id = ' . $cat_field->cf_related_cat_set_id);
                 }
                 if (!isset($cs) || !$cs->category_set_id) {
-                    return $ctx->error("No Category Set could be found.");
+                    $cs = $ctx->stash('category_set');
+                } else {
+                    $ctx->stash('category_set', $cs);
                 }
-                $ctx->stash('category_set', $cs);
+                if (!isset($cs)) {
+                   return $ctx->error("No Category Set could be found.");
+                }
             }
             require_once("block.mtcategories.php");
             return smarty_block_mtcategories($args, $content, $ctx, $repeat);

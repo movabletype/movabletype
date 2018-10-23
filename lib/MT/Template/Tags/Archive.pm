@@ -222,10 +222,11 @@ sub _hdlr_archives {
             ? MT->model('category_set')
             ->load( $cat_field->related_cat_set_id || 0 )
             : undef;
+        local $ctx->{__stash}{category_set} = $category_set if $category_set;
+        $category_set ||= $ctx->stash('category_set');
         return $ctx->_no_category_set_error unless $category_set;
         $args->{category_set_id} = $category_set->id;
         if ( $at eq 'ContentType-Category' ) {
-            local $ctx->{__stash}{category_set} = $category_set;
             return $ctx->invoke_handler( 'categories', $args, $cond );
         }
     }
