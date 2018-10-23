@@ -23,7 +23,7 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
 
 function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
     $maps = $ctx->mt->db()->fetch_templatemap(
-        array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+        array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
     if (isset($maps)) {
         $map = $maps[0];
         $dt_field_id = $map->templatemap_dt_field_id;
@@ -2477,7 +2477,6 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
                 $maps = $ctx->mt->db()->fetch_templatemap(array(
                     'type'         => $at,
                     'preferred'    => 1,
-                    'build_type'   => 3,
                     'content_type' => $content_type_id
                 ));
                 if (isset($maps)) {
@@ -3250,7 +3249,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             $order = $is_prev ? 'previous' : 'next';
             $blog_id = $ctx->stash('blog_id');
             $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
             if (isset($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
@@ -3979,7 +3978,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $blog_id = $ctx->stash('blog_id');
             $ts = $ctx->stash('current_timestamp');
             $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1, 'build_type' => 3));
+                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
             if (isset($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
