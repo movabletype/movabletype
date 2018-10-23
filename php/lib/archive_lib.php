@@ -3440,7 +3440,7 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
-        $vars += ContentTypeDateBasedAuthorArchiver::get_template_params();
+        $vars += ContentTypeAuthorYearlyArchiver::get_template_params();
     }
 
     protected function get_helper() {
