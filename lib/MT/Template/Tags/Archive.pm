@@ -209,8 +209,22 @@ sub _hdlr_archives {
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
-        my $category_set = $ctx->stash('category_set')
-            or return $ctx->_no_category_set_error();
+        my $map
+            = $ctx->stash('template_map') || MT->model('templatemap')->load(
+            {   blog_id      => $blog->id,
+                archive_type => $at,
+                is_preferred => 1,
+            }
+            );
+        my $cat_field = $map ? $map->cat_field : undef;
+        my $category_set
+            = $cat_field
+            ? MT->model('category_set')
+            ->load( $cat_field->related_cat_set_id || 0 )
+            : undef;
+        local $ctx->{__stash}{category_set} = $category_set if $category_set;
+        $category_set ||= $ctx->stash('category_set');
+        return $ctx->_no_category_set_error unless $category_set;
         $args->{category_set_id} = $category_set->id;
         if ( $at eq 'ContentType-Category' ) {
             return $ctx->invoke_handler( 'categories', $args, $cond );
