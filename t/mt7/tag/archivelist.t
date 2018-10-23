@@ -225,20 +225,16 @@ __END__
 1
 
 === mt:ArchiveList type="ContentType-Category"
---- skip_php
-1
 --- template
 <mt:ArchiveList type="ContentType-Category" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList>
---- expected_error
-No Category Set could be found.
+--- expected
+1
 
 === mt:ArchiveList type="ContentType-Category-Monthly"
---- skip_php
-1
 --- template
 <mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList>
---- expected_error
-No Category Set could be found.
+--- expected
+1
 
 === mt:ArchiveList type="ContentType-Category" with category_set
 --- template
