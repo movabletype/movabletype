@@ -4280,7 +4280,6 @@ abstract class MTDatabase {
                 'blog_id' => $blog_id,
                 'type' => $ctx->stash('current_archive_type'),
                 'preferred' => 1,
-                'build_type' => 3,
             ));
             if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
                 $start = isset($args['current_timestamp'])
@@ -4856,7 +4855,6 @@ abstract class MTDatabase {
             $map = $this->fetch_templatemap(array(
                 'type'         => 'ContentType',
                 'preferred'    => 1,
-                'build_type'   => 3,
                 'content_type' => $obj->id
             ));
             if (isset($map))
