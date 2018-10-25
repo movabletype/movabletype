@@ -3597,6 +3597,97 @@ use vars qw( @ISA %Lexicon );
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラシックウェブサイト',
 
+## themes/pico/templates/about_this_page.mtml
+
+## themes/pico/templates/archive_index.mtml
+	'Related Content' => '関連コンテンツ',
+
+## themes/pico/templates/archive_widgets_group.mtml
+
+## themes/pico/templates/author_archive_list.mtml
+
+## themes/pico/templates/banner_footer.mtml
+
+## themes/pico/templates/calendar.mtml
+
+## themes/pico/templates/category_archive_list.mtml
+
+## themes/pico/templates/category_entry_listing.mtml
+
+## themes/pico/templates/comment_detail.mtml
+
+## themes/pico/templates/comment_listing.mtml
+
+## themes/pico/templates/comment_preview.mtml
+	'Preview Comment' => 'コメントの確認',
+
+## themes/pico/templates/comment_response.mtml
+
+## themes/pico/templates/comments.mtml
+
+## themes/pico/templates/creative_commons.mtml
+
+## themes/pico/templates/current_author_monthly_archive_list.mtml
+
+## themes/pico/templates/current_category_monthly_archive_list.mtml
+
+## themes/pico/templates/date_based_author_archives.mtml
+
+## themes/pico/templates/date_based_category_archives.mtml
+
+## themes/pico/templates/dynamic_error.mtml
+
+## themes/pico/templates/entry.mtml
+
+## themes/pico/templates/entry_summary.mtml
+
+## themes/pico/templates/javascript.mtml
+
+## themes/pico/templates/main_index.mtml
+
+## themes/pico/templates/main_index_widgets_group.mtml
+
+## themes/pico/templates/monthly_archive_dropdown.mtml
+
+## themes/pico/templates/monthly_archive_list.mtml
+
+## themes/pico/templates/monthly_entry_listing.mtml
+
+## themes/pico/templates/navigation.mtml
+	'Subscribe' => '購読',
+
+## themes/pico/templates/openid.mtml
+
+## themes/pico/templates/page.mtml
+
+## themes/pico/templates/pages_list.mtml
+
+## themes/pico/templates/recent_assets.mtml
+
+## themes/pico/templates/recent_comments.mtml
+
+## themes/pico/templates/recent_entries.mtml
+
+## themes/pico/templates/search.mtml
+
+## themes/pico/templates/search_results.mtml
+
+## themes/pico/templates/signin.mtml
+
+## themes/pico/templates/syndication.mtml
+
+## themes/pico/templates/tag_cloud.mtml
+
+## themes/pico/templates/technorati_search.mtml
+
+## themes/pico/templates/trackbacks.mtml
+
+## themes/pico/theme.yaml
+	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。},
+	'Pico' => 'Pico',
+	'Pico Styles' => 'Picoスタイル',
+	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
+
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
 	'the beginning' => '最初から',
