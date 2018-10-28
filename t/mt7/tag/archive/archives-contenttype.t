@@ -41,18 +41,34 @@ my $blog = MT::Blog->load($blog_id);
 
 # Run Perl Tests
 
-$blog->archive_type($archive_types);
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_perl_tests(
+    $blog_id,
+    sub {
+        my ( $ctx, $block ) = @_;
+        my $site = $ctx->stash('blog');
+        $site->archive_type(
+            defined $block->archive_type
+            ? $block->archive_type
+            : $archive_types );
+    }
+);
 
 # Run PHP Tests
 #
 
-$blog->archive_type($archive_types);
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests(
+    $blog_id,
+    sub {
+        my ($block) = @_;
+        my $archive_type
+            = defined $block->archive_type ? $block->archive_type : $archive_types;
+        return <<"PHP";
+\$site = \$db->fetch_blog(\$blog_id);
+\$site->archive_type = "$archive_type";
+\$site->save();
+PHP
+    }
+);
 
 __END__
 
@@ -88,6 +104,13 @@ archive_class: contenttype-archive
 archive_template: 1
 contenttype_archive: 1
 
+=== type="None"
+--- template
+<mt:Archives type="None">
+<mt:ArchiveType>
+</mt:Archives>
+--- expected
+
 === archive_type with ContentType
 --- skip
 1
@@ -97,11 +120,21 @@ contenttype_archive: 1
 </mt:Archives>
 --- expected
 
-=== No modifier
---- skip
-1
+=== No modifier and $blog->archive_type('')
+--- archive_type
+
 --- template
 <mt:Archives>
 <mt:ArchiveType>
 </mt:Archives>
 --- expected
+
+=== No modifier and $blog->archive_type('None')
+--- archive_type
+None
+--- template
+<mt:Archives type="None">
+<mt:ArchiveType>
+</mt:Archives>
+--- expected
+
