@@ -27,6 +27,11 @@ my $app = MT->instance;
 
 my $blog_id = 1;
 
+filters {
+    template => [qw( chomp )],
+    expected => [qw( chomp )],
+};
+
 $test_env->prepare_fixture('db');
 
 my $archive_types
@@ -71,42 +76,19 @@ MT::Test::Tag->run_php_tests($blog_id);
 __END__
 
 === archive_type with ContentType
---- skip
-1
 --- template
 <mt:Archives type="ContentType">
 <mt:ArchiveType>
-- archive_template: '<mt:var name="template_params" key="archive_template">'
-- archive_listing: '<mt:var name="template_params" key="archive_listing">'
-- datebased_archive: '<mt:var name="template_params" key="datebased_archive">'
-- entry_archive: '<mt:var name="template_params" key="entry_archive">'
-- entry_template: '<mt:var name="template_params" key="entry_template">'
-- page_archive: '<mt:var name="template_params" key="page_archive">'
-- page_template: '<mt:var name="template_params" key="page_template">'
-- feedback_template: '<mt:var name="template_params" key="feedback_template">'
-- datebased_only_archive: '<mt:var name="template_params" key="datebased_only_archive">'
-- datebased_daily_archive: '<mt:var name="template_params" key="datebased_daily_archive">'
-- datebased_weekly_archive: '<mt:var name="template_params" key="datebased_weekly_archive">'
-- datebased_monthly_archive: '<mt:var name="template_params" key="datebased_monthly_archive">'
-- datebased_yearly_archive: '<mt:var name="template_params" key="datebased_yearly_archive">'
-- author_archive: '<mt:var name="template_params" key="author_archive">'
-- author_based_archive: '<mt:var name="template_params" key="author_based_archive">'
-- author_daily_archive: '<mt:var name="template_params" key="author_daily_archive">'
-- author_weekly_archive: '<mt:var name="template_params" key="author_weekly_archive">'
-- author_monthly_archive: '<mt:var name="template_params" key="author_monthly_archive">'
-- author_yearly_archive: '<mt:var name="template_params" key="author_yearly_archive">'
-- category_archive: '<mt:var name="template_params" key="category_archive">'
-- category_based_archive: '<mt:var name="template_params" key="category_based_archive">'
-- category_set_based_archive: '<mt:var name="template_params" key="category_set_based_archive">'
-- category_daily_archive: '<mt:var name="template_params" key="category_daily_archive">'
-- category_weekly_archive: '<mt:var name="template_params" key="category_weekly_archive">'
-- category_monthly_archive: '<mt:var name="template_params" key="category_monthly_archive">'
-- category_yearly_archive: '<mt:var name="template_params" key="category_yearly_archive">'
-- archive_class: '<mt:var name="template_params" key="archive_class">'
-- contenttype_archive: '<mt:var name="template_params" key="contenttype_archive">'
-- contenttype_archive_listing: '<mt:var name="template_params" key="contenttype_archive_listing">'
+***
+<mt:loop name="template_params" sort_by="key"><mt:var name="__key__">: <mt:var name="__value__">
+</mt:loop>
 </mt:Archives>
 --- expected
+ContentType
+***
+archive_class: contenttype-archive
+archive_template: 1
+contenttype_archive: 1
 
 === type with ContentType
 --- skip
