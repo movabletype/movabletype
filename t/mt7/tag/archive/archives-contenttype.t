@@ -75,6 +75,23 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
+=== type="Individual"
+--- template
+<mt:Archives type="Individual">
+<mt:ArchiveType>
+***
+<mt:loop name="template_params" sort_by="key"><mt:var name="__key__">: <mt:var name="__value__">
+</mt:loop>
+</mt:Archives>
+--- expected
+Individual
+***
+archive_class: entry-archive
+archive_template: 1
+entry_archive: 1
+entry_template: 1
+feedback_template: 1
+
 === type with ContentType
 --- template
 <mt:Archives type="ContentType">
