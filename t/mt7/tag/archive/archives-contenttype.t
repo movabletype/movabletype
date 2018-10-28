@@ -18,7 +18,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => 2 * 3 * blocks;
 
 use MT;
 use MT::Test;
