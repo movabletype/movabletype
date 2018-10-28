@@ -11,7 +11,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -29,7 +29,8 @@ my $blog_id = 1;
 
 $test_env->prepare_fixture('db');
 
-my $archive_types = 'Individual,Page,Daily,Weekly,Monthly,Yearly,Author,Author-Daily,Author-Weekly,Author-Monthly,Author-Yearly,Category,Category-Daily,Category-Weekly,Category-Monthly,Category-Yearly,ContentType,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly,ContentType-Author,ContentType-Author-Daily,ContentType-Author-Weekly,ContentType-Author-Monthly,ContentType-Author-Yearly,ContentType-Category,ContentType-Category-Daily,ContentType-Category-Weekly,ContentType-Category-Monthly,ContentType-Category-Yearly';
+my $archive_types
+    = 'Individual,Page,Daily,Weekly,Monthly,Yearly,Author,Author-Daily,Author-Weekly,Author-Monthly,Author-Yearly,Category,Category-Daily,Category-Weekly,Category-Monthly,Category-Yearly,ContentType,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly,ContentType-Author,ContentType-Author-Daily,ContentType-Author-Weekly,ContentType-Author-Monthly,ContentType-Author-Yearly,ContentType-Category,ContentType-Category-Daily,ContentType-Category-Weekly,ContentType-Category-Monthly,ContentType-Category-Yearly';
 
 my $blog = MT::Blog->load($blog_id);
 
