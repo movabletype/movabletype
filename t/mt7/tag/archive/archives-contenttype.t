@@ -70,7 +70,7 @@ MT::Test::Tag->run_php_tests($blog_id);
 __END__
 
 === archive_type with ContentType
---- ci skip
+--- skip
 1
 --- template
 <mt:Archives type="ContentType">
@@ -108,7 +108,7 @@ __END__
 --- expected
 
 === type with ContentType
---- ci skip
+--- skip
 1
 --- template
 <mt:Archives archive_type="ContentType">
@@ -117,7 +117,7 @@ __END__
 --- expected
 
 === No modifier
---- ci skip
+--- skip
 1
 --- template
 <mt:Archives>
