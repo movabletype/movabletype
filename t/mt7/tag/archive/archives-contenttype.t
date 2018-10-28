@@ -18,7 +18,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * 3 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -41,16 +41,6 @@ my $blog = MT::Blog->load($blog_id);
 
 # Run Perl Tests
 
-$blog->archive_type('');
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_perl_tests($blog_id);
-
-$blog->archive_type('None');
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_perl_tests($blog_id);
-
 $blog->archive_type($archive_types);
 $blog->save or die $blog->error;
 
@@ -58,15 +48,6 @@ MT::Test::Tag->run_perl_tests($blog_id);
 
 # Run PHP Tests
 #
-$blog->archive_type('');
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_php_tests($blog_id);
-
-$blog->archive_type('None');
-$blog->save or die $blog->error;
-
-MT::Test::Tag->run_php_tests($blog_id);
 
 $blog->archive_type($archive_types);
 $blog->save or die $blog->error;
