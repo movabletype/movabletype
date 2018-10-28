@@ -75,7 +75,7 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
-=== archive_type with ContentType
+=== type with ContentType
 --- template
 <mt:Archives type="ContentType">
 <mt:ArchiveType>
@@ -90,7 +90,7 @@ archive_class: contenttype-archive
 archive_template: 1
 contenttype_archive: 1
 
-=== type with ContentType
+=== archive_type with ContentType
 --- skip
 1
 --- template
