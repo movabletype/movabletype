@@ -94,9 +94,9 @@ sub make_website {
     MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
-    my $classic_website = MT::Theme->load('classic_website')
+    my $theme = MT::Theme->load( $values->{theme_id} )
         or die MT::Theme->errstr;
-    $classic_website->apply($website);
+    $theme->apply($website);
     $website->save() or die "Couldn't save blog: " . $website->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
@@ -154,9 +154,9 @@ sub make_blog {
     MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
-    my $classic_blog = MT::Theme->load('classic_blog')
+    my $theme = MT::Theme->load( $values->{theme_id} )
         or die MT::Theme->errstr;
-    $classic_blog->apply($blog);
+    $theme->apply($blog);
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
