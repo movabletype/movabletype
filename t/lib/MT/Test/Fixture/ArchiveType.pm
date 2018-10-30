@@ -7,7 +7,7 @@ use MT::Test::Fixture;
 
 our %FixtureSpec = (
     author => [qw/author1 author2/],
-    blog   => [
+    website => [
         {   name     => 'site_for_archive_test',
             theme_id => 'mont-blanc',
         }
