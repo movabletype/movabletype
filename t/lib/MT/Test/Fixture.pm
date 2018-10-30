@@ -12,6 +12,7 @@ sub prepare {
 
     my %objs;
     $class->prepare_author( $spec, \%objs );
+    $class->prepare_website( $spec, \%objs );
     $class->prepare_blog( $spec, \%objs );
     $class->prepare_category( $spec, \%objs );
     $class->prepare_entry( $spec, \%objs );
@@ -46,6 +47,25 @@ sub prepare_author {
     }
     if ( @author_names == 1 ) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
+    }
+}
+
+sub prepare_website {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{website};
+
+    my @site_names;
+    if ( ref $spec->{website} eq 'ARRAY' ) {
+        for my $item ( @{ $spec->{website} } ) {
+            my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+
+            my $site = MT::Test::Permission->make_website(%arg);
+            $objs->{website}{ $site->name } = $site;
+            push @site_names, $site->name;
+        }
+    }
+    if ( @site_names == 1 ) {
+        $objs->{blog_id} = $objs->{website}{ $site_names[0] }->id;
     }
 }
 
