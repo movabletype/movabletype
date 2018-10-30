@@ -50,7 +50,8 @@ MT::Test::Tag->run_perl_tests(
         $site->archive_type(
             defined $block->archive_type
             ? $block->archive_type
-            : $archive_types );
+            : $archive_types
+        );
     }
 );
 
@@ -61,7 +62,9 @@ MT::Test::Tag->run_php_tests(
     sub {
         my ($block) = @_;
         my $archive_type
-            = defined $block->archive_type ? $block->archive_type : $archive_types;
+            = defined $block->archive_type
+            ? $block->archive_type
+            : $archive_types;
         return <<"PHP";
 \$site = \$db->fetch_blog(\$blog_id);
 \$site->archive_type = "$archive_type";

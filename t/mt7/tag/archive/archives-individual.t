@@ -53,7 +53,7 @@ my $archive_types
 
 my $blog = MT::Blog->load($blog_id);
 
-$vars->{archive_type} = 'Individual';
+$vars->{archive_type}    = 'Individual';
 $vars->{template_params} = <<'PARAMS';
 archive_class: entry-archive
 archive_template: 1
@@ -61,7 +61,7 @@ entry_archive: 1
 entry_template: 1
 feedback_template: 1
 PARAMS
-chomp($vars->{template_params});
+chomp( $vars->{template_params} );
 
 # Run Perl Tests
 
@@ -73,7 +73,8 @@ MT::Test::Tag->run_perl_tests(
         $site->archive_type(
             defined $block->archive_type
             ? $block->archive_type
-            : $archive_types );
+            : $archive_types
+        );
     }
 );
 
@@ -84,7 +85,9 @@ MT::Test::Tag->run_php_tests(
     sub {
         my ($block) = @_;
         my $archive_type
-            = defined $block->archive_type ? $block->archive_type : $archive_types;
+            = defined $block->archive_type
+            ? $block->archive_type
+            : $archive_types;
         return <<"PHP";
 \$site = \$db->fetch_blog(\$blog_id);
 \$site->archive_type = "$archive_type";
