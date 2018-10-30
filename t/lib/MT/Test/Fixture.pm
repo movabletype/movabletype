@@ -83,7 +83,10 @@ sub prepare_blog {
             push @blog_names, $blog->name;
         }
     }
-    if ( @blog_names == 1 ) {
+    if ( $objs->{blog_id} && @blog_names ) {
+        delete $objs->{blog_id};
+    }
+    elsif ( @blog_names == 1 ) {
         $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
     }
 }
