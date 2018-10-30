@@ -53,11 +53,14 @@ my $archive_types
 
 my $blog = MT::Blog->load($blog_id);
 
-$vars->{archive_type} = 'ContentType';
+$vars->{archive_type} = 'Yearly';
 $vars->{template_params} = <<'PARAMS';
-archive_class: contenttype-archive
+archive_class: datebased-yearly-archive
+archive_listing: 1
 archive_template: 1
-contenttype_archive: 1
+datebased_archive: 1
+datebased_only_archive: 1
+datebased_yearly_archive: 1
 PARAMS
 chomp($vars->{template_params});
 
@@ -96,6 +99,9 @@ __END__
 === Empty with type
 --- todo
 https://movabletype.atlassian.net/browse/MTC-26065
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- archive_type
 
 --- template
@@ -113,6 +119,9 @@ https://movabletype.atlassian.net/browse/MTC-26065
 === Empty with archive_type
 --- todo
 https://movabletype.atlassian.net/browse/MTC-26065
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- archive_type
 
 --- template
@@ -130,6 +139,9 @@ https://movabletype.atlassian.net/browse/MTC-26065
 === None with type
 --- todo
 https://movabletype.atlassian.net/browse/MTC-26065
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- archive_type
 None
 --- template
@@ -147,6 +159,9 @@ None
 === None with archive_type
 --- todo
 https://movabletype.atlassian.net/browse/MTC-26065
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- archive_type
 None
 --- template
@@ -162,6 +177,10 @@ None
 [% template_params %]
 
 === Some ArchiveTypes with type
+--- todo
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- template
 <mt:Archives type="[% archive_type %]">
 <mt:ArchiveType>
@@ -175,6 +194,10 @@ None
 [% template_params %]
 
 === Some ArchiveTypes with archive_type
+--- todo
+https://movabletype.atlassian.net/browse/MTC-26073
+--- skip
+1
 --- template
 <mt:Archives archive_type="[% archive_type %]">
 <mt:ArchiveType>

@@ -53,11 +53,15 @@ my $archive_types
 
 my $blog = MT::Blog->load($blog_id);
 
-$vars->{archive_type} = 'ContentType';
+$vars->{archive_type} = 'ContentType-Author-Monthly';
 $vars->{template_params} = <<'PARAMS';
-archive_class: contenttype-archive
+archive_class: contenttype-author-monthly-archive
+archive_listing: 1
 archive_template: 1
-contenttype_archive: 1
+author_based_archive: 1
+author_monthly_archive: 1
+contenttype_archive_listing: 1
+datebased_archive: 1
 PARAMS
 chomp($vars->{template_params});
 
