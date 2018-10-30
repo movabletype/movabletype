@@ -369,6 +369,7 @@ PHP
             $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
             my $expected = $block->$expected_method;
+            $expected = '' unless defined $expected;
             $expected =~ s/\\r/\\n/g;
             $expected =~ s/\r/\n/g;
 
