@@ -36,8 +36,10 @@ sub prepare_author {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
             $arg{nickname} ||= $arg{name};
             my $author = MT::Test::Permission->make_author(%arg);
-            $author->is_superuser( $arg{is_superuser} // 1 );
-            $author->save;
+            if ( !defined $arg{is_superuser} or $arg{is_superuser} ) {
+                $author->is_superuser(1);
+                $author->save;
+            }
             $objs->{author}{ $author->name } = $author;
             push @author_names, $author->name;
         }
