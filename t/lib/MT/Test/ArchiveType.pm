@@ -294,6 +294,16 @@ PHP
 \$ctx->stash('current_archive_type', '$archive_type');
 PHP
 
+            if ( my $ct = $stash->{content_type} ) {
+                my $ct_id = $ct->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_content_type.php');
+\$ct = new ContentType;
+\$ct->Load($ct_id);
+\$ctx->stash('content_type', \$ct);
+PHP
+            }
+
             if ( my $timestamp = $stash->{timestamp} ) {
                 my ( $start, $end ) = @{ $stash->{timestamp} };
                 $test_script .= <<"PHP";
