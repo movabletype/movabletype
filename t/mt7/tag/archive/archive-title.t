@@ -43,6 +43,9 @@ __END__
 --- expected_author
 author1
 author2
+--- expected_php_todo_author
+author1
+author2
 --- expected_author_daily
 December  3, 2018
 December  3, 2017
@@ -120,15 +123,19 @@ cat_strawberry
 --- expected_contenttype_category_daily
 October 31, 2018
 October 31, 2017
+--- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 October 2018
 October 2017
+--- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 October 28, 2018 - November  3, 2018
 October 29, 2017 - November  4, 2017
+--- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 2018
 2017
+--- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 October 31, 2018
 October 31, 2017
