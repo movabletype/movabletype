@@ -399,6 +399,7 @@ sub load_objs {
     my @author_names = @{ $spec->{author} };
     my @authors = MT::Author->load( { name => \@author_names } );;
     $objs{author} = { map {$_->name => $_} @authors };
+    $objs{author_id} = $authors[0]->id if @authors == 1;
 
     my @site_names = map { $_->{name} } @{ $spec->{website} };
     my @sites = MT::Website->load( { name => \@site_names } );
