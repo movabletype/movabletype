@@ -455,7 +455,7 @@ sub load_schema_and_fixture {
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
             for my $bind_value (@bind) {
-                if ($bind_value && $bind_value =~ /^BIN:SERG/) {
+                if ( $bind_value && $bind_value =~ /^BIN:SERG/ ) {
                     $bind_value =~ s/(.)/sprintf('0x%02x', ord($1))/ge;
                 }
             }
@@ -667,8 +667,8 @@ sub test_schema {
     $self->_get_id_from_caller;
     $self->_set_fixture_dirs;
 
-    my $driver       = lc $self->{driver};
-    my $schema_file  = "$self->{fixture_dirs}[0]/schema.$driver.sql";
+    my $driver      = lc $self->{driver};
+    my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
     my $saved_schema = _slurp($schema_file);
