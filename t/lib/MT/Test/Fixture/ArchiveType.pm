@@ -6,7 +6,7 @@ use MT::Test;
 use MT::Test::Fixture;
 
 our %FixtureSpec = (
-    author => [qw/author1 author2/],
+    author  => [qw/author1 author2/],
     website => [
         {   name     => 'site_for_archive_test',
             theme_id => 'mont-blanc',
@@ -15,113 +15,101 @@ our %FixtureSpec = (
     folder => [
         'folder_oolong_tea',
         'folder_green_tea',
-        { label => 'folder_cola', parent => 'folder_green_tea' },
+        { label => 'folder_cola',   parent => 'folder_green_tea' },
         { label => 'folder_coffee', parent => 'folder_cola' },
         'folder_water',
     ],
     page => [
-        {
-            basename => 'page_author1_coffee',
-            title => 'page_author1_coffee',
-            author => 'author1',
-            status => 'publish',
+        {   basename    => 'page_author1_coffee',
+            title       => 'page_author1_coffee',
+            author      => 'author1',
+            status      => 'publish',
             authored_on => '20181029101112',
-            folder => 'folder_coffee',
+            folder      => 'folder_coffee',
         },
-        {
-            basename => 'page_author1_publish',
-            title => 'page_author1_coffee',
-            author => 'author1',
-            status => 'publish',
+        {   basename    => 'page_author1_publish',
+            title       => 'page_author1_coffee',
+            author      => 'author1',
+            status      => 'publish',
             authored_on => '20181029101112',
-            folder => 'folder_coffee',
+            folder      => 'folder_coffee',
         },
-        {
-            basename => 'page_author2_water',
-            title => 'page_author2_water',
-            author => 'author2',
-            status => 'publish',
+        {   basename    => 'page_author2_water',
+            title       => 'page_author2_water',
+            author      => 'author2',
+            status      => 'publish',
             authored_on => '20251029101112',
-            folder => 'folder_water',
+            folder      => 'folder_water',
         },
-        {
-            basename => 'page_author2_no_folder',
-            title => 'page_author2_no_folder',
-            author => 'author2',
-            status => 'publish',
+        {   basename    => 'page_author2_no_folder',
+            title       => 'page_author2_no_folder',
+            author      => 'author2',
+            status      => 'publish',
             authored_on => '20361029101112',
-            folder => '',
+            folder      => '',
         },
-        {
-            basename => 'page_author1_draft',
-            title => 'page_author1_draft1',
-            author => 'author1',
-            status => 'draft',
+        {   basename    => 'page_author1_draft',
+            title       => 'page_author1_draft1',
+            author      => 'author1',
+            status      => 'draft',
             authored_on => '20421029101112',
-            folder => 'folder_cola',
+            folder      => 'folder_cola',
         },
     ],
     category => [
         'cat_clip',
         { label => 'cat_compass', parent => 'cat_clip' },
-        { label => 'cat_ruler', parent => 'cat_compass' },
+        { label => 'cat_ruler',   parent => 'cat_compass' },
         'cat_eraser',
         'cat_pencil',
     ],
     entry => [
-        {
-            basename => 'entry_author1_ruler_eraser',
-            title => 'entry_author1_ruler_eraser',
-            author => 'author1',
-            status => 'publish',
+        {   basename    => 'entry_author1_ruler_eraser',
+            title       => 'entry_author1_ruler_eraser',
+            author      => 'author1',
+            status      => 'publish',
             authored_on => '20181203121110',
-            categories => [qw/cat_ruler cat_eraser/],
+            categories  => [qw/cat_ruler cat_eraser/],
         },
-        {
-            basename => 'entry_author1_ruler_eraser_1',
-            title => 'entry_author1_ruler_eraser',
-            author => 'author1',
-            status => 'publish',
+        {   basename    => 'entry_author1_ruler_eraser_1',
+            title       => 'entry_author1_ruler_eraser',
+            author      => 'author1',
+            status      => 'publish',
             authored_on => '20181203121110',
-            categories => [qw/cat_ruler cat_eraser/],
+            categories  => [qw/cat_ruler cat_eraser/],
         },
-        {
-            basename => 'entry_author1_compass',
-            title => 'entry_author1_compass',
-            author => 'author1',
-            status => 'publish',
+        {   basename    => 'entry_author1_compass',
+            title       => 'entry_author1_compass',
+            author      => 'author1',
+            status      => 'publish',
             authored_on => '20171203121110',
-            categories => [qw/cat_compass/],
+            categories  => [qw/cat_compass/],
         },
-        {
-            basename => 'entry_author2_pencil_eraser',
-            title => 'entry_author2_pencil_eraser',
-            author => 'author2',
-            status => 'publish',
+        {   basename    => 'entry_author2_pencil_eraser',
+            title       => 'entry_author2_pencil_eraser',
+            author      => 'author2',
+            status      => 'publish',
             authored_on => '20161203121110',
-            categories => [qw/cat_pencil cat_eraser/],
+            categories  => [qw/cat_pencil cat_eraser/],
         },
-        {
-            basename => 'entry_author2_no_category',
-            title => 'entry_author2_no_category',
-            author => 'author2',
-            status => 'publish',
+        {   basename    => 'entry_author2_no_category',
+            title       => 'entry_author2_no_category',
+            author      => 'author2',
+            status      => 'publish',
             authored_on => '20151203121110',
-            categories => [qw//],
+            categories  => [qw//],
         },
-        {
-            basename => 'entry_author1_draft',
-            title => 'entry_author1_draft',
-            author => 'author1',
-            status => 'draft',
+        {   basename    => 'entry_author1_draft',
+            title       => 'entry_author1_draft',
+            author      => 'author1',
+            status      => 'draft',
             authored_on => '20141203121110',
-            categories => [qw/cat_compass cat_ruler/],
+            categories  => [qw/cat_compass cat_ruler/],
         },
     ],
     category_set => {
-        catset_fruit  => [
-            'cat_apple',
-            'cat_strawberry',
+        catset_fruit => [
+            'cat_apple', 'cat_strawberry',
             { label => 'cat_orange', parent => 'cat_strawberry' },
             'cat_peach',
         ],
@@ -135,26 +123,26 @@ our %FixtureSpec = (
     },
     content_type => {
         ct_with_same_catset => [
-            cf_same_date               => 'date_only',
-            cf_same_datetime           => 'date_and_time',
-            cf_same_catset_fruit       => {
-                type => 'categories',
+            cf_same_date         => 'date_only',
+            cf_same_datetime     => 'date_and_time',
+            cf_same_catset_fruit => {
+                type         => 'categories',
                 category_set => 'catset_fruit',
             },
             cf_same_catset_other_fruit => {
-                type => 'categories',
+                type         => 'categories',
                 category_set => 'catset_fruit',
             },
         ],
         ct_with_other_catset => [
-            cf_other_date          => 'date_only',
-            cf_other_datetime      => 'date_and_time',
-            cf_other_catset_fruit  => {
-                type => 'categories',
+            cf_other_date         => 'date_only',
+            cf_other_datetime     => 'date_and_time',
+            cf_other_catset_fruit => {
+                type         => 'categories',
                 category_set => 'catset_fruit',
             },
             cf_other_catset_animal => {
-                type => 'categories',
+                type         => 'categories',
                 category_set => 'catset_animal',
             },
         ],
@@ -177,7 +165,7 @@ our %FixtureSpec = (
             author       => 'author1',
             authored_on  => '20171031000000',
             status       => 'publish',
-                data         => {
+            data         => {
                 cf_same_date               => '20200926',
                 cf_same_datetime           => '20061101121212',
                 cf_same_catset_fruit       => [qw/cat_apple cat_orange/],
@@ -252,12 +240,14 @@ our %FixtureSpec = (
             data         => {
                 cf_other_date         => '19970831',
                 cf_other_datetime     => '20181031000000',
-                cf_other_catset_fruit => [qw/
-                    cat_apple
-                    cat_orange
-                    cat_peach
-                    cat_strawberry
-                /],
+                cf_other_catset_fruit => [
+                    qw/
+                        cat_apple
+                        cat_orange
+                        cat_peach
+                        cat_strawberry
+                        /
+                ],
                 cf_other_catset_animal => [qw/cat_rabbit/],
             },
         },
@@ -293,9 +283,13 @@ our $CachedObjs;
 sub fixture_spec { \%FixtureSpec }
 
 sub prepare_fixture {
+    my $class = shift;
+
     MT::Test->init_db;
 
-    my $objs = MT::Test::Fixture->prepare( \%FixtureSpec );
+    my $spec = $class->fixture_spec;
+
+    my $objs = MT::Test::Fixture->prepare($spec);
     $CachedObjs = $objs;
 
     my $blog_id = $objs->{blog_id};
@@ -306,7 +300,7 @@ sub prepare_fixture {
         ( my $archive_type_name = $archive_type ) =~ tr/A-Z-/a-z_/;
         if ( $archive_type =~ /^ContentType/ ) {
             for my $ct_item ( values %{ $objs->{content_type} } ) {
-                my $ct = $ct_item->{content_type};
+                my $ct         = $ct_item->{content_type};
                 my @fields     = @{ $ct->fields };
                 my @dt_fields  = grep { $_->{type} =~ /date/ } @fields;
                 my @cat_fields = grep { $_->{type} eq 'categories' } @fields;
@@ -353,7 +347,7 @@ sub _template_type {
     return 'page'       if $archive_type eq 'Page';
     return 'ct'         if $archive_type eq 'ContentType';
     return 'ct_archive' if $archive_type =~ /^ContentType/;
-    return 'archive';   # and custom?
+    return 'archive';    # and custom?
 }
 
 sub _file_template {
@@ -365,9 +359,9 @@ sub _file_template {
 }
 
 sub template_maps {
-    my ($class, @archive_types) = @_;
+    my ( $class, @archive_types ) = @_;
 
-    my $objs = $class->load_objs;
+    my $objs    = $class->load_objs;
     my $blog_id = $objs->{blog_id};
 
     my @maps;
@@ -389,53 +383,66 @@ sub load_objs {
 
     return $CachedObjs if $CachedObjs;
 
-    my %objs;
-    my @author_names = @{ $FixtureSpec{author} };
-    my @authors = MT::Author->load( { name => \@author_names } );;
-    $objs{author} = { map {$_->name => $_} @authors };
+    my $spec = $class->fixture_spec;
 
-    my @blog_names = map { $_->{name} } @{ $FixtureSpec{blog} };
+    my %objs;
+    my @author_names = @{ $spec->{author} };
+    my @authors = MT::Author->load( { name => \@author_names } );
+    $objs{author} = { map { $_->name => $_ } @authors };
+    $objs{author_id} = $authors[0]->id if @authors == 1;
+
+    my @site_names = map { $_->{name} } @{ $spec->{website} };
+    my @sites = MT::Website->load( { name => \@site_names } );
+    $objs{website} = { map { $_->name => $_ } @sites };
+
+    my @blog_names = map { $_->{name} } @{ $spec->{blog} };
     my @blogs = MT::Blog->load( { name => \@blog_names } );
-    $objs{blog} = { map {$_->name => $_} @blogs };
-    $objs{blog_id} = $blogs[0]->id if @blogs == 1;
+    $objs{blog} = { map { $_->name => $_ } @blogs };
+
+    my @all_sites = ( @sites, @blogs );
+    $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     my $blog_id = $objs{blog_id};
 
-    my @category_set_names = keys %{ $FixtureSpec{category_set} };
-    my @category_sets = MT::CategorySet->load( {
-        blog_id => $blog_id,
-        name => \@category_set_names,
-    } );
+    my @category_set_names = keys %{ $spec->{category_set} };
+    my @category_sets      = MT::CategorySet->load(
+        {   blog_id => $blog_id,
+            name    => \@category_set_names,
+        }
+    );
 
     my %category_set_map = map { $_->id => $_->name } @category_sets;
-    my @categories = MT::Category->load( {
-        blog_id => $blog_id,
-        category_set_id => [ keys %category_set_map ],
-    } );
+    my @categories = MT::Category->load(
+        {   blog_id         => $blog_id,
+            category_set_id => [ keys %category_set_map ],
+        }
+    );
 
     my %category_map;
     for my $cat (@categories) {
-        $category_map{$cat->category_set_id}{$cat->name} = $cat;
+        $category_map{ $cat->category_set_id }{ $cat->name } = $cat;
     }
 
     for my $set (@category_sets) {
-        $objs{category_set}{$set->name} = {
+        $objs{category_set}{ $set->name } = {
             category_set => $set,
-            category => $category_map{$set->id},
+            category     => $category_map{ $set->id },
         };
     }
 
-    my @content_type_names = keys %{ $FixtureSpec{content_type} };
-    my @content_types = MT::ContentType->load( {
-        blog_id => $blog_id,
-        name => \@content_type_names,
-    } );
-    my @content_type_ids = map {$_->id => $_} @content_types;
+    my @content_type_names = keys %{ $spec->{content_type} };
+    my @content_types      = MT::ContentType->load(
+        {   blog_id => $blog_id,
+            name    => \@content_type_names,
+        }
+    );
+    my @content_type_ids = map { $_->id => $_ } @content_types;
 
-    my @content_fields = MT::ContentField->load( {
-        blog_id => $blog_id,
-        content_type_id => \@content_type_ids,
-    } );
+    my @content_fields = MT::ContentField->load(
+        {   blog_id         => $blog_id,
+            content_type_id => \@content_type_ids,
+        }
+    );
 
     my %content_field_map;
     for my $cf (@content_fields) {
@@ -443,17 +450,18 @@ sub load_objs {
     }
 
     for my $ct (@content_types) {
-        $objs{content_type}{$ct->name} = {
-            content_type => $ct,
+        $objs{content_type}{ $ct->name } = {
+            content_type  => $ct,
             content_field => $content_field_map{ $ct->id },
         };
     }
 
-    my @content_data = MT::ContentData->load( {
-        blog_id => $blog_id,
-        content_type_id => \@content_type_ids,
-    } );
-    $objs{content_data} = { map {$_->label => $_} @content_data };
+    my @content_data = MT::ContentData->load(
+        {   blog_id         => $blog_id,
+            content_type_id => \@content_type_ids,
+        }
+    );
+    $objs{content_data} = { map { $_->label => $_ } @content_data };
 
     $CachedObjs = \%objs;
 }
