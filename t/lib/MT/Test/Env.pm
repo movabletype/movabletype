@@ -2,6 +2,7 @@ package MT::Test::Env;
 
 use strict;
 use warnings;
+use Carp;
 use Test::More;
 use File::Spec;
 use Cwd ();
@@ -12,6 +13,7 @@ use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
+use String::CamelCase 'camelize';
 
 our $MT_HOME;
 
@@ -318,7 +320,12 @@ sub prepare_fixture {
             };
         }
         else {
-            $code = shift;
+            $code = sub {
+                my $fixture_class = 'MT::Test::Fixture::' . camelize($id);
+                eval "require $fixture_class; 1"
+                    or croak "Unknown fixture id: $id";
+                $fixture_class->prepare_fixture;
+            };
         }
     }
 
@@ -448,7 +455,7 @@ sub load_schema_and_fixture {
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
             for my $bind_value (@bind) {
-                if ($bind_value && $bind_value =~ /^BIN:SERG/) {
+                if ( $bind_value && $bind_value =~ /^BIN:SERG/ ) {
                     $bind_value =~ s/(.)/sprintf('0x%02x', ord($1))/ge;
                 }
             }
@@ -660,8 +667,8 @@ sub test_schema {
     $self->_get_id_from_caller;
     $self->_set_fixture_dirs;
 
-    my $driver       = lc $self->{driver};
-    my $schema_file  = "$self->{fixture_dirs}[0]/schema.$driver.sql";
+    my $driver      = lc $self->{driver};
+    my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
     my $saved_schema = _slurp($schema_file);
@@ -679,6 +686,16 @@ sub test_schema {
                 { STYLE => 'Unified' } );
         }
     }
+}
+
+sub dump_table {
+    my ( $self, $table, $extra, $bind ) = @_;
+    my $dbh = $self->dbh;
+    my $sql = "SELECT * FROM $table";
+    $sql .= " $extra" if $extra;
+    my $rows = $dbh->selectall_arrayref( $sql,
+        { Slice => +{} }, @{ $bind || [] } );
+    note explain($rows);
 }
 
 sub skip_if_addon_exists {
