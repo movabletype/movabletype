@@ -317,6 +317,12 @@ sub prepare_fixture {
                 MT::Test->init_data;
             };
         }
+        elsif ( $id eq 'archive_type' ) {
+            $code = sub {
+                require MT::Test::Fixture::ArchiveType;
+                MT::Test::Fixture::ArchiveType->prepare_fixture;
+            };
+        }
         else {
             $code = shift;
         }
@@ -679,6 +685,16 @@ sub test_schema {
                 { STYLE => 'Unified' } );
         }
     }
+}
+
+sub dump_table {
+    my ( $self, $table, $extra, $bind ) = @_;
+    my $dbh = $self->dbh;
+    my $sql = "SELECT * FROM $table";
+    $sql .= " $extra" if $extra;
+    my $rows = $dbh->selectall_arrayref( $sql,
+        { Slice => +{} }, @{ $bind || [] } );
+    note explain($rows);
 }
 
 sub skip_if_addon_exists {
