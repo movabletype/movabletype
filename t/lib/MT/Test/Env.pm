@@ -2,6 +2,7 @@ package MT::Test::Env;
 
 use strict;
 use warnings;
+use Carp;
 use Test::More;
 use File::Spec;
 use Cwd ();
@@ -12,6 +13,7 @@ use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
+use String::CamelCase 'camelize';
 
 our $MT_HOME;
 
@@ -317,14 +319,13 @@ sub prepare_fixture {
                 MT::Test->init_data;
             };
         }
-        elsif ( $id eq 'archive_type' ) {
-            $code = sub {
-                require MT::Test::Fixture::ArchiveType;
-                MT::Test::Fixture::ArchiveType->prepare_fixture;
-            };
-        }
         else {
-            $code = shift;
+            $code = sub {
+                my $fixture_class = 'MT::Test::Fixture::' . camelize($id);
+                eval "require $fixture_class; 1"
+                    or croak "Unknown fixture id: $id";
+                $fixture_class->prepare_fixture;
+            };
         }
     }
 
