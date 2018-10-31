@@ -135,8 +135,8 @@ our %FixtureSpec = (
     },
     content_type => {
         ct_with_same_catset => [
-            cf_same_date               => 'date',
-            cf_same_datetime           => 'datetime',
+            cf_same_date               => 'date_only',
+            cf_same_datetime           => 'date_and_time',
             cf_same_catset_fruit       => {
                 type => 'categories',
                 category_set => 'catset_fruit',
@@ -147,8 +147,8 @@ our %FixtureSpec = (
             },
         ],
         ct_with_other_catset => [
-            cf_other_date          => 'date',
-            cf_other_datetime      => 'datetime',
+            cf_other_date          => 'date_only',
+            cf_other_datetime      => 'date_and_time',
             cf_other_catset_fruit  => {
                 type => 'categories',
                 category_set => 'catset_fruit',
