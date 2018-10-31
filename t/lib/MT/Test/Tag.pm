@@ -20,6 +20,11 @@ BEGIN {
 sub run_perl_tests {
     my ( $blog_id, $callback, $expected_method ) = @_;
 
+    if ( $callback && !ref $callback ) {
+        $expected_method = $callback;
+        $callback = undef;
+    }
+
     MT->instance;
 
     run {
@@ -67,6 +72,11 @@ sub run_php_tests {
 SKIP: {
         unless ( has_php() ) {
             skip "Can't find executable file: php", 1 * blocks;
+        }
+
+        if ( $callback && !ref $callback ) {
+            $expected_method = $callback;
+            $callback = undef;
         }
 
         run {
