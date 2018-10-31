@@ -22,7 +22,7 @@ sub run_perl_tests {
 
     if ( $callback && !ref $callback ) {
         $expected_method = $callback;
-        $callback = undef;
+        $callback        = undef;
     }
 
     MT->instance;
@@ -76,7 +76,7 @@ SKIP: {
 
         if ( $callback && !ref $callback ) {
             $expected_method = $callback;
-            $callback = undef;
+            $callback        = undef;
         }
 
         run {
@@ -101,7 +101,7 @@ SKIP: {
                 my $expected
                     = $block->expected_error ? $block->expected_error
                     : $block->error          ? $block->error
-                    : $block->can($expected_method)
+                    : ( $expected_method && $block->can($expected_method) )
                     ? $block->$expected_method
                     : $block->expected;
                 $expected =~ s/\\r/\\n/g;
