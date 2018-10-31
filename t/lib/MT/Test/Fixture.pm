@@ -160,7 +160,8 @@ sub prepare_entry {
                 %arg = %$item;
                 if ( my $author_name = delete $arg{author} ) {
                     my $author = $objs->{author}{$author_name}
-                        or croak "unknown author: $author_name: entry: $arg{title}";
+                        or croak
+                        "unknown author: $author_name: entry: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
                 my $status = $arg{status} || 'publish';
@@ -211,7 +212,8 @@ sub prepare_page {
                 %arg = %$item;
                 if ( my $author_name = delete $arg{author} ) {
                     my $author = $objs->{author}{$author_name}
-                        or croak "unknown author: $author_name: page: $arg{title}";
+                        or croak
+                        "unknown author: $author_name: page: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
                 my $status = $arg{status} || 'publish';

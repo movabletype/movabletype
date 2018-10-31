@@ -99,6 +99,7 @@ on 'test' => sub {
     requires 'pQuery';
     requires 'SQL::Maker';
     requires 'SQL::Translator';
+    requires 'String::CamelCase';
     requires 'Test::Base';
     requires 'Test::Class';
     requires 'Test::Data';
