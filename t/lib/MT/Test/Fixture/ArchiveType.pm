@@ -400,10 +400,16 @@ sub load_objs {
     my @authors = MT::Author->load( { name => \@author_names } );;
     $objs{author} = { map {$_->name => $_} @authors };
 
+    my @site_names = map { $_->{name} } @{ $spec->{website} };
+    my @sites = MT::Website->load( { name => \@site_names } );
+    $objs{website} = { map { $_->name => $_ } @sites };
+
     my @blog_names = map { $_->{name} } @{ $spec->{blog} };
     my @blogs = MT::Blog->load( { name => \@blog_names } );
     $objs{blog} = { map {$_->name => $_} @blogs };
-    $objs{blog_id} = $blogs[0]->id if @blogs == 1;
+
+    my @all_sites = ( @sites, @blogs );
+    $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     my $blog_id = $objs{blog_id};
 
