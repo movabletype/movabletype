@@ -22,7 +22,7 @@ sub run_perl_tests {
 
     if ( $callback && !ref $callback ) {
         $expected_method = $callback;
-        $callback = undef;
+        $callback        = undef;
     }
 
     MT->instance;
@@ -76,7 +76,7 @@ SKIP: {
 
         if ( $callback && !ref $callback ) {
             $expected_method = $callback;
-            $callback = undef;
+            $callback        = undef;
         }
 
         run {
