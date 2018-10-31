@@ -46,7 +46,7 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            if ( !$expected_method or $block->can($expected_method) ) {
+            if ( !$expected_method or !$block->can($expected_method) ) {
                 $expected_method = 'expected';
             }
 
