@@ -293,9 +293,13 @@ our $CachedObjs;
 sub fixture_spec { \%FixtureSpec }
 
 sub prepare_fixture {
+    my $class = shift;
+
     MT::Test->init_db;
 
-    my $objs = MT::Test::Fixture->prepare( \%FixtureSpec );
+    my $spec = $class->fixture_spec;
+
+    my $objs = MT::Test::Fixture->prepare($spec);
     $CachedObjs = $objs;
 
     my $blog_id = $objs->{blog_id};
@@ -389,19 +393,21 @@ sub load_objs {
 
     return $CachedObjs if $CachedObjs;
 
+    my $spec = $class->fixture_spec;
+
     my %objs;
-    my @author_names = @{ $FixtureSpec{author} };
+    my @author_names = @{ $spec->{author} };
     my @authors = MT::Author->load( { name => \@author_names } );;
     $objs{author} = { map {$_->name => $_} @authors };
 
-    my @blog_names = map { $_->{name} } @{ $FixtureSpec{blog} };
+    my @blog_names = map { $_->{name} } @{ $spec->{blog} };
     my @blogs = MT::Blog->load( { name => \@blog_names } );
     $objs{blog} = { map {$_->name => $_} @blogs };
     $objs{blog_id} = $blogs[0]->id if @blogs == 1;
 
     my $blog_id = $objs{blog_id};
 
-    my @category_set_names = keys %{ $FixtureSpec{category_set} };
+    my @category_set_names = keys %{ $spec->{category_set} };
     my @category_sets = MT::CategorySet->load( {
         blog_id => $blog_id,
         name => \@category_set_names,
@@ -425,7 +431,7 @@ sub load_objs {
         };
     }
 
-    my @content_type_names = keys %{ $FixtureSpec{content_type} };
+    my @content_type_names = keys %{ $spec->{content_type} };
     my @content_types = MT::ContentType->load( {
         blog_id => $blog_id,
         name => \@content_type_names,
