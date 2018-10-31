@@ -18,7 +18,12 @@ BEGIN {
 }
 
 sub run_perl_tests {
-    my ( $blog_id, $callback ) = @_;
+    my ( $blog_id, $callback, $expected_method ) = @_;
+
+    if ( $callback && !ref $callback ) {
+        $expected_method = $callback;
+        $callback = undef;
+    }
 
     MT->instance;
 
@@ -41,11 +46,15 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
+            if ( !$expected_method or !$block->can($expected_method) ) {
+                $expected_method = 'expected';
+            }
+
             my $result = eval { $tmpl->build };
             if ( !$block->expected_error ) {
                 $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
                     if defined $result;
-                is( $result, $block->expected, $block->name );
+                is( $result, $block->$expected_method, $block->name );
             }
             else {
                 $result = $ctx->errstr;
@@ -58,11 +67,16 @@ sub run_perl_tests {
 }
 
 sub run_php_tests {
-    my ( $blog_id, $callback ) = @_;
+    my ( $blog_id, $callback, $expected_method ) = @_;
 
 SKIP: {
         unless ( has_php() ) {
             skip "Can't find executable file: php", 1 * blocks;
+        }
+
+        if ( $callback && !ref $callback ) {
+            $expected_method = $callback;
+            $callback = undef;
         }
 
         run {
@@ -85,10 +99,10 @@ SKIP: {
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
                 my $expected
-                    = $block->expected_error
-                    ? $block->expected_error
-                    : $block->error
-                    ? $block->error
+                    = $block->expected_error ? $block->expected_error
+                    : $block->error          ? $block->error
+                    : $block->can($expected_method)
+                    ? $block->$expected_method
                     : $block->expected;
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
