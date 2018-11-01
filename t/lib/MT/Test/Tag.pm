@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use Test::More;
 use MT::Test 'has_php';
+use MT::I18N;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -105,7 +106,6 @@ SKIP: {
                 run3 [ 'php', '-q' ], \$php_script, \my $php_result, undef,
                     { binmode_stdin => 1 }
                     or die $?;
-
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
 
                 my $expected
@@ -118,7 +118,7 @@ SKIP: {
                 $expected =~ s/\r/\n/g;
 
                 my $name = $block->name . ' - dynamic';
-                is( $php_result, _filter_vars($expected), $name );
+                is( MT::I18N::encode_text($php_result, undef, 'utf-8'), _filter_vars(MT::I18N::encode_text($expected, undef, 'utf-8')), $name );
             }
         }
     }
