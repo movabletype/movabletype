@@ -17,6 +17,13 @@ BEGIN {
         or plan skip_all => 'IPC::Run3 is not installed';
 }
 
+my $vars = {};
+
+sub vars {
+    $vars = shift if @_;
+    $vars;
+}
+
 sub run_perl_tests {
     my ( $blog_id, $callback, $expected_method ) = @_;
 
@@ -35,7 +42,7 @@ sub run_perl_tests {
             MT::Request->instance->reset;
 
             my $tmpl = MT::Template->new;
-            $tmpl->text( $block->template );
+            $tmpl->text( _filter_vars( $block->template ) );
             my $ctx = $tmpl->context;
 
             my $blog = MT::Blog->load( $block->blog_id || $blog_id );
@@ -54,13 +61,16 @@ sub run_perl_tests {
             if ( !$block->expected_error ) {
                 $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
                     if defined $result;
-                is( $result, $block->$expected_method, $block->name );
+                is( $result, _filter_vars( $block->$expected_method ),
+                    $block->name );
             }
             else {
                 $result = $ctx->errstr;
                 $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-                is( $result, $block->expected_error,
-                    $block->name . ' (error)' );
+                is( $result,
+                    _filter_vars( $block->expected_error ),
+                    $block->name . ' (error)'
+                );
             }
         }
     }
@@ -85,7 +95,7 @@ SKIP: {
                 skip $block->skip, 1 if $block->skip;
                 skip 'skip php test', 1 if $block->skip_php;
 
-                my $template = $block->template;
+                my $template = _filter_vars( $block->template );
                 my $text     = $block->text || '';
                 my $extra    = $callback ? $callback->($block) : '';
 
@@ -108,10 +118,17 @@ SKIP: {
                 $expected =~ s/\r/\n/g;
 
                 my $name = $block->name . ' - dynamic';
-                is( $php_result, $expected, $name );
+                is( $php_result, _filter_vars($expected), $name );
             }
         }
     }
+}
+
+sub MT::Test::Tag::_filter_vars {
+    my $str = shift;
+    return $str unless defined $str;
+    $str =~ s/\[% $_ %\]/$vars->{$_}/g for keys %$vars;
+    $str;
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
@@ -138,7 +155,7 @@ PHP
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(1, $MT_CONFIG);
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->init_plugins();
 
 $db = $mt->db();
