@@ -53,7 +53,7 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            if ( !$expected_method or !$block->can($expected_method) ) {
+            if ( !$expected_method or !exists $block->{$expected_method} ) {
                 $expected_method = 'expected';
             }
 
@@ -111,7 +111,8 @@ SKIP: {
                 my $expected
                     = $block->expected_error ? $block->expected_error
                     : $block->error          ? $block->error
-                    : ( $expected_method && $block->can($expected_method) )
+                    : ( $expected_method
+                        && exists $block->{$expected_method} )
                     ? $block->$expected_method
                     : $block->expected;
                 $expected =~ s/\\r/\\n/g;
