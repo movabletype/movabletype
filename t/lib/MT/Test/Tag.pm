@@ -25,11 +25,11 @@ sub vars {
 }
 
 sub run_perl_tests {
-    my ( $blog_id, $callback, $expected_method ) = @_;
+    my ( $blog_id, $callback, $original_expected_method ) = @_;
 
     if ( $callback && !ref $callback ) {
-        $expected_method = $callback;
-        $callback        = undef;
+        $original_expected_method = $callback;
+        $callback                 = undef;
     }
 
     MT->instance;
@@ -53,6 +53,7 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
+            my $expected_method = $original_expected_method;
             if ( !$expected_method or !exists $block->{$expected_method} ) {
                 $expected_method = 'expected';
             }
