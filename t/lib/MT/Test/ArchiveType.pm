@@ -151,10 +151,10 @@ sub _run_perl_test {
 
             if ( my $error = $ctx->errstr ) {
                 my $expected_error_method = "expected_error_$method_name";
-                if ( !$block->can($expected_error_method) ) {
+                if ( !exists $block->{$expected_error_method} ) {
                     $expected_error_method = 'expected_error';
                 }
-                if ( !$block->can($expected_error_method) ) {
+                if ( !exists $block->{$expected_error_method} ) {
                     $expected_error_method = 'expected';
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
@@ -168,7 +168,7 @@ sub _run_perl_test {
                 my @extra_methods   = ( "expected_todo_$method_name",
                     "expected_$method_name", );
                 for my $method (@extra_methods) {
-                    if ( $block->can($method) ) {
+                    if ( exists $block->{$method} ) {
                         $expected_method = $method;
                         last;
                     }
@@ -361,7 +361,7 @@ PHP
             );
             my $expected_method = "expected";
             for my $method (@extra_methods) {
-                if ( $block->can($method) ) {
+                if ( exists $block->{$method} ) {
                     $expected_method = $method;
                     last;
                 }
