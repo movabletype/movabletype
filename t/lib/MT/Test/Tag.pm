@@ -155,7 +155,7 @@ PHP
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(1, $MT_CONFIG);
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->init_plugins();
 
 $db = $mt->db();
