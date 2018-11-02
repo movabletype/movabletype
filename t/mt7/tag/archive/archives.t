@@ -52,6 +52,7 @@ my @archive_types = MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
 foreach my $archive_type (@archive_types) {
+    note $archive_type;
     my $expected_method = 'expected_' . lc($archive_type);
     $expected_method =~ s/-/_/g;
     MT::Test::Tag->vars->{archive_type} = $archive_type;

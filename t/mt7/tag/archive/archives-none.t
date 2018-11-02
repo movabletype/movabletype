@@ -35,8 +35,8 @@ filters {
 
 $test_env->prepare_fixture('db');
 
-my $archive_types
-    = 'Individual,Page,Daily,Weekly,Monthly,Yearly,Author,Author-Daily,Author-Weekly,Author-Monthly,Author-Yearly,Category,Category-Daily,Category-Weekly,Category-Monthly,Category-Yearly,ContentType,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly,ContentType-Author,ContentType-Author-Daily,ContentType-Author-Weekly,ContentType-Author-Monthly,ContentType-Author-Yearly,ContentType-Category,ContentType-Category-Daily,ContentType-Category-Weekly,ContentType-Category-Monthly,ContentType-Category-Yearly';
+my @archive_types = sort { $a cmp $b } MT->publisher->archive_types;
+my $archive_types = join ',', @archive_types;
 
 my $blog = MT::Blog->load($blog_id);
 
@@ -79,8 +79,7 @@ __END__
 --- archive_type
 
 --- template
-<mt:Archives>
-<mt:ArchiveType>
+<mt:Archives><mt:ArchiveType>
 </mt:Archives>
 --- expected
 
@@ -88,75 +87,43 @@ __END__
 --- archive_type
 None
 --- template
-<mt:Archives>
-<mt:ArchiveType>
+<mt:Archives><mt:ArchiveType>
 </mt:Archives>
 --- expected
 
 === No modifier and $blog->archive_type('Some ArchiveType')
 --- template
-<mt:Archives>
-<mt:ArchiveType>
+<mt:Archives><mt:ArchiveType>
 </mt:Archives>
 --- expected
-Individual
-
-Page
-
-Daily
-
-Weekly
-
-Monthly
-
-Yearly
-
 Author
-
 Author-Daily
-
-Author-Weekly
-
 Author-Monthly
-
+Author-Weekly
 Author-Yearly
-
 Category
-
 Category-Daily
-
-Category-Weekly
-
 Category-Monthly
-
+Category-Weekly
 Category-Yearly
-
 ContentType
-
-ContentType-Daily
-
-ContentType-Weekly
-
-ContentType-Monthly
-
-ContentType-Yearly
-
 ContentType-Author
-
 ContentType-Author-Daily
-
-ContentType-Author-Weekly
-
 ContentType-Author-Monthly
-
+ContentType-Author-Weekly
 ContentType-Author-Yearly
-
 ContentType-Category
-
 ContentType-Category-Daily
-
-ContentType-Category-Weekly
-
 ContentType-Category-Monthly
-
+ContentType-Category-Weekly
 ContentType-Category-Yearly
+ContentType-Daily
+ContentType-Monthly
+ContentType-Weekly
+ContentType-Yearly
+Daily
+Individual
+Monthly
+Page
+Weekly
+Yearly
