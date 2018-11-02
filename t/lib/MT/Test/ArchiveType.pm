@@ -156,9 +156,9 @@ sub _run_perl_test {
                     "expected_error_$method_name",
                     "expected_error"
                 );
-                for my $method (@extra_methods) {
+                for my $method (@extra_error_methods) {
                     if ( exists $block->{$method} ) {
-                        $expected_method = $method;
+                        $expected_error_method = $method;
                         last;
                     }
                 }
