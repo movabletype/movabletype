@@ -77,8 +77,6 @@ sub run_tests {
             }
         }
     }
-
-    done_testing;
 }
 
 sub _run_perl_test {
