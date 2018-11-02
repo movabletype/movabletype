@@ -130,6 +130,7 @@ sub MT::Test::Tag::_filter_vars {
     my $str = shift;
     return $str unless defined $str;
     $str =~ s/\[% $_ %\]/$vars->{$_}/g for keys %$vars;
+    chomp $str;
     $str;
 }
 
