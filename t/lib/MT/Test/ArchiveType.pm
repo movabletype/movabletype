@@ -3,6 +3,7 @@ package MT::Test::ArchiveType;
 use strict;
 use warnings;
 use Test::More;
+use Encode;
 use MT::Test;
 use MT::Test::Fixture::ArchiveType;
 
@@ -367,6 +368,7 @@ PHP
                 }
             }
             $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+            $result = Encode::decode_utf8($result);
 
             my $expected = $block->$expected_method;
             $expected = '' unless defined $expected;

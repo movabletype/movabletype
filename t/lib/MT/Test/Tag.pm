@@ -7,6 +7,7 @@ package MT::Test::Tag;
 
 use strict;
 use warnings;
+use Encode;
 use Test::More;
 use MT::Test 'has_php';
 
@@ -108,6 +109,7 @@ SKIP: {
                     or die $?;
 
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                $php_result = Encode::decode_utf8($php_result);
 
                 my $expected
                     = $block->expected_error ? $block->expected_error
