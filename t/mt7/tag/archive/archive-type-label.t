@@ -9,13 +9,6 @@ use MT::Test::Env;
 use utf8;
 our $test_env;
 
-my $builder = Test::More->builder;
-binmode $builder->output,         ':encoding(utf8)';
-binmode $builder->failure_output, ':encoding(utf8)';
-binmode $builder->todo_output,    ':encoding(utf8)';
-binmode STDOUT, ':utf8';
-binmode STDERR, ':utf8';
-
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
@@ -32,8 +25,6 @@ use MT;
 use MT::Test;
 use MT::Test::Tag;
 
-# plan tests => 1 * blocks;
-
 my $app = MT->instance;
 
 filters {
@@ -44,8 +35,6 @@ $test_env->prepare_fixture('db');
 
 my $default_language = MT->config->DefaultLanguage;
 
-# Run Perl Tests
-
 my $blog_id = 1;
 
 for my $archive_type ( MT->publisher->archive_types ) {
@@ -53,6 +42,8 @@ for my $archive_type ( MT->publisher->archive_types ) {
     ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
     my $expected_method = 'expected_' . $name;
     MT::Test::Tag->vars->{archive_type} = $archive_type;
+
+    # Run Perl Tests
     MT::Test::Tag->run_perl_tests(
         $blog_id,
         sub {
@@ -69,8 +60,6 @@ for my $archive_type ( MT->publisher->archive_types ) {
     );
 
     # Run PHP Tests
-    #
-
     MT::Test::Tag->run_php_tests(
         $blog_id,
         sub {
@@ -103,6 +92,7 @@ __END__
 
 === mt:ArchiveTypeLabel de
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26050
 --- skip_php
 1
@@ -179,6 +169,7 @@ Jahresarchiv
 === mt:ArchiveTypeLabel en_us
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26050
+https://movabletype.atlassian.net/browse/MTC-26050
 --- skip_php
 1
 --- language
@@ -253,6 +244,7 @@ Yearly
 
 === mt:ArchiveTypeLabel es
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26050
 --- language 
 es
@@ -329,6 +321,7 @@ anuales
 === mt:ArchiveTypeLabel fr
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26050
+https://movabletype.atlassian.net/browse/MTC-26050
 --- language 
 fr
 --- skip_php
@@ -403,6 +396,7 @@ annuelles
 
 === mt:ArchiveTypeLabel nl
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26050
 --- language 
 nl
