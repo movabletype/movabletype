@@ -36,7 +36,7 @@ __END__
 
 === mt:ArchiveTitle (authored_on, cat_apple)
 --- stash
-{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_orange' }
+{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
 <mt:ArchiveList><mt:ArchiveTitle>
 </mt:ArchiveList>
