@@ -49,6 +49,7 @@ my $default_language = MT->config->DefaultLanguage;
 my $blog_id = 1;
 
 for my $archive_type ( MT->publisher->archive_types ) {
+    note $archive_type;
     ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
     my $expected_method = 'expected_' . $name;
     MT::Test::Tag->vars->{archive_type} = $archive_type;
