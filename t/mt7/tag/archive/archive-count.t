@@ -97,7 +97,7 @@ December  2, 2018 - December  8, 2018:2
 2016:1
 2016:1
 2018:2
---- expected_contenttype
+--- expected_todo_contenttype
 cd_same_apple_orange:1
 cd_same_same_date:1
 cd_same_apple_orange_peach:1
