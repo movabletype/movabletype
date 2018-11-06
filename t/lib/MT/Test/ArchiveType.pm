@@ -69,6 +69,8 @@ sub run_tests {
     SKIP: {
             my $archive_type = $map->archive_type;
 
+            $vars->{archive_type} = $archive_type;
+
             my $blog = MT::Blog->load($blog_id);
             $blog->archive_type_preferred($archive_type);
             $blog->save;
