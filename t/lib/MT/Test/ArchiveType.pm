@@ -448,16 +448,30 @@ sub _set_stash {
     }
 
     if ( $archiver->author_based ) {
+        my $cd_spec = $fixture_spec->{content_data}{$cd_name};
+        my $author;
         if ( $archiver->contenttype_author_based ) {
-            my $cd_spec = $fixture_spec->{content_data}{$cd_name}
-                or croak "unknown content_data: $cd_name";
-
-            my $author = $objs->{author}{ $cd_spec->{author} };
+            unless ($cd_spec) {
+                croak "unknown content_data: $cd_name";
+            }
+            $author = $objs->{author}{ $cd_spec->{author} };
             if ( !$author ) {
                 return ( undef, " requires content_data's author" );
             }
-            $stash{author} = $author;
         }
+        else {
+            my $author_name
+                = exists $names->{author}
+                ? $names->{author}
+                : $cd_spec->{author};
+            if ( defined $author_name ) {
+                $author = $objs->{author}{$author_name};
+            }
+            if ( !$author ) {
+                return ( undef, " requires author or content_data's author" );
+            }
+        }
+        $stash{author} = $author;
     }
 
     if ( $archiver->category_based ) {
