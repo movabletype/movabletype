@@ -464,7 +464,7 @@ sub _set_stash {
         if ( $archiver->contenttype_category_based ) {
             return ( undef, " requires category" ) unless $cat_name;
 
-            my $cat_field_id = $map->cat_field_id;
+            my $cat_field_id = $map->cat_field_id || 0;
 
             my $ct = $stash{content_type};
             my @fields
