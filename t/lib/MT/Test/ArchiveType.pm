@@ -102,6 +102,9 @@ sub _run_perl_test {
             my $tmpl_name = $tmpl->name;
             my $ctx       = $tmpl->context;
 
+            $ctx->{archive_type} = $ctx->{current_archive_type}
+                = $archive_type;
+
             my $test_info = " [[$tmpl_name]]";
 
             my $blog = MT::Blog->load($blog_id);
