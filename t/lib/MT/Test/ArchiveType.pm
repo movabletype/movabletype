@@ -166,6 +166,8 @@ sub _run_perl_test {
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                local $TODO = "may fail"
+                    if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
                     $block->$expected_error_method,
                     $block->name . $test_info . ' (error)'
