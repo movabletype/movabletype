@@ -124,7 +124,7 @@ sub _run_perl_test {
             $ctx->stash( builder       => MT::Builder->new );
 
             my ( $stash, $skip )
-                = $self->_set_stash( $block, $map, $archiver, $objs );
+                = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
             if ($skip) { skip "$skip $test_info", 1 }
 
             $ctx->stash( template_map => $map );
@@ -234,7 +234,7 @@ sub _run_php_test {
             my $test_info = " [[$tmpl_name dynamic]]";
 
             my ( $stash, $skip )
-                = $self->_set_stash( $block, $map, $archiver, $objs,
+                = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs,
                 'dynamic' );
             if ($skip) { skip "$skip $test_info", 1 }
 
@@ -417,7 +417,7 @@ sub _filter_vars {
 }
 
 sub _set_stash {
-    my ( $block, $map, $archiver, $objs, $dynamic ) = @_;
+    my ( $block, $map, $tmpl, $archiver, $objs, $dynamic ) = @_;
 
     my $fixture_spec = MT::Test::Fixture::ArchiveType->fixture_spec;
 
@@ -436,6 +436,10 @@ sub _set_stash {
         my $cd      = $objs->{content_data}{$cd_name};
         my $ct_name = $cd_spec->{content_type};
         my $ct      = $objs->{content_type}{$ct_name}{content_type};
+
+        return ( undef, " this mapping is not for $ct_name" )
+            unless $ct->id == $tmpl->content_type_id;
+
         $stash{content}      = $cd;
         $stash{content_type} = $ct;
 
