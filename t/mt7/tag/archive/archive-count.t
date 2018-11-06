@@ -32,6 +32,8 @@ filters {
 
 MT::Test::ArchiveType->run_tests;
 
+done_testing;
+
 __END__
 
 === mt:ArchiveCount(authored_on, cat_apple))
