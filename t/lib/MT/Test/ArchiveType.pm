@@ -46,6 +46,13 @@ sub MT::Test::ArchiveType::filter_spec {
     %filters;
 }
 
+my $vars = {};
+
+sub vars {
+    $vars = shift if @_;
+    $vars;
+}
+
 sub run_tests {
     my @maps = @_;
 
@@ -97,7 +104,7 @@ sub _run_perl_test {
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
             my $tmpl = MT::Template->load( $map->template_id );
-            $tmpl->text( $block->template );
+            $tmpl->text( $self->_filter_vars( $block->template ) );
 
             my $tmpl_name = $tmpl->name;
             my $ctx       = $tmpl->context;
@@ -169,7 +176,7 @@ sub _run_perl_test {
                 local $TODO = "may fail"
                     if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
-                    $block->$expected_error_method,
+                    $self->_filter_vars( $block->$expected_error_method ),
                     $block->name . $test_info . ' (error)'
                 );
             }
@@ -190,8 +197,10 @@ sub _run_perl_test {
                 local $TODO = "may fail"
                     if $expected_method =~ /^expected_todo_/;
 
-                is( $result, $block->$expected_method,
-                    $block->name . $test_info );
+                is( $result,
+                    $self->_filter_vars( $block->$expected_method ),
+                    $block->name . $test_info
+                );
             }
         }
     }
@@ -245,7 +254,7 @@ sub _run_php_test {
                 $finfo_id = $finfo->id;
             }
 
-            my $template = $block->template;
+            my $template = $self->_filter_vars( $block->template );
             $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
 
             my $text = $block->text || '';
@@ -388,9 +397,17 @@ PHP
 
             local $TODO = "may fail"
                 if $expected_method =~ /^expected_(?:php_)?todo_/;
-            is( $result, $expected, "$name $test_info" );
+            is( $result, $self->_filter_vars($expected), "$name $test_info" );
         }
     }
+}
+
+sub _filter_vars {
+    my $str = shift;
+    return $str unless defined $str;
+    $str =~ s/\[% $_ %\]/$vars->{$_}/g for keys %$vars;
+    chomp $str;
+    $str;
 }
 
 sub _set_stash {
