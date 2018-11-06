@@ -102,6 +102,9 @@ sub _run_perl_test {
             my $tmpl_name = $tmpl->name;
             my $ctx       = $tmpl->context;
 
+            $ctx->{archive_type} = $ctx->{current_archive_type}
+                = $archive_type;
+
             my $test_info = " [[$tmpl_name]]";
 
             my $blog = MT::Blog->load($blog_id);
@@ -163,6 +166,8 @@ sub _run_perl_test {
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                local $TODO = "may fail"
+                    if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
                     $block->$expected_error_method,
                     $block->name . $test_info . ' (error)'
@@ -263,7 +268,7 @@ PHP
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(1, $MT_CONFIG);
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->init_plugins();
 
 $db = $mt->db();

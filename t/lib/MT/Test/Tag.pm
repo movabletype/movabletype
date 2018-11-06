@@ -43,7 +43,7 @@ sub run_perl_tests {
 
             MT::Request->instance->reset;
 
-            my $tmpl = MT::Template->new;
+            my $tmpl = MT::Template->new( type => '' );  # empty type for test
             $tmpl->text( _filter_vars( $block->template ) );
             my $ctx = $tmpl->context;
 
