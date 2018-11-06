@@ -30,18 +30,20 @@ filters {
     MT::Test::ArchiveType->filter_spec
 };
 
-MT::Test::ArchiveType->run_tests;
+my @maps = MT::Test::ArchiveType->template_maps('ContentType-Author-Daily');
+
+MT::Test::ArchiveType->run_tests(@maps);
 
 done_testing;
 
 __END__
 
 === mt:ArchiveTitle (authored_on, cat_apple)
+--- ONLY
 --- stash
 { cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
-<mt:ArchiveList><mt:ArchiveTitle>
-</mt:ArchiveList>
+<mt:ArchiveTitle>
 --- expected_author
 author1
 author2
@@ -106,8 +108,7 @@ cd_same_peach
 author1
 author2
 --- expected_contenttype_author_daily
-October 31, 2018
-October 31, 2017
+author1: October 31, 2018
 --- expected_contenttype_author_monthly
 October 2018
 October 2017
