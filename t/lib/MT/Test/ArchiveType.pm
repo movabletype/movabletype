@@ -30,9 +30,10 @@ sub Test::Base::Filter::var {
 
 sub MT::Test::ArchiveType::filter_spec {
     my %filters = (
-        stash    => [qw/ chomp eval /],
-        template => [qw/ var chomp /],
-        expected => [qw/ var chomp /],
+        stash         => [qw/ chomp eval /],
+        template      => [qw/ var chomp /],
+        expected      => [qw/ var chomp /],
+        expected_todo => [qw/ var chomp /],
     );
     for my $archive_type ( MT->publisher->archive_types ) {
         ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
@@ -184,8 +185,10 @@ sub _run_perl_test {
             }
             else {
                 my $expected_method = 'expected';
-                my @extra_methods   = ( "expected_todo_$method_name",
-                    "expected_$method_name", );
+                my @extra_methods   = (
+                    "expected_todo_$method_name",
+                    "expected_$method_name", "expected_todo"
+                );
                 for my $method (@extra_methods) {
                     if ( exists $block->{$method} ) {
                         $expected_method = $method;
@@ -197,7 +200,7 @@ sub _run_perl_test {
                     if defined $result;
 
                 local $TODO = "may fail"
-                    if $expected_method =~ /^expected_todo_/;
+                    if $expected_method =~ /^expected_todo/;
 
                 is( $result,
                     $self->_filter_vars( $block->$expected_method ),
@@ -379,6 +382,7 @@ PHP
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
                 "expected_$method_name",
+                "expected_todo",
             );
             my $expected_method = "expected";
             for my $method (@extra_methods) {
@@ -398,7 +402,7 @@ PHP
             my $name = $block->name;
 
             local $TODO = "may fail"
-                if $expected_method =~ /^expected_(?:php_)?todo_/;
+                if $expected_method =~ /^expected_(?:php_)?todo/;
             is( $result, $self->_filter_vars($expected), "$name $test_info" );
         }
     }
