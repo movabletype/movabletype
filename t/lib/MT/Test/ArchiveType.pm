@@ -3,6 +3,7 @@ package MT::Test::ArchiveType;
 use strict;
 use warnings;
 use Test::More;
+use Encode;
 use MT::Test;
 use MT::Test::Fixture::ArchiveType;
 
@@ -35,11 +36,12 @@ sub MT::Test::ArchiveType::filter_spec {
     );
     for my $archive_type ( MT->publisher->archive_types ) {
         ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
-        $filters{"expected_$name"}           = [qw/ var chomp /];
-        $filters{"expected_todo_$name"}      = [qw/ var chomp /];
-        $filters{"expected_php_todo_$name"}  = [qw/ var chomp /];
-        $filters{"expected_error_$name"}     = [qw/ var chomp /];
-        $filters{"expected_php_error_$name"} = [qw/ var chomp /];
+        $filters{"expected_$name"}            = [qw/ var chomp /];
+        $filters{"expected_todo_$name"}       = [qw/ var chomp /];
+        $filters{"expected_php_todo_$name"}   = [qw/ var chomp /];
+        $filters{"expected_todo_error_$name"} = [qw/ var chomp /];
+        $filters{"expected_error_$name"}      = [qw/ var chomp /];
+        $filters{"expected_php_error_$name"}  = [qw/ var chomp /];
     }
     %filters;
 }
@@ -76,8 +78,6 @@ sub run_tests {
             }
         }
     }
-
-    done_testing;
 }
 
 sub _run_perl_test {
@@ -150,12 +150,17 @@ sub _run_perl_test {
             diag $@ if $@;
 
             if ( my $error = $ctx->errstr ) {
-                my $expected_error_method = "expected_error_$method_name";
-                if ( !exists $block->{$expected_error_method} ) {
-                    $expected_error_method = 'expected_error';
-                }
-                if ( !exists $block->{$expected_error_method} ) {
-                    $expected_error_method = 'expected';
+                my $expected_error_method = "expected";
+                my @extra_error_methods   = (
+                    "expected_todo_error_$method_name",
+                    "expected_error_$method_name",
+                    "expected_error"
+                );
+                for my $method (@extra_error_methods) {
+                    if ( exists $block->{$method} ) {
+                        $expected_error_method = $method;
+                        last;
+                    }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 is( $error,
@@ -258,7 +263,7 @@ PHP
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(1, $MT_CONFIG);
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->init_plugins();
 
 $db = $mt->db();
@@ -367,6 +372,7 @@ PHP
                 }
             }
             $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+            $result = Encode::decode_utf8($result);
 
             my $expected = $block->$expected_method;
             $expected = '' unless defined $expected;

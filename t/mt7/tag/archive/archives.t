@@ -18,27 +18,12 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * 31 * blocks;
-
 use MT;
 use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
 my $blog_id = 1;
-
-my $vars = {};
-
-sub var {
-    for my $line (@_) {
-        for my $key ( keys %{$vars} ) {
-            my $replace = quotemeta "[% ${key} %]";
-            my $value   = $vars->{$key};
-            $line =~ s/$replace/$value/g;
-        }
-    }
-    @_;
-}
 
 filters {
     archive_type => [qw( chomp )],
@@ -50,6 +35,8 @@ $test_env->prepare_fixture('db');
 
 my @archive_types = MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
+
+plan tests => 2 * @archive_types * blocks;
 
 foreach my $archive_type (@archive_types) {
     note $archive_type;
@@ -78,7 +65,7 @@ foreach my $archive_type (@archive_types) {
                 ? $block->archive_type
                 : $archive_types;
             return <<"PHP";
-\$site = \$db->fetch_blog(\$blog_id);
+\$site = \$ctx->stash('blog');
 \$site->archive_type = "$archive_type";
 \$site->save();
 PHP

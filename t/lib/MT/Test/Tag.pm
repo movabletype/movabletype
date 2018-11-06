@@ -7,6 +7,7 @@ package MT::Test::Tag;
 
 use strict;
 use warnings;
+use Encode;
 use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
@@ -108,6 +109,7 @@ SKIP: {
                     { binmode_stdin => 1 }
                     or die $?;
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                $php_result = Encode::decode_utf8($php_result);
 
                 my $expected
                     = $block->expected_error ? $block->expected_error
@@ -166,14 +168,14 @@ $ctx =& $mt->context();
 
 $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
+
+$blog = $db->fetch_blog($blog_id);
+$ctx->stash('blog', $blog);
 PHP
 
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
     print($error_msg."\n");
 }, E_USER_ERROR );
