@@ -54,7 +54,8 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_monthly
 --- expected_todo_error_category_weekly
 --- expected_todo_error_category_yearly
---- expected_todo_error_contenttype
+--- expected_error_contenttype
+You used an MTArchiveDate tag without a date context set up.
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_contenttype_author
@@ -86,9 +87,11 @@ October 28, 2018 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2018 12:00 AM
 --- expected_todo_error_daily
---- expected_todo_error_individual
+--- expected_error_individual
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_monthly
---- expected_todo_error_page
+--- expected_error_page
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_weekly
 --- expected_todo_error_yearly
 
@@ -111,7 +114,8 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_monthly
 --- expected_todo_error_category_weekly
 --- expected_todo_error_category_yearly
---- expected_todo_error_contenttype
+--- expected_error_contenttype
+You used an MTArchiveDate tag without a date context set up.
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_contenttype_author
@@ -151,9 +155,11 @@ September 22, 2019 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2019 12:00 AM
 --- expected_todo_error_daily
---- expected_todo_error_individual
+--- expected_error_individual
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_monthly
---- expected_todo_error_page
+--- expected_error_page
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_weekly
 --- expected_todo_error_yearly
 
@@ -176,7 +182,8 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_monthly
 --- expected_todo_error_category_weekly
 --- expected_todo_error_category_yearly
---- expected_todo_error_contenttype
+--- expected_error_contenttype
+You used an MTArchiveDate tag without a date context set up.
 --- FIXME
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
@@ -207,9 +214,11 @@ October 26, 2008 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2008 12:00 AM
 --- expected_todo_error_daily
---- expected_todo_error_individual
+--- expected_error_individual
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_monthly
---- expected_todo_error_page
+--- expected_error_page
+You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_weekly
 --- expected_todo_error_yearly
 
