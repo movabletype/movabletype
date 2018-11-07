@@ -160,7 +160,6 @@ December 25, -001 - December 31, -001
 --- expected_todo_yearly
 
 === mt:ArchiveTitle (datetime, cat_orange)
---- ONLY
 --- stash
 { cd => 'cd_same_apple_orange_peach', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_orange' }
 --- template
