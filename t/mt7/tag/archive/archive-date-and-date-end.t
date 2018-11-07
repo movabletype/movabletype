@@ -36,12 +36,12 @@ done_testing;
 __END__
 
 === mt:ArchiveDate (authored_on)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 --- stash
 { cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
 <mt:ArchiveDate>
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_author_daily
@@ -56,8 +56,6 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_yearly
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
@@ -96,12 +94,12 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_yearly
 
 === mt:ArchiveDate (dt_field: date)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26070
 --- stash
 { cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
 <mt:ArchiveDate>
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_author_daily
@@ -116,16 +114,12 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_yearly
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
 September 26, 2019 12:00 AM
 --- expected_contenttype_author_monthly
 September  1, 2019 12:00 AM
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
 --- expected_contenttype_author_weekly
 September 22, 2019 12:00 AM
 --- expected_contenttype_author_yearly
@@ -136,8 +130,6 @@ You used an MTArchiveDate tag without a date context set up.
 September 26, 2019 12:00 AM
 --- expected_contenttype_category_monthly
 September  1, 2019 12:00 AM
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
 --- expected_contenttype_category_weekly
 September 22, 2019 12:00 AM
 --- expected_todo_contenttype_category_monthly
@@ -148,8 +140,6 @@ January  1, 2019 12:00 AM
 September 26, 2019 12:00 AM
 --- expected_contenttype_monthly
 September  1, 2019 12:00 AM
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
 --- expected_contenttype_weekly
 September 22, 2019 12:00 AM
 --- expected_contenttype_yearly
@@ -164,12 +154,12 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_yearly
 
 === mt:ArchiveDate (dt_field: datetime)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 --- stash
 { cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
 <mt:ArchiveDate>
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26070
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_author_daily
@@ -184,7 +174,6 @@ You used an MTArchiveDate tag without a date context set up.
 --- expected_todo_error_category_yearly
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
---- FIXME
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
