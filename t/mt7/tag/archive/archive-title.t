@@ -118,10 +118,8 @@ author1
 author1: September 26, 2019
 --- expected_contenttype_author_monthly
 author1: September 2019
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
---- expected_todo_contenttype_author_weekly
-December 25, -001 - December 31, -001
+--- expected_contenttype_author_weekly
+author1: September 22, 2019 - September 28, 2019
 --- expected_contenttype_author_yearly
 author1: 2019
 --- expected_contenttype_category
@@ -130,20 +128,16 @@ cat_orange
 cat_orange: September 26, 2019
 --- expected_contenttype_category_monthly
 cat_orange: September 2019
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
---- expected_todo_contenttype_category_weekly
-December 25, -001 - December 31, -001
+--- expected_contenttype_category_weekly
+cat_orange: September 22, 2019 - September 28, 2019
 --- expected_contenttype_category_yearly
 cat_orange: 2019
 --- expected_contenttype_daily
 September 26, 2019
 --- expected_contenttype_monthly
 September 2019
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
---- expected_todo_contenttype_weekly
-December 25, -001 - December 31, -001
+--- expected_contenttype_weekly
+September 22, 2019 - September 28, 2019
 --- expected_contenttype_yearly
 2019
 --- expected_todo_daily
