@@ -122,7 +122,12 @@ SKIP: {
                 $expected =~ s/\r/\n/g;
 
                 my $name = $block->name . ' - dynamic';
-                is( MT::I18N::encode_text($php_result, undef, 'utf-8'), _filter_vars(MT::I18N::encode_text($expected, undef, 'utf-8')), $name );
+                is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
+                    _filter_vars(
+                        MT::I18N::encode_text( $expected, undef, 'utf-8' )
+                    ),
+                    $name
+                );
             }
         }
     }
