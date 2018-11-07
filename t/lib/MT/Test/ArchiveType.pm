@@ -30,9 +30,10 @@ sub Test::Base::Filter::var {
 
 sub MT::Test::ArchiveType::filter_spec {
     my %filters = (
-        stash    => [qw/ chomp eval /],
-        template => [qw/ var chomp /],
-        expected => [qw/ var chomp /],
+        stash         => [qw/ chomp eval /],
+        template      => [qw/ var chomp /],
+        expected      => [qw/ var chomp /],
+        expected_todo => [qw/ var chomp /],
     );
     for my $archive_type ( MT->publisher->archive_types ) {
         ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
@@ -44,6 +45,13 @@ sub MT::Test::ArchiveType::filter_spec {
         $filters{"expected_php_error_$name"}  = [qw/ var chomp /];
     }
     %filters;
+}
+
+my $vars = {};
+
+sub vars {
+    $vars = shift if @_;
+    $vars;
 }
 
 sub run_tests {
@@ -61,6 +69,8 @@ sub run_tests {
     for my $map ( sort { $a->archive_type cmp $b->archive_type } @maps ) {
     SKIP: {
             my $archive_type = $map->archive_type;
+
+            $vars->{archive_type} = $archive_type;
 
             my $blog = MT::Blog->load($blog_id);
             $blog->archive_type_preferred($archive_type);
@@ -97,10 +107,13 @@ sub _run_perl_test {
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
             my $tmpl = MT::Template->load( $map->template_id );
-            $tmpl->text( $block->template );
+            $tmpl->text( $self->_filter_vars( $block->template ) );
 
             my $tmpl_name = $tmpl->name;
             my $ctx       = $tmpl->context;
+
+            $ctx->{archive_type} = $ctx->{current_archive_type}
+                = $archive_type;
 
             my $test_info = " [[$tmpl_name]]";
 
@@ -111,7 +124,7 @@ sub _run_perl_test {
             $ctx->stash( builder       => MT::Builder->new );
 
             my ( $stash, $skip )
-                = $self->_set_stash( $block, $map, $archiver, $objs );
+                = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
             if ($skip) { skip "$skip $test_info", 1 }
 
             $ctx->stash( template_map => $map );
@@ -163,15 +176,19 @@ sub _run_perl_test {
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                local $TODO = "may fail"
+                    if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
-                    $block->$expected_error_method,
+                    $self->_filter_vars( $block->$expected_error_method ),
                     $block->name . $test_info . ' (error)'
                 );
             }
             else {
                 my $expected_method = 'expected';
-                my @extra_methods   = ( "expected_todo_$method_name",
-                    "expected_$method_name", );
+                my @extra_methods   = (
+                    "expected_todo_$method_name",
+                    "expected_$method_name", "expected_todo"
+                );
                 for my $method (@extra_methods) {
                     if ( exists $block->{$method} ) {
                         $expected_method = $method;
@@ -183,10 +200,12 @@ sub _run_perl_test {
                     if defined $result;
 
                 local $TODO = "may fail"
-                    if $expected_method =~ /^expected_todo_/;
+                    if $expected_method =~ /^expected_todo/;
 
-                is( $result, $block->$expected_method,
-                    $block->name . $test_info );
+                is( $result,
+                    $self->_filter_vars( $block->$expected_method ),
+                    $block->name . $test_info
+                );
             }
         }
     }
@@ -215,7 +234,7 @@ sub _run_php_test {
             my $test_info = " [[$tmpl_name dynamic]]";
 
             my ( $stash, $skip )
-                = $self->_set_stash( $block, $map, $archiver, $objs,
+                = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs,
                 'dynamic' );
             if ($skip) { skip "$skip $test_info", 1 }
 
@@ -240,7 +259,7 @@ sub _run_php_test {
                 $finfo_id = $finfo->id;
             }
 
-            my $template = $block->template;
+            my $template = $self->_filter_vars( $block->template );
             $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
 
             my $text = $block->text || '';
@@ -363,6 +382,7 @@ PHP
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
                 "expected_$method_name",
+                "expected_todo",
             );
             my $expected_method = "expected";
             for my $method (@extra_methods) {
@@ -382,14 +402,22 @@ PHP
             my $name = $block->name;
 
             local $TODO = "may fail"
-                if $expected_method =~ /^expected_(?:php_)?todo_/;
-            is( $result, $expected, "$name $test_info" );
+                if $expected_method =~ /^expected_(?:php_)?todo/;
+            is( $result, $self->_filter_vars($expected), "$name $test_info" );
         }
     }
 }
 
+sub _filter_vars {
+    my $str = shift;
+    return $str unless defined $str;
+    $str =~ s/\[% $_ %\]/$vars->{$_}/g for keys %$vars;
+    chomp $str;
+    $str;
+}
+
 sub _set_stash {
-    my ( $block, $map, $archiver, $objs, $dynamic ) = @_;
+    my ( $block, $map, $tmpl, $archiver, $objs, $dynamic ) = @_;
 
     my $fixture_spec = MT::Test::Fixture::ArchiveType->fixture_spec;
 
@@ -408,6 +436,10 @@ sub _set_stash {
         my $cd      = $objs->{content_data}{$cd_name};
         my $ct_name = $cd_spec->{content_type};
         my $ct      = $objs->{content_type}{$ct_name}{content_type};
+
+        return ( undef, " this mapping is not for $ct_name" )
+            unless $ct->id == $tmpl->content_type_id;
+
         $stash{content}      = $cd;
         $stash{content_type} = $ct;
 
@@ -432,7 +464,7 @@ sub _set_stash {
         if ( $archiver->contenttype_category_based ) {
             return ( undef, " requires category" ) unless $cat_name;
 
-            my $cat_field_id = $map->cat_field_id;
+            my $cat_field_id = $map->cat_field_id || 0;
 
             my $ct = $stash{content_type};
             my @fields
