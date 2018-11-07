@@ -54,11 +54,8 @@ author2
 --- expected_todo_category_monthly
 --- expected_todo_category_weekly
 --- expected_todo_category_yearly
---- expected_todo_contenttype
+--- expected_contenttype
 cd_same_apple_orange
-cd_same_same_date
-cd_same_apple_orange_peach
-cd_same_peach
 --- expected_contenttype_author
 author1
 --- expected_contenttype_author_daily
@@ -113,11 +110,8 @@ October 28, 2018 - November  3, 2018
 --- expected_todo_category_monthly
 --- expected_todo_category_weekly
 --- expected_todo_category_yearly
---- expected_todo_contenttype
-cd_same_same_date
+--- expected_contenttype
 cd_same_apple_orange
-cd_same_apple_orange_peach
-cd_same_peach
 --- expected_contenttype_author
 author1
 --- expected_contenttype_author_daily
@@ -174,11 +168,8 @@ December 25, -001 - December 31, -001
 --- expected_todo_category_monthly
 --- expected_todo_category_weekly
 --- expected_todo_category_yearly
---- expected_todo_contenttype
-cd_same_apple_orange
-cd_same_same_date
+--- expected_contenttype
 cd_same_apple_orange_peach
-cd_same_peach
 --- expected_contenttype_author
 author1
 --- expected_contenttype_author_daily
