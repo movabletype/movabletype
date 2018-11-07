@@ -434,8 +434,7 @@ sub _set_stash {
     my %stash;
     my $names = $block->stash || {};    # or return;
 
-    my $cd_name  = $names->{content_data} || $names->{cd};
-    my $cat_name = $names->{category}     || $names->{cat};
+    my $cd_name = $names->{content_data} || $names->{cd};
 
     if ( $archiver->contenttype_based or $archiver->contenttype_group_based )
     {
@@ -504,6 +503,10 @@ sub _set_stash {
 
     if ( $archiver->category_based ) {
         if ( $archiver->contenttype_category_based ) {
+            my $cat_name
+                = $names->{category}
+                || $names->{cat}
+                || $names->{content_category};
             return ( undef, " requires category" ) unless $cat_name;
 
             my $cat_field_id = $map->cat_field_id || 0;
@@ -529,6 +532,18 @@ sub _set_stash {
             $stash{category}         = $category;
             $stash{archive_category} = $category;
             $stash{category_set}     = $set->{category_set};
+        }
+        else {
+            # Support folder as well?
+            my $cat_name
+                = $names->{entry_category}
+                || $names->{entry_cat}
+                || $names->{cat};
+            return ( undef, " requires entry_category" ) unless $cat_name;
+            my $category = $objs->{category}{$cat_name}
+                or croak "unknown entry_category: $cat_name";
+            $stash{category}         = $category;
+            $stash{archive_category} = $category;
         }
     }
 
