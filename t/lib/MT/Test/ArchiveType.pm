@@ -358,6 +358,16 @@ require_once('class.mt_author.php');
 PHP
             }
 
+            if ( my $entry = $stash->{entry} ) {
+                my $entry_id = $entry->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_entry.php');
+\$entry = new Entry;
+\$entry->Load($entry_id);
+\$ctx->stash('entry', \$entry);
+PHP
+            }
+
             $test_script .= <<'PHP';
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
@@ -447,6 +457,24 @@ sub _set_stash {
             $dynamic );
     }
 
+    if ( $archiver->entry_based ) {
+        my $key = "entry";
+        $key = "page" if $archiver->name eq 'Page';
+
+        my $entry_name = $names->{$key}
+            or return ( undef, " requires $key" );
+
+        my ($entry_spec)
+            = grep { $_->{basename} eq $entry_name }
+            @{ $fixture_spec->{$key} || [] };
+
+        unless ($entry_spec) {
+            croak "unknown $key: $entry_name";
+        }
+        my $entry = $objs->{$key}{$entry_name};
+        $stash{entry} = $entry;
+    }
+
     if ( $archiver->author_based ) {
         my $cd_spec = $fixture_spec->{content_data}{$cd_name};
         my $author;
@@ -514,6 +542,11 @@ sub _set_stash {
             }
             else {
                 $start = $cd->authored_on;
+            }
+        }
+        else {
+            if ( my $entry = $stash{entry} ) {
+                $start = $entry->authored_on;
             }
         }
         if ($start) {
