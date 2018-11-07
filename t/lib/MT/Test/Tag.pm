@@ -43,7 +43,7 @@ sub run_perl_tests {
 
             MT::Request->instance->reset;
 
-            my $tmpl = MT::Template->new( type => '' );  # empty type for test
+            my $tmpl = MT::Template->new( type => 'index' );
             $tmpl->text( _filter_vars( $block->template ) );
             my $ctx = $tmpl->context;
 
@@ -170,6 +170,8 @@ $mt->init_plugins();
 
 $db = $mt->db();
 $ctx =& $mt->context();
+
+$ctx->stash('index_archive', true);
 
 $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
