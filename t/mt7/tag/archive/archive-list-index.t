@@ -23,7 +23,6 @@ use MT::Test;
 use MT::Test::Permission;
 my $app = MT->instance;
 
-
 filters {
     archive_type => [qw( chomp )],
     template     => [qw( chomp )],
@@ -34,7 +33,7 @@ $test_env->prepare_fixture('archive_type_simple');
 my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id};
 
-my @archive_types = MT->publisher->archive_types;
+my @archive_types = sort MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
 foreach my $archive_type (@archive_types) {
