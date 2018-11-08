@@ -475,9 +475,9 @@ sub _set_stash {
     }
 
     if ( $archiver->author_based ) {
-        my $cd_spec = $fixture_spec->{content_data}{$cd_name};
         my $author;
         if ( $archiver->contenttype_author_based ) {
+            my $cd_spec = $fixture_spec->{content_data}{$cd_name};
             unless ($cd_spec) {
                 croak "unknown content_data: $cd_name";
             }
@@ -487,10 +487,15 @@ sub _set_stash {
             }
         }
         else {
+            my $entry_name = $names->{entry};
+            my $entry_spec
+                = $entry_name ? $fixture_spec->{entry}{$entry_name}
+                : $cd_name    ? $fixture_spec->{content_data}{$cd_name}
+                :               undef;
             my $author_name
-                = exists $names->{author}
-                ? $names->{author}
-                : $cd_spec->{author};
+                = exists $names->{author} ? $names->{author}
+                : $entry_spec             ? $entry_spec->{author}
+                :                           undef;
             if ( defined $author_name ) {
                 $author = $objs->{author}{$author_name};
             }
