@@ -37,8 +37,6 @@ my $blog_id = $objs->{blog_id};
 my @archive_types = MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
-plan tests => 2 * @archive_types * blocks;
-
 foreach my $archive_type (@archive_types) {
     note "--- $archive_type";
     my $expected_method = 'expected_' . lc($archive_type);
@@ -74,6 +72,8 @@ PHP
         $expected_method
     );
 }
+
+done_testing;
 
 __END__
 
