@@ -488,10 +488,13 @@ sub _set_stash {
         }
         else {
             my $entry_name = $names->{entry};
-            my $entry_spec
-                = $entry_name ? $fixture_spec->{entry}{$entry_name}
-                : $cd_name    ? $fixture_spec->{content_data}{$cd_name}
-                :               undef;
+            my ($entry_spec)
+                = grep { $_->{basename} eq $entry_name }
+                @{ $fixture_spec->{entry} || [] };
+            $entry_spec ||=
+                $cd_name
+                ? ( $fixture_spec->{content_data} || {} )->{$cd_name}
+                : undef;
             my $author_name
                 = exists $names->{author} ? $names->{author}
                 : $entry_spec             ? $entry_spec->{author}
