@@ -420,7 +420,7 @@ sub load_objs {
 
     my %category_map;
     for my $cat (@categories) {
-        $category_map{ $cat->category_set_id }{ $cat->name } = $cat;
+        $category_map{ $cat->category_set_id }{ $cat->label } = $cat;
     }
 
     for my $set (@category_sets) {
