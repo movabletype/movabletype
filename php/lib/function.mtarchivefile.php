@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,6 +16,15 @@ function smarty_function_mtarchivefile($args, &$ctx) {
         }
         if (!$e) return $ctx->error("Could not determine entry");
         $f = $e->entry_basename;
+    }
+    elseif (!$at or $at == 'ContentType') {
+        $c = $ctx->stash('content');
+        if (!$c) {
+            $contents = $ctx->stash('contents');
+            $c = $entries[0];
+        }
+        if (!$c) return $ctx->error("Could not determine content");
+        $f = $c->identifier;
     } else {
         $f = $ctx->stash('_basename')
             ? $ctx->stash('_basename')

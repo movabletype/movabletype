@@ -11,7 +11,7 @@ package Image::ExifTool::Lang::de;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.30';
+$VERSION = '1.33';
 
 %Image::ExifTool::Lang::de::Translate = (
    'AEAperture' => 'AE-Blende',
@@ -312,8 +312,8 @@ $VERSION = '1.30';
       Description => 'AF-Feinabstimmung',
       PrintConv => {
         'Off' => 'Aus',
-        'On (1)' => 'An (1)',
-        'On (2)' => 'An (2)',
+        'On (1)' => 'Ein (1)',
+        'On (2)' => 'Ein (2)',
       },
     },
    'AFFineTuneAdj' => 'AF-Feinabstimmung',
@@ -338,7 +338,7 @@ $VERSION = '1.30';
         'Adjust by lens' => 'Korrektur objektivabhängig',
         'Disable' => 'Deaktiviert',
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'AFMicroAdjRegisteredLenses' => 'AF Feinabstimmung bekannte Objektive',
@@ -470,7 +470,7 @@ $VERSION = '1.30';
       PrintConv => {
         'All 45 points area' => 'Alle 45 Punkte',
         'Disable' => 'Aus',
-        'Enable' => 'An',
+        'Enable' => 'Ein',
         'Left/right AF points' => 'Möglich (linkes/rechtes zusätzliches AF-Messfeld)',
         'Surrounding AF points' => 'Möglich (entsprechendes zusätzliches AF-Messfeld)',
       },
@@ -1094,7 +1094,7 @@ $VERSION = '1.30';
     },
    'Artist' => 'Künstler',
    'ArtworkCreator' => 'Artwork Ersteller',
-   'AsShotICCProfile' => 'Aufnahme ICC-Profil',
+   'AsShotICCProfile' => 'Aufnahme Farbprofil',
    'AsShotNeutral' => 'Aufnahme Neutral',
    'AsShotPreProfileMatrix' => 'Aufnahme Pre Profil Matrix',
    'AsShotProfileName' => 'Aufnahme Pre Profilname',
@@ -1181,7 +1181,7 @@ $VERSION = '1.30';
         'Effect' => 'Effekt',
         'No flash & flash' => 'Kein Blitz & Blitz',
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
         'WB' => 'Weißabgleich',
         'WB2' => 'Weißabgleich 2',
       },
@@ -1290,7 +1290,7 @@ $VERSION = '1.30';
       Description => 'Schwarz-Weiß Modus',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'BabyAge' => 'Kindesalter',
@@ -1731,24 +1731,24 @@ $VERSION = '1.30';
       Description => 'Farbabweichung Korrektur',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'ChromaticAberrationCorrection' => {
       Description => 'Farbabweichung Korrektur',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
-   'ChromaticAberrationOn' => 'Farbabweichung An',
+   'ChromaticAberrationOn' => 'Farbabweichung Ein',
    'ChromaticAberrationR' => 'Farbabweichung R',
    'ChromaticAberrationRed' => 'Farbabweichung Rot',
    'ChromaticAberrationSetting' => {
       Description => 'Farbabweichung Einstellung',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'Chromaticity' => 'Chromatizität',
@@ -2158,8 +2158,8 @@ $VERSION = '1.30';
     },
    'ConditionalFEC' => 'Blitzbelichtungskorrektur',
    'ConnectionSpaceIlluminant' => 'Weißpunkt des Verbindungsfarbraums',
-   'ConstrainedCropHeight' => 'Crop erzeugte Höhe',
-   'ConstrainedCropWidth' => 'Crop erzeugte Breite',
+   'ConstrainedCropHeight' => 'Ausschnitt erzeugte Höhe',
+   'ConstrainedCropWidth' => 'Ausschnitt erzeugte Breite',
    'Contact' => 'Kontakt',
    'ContentLocationCode' => 'Inhaltspositionscode',
    'ContentLocationName' => 'Inhaltspositionsname',
@@ -2196,10 +2196,10 @@ $VERSION = '1.30';
    'Contrast' => {
       Description => 'Kontrast',
       PrintConv => {
-        '+1 (med high)' => '+1 (Leicht erhöht)',
+        '+1 (medium high)' => '+1 (Leicht erhöht)',
         '+2 (high)' => '+2 (Stark)',
         '+3 (very high)' => '+3 (Sehr hoch)',
-        '-1 (med low)' => '-1 (Leicht verringert)',
+        '-1 (medium low)' => '-1 (Leicht verringert)',
         '-2 (low)' => '-2 (Leicht)',
         '-3 (very low)' => '-3 (Sehr gering)',
         'Film Simulation' => 'Film-Simulation',
@@ -2229,7 +2229,7 @@ $VERSION = '1.30';
       Description => 'Kontrast helle Stellen',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'ContrastLandscape' => {
@@ -2331,10 +2331,10 @@ $VERSION = '1.30';
       },
     },
    'CoringValues' => 'Coring Werte',
-   'Country' => 'Staat',
-   'Country-PrimaryLocationCode' => 'ISO-Landescode',
-   'Country-PrimaryLocationName' => 'Staat',
-   'CountryCode' => 'Länderkennzeichen',
+   'Country' => 'Land',
+   'Country-PrimaryLocationCode' => 'ISO-Ländercode',
+   'Country-PrimaryLocationName' => 'Land',
+   'CountryCode' => 'ISO-Ländercode',
    'Coverage' => 'Anwendungsbereich',
    'CreateDate' => 'Digitalisierungsdatum/-uhrzeit',
    'CreationDate' => 'Aufnahmedatum',
@@ -2376,22 +2376,22 @@ $VERSION = '1.30';
    'CreatorContactInfo' => 'Ersteller Kontaktinfo',
    'CreatorCountry' => 'Ersteller - Land',
    'CreatorPostalCode' => 'Ersteller - PLZ',
-   'CreatorRegion' => 'Ersteller - Staat/Provinz',
-   'CreatorTool' => 'Erzeugertool',
+   'CreatorRegion' => 'Ersteller - Bundesland/Kanton',
+   'CreatorTool' => 'Erstellertool',
    'CreatorWorkEmail' => 'Ersteller - E-Mail',
    'CreatorWorkTelephone' => 'Ersteller - Telefon',
    'CreatorWorkURL' => 'Ersteller - Webseite(n)',
    'Credit' => 'Anbieter',
    'CropActive' => {
-      Description => 'Crop aktiviert',
+      Description => 'Ausschnitt aktiviert',
       PrintConv => {
         'No' => 'Nein',
         'Yes' => 'Ja',
       },
     },
-   'CropAngle' => 'Crop Winkel',
+   'CropAngle' => 'Ausschnitt Winkel',
    'CropAspectRatio' => {
-      Description => 'Crop Bildformat',
+      Description => 'Ausschnitt Bildformat',
       PrintConv => {
         'A-size Landscape' => 'DIN A Querformat',
         'A-size Portrait' => 'DIN A Hochformat',
@@ -2402,42 +2402,42 @@ $VERSION = '1.30';
         'Letter-size Portrait' => 'Letter Querformat',
       },
     },
-   'CropBottom' => 'Crop Unten',
-   'CropBottomMargin' => 'Crop Rand Unten',
+   'CropBottom' => 'Ausschnitt Unten',
+   'CropBottomMargin' => 'Ausschnitt Rand Unten',
    'CropCircleActive' => {
       PrintConv => {
         'No' => 'Nein',
         'Yes' => 'Ja',
       },
     },
-   'CropHeight' => 'Crop Höhe',
-   'CropHiSpeed' => 'Highspeed-Bildformat',
-   'CropLeft' => 'Crop Links',
-   'CropLeftMargin' => 'Crop Rand Links',
-   'CropRight' => 'Crop Rechts',
-   'CropRightMargin' => 'Crop Rand Rechts',
-   'CropRotation' => 'Crop Drehung',
-   'CropTop' => 'Crop Oben',
-   'CropTopMargin' => 'Crop Rand Oben',
+   'CropHeight' => 'Ausschnitt Höhe',
+   'CropHiSpeed' => 'Ausschnitt Highspeed',
+   'CropLeft' => 'Ausschnitt Links',
+   'CropLeftMargin' => 'Ausschnitt Rand Links',
+   'CropRight' => 'Ausschnitt Rechts',
+   'CropRightMargin' => 'Ausschnitt Rand Rechts',
+   'CropRotation' => 'Ausschnitt Drehung',
+   'CropTop' => 'Ausschnitt Oben',
+   'CropTopMargin' => 'Ausschnitt Rand Oben',
    'CropUnit' => {
-      Description => 'Crop Einheit',
+      Description => 'Ausschnitt Einheit',
       PrintConv => {
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
         'pixels' => 'Pixel',
       },
     },
    'CropUnits' => {
-      Description => 'Crop Einheiten',
+      Description => 'Ausschnitt Einheiten',
       PrintConv => {
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
         'pixels' => 'Pixel',
       },
     },
-   'CropWidth' => 'Crop Breite',
-   'CroppedImageHeight' => 'Crop Bildhöhe',
-   'CroppedImageLeft' => 'Crop Bildanfang Links',
-   'CroppedImageTop' => 'Crop Bildanfang Oben',
-   'CroppedImageWidth' => 'Crop Bildbreite',
+   'CropWidth' => 'Ausschnitt Breite',
+   'CroppedImageHeight' => 'Ausschnitt Bildhöhe',
+   'CroppedImageLeft' => 'Ausschnitt Bildanfang Links',
+   'CroppedImageTop' => 'Ausschnitt Bildanfang Oben',
+   'CroppedImageWidth' => 'Ausschnitt Bildbreite',
    'CurrentICCProfile' => 'Aktuelles ICC-Profile',
    'CurrentIPTCDigest' => 'Aktueller IPTC Kennwert',
    'Curves' => {
@@ -2550,8 +2550,8 @@ $VERSION = '1.30';
       },
     },
    'Declination' => 'Deklination',
-   'DefaultCropOrigin' => 'System-Crop Beginn',
-   'DefaultCropSize' => 'System-Crop Größe',
+   'DefaultCropOrigin' => 'System-Ausschnitt Beginn',
+   'DefaultCropSize' => 'System-Ausschnitt Größe',
    'DefaultDisplayHeight' => 'Default Anzeigehöhe',
    'DefaultDisplayWidth' => 'Default Anzeigebreite',
    'DefaultEraseOption' => {
@@ -2764,13 +2764,13 @@ $VERSION = '1.30';
    'DisplayUnit' => {
       PrintConv => {
         'Pixels' => 'Pixel',
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
       },
     },
    'DisplayUnits' => {
       Description => 'Anzeigeeinheit',
       PrintConv => {
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
         'meters' => 'Meter',
       },
     },
@@ -2787,13 +2787,13 @@ $VERSION = '1.30';
    'DisplayedUnitsX' => {
       Description => 'Einheit der horiz. Auflösung',
       PrintConv => {
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
       },
     },
    'DisplayedUnitsY' => {
       Description => 'Einheit der vert. Auflösung',
       PrintConv => {
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
       },
     },
    'DistortionControl' => {
@@ -2818,7 +2818,7 @@ $VERSION = '1.30';
         'On' => 'Ein',
       },
     },
-   'DistortionCorrectionOn' => 'Verzeichnungskorrektur An',
+   'DistortionCorrectionOn' => 'Verzeichnungskorrektur Ein',
    'DistortionN' => 'Verzeichnung N',
    'DistortionParam02' => 'Verzeichnungsparameter 02',
    'DistortionParam04' => 'Verzeichnungsparameter 04',
@@ -2996,7 +2996,6 @@ $VERSION = '1.30';
         'Tv or Av' => 'Tv oder Av',
       },
     },
-   'EMail' => 'E-Mail',
    'ETTLII' => {
       PrintConv => {
         'Average' => 'Integralmessung',
@@ -3073,6 +3072,7 @@ $VERSION = '1.30';
    'EditorialUpdate' => 'Redaktionelle Überarbeitung',
    'EffectiveLV' => 'Effektiver LW',
    'EffectiveMaxAperture' => 'Effektiv größte Blende',
+   'Email' => 'E-Mail',
    'EmbeddedImage' => 'Eingebettetes Bild',
    'EmbeddedImageByteOrder' => 'Eingebettetes Bild Bytereihenfolge',
    'EmbeddedImageHeight' => 'Eingebettetes Bild Bildhöhe',
@@ -3640,7 +3640,7 @@ $VERSION = '1.30';
       PrintConv => {
         'Extra fine' => 'Extra',
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'FineTuneOptCenterWeighted' => 'Feinabst. der Bel.Messung Mittenbetonte Messung',
@@ -3651,7 +3651,7 @@ $VERSION = '1.30';
    'FirmwareVersion' => 'Firmware-Version',
    'FixtureIdentifier' => 'Kennzeichnung',
    'Flash' => {
-      Description => 'Blitz',
+      Description => 'Blitzmodus',
       PrintConv => {
         'Auto, Did not fire' => 'Blitz wurde nicht ausgelöst, Automodus',
         'Auto, Did not fire, Red-eye reduction' => 'Blitz wurde nicht ausgelöst, Rote-Augen-Reduzierung',
@@ -4076,7 +4076,7 @@ $VERSION = '1.30';
       Description => 'Einheit der Sensorauflösung',
       PrintConv => {
         'None' => 'Keine',
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
         'um' => 'µm (Mikrometer)',
       },
     },
@@ -4277,9 +4277,9 @@ $VERSION = '1.30';
     },
    'GEImageSize' => 'GE Bildgröße',
    'GIFVersion' => 'GIF-Version',
-   'GPSAltitude' => 'Höhe',
+   'GPSAltitude' => 'GPS Höhe',
    'GPSAltitudeRef' => {
-      Description => 'Bezugshöhe',
+      Description => 'GPS-Höhe Bezug',
       PrintConv => {
         'Above Sea Level' => 'Höhe über Normal-Null (Meeresspiegel)',
         'Below Sea Level' => 'Höhe unter Normal-Null (Meeresspiegel)',
@@ -4288,7 +4288,7 @@ $VERSION = '1.30';
    'GPSAreaInformation' => 'Name des GPS-Gebietes',
    'GPSDOP' => 'Messgenauigkeit',
    'GPSDateStamp' => 'GPS Datum',
-   'GPSDateTime' => 'GPS-Zeit (Atomuhr)',
+   'GPSDateTime' => 'GPS Zeitstempel',
    'GPSDestBearing' => 'Motivrichtung',
    'GPSDestBearingRef' => {
       Description => 'Referenz für Motivrichtung',
@@ -4297,9 +4297,9 @@ $VERSION = '1.30';
         'True North' => 'Geographische Ausrichtung',
       },
     },
-   'GPSDestDistance' => 'Distanz zum Ziel',
+   'GPSDestDistance' => 'GPS Zielentfernung',
    'GPSDestDistanceRef' => {
-      Description => 'Reference for distance to destination',
+      Description => 'GPS-Zielentfernung Maßeinheit',
       PrintConv => {
         'Kilometers' => 'Kilometer',
         'Miles' => 'Meilen',
@@ -4323,7 +4323,7 @@ $VERSION = '1.30';
       },
     },
    'GPSDifferential' => {
-      Description => 'GPS-Differentialkorrektur',
+      Description => 'GPS Differentialkorrektur',
       PrintConv => {
         'Differential Corrected' => 'Differentialkorrektur angewandt',
         'No Correction' => 'Messung ohne Differentialkorrektur',
@@ -4356,7 +4356,7 @@ $VERSION = '1.30';
     },
    'GPSMapDatum' => 'Geodätisches Datum',
    'GPSMeasureMode' => {
-      Description => 'GPS-Messverfahren',
+      Description => 'GPS Messverfahren',
       PrintConv => {
         '2-D' => '2-Dimensionale Messung',
         '2-Dimensional' => '2-Dimensionale Messung',
@@ -4378,13 +4378,13 @@ $VERSION = '1.30';
       },
     },
    'GPSStatus' => {
-      Description => 'GPS-Empfänger-Status',
+      Description => 'GPS-Empfänger Status',
       PrintConv => {
         'Measurement Active' => 'Messung aktiv',
         'Measurement Void' => 'Messung ungültig',
       },
     },
-   'GPSTimeStamp' => 'GPS-Zeit (Atomuhr)',
+   'GPSTimeStamp' => 'GPS-Zeit UTC',
    'GPSTrack' => 'Bewegungsrichtung',
    'GPSTrackRef' => {
       Description => 'Referenz für Bewegungsrichtung',
@@ -4468,10 +4468,19 @@ $VERSION = '1.30';
     },
    'Headline' => 'Überschrift',
    'HeightResolution' => 'Vertikale Bildauflösung',
-   'HierarchicalSubject' => 'Hierarchische Schlüsselworte',
+   'HierarchicalSubject' => 'Hierarchische Schlüsselwörter',
    'HighISONoiseReduction' => {
       Description => 'Rauschunterdrückung bei hoher Empfindlichkeit',
       PrintConv => {
+        '+1 (medium strong)' => '+1',
+        '+2 (strong)' => '+2 (Stark)',
+        '+3 (very strong)' => '+3',
+        '+4 (strongest)' => '+4',
+        '-1 (medium weak)' => '-1',
+        '-2 (weak)' => '-2 (Gering)',
+        '-3 (very weak)' => '-3',
+        '-4 (weakest)' => '-4 (Sehr gering)',
+        '0 (normal)' => '0 (Normal)',
         'Auto' => 'Automatisch',
         'High' => 'Stärker',
         'Low' => 'Schwächer',
@@ -4527,7 +4536,7 @@ $VERSION = '1.30';
    'HuffmanTable' => 'Huffman Tabelle',
    'HyperfocalDistance' => 'Hyperfokale Entfernung',
    'ICCProfile' => 'ICC-Profil',
-   'ICCProfileName' => 'Name des ICC-Profils',
+   'ICCProfileName' => 'ICC-Profil Name',
    'ICC_Profile' => 'ICC-Profil',
    'ID3Size' => 'ID3 Datenlänge',
    'IDCCreativeStyle' => {
@@ -4650,7 +4659,7 @@ $VERSION = '1.30';
    'Image::ExifTool::Canon::CameraInfoPowerShot' => 'Canon KameraInfo PowerShot',
    'Image::ExifTool::Canon::CameraInfoPowerShot2' => 'Canon KameraInfo PowerShot2',
    'Image::ExifTool::Canon::CameraInfoUnknown32' => 'Canon KameraInfo Unbekannt32',
-   'Image::ExifTool::Canon::CropInfo' => 'Canon Crop Info',
+   'Image::ExifTool::Canon::CropInfo' => 'Canon Ausschnitt Info',
    'Image::ExifTool::CanonRaw::ImageFormat' => 'CanonRaw Bildformat',
    'Image::ExifTool::DNG::OriginalRaw' => 'DNG Original RAW',
    'Image::ExifTool::ICC_Profile::Measurement' => 'ICC_Profil Messung',
@@ -4679,7 +4688,7 @@ $VERSION = '1.30';
       Description => 'Bild-Authentifikation',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'ImageBoundary' => 'Bildbegrenzung',
@@ -4853,7 +4862,7 @@ $VERSION = '1.30';
       },
     },
    'Instructions' => 'Anweisungen',
-   'IntellectualGenre' => 'Genre',
+   'IntellectualGenre' => 'Intellektuelles Genre',
    'IntelligentAuto' => {
       PrintConv => {
         'Advanced' => 'Erweitert',
@@ -4945,7 +4954,7 @@ $VERSION = '1.30';
    'InternalName' => 'Interner Name',
    'InternalSerialNumber' => 'Interne Seriennummer',
    'InteropIndex' => {
-      Description => 'Interoperabilitäts-Identifikation',
+      Description => 'Interoperabilität Identifikation',
       PrintConv => {
         'R03 - DCF option file (Adobe RGB)' => 'R03: DCF Option-Format (Adobe RGB)',
         'R98 - DCF basic file (sRGB)' => 'R98: DCF Basic-Format (sRGB)',
@@ -4989,14 +4998,14 @@ $VERSION = '1.30';
     },
    'JPEGSize' => 'JPEG Größe',
    'JPEGTables' => 'JPEG Tabellen',
-   'JobID' => 'Job-ID',
+   'JobID' => 'Job-Kennung',
    'JpgFromRaw' => 'Jpg From Raw Bild',
    'JpgFromRawLength' => 'Jpg From Raw Datenlänge',
    'JpgFromRawStart' => 'Jpg From Raw Datenposition',
    'JpgRecordedPixels' => 'JPEG-Auflösung',
    'Key' => 'Schlüssel',
    'Keyword' => 'Schlüsselwort',
-   'Keywords' => 'Schlüsselwort',
+   'Keywords' => 'Schlüsselwörter',
    'KodakImageHeight' => 'Kodak-Bildhöhe',
    'KodakImageWidth' => 'Kodak-Bildbreite',
    'LC1' => 'Objektiv-Wert',
@@ -5045,7 +5054,7 @@ $VERSION = '1.30';
         'On' => 'Ein',
       },
     },
-   'Label' => 'Bezeichnung',
+   'Label' => 'Beschriftung',
    'Landmark' => 'Sehenswürdigkeit',
    'Language' => 'Sprache',
    'LanguageCode' => {
@@ -5246,8 +5255,8 @@ $VERSION = '1.30';
       Description => 'Langzeit Rauschunterdrückung 2',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
-        'On (1D)' => 'An (1D)',
+        'On' => 'Ein',
+        'On (1D)' => 'Ein (1D)',
       },
     },
    'Luminance' => 'Luminanz',
@@ -5746,7 +5755,7 @@ $VERSION = '1.30';
       Description => 'Ruisond. Multi Frame',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
         'n/a' => '(nicht gesetzt)',
       },
     },
@@ -5915,7 +5924,7 @@ $VERSION = '1.30';
       Description => 'Rauschunterdrückungsmodus',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'NoiseReductionSharpness' => 'Rauschunterdrückung Schärfe',
@@ -5981,8 +5990,8 @@ $VERSION = '1.30';
       Description => 'Sofort-Weißabgleich',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
-        'On (Preset)' => 'An (Preset)',
+        'On' => 'Ein',
+        'On (Preset)' => 'Ein (Preset)',
       },
     },
    'OperatingSystem' => {
@@ -6042,7 +6051,7 @@ $VERSION = '1.30';
    'OriginalTHMFileType' => 'Original THM Dateityp',
    'OriginalTHMImage' => 'Original THM Bild',
    'OriginalTHMResource' => 'Original THM Basisdaten',
-   'OriginalTransmissionReference' => 'Jobkennung',
+   'OriginalTransmissionReference' => 'Anbietervermerk Verweis',
    'OriginatingProgram' => 'Erstellungsprogramm',
    'OtherImage' => 'Other Image Vorschaubild',
    'OtherImageLength' => 'OtherImage Datenlänge',
@@ -6079,10 +6088,10 @@ $VERSION = '1.30';
    'PanasonicImageHeight' => 'Panasonic Bildhöhe',
    'PanasonicImageWidth' => 'Panasonic Bildbreite',
    'PanasonicTitle' => 'Titel',
-   'PanoramaCropBottom' => 'Panorama Crop Unten',
-   'PanoramaCropLeft' => 'Panorama Crop Links',
-   'PanoramaCropRight' => 'Panorame Crop Rechts',
-   'PanoramaCropTop' => 'Panorama Crop Oben',
+   'PanoramaCropBottom' => 'Panorama Ausschnitt Unten',
+   'PanoramaCropLeft' => 'Panorama Ausschnitt Links',
+   'PanoramaCropRight' => 'Panorame Ausschnitt Rechts',
+   'PanoramaCropTop' => 'Panorama Ausschnitt Oben',
    'PanoramaDirection' => {
       Description => 'Panorama-Richtung',
       PrintConv => {
@@ -6446,10 +6455,10 @@ $VERSION = '1.30';
         'Unknown' => 'Unbekannt',
       },
     },
-   'PreviewCropBottom' => 'Vorschau Crop Unten',
-   'PreviewCropLeft' => 'Vorschau Crop Links',
-   'PreviewCropRight' => 'Vorschau Crop Rechts',
-   'PreviewCropTop' => 'Vorschau Crop Oben',
+   'PreviewCropBottom' => 'Vorschau Ausschnitt Unten',
+   'PreviewCropLeft' => 'Vorschau Ausschnitt Links',
+   'PreviewCropRight' => 'Vorschau Ausschnitt Rechts',
+   'PreviewCropTop' => 'Vorschau Ausschnitt Oben',
    'PreviewIFD' => 'Preview-IFD-Zeiger',
    'PreviewImage' => 'Vorschaubild',
    'PreviewImageBorders' => 'Vorschaubild-Ränder',
@@ -6502,7 +6511,7 @@ $VERSION = '1.30';
    'ProcessingInfo' => 'Verarbeitungsinformationen',
    'ProcessingSoftware' => 'Verarbeitungssoftware',
    'Producer' => 'Produzent',
-   'ProducerKeywords' => 'Hersteller Schlüsselwort',
+   'ProducerKeywords' => 'Hersteller Schlüsselwörter',
    'Producers' => 'Produzent',
    'ProductID' => 'Produkt-ID',
    'ProductionCode' => 'Herstellungskennzeichen',
@@ -6524,8 +6533,8 @@ $VERSION = '1.30';
    'ProfileCopyright' => 'Urheberrechtsvermerk',
    'ProfileCreator' => 'Profilersteller',
    'ProfileDateTime' => 'Profil-Erstellungszeit',
-   'ProfileDescription' => 'Profil-Beschreibung',
-   'ProfileDescriptionML' => 'Profil-Beschreibung ML',
+   'ProfileDescription' => 'Farbprofil Name',
+   'ProfileDescriptionML' => 'Farbprofil Name mehrsprachig',
    'ProfileFileSignature' => 'Profil-Datei-Signatur',
    'ProfileID' => 'Profile-ID',
    'ProfileSequenceDesc' => 'Profilsequenz-Beschreibung',
@@ -6652,10 +6661,10 @@ $VERSION = '1.30';
         'Shot Settings' => 'Aufnahmeeinstellung',
       },
     },
-   'RawCropBottom' => 'Raw Crop Unten',
-   'RawCropLeft' => 'Raw Crop Links',
-   'RawCropRight' => 'Raw Crop Rechts',
-   'RawCropTop' => 'Raw Crop Oben',
+   'RawCropBottom' => 'Raw Ausschnitt Unten',
+   'RawCropLeft' => 'Raw Ausschnitt Links',
+   'RawCropRight' => 'Raw Ausschnitt Rechts',
+   'RawCropTop' => 'Raw Ausschnitt Oben',
    'RawData' => 'Raw-Daten',
    'RawDataByteOrder' => 'RAW Daten Bytereihenfolge',
    'RawDataLength' => 'RAW-Daten Länge',
@@ -6853,7 +6862,7 @@ $VERSION = '1.30';
       Description => 'Einheit der X- und Y-Auflösung',
       PrintConv => {
         'None' => 'Keine',
-        'inches' => 'Inch',
+        'inches' => 'Zoll',
       },
     },
    'RetouchHistory' => {
@@ -6951,14 +6960,20 @@ $VERSION = '1.30';
    'Saturation' => {
       Description => 'Farbsättigung',
       PrintConv => {
-        '+1 (med high)' => '+1 (Leicht erhöht)',
+        '+1 (medium high)' => '+1 (Leicht erhöht)',
         '+2 (high)' => '+2 (Hohe Farbsättigung)',
         '+3 (very high)' => '+3 (Sehr hoch)',
-        '-1 (med low)' => '-1 (Leicht verringert)',
+        '+4 (highest)' => '+4',
+        '+4 (maximum)' => '+4',
+        '-1 (medium low)' => '-1 (Leicht verringert)',
         '-2 (low)' => '-2 (Geringe Farbsättigung)',
         '-3 (very low)' => '-3 (Sehr gering)',
+        '-4 (lowest)' => '-4',
+        '-4 (minimum)' => '-4',
+        '0 (normal)' => '0 (Normal)',
         'B&W' => 'Schwarz/Weiß',
         'B&W Green Filter' => 'Schwarz-Weiß Grünfilter',
+        'B&W Red Filter' => 'Schwarz-Weiß Rotfilter',
         'B&W Sepia' => 'Schwarz-Weiß Sepia',
         'B&W Yellow Filter' => 'Schwarz-Weiß Gelbfilter',
         'Black & White' => 'Schwarz/Weiß',
@@ -7362,20 +7377,21 @@ $VERSION = '1.30';
    'Sharpness' => {
       Description => 'Schärfe',
       PrintConv => {
-        '+1 (med hard)' => '+1 (Leicht erhöht)',
+        '+1 (medium hard)' => '+1 (Leicht erhöht)',
         '+2 (hard)' => '+2 (Stark)',
         '+3 (very hard)' => '+3 (Sehr hoch)',
-        '-1 (med soft)' => '-1 (Leicht verringert)',
+        '+4 (hardest)' => '+4',
+        '+4 (maximum)' => '+4',
+        '-1 (medium soft)' => '-1 (Leicht verringert)',
         '-2 (soft)' => '-2 (Leicht)',
         '-3 (very soft)' => '-3 (Sehr weich)',
+        '-4 (minimum)' => '-4',
+        '-4 (softest)' => '-4',
+        '0 (normal)' => '0 (Normal)',
         'Film Simulation' => 'Film-Simulation',
         'Hard' => 'Stark',
-        'Hard2' => 'Hart2',
-        'Medium Hard' => 'Mittel-Hart',
-        'Medium Soft' => 'Mittel-Weich',
         'Sharp' => 'Hart',
         'Soft' => 'Leicht',
-        'Soft2' => 'Weich 2',
         'n/a' => '(nicht gesetzt)',
       },
     },
@@ -7610,7 +7626,7 @@ $VERSION = '1.30';
       Description => 'Slow-Synchro',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'SoftSkinEffect' => {
@@ -7706,9 +7722,9 @@ $VERSION = '1.30';
         'Monochrome' => 'Monochrom',
       },
     },
-   'Subject' => 'Thema',
+   'Subject' => 'Themen/Schlüsselwörter',
    'SubjectArea' => 'Hauptobjektposition',
-   'SubjectCode' => 'Themencode',
+   'SubjectCode' => 'IPTC Themencode',
    'SubjectDistance' => 'Objektentfernung',
    'SubjectDistanceRange' => {
       Description => 'Objektdistanzbereich',
@@ -7882,7 +7898,6 @@ $VERSION = '1.30';
         'Enable' => 'Möglich',
       },
     },
-   'Timezone' => 'Zeitzone',
    'Title' => 'Titel',
    'ToneComp' => 'Tonwertkorrektur',
    'ToneCurve' => {
@@ -8077,7 +8092,7 @@ $VERSION = '1.30';
         'Rotate 90 CW' => '90° im Uhrzeigersinn',
       },
     },
-   'TransmissionReference' => 'Übertragungsbezug',
+   'TransmissionReference' => 'Anbietervermerk',
    'Trapped' => {
       PrintConv => {
         'Unknown' => 'Unbekannt',
@@ -8183,7 +8198,7 @@ $VERSION = '1.30';
         'Enable' => 'Möglich',
       },
     },
-   'UsageTerms' => 'Verwendungsvorschriften',
+   'UsageTerms' => 'Nutzungsbedingungen',
    'UserComment' => 'Benutzerkommentar',
    'UserDef1PictureStyle' => {
       Description => 'Bildstil Benutzerdefiniert 1',
@@ -8519,7 +8534,7 @@ $VERSION = '1.30';
       Description => 'Weißabgleich automatische Abstimmung',
       PrintConv => {
         'Off' => 'Aus',
-        'On' => 'An',
+        'On' => 'Ein',
       },
     },
    'WhiteBalanceBias' => 'Weißabgleich Bias',
@@ -8617,7 +8632,7 @@ $VERSION = '1.30';
    'XMP' => 'XMP Metadaten',
    'XPAuthor' => 'XP Autor',
    'XPComment' => 'XP Kommentar',
-   'XPKeywords' => 'XP Schlüsselwort',
+   'XPKeywords' => 'XP Schlüsselwörter',
    'XPSubject' => 'XP Thema',
    'XPTitle' => 'XP Titel',
    'XResolution' => 'Horizontale Bildauflösung',
@@ -8676,7 +8691,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

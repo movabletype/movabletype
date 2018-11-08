@@ -4,8 +4,6 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: LOCAL.pm 386 2011-08-18 19:48:31Z kutterma $
-#
 # ======================================================================
 
 package SOAP::Transport::LOCAL;
@@ -13,7 +11,7 @@ package SOAP::Transport::LOCAL;
 use strict;
 
 
-our $VERSION = 0.714;
+our $VERSION = 1.17;
 
 # ======================================================================
 
@@ -22,18 +20,23 @@ package SOAP::Transport::LOCAL::Client;
 use SOAP::Lite;
 
 use vars qw(@ISA);
-@ISA = qw(SOAP::Client SOAP::Server);
+our @ISA = qw(SOAP::Client SOAP::Server);
 
 sub new {
     my $class = shift;
     return $class if ref $class;
-    my(@arg_from, @method_from);
+    my @method_from;
     while (@_) {
-        $class->can($_[0])
-            ? push(@method_from, shift() => shift)
-            : push(@arg_from, shift)
+        if ($class->can($_[0])) {
+            push(@method_from, shift() => shift);
+        }
+        else
+        {
+            # ignore unknown arguments
+            shift;
+        }
     }
-    my $self = $class->SUPER::new(@arg_from);
+    my $self = $class->SUPER::new();
     $self->is_success(1);     # it's difficult to fail in this module
     $self->dispatch_to(@INC);
     while (@method_from) {
@@ -46,8 +49,8 @@ sub new {
 }
 
 sub send_receive {
-    my($self, %parameters) = @_;
-    my($envelope, $endpoint, $action) =
+    my ($self, %parameters) = @_;
+    my ($envelope, $endpoint, $action) =
         @parameters{qw(envelope endpoint action)};
 
     SOAP::Trace::debug($envelope);

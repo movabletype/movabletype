@@ -1,14 +1,27 @@
-# $Id: NodeSet.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::NodeSet;
-use strict;
+
+$VERSION = '1.42';
+
+use strict; use warnings;
 
 use XML::XPath::Boolean;
 
-use overload 
-		'""' => \&to_literal,
-                'bool' => \&to_boolean,
-        ;
+use overload
+    '""'   => \&to_literal,
+    'eq'   => \&string_value,
+    'ne'   => \&string_value,
+    'lt'   => \&string_value,
+    'le'   => \&string_value,
+    'gt'   => \&string_value,
+    'ge'   => \&string_value,
+    'bool' => \&to_boolean,
+    '=='   => \&to_number,
+    '!='   => \&to_number,
+    '>'	   => \&to_number,
+    '<'	   => \&to_number,
+    '>='   => \&to_number,
+    '<='   => \&to_number,
+;
 
 sub new {
 	my $class = shift;
@@ -18,6 +31,19 @@ sub new {
 sub sort {
     my $self = CORE::shift;
     @$self = CORE::sort { $a->get_global_pos <=> $b->get_global_pos } @$self;
+    $self->remove_duplicates;
+    return $self;
+}
+
+sub remove_duplicates {
+    my $self = CORE::shift;
+    my @unique;
+    my $last_node=0;
+    foreach my $node (@$self) {
+        push @unique, $node unless( $node == $last_node);
+        $last_node= $node;
+    }
+    @$self= @unique;
     return $self;
 }
 

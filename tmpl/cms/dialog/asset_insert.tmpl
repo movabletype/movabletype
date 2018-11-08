@@ -1,7 +1,8 @@
-<mt:include name="dialog/header.tmpl">
 <mt:setvarblock name="insert_script" id="insert_script">
 window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:var name="edit_field" escape="js">' );
 </mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 
@@ -12,20 +13,23 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
 
 // Set dirty flag
 window.parent.app.setDirty();
- 
+
 // remove the no assets text if it's there
 var Node = window.parent.document.getElementById("empty-asset-list");
 if (Node) {
     Node.parentNode.removeChild(Node);
-} 
+}
 
 // make sure asset list is present in an entry edit page
 var AssetList = window.parent.document.getElementById("asset-list");
 
 if (AssetList) {
+
     // make sure the asset isn't there already and that we're in the edit entry page
     var Asset;
 <mt:Assets>
+  <mt:setvarblock name="asset_class"><mt:AssetProperty property="class"></mt:setvarblock>
+
     Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
 
     if (Asset) {
@@ -45,49 +49,54 @@ if (AssetList) {
         myAssetLink.setAttribute('class', 'asset-title');
         myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
 
+        // create the link col
+        var myAssetLinkCol = window.document.createElement('div');
+        myAssetLinkCol.setAttribute('class', 'col text-truncate');
+        myAssetLinkCol.appendChild(myAssetLink);
+
         // create the remove link for this asset
-        var myRemoveLink = window.document.createElement('a');
-        myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
-        myRemoveLink.setAttribute('class', 'remove-asset');
+        var myRemoveLink = window.document.createElement('button');
+        myRemoveLink.setAttribute('type', 'button');
+        myRemoveLink.setAttribute('class', 'close');
+        myRemoveLink.setAttribute('aria-label', 'Close');
+        myRemoveLink.setAttribute('onclick', 'removeAssetFromList(<mt:AssetID>);');
+        myRemoveLink.innerHTML = '<span aria-hidden="true">&times;</span>';
+
+        // create the remove link col
+        var myRemoveLinkCol = window.document.createElement('div');
+        myRemoveLinkCol.setAttribute('class', 'col-1');
+        myRemoveLinkCol.appendChild(myRemoveLink);
+
+        // create row
+        var myRow = window.document.createElement('div');
+        myRow.setAttribute('class', 'row');
+        myRow.appendChild(myAssetLinkCol);
+        myRow.appendChild(myRemoveLinkCol);
 
         // create the asset list item
         var myElement = window.document.createElement('li');
         myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
         myElement.setAttribute('class', 'asset-type-<mt:AssetProperty property="class"$>');
-        <mt:If name="asset_type" eq="image">
+        <mt:If name="asset_class" eq="image">
             myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
             myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
         </mt:If>
-        myElement.appendChild(myAssetLink);
-        myElement.appendChild(myRemoveLink);
+        myElement.appendChild(myRow);
 
-        // I HATE IE!
-        if (document.attachEvent) {
-            var oldLis = window.parent.document.getElementById("asset-list").innerHTML;
-            var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="show(\'list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'list-image-<mt:AssetID>\', window.parent.document)">' + myElement.innerHTML + '</li>';
-            window.parent.document.getElementById("asset-list").innerHTML = oldLis + newLi;
-        } 
-        else {
-            window.parent.document.getElementById("asset-list").appendChild(myElement);
-        }
-
-        // create the image thumbnail if it exists
-        <mt:If name="asset_type" eq="image">
-            var myImageElement = window.document.createElement('img');
-            myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
-            myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
-            myImageElement.setAttribute('class', 'list-image hidden');
-            myElement.appendChild(myImageElement);
-        </mt:If>
+        window.parent.document.getElementById("asset-list").appendChild(myElement);
     }
 </mt:Assets>
+
 }
+
 <mt:unless name="extension_message">
-  parent.jQuery.fn.mtDialog.close();
+  jQuery.fn.mtModal.close();
 </mt:unless>
 /* ]]> */
 </script>
+</mt:setvarblock>
 
+<mt:setvarblock name="page_content">
 <mt:if name="extension_message">
   <mtapp:statusmsg
      id="extension-changed"
@@ -101,11 +110,14 @@ if (AssetList) {
       <button
          type="submit"
          accesskey="x"
-         class="cancel button mt-close-dialog"
+         class="cancel button mt-close-dialog btn btn-default"
+         data-mt-modal-close
          title="<__trans phrase="Close (x)">">
         <__trans phrase="Close"></button>
     </form>
   </div>
 </mt:if>
+</mt:setvarblock>
 
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

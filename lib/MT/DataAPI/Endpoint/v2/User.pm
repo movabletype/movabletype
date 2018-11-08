@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -72,7 +72,7 @@ sub delete {
 sub unlock {
     my ( $app, $endpoint ) = @_;
 
-    return $app->error(403) if !$app->user->is_superuser;
+    return $app->error(403) if !$app->user->can_manage_users_groups();
 
     my ($user) = context_objects(@_) or return;
 
@@ -87,7 +87,11 @@ sub unlock {
 sub recover_password {
     my ( $app, $endpoint ) = @_;
 
-    if ( !( $app->user->is_superuser() && MT::Auth->can_recover_password ) ) {
+    if (!(  $app->user->can_manage_users_groups()
+            && MT::Auth->can_recover_password
+        )
+        )
+    {
         return $app->error(403);
     }
 
@@ -95,8 +99,7 @@ sub recover_password {
 
     require MT::App::CMS;
     my $cms = MT::App::CMS->new;
-    my ( $rc, $res )
-        = MT::CMS::Tools::reset_password( $cms, $user, $user->hint );
+    my ( $rc, $res ) = MT::CMS::Tools::reset_password( $cms, $user );
 
     if ($rc) {
         return +{ status => 'success', message => $res };
@@ -128,9 +131,10 @@ sub recover {
         );
     }
 
+    my $email   = $app->param('email');
     my $message = $app->translate(
         'An email with a link to reset your password has been sent to your email address ([_1]).',
-        $app->param('email')
+        $email
     );
     return +{ status => 'success', message => $message };
 }

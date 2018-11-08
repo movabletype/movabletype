@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Association;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
@@ -64,10 +65,6 @@ sub list_props {
             html         => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $type = 'user';
-                my $icon_url
-                    = MT->static_path
-                    . 'images/nav_icons/color/'
-                    . $type . '.gif';
                 return '(unknown object)' unless defined $obj->user;
                 my $name      = MT::Util::encode_html( $obj->user->name );
                 my $edit_link = $app->uri(
@@ -78,10 +75,14 @@ sub list_props {
                         blog_id => 0,
                     },
                 );
+                my $user_title = $app->translate('User');
+                my $static_uri = $app->static_path;
                 return qq{
-                    <a href="$edit_link">$name</a>
+                    <a href="$edit_link" class="align-top">$name</a>
                     <span class="target-type $type">
-                        <img src="$icon_url" />
+                        <svg title="$user_title" role="img" class="mt-icon mt-icon--sm">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                        </svg>
                     </span>
                 };
             },
@@ -186,8 +187,8 @@ sub list_props {
             },
         },
         blog_name => {
-            label        => 'Website/Blog Name',
-            filter_label => '__WEBSITE_BLOG_NAME',
+            label        => 'Site Name',
+            filter_label => 'Site Name',
             base         => '__virtual.string',
             display      => 'default',
             order        => 300,
@@ -274,8 +275,8 @@ sub list_props {
                 my $author = MT->model('author')->load($val)
                     or
                     return $prop->error( MT->translate('Invalid parameter') );
-                my $label = MT->translate( 'User is [_1]',
-                    $author->nickname, );
+                my $label
+                    = MT->translate( 'User is [_1]', $author->nickname, );
                 return $label;
             },
             label_via_param => sub {
@@ -335,6 +336,8 @@ sub rebuild_permissions {
     my $assoc = shift;
     require MT::Permission;
     MT::Permission->rebuild($assoc);
+
+    $assoc->_rebuild_favorite;
 }
 
 sub user {
@@ -434,6 +437,17 @@ sub objects_to_terms {
         return undef;
     }
     $terms;
+}
+
+sub _rebuild_favorite {
+    my ($obj) = @_;
+
+    my $app = MT->instance;
+    return if !$app or $app->isa('MT::App::Upgrader');
+    return if $obj->type != USER_BLOG_ROLE;
+
+    my $user = $obj->user;
+    $user->rebuild_favorite_sites;
 }
 
 1;

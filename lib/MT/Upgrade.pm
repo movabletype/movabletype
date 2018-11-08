@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Upgrade;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 use File::Spec;
 
@@ -93,7 +94,7 @@ sub BEGIN {
         # The order here is the same order they are presented on the
         # role definition screen.
         2**0  => 'comment',             # 'Add Comments', 1, 'blog'],
-        2**12 => 'administer_blog',     # 'Blog Administrator', 1, 'blog'],
+        2**12 => 'administer_site',     # 'Blog Administrator', 1, 'blog'],
         2**6  => 'edit_config',         # 'Configure Blog', 1, 'blog'],
         2**3  => 'edit_all_posts',      # 'Edit All Entries', 1, 'blog'],
         2**4  => 'edit_templates',      # 'Manage Templates', 1, 'blog'],
@@ -971,12 +972,16 @@ sub core_finish {
     }
 
     my $cur_version = MT->version_number;
+    my $cur_rel     = MT->release_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
+        $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
-    my $cur_rel = MT->release_number;
-    if ( !defined( $cfg->MTReleaseNumber )
-        || ( $cur_rel > $cfg->MTReleaseNumber ) )
+    elsif (
+        !defined( $cfg->MTReleaseNumber )
+        || (   $cur_version == $cfg->MTVersion
+            && $cur_rel > $cfg->MTReleaseNumber )
+        )
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
@@ -987,107 +992,6 @@ sub core_finish {
         $App->finish();
     }
 
-    1;
-}
-
-sub core_update_entry_counts {
-    my $self = shift;
-    my (%param) = @_;
-
-    my $class = MT->model('entry');
-    return $self->error(
-        $self->translate_escape( "Error loading class: [_1].", $param{type} )
-    ) unless $class;
-
-    my $msg = $self->translate_escape(
-        "Assigning entry comment and TrackBack counts...");
-    my $offset = $param{offset} || 0;
-    my $count = $param{count};
-    if ( !$count ) {
-        $count = $class->count( { class => '*' } );
-    }
-    return unless $count;
-    if ($offset) {
-        $self->progress( sprintf( "$msg (%d%%)", ( $offset / $count * 100 ) ),
-            $param{step} );
-    }
-    else {
-        $self->progress( $msg, $param{step} );
-    }
-
-    my $continue = 0;
-    my $driver   = $class->driver;
-
-    my $iter = $class->load_iter( { class => '*' },
-        { offset => $offset, limit => $MAX_ROWS + 1 } );
-    my $start = time;
-    my ( %touched, %c, %tb );
-    my $rows = 0;
-    while ( my $e = $iter->() ) {
-        $rows++;
-        $c{ $e->id } = $e;
-        if ( my $tb = $e->trackback ) {
-            $tb{ $tb->id } = $e;
-        }
-        $continue = 1, last if scalar $rows == $MAX_ROWS;
-    }
-    if ($continue) {
-        $iter->end;
-        $offset += $rows;
-    }
-
-    # now gather counts -- comments
-    if (my $grp_iter = MT::Comment->count_group_by(
-            {   visible  => 1,
-                entry_id => [ keys %c ],
-            },
-            { group => ['entry_id'], }
-        )
-        )
-    {
-        while ( my ( $count, $id ) = $grp_iter->() ) {
-            my $e = $c{$id} or next;
-            if (   ( !defined $e->comment_count )
-                || ( ( $e->comment_count || 0 ) != $count ) )
-            {
-                $e->comment_count($count);
-                $touched{ $e->id } = $e;
-            }
-        }
-    }
-
-    # pings
-    if (%tb) {
-        if (my $grp_iter = MT::TBPing->count_group_by(
-                {   visible => 1,
-                    tb_id   => [ keys %tb ],
-                },
-                { group => ['tb_id'], }
-            )
-            )
-        {
-            while ( my ( $count, $id ) = $grp_iter->() ) {
-                my $e = $tb{$id} or next;
-                if (   ( !defined $e->ping_count )
-                    || ( ( $e->ping_count || 0 ) != $count ) )
-                {
-                    $e->ping_count($count);
-                    $touched{ $e->id } = $e;
-                }
-            }
-        }
-    }
-
-    foreach my $e ( values %touched ) {
-        $e->save;
-    }
-
-    if ($continue) {
-        return { offset => $offset, count => $count };
-    }
-    else {
-        $self->progress( "$msg (100%)", $param{step} );
-    }
     1;
 }
 
@@ -1117,7 +1021,7 @@ sub core_update_records {
     my $offset = $param{offset};
     my $count  = $param{count};
     if ( !$count ) {
-        $count = $class->count( $param{terms} || undef );
+        $count = $class->count( $param{terms} );
     }
     return unless $count;
     if ($offset) {
@@ -1141,7 +1045,7 @@ sub core_update_records {
     return 1 if $DryRun;
 
     if ( !$sql || !$driver->sql($sql) ) {
-        my $iter = $class->load_iter( $param{terms} || undef,
+        my $iter = $class->load_iter( $param{terms},
             { offset => $offset, limit => $MAX_ROWS + 1 } );
         my $start = time;
         my @list;

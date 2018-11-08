@@ -1,4 +1,4 @@
-# $Id: DTDDecls.pm,v 1.9 2008-08-05 12:37:13 grant Exp $
+# $Id$
 
 package XML::SAX::PurePerl;
 

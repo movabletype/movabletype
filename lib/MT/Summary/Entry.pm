@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,6 @@ use MT::Entry;
 sub summarize_all_assets {
     my $entry = shift;
     my ($terms) = @_;
-    my %args;
 
     require MT::ObjectAsset;
     my @assets = MT::Asset->load(

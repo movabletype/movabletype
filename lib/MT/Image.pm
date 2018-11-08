@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Image;
 
 use strict;
+use warnings;
 use MT;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
 
@@ -167,7 +168,7 @@ sub get_image_type {
     my @image_size = $class->get_image_info( Fh => @_ );
 
     ( $image_size[0] && $image_size[1] && $image_size[2] )
-        ? $image_size[2]
+        ? lc $image_size[2]
         : ();
 }
 

@@ -1,28 +1,17 @@
 package CGI::Push;
+use if $] >= 5.019, 'deprecate';
 
-# See the bottom of this file for the POD documentation.  Search for the
-# string '=head'.
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
 
-# You can run this file through either pod2man or pod2html to produce pretty
-# documentation in manual or html file format (these utilities are part of the
-# Perl 5 distribution).
-
-# Copyright 1995-2000, Lincoln D. Stein.  All rights reserved.
-# It may be used and modified freely, but I do request that this copyright
-# notice remain attached to the file.  You may modify this module as you 
-# wish, but if you redistribute a modified version, please attach a note
-# listing the modifications you have made.
-
-# The most recent version and complete docs are available at:
-#   http://stein.cshl.org/WWW/software/CGI/
-
-$CGI::Push::VERSION='1.05';
+$CGI::Push::VERSION='4.38';
 use CGI;
 use CGI::Util 'rearrange';
 @ISA = ('CGI');
 
 $CGI::DefaultClass = 'CGI::Push';
-$CGI::Push::AutoloadClass = 'CGI';
 
 # add do_push() and push_delay() to exported tags
 push(@{$CGI::EXPORT_TAGS{':standard'}},'do_push','push_delay');
@@ -98,6 +87,7 @@ sub do_sleep {
         sleep($delay);
     } else {
         select(undef,undef,undef,$delay);
+		return $delay;
     }
 }
 
@@ -115,27 +105,26 @@ CGI::Push - Simple Interface to Server Push
 
 =head1 SYNOPSIS
 
+    use strict;
+    use warnings;
+
     use CGI::Push qw(:standard);
 
-    do_push(-next_page=>\&next_page,
-            -last_page=>\&last_page,
-            -delay=>0.5);
+    do_push(
+        -next_page => \&next_page,
+        -last_page => \&last_page,
+        -delay     => 0.5
+    );
 
     sub next_page {
         my($q,$counter) = @_;
         return undef if $counter >= 10;
-        return start_html('Test'),
-               h1('Visible'),"\n",
-               "This page has been called ", strong($counter)," times",
-               end_html();
+        ....
     }
 
     sub last_page {
         my($q,$counter) = @_;
-        return start_html('Done'),
-               h1('Finished'),
-               strong($counter - 1),' iterations.',
-               end_html;
+        return ...
     }
 
 =head1 DESCRIPTION
@@ -167,7 +156,7 @@ You may call do_push() in the object oriented manner or not, as you
 prefer:
 
     use CGI::Push;
-    $q = new CGI::Push;
+    $q = CGI::Push->new;
     $q->do_push(-next_page=>\&draw_a_page);
 
         -or-
@@ -194,9 +183,7 @@ redrawing loop and print out the final page (if any)
     sub my_draw_routine {
         my($q,$counter) = @_;
         return undef if $counter > 100;
-        return start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ...
     }
 
 You are of course free to refer to create and use global variables
@@ -250,9 +237,7 @@ look like this:
     sub my_draw_routine {
         my($q,$counter) = @_;
         return header('text/html'),   # note we're producing the header here
-               start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ....
     }
 
 You can add any header fields that you like, but some (cookies and
@@ -266,19 +251,13 @@ as shown below:
         my($q,$counter) = @_;
         return undef if $counter > 10;
         return header('text/html'),   # note we're producing the header here
-               start_html('testing'),
-               h1('testing'),
-               "This page called $counter times";
+        ...
     }
 
     sub my_last_page {
         return header(-refresh=>'5; URL=http://somewhere.else/finished.html',
                       -type=>'text/html'),
-               start_html('Moved'),
-               h1('This is the last page'),
-               'Goodbye!'
-               hr,
-               end_html; 
+        ...
     }
 
 =head2 Changing the Page Delay on the Fly
@@ -306,12 +285,19 @@ NPH script.
 
 =head1 AUTHOR INFORMATION
 
+The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
+distributed under GPL and the Artistic License 2.0. It is currently
+maintained by Lee Johnson with help from many contributors.
+
+Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
+
+The original bug tracker can be found at: https://rt.cpan.org/Public/Dist/Display.html?Queue=CGI.pm
+
+When sending bug reports, please provide the version of CGI.pm, the version of
+Perl, the name and version of your Web server, and the name and version of the
+operating system you are using.  If the problem is even remotely browser
+dependent, please provide information about the affected browsers as well.
 Copyright 1995-1998, Lincoln D. Stein.  All rights reserved.  
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-Address bug reports and comments to: lstein@cshl.org
 
 =head1 BUGS
 

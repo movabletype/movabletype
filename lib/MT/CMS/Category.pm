@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,7 +6,7 @@
 package MT::CMS::Category;
 
 use strict;
-use MT::Util qw( encode_url encode_js );
+use warnings;
 
 sub edit {
     my $cb = shift;
@@ -29,28 +29,10 @@ sub edit {
         $param->{path_prefix}
             = $site_url . ( $parent ? $parent->publish_path : '' );
         $param->{path_prefix} .= '/' unless $param->{path_prefix} =~ m!/$!;
-        require MT::Trackback;
-        my $tb = MT::Trackback->load( { category_id => $obj->id } );
 
-        if ($tb) {
-            my $list_pref = $app->list_pref('ping');
-            %$param = ( %$param, %$list_pref );
-            my $path = $app->config('CGIPath');
-            $path .= '/' unless $path =~ m!/$!;
-            if ( $path =~ m!^/! ) {
-                my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-                $path = $blog_domain . $path;
-            }
-
-            my $script = $app->config('TrackbackScript');
-            $param->{tb}     = 1;
-            $param->{tb_url} = $path . $script . '/' . $tb->id;
-            if ( $param->{tb_passphrase} = $tb->passphrase ) {
-                $param->{tb_url}
-                    .= '/' . encode_url( $param->{tb_passphrase} );
-            }
-            $app->load_list_actions( 'ping', $param->{ping_table}[0],
-                'pings' );
+        if ( MT->has_plugin('Trackback') ) {
+            require Trackback::CMS::Category;
+            Trackback::CMS::Category::_edit( $app, $blog, $obj, $param );
         }
     }
 
@@ -58,6 +40,8 @@ sub edit {
         = $app->param('type')
         || $app->param('_type')
         || MT::Category->class_type;
+    return $app->trans_error('Invalid request.')
+        unless $obj && $obj->class eq $type;
     my $entry_class;
     my $entry_type;
     if ( $type eq 'category' ) {
@@ -76,14 +60,49 @@ sub edit {
     ## author_id parameter of the author currently logged in.
     delete $param->{'author_id'};
 
+    if ( $obj->category_set_id ) {
+        $app->add_breadcrumb(
+            $app->model('category_set')->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+        $app->add_breadcrumb(
+            $obj->category_set->name,
+            $app->uri(
+                mode => 'view',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $blog->id,
+                    id      => $obj->category_set_id,
+                },
+            ),
+        );
+    }
+    else {
+        $app->add_breadcrumb(
+            $app->model($type)->class_label_plural,
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => $type,
+                    blog_id => $blog->id,
+                },
+            ),
+        );
+    }
+    $app->add_breadcrumb( $obj->label );
+
     1;
 }
 
 sub save {
     my $app   = shift;
-    my $q     = $app->param;
-    my $perms = $app->permissions;
-    my $type  = $q->param('_type');
+    my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
 
@@ -101,19 +120,20 @@ sub save {
 
     $app->validate_magic() or return;
 
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     my $cat;
-    if ( my $moved_cat_id = $q->param('move_cat_id') ) {
-        $cat = $class->load( $q->param('move_cat_id') )
-            or return;
+    if ( my $moved_cat_id = $app->param('move_cat_id') ) {
+        $cat = $class->load($moved_cat_id) or return;
         move_category($app) or return;
     }
     else {
-        for my $p ( $q->param ) {
+        for my $p ( $app->multi_param ) {
             my ($parent) = $p =~ /^category-new-parent-(\d+)$/;
             next unless ( defined $parent );
 
-            my $label = $q->param($p);
+            my $label = $app->param($p);
+            next unless defined $label;
+
             $label =~ s/(^\s+|\s+$)//g;
             next unless ( $label ne '' );
 
@@ -154,11 +174,21 @@ sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $model = $app->param('datasource') || 'category';
+    my $is_category_set = $app->param('is_category_set');
+    my $set_id          = $app->param('set_id');
+    my $model           = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
-        $app->can_do('edit_categories')
-            or
-            return $app->json_error( $app->translate("Permission denied.") );
+        if ($is_category_set) {
+            return $app->json_error( $app->translate('Permission denied.') )
+                unless ( $app->user->can_manage_content_types
+                || $app->can_do('save_category_set') );
+        }
+        else {
+            $app->can_do('edit_categories')
+                or return $app->json_error(
+                $app->translate("Permission denied.") );
+        }
+
     }
     elsif ( 'folder' eq $model ) {
         $app->can_do('save_folder')
@@ -187,13 +217,56 @@ sub bulk_update {
     else {
         $objects = [];
     }
-    my @old_objects = $class->load( { blog_id => $blog_id } );
+
+    my $set;
+    if ($is_category_set) {
+        if ($set_id) {
+            $set = MT->model('category_set')->load($set_id)
+                or return $app->json_error(
+                $app->translate( 'Invalid category_set_id: [_1]', $set_id ) );
+            $set->name( scalar $app->param('set_name') );
+            $set->save or return $app->json_error( $set->errstr );
+        }
+        else {
+            $set = MT->model('category_set')->new;
+            $set->set_values(
+                {   blog_id => $blog_id,
+                    name    => scalar $app->param('set_name'),
+                }
+            );
+            $set->save or return $app->json_error( $set->errstr );
+            $set_id = $set->id;
+            $app->param( 'set_id', $set_id );
+        }
+    }
+
+    my $old_objects_terms;
+    if ($set_id) {
+        $old_objects_terms
+            = { blog_id => $blog_id, category_set_id => $set_id };
+    }
+    elsif ($is_category_set) {
+        $old_objects_terms = { id => 0 };    # no data
+    }
+    else {
+        $old_objects_terms
+            = { blog_id => $blog_id, category_set_id => [ \'IS NULL', 0 ] };
+    }
+    my @old_objects = $class->load($old_objects_terms);
 
     # Test CheckSum
+    my $cat_order;
     my $meta = $model . '_order';
+    if ($is_category_set) {
+        $cat_order = $set->order || '';
+    }
+    else {
+        $cat_order = $app->blog->$meta || '';
+    }
+
     my $text = join(
         ':',
-        $app->blog->$meta,
+        $cat_order,
         map {
             join( ':',
                 $_->id,
@@ -204,7 +277,7 @@ sub bulk_update {
             sort { $a->id <=> $b->id } @old_objects
     );
     require Digest::MD5;
-    if ( $app->param('checksum') ne Digest::MD5::md5_hex($text) ) {
+    if ( ( $app->param('checksum') || '' ) ne Digest::MD5::md5_hex($text) ) {
         return $app->json_error(
             $app->translate(
                 'Failed to update [_1]: Some of [_2] were changed after you opened this page.',
@@ -231,6 +304,7 @@ sub bulk_update {
             $new_obj->set_values($obj);
             $new_obj->blog_id($blog_id);
             $new_obj->author_id( $app->user->id );
+            $new_obj->category_set_id($set_id) if $set_id;
             push @objects, $new_obj;
             push @creates, $new_obj;
             $new_obj->{tmp_id} = $tmp_id;
@@ -259,23 +333,17 @@ sub bulk_update {
     }
     my %TEMP_MAP;
     my ( $creates, $updates, $deletes ) = ( 0, 0, 0 );
-    for my $create (@creates) {
-        if ( $create->parent =~ /^x(\d+)/ ) {
-            my $tmp_id = $1;
-            $create->parent( $TEMP_MAP{$tmp_id} );
+    my ( @updated_with_parent, @updated_without_parent );
+    for my $cat (@updated) {
+        if ( $cat->parent =~ /^x\d+/ ) {
+            push @updated_without_parent, $cat;
         }
-        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
-        $app->run_callbacks( 'cms_pre_save.' . $model,
-            $app, $create, $original )
-            or return $app->json_error( $app->errstr() );
-        $create->save;
-        $app->run_callbacks( 'cms_post_save.' . $model,
-            $app, $create, $original )
-            or return $app->json_error( $app->errstr() );
-        $creates++;
-        $TEMP_MAP{ $create->{tmp_id} } = $create->id;
+        else {
+            push @updated_with_parent, $cat;
+        }
     }
-    for my $updated (@updated) {
+    my $save_for_updated = sub {
+        my ($updated) = @_;
         if ( $updated->parent =~ /^x(\d+)/ ) {
             my $tmp_id = $1;
             $updated->parent( $TEMP_MAP{$tmp_id} );
@@ -294,6 +362,28 @@ sub bulk_update {
             $app, $updated, $original )
             or return $app->json_error( $app->errstr() );
         $updates++;
+    };
+    for my $updated (@updated_with_parent) {
+        $save_for_updated->($updated);
+    }
+    for my $create (@creates) {
+        if ( $create->parent =~ /^x(\d+)/ ) {
+            my $tmp_id = $1;
+            $create->parent( $TEMP_MAP{$tmp_id} );
+        }
+        my $original = $clone_objects{ 'x' . $create->{tmp_id} };
+        $app->run_callbacks( 'cms_pre_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
+        $create->save;
+        $app->run_callbacks( 'cms_post_save.' . $model,
+            $app, $create, $original )
+            or return $app->json_error( $app->errstr() );
+        $creates++;
+        $TEMP_MAP{ $create->{tmp_id} } = $create->id;
+    }
+    for my $updated (@updated_without_parent) {
+        $save_for_updated->($updated);
     }
 
     for my $obj ( values %old_objects ) {
@@ -309,11 +399,17 @@ sub bulk_update {
 
     $app->touch_blogs;
 
-    my $previous_order = $blog->$meta;
-    my @ordered_ids    = map { $_->id } @objects;
-    my $new_order      = join ',', @ordered_ids;
+    my $previous_order;
+    if ($is_category_set) {
+        $previous_order = $set->order || '';
+    }
+    else {
+        $previous_order = $blog->$meta || '';
+    }
+
+    my @ordered_ids = map { $_->id } @objects;
+    my $new_order = join ',', @ordered_ids;
     if ( $previous_order ne $new_order ) {
-        $blog->$meta($new_order);
         $app->log(
             {   message => $app->translate(
                     "[_1] order has been edited by '[_2]'.",
@@ -326,7 +422,15 @@ sub bulk_update {
                 metadata => "[${previous_order}] => [${new_order}]",
             }
         );
-        $blog->save;
+
+        if ($is_category_set) {
+            $set->order($new_order);
+            $set->save;
+        }
+        else {
+            $blog->$meta($new_order);
+            $blog->save;
+        }
     }
 
     $app->run_callbacks( 'cms_post_bulk_save.' . $model, $app, \@objects );
@@ -350,89 +454,23 @@ sub bulk_update {
     $app->forward( 'filtered_list', messages => \@messages );
 }
 
-# DEPRECATED: will be removed.
-sub category_add {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type') || 'category';
-    my $pkg  = $app->model($type);
-    my $data = $app->_build_category_list(
-        blog_id => scalar $q->param('blog_id'),
-        type    => $type
-    );
-    my %param;
-    $param{'category_loop'} = $data;
-    $app->add_breadcrumb(
-        $app->translate( 'Add a [_1]', $pkg->class_label ) );
-    $param{object_type}  = $type;
-    $param{object_label} = $pkg->class_label;
-    $app->load_tmpl( 'popup/category_add.tmpl', \%param );
-}
-
-sub category_do_add {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type') || 'category';
-    return $app->errtrans("Invalid request.")
-        unless ( $type eq 'category' )
-        or ( $type eq 'folder' );
-    my $author = $app->user;
-    my $pkg    = $app->model($type);
-    $app->validate_magic() or return;
-    my $name = $q->param('label')
-        or return $app->error( $app->translate("No label") );
-    $name =~ s/(^\s+|\s+$)//g;
-    return $app->errtrans("The category name cannot be blank.")
-        if $name eq '';
-    my $parent   = $q->param('parent') || '0';
-    my $cat      = $pkg->new;
-    my $original = $cat->clone;
-    $cat->blog_id( scalar $q->param('blog_id') );
-    $cat->author_id( $app->user->id );
-    $cat->label($name);
-    $cat->parent($parent);
-
-    if ( !$author->is_superuser ) {
-        $app->run_callbacks( 'cms_save_permission_filter.' . $type,
-            $app, undef )
-            || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
-    }
-
-    my $filter_result
-        = $app->run_callbacks( 'cms_save_filter.' . $type, $app )
-        || return;
-
-    $app->run_callbacks( 'cms_pre_save.' . $type, $app, $cat, $original )
-        || return;
-
-    $cat->save or return $app->error( $cat->errstr );
-
-    # Now post-process it.
-    $app->run_callbacks( 'cms_post_save.' . $type, $app, $cat, $original )
-        or return;
-
-    my $id = $cat->id;
-    $name = encode_js($name);
-    my %param = ( javascript => <<SCRIPT);
-    o.doAddCategoryItem('$name', '$id');
-SCRIPT
-    $app->load_tmpl( 'reload_opener.tmpl', \%param );
-}
-
 sub js_add_category {
     my $app = shift;
     unless ( $app->validate_magic ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
-    my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
-    my $type    = $app->param('_type') || 'category';
+    my $user            = $app->user;
+    my $blog_id         = $app->param('blog_id');
+    my $type            = $app->param('_type') || 'category';
+    my $category_set_id = 0;
+    if ( $type eq 'category' ) {
+        $category_set_id = $app->param('category_set_id') || 0;
+    }
     return $app->json_error( $app->translate("Invalid request.") )
         unless ( $type eq 'category' )
         or ( $type eq 'folder' );
     my $class = $app->model($type);
+
     if ( !$class ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
@@ -451,8 +489,12 @@ sub js_add_category {
     my $parent;
     if ( my $parent_id = $app->param('parent') ) {
         if ( $parent_id != -1 ) {    # special case for 'root' folder
-            $parent
-                = $class->load( { id => $parent_id, blog_id => $blog_id } );
+            $parent = $class->load(
+                {   id              => $parent_id,
+                    blog_id         => $blog_id,
+                    category_set_id => $category_set_id || [ \'IS NULL', 0 ],
+                }
+            );
             if ( !$parent ) {
                 return $app->json_error(
                     $app->translate("Invalid request.") );
@@ -467,6 +509,7 @@ sub js_add_category {
     $obj->basename($basename)   if $basename;
     $obj->parent( $parent->id ) if $parent;
     $obj->blog_id($blog_id);
+    $obj->category_set_id($category_set_id);
     $obj->author_id( $user->id );
     $obj->created_by( $user->id );
 
@@ -493,8 +536,15 @@ sub js_add_category {
 
     # Update category/folder order by low cost method.
     # So, broken order cannot be updated correctly.
-    my $order_field = "${type}_order";
-    my @order = split ',', ( $blog->$order_field || '' );
+    my $order_field;
+    my @order;
+    if ($category_set_id) {
+        @order = split ',', ( $obj->category_set->order || '' );
+    }
+    else {
+        $order_field = "${type}_order";
+        @order = split ',', ( $blog->$order_field || '' );
+    }
     if ($parent) {
         @order = map { $_ == $parent->id ? ( $_, $obj->id ) : $_ } @order;
     }
@@ -502,8 +552,15 @@ sub js_add_category {
         unshift @order, $obj->id;
     }
     my $new_order = join ',', @order;
-    $blog->$order_field($new_order);
-    $blog->save;    # Ignore error.
+    if ($category_set_id) {
+        my $category_set = $obj->category_set;
+        $category_set->order($new_order);
+        $category_set->save;
+    }
+    else {
+        $blog->$order_field($new_order);
+        $blog->save;    # Ignore error.
+    }
 
     return $app->json_result(
         {   id       => $obj->id,
@@ -515,7 +572,6 @@ sub js_add_category {
 sub can_view {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
-    return 1 if $author->is_superuser();
 
     if ( $obj && !ref $obj ) {
         $obj = MT->model('category')->load($obj)
@@ -526,25 +582,44 @@ sub can_view {
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions($blog_id)
-        ->can_do('open_category_edit_screen');
+
+    if ( $obj && $obj->category_set ) {
+        return $author->permissions($blog_id)
+            ->can_do('open_category_set_category_edit_screen');
+    }
+    else {
+        return $author->permissions($blog_id)
+            ->can_do('open_category_edit_screen');
+    }
 }
 
 sub can_save {
-    my ( $eh, $app, $obj ) = @_;
+    my ( $eh, $app, $id, $obj, $origin ) = @_;
     my $author = $app->user;
     return 1 if $author->is_superuser();
 
-    if ( $obj && !ref $obj ) {
-        $obj = MT->model('category')->load($obj)
-            or return;
+    if ($id) {
+        if ( !ref $id ) {
+            $obj ||= MT->model('category')->load($id)
+                or return;
+        }
+        else {
+            $obj = $id;
+        }
     }
     if ($obj) {
         return unless $obj->is_category;
     }
 
     my $blog_id = $obj ? $obj->blog_id : ( $app->blog ? $app->blog->id : 0 );
-    return $author->permissions($blog_id)->can_do('save_category');
+
+    if ( $obj && $obj->category_set ) {
+        return $author->permissions($blog_id)
+            ->can_do('save_catefory_set_category');
+    }
+    else {
+        return $author->permissions($blog_id)->can_do('save_category');
+    }
 }
 
 sub can_delete {
@@ -572,8 +647,9 @@ sub pre_save {
         $obj->{__tb_passphrase} = $pass;
     }
     my @siblings = $pkg->load(
-        {   parent  => $obj->parent,
-            blog_id => $obj->blog_id
+        {   parent          => $obj->parent,
+            blog_id         => $obj->blog_id,
+            category_set_id => $obj->category_set_id || 0,
         }
     );
     foreach (@siblings) {
@@ -587,9 +663,9 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
-        ) if $_->basename eq $obj->basename;
+        ) if defined $obj->basename and $_->basename eq $obj->basename;
     }
     return $eh->error(
         $app->translate( "The name '[_1]' is too long!", $obj->label ) )
@@ -723,10 +799,11 @@ sub move_category {
         or return $app->errtrans("Invalid request.");
     $app->validate_magic() or return;
 
-    my $cat = $class->load( $app->param('move_cat_id') )
+    my $move_cat_id = $app->param('move_cat_id');
+    my $cat         = $class->load($move_cat_id)
         or return;
 
-    my $new_parent_id = $app->param('move-radio');
+    my $new_parent_id = $app->param('move-radio') || 0;
 
     return 1 if ( $new_parent_id == $cat->parent );
 
@@ -763,11 +840,52 @@ sub move_category {
 
 sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
+    if ( $param->{is_category_set} = $app->param('is_category_set') ) {
+        my $set_id = $app->param('id');
+        my $set = MT->model('category_set')->load( $set_id || 0 );
+
+        if ($set) {
+            $param->{id}       = $set->id;
+            $param->{set_name} = $set->name;
+        }
+
+        my $object_label = $app->translate('Category Set');
+        $param->{page_title}
+            = $set
+            ? $app->translate( "Edit [_1]",   $object_label )
+            : $app->translate( "Create [_1]", $object_label );
+    }
+    else {
+        $param->{page_title}
+            = $app->translate( 'Manage [_1]', $param->{object_label_plural} );
+    }
+
     my $blog = $app->blog or return;
     $param->{basename_limit} = $blog->basename_limit || 30; #FIXME: hardcoded.
     my $type  = $app->param('_type');
     my $class = MT->model($type);
     $param->{basename_prefix} = $class->basename_prefix;
+
+    if ( $param->{is_category_set} ) {
+        $app->{breadcrumbs} = [];
+        $app->add_breadcrumb(
+            $app->translate('Category Sets'),
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'category_set',
+                    blog_id => $app->blog->id,
+                },
+            ),
+        );
+        if ( $param->{id} ) {
+            $app->add_breadcrumb( $param->{set_name} );
+        }
+        else {
+            $app->add_breadcrumb( $app->translate('Create Category Set') );
+        }
+    }
 }
 
 sub pre_load_filtered_list {
@@ -777,17 +895,46 @@ sub pre_load_filtered_list {
     delete $opts->{sort_order};
     $opts->{sort_by} = 'custom_sort';
     @$cols = qw( id parent label basename entry_count );
+
+    if ( my $set_id = $app->param('set_id') ) {
+        $opts->{terms} ||= {};
+        $opts->{terms}{category_set_id} = $set_id;
+    }
+    elsif ( $app->param('is_category_set') ) {
+        $opts->{terms} ||= {};
+        $opts->{terms}{id} = 0;    # return no data
+    }
+    else {
+        my $set_id_terms = { category_set_id => [ \'IS NULL', 0 ] };
+        if ( $opts->{terms} ) {
+            $opts->{terms} = [ $opts->{terms}, $set_id_terms ];
+        }
+        else {
+            $opts->{terms} = $set_id_terms;
+        }
+    }
 }
 
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
-    my $type            = $app->param('datasource');
-    my $meta            = $type . '_order';
-    my $blog_meta_value = $app->blog->$meta;
-    $blog_meta_value = '' unless defined($blog_meta_value);
+
+    my $sort_order = '';
+    if ( $app->param('is_category_set') ) {
+        if ( my $set_id = $app->param('set_id') ) {
+            my $set = $app->model('category_set')->load($set_id);
+            $sort_order = $set->order || '';
+            $param->{category_set_id} = $set_id;
+        }
+    }
+    else {
+        my $type = $app->param('datasource');
+        my $meta = $type . '_order';
+        $sort_order = $app->blog->$meta || '';
+    }
+
     my $text = join(
         ':',
-        $blog_meta_value,
+        $sort_order,
         map {
             join( ':', $_->id, $_->parent, Encode::encode_utf8( $_->label ), )
             }

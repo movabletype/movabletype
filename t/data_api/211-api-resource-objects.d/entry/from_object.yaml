@@ -1,0 +1,410 @@
+- 
+  note: A published entry
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 
+    author_id: 2
+    blog_id: 1
+    id: 9999
+    status: 2
+    allow_comments: 1
+    allow_pings: 1
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130517101010
+    created_on: 20130317101010
+    modified_on: 20130417101010
+    pinged_urls: |-
+      http://example.com/entry/1
+      http://example.com/entry/2
+    comment_count: 0
+    ping_count: 0
+  to: 
+    id: 9999
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Publish
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    permalink: http://narnia.na/nana/archives/2013/05/a-basename.html
+    date: 2013-05-17T10:10:10-03:30
+    createdDate: 2013-03-17T10:10:10-03:30
+    modifiedDate: 2013-04-17T10:10:10-03:30
+    categories: []
+    assets: []
+    tags: []
+    updatable: 1
+- 
+  note: A draft entry
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 
+    author_id: 2
+    blog_id: 1
+    id: 9999
+    status: 1
+    allow_comments: 1
+    allow_pings: 1
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130517101010
+    created_on: 20130317101010
+    modified_on: 20130417101010
+    pinged_urls: ""
+    comment_count: 0
+    ping_count: 0
+  to: 
+    id: 9999
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Draft
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    permalink: http://narnia.na/nana/archives/2013/05/a-basename.html
+    date: 2013-05-17T10:10:10-03:30
+    createdDate: 2013-03-17T10:10:10-03:30
+    modifiedDate: 2013-04-17T10:10:10-03:30
+    categories: []
+    assets: []
+    tags: []
+    updatable: 1
+- 
+  note: A review entry
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 
+    author_id: 2
+    blog_id: 1
+    id: 9999
+    status: 3
+    allow_comments: 0
+    allow_pings: 0
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130517101010
+    created_on: 20130317101010
+    modified_on: 20130417101010
+    pinged_urls: ""
+    comment_count: 0
+    ping_count: 0
+  to: 
+    id: 9999
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Review
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    permalink: http://narnia.na/nana/archives/2013/05/a-basename.html
+    date: 2013-05-17T10:10:10-03:30
+    createdDate: 2013-03-17T10:10:10-03:30
+    modifiedDate: 2013-04-17T10:10:10-03:30
+    categories: []
+    assets: []
+    tags: []
+    updatable: 1
+- 
+  note: A future entry
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 
+    author_id: 2
+    blog_id: 1
+    id: 9999
+    status: 4
+    allow_comments: 0
+    allow_pings: 0
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130517101010
+    created_on: 20130317101010
+    modified_on: 20130417101010
+    pinged_urls: ""
+    comment_count: 0
+    ping_count: 0
+  to: 
+    id: 9999
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Future
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    permalink: http://narnia.na/nana/archives/2013/05/a-basename.html
+    date: 2013-05-17T10:10:10-03:30
+    createdDate: 2013-03-17T10:10:10-03:30
+    modifiedDate: 2013-04-17T10:10:10-03:30
+    categories: []
+    assets: []
+    tags: []
+    updatable: 1
+- 
+  note: A spam entry
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 
+    author_id: 2
+    blog_id: 1
+    id: 9999
+    status: 5
+    allow_comments: 0
+    allow_pings: 0
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130517101010
+    created_on: 20130317101010
+    modified_on: 20130417101010
+    pinged_urls: ""
+    comment_count: 0
+    ping_count: 0
+  to: 
+    id: 9999
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Spam
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    permalink: http://narnia.na/nana/archives/2013/05/a-basename.html
+    date: 2013-05-17T10:10:10-03:30
+    createdDate: 2013-03-17T10:10:10-03:30
+    modifiedDate: 2013-04-17T10:10:10-03:30
+    categories: []
+    assets: []
+    tags: []
+    updatable: 1
+- 
+  note: A entry that has comments, trackbacks, assets and tags
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 1
+  to: 
+    id: 1
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Publish
+    title: A Rainy Day
+    body: On a drizzly day last weekend,
+    more: I took my grandpa for a walk.
+    excerpt: A story of a stroll.
+    keywords: keywords
+    basename: a_rainy_day
+    permalink: http://narnia.na/nana/archives/1978/01/a-rainy-day.html
+    date: 1978-01-31T07:45:00-03:30
+    createdDate: 1978-01-31T07:45:00-03:30
+    modifiedDate: 1978-01-31T07:46:00-03:30
+    categories: []
+    assets:
+      -
+        id: 5
+        description: This is a test photo.
+        label: Image photo
+        filename: test_1.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_1.jpg
+      -
+        id: 6
+        description: This is a test photo.
+        label: Image photo
+        filename: test_2.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_2.jpg
+      -
+        id: 7
+        description: This is a test photo.
+        label: Image photo
+        filename: test_3.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_3.jpg
+    tags:
+      - grandpa
+      - rain
+      - strolling
+    updatable: 1
+- 
+  note: A entry that has comments, trackbacks, assets and tags when maxComments is 0
+  params:
+    maxComments: 0
+    maxTrackbacks: 0
+  from: 1
+  to: 
+    id: 1
+    blog:
+      id: 1
+    author:
+      id: 2
+      displayName: Chucky Dee
+      userpicUrl: /mt-static/support/assets_c/userpics/userpic-2-100x100.png
+    class: entry
+    status: Publish
+    title: A Rainy Day
+    body: On a drizzly day last weekend,
+    more: I took my grandpa for a walk.
+    excerpt: A story of a stroll.
+    keywords: keywords
+    basename: a_rainy_day
+    permalink: http://narnia.na/nana/archives/1978/01/a-rainy-day.html
+    date: 1978-01-31T07:45:00-03:30
+    createdDate: 1978-01-31T07:45:00-03:30
+    modifiedDate: 1978-01-31T07:46:00-03:30
+    categories: []
+    assets:
+      -
+        id: 5
+        description: This is a test photo.
+        label: Image photo
+        filename: test_1.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_1.jpg
+      -
+        id: 6
+        description: This is a test photo.
+        label: Image photo
+        filename: test_2.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_2.jpg
+      -
+        id: 7
+        description: This is a test photo.
+        label: Image photo
+        filename: test_3.jpg
+        mimeType: image/jpeg
+        tags:
+          - alpha
+          - beta
+          - gamma
+        url: http://narnia.na/nana/images/test_3.jpg
+    tags:
+      - grandpa
+      - rain
+      - strolling
+    updatable: 1
+- 
+  note: A entry that has categories
+  params:
+    maxComments: 9999
+    maxTrackbacks: 9999
+  from: 6
+  to: 
+    id: 6
+    blog:
+      id: 1
+    author:
+      id: 3
+      displayName: Dylan
+      userpicUrl: ~
+    class: entry
+    status: Publish
+    title: Verse 3
+    body: |-
+      I met one man who was wounded in love,
+      I met another man who was wounded with hatred
+    more: ""
+    excerpt: I met one man who was wounded in love, I met another man who was wounded with hatred...
+    keywords: ""
+    basename: verse_3
+    permalink: http://narnia.na/nana/archives/1963/01/verse-3.html
+    date: 1963-01-31T07:45:01-03:30
+    createdDate: 1963-01-31T07:45:01-03:30
+    modifiedDate: 1963-01-31T07:46:01-03:30
+    categories:
+      - foo
+      - bar
+    assets: []
+    tags:
+      - rain
+      - verse
+    updatable: 1

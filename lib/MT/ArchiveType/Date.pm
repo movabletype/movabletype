@@ -1,10 +1,12 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::ArchiveType::Date;
 
+use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 sub group_based {
@@ -99,7 +101,7 @@ sub get_entry {
     my $archiver = shift;
     my ( $ts, $blog_id, $order ) = @_;
     my ( $start, $end ) = $archiver->date_range($ts);
-    if ( $order eq 'previous' ) {
+    if ( $order and $order eq 'previous' ) {
         $order = 'descend';
         $ts    = $start;
     }

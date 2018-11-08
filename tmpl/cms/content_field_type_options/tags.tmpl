@@ -1,0 +1,49 @@
+<mt:app:ContentFieldOptionGroup
+   type="tags">
+
+  <mtapp:ContentFieldOption
+     id="tags-multiple"
+     label="<__trans phrase="Allow users to input multiple values?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="tags-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="tags-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tags-min"
+     label="<__trans phrase="Minimum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="tags-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tags-max"
+     label="<__trans phrase="Maximum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="tags-max" class="form-control w-25" min="1" value={ options.max }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tags-initial_value"
+     label="<__trans phrase="Initial Value">">
+    <input ref="initial_value" type="text" name="initial_value" id="tags-initial_value" class="form-control" value={ options.initial_value } >
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tags-can_add"
+     label="<__trans phrase="Allow users to create new tags?">">
+    <input ref="can_add" type="checkbox" class="mt-switch form-control" id="tags-can_add" name="can_add" checked={ options.can_add }><label for="tags-can_add"><__trans phrase="Allow users to create new tags?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+  if ( this.options.multiple === "0" ) {
+    this.options.multiple = 0
+  }
+
+  if ( this.options.can_add === "0" ) {
+    this.options.can_add = 0
+  }
+
+  changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+  }
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -44,7 +44,7 @@ use vars qw( %Lexicon );
 	'OAuth2 settings' => 'OAuth2の設定',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	'Other Google account' => '別のアカウントを利用する',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Console</a>でウェブアプリケーション向けのClient IDを作成してください。},
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
 	'Redirect URI of the OAuth2 application' => '承認済みのリダイレクト URI',
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',

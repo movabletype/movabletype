@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,7 +7,9 @@
 package MT::Blog;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
+use File::Spec;
 
 use MT::FileMgr;
 use MT::Util;
@@ -19,8 +21,8 @@ __PACKAGE__->install_properties(
             'theme_id'               => 'string(255)',
             'name'                   => 'string(255) not null',
             'description'            => 'text',
-            'archive_type'           => 'string(255)',
-            'archive_type_preferred' => 'string(25)',
+            'archive_type'           => 'string(2000)',
+            'archive_type_preferred' => 'string(50)',
             'site_path'              => 'string(255)',
             'site_url'               => 'string(255)',
             'days_on_index'          => 'integer',
@@ -107,6 +109,7 @@ __PACKAGE__->install_properties(
             'include_system'           => 'string meta',
             'include_cache'            => 'integer meta',
             'max_revisions_entry'      => 'integer meta',
+            'max_revisions_cd'         => 'integer meta',
             'max_revisions_template'   => 'integer meta',
             'theme_export_settings'    => 'hash meta',
             'category_order'           => 'text meta',
@@ -119,6 +122,10 @@ __PACKAGE__->install_properties(
             'operation_if_exists'       => 'integer meta',
             'normalize_orientation'     => 'boolean meta',
             'auto_rename_non_ascii'     => 'boolean meta',
+            ## rebuild trigger
+            'blog_content_accessible' => 'boolean meta',
+            'default_mt_sites_action' => 'boolean meta',
+            'default_mt_sites_sites'  => 'string meta',
         },
         meta    => 1,
         audit   => 1,
@@ -148,11 +155,11 @@ sub ALIGN () {'none'}
 sub UNITS () {'pixels'}
 
 sub class_label {
-    MT->translate("Blog");
+    MT->translate("Child Site");
 }
 
 sub class_label_plural {
-    MT->translate("Blogs");
+    MT->translate("Child Sites");
 }
 
 sub list_props {
@@ -226,42 +233,52 @@ sub list_props {
             count_args         => { no_class => 1 },
             list_permit_action => 'access_to_asset_list',
         },
-        comment_count => {
-            label              => 'Comments',
-            filter_label       => '__COMMENT_COUNT',
+        content_type_count => {
+            label              => 'Content Type',
+            filter_label       => 'Content Type Count',
+            display            => 'default',
             order              => 600,
             base               => '__virtual.object_count',
-            count_class        => 'comment',
+            col_class          => 'num',
+            count_class        => 'content_type',
             count_col          => 'blog_id',
             filter_type        => 'blog_id',
-            list_screen        => 'comment',
-            list_permit_action => 'access_to_comment_list',
+            list_permit_action => 'access_to_content_type_list',
         },
-
-        # not in use in 5.1
-        # member_count => {
-        #     label              => 'Members',
-        #     order              => 700,
-        #     base               => '__virtual.object_count',
-        #     count_class        => 'permission',
-        #     count_col          => 'blog_id',
-        #     filter_type        => 'blog_id',
-        #     list_screen        => 'member',
-        #     count_terms        => { author_id => { not => 0 } },
-        #     list_permit_action => 'access_to_member_list',
-        # },
+        content_count => {
+            label        => 'Content Data',
+            filter_label => 'Content Data Count',
+            display      => 'default',
+            order        => 700,
+            base         => '__virtual.object_count',
+            col_class    => 'num',
+            count_class  => 'content_data',
+            count_col    => 'blog_id',
+            filter_type  => 'blog_id',
+            html         => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $count = $prop->raw(@_);
+                return $count;
+            },
+        },
         parent_website => {
-            view            => ['system'],
-            label           => 'Website',
+            view            => ['website'],
+            label           => 'Parent Site',
             order           => 800,
             display         => 'default',
             filter_editable => 0,
             raw             => sub {
                 my ( $prop, $obj ) = @_;
-                my $parent = $obj->website;
-                return $parent
-                    ? $parent->name
-                    : ( MT->translate('*Website/Blog deleted*') );
+                if ( $obj->is_blog ) {
+                    my $parent = $obj->website;
+                    $parent
+                        ? $parent->name
+                        : ( MT->translate('*Site/Child Site deleted*') );
+                }
+                else {
+                    '-';
+                }
             },
             bulk_sort => sub {
                 my $prop    = shift;
@@ -282,9 +299,10 @@ sub list_props {
             order => 900,
         },
         description => {
-            auto    => 1,
-            label   => 'Description',
-            display => 'none',
+            auto      => 1,
+            label     => 'Description',
+            display   => 'none',
+            use_blank => 1,
         },
         theme_id => {
             label                 => 'Theme',
@@ -354,7 +372,6 @@ sub list_props {
                 allow_pings              => 1,
                 moderate_unreg_comments  => MT::Blog::MODERATE_UNTRSTD(),
                 moderate_pings           => 1,
-                require_comment_emails   => 1,
                 allow_comments_default   => 1,
                 allow_comment_html       => 1,
                 autolink_urls            => 1,
@@ -470,6 +487,23 @@ sub create_default_templates {
                 MT::Template->widgets_to_modulesets( $modulesets, $blog->id )
             );
         }
+        if ( ( $val->{type} eq 'ct' || $val->{type} eq 'ct_archive' )
+            && exists $val->{content_type} )
+        {
+            my $ct = MT->model('content_type')->load(
+                {   blog_id   => $blog->id,
+                    unique_id => $val->{content_type},
+                }
+            );
+            $ct ||= MT->model('content_type')->load(
+                {   blog_id => $blog->id,
+                    name    => $val->{content_type},
+                }
+            );
+            if ($ct) {
+                $obj->content_type_id( $ct->id );
+            }
+        }
         $obj->save;
         if ( $val->{mappings} ) {
             push @arch_tmpl,
@@ -489,10 +523,27 @@ sub create_default_templates {
         for my $map_set (@arch_tmpl) {
             my $tmpl     = $map_set->{template};
             my $mappings = $map_set->{mappings};
-            foreach my $map_key ( keys %$mappings ) {
+            foreach my $map_key ( sort keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
-                $archive_types{$at} = 1;
+
+                unless ( defined $at && $at ne '' ) {
+                    return $blog->error(
+                        MT->translate(
+                            "archive_type is needed in Archive Mapping '[_1]'",
+                            $map_key,
+                        )
+                    );
+                }
+
+                $archive_types{$at} ||= $app->publisher->archiver($at)
+                    or return $blog->error(
+                    MT->translate(
+                        "Invalid archive_type '[_1]' in Archive Mapping '[_2]'",
+                        $at,
+                        $map_key,
+                    )
+                    );
 
                 # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
@@ -509,12 +560,84 @@ sub create_default_templates {
                 $map->blog_id( $tmpl->blog_id );
                 $map->build_type( $m->{build_type} )
                     if defined $m->{build_type};
+
+                if ( $tmpl->content_type_id ) {
+                    if ( $m->{datetime_field} ) {
+                        my $datetime_field
+                            = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{datetime_field},
+                            }
+                            );
+                        $datetime_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{datetime_field},
+                            }
+                        );
+
+                        return $blog->error(
+                            MT->translate(
+                                "Invalid datetime_field '[_1]' in Archive Mapping '[_2]'",
+                                $m->{datetime_field},
+                                $map_key,
+                            )
+                        ) unless $datetime_field;
+
+                        $map->dt_field_id( $datetime_field->id );
+                    }
+                    if ( $m->{category_field} ) {
+                        my $cat_field = MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                unique_id       => $m->{category_field},
+                            }
+                        );
+                        $cat_field ||= MT->model('content_field')->load(
+                            {   blog_id         => $tmpl->blog_id,
+                                content_type_id => $tmpl->content_type_id,
+                                name            => $m->{category_field},
+                            }
+                        );
+
+                        return $blog->error(
+                            MT->translate(
+                                "Invalid category_field '[_1]' in Archive Mapping '[_2]'",
+                                $m->{category_field},
+                                $map_key,
+                            )
+                        ) unless $cat_field;
+
+                        $map->cat_field_id( $cat_field->id );
+                    }
+                }
+
+                unless ( $map->cat_field_id ) {
+                    if ($archive_types{$at}->contenttype_category_based
+                        || (   $archive_types{$at}->contenttype_based
+                            && $map->file_template =~ /%[\-_]?[Cc]/ )
+                        )
+                    {
+                        return $blog->error(
+                            MT->translate(
+                                "category_field is required in Archive Mapping '[_1]'",
+                                $map_key,
+                            )
+                        );
+                    }
+                }
+
+                unless ( $map->dt_field_id ) {
+                    $map->dt_field_id(0);
+                }
+
                 $map->save;
             }
         }
     }
 
-    $blog->archive_type( join ',', keys %archive_types );
+    $blog->archive_type( join ',', sort keys %archive_types );
     foreach my $at (qw( Individual Daily Weekly Monthly Category )) {
         $blog->archive_type_preferred($at), last
             if exists $archive_types{$at};
@@ -634,9 +757,7 @@ sub is_site_path_absolute {
     }
 
     return 0 if !defined $raw_path;
-    return 1 if $raw_path =~ m!^/!;
-    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!;    # UNC
+    return 1 if File::Spec->file_name_is_absolute($raw_path);
     return 0;
 }
 
@@ -646,6 +767,7 @@ sub site_path {
     if (@_) {
         my ($new_site_path) = @_;
         my $sep = quotemeta MT::Util::dir_separator;
+        $sep = qr![\\/]! if $^O eq 'MSWin32';
         $new_site_path =~ s/$sep*$//;
 
         $blog->column( 'site_path', $new_site_path );
@@ -678,9 +800,6 @@ sub raw_archive_url {
     my $archive_url = $blog->column('archive_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
-        if ( $subdomain ne $archive_url ) {
-            return ( $subdomain, $path );
-        }
     }
     return $archive_url;
 }
@@ -725,9 +844,7 @@ sub is_archive_path_absolute {
 
     my $raw_path = $blog->column('archive_path');
     return 0 unless $raw_path;
-    return 1 if $raw_path =~ m!^/!;
-    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!;    # UNC
+    return 1 if File::Spec->file_name_is_absolute($raw_path);
     return 0;
 }
 
@@ -894,9 +1011,8 @@ sub file_mgr {
 }
 
 sub remove {
-    my $blog    = shift;
-    my $blog_id = $blog->id
-        if ref($blog);
+    my $blog = shift;
+    my $blog_id = ref $blog ? $blog->id : undef;
 
     # Load all the models explicitly.
     MT->all_models;
@@ -912,18 +1028,6 @@ sub remove {
     $res;
 }
 
-# deprecated: use $blog->remote_auth_token instead
-sub effective_remote_auth_token {
-    my $blog = shift;
-    if ( scalar @_ ) {
-        return $blog->remote_auth_token(@_);
-    }
-    if ( $blog->remote_auth_token() ) {
-        return $blog->remote_auth_token();
-    }
-    undef;
-}
-
 sub flush_has_archive_type_cache {
     my $blog = shift;
     my ($type) = @_;
@@ -936,16 +1040,25 @@ sub flush_has_archive_type_cache {
 }
 
 sub has_archive_type {
-    my $blog   = shift;
-    my ($type) = @_;
-    my %at     = map { lc $_ => 1 } split( /,/, $blog->archive_type );
+    my $blog = shift;
+    my ( $type, $content_type ) = @_;
+    my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
     my $r     = MT->request;
     my $cache = $r->cache($cache_key);
-    if ( !$cache || ( $cache && !$cache->{$type} ) ) {
+    if (!$cache
+        || ($cache
+            && (!$cache->{$type}
+                || (   defined $content_type
+                    && $content_type ne ''
+                    && !$cache->{$type}->{$content_type} )
+            )
+        )
+        )
+    {
         require MT::PublishOption;
         require MT::TemplateMap;
         my $count = MT::TemplateMap->count(
@@ -954,10 +1067,42 @@ sub has_archive_type {
                 build_type   => { not => MT::PublishOption::DISABLED() },
             }
         );
-        $cache->{$type} = $count;
+        if ( defined $content_type && $content_type ne '' && $count ) {
+            my $content_type_obj = MT::ContentType->load(
+                [   { unique_id => $content_type },
+                    -or => { name => $content_type },
+                    -or => { id   => $content_type }
+                ]
+            );
+            if ($content_type_obj) {
+                $count = MT::TemplateMap->count(
+                    {   blog_id      => $blog->id,
+                        archive_type => $type,
+                        build_type =>
+                            { not => MT::PublishOption::DISABLED() },
+                    },
+                    {   join => MT->model('template')->join_on(
+                            undef,
+                            {   id => \'= templatemap_template_id',
+                                content_type_id => $content_type_obj->id,
+                            },
+                        )
+                    }
+                );
+                $cache->{$type}->{$content_type} = $count;
+            }
+        }
+        else {
+            $cache->{$type} = $count;
+        }
         $r->cache( $cache_key, $cache );
     }
-    return $cache->{$type};
+    if ( defined $content_type && $content_type ne '' ) {
+        return $cache->{$type}->{$content_type};
+    }
+    else {
+        return $cache->{$type};
+    }
 }
 
 sub accepts_registered_comments {
@@ -1054,7 +1199,8 @@ sub clone_with_children {
     $new_blog->save or die $new_blog->errstr;
     $new_blog_id = $new_blog->id;
     $callback->(
-        MT->translate( "Cloned blog... new id is [_1].", $new_blog_id ) );
+        MT->translate( "Cloned child site... new id is [_1].", $new_blog_id )
+    );
 
     if ( ( !exists $classes->{'MT::Permission'} )
         || $classes->{'MT::Permission'} )
@@ -1250,52 +1396,15 @@ sub clone_with_children {
             );
         }
 
-        if ( ( !exists $classes->{'MT::Comment'} )
-            || $classes->{'MT::Comment'} )
-        {
-
-            # Comments can only be cloned if entries are cloned.
-            my $state = MT->translate("Cloning comments for blog...");
-            $callback->( $state, "comments" );
-            require MT::Comment;
-            $iter = MT::Comment->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            my %comment_parents;
-            while ( my $comment = $iter->() ) {
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'comments'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-
-                my $new_comment = $comment->clone();
-                delete $new_comment->{column_values}->{id};
-                delete $new_comment->{changed_cols}->{id};
-                $new_comment->entry_id( $entry_map{ $comment->entry_id } );
-                $new_comment->blog_id($new_blog_id);
-                $new_comment->save or die $new_comment->errstr;
-                $comment_map{ $comment->id } = $new_comment->id;
-                if ( $comment->parent_id ) {
-                    $comment_parents{ $new_comment->id }
-                        = $comment->parent_id;
-                }
+        if ( MT->has_plugin('Comments') ) {
+            if ( ( !exists $classes->{'MT::Comment'} )
+                || $classes->{'MT::Comment'} )
+            {
+                require Comments::Blog;
+                Comments::Blog::_clone_comments( $callback, $old_blog_id,
+                    $new_blog_id,
+                    { entry => \%entry_map, comment => \%comment_map } );
             }
-            foreach ( keys %comment_parents ) {
-                my $comment = MT::Comment->load($_);
-                if ($comment) {
-                    $comment->parent_id(
-                        $comment_map{ $comment_parents{ $comment->id } } );
-                    $comment->save or die $comment->errstr;
-                }
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'comments'
-            );
         }
 
         if ( ( !exists $classes->{'MT::ObjectTag'} )
@@ -1400,117 +1509,34 @@ sub clone_with_children {
         );
     }
 
-    if ( ( !exists $classes->{'MT::Trackback'} )
-        || $classes->{'MT::Trackback'} )
-    {
-        my $state = MT->translate("Cloning TrackBacks for blog...");
-        $callback->( $state, "tbs" );
-        require MT::Trackback;
-        $iter = MT::Trackback->load_iter( { blog_id => $old_blog_id } );
-        $counter = 0;
-        while ( my $tb = $iter->() ) {
-            next
-                unless ( $tb->entry_id && $entry_map{ $tb->entry_id } )
-                || ( $tb->category_id && $cat_map{ $tb->category_id } );
-
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed...", $counter ),
-                'tbs'
-            ) if $counter && ( $counter % 100 == 0 );
-            $counter++;
-            my $tb_id  = $tb->id;
-            my $new_tb = $tb->clone();
-            delete $new_tb->{column_values}->{id};
-            delete $new_tb->{changed_cols}->{id};
-
-            if ( $tb->category_id ) {
-                if ( my $cid = $cat_map{ $tb->category_id } ) {
-                    my $cat_tb
-                        = MT::Trackback->load( { category_id => $cid } );
-                    if ($cat_tb) {
-                        my $changed;
-                        if ( $tb->passphrase ) {
-                            $cat_tb->passphrase( $tb->passphrase );
-                            $changed = 1;
-                        }
-                        if ( $tb->is_disabled ) {
-                            $cat_tb->is_disabled(1);
-                            $changed = 1;
-                        }
-                        $cat_tb->save if $changed;
-                        $tb_map{$tb_id} = $cat_tb->id;
-                        next;
-                    }
-                }
-            }
-            elsif ( $tb->entry_id ) {
-                if ( my $eid = $entry_map{ $tb->entry_id } ) {
-                    my $entry_tb = MT::Entry->load($eid)->trackback;
-                    if ($entry_tb) {
-                        my $changed;
-                        if ( $tb->passphrase ) {
-                            $entry_tb->passphrase( $tb->passphrase );
-                            $changed = 1;
-                        }
-                        if ( $tb->is_disabled ) {
-                            $entry_tb->is_disabled(1);
-                            $changed = 1;
-                        }
-                        $entry_tb->save if $changed;
-                        $tb_map{$tb_id} = $entry_tb->id;
-                        next;
-                    }
-                }
-            }
-
-            # A trackback wasn't created when saving the entry/category,
-            # (perhaps trackbacks are now disabled for the entry/category?)
-            # so create one now
-            $new_tb->entry_id( $entry_map{ $tb->entry_id } )
-                if $tb->entry_id && $entry_map{ $tb->entry_id };
-            $new_tb->category_id( $cat_map{ $tb->category_id } )
-                if $tb->category_id && $cat_map{ $tb->category_id };
-            $new_tb->blog_id($new_blog_id);
-            $new_tb->save or die $new_tb->errstr;
-            $tb_map{$tb_id} = $new_tb->id;
-        }
-        $callback->(
-            $state . " "
-                . MT->translate( "[_1] records processed.", $counter ),
-            'tbs'
-        );
-
-        if ( ( !exists $classes->{'MT::TBPing'} )
-            || $classes->{'MT::TBPing'} )
+    if ( MT->has_plugin('Trackback') ) {
+        if ( ( !exists $classes->{'MT::Trackback'} )
+            || $classes->{'MT::Trackback'} )
         {
-            my $state = MT->translate("Cloning TrackBack pings for blog...");
-            $callback->( $state, "pings" );
-            require MT::TBPing;
-            $iter = MT::TBPing->load_iter( { blog_id => $old_blog_id } );
-            $counter = 0;
-            while ( my $ping = $iter->() ) {
-                next unless $tb_map{ $ping->tb_id };
-                $callback->(
-                    $state . " "
-                        . MT->translate(
-                        "[_1] records processed...", $counter
-                        ),
-                    'pings'
-                ) if $counter && ( $counter % 100 == 0 );
-                $counter++;
-                my $new_ping = $ping->clone();
-                delete $new_ping->{column_values}->{id};
-                delete $new_ping->{changed_cols}->{id};
-                $new_ping->tb_id( $tb_map{ $ping->tb_id } );
-                $new_ping->blog_id($new_blog_id);
-                $new_ping->save or die $new_ping->errstr;
-            }
-            $callback->(
-                $state . " "
-                    . MT->translate( "[_1] records processed.", $counter ),
-                'pings'
+            require Trackback::Blog;
+            Trackback::Blog::_clone_trackbacks(
+                $callback,
+                $old_blog_id,
+                $new_blog_id,
+                {   entry     => \%entry_map,
+                    category  => \%cat_map,
+                    trackback => \%tb_map
+                }
             );
+
+            if ( ( !exists $classes->{'MT::TBPing'} )
+                || $classes->{'MT::TBPing'} )
+            {
+                Trackback::Blog::_clone_pings(
+                    $callback,
+                    $old_blog_id,
+                    $new_blog_id,
+                    {   entry     => \%entry_map,
+                        category  => \%cat_map,
+                        trackback => \%tb_map
+                    }
+                );
+            }
         }
     }
 
@@ -1671,8 +1697,8 @@ sub apply_theme {
     $theme->apply($blog)
         or return $blog->error(
         MT->translate(
-            "Failed to apply theme [_1]: [_2]", $theme_id,
-            MT::Theme->errstr
+            "Failed to apply theme [_1]: [_2]",
+            $theme_id, $theme->errstr
         )
         );
     return 1;
@@ -1727,6 +1753,29 @@ sub to_hash {
     $hash->{'blog.archive_url'} = $obj->archive_url
         if exists( $hash->{'blog.archive_url'} );
     return $hash;
+}
+
+sub junk_score_threshold {
+    my $self = shift;
+    if (@_) {
+        my $adjusted_value = _adjust_threshold( $_[0] );
+        return $self->column( 'junk_score_threshold', $adjusted_value );
+    }
+    else {
+        return _adjust_threshold( $self->column('junk_score_threshold') );
+    }
+}
+
+sub _adjust_threshold {
+    my $value = shift;
+    if ( defined $value && $value =~ /^[+-]?[0-9]+\.?[0-9]*$/ ) {
+        return -10 if $value < -10;
+        return 10  if $value > 10;
+        return $value + 0;
+    }
+    else {
+        return 0;
+    }
 }
 
 1;
@@ -2011,7 +2060,10 @@ When a new comment is entered, it is checked if it is spam using spam
 filters. each filter is voting by returning a number between -10 to 10,
 (or ABSTAIN) and then numbers are merged to a single spam score. if this
 score is bigger then junk_score_threshold, this comment is considered
-spam
+spam.
+
+If this value is out of range between -10 to 10, rounded value will
+be returned.
 
 =item * basename_limit
 
@@ -2082,7 +2134,7 @@ Default setting for embedded images in entries
 =item * commenter_authenticators
 
 A comma-delimited list of authentication options for commenters.
-for example: "MovableType,TypeKey,LiveJournal"
+for example: "MovableType,LiveJournal"
 
 =item * require_typekey_emails
 
@@ -2149,6 +2201,11 @@ php, jsp or asp
 
 If revisions are enabled for this blog, (see use_revision) specify how
 many revision to keep for each entry
+
+=item * max_revisions_cd
+
+If revisions are enabled for this blog, (see use_revision) specify how
+many revision to keep for each content data
 
 =item * max_revisions_template
 

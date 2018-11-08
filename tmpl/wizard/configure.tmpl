@@ -1,5 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Database Configuration"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
+
+<mt:setvarblock name="page_content">
 <form id="configure_form" method="post">
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="configure" />
@@ -32,19 +33,19 @@
 <mt:if name="success">
   <p class="intro"><span class="ready"><__trans phrase="Your database configuration is complete."></span> <__trans phrase="You may proceed to the next step."></p>
   <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
-  <div id="success" class="actions-bar">
+  <div id="success" class="actions-bar text-right">
     <button
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
     <button
        name="back"
        type="submit"
        onclick="needValidate = false; this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
   </div>
@@ -57,7 +58,7 @@
          id="dbtype"
          label="<__trans phrase="Database Type">"
          label_class="top-label">
-        <select id="dbtype" name="dbtype">
+        <select id="dbtype" class="custom-select form-control" name="dbtype">
         <mt:unless name="one_db">
           <option value=""><__trans phrase="Select One..."></option>
         </mt:unless>
@@ -68,7 +69,7 @@
       </mtapp:setting>
 
     <mt:unless name="db_loop">
-    <mt:setvarblock name="db_setup_url"><__trans phrase="http://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
+    <mt:setvarblock name="db_setup_url"><__trans phrase="https://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
       <div id="db_hint">
         <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
         <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
@@ -85,7 +86,7 @@
            hint="<mt:var name="hint">"
            show_hint="<mt:var name="show_hint" default="0">">
         <mt:if name="element" eq="select">
-          <select id="<mt:var name="id">" name="<mt:var name="id">">
+          <select id="<mt:var name="id">" class="custom-select form-control" name="<mt:var name="id">">
           <mt:loop name="option_loop">
             <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
           </mt:loop>
@@ -94,7 +95,7 @@
           <input
              type="<mt:var name="type">"
              name="<mt:var name="id">"
-             class="<mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
+             class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
              value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
         </mt:if>
         </mtapp:setting>
@@ -108,7 +109,7 @@
              id="<mt:var name="id">"
              label="<mt:var name="label">"
              label_class="top-label">
-            <input type="<mt:var name="type">" name="<mt:var name="id">" class="<mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
+            <input type="<mt:var name="type">" name="<mt:var name="id">" class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
           </mtapp:setting>
         </mt:loop>
         </div>
@@ -116,42 +117,42 @@
       </div>
 
     <mt:unless name="success">
-      <div id="submit" class="actions-bar" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+      <div id="submit" class="actions-bar text-right" <mt:unless name="dbtype">style="display: none"</mt:unless>>
         <button
            name="test"
            type="submit"
            value="1"
            onclick="go('test');"
-           class="action primary button">
+           class="action primary button btn btn-primary">
           <__trans phrase="Test Connection">
         </button>
         <button
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
 
-      <div id="goback" class="actions-bar" <mt:if name="dbtype">style="display: none"</mt:if>>
+      <div id="goback" class="actions-bar text-right" <mt:if name="dbtype">style="display: none"</mt:if>>
         <button
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
     </mt:unless>
 
     <mt:if name="success">
-      <div id="continue" class="actions-bar">
+      <div id="continue" class="actions-bar text-right">
         <button
            name="continue"
            type="submit"
            onclick="go('next_step');"
-           class="continue action primary button">
+           class="continue action primary button btn btn-primary">
           <__trans phrase="Continue">
         </button>
         <button
@@ -159,20 +160,23 @@
            type="submit"
            value="1"
            onclick="go('test');"
-           class="action button">
+           class="action button btn btn-default">
           <__trans phrase="Test Connection">
         </button>
         <button
            name="back"
            type="submit"
            onclick="needValidate = false; this.form.reset(); go('previous_step');"
-           class="goback action button">
+           class="goback action button btn btn-default">
           <__trans phrase="Back">
         </button>
       </div>
     </mt:if>
   </div>
 </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 var needValidate = true;
@@ -220,6 +224,7 @@ var database = new Array();
 </mt:loop>
 /* ]]> */
 </script>
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:unless name="success">
@@ -263,4 +268,7 @@ var database = new Array();
     jQuery('.msg').mtToggleField();
 </mt:if>
 </mt:setvarblock>
-<mt:include name="include/chromeless_footer.tmpl">
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

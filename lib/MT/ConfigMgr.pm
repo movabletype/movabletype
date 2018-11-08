@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ConfigMgr;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 our $cfg;
@@ -276,7 +277,7 @@ sub save_config {
             if exists $mgr->{__settings}{$_}{dirty};
         if ( $type eq 'HASH' ) {
             my $h = $settings->{$_};
-            foreach my $k ( keys %$h ) {
+            foreach my $k ( sort keys %$h ) {
                 $data
                     .= $mgr->{__settings}{$_}{key} . ' '
                     . $k . '='
@@ -289,7 +290,7 @@ sub save_config {
                 $data .= $mgr->{__settings}{$_}{key} . ' ' . $v . "\n";
             }
         }
-        else {
+        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
             $data
                 .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
         }

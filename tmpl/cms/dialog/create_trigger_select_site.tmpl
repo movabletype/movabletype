@@ -1,0 +1,67 @@
+<$mt:setvar name="screen_type" value="dialog-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Create Rebuild Trigger"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+var win = window.parent;
+function returnTrigger(ok) {
+    if (!ok) // user cancelled
+        return jQuery.fn.mtModal.close();
+
+    // populate form and submit
+    frm = TC.getElementsByTagAndClassName("form", "multiblog-trigger", dialog.panels[0].element);
+    if (frm) {
+        frm = frm[0];
+
+        /* gather blog id and name from table */
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) {
+            alert("Please select a weblog.")
+            return;
+        }
+        var inp = inputs[0];
+        var blog_id = inp.value;
+        var row = TC.getParentByTagName( inp, "tr" );
+        if (!row) return;
+        var labels = row.getElementsByClassName('panel-label');
+        if (labels.length == 0) return;
+        var blog_name = labels[0].innerHTML;
+
+        win.addMultiBlogTrigger('<mt:var name="action_text">', '<mt:var name="action_value">', blog_name, blog_id, '<mt:var name="trigger_text">', '<mt:var name="trigger_value">', '<mt:var name="content_type_text">', '<mt:var name="content_type_id">');
+        jQuery.fn.mtModal.close();
+    }
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, returnTrigger);
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="after_listing_panel">
+<form class="form-inline multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
+  <mt:var name="trigger_caption">
+  <mt:var name="trigger_label">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<div class="modal_width" id="select-weblog-dialog">
+<mt:include name="include/listing_panel.tmpl">
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

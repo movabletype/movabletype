@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="Create Website">">
+<mt:setvar name="page_title" value="<__trans phrase="Create Site">">
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvarblock name="related_content">
 <$mtapp:PageActions$>
@@ -18,22 +18,12 @@
      class="success"
      rebuild="all"
      can_close="0">
-    <__trans phrase="Your blog configuration has been saved.">
+    <__trans phrase="Your site configuration has been saved.">
   </mtapp:statusmsg>
 </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="html_head" append="1">
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
-    jQuery('#name').focus();
-});
-/* ]]> */
-</script>
-</mt:setvarblock>
 
-<mt:include name="include/header.tmpl" id="header_include">
-
+<mt:setvarblock name="page_content">
 <form method="post" action="<mt:var name="script_url">" id="new_website_form">
 <mt:unless name="new_object">
   <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
@@ -45,12 +35,14 @@ jQuery(function() {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
   <mtapp:setting
      id="website_theme"
-     label="<__trans phrase="Website Theme">"
-     hint="<__trans phrase="Select the theme you wish to use for this website.">"
+     label="<__trans phrase="Site Theme">"
+     label_for="website_theme"
+     hint="<__trans phrase="Select the theme you wish to use for this site.">"
+     hint_id="siteTheme"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="website_theme">
-    <select name="website_theme">
+    <select id="website_theme" name="website_theme" class="custom-select form-control" aria-describedby="siteTheme">
     <mt:loop name="theme_loop">
       <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
     </mt:loop>
@@ -58,39 +50,50 @@ jQuery(function() {
   </mtapp:setting>
   <mtapp:setting
      id="name"
-     label="<__trans phrase="Website Name">"
-     hint="<__trans phrase="Name your website. The website name can be changed at any time.">"
+     label="<__trans phrase="Site Name">"
+     label_for="name"
+     hint="<__trans phrase="Name your site. The site name can be changed at any time.">"
+     hint_id="siteName"
+     required="1"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="website_name">
-    <input type="text" name="name" id="name" class="text required" value="<mt:var name="name" escape="html">" />
+    <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" aria-describedby="siteName" />
   </mtapp:setting>
   <mtapp:setting
      id="website_url"
-     label="<__trans phrase="Website URL">"
-     hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/">"
+     label="<__trans phrase="Site URL">"
+     label_for="site_url"
+     hint="<__trans phrase="Enter the URL of your site. Exclude the filename (i.e. index.html). Example: http://www.example.com/">"
+     required="1"
      show_hint="1"
+     hint_id="siteUrl"
      help_page="blog_settings_publishing"
      help_section="website_url">
-    <input type="text" name="site_url" id="site_url" class="text required" value="<mt:var name="site_url"  escape="html">" />
+    <input type="text" name="site_url" id="site_url" class="form-control text required" value="<mt:var name="site_url"  escape="html">" aria-describedby="siteName" />
   </mtapp:setting>
   <mtapp:setting
      id="website_path"
-     label="<__trans phrase="Website Root">"
+     label="<__trans phrase="Site Root">"
+     label_for="site_path"
      hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html">"
+     required="1"
      show_hint="1"
+     hint_id="siteRoot"
      help_page="blog_settings_publishing"
      help_section="website_root">
-    <input type="text" name="site_path" id="site_path" class="text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
+    <input type="text" name="site_path" id="site_path" class="form-control text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" aria-describedby="siteRoot" />
   </mtapp:setting>
   <mtapp:setting
      id="server_offset"
      label="<__trans phrase="Time Zone">"
+     label_for="server_offset"
      hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+     hint_id="timeZone"
      show_hint="1"
      help_page="blog_settings_general"
      help_section="blog_timezone">
-    <select name="server_offset" id="server_offset">
+    <select name="server_offset" id="server_offset" class="custom-select form-control" aria-describedby="timeZone">
       <option value=""><__trans phrase="Time zone not selected"></option>
       <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
       <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -127,10 +130,11 @@ jQuery(function() {
   <mtapp:setting
      id="blog_language"
      label="<__trans phrase="Language">"
+     label_for="blog_language"
      hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
-     show_hint="1"
-     show_warning="1">
-    <select name="blog_language" id="blog_language" class="se">
+     hint_id="blogLanguage"
+     show_hint="1">
+    <select name="blog_language" id="blog_language" class="custom-select form-control se" aria-describedby="blogLanguage">
     <mt:loop name="languages">
       <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>
@@ -140,17 +144,21 @@ jQuery(function() {
     <button
        type="submit"
        accesskey="s"
-       title="<__trans phrase="Create Website (s)">"
-       class="create action primary button">
-      <__trans phrase="Create Website">
+       title="<__trans phrase="Create Site (s)">"
+       class="create action primary button btn btn-primary">
+      <__trans phrase="Create Site">
     </button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include">
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
+    jQuery('#name').focus();
+
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -188,7 +196,7 @@ jQuery(function() {
         '#site_path': '<__trans phrase="Please enter a valid site path." escape="singlequotes">',
         '#site_path.required': '<__trans phrase="This field is required." escape="singlequotes">',
 <mt:if name="sitepath_limited">
-        "#site_path.limited_path": '<__trans phrase="Website root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+        "#site_path.limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
 </mt:if>
         '#server_offset': '<__trans phrase="You did not select a timezone." escape="singlequotes">'
     });
@@ -199,5 +207,7 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
+</mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

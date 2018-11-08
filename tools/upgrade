@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -44,26 +44,12 @@ sub help {
   --use_system_email [0 or 1]
 
   --preferred_language [ja|de|en-us|es|fr|nl]
-
-  --site_name <name>
-
-  --site_url <url>
-
-  --site_path <path>
-
-  --site_theme <theme>
-
-  --site_timezone <timezone in numeric>
-
-  --rebuild [0|1]
 HELP
 }
 
 my ( $quiet, $dryrun, $name, $sqlonly );
 my ($username,   $password,         $nickname,
     $email,      $use_system_email, $preferred_language,
-    $site_name,  $site_url,         $site_path,
-    $site_theme, $site_timezone,    $rebuild,
 );
 
 sub options {
@@ -79,12 +65,6 @@ sub options {
         "email=s"              => \$email,
         "use_system_email=n"   => \$use_system_email,
         "preferred_language=s" => \$preferred_language,
-        "site_name=s"          => \$site_name,
-        "site_url=s"           => \$site_url,
-        "site_path=s"          => \$site_path,
-        "site_theme=s"         => \$site_theme,
-        "site_timezone=n"      => \$site_timezone,
-        "rebuild=n"            => \$rebuild,
     );
 }
 
@@ -154,18 +134,6 @@ sub main {
         _error "--email is required for initial install"    unless $email;
         _error "--preferred_language is required for initial install"
             unless $preferred_language;
-        _error "--site_name is required for initial install"
-            unless $site_name;
-        _error "--site_url is required for initial install" unless $site_url;
-        _error "--site_path is required for initial install"
-            unless $site_path;
-        _error "--site_timezone is required for initial install"
-            unless defined $site_timezone;
-        _error "--site_theme is required for initial install"
-            unless $site_theme;
-        require MT::Theme;
-        my $theme = MT::Theme->load($site_theme);
-        _error "Theme '$site_theme' isn't installed" unless $theme;
 
         my $new_user = {
             user_name     => $username,
@@ -173,13 +141,6 @@ sub main {
             user_password => $password,
             user_email    => $email,
             user_lang     => $preferred_language,
-        };
-        my $new_website = {
-            website_name     => $site_name,
-            website_url      => $site_url,
-            website_path     => $site_path,
-            website_timezone => $site_timezone,
-            website_theme    => $site_theme,
         };
 
         my $updated = MT::Upgrade->do_upgrade(
@@ -189,7 +150,6 @@ sub main {
             SuperUser => $author_id,
             CLI       => 1,
             User      => $new_user,
-            Website   => $new_website,
         );
         exit( $updated ? 0 : 1 ) if $dryrun;
         if ($use_system_email) {
@@ -197,12 +157,6 @@ sub main {
             MT->config->save_config;
         }
         print "Installation complete.\n" unless $quiet;
-
-        if ($rebuild) {
-            my $blog = MT->model('blog')->load(1);
-            MT->rebuild( BlogID => $blog->id );
-            print "Rebuilding website complete.\n" unless $quiet;
-        }
 
         exit( $updated ? 0 : 1 );
     }

@@ -3,39 +3,44 @@
 
 <mt:setvarblock name="table_header">
   <tr>
-    <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-    <th class="col head display-name"><span class="col-label"><__trans phrase="Folder Name"></span></th>
-    <th class="col head path primary"><span class="col-label"><__trans phrase="Path"></span></th>
+    <th class="head cb">
+      <div class="custom-control custom-checkbox">
+        <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+        <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+      </div>
+    </th>
+    <th class="head display-name"><span class="col-label"><__trans phrase="Folder Name"></span></th>
+    <th class="head path primary"><span class="col-label"><__trans phrase="Path"></span></th>
   </tr>
 </mt:setvarblock>
 
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd</mt:if>">
-      <td class="col cb">
-        <input
-           type="checkbox"
-           name="default_folder_export_ids"
-           id="default_folder_<mt:var name="category_id">"
-           class="select folder-tree"
-           value="<mt:var name="category_id">"
-           <mt:if name="category_parent">folder_parent="<mt:var name="category_parent">"</mt:if>
-           <mt:if name="category_path_ids">folder_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
-           <mt:if name="checked">checked="checked"</mt:if>
-           />
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input
+             type="checkbox"
+             name="default_folder_export_ids"
+             id="default_folder_<mt:var name="category_id">"
+             class="custom-control-input select folder-tree"
+             value="<mt:var name="category_id">"
+             <mt:if name="category_parent">folder_parent="<mt:var name="category_parent">"</mt:if>
+             <mt:if name="category_path_ids">folder_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+             <mt:if name="checked">checked="checked"</mt:if>
+             />
+          <label class="custom-control-label" for="default_folder_<mt:var name="category_id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
       </td>
-      <td class="col display-name">
+      <td class="display-name">
         <div style="margin-left: <mt:var name="category_pixel_depth">px;">
           <mt:var name="category_label" escape="html">
         </div>
       </td>
-      <td class="col path">
+      <td class="path">
         <em><__trans phrase="<mt:if name="is_blog">Blog URL<mt:else>Site URL</mt:if>"></em>/<mt:var name="category_selector_label" escape="html">
       </td>
     </tr>

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::CMS::BanList;
 
 use strict;
+use warnings;
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
@@ -47,8 +48,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     require MT::Permission;
-    my $options_blog_ids = $load_options->{blog_ids} || undef;
-    my $iter = MT::Permission->load_iter(
+    my $options_blog_ids = $load_options->{blog_ids};
+    my $iter             = MT::Permission->load_iter(
         {   author_id => $user->id,
             (   $options_blog_ids
                 ? ( blog_id => $options_blog_ids )

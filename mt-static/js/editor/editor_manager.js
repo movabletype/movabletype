@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -73,8 +73,7 @@ $.extend(MT.EditorManager, {
     },
 
     insertContent: function(html, field) {
-        $('#' + field).data('mt-editor')
-            .insertContent(html);
+        app.editors[field].insertContent(html);
     }
 });
 
@@ -164,6 +163,9 @@ $.extend(MT.EditorManager.prototype, {
 
     clearDirty: function() {
         this.currentEditor.clearDirty();
+    },
+    reload: function() {
+        this.currentEditor.reload();
     }
 });
 

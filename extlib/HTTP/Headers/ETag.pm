@@ -1,13 +1,15 @@
 package HTTP::Headers::ETag;
 
 use strict;
-use vars qw($VERSION);
-$VERSION = "5.810";
+use warnings;
+
+our $VERSION = '6.14';
 
 require HTTP::Date;
 
 require HTTP::Headers;
-package HTTP::Headers;
+package
+    HTTP::Headers;
 
 sub _etags
 {
@@ -92,3 +94,30 @@ sub _split_etag_list
 }
 
 1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+HTTP::Headers::ETag
+
+=head1 VERSION
+
+version 6.14
+
+=head1 AUTHOR
+
+Gisle Aas <gisle@activestate.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 1994-2017 by Gisle Aas.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

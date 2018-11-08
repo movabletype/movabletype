@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Entry;
 
 use strict;
+use warnings;
 
 use MT::Tag;        # Holds MT::Taggable
 use MT::Summary;    # Holds MT::Summarizable
@@ -20,9 +21,15 @@ use MT::Memcached;
 use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
-use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
+use MT::Util qw( archive_file_for start_end_period extract_domain
     extract_domains weaken first_n_words remove_html encode_html trim );
 use MT::I18N qw( first_n_text const );
+
+use MT::EntryStatus qw(:all);
+
+use Exporter 'import';
+our @EXPORT_OK = qw( HOLD RELEASE FUTURE );
+our %EXPORT_TAGS = ( constants => [qw(HOLD RELEASE FUTURE)] );
 
 sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
 
@@ -185,19 +192,6 @@ __PACKAGE__->install_properties(
     }
 );
 
-sub HOLD ()     {1}
-sub RELEASE ()  {2}
-sub REVIEW ()   {3}
-sub FUTURE ()   {4}
-sub JUNK ()     {5}
-sub UNPUBLISH() {6}
-
-use Exporter;
-*import = \&Exporter::import;
-use vars qw( @EXPORT_OK %EXPORT_TAGS);
-@EXPORT_OK = qw( HOLD RELEASE FUTURE );
-%EXPORT_TAGS = ( constants => [qw(HOLD RELEASE FUTURE)] );
-
 sub class_label {
     MT->translate("Entry");
 }
@@ -224,6 +218,7 @@ sub list_props {
             base       => '__virtual.title',
             label      => 'Title',
             display    => 'force',
+            use_blank  => 1,
             order      => 200,
             sub_fields => [
                 {   class   => 'status',
@@ -273,26 +268,44 @@ sub list_props {
                     : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
                     :                                     '';
                 my $lc_status_class = lc $status_class;
-                require MT::Entry;
-                my $status_file
-                    = $status == MT::Entry::HOLD()      ? 'draft.gif'
-                    : $status == MT::Entry::RELEASE()   ? 'success.gif'
-                    : $status == MT::Entry::REVIEW()    ? 'warning.gif'
-                    : $status == MT::Entry::FUTURE()    ? 'future.gif'
-                    : $status == MT::Entry::JUNK()      ? 'warning.gif'
-                    : $status == MT::Entry::UNPUBLISH() ? 'unpublished.gif'
+
+                my $status_icon_id
+                    = $status == MT::Entry::HOLD()      ? 'ic_draft'
+                    : $status == MT::Entry::RELEASE()   ? 'ic_checkbox'
+                    : $status == MT::Entry::REVIEW()    ? 'ic_error'
+                    : $status == MT::Entry::FUTURE()    ? 'ic_clock'
+                    : $status == MT::Entry::JUNK()      ? 'ic_error'
+                    : $status == MT::Entry::UNPUBLISH() ? 'ic_stop'
                     :                                     '';
-                my $status_img
-                    = MT->static_path . 'images/status_icons/' . $status_file;
-                my $view_img
-                    = MT->static_path . 'images/status_icons/view.gif';
+                my $status_icon_color_class
+                    = $status == MT::Entry::HOLD()      ? ''
+                    : $status == MT::Entry::RELEASE()   ? ' mt-icon--success'
+                    : $status == MT::Entry::REVIEW()    ? ' mt-icon--warning'
+                    : $status == MT::Entry::FUTURE()    ? ' mt-icon--info'
+                    : $status == MT::Entry::JUNK()      ? ' mt-icon--warning'
+                    : $status == MT::Entry::UNPUBLISH() ? ' mt-icon--danger'
+                    :                                     '';
+
+                my $status_img = '';
+                if ($status_icon_id) {
+                    my $static_uri = MT->static_path;
+                    $status_img = qq{
+                        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                        </svg>
+                    };
+                }
+
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
-                my $view_link = $obj->status == MT::Entry::RELEASE()
+                my $static_uri = MT->static_path;
+                my $view_link  = $obj->status == MT::Entry::RELEASE()
                     ? qq{
                     <span class="view-link">
-                      <a href="$permalink" target="_blank">
-                        <img alt="$view_link_text" src="$view_img" />
+                      <a href="$permalink" class="d-inline-block" target="_blank">
+                        <svg title="$view_link_text" role="img" class="mt-icon mt-icon--sm">
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                        </svg>
                       </a>
                     </span>
                 }
@@ -300,7 +313,7 @@ sub list_props {
 
                 my $out = qq{
                     <span class="icon status $lc_status_class">
-                      <a href="$edit_url"><img alt="$status_class" src="$status_img" /></a>
+                      <a href="$edit_url" class="d-inline-block">$status_img</a>
                     </span>
                     <span class="title">
                       $title
@@ -360,27 +373,25 @@ sub list_props {
             args_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $id  = MT->app->param('filter_val');
-                my $cat = MT->model('category')->load($id)
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return { option => 'equal', value => $cat->id };
             },
             label_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('category')->load($id)
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('category')->load($val)
                     or return $prop->error(
                     MT->translate(
                         '[_1] ( id:[_2] ) does not exists.',
                         $prop->datasource->container_label,
-                        $id
+                        defined $val ? $val : ''
                     )
                     );
                 return if !$app->blog || $app->blog->id != $cat->blog_id;
@@ -395,10 +406,12 @@ sub list_props {
         category => {
             label            => 'Primary Category',
             filter_label     => 'Category',
+            use_blank        => 1,
             order            => 500,
             display          => 'default',
             base             => '__virtual.string',
             col_class        => 'string',
+            col              => 'label',
             view_filter      => [ 'website', 'blog', 'system' ],
             category_class   => 'category',
             zero_state_label => '-',
@@ -490,7 +503,8 @@ sub list_props {
             #     ];
             # },
             terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
                 my $blog = MT->app->blog;
                 my $blog_id
                     = $blog
@@ -502,37 +516,41 @@ sub list_props {
                     : 0;
                 my $app    = MT->instance;
                 my $option = $args->{option};
-                my $query  = $args->{string};
-                $query = { like => "%$query%" }
-                    if ( 'contains' eq $option
-                    || 'not_contains' eq $option
-                    || 'beginning' eq $option
-                    || 'end' eq $option );
-                if ( 'not_contains' eq $option ) {
+                if ( 'not_contains' eq $option || 'blank' eq $option ) {
+                    my $query = $args->{string};
+                    my $label_terms
+                        = { $prop->col => { like => "%$query%" } };
                     my @placements = MT->model('placement')->load(
                         ( $blog_id ? { blog_id => $blog_id } : undef ),
                         {   unique => 1,
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                {   label => $query,
-                                    id    => \'= placement_category_id',
-                                    (   $blog_id
-                                        ? ( blog_id => $blog_id )
-                                        : ()
-                                    ),
-                                },
+                                [     ( 'blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
+                                    {   id => \'= placement_category_id',
+                                        (   $blog_id ? ( blog_id => $blog_id )
+                                            : ()
+                                        ),
+                                    },
+                                ],
                                 { unique => 1, }
                                 ),
                         },
                     );
                     my @entry_ids = map { $_->entry_id } @placements;
+                    return unless @entry_ids;
                     my %hash;
                     @hash{@entry_ids} = ();
                     @entry_ids = keys %hash;
                     $db_terms->{id} = { not => \@entry_ids };
+                    $db_terms->{class}
+                        = $prop->category_class eq 'folder'
+                        ? 'page'
+                        : 'entry';
                 }
                 else {
+                    my $label_terms = $prop->super(@_);
                     push @{ $db_args->{joins} },
                         MT->model('placement')->join_on(
                         undef,
@@ -543,13 +561,14 @@ sub list_props {
                             join =>
                                 MT->model( $prop->category_class )->join_on(
                                 undef,
-                                {   label => $query,
-                                    id    => \'= placement_category_id',
-                                    (   $blog_id
-                                        ? ( blog_id => $blog_id )
-                                        : ()
-                                    ),
-                                },
+                                [     ( 'not_blank' eq $option ) ? ()
+                                    : ( $label_terms, '-and' ),
+                                    {   id => \'= placement_category_id',
+                                        (   $blog_id ? ( blog_id => $blog_id )
+                                            : ()
+                                        ),
+                                    },
+                                ],
                                 { unique => 1, }
                                 ),
                         },
@@ -586,62 +605,23 @@ sub list_props {
             label   => 'Unpublish Date',
             order   => 750,
         },
-        comment_count => {
-            auto         => 1,
-            display      => 'default',
-            label        => 'Comments',
-            filter_label => '__COMMENT_COUNT',
-            order        => 800,
-            html_link    => sub {
-                my $prop = shift;
-                my ( $obj, $app, $opts ) = @_;
-                return unless $app->can_do('access_to_comment_list');
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type      => 'comment',
-                        filter     => 'entry',
-                        filter_val => $obj->id,
-                        blog_id    => $opts->{blog_id} || 0,
-                    },
-                );
-            },
-        },
-        ping_count => {
-            auto         => 1,
-            display      => 'optional',
-            label        => 'Trackbacks',
-            filter_label => '__PING_COUNT',
-            order        => 900,
-            html_link    => sub {
-                my $prop = shift;
-                my ( $obj, $app, $opts ) = @_;
-                return unless $app->can_do('access_to_trackback_list');
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type      => 'ping',
-                        filter     => 'entry_id',
-                        filter_val => $obj->id,
-                        blog_id    => $opts->{blog_id} || 0,
-                    },
-                );
-            },
-        },
         text => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Body',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Body',
+            use_blank => 1,
         },
         text_more => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Extended',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Extended',
+            use_blank => 1,
         },
         excerpt => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Excerpt',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Excerpt',
+            use_blank => 1,
         },
         status => {
             label                 => 'Status',
@@ -685,68 +665,6 @@ sub list_props {
             display => 'none',
             auto    => 1,
         },
-        commented_on => {
-            base          => '__virtual.date',
-            label         => 'Date Commented',
-            comment_class => 'comment',
-            display       => 'none',
-            terms         => sub {
-                my $prop = shift;
-                my ( $args, $db_terms, $db_args ) = @_;
-                my $option = $args->{option};
-                my $query;
-                my $blog = MT->app ? MT->app->blog : undef;
-                require MT::Util;
-                my $now = MT::Util::epoch2ts( $blog, time() );
-                my $from   = $args->{from}   || undef;
-                my $to     = $args->{to}     || undef;
-                my $origin = $args->{origin} || undef;
-                $from =~ s/\D//g;
-                $to =~ s/\D//g;
-                $origin =~ s/\D//g;
-                $from .= '000000' if $from;
-                $to   .= '235959' if $to;
-
-                if ( 'range' eq $option ) {
-                    $query = [
-                        '-and',
-                        { op => '>', value => $from },
-                        { op => '<', value => $to },
-                    ];
-                }
-                elsif ( 'days' eq $option ) {
-                    my $days   = $args->{days};
-                    my $origin = MT::Util::epoch2ts( $blog,
-                        time - $days * 60 * 60 * 24 );
-                    $query = [
-                        '-and',
-                        { op => '>', value => $origin },
-                        { op => '<', value => $now },
-                    ];
-                }
-                elsif ( 'before' eq $option ) {
-                    $query = { op => '<', value => $origin . '000000' };
-                }
-                elsif ( 'after' eq $option ) {
-                    $query = { op => '>', value => $origin . '235959' };
-                }
-                elsif ( 'future' eq $option ) {
-                    $query = { op => '>', value => $now };
-                }
-                elsif ( 'past' eq $option ) {
-                    $query = { op => '<', value => $now };
-                }
-                $db_args->{joins} ||= [];
-                push @{ $db_args->{joins} },
-                    MT->model( $prop->comment_class )->join_on(
-                    undef,
-                    { entry_id => \'= entry_id', created_on => $query },
-                    { unique   => 1, },
-                    );
-                return;
-            },
-            sort => 0,
-        },
         author_id => {
             auto            => 1,
             filter_editable => 0,
@@ -755,11 +673,18 @@ sub list_props {
             label_via_param => sub {
                 my $prop = shift;
                 my ( $app, $val ) = @_;
-                my $author = MT->model('author')->load($val);
+                my $author = MT->model('author')->load( $val || 0 )
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        MT->translate("Author"),
+                        defined $val ? $val : ''
+                    )
+                    );
                 return MT->translate( 'Entries by [_1]', $author->nickname, );
             },
         },
-        tag          => { base => '__virtual.tag', },
+        tag          => { base => '__virtual.tag', use_blank => 1 },
         current_user => {
             base            => '__common.current_user',
             label           => 'My Entries',
@@ -785,6 +710,7 @@ sub list_props {
                             { not => [ map { $_->id } @all_authors ] }, };
                 }
                 else {
+                    my $datasource = $prop->datasource->datasource;
                     my $status
                         = $val eq 'enabled'
                         ? MT::Author::ACTIVE()
@@ -793,7 +719,7 @@ sub list_props {
                     push @{ $db_args->{joins} },
                         MT->model('author')->join_on(
                         undef,
-                        {   id     => \'= entry_author_id',
+                        {   id     => \"= ${datasource}_author_id",
                             status => $status,
                         },
                         );
@@ -851,15 +777,6 @@ sub system_filters {
             },
             order => 500,
         },
-        commented_in_last_7_days => {
-            label => 'Entries with Comments Within the Last 7 Days',
-            items => [
-                {   type => 'commented_on',
-                    args => { option => 'days', days => 7 }
-                }
-            ],
-            order => 1100,
-        },
     };
 }
 
@@ -890,29 +807,6 @@ sub status {
             unless exists( $entry->{__orig_value}->{status} );
     }
     return $entry->column( 'status', @_ );
-}
-
-sub status_text {
-    my $s = $_[0];
-          $s == HOLD      ? "Draft"
-        : $s == RELEASE   ? "Publish"
-        : $s == REVIEW    ? "Review"
-        : $s == FUTURE    ? "Future"
-        : $s == JUNK      ? "Spam"
-        : $s == UNPUBLISH ? "Unpublish"
-        :                   '';
-}
-
-sub status_int {
-    my $s = lc $_[0];    ## Lower-case it so that it's case-insensitive
-          $s eq 'draft'     ? HOLD
-        : $s eq 'publish'   ? RELEASE
-        : $s eq 'review'    ? REVIEW
-        : $s eq 'future'    ? FUTURE
-        : $s eq 'junk'      ? JUNK
-        : $s eq 'spam'      ? JUNK
-        : $s eq 'unpublish' ? UNPUBLISH
-        :                     undef;
 }
 
 sub authored_on_obj {
@@ -980,25 +874,10 @@ sub _nextprev {
         direction => $direction,
         terms => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args  => $args,
-        by => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
+        by    => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
     );
     weaken( $obj->{$label} = $o ) if $o;
     return $o;
-}
-
-sub trackback {
-    my $entry = shift;
-    $entry->cache_property(
-        'trackback',
-        sub {
-            require MT::Trackback;
-            if ( $entry->id ) {
-                return
-                    scalar MT::Trackback->load( { entry_id => $entry->id } );
-            }
-        },
-        @_
-    );
 }
 
 sub author {
@@ -1126,111 +1005,10 @@ sub comment_latest {
     );
 }
 
-MT::Comment->add_callback(
-    'post_save',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $comment ) = @_;
-        my $entry = MT::Entry->load( $comment->entry_id )
-            or return;
-        $entry->clear_cache('comment_latest');
-        my $count = MT::Comment->count(
-            {   entry_id => $comment->entry_id,
-                visible  => 1,
-            }
-        );
-        return unless ( $entry->comment_count != $count );
-        $entry->comment_count($count);
-        $entry->save;
-    },
-);
-
-MT::Comment->add_callback(
-    'post_remove',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $comment ) = @_;
-        my $entry = MT::Entry->load( $comment->entry_id )
-            or return;
-        $entry->clear_cache('comment_latest');
-        if ( $comment->visible ) {
-            my $count
-                = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
-            $entry->comment_count($count);
-            $entry->save;
-        }
-    },
-);
-
-sub pings {
-    my $entry = shift;
-    my ( $terms, $args ) = @_;
-    my $tb = $entry->trackback;
-    return undef unless $tb;
-    if ( $terms || $args ) {
-        $terms ||= {};
-        $terms->{tb_id} = $tb->id;
-        return [ MT::TBPing->load( $terms, $args ) ];
-    }
-    else {
-        $entry->cache_property(
-            'pings',
-            sub {
-                [ MT::TBPing->load( { tb_id => $tb->id } ) ];
-            }
-        );
-    }
-}
-
-MT::TBPing->add_callback(
-    'post_save',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $ping ) = @_;
-        require MT::Trackback;
-        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
-            if ( $tb->entry_id ) {
-                my $entry = MT::Entry->load( $tb->entry_id )
-                    or return;
-                my $count = MT::TBPing->count(
-                    {   tb_id   => $tb->id,
-                        visible => 1,
-                    }
-                );
-                $entry->ping_count($count);
-                $entry->save;
-            }
-        }
-    }
-);
-
-MT::TBPing->add_callback(
-    'post_remove',
-    0,
-    MT->component('core'),
-    sub {
-        my ( $cb, $ping ) = @_;
-        require MT::Trackback;
-        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
-            if ( $tb->entry_id && $ping->visible ) {
-                my $entry = MT::Entry->load( $tb->entry_id )
-                    or return;
-                my $count
-                    = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
-                $entry->ping_count($count);
-                $entry->save;
-            }
-        }
-    }
-);
-
 sub archive_file {
     my $entry = shift;
     my ($at)  = @_;
-    my $blog  = $entry->blog() || return;
+    my $blog  = $entry->blog() || return '';
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -1246,21 +1024,23 @@ sub archive_file {
             last;
         }
     }
-    archive_file_for( $entry, $blog, $at );
+    my $file = archive_file_for( $entry, $blog, $at ) or return;
+    $file = '' unless defined $file;
+    $file;
 }
 
 sub archive_url {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
+    my $file  = $entry->archive_file(@_) or return;
     my $url   = $blog->archive_url || "";
-    $url .= '/' unless $url =~ m!/$!;
-    $url . $entry->archive_file(@_);
+    MT::Util::caturl( $url, $file );
 }
 
 sub permalink {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
-    my $url   = $entry->archive_url( $_[0] );
+    my $url   = $entry->archive_url( $_[0] ) or return;
     my $effective_archive_type
         = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
     $url
@@ -1368,71 +1148,6 @@ sub make_atom_id {
     qq{tag:$host,$year:$path/$blog_id.$entry_id};
 }
 
-sub discover_tb_from_entry {
-    my $entry = shift;
-    ## If we need to auto-discover TrackBack ping URLs, do that here.
-    my $cfg     = MT->config;
-    my $blog    = $entry->blog();
-    my $send_tb = $cfg->OutboundTrackbackLimit;
-    if (   $send_tb ne 'off'
-        && $blog
-        && (   $blog->autodiscover_links
-            || $blog->internal_autodiscovery )
-        )
-    {
-        my @tb_domains;
-        if ( $send_tb eq 'selected' ) {
-            @tb_domains = $cfg->OutboundTrackbackDomains;
-        }
-        elsif ( $send_tb eq 'local' ) {
-            my $iter = MT::Blog->load_iter( undef,
-                { fetchonly => ['site_url'], no_triggers => 1 } );
-            while ( my $b = $iter->() ) {
-                next if $b->id == $blog->id;
-                push @tb_domains, extract_domain( $b->site_url );
-            }
-        }
-        my $tb_domains;
-        if (@tb_domains) {
-            $tb_domains = '';
-            my %seen;
-            foreach (@tb_domains) {
-                next unless $_;
-                $_ = lc($_);
-                next if $seen{$_};
-                $tb_domains .= '|' if $tb_domains ne '';
-                $tb_domains .= quotemeta($_);
-                $seen{$_} = 1;
-            }
-            $tb_domains = '(' . $tb_domains . ')' if $tb_domains;
-        }
-        my $archive_domain;
-        ($archive_domain) = extract_domains( $blog->archive_url );
-        my %to_ping = map { $_ => 1 } @{ $entry->to_ping_url_list };
-        my %pinged  = map { $_ => 1 }
-            @{ $entry->pinged_url_list( IncludeFailures => 1 ) };
-        my $body = $entry->text . ( $entry->text_more || "" );
-        $body = MT->apply_text_filters( $body, $entry->text_filters );
-        while ( $body =~ m!<a\s.*?\bhref\s*=\s*(["']?)([^'">]+)\1!gsi ) {
-            my $url = $2;
-            my $url_domain;
-            ($url_domain) = extract_domains($url);
-            if ( $url_domain =~ m/\Q$archive_domain\E$/i ) {
-                next if !$blog->internal_autodiscovery;
-            }
-            else {
-                next if !$blog->autodiscover_links;
-            }
-            next if $tb_domains && lc($url_domain) !~ m/$tb_domains$/;
-            if ( my $item = discover_tb($url) ) {
-                $to_ping{ $item->{ping_url} } = 1
-                    unless $pinged{ $item->{ping_url} };
-            }
-        }
-        $entry->to_ping_urls( join "\n", keys %to_ping );
-    }
-}
-
 # Deprecated (case #112321).
 sub sync_assets {
     my $entry = shift;
@@ -1511,33 +1226,9 @@ sub save {
 
     ## If pings are allowed on this entry, create or update
     ## the corresponding TrackBack object for this entry.
-    require MT::Trackback;
-    if ( $entry->allow_pings ) {
-        my $tb;
-        unless ( $tb = $entry->trackback ) {
-            $tb = MT::Trackback->new;
-            $tb->blog_id( $entry->blog_id );
-            $tb->entry_id( $entry->id );
-            $tb->category_id(0);    ## category_id can't be NULL
-        }
-        $tb->title( $entry->title );
-        $tb->description( $entry->get_excerpt );
-        $tb->url( $entry->permalink );
-        $tb->is_disabled(0);
-        $tb->save
-            or return $entry->error( $tb->errstr );
-        $entry->trackback($tb);
-    }
-    else {
-        ## If there is a TrackBack item for this entry, but
-        ## pings are now disabled, make sure that we mark the
-        ## object as disabled.
-        my $tb = $entry->trackback;
-        if ( $tb && !$tb->is_disabled ) {
-            $tb->is_disabled(1);
-            $tb->save
-                or return $entry->error( $tb->errstr );
-        }
+    if ( MT->has_plugin('Trackback') ) {
+        require Trackback::Entry;
+        Trackback::Entry::_save_trackback($entry);
     }
 
     $entry->clear_cache() if $is_new;
@@ -1629,7 +1320,7 @@ sub gather_changed_cols {
     MT::Revisable::gather_changed_cols( $obj, @_ );
     my $changed_cols = $obj->{changed_revisioned_cols} || [];
 
-    # When a entry is saved at first and 'unpublished_on' is undef,
+    # When an entry is saved at first and 'unpublished_on' is undef,
     # 'unpublished_on' is added to 'changed_revisioned_cols'.
     unless ( $obj->id ) {
         unless ( $obj->unpublished_on ) {
@@ -2079,6 +1770,36 @@ sub set_values {
         $obj->unpublished_on( $values->{'unpublished_on'}, $args );
     }
 }
+
+# Register entry post-save callback for rebuild triggers
+MT->add_callback(
+    'cms_post_save.entry', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'api_post_save.entry', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'cms_post_bulk_save.entries',
+    10,
+    MT->component('core'),
+    sub {
+        MT->model('rebuild_trigger')->runner( 'post_entries_bulk_save', @_ );
+    }
+);
+MT->add_callback(
+    'scheduled_post_published', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_pub', @_ ); }
+);
+MT->add_callback(
+    'unpublish_past_entries', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_unpub', @_ ); }
+);
 
 #trans('Draft')
 #trans('Review')

@@ -1,4 +1,4 @@
-# $Id: URI.pm,v 1.1 2001-11-11 18:41:51 matt Exp $
+# $Id$
 
 package XML::SAX::PurePerl::Reader::URI;
 

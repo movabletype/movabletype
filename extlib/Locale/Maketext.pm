@@ -1,4 +1,3 @@
-
 package Locale::Maketext;
 use strict;
 use vars qw( @ISA $VERSION $MATCH_SUPERS $USING_LANGUAGE_TAGS
@@ -27,7 +26,7 @@ BEGIN {
 }
 
 
-$VERSION = '1.23';
+$VERSION = '1.28';
 @ISA = ();
 
 $MATCH_SUPERS = 1;
@@ -138,6 +137,56 @@ sub fail_with { # an actual attribute method!
 
 #--------------------------------------------------------------------------
 
+sub blacklist {
+    my ( $handle, @methods ) = @_;
+
+    unless ( defined $handle->{'blacklist'} ) {
+        no strict 'refs';
+
+        # Don't let people call methods they're not supposed to from maketext.
+        # Explicitly exclude all methods in this package that start with an
+        # underscore on principle.
+        $handle->{'blacklist'} = {
+            map { $_ => 1 } (
+                qw/
+                  blacklist
+                  encoding
+                  fail_with
+                  failure_handler_auto
+                  fallback_language_classes
+                  fallback_languages
+                  get_handle
+                  init
+                  language_tag
+                  maketext
+                  new
+                  whitelist
+                  /, grep { /^_/ } keys %{ __PACKAGE__ . "::" }
+            ),
+        };
+    }
+
+    if ( scalar @methods ) {
+        $handle->{'blacklist'} = { %{ $handle->{'blacklist'} }, map { $_ => 1 } @methods };
+    }
+
+    delete $handle->{'_external_lex_cache'};
+    return;
+}
+
+sub whitelist {
+    my ( $handle, @methods ) = @_;
+    if ( scalar @methods ) {
+        $handle->{'whitelist'} = {} unless defined $handle->{'whitelist'};
+        $handle->{'whitelist'} = { %{ $handle->{'whitelist'} }, map { $_ => 1 } @methods };
+    }
+
+    delete $handle->{'_external_lex_cache'};
+    return;
+}
+
+#--------------------------------------------------------------------------
+
 sub failure_handler_auto {
     # Meant to be used like:
     #  $handle->fail_with('failure_handler_auto')
@@ -179,6 +228,7 @@ sub new {
     # Nothing fancy!
     my $class = ref($_[0]) || $_[0];
     my $handle = bless {}, $class;
+    $handle->blacklist;
     $handle->init;
     return $handle;
 }
@@ -194,7 +244,7 @@ sub maketext {
     my($handle, $phrase) = splice(@_,0,2);
     Carp::confess('No handle/phrase') unless (defined($handle) && defined($phrase));
 
-    # backup $@ in case it it's still being used in the calling code.
+    # backup $@ in case it's still being used in the calling code.
     # If no failures, we'll re-set it back to what it was later.
     my $at = $@;
 
@@ -344,7 +394,7 @@ sub _langtag_munging {
     my($base_class, @languages) = @_;
 
     # We have all these DEBUG statements because otherwise it's hard as hell
-    # to diagnose ifwhen something goes wrong.
+    # to diagnose if/when something goes wrong.
 
     DEBUG and warn 'Lgs1: ', map("<$_>", @languages), "\n";
 
@@ -449,6 +499,8 @@ sub _try_use {   # Basically a wrapper around "require Modulename"
 
     local $SIG{'__DIE__'};
     local $@;
+    local @INC = @INC;
+    pop @INC if $INC[-1] eq '.';
     eval "require $module"; # used to be "use $module", but no point in that.
 
     if($@) {
@@ -508,7 +560,7 @@ sub _compile {
     # on strings that don't need compiling.
     return \"$string_to_compile" if($string_to_compile !~ m/[\[~\]]/ms); # return a string ref if chars [~] are not in the string
 
-    my $target = ref($_[0]) || $_[0];
+    my $handle = $_[0];
 
     my(@code);
     my(@c) = (''); # "chunks" -- scratch.
@@ -540,10 +592,10 @@ sub _compile {
                 #  preceding literal.
                 if($in_group) {
                     if($1 eq '') {
-                        $target->_die_pointing($string_to_compile, 'Unterminated bracket group');
+                        $handle->_die_pointing($string_to_compile, 'Unterminated bracket group');
                     }
                     else {
-                        $target->_die_pointing($string_to_compile, 'You can\'t nest bracket groups');
+                        $handle->_die_pointing($string_to_compile, 'You can\'t nest bracket groups');
                     }
                 }
                 else {
@@ -570,6 +622,7 @@ sub _compile {
                             $c[-1] = ''; # reuse this slot
                         }
                         else {
+                            $c[-1] =~ s/\\\\/\\/g;
                             push @code, ' $c[' . $#c . "],\n";
                             push @c, ''; # new chunk
                         }
@@ -626,13 +679,15 @@ sub _compile {
                         push @code, ' (';
                     }
                     elsif($m =~ /^\w+$/s
-                        # exclude anything fancy, especially fully-qualified module names
+                        && !$handle->{'blacklist'}{$m}
+                        && ( !defined $handle->{'whitelist'} || $handle->{'whitelist'}{$m} )
+                        # exclude anything fancy and restrict to the whitelist/blacklist.
                     ) {
                         push @code, ' $_[0]->' . $m . '(';
                     }
                     else {
                         # TODO: implement something?  or just too icky to consider?
-                        $target->_die_pointing(
+                        $handle->_die_pointing(
                             $string_to_compile,
                             "Can't use \"$m\" as a method name in bracket group",
                             2 + length($c[-1])
@@ -674,7 +729,7 @@ sub _compile {
                     push @c, '';
                 }
                 else {
-                    $target->_die_pointing($string_to_compile, q{Unbalanced ']'});
+                    $handle->_die_pointing($string_to_compile, q{Unbalanced ']'});
                 }
 
             }
@@ -759,8 +814,9 @@ sub _compile {
 
 sub _die_pointing {
     # This is used by _compile to throw a fatal error
-    my $target = shift; # class name
-    # ...leaving $_[0] the error-causing text, and $_[1] the error message
+    my $target = shift;
+    $target = ref($target) || $target; # class name
+                                       # ...leaving $_[0] the error-causing text, and $_[1] the error message
 
     my $i = index($_[0], "\n");
 

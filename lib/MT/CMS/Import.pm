@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::CMS::Import;
 
 use strict;
+use warnings;
 
 use MT::I18N qw( const );
 
@@ -15,7 +16,7 @@ sub start_import {
 
     my $perms = $app->permissions;
     return $app->permission_denied()
-        unless $app->can_do('open_start_import_screen');
+        unless $perms && $app->can_do('open_start_import_screen');
 
     my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
@@ -25,7 +26,8 @@ sub start_import {
 
     # FIXME: This should build a category hierarchy!
     my $cat_class = $app->model('category');
-    my $iter = $cat_class->load_iter( { blog_id => $blog_id } );
+    my $iter      = $cat_class->load_iter(
+        { blog_id => $blog_id, category_set_id => 0 } );
     my @data;
     while ( my $cat = $iter->() ) {
         push @data,
@@ -38,7 +40,7 @@ sub start_import {
     $param{category_loop} = \@data;
     $param{nav_import}    = 1;
 
-    #$param{can_edit_authors} = $app->permissions->can_administer_blog;
+    #$param{can_edit_authors} = $app->permissions->can_administer_site;
     $param{encoding_names} = const('ENCODING_NAMES');
     require MT::Auth;
     $param{password_needed} = MT::Auth->password_exists;
@@ -85,27 +87,26 @@ sub start_import {
         $param{blog_id} = $blog_id;
         my $blog = $app->model('blog')->load($blog_id)
             or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+            $app->translate( 'Cannot load site #[_1].', $blog_id ) );
         $param{text_filters}
             = $app->load_text_filters( $blog->convert_paras, 'entry' );
     }
 
-    $app->add_breadcrumb( $app->translate('Import/Export') );
+    $app->add_breadcrumb( $app->translate('Import Site Entries') );
     $app->load_tmpl( 'import.tmpl', \%param );
 }
 
 sub do_import {
     my $app = shift;
 
-    my $q = $app->param;
     require MT::Blog;
-    my $blog_id = $q->param('blog_id')
+    my $blog_id = $app->param('blog_id')
         or return $app->return_to_dashboard( redirect => 1 );
 
     my $blog = MT::Blog->load($blog_id)
         or return $app->error(
         $app->translate(
-            "Loading blog '[_1]' failed: [_2]", $blog_id,
+            "Loading site '[_1]' failed: [_2]", $blog_id,
             MT::Blog->errstr
         )
         );
@@ -122,7 +123,7 @@ sub do_import {
     return $app->permission_denied()
         unless $app->user->permissions($blog_id)->can_do('import_blog');
 
-    my $import_as_me = $q->param('import_as_me');
+    my $import_as_me = $app->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
     my $author    = $app->user;
@@ -137,20 +138,31 @@ sub do_import {
             $app->translate('You do not have permission to create users') );
     }
 
-    my ($pass);
-    if ( !$import_as_me ) {
-        $pass = $q->param('password')
-            or return $app->error(
+    my $password       = $app->param('password');
+    my $default_cat_id = $app->param('default_cat_id');
+    my $convert_breaks = $app->param('convert_breaks');
+
+    if ( !$import_as_me and !$password and MT::Auth->password_exists ) {
+        return $app->error(
             $app->translate(
-                'You need to provide a password if you are going to create new users for each user listed in your blog.'
+                'You need to provide a password if you are going to create new users for each user listed in your site.'
             )
-            ) if ( MT::Auth->password_exists );
+        );
     }
 
     $app->validate_magic() or return;
 
+    $app->add_breadcrumb(
+        $app->translate('Import Site Entries'),
+        $app->uri(
+            mode => 'start_import',
+            args => { blog_id => $blog_id },
+        ),
+    );
+    $app->add_breadcrumb( $app->translate('Import') );
+
     my ($fh) = $app->upload_info('file');
-    my $encoding = $q->param('encoding');
+    my $encoding = $app->param('encoding');
     my $stream = $fh ? $fh : $app->config('ImportPath');
 
     $app->{no_print_body} = 1;
@@ -172,7 +184,7 @@ sub do_import {
     require MT::Comment;
     require MT::TBPing;
 
-    my $import_type = $q->param('import_type');
+    my $import_type = $app->param('import_type') || '';
     require MT::Import;
     my $imp      = MT::Import->new;
     my $importer = $imp->importer($import_type);
@@ -181,7 +193,8 @@ sub do_import {
         $app->translate( 'Importer type [_1] was not found.', $import_type ) )
         unless $importer;
 
-    my %options = map { $_ => $q->param($_); } @{ $importer->{options} }
+    my %options;
+    %options = map { $_ => scalar $app->param($_); } @{ $importer->{options} }
         if $importer->{options};
     my $import_result = $imp->import_contents(
         Key      => $import_type,
@@ -192,9 +205,9 @@ sub do_import {
         ($import_as_me)
         ? ( ImportAs => $author )
         : ( ParentAuthor => $author ),
-        NewAuthorPassword => ( $q->param('password')       || undef ),
-        DefaultCategoryID => ( $q->param('default_cat_id') || undef ),
-        ConvertBreaks     => ( $q->param('convert_breaks') || undef ),
+        NewAuthorPassword => $password,
+        DefaultCategoryID => $default_cat_id,
+        ConvertBreaks     => $convert_breaks,
         (%options) ? (%options) : (),
     );
 

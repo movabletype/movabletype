@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType;
 
 use strict;
+use warnings;
 use MT::WeblogPublisher;
 
 sub new {
@@ -53,6 +54,10 @@ sub archive_group_entries {
     shift->_getset_coderef( 'archive_group_entries', @_ );
 }
 
+sub archive_group_contents {
+    shift->_getset_coderef( 'archive_group_contents', @_ );
+}
+
 sub archive_file {
     shift->_getset_coderef( 'archive_file', @_ );
 }
@@ -65,10 +70,22 @@ sub archive_label {
     shift->_getset_coderef( 'archive_label', @_ );
 }
 
+sub archive_short_label {
+    shift->_getset_coderef( 'archive_short_label', @_ );
+}
+
 sub group_based {
     my $obj = shift;
     if ( ref($obj) eq __PACKAGE__ ) {
         return $obj->_getset('archive_group_entries') ? 1 : 0;
+    }
+    return 0;
+}
+
+sub contenttype_group_based {
+    my $obj = shift;
+    if ( ref($obj) eq __PACKAGE__ ) {
+        return $obj->_getset('archive_group_contents') ? 1 : 0;
     }
     return 0;
 }
@@ -121,6 +138,38 @@ sub author_based {
     return $obj->_getset( 'author_based', @_ );
 }
 
+sub contenttype_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentType');
+    }
+    return $obj->_getset( 'contenttype_based', @_ );
+}
+
+sub contenttype_category_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeCategory');
+    }
+    return $obj->_getset( 'contenttype_category_based', @_ );
+}
+
+sub contenttype_author_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeAuthor');
+    }
+    return $obj->_getset( 'contenttype_author_based', @_ );
+}
+
+sub contenttype_date_based {
+    my $obj = shift;
+    if ( ref $obj ne __PACKAGE__ ) {
+        return $obj->isa('MT::ArchiveType::ContentTypeDate');
+    }
+    return $obj->_getset( 'contenttype_date_based', @_ );
+}
+
 sub archive_entries_count {
     my $self = shift;
 
@@ -159,6 +208,89 @@ sub archive_entries_count {
     return $count;
 }
 
+sub archive_contents_count {
+    my $self = shift;
+
+    return $self->_getset_coderef( 'archive_contents_count', @_ )
+        if ref($self) eq __PACKAGE__;
+
+    my ($params)     = @_;
+    my $blog         = $params->{Blog};
+    my $at           = $params->{ArchiveType};
+    my $ts           = $params->{Timestamp};
+    my $cat          = $params->{Category};
+    my $auth         = $params->{Author};
+    my $map          = $params->{TemplateMap};
+    my $content_data = $params->{ContentData};
+
+    my ( $start, $end );
+    if ($ts) {
+        my $archiver = MT->publisher->archiver($at);
+        ( $start, $end ) = $archiver->date_range($ts) if $archiver;
+    }
+
+    my $cat_field_id
+        = ( $at eq 'ContentType' || $self->category_based )
+        && defined $map
+        && $map ? $map->cat_field_id : '';
+    my $dt_field_id
+        = ( $at eq 'ContentType' || $self->date_based )
+        && defined $map
+        && $map ? $map->dt_field_id : '';
+
+    require MT::ContentStatus;
+    my $count = MT->model('content_data')->count(
+        {   blog_id => $blog->id,
+            status  => MT::ContentStatus::RELEASE(),
+            (   $content_data
+                ? ( content_type_id => $content_data->content_type_id )
+                : ()
+            ),
+            (   !$dt_field_id && $ts ? ( authored_on => [ $start, $end ] )
+                : ()
+            ),
+            ( $auth ? ( author_id => $auth->id ) : () ),
+        },
+        {   (   !$dt_field_id && $ts ? ( range_incl => { authored_on => 1 } )
+                : ()
+            ),
+            joins => [
+                (   $cat_field_id
+                    ? ( MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            {   content_field_id => $cat_field_id,
+                                value_integer    => $cat->id
+                            },
+                            { alias => 'dt_cf_idx' }
+                        )
+                        )
+                    : ()
+                ),
+                (   $dt_field_id && $ts
+                    ? ( MT::ContentFieldIndex->join_on(
+                            'content_data_id',
+                            [   { content_field_id => $dt_field_id },
+                                '-and',
+                                [   {   value_datetime =>
+                                            { op => '>=', value => $start }
+                                    },
+                                    '-and',
+                                    {   value_datetime =>
+                                            { op => '<=', value => $end }
+                                    }
+                                ],
+                            ],
+                            { alias => 'cat_cf_idx' }
+                        )
+                        )
+                    : ()
+                ),
+            ]
+        }
+    );
+    return $count;
+}
+
 sub does_publish_file {
     return 1;
 }
@@ -174,6 +306,18 @@ sub next_archive_entry {
 
 sub previous_archive_entry {
     shift->_getset_coderef( 'previous_archive_entry', @_ );
+}
+
+sub next_archive_content_data {
+    shift->_getset_coderef( 'next_archive_content_data', @_ );
+}
+
+sub previous_archive_content_data {
+    shift->_getset_coderef( 'previous_archive_content_data', @_ );
+}
+
+sub get_content {
+    shift->_getset_coderef( 'get_content', @_ );
 }
 
 1;

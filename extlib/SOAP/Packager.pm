@@ -4,8 +4,6 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Packager.pm 386 2011-08-18 19:48:31Z kutterma $
-#
 # ======================================================================
 
 package SOAP::Packager;
@@ -13,7 +11,7 @@ package SOAP::Packager;
 use strict;
 use vars;
 
-our $VERSION = 0.714;
+our $VERSION = 1.17;
 our $SUPPORTED_TYPES = { };
 
 sub BEGIN {
@@ -115,6 +113,7 @@ sub initialize_parser {
   $self->{'_parser'}->output_to_core('ALL');
   $self->{'_parser'}->tmp_to_core(1);
   $self->{'_parser'}->ignore_errors(1);
+  $self->{'_parser'}->extract_nested_messages(0);
 }
 
 sub generate_random_string {
@@ -482,14 +481,14 @@ SOAP::Lite client.
     Path        => "attachment.txt",
     Filename    => "attachment.txt",
     Disposition => "attachment";
-  $NS = "urn:Majordojo:TemperatureService";
-  $HOST = "http://localhost/cgi-bin/soaplite.cgi";
+  my $NS = "urn:Majordojo:TemperatureService";
+  my $HOST = "http://localhost/cgi-bin/soaplite.cgi";
   my $client = SOAP::Lite
     ->packager(SOAP::Packager::MIME->new)
     ->parts([ $ent ])
     ->uri($NS)
     ->proxy($HOST);
-  $response = $client->c2f(SOAP::Data->name("temperature" => '100'));
+  my $response = $client->c2f(SOAP::Data->name("temperature" => '100'));
   print $response->valueof('//c2fResponse/foo');
 
 =head3 SERVER SIDE EXAMPLE

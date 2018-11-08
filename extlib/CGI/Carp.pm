@@ -1,4 +1,10 @@
 package CGI::Carp;
+use if $] >= 5.019, 'deprecate';
+
+my $appease_cpants_kwalitee = q/
+use strict;
+use warnings;
+#/;
 
 =head1 NAME
 
@@ -33,9 +39,9 @@ with
 
     use CGI::Carp
 
-And the standard warn(), die (), croak(), confess() and carp() calls
-will automagically be replaced with functions that write out nicely
-time-stamped messages to the HTTP server error log.
+The standard warn(), die (), croak(), confess() and carp() calls will
+be replaced with functions that write time-stamped messages to the
+HTTP server error log.
 
 For example:
 
@@ -57,10 +63,10 @@ saying
 
    use CGI::Carp qw(carpout);
 
-The carpout() function requires one argument, which should be a
-reference to an open filehandle for writing errors.  It should be
-called in a C<BEGIN> block at the top of the CGI application so that
-compiler errors will be caught.  Example:
+The carpout() function requires one argument, a reference to an open
+filehandle for writing errors.  It should be called in a C<BEGIN>
+block at the top of the CGI application so that compiler errors will
+be caught.  Example:
 
    BEGIN {
      use CGI::Carp qw(carpout);
@@ -69,14 +75,15 @@ compiler errors will be caught.  Example:
      carpout(LOG);
    }
 
-carpout() does not handle file locking on the log for you at this point.
-Also, note that carpout() does not work with in-memory file handles, although
-a patch would be welcome to address that.
+carpout() does not handle file locking on the log for you at this
+point.  Also, note that carpout() does not work with in-memory file
+handles, although a patch would be welcome to address that.
 
-The real STDERR is not closed -- it is moved to CGI::Carp::SAVEERR.  Some
-servers, when dealing with CGI scripts, close their connection to the
-browser when the script closes STDOUT and STDERR.  CGI::Carp::SAVEERR is there to
-prevent this from happening prematurely.
+The real STDERR is not closed -- it is moved to CGI::Carp::SAVEERR.
+Some servers, when dealing with CGI scripts, close their connection to
+the browser when the script closes STDOUT and STDERR.
+CGI::Carp::SAVEERR is there to prevent this from happening
+prematurely.
 
 You can pass filehandles to carpout() in a variety of ways.  The "correct"
 way according to Tom Christiansen is to pass a reference to a filehandle
@@ -104,17 +111,17 @@ CGI::Carp methods is called to prevent the performance hit.
 
 =head1 MAKING PERL ERRORS APPEAR IN THE BROWSER WINDOW
 
-If you want to send fatal (die, confess) errors to the browser, ask to
-import the special "fatalsToBrowser" subroutine:
+If you want to send fatal (die, confess) errors to the browser, import
+the special "fatalsToBrowser" subroutine:
 
     use CGI::Carp qw(fatalsToBrowser);
     die "Bad error here";
 
-Fatal errors will now be echoed to the browser as well as to the log.  CGI::Carp
-arranges to send a minimal HTTP header to the browser so that even errors that
-occur in the early compile phase will be seen.
-Nonfatal errors will still be directed to the log file only (unless redirected
-with carpout).
+Fatal errors will now be echoed to the browser as well as to the log.
+CGI::Carp arranges to send a minimal HTTP header to the browser so
+that even errors that occur in the early compile phase will be seen.
+Nonfatal errors will still be directed to the log file only (unless
+redirected with carpout).
 
 Note that fatalsToBrowser may B<not> work well with mod_perl version 2.0
 and higher.
@@ -183,20 +190,20 @@ attempting to set SIG{__DIE__} yourself, you may interfere with
 this module's functionality, or this module may interfere with 
 your module's functionality.
 
-=head2 SUPPRESSING PERL ERRORS APPEARING IN THE BROWSER WINDOW
+=head1 SUPPRESSING PERL ERRORS APPEARING IN THE BROWSER WINDOW
 
 A problem sometimes encountered when using fatalsToBrowser is
 when a C<die()> is done inside an C<eval> body or expression.
 Even though the
 fatalsToBrower support takes precautions to avoid this,
 you still may get the error message printed to STDOUT.
-This may have some undesireable effects when the purpose of doing the
+This may have some undesirable effects when the purpose of doing the
 eval is to determine which of several algorithms is to be used.
 
-By setting C<$CGI::Carp::TO_BROWSER> to 0 you can suppress printing the C<die> messages
-but without all of the complexity of using C<set_die_handler>.
-You can localize this effect to inside C<eval> bodies if this is desireable:
-For example:
+By setting C<$CGI::Carp::TO_BROWSER> to 0 you can suppress printing
+the C<die> messages but without all of the complexity of using
+C<set_die_handler>.  You can localize this effect to inside C<eval>
+bodies if this is desirable: For example:
 
  eval {
    local $CGI::Carp::TO_BROWSER = 0;
@@ -207,12 +214,12 @@ For example:
 
 =head1 MAKING WARNINGS APPEAR AS HTML COMMENTS
 
-It is now also possible to make non-fatal errors appear as HTML
-comments embedded in the output of your program.  To enable this
-feature, export the new "warningsToBrowser" subroutine.  Since sending
-warnings to the browser before the HTTP headers have been sent would
-cause an error, any warnings are stored in an internal buffer until
-you call the warningsToBrowser() subroutine with a true argument:
+It is also possible to make non-fatal errors appear as HTML comments
+embedded in the output of your program.  To enable this feature,
+export the new "warningsToBrowser" subroutine.  Since sending warnings
+to the browser before the HTTP headers have been sent would cause an
+error, any warnings are stored in an internal buffer until you call
+the warningsToBrowser() subroutine with a true argument:
 
     use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
     use CGI qw(:standard);
@@ -264,68 +271,43 @@ You can set the program back to the default by calling
 Note that this override doesn't happen until after the program has
 compiled, so any compile-time errors will still show up with the
 non-overridden program name
-  
-=head1 CHANGE LOG
 
-3.51 Added $CGI::Carp::TO_BROWSER
+=head1 TURNING OFF TIMESTAMPS IN MESSAGES
 
-1.29 Patch from Peter Whaite to fix the unfixable problem of CGI::Carp
-     not behaving correctly in an eval() context.
+If your web server automatically adds a timestamp to each log line,
+you may not need CGI::Carp to add its own. You can disable timestamping
+by importing "noTimestamp":
 
-1.05 carpout() added and minor corrections by Marc Hedlund
-     <hedlund@best.com> on 11/26/95.
+    use CGI::Carp qw(noTimestamp);
 
-1.06 fatalsToBrowser() no longer aborts for fatal errors within
-     eval() statements.
+Alternatively you can set C<$CGI::Carp::NO_TIMESTAMP> to 1.
 
-1.08 set_message() added and carpout() expanded to allow for FileHandle
-     objects.
+Note that the name of the program is still automatically included in
+the message.
 
-1.09 set_message() now allows users to pass a code REFERENCE for 
-     really custom error messages.  croak and carp are now
-     exported by default.  Thanks to Gunther Birznieks for the
-     patches.
+=head1 GETTING THE FULL PATH OF THE SCRIPT IN MESSAGES
 
-1.10 Patch from Chris Dean (ctdean@cogit.com) to allow 
-     module to run correctly under mod_perl.
+Set C<$CGI::Carp::FULL_PATH> to 1.
 
-1.11 Changed order of &gt; and &lt; escapes.
+=head1 AUTHOR INFORMATION
 
-1.12 Changed die() on line 217 to CORE::die to avoid B<-w> warning.
+The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
+distributed under GPL and the Artistic License 2.0. It is currently
+maintained by Lee Johnson with help from many contributors.
 
-1.13 Added cluck() to make the module orthogonal with Carp.
-     More mod_perl related fixes.
+Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
 
-1.20 Patch from Ilmari Karonen (perl@itz.pp.sci.fi):  Added
-     warningsToBrowser().  Replaced <CODE> tags with <PRE> in
-     fatalsToBrowser() output.
+The original bug tracker can be found at: https://rt.cpan.org/Public/Dist/Display.html?Queue=CGI.pm
 
-1.23 ineval() now checks both $^S and inspects the message for the "eval" pattern
-     (hack alert!) in order to accommodate various combinations of Perl and
-     mod_perl.
-
-1.24 Patch from Scott Gifford (sgifford@suspectclass.com): Add support
-     for overriding program name.
-
-1.26 Replaced CORE::GLOBAL::die with the evil $SIG{__DIE__} because the
-     former isn't working in some people's hands.  There is no such thing
-     as reliable exception handling in Perl.
-
-1.27 Replaced tell STDOUT with bytes=tell STDOUT.
-
-=head1 AUTHORS
-
-Copyright 1995-2002, Lincoln D. Stein.  All rights reserved.  
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-Address bug reports and comments to: lstein@cshl.org
+When sending bug reports, please provide the version of CGI.pm, the version of
+Perl, the name and version of your Web server, and the name and version of the
+operating system you are using.  If the problem is even remotely browser
+dependent, please provide information about the affected browsers as well.
 
 =head1 SEE ALSO
 
-Carp, CGI::Base, CGI::BasePlus, CGI::Request, CGI::MiniSvr, CGI::Form,
-CGI::Response
+L<Carp>, L<CGI::Base>, L<CGI::BasePlus>, L<CGI::Request>,
+L<CGI::MiniSvr>, L<CGI::Form>, L<CGI::Response>.
 
 =cut
 
@@ -341,15 +323,16 @@ use File::Spec;
 
 @ISA = qw(Exporter);
 @EXPORT = qw(confess croak carp);
-@EXPORT_OK = qw(carpout fatalsToBrowser warningsToBrowser wrap set_message set_die_handler set_progname cluck ^name= die);
+@EXPORT_OK = qw(carpout fatalsToBrowser warningsToBrowser wrap noTimestamp set_message set_die_handler set_progname cluck ^name= die);
 
 $main::SIG{__WARN__}=\&CGI::Carp::warn;
 
-$CGI::Carp::VERSION     = '3.51';
+$CGI::Carp::VERSION     = '4.38';
 $CGI::Carp::CUSTOM_MSG  = undef;
 $CGI::Carp::DIE_HANDLER = undef;
 $CGI::Carp::TO_BROWSER  = 1;
-
+$CGI::Carp::NO_TIMESTAMP= 0;
+$CGI::Carp::FULL_PATH   = 0;
 
 # fancy import routine detects and handles 'errorWrap' specially.
 sub import {
@@ -371,7 +354,7 @@ sub import {
     Exporter::import($pkg,keys %routines);
     $Exporter::ExportLevel = $oldlevel;
     $main::SIG{__DIE__} =\&CGI::Carp::die if $routines{'fatalsToBrowser'};
-#    $pkg->export('CORE::GLOBAL','die');
+    $CGI::Carp::NO_TIMESTAMP = 1 if $routines{'noTimestamp'};
 }
 
 # These are the originals
@@ -386,7 +369,6 @@ sub id {
 }
 
 sub stamp {
-    my $time = scalar(localtime);
     my $frame = 0;
     my ($id,$pack,$file,$dev,$dirs);
     if (defined($CGI::Carp::PROGNAME)) {
@@ -397,7 +379,11 @@ sub stamp {
 	  ($pack,$file) = caller($frame++);
         } until !$file;
     }
-    ($dev,$dirs,$id) = File::Spec->splitpath($id);
+	if (! $CGI::Carp::FULL_PATH) {
+	    ($dev,$dirs,$id) = File::Spec->splitpath($id);
+	}
+    return "$id: " if $CGI::Carp::NO_TIMESTAMP;
+    my $time = scalar(localtime);
     return "[$time] $id: ";
 }
 
@@ -513,7 +499,7 @@ sub carpout {
     
     open(SAVEERR, ">&STDERR");
     open(STDERR, ">&$no") or 
-	( print SAVEERR "Unable to redirect STDERR: $!\n" and exit(1) );
+	( print SAVEERR "Unable to redirect >&$no: $!\n" and exit(1) );
 }
 
 sub warningsToBrowser {
@@ -549,7 +535,7 @@ END
         eval { 
             &$CUSTOM_MSG($msg); # nicer to perl 5.003 users
         };
-        if ($@) { print STDERR q(error while executing the error handler: $@); }
+        if ($@) { print STDERR qq(error while executing the error handler: $@); }
 
       return;
     } else {
@@ -590,7 +576,7 @@ END
       $mod_perl == 2 ? ModPerl::Util::exit(0) : $r->exit;
     } else {
       # MSIE won't display a custom 500 response unless it is >512 bytes!
-      if ($ENV{HTTP_USER_AGENT} =~ /MSIE/) {
+      if (defined($ENV{HTTP_USER_AGENT}) && $ENV{HTTP_USER_AGENT} =~ /MSIE/) {
         $mess = "<!-- " . (' ' x 513) . " -->\n$mess";
       }
       $r->custom_response(500,$mess);
@@ -603,6 +589,10 @@ END
     else {
         print STDOUT "Status: 500\n";
         print STDOUT "Content-type: text/html\n\n";
+        # MSIE won't display a custom 500 response unless it is >512 bytes!
+        if (defined($ENV{HTTP_USER_AGENT}) && $ENV{HTTP_USER_AGENT} =~ /MSIE/) {
+          $mess = "<!-- " . (' ' x 513) . " -->\n$mess";
+        }
         print STDOUT $mess;
     }
   }

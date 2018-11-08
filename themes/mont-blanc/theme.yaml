@@ -1,0 +1,125 @@
+id: mont-blanc
+label: Mont-Blanc
+name: Mont-Blanc
+version: '1.0'
+author_link: https://www.movabletype.org/
+author_name: Six Apart Ltd.
+class: both
+description: <__trans phrase="__DESCRIPTION">
+protected: 1
+l10n_lexicon:
+  en_us: l10n_en_us.yaml
+  ja: l10n_ja.yaml
+  nl: l10n_nl.yaml
+  fr: l10n_fr.yaml
+  de: l10n_de.yaml
+  es: l10n_es.yaml
+thumbnail_file: 'thumb.png'
+thumbnail_file_medium: 'thumb-medium.png'
+thumbnail_file_small: 'thumb-small.png'
+elements:
+  default_category_sets:
+    component: ~
+    data:
+      Folders:
+        categories: ~
+        name: Folders
+    importer: default_category_sets
+  default_content_types:
+    component: ~
+    data:
+      -
+        description: ''
+        fields:
+          -
+            description: ''
+            display: force
+            initial_value: ''
+            label: Title
+            max_length: 255
+            min_length: 0
+            order: 1
+            required: 1
+            type: single_line_text
+          -
+            description: ''
+            display: default
+            initial_value: ''
+            input_format: blockeditor
+            label: Body
+            order: 2
+            required: 0
+            type: multi_line_text
+          -
+            description: ''
+            display: default
+            initial_value: ''
+            input_format: __default__
+            label: Summary
+            order: 3
+            required: 0
+            type: multi_line_text
+          -
+            allow_upload: 1
+            description: ''
+            display: default
+            label: og:image
+            max: ''
+            min: ''
+            multiple: 0
+            order: 5
+            required: 0
+            type: asset_image
+          -
+            can_add: 1
+            description: ''
+            display: default
+            initial_value: ''
+            label: Tags
+            max: ''
+            min: ''
+            multiple: 1
+            order: 6
+            required: 0
+            type: tags
+          -
+            can_add: 1
+            category_set: Folders
+            description: ''
+            display: default
+            label: Folders
+            max: ''
+            min: ''
+            multiple: 0
+            order: 6
+            required: 0
+            type: categories
+        name: Site Page
+        user_disp_option: 1
+    importer: default_content_types
+  template_set:
+    component: 'core'
+    importer: 'template_set'
+    data:
+      base_path: templates
+      require: 1
+      templates:
+        system:
+          dynamic_error:
+            description_label: 'Displays errors for dynamically-published templates.'
+            label: 'Dynamic Error'
+          popup_image:
+            description_label: 'Displays image when user clicks a popup-linked image.'
+            label: 'Popup Image'
+          search_results:
+            description_label: 'Displays results of a search.'
+            label: 'Search Results'
+          cd_search_results:
+            description_label: 'Displays results of a search for content data.'
+            label: 'Search Results for Content Data'
+          comment_preview:
+            description_label: 'Displays preview of comment.'
+            label: 'Comment Preview'
+          comment_response:
+            description_label: 'Displays error, pending or confirmation message for comments.'
+            label: 'Comment Response'

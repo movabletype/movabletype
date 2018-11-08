@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,13 +6,13 @@
 package MT::CMS::Theme;
 
 use strict;
+use warnings;
 use MT::Util qw( remove_html dirify is_valid_url encode_html );
 use MT::Theme;
 use File::Spec;
 
 sub list {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     return $app->permission_denied()
         unless $app->can_do('open_theme_listing_screen');
@@ -58,11 +58,11 @@ sub list {
     $app->add_breadcrumb( $app->translate("Themes") );
     $param{screen_id}              = "list-themes";
     $param{screen_class}           = "theme-settings";
-    $param{applied}                = $q->param('applied');
-    $param{theme_uninstalled}      = $q->param('theme_uninstalled');
-    $param{uninstalled_theme_name} = $q->param('uninstalled_theme_name');
-    $param{warning_on_apply}       = $q->param('warning_on_apply');
-    $param{refreshed}              = $q->param('refreshed');
+    $param{applied}                = $app->param('applied');
+    $param{theme_uninstalled}      = $app->param('theme_uninstalled');
+    $param{uninstalled_theme_name} = $app->param('uninstalled_theme_name');
+    $param{warning_on_apply}       = $app->param('warning_on_apply');
+    $param{refreshed}              = $app->param('refreshed');
     $app->load_tmpl( 'list_theme.tmpl', \%param );
 }
 
@@ -136,7 +136,6 @@ sub _build_theme_table {
 
 sub dialog_select_theme {
     my $app = shift;
-    my $q   = $app->param;
     my %param;
     $param{idfield}    = $app->param('idfield');
     $param{namefield}  = $app->param('namefield');
@@ -178,8 +177,7 @@ sub apply {
         unless $app->can_do('apply_theme');
     my $blog = $app->blog
         or return $app->error( MT->translate('Invalid request') );
-    my $q        = $app->param;
-    my $theme_id = $q->param('theme_id')
+    my $theme_id = $app->param('theme_id')
         or return $app->error( MT->translate('Invalid request') );
     require MT::Theme;
     my $theme = MT::Theme->load($theme_id)
@@ -187,7 +185,7 @@ sub apply {
     $blog->theme_id( $theme->id );
     $blog->theme_export_settings(undef);
     $blog->save;
-    $blog->apply_theme;
+    $blog->apply_theme or die $blog->errstr;
     $app->redirect(
         $app->uri(
             mode => 'list_theme',
@@ -207,8 +205,7 @@ sub uninstall {
     $app->can_do('uninstall_theme_package')
         or return $app->permission_denied();
 
-    my $q        = $app->param;
-    my $theme_id = $q->param('theme_id');
+    my $theme_id = $app->param('theme_id');
     my $theme    = MT::Theme->load($theme_id);
     if ( $theme->{type} ne 'package' ) {
         return $app->error( MT->translate('Invalid request.') );
@@ -242,8 +239,8 @@ sub export {
     $app->can_do('open_theme_export_screen')
         or return $app->permission_denied();
     my %param;
-    my $q = $app->param;
-    my $blog = $app->blog || MT->model('blog')->load( $q->param('blog_id') )
+    my $blog_id = $app->param('blog_id');
+    my $blog = $app->blog || MT->model('blog')->load($blog_id)
         or return $app->return_to_dashboard( redirect => 1 );
     $param{theme_class} = $blog->class;
     $param{output}      = 'themedir';
@@ -324,9 +321,12 @@ sub export {
     $param{output_methods}       = \@output_methods;
     $param{select_output_method} = scalar @output_methods > 1 ? 1 : 0;
     $param{exporters}            = $exporters;
-    $param{save_success}         = $q->param('success');
+    $param{save_success}         = $app->param('success');
     $param{search_label}         = $app->translate('Templates');
     $param{object_type}          = 'template';
+
+    $app->add_breadcrumb( $app->translate('Export Themes') );
+
     $app->load_tmpl( 'export_theme.tmpl', \%param );
 }
 
@@ -335,8 +335,8 @@ sub element_dialog {
     $app->can_do('open_theme_export_screen')
         or return $app->permission_denied();
 
-    my $q = $app->param;
-    my $blog = $app->blog || MT->model('blog')->load( $q->param('blog_id') )
+    my $blog_id = $app->param('blog_id');
+    my $blog = $app->blog || MT->model('blog')->load($blog_id)
         or return $app->error( MT->translate('Invalid request.') );
     my $exporter_id = $app->param('exporter_id')
         or return $app->error( $app->translate('Invalid request.') );
@@ -367,7 +367,7 @@ sub element_dialog {
                 category => 'export',
             }
         );
-        next;
+        return;
     }
 
     if ( ref $tmpl eq MT->model('template') ) {
@@ -395,7 +395,6 @@ sub save_detail {
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
 
-    my $q = $app->param;
     my %param;
     my $blog        = $app->blog;
     my $fmgr        = MT::FileMgr->new('Local');
@@ -412,7 +411,7 @@ sub save_detail {
         ? $exporter->{params}
         : [ $exporter->{params} ];
     for my $param (@$params) {
-        $setting->{$param} = [ $app->param($param) ];
+        $setting->{$param} = [ $app->multi_param($param) ];
     }
     $settings->{$exporter_id} = $setting;
     $blog->theme_export_settings($settings);
@@ -433,21 +432,29 @@ sub do_export {
     $app->can_do('do_export_theme')
         or return $app->permission_denied();
 
-    my $q    = $app->param;
     my $cfg  = $app->config;
     my $blog = $app->blog;
-    my $theme_id
-        = dirify( $q->param('theme_id') )
-        || dirify( $q->param('theme_name') )
+
+    my $theme_id          = $app->param('theme_id');
+    my $theme_name        = $app->param('theme_name');
+    my $theme_version     = $app->param('theme_version') || '1.0';
+    my $theme_author_name = $app->param('theme_author_name');
+    my $theme_author_link = $app->param('theme_author_link') || '';
+    my $description       = $app->param('description') || '';
+
+    $theme_id
+        = dirify($theme_id)
+        || dirify($theme_name)
         || 'theme_from_' . dirify( $blog->name )
         || 'theme_from_blog_' . $blog->id;
-    my $theme_name    = $q->param('theme_name')    || $theme_id;
-    my $theme_version = $q->param('theme_version') || '1.0';
+    $theme_name ||= $theme_id;
 
     my $fmgr = MT::FileMgr->new('Local');
 
     ## $output should have 'themedir' or 'zipdownload'.
-    my $output = $q->param('output') || 'themedir';
+    my $output = $app->param('output') || 'themedir';
+
+    my @include = $app->multi_param('include');
 
     ## Abort if theme directory is not okey for output.
     my ( $theme_dir, $output_path );
@@ -481,11 +488,11 @@ sub do_export {
         $output_path = File::Spec->catdir( $theme_dir, $theme_id );
 
         if ( $fmgr->exists($output_path) ) {
-            if ( $q->param('overwrite_yes') ) {
+            if ( $app->param('overwrite_yes') ) {
                 use File::Path 'rmtree';
                 rmtree($output_path);
             }
-            elsif ( $q->param('overwrite_no') ) {
+            elsif ( $app->param('overwrite_no') ) {
                 return $app->redirect(
                     $app->uri(
                         mode => 'export_theme',
@@ -495,11 +502,10 @@ sub do_export {
             }
             else {
                 my %params;
-                foreach ( $q->param ) {
+                foreach ( $app->multi_param ) {
                     $params{$_} = $app->param($_);
                 }
 
-                my @include = $q->param('include');
                 $params{include}      = \@include;
                 $params{theme_folder} = $output_path;
                 return $app->load_tmpl( 'theme_export_replace.tmpl',
@@ -510,7 +516,7 @@ sub do_export {
 
     ## Pick up settings.
     my $hdlrs = MT->registry('theme_element_handlers');
-    my %includes = map { $_ => 1 } ( $q->param('include') );
+    my %includes = map { $_ => 1 } @include;
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -529,14 +535,14 @@ sub do_export {
         id    => $theme_id,
         name  => $theme_name,
         label => $theme_name,
-        (   $q->param('theme_author_name')
-            ? ( author_name => $q->param('theme_author_name') )
+        (   $theme_author_name
+            ? ( author_name => $theme_author_name )
             : ()
         ),
-        author_link => $q->param('theme_author_link') || '',
-        version => $theme_version,
-        class => ( $blog->is_blog ? 'blog' : 'website' ),
-        description => $q->param('description') || '',
+        author_link => $theme_author_link,
+        version     => $theme_version,
+        class       => ( $blog->is_blog ? 'blog' : 'website' ),
+        description => $description,
     };
 
     for my $exporter_id ( keys %$hdlrs ) {
@@ -641,7 +647,7 @@ sub do_export {
         my $newfilename = $theme_id;
         $newfilename .= $theme_version if $theme_version;
         $newfilename .= '.' . $arc_info->{extension};
-        open my $fh, "<", $arcfile;
+        open my $fh, "<", $arcfile or die "Couldn't open $arcfile: $!";
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(
@@ -663,7 +669,7 @@ sub do_export {
         output
     );
     for my $param (@core_params) {
-        $settings->{core}{$param} = [ $q->param($param) ];
+        $settings->{core}{$param} = [ $app->multi_param($param) ];
     }
     $blog->theme_export_settings($settings);
     $blog->save

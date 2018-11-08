@@ -1,6 +1,6 @@
 use strict; use warnings;
 package boolean;
-our $VERSION = '0.45';
+our $VERSION = '0.46';
 
 my ($true, $false);
 
@@ -32,6 +32,13 @@ BEGIN {
     $true  = do {bless \$t, 'boolean'};
     $false = do {bless \$f, 'boolean'};
 
+    $true_val  = overload::StrVal($true);
+    $false_val = overload::StrVal($false);
+    $bool_vals = {$true_val => 1, $false_val => 1};
+}
+
+# refaddrs change on thread spawn, so CLONE fixes them up
+sub CLONE {
     $true_val  = overload::StrVal($true);
     $false_val = overload::StrVal($false);
     $bool_vals = {$true_val => 1, $false_val => 1};

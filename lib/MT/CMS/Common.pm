@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,14 +6,14 @@
 package MT::CMS::Common;
 
 use strict;
+use warnings;
 
 use MT::Util qw( format_ts offset_time_list relative_date remove_html);
 
 sub save {
     my $app             = shift;
-    my $q               = $app->param;
-    my $type            = $q->param('_type');
-    my $id              = $q->param('id');
+    my $type            = $app->param('_type');
+    my $id              = $app->param('id');
     my @types_for_event = ($type);
 
     my $class = $app->model($type)
@@ -21,6 +21,46 @@ sub save {
 
     return $app->errtrans("Invalid request.")
         unless $type;
+
+    return $app->errtrans("Invalid request.")
+        if !$id && $type eq 'asset';
+
+    if ( exists $class->properties->{class_type} and $app->param('class') ) {
+        my $classParamFilter
+            = lc $app->config('DefaultClassParamFilter') || 'all';
+        if ( $classParamFilter ne 'none' ) {
+
+            # Respect result of callbacks
+            my $res;
+            $res
+                = $app->run_callbacks( 'cms_class_param_filter.' . $type,
+                $app )
+                if $app->is_callback_registered(
+                'cms_class_param_filter.' . $type );
+
+            if ( !$res ) {
+
+                # all callbacks not returns true, or no callbacks found
+                if ( $classParamFilter eq 'moderate' ) {
+
+                    # MT core object only
+                    $res = 1;
+                    my @list
+                        = qw ( MT::Asset MT::Entry MT::Page MT::Category MT::Folder MT::Blog MT::Website );
+                    foreach my $o (@list) {
+                        if ( $class->isa($o) ) {
+                            $res = 0;
+                            last;
+                        }
+                    }
+                }
+            }
+
+            # Raise error when state is still active
+            return $app->errtrans('Invalid request.')
+                if !$res;
+        }
+    }
 
     if ( $id && $type eq 'website' ) {
         $type = 'blog';
@@ -38,11 +78,11 @@ sub save {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'save', $t );
+            unless is_enabled_mode( $app, 'save', $t );
     }
 
-    $q->param( 'allow_pings', 0 )
-        if ( $type eq 'category' ) && !defined( $q->param('allow_pings') );
+    $app->param( 'allow_pings', 0 )
+        if ( $type eq 'category' ) && !defined( $app->param('allow_pings') );
 
     $app->validate_magic() or return;
     my $author = $app->user;
@@ -67,21 +107,21 @@ sub save {
 
     my $param = {};
     if ( $type eq 'author' ) {
-        if ( my $delim = $q->param('tag_delim') ) {
+        if ( my $delim = $app->param('tag_delim') ) {
             $param->{ 'auth_pref_tag_delim_' . $delim } = 1;
             $param->{'auth_pref_tag_delim'} = $delim;
         }
+        my $preferred_language     = $app->param('preferred_language');
+        my $create_personal_weblog = $app->param('create_personal_weblog');
         $param->{languages}
-            = MT::I18N::languages_list( $app,
-            $q->param('preferred_language') )
-            if $q->param('preferred_language');
-        $param->{create_personal_weblog}
-            = $q->param('create_personal_weblog') ? 1 : 0;
+            = MT::I18N::languages_list( $app, $preferred_language )
+            if $preferred_language;
+        $param->{create_personal_weblog} = $create_personal_weblog ? 1 : 0;
         require MT::Permission;
         my $sys_perms = MT::Permission->perms('system');
         foreach (@$sys_perms) {
             $param->{ 'perm_can_' . $_->[0] } = 1
-                if $q->param( 'can_' . $_->[0] );
+                if $app->param( 'can_' . $_->[0] );
         }
     }
 
@@ -91,12 +131,13 @@ sub save {
             &&= $app->run_callbacks( 'cms_save_filter.' . $t, $app );
     }
 
+    my $cfg_screen = $app->param('cfg_screen') || '';
     if ( !$filter_result ) {
         my %param = (%$param);
         $param{error}       = $app->errstr;
         $param{return_args} = $app->param('return_args');
 
-        if ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
+        if ( $cfg_screen eq 'cfg_prefs' ) {
             return MT::CMS::Blog::cfg_prefs( $app, \%param );
         }
         elsif ( $app->param('forward_list') ) {
@@ -113,9 +154,11 @@ sub save {
         }
     }
 
+    my $name    = $app->param('name');
+    my $outfile = $app->param('outfile');
     return $app->errtrans(
         'The Template Name and Output File fields are required.')
-        if $type eq 'template' && !$q->param('name') && !$q->param('outfile');
+        if $type eq 'template' && !$name && !$outfile;
 
     if ( $type eq 'template' ) {
 
@@ -123,7 +166,7 @@ sub save {
         $app->remove_preview_file;
 
         # check for autosave
-        if ( $q->param('_autosave') ) {
+        if ( $app->param('_autosave') ) {
             return $app->autosave_object();
         }
     }
@@ -138,15 +181,16 @@ sub save {
         $obj = $class->new;
     }
 
+    my $use_absolute       = $app->param('use_absolute');
+    my $site_path_absolute = $app->param('site_path_absolute');
+
     my $original = $obj->clone();
     my $names    = $obj->column_names;
-    my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
+    my %values   = map { $_ => ( scalar $app->param($_) ) } @$names;
     if (   $type eq 'blog'
         && $obj->class eq 'blog'
-        && (!$app->param('cfg_screen')
-            || ( $app->param('cfg_screen')
-                && ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' )
-        )
+        && ( !$cfg_screen
+            || ( $cfg_screen eq 'cfg_prefs' ) )
         )
     {
         if (    $values{site_path}
@@ -156,12 +200,12 @@ sub save {
             return $app->errtrans("Invalid request.");
         }
 
-        if (   $app->param('use_absolute')
-            && $app->param('site_path_absolute')
+        if (   $use_absolute
+            && $site_path_absolute
             && $app->config->BaseSitePath )
         {
             my $l_path = $app->config->BaseSitePath;
-            my $s_path = $app->param('site_path_absolute');
+            my $s_path = $site_path_absolute;
             unless ( is_within_base_sitepath( $app, $s_path ) ) {
                 return $app->errtrans(
                     "The blog root directory must be within [_1].", $l_path );
@@ -169,17 +213,17 @@ sub save {
         }
 
         unless ( $obj->id ) {
-            my $subdomain = $q->param('site_url_subdomain');
-            $subdomain = '' if !$q->param('use_subdomain');
+            my $subdomain = $app->param('site_url_subdomain') || '';
+            $subdomain = '' if !$app->param('use_subdomain');
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
-            my $path = $q->param('site_url_path');
+            my $path = $app->param('site_url_path') || '';
             $values{site_url} = "$subdomain/::/$path";
 
-            $values{site_path} = $app->param('site_path_absolute')
+            $values{site_path} = $site_path_absolute
                 if !$app->config->BaseSitePath
-                && $app->param('use_absolute')
-                && $app->param('site_path_absolute');
+                && $use_absolute
+                && $site_path_absolute;
         }
 
         unless ( $author->is_superuser
@@ -243,33 +287,41 @@ sub save {
         #FIXME: Legacy columns - remove them
         my @cols
             = qw(is_superuser can_create_blog can_view_log can_edit_templates);
-        if ( !$author->is_superuser ) {
-            delete $values{$_} for @cols;
-        }
-        else {
-            if ( !$id || ( $author->id != $id ) ) {
+        delete $values{$_} for @cols;
 
-                # Assign the auth_type unless it was assigned
-                # through the form.
-                $obj->auth_type( $app->config->AuthenticationModule )
-                    unless $obj->auth_type;
-                if ( $values{'status'} == MT::Author::ACTIVE() ) {
-                    my $sys_perms = MT::Permission->perms('system');
-                    if ( defined( $q->param('can_administer') )
-                        && $q->param('can_administer') )
-                    {
-                        $obj->is_superuser(1);
-                    }
-                    else {
-                        foreach (@$sys_perms) {
-                            my $name = 'can_' . $_->[0];
-                            if ( defined $q->param($name) ) {
-                                $obj->$name( $q->param($name) );
-                                delete $values{$name};
-                            }
-                            else {
-                                $obj->$name(0);
-                            }
+        delete $values{'status'}
+            if ( ( $author->id || 0 ) == ( $obj->id || 0 ) )
+            || ( !$author->is_superuser && $obj->is_superuser );
+
+        if (  !$id
+            || $author->is_superuser
+            || $author->can_manage_users_groups )
+        {
+
+            # Assign the auth_type unless it was assigned
+            # through the form.
+            $obj->auth_type( $app->config->AuthenticationModule )
+                unless $obj->auth_type;
+            if ( ( $values{'status'} || 0 ) == MT::Author::ACTIVE() ) {
+                my $sys_perms      = MT::Permission->perms('system');
+                my $can_administer = $app->param('can_administer');
+                if ($can_administer) {
+                    $obj->is_superuser(1);
+                }
+                else {
+                    my %legacy_perms
+                        = ( create_website => 1, create_blog => 1 );
+                    foreach (@$sys_perms) {
+                        next if $legacy_perms{ $_->[0] };
+
+                        my $name  = 'can_' . $_->[0];
+                        my $value = $app->param($name);
+                        if ( defined $value ) {
+                            $obj->$name($value);
+                            delete $values{$name};
+                        }
+                        else {
+                            $obj->$name(0);
                         }
                     }
                 }
@@ -291,6 +343,7 @@ sub save {
                 }
             );
             while ( my $perm = $perm_iter->() ) {
+
                 # Clear all permissions then rebuild it.
                 $perm->permissions('');
                 $perm->rebuild;
@@ -303,14 +356,15 @@ sub save {
         # If this is a new blog, set the preferences, archive settings
         # and template set to the defaults.
         if ( !$obj->id ) {
-            $obj->language( $q->param('blog_language')
-                    || MT->config->DefaultLanguage );
+            my $blog_language = $app->param('blog_language');
+            $obj->language( $blog_language || MT->config->DefaultLanguage );
             $obj->date_language( $obj->language );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
             $obj->page_layout('layout-wtt');
             my @authenticators = qw( MovableType );
             my @default_auth = split /,/, MT->config('DefaultCommenterAuth');
+
             foreach my $auth (@default_auth) {
                 my $a = MT->commenter_authenticator($auth);
                 if ( !defined $a
@@ -323,21 +377,20 @@ sub save {
             }
             $obj->commenter_authenticators( join ',', @authenticators );
             require MT::Theme;
-            my $theme = MT::Theme->load( $app->param( $type . '_theme' ) )
+            my $type_theme = $app->param( $type . '_theme' );
+            my $theme      = MT::Theme->load($type_theme)
                 or return $app->error('Internal error: Unknown theme!');
             $obj->theme_id( $theme->{id} );
         }
 
         if ( $values{file_extension} ) {
             $values{file_extension} =~ s/^\.*//
-                if ( $q->param('file_extension') || '' ) ne '';
+                if ( $app->param('file_extension') || '' ) ne '';
         }
-
-        my $cfg_screen = $app->param('cfg_screen') || '';
 
         if ( $cfg_screen eq 'cfg_prefs' ) {
             $values{publish_empty_archive}
-                = $q->param('publish_empty_archive') ? 1 : 0;
+                = $app->param('publish_empty_archive') ? 1 : 0;
         }
 
         if ( $obj && $cfg_screen eq 'cfg_web_services' ) {
@@ -355,10 +408,12 @@ sub save {
     }
 
     if ( $type eq 'template' ) {
-        if (   $q->param('type') eq 'archive'
-            && $q->param('archive_type') )
+        my $archive_type = $app->param('archive_type');
+        my $param_type = $app->param('type') || '';
+        if (   $param_type eq 'archive'
+            && $archive_type )
         {
-            $values{type} = $q->param('archive_type');
+            $values{type} = $archive_type;
         }
     }
 
@@ -383,7 +438,7 @@ sub save {
     }
     unless ($filter_result) {
         if ( 'blog' eq $type ) {
-            my $meth = $q->param('cfg_screen');
+            my $meth = $cfg_screen;
             if ( $meth && $app->handlers_for_mode($meth) ) {
                 $app->error(
                     $app->translate( "Save failed: [_1]", $app->errstr ) );
@@ -419,24 +474,25 @@ sub save {
     }
 
     # Save NWC settings and revision settings
-    my $screen = $q->param('cfg_screen') || '';
-    if ( ( $type eq 'blog' || $type eq 'website' ) && $screen eq 'cfg_entry' )
+    if ( ( $type eq 'blog' || $type eq 'website' )
+        && $cfg_screen eq 'cfg_entry' )
     {
+        my $nwc_smart_replace = $app->param('nwc_smart_replace');
         my @fields;
-        push( @fields, 'title' )     if $q->param('nwc_title');
-        push( @fields, 'text' )      if $q->param('nwc_text');
-        push( @fields, 'text_more' ) if $q->param('nwc_text_more');
-        push( @fields, 'keywords' )  if $q->param('nwc_keywords');
-        push( @fields, 'excerpt' )   if $q->param('nwc_excerpt');
-        push( @fields, 'tags' )      if $q->param('nwc_tags');
+        push( @fields, 'title' )     if $app->param('nwc_title');
+        push( @fields, 'text' )      if $app->param('nwc_text');
+        push( @fields, 'text_more' ) if $app->param('nwc_text_more');
+        push( @fields, 'keywords' )  if $app->param('nwc_keywords');
+        push( @fields, 'excerpt' )   if $app->param('nwc_excerpt');
+        push( @fields, 'tags' )      if $app->param('nwc_tags');
         my $fields = @fields ? join( ',', @fields ) : 0;
         $obj->smart_replace_fields($fields);
-        $obj->smart_replace( $q->param('nwc_smart_replace') );
+        $obj->smart_replace($nwc_smart_replace);
         $obj->save;
     }
 
     # Finally, decide where to go next, depending on the object type.
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
     if ( $type eq 'blog' || $type eq 'website' ) {
         $blog_id = $obj->id;
     }
@@ -478,21 +534,22 @@ sub save {
 
     # TODO: convert this to use $app->call_return();
     # then templates can determine the page flow.
-    if ( my $cfg_screen = $q->param('cfg_screen') ) {
+    if ($cfg_screen) {
         if ( $cfg_screen eq 'cfg_publish_profile' ) {
             my $dcty = $obj->custom_dynamic_templates || 'none';
             if ( ( $dcty eq 'all' ) || ( $dcty eq 'archives' ) ) {
                 require MT::CMS::Blog;
                 my %param = ();
                 MT::CMS::Blog::_create_build_order( $app, $obj, \%param );
-                $q->param( 'single_template', 1 );  # to show tmpl full-screen
+                $app->param( 'single_template', 1 )
+                    ;    # to show tmpl full-screen
                 if ( $dcty eq 'all' ) {
-                    $q->param( 'type', $param{build_order} );
+                    $app->param( 'type', $param{build_order} );
                 }
                 elsif ( $dcty eq 'archives' ) {
                     my @ats = map { $_->{archive_type} }
                         @{ $param{archive_type_loop} };
-                    $q->param( 'type', join( ',', @ats ) );
+                    $app->param( 'type', join( ',', @ats ) );
                 }
                 return MT::CMS::Blog::start_rebuild_pages($app);
             }
@@ -508,7 +565,7 @@ sub save {
         $app->add_return_arg( no_writedir => 1 )
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
-    elsif ( $type eq 'template' && $q->param('rebuild') ) {
+    elsif ( $type eq 'template' && $app->param('rebuild') ) {
         if ( !$id ) {
 
             # add return argument for newly created templates
@@ -516,9 +573,9 @@ sub save {
         }
         if ( $obj->build_type ) {
             if ( $obj->type eq 'index' ) {
-                $q->param( 'type',            'index-' . $obj->id );
-                $q->param( 'tmpl_id',         $obj->id );
-                $q->param( 'single_template', 1 );
+                $app->param( 'type',            'index-' . $obj->id );
+                $app->param( 'tmpl_id',         $obj->id );
+                $app->param( 'single_template', 1 );
                 $app->add_return_arg( 'saved'     => 1 );
                 $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
@@ -526,8 +583,8 @@ sub save {
             else {
 
                 # archive rebuild support
-                $q->param( 'id',     $obj->id );
-                $q->param( 'reedit', $obj->id );
+                $app->param( 'id',     $obj->id );
+                $app->param( 'reedit', $obj->id );
                 return $app->forward('publish_archive_templates');
             }
         }
@@ -553,11 +610,11 @@ sub save {
                 my @maps = MT::TemplateMap->load($terms);
                 my @ats = map { $_->archive_type } @maps;
                 if ( $#ats >= 0 ) {
-                    $q->param( 'type', join( ',', @ats ) );
-                    $q->param( 'with_indexes',    1 );
-                    $q->param( 'no_static',       1 );
-                    $q->param( 'template_id',     $obj->id );
-                    $q->param( 'single_template', 1 );
+                    $app->param( 'type', join( ',', @ats ) );
+                    $app->param( 'with_indexes',    1 );
+                    $app->param( 'no_static',       1 );
+                    $app->param( 'template_id',     $obj->id );
+                    $app->param( 'single_template', 1 );
                     require MT::CMS::Blog;
                     return MT::CMS::Blog::start_rebuild_pages($app);
                 }
@@ -616,9 +673,8 @@ sub run_web_services_save_config_callbacks {
 sub edit {
     my $app = shift;
 
-    my $q               = $app->param;
-    my $type            = $q->param('_type');
-    my $id              = $q->param('id');
+    my $type            = $app->param('_type');
+    my $id              = $app->param('id');
     my @types_for_event = ($type);
 
     return $app->errtrans("Invalid request.")
@@ -643,12 +699,12 @@ sub edit {
 
     for my $t (@types_for_event) {
         return $app->errtrans("Invalid request.")
-            if is_disabled_mode( $app, 'edit', $t );
+            unless is_enabled_mode( $app, 'edit', $t );
     }
 
     my %param = eval { $_[0] ? %{ $_[0] } : (); };
     die Carp::longmess if $@;
-    my $blog_id = $q->param('blog_id');
+    my $blog_id = $app->param('blog_id');
 
     if ( defined($blog_id) && $blog_id ) {
         return $app->error( $app->translate("Invalid parameter") )
@@ -657,14 +713,15 @@ sub edit {
 
     $app->remove_preview_file;
 
-    if ( $q->param('_recover') ) {
+    if ( $app->param('_recover') ) {
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
             my $data = $sess_obj->thaw_data;
             if ($data) {
-                $q->param( $_, $data->{$_} ) for keys %$data;
+                $app->param( $_, $data->{$_} ) for keys %$data;
+                my $recovered_id = $app->param('id');
                 $app->delete_param('id')
-                    if defined $q->param('id') && !$q->param('id');
+                    if defined $recovered_id && !$recovered_id;
                 $param{'recovered_object'} = 1;
             }
             else {
@@ -675,10 +732,12 @@ sub edit {
             $param{'recovered_failed'} = 1;
         }
     }
-    elsif ( $q->param('qp') ) {
+    elsif ( $app->param('qp') ) {
+
+        # dedupe
         foreach (qw( title text )) {
-            my $data = $q->param($_);
-            $q->param( $_, $data );
+            my $data = $app->param($_);
+            $app->param( $_, $data );
         }
     }
 
@@ -689,7 +748,7 @@ sub edit {
     my $cfg    = $app->config;
     $param{styles} = '';
     if ( $type eq 'author' ) {
-        if ( $perms || $blog_id ) {
+        if ($blog_id) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
@@ -711,7 +770,7 @@ sub edit {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -751,8 +810,8 @@ sub edit {
 
         # Populate the param hash with the object's own values
         for my $col (@$cols) {
-            $param{$col}
-                = defined $q->param($col) ? $q->param($col) : $obj->$col();
+            my $value = $app->param($col);
+            $param{$col} = defined $value ? $value : $obj->$col();
         }
 
         # Make certain any blog-specific element matches the blog we're
@@ -816,25 +875,25 @@ sub edit {
     else {    # object is new
         $param{new_object} = 1;
         for my $col (@$cols) {
-            $param{$col} = $q->param($col);
+            $param{$col} = $app->param($col);
         }
     }
 
     {
-        # If any column value is overridden by $q->param,
+        # If any column value is overridden by $app->param,
         # the MT (especially WYSISYG editor) will be working in tainted mode.
         $param{tainted_input} = 0;
         local $app->{login_again};
         unless ( $app->validate_magic ) {
-            $param{tainted_input} ||= ( $q->param($_) || '' ) !~ /^\d*$/
+            $param{tainted_input} ||= ( $app->param($_) || '' ) !~ /^\d*$/
                 for @$cols;
         }
     }
 
     if ( $type eq 'website' || $type eq 'blog' ) {
         require MT::Theme;
-        $param{theme_loop} = MT::Theme->load_theme_loop( $type,
-            $app->param( $type . '_theme' ) );
+        my $theme = $app->param( $type . '_theme' );
+        $param{theme_loop} = MT::Theme->load_theme_loop( $type, $theme );
         $param{'master_revision_switch'} = $app->config->TrackRevisions;
         my $limit = File::Spec->catdir( $cfg->BaseSitePath, 'PATH' );
         $limit =~ s/PATH$//;
@@ -866,11 +925,11 @@ sub edit {
         }
     }
 
-    if ( ( $q->param('msg') || "" ) eq 'nosuch' ) {
+    if ( ( $app->param('msg') || "" ) eq 'nosuch' ) {
         $param{nosuch} = 1;
     }
-    for my $p ( $q->param ) {
-        $param{$p} = $q->param($p) if $p =~ /^saved/;
+    for my $p ( $app->multi_param ) {
+        $param{$p} = $app->param($p) if $p =~ /^saved/;
     }
     $param{page_actions} = $app->page_actions( $type, $obj );
     if ( $class->can('class_label') ) {
@@ -898,13 +957,18 @@ sub edit {
         }
     }
     local $app->{component} = $component if $component;
+
+    if ( $app->mode eq 'cfg_web_services' ) {
+        $app->add_breadcrumb( $app->translate('Web Services Settings') );
+    }
+
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
 sub list {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $app     = shift;
+    my $type    = $app->param('_type');
+    my $subtype = $app->param('type') ? '.' . $app->param('type') : '';
     my $scope
         = $app->blog ? ( $app->blog->is_blog ? 'blog' : 'website' )
         : defined $app->param('blog_id') ? 'system'
@@ -918,15 +982,15 @@ sub list {
         return $app->forward($list_mode);
     }
     my %param;
-    $param{list_type} = $type;
+    $param{list_type} = $type . $subtype;
     my @messages;
 
     my @list_components = grep {
-               $_->registry( list_properties => $type )
-            || $_->registry( listing_screens => $type )
-            || $_->registry( list_actions    => $type )
-            || $_->registry( content_actions => $type )
-            || $_->registry( system_filters  => $type )
+               $_->registry( list_properties => $type . $subtype )
+            || $_->registry( listing_screens => $type . $subtype )
+            || $_->registry( list_actions    => $type . $subtype )
+            || $_->registry( content_actions => $type . $subtype )
+            || $_->registry( system_filters  => $type . $subtype )
     } MT::Component->select;
 
     my @list_headers;
@@ -945,7 +1009,7 @@ sub list {
         push @list_headers, { filename => $f, component => $c->id } if -e $f;
     }
 
-    my $screen_settings = MT->registry( listing_screens => $type )
+    my $screen_settings = MT->registry( listing_screens => $type . $subtype )
         or return $app->error(
         $app->translate( 'Unknown action [_1]', $list_mode ) );
 
@@ -958,7 +1022,7 @@ sub list {
             if ( $app->errstr ) {
                 return $app->error( $app->errstr );
             }
-            return $app->return_to_dashboard;
+            return $app->permission_denied();
         }
     }
 
@@ -984,17 +1048,28 @@ sub list {
         }
         my $allowed = 0;
         my @act;
-        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+        if ( 'CODE' eq ref $list_permission ) {
             my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
+            eval { $list_permission = $code->($app); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
                 )
             ) if $@;
         }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
+        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
+        {
+            my $code = $list_permission;
+            $code = MT->handler_to_coderef($code);
+            eval { $list_permission = $code->(); };
+            return $app->error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
+        }
+
+        if ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
         }
         else {
@@ -1003,9 +1078,6 @@ sub list {
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' && $inherit_blogs ) {
-                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
-            }
         }
         foreach my $p (@act) {
             $allowed = 1,
@@ -1022,13 +1094,13 @@ sub list {
 
     my $initial_filter;
 
-    my $list_prefs = $app->user->list_prefs         || {};
-    my $list_pref  = $list_prefs->{$type}{$blog_id} || {};
-    my $rows       = $list_pref->{rows}             || 50; ## FIXME: Hardcoded
+    my $list_prefs = $app->user->list_prefs || {};
+    my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
+    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items = $list_pref->{last_items} || [];
-    my $initial_sys_filter = $q->param('filter_key');
+    my $initial_sys_filter = $app->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
@@ -1037,14 +1109,21 @@ sub list {
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
     my $obj_class  = MT->model($obj_type);
-    my $list_props = MT::ListProperty->list_properties($type);
+    my $list_props = MT::ListProperty->list_properties( $type . $subtype );
+
+    my $breadcrumb
+        = $screen_settings->{object_label_plural}
+        ? $screen_settings->{object_label_plural}
+        : $obj_class->class_label_plural;
+    $breadcrumb = $breadcrumb->() if ref $breadcrumb eq 'CODE';
+    $app->add_breadcrumb( $app->translate($breadcrumb) );
 
     if ( $app->param('no_filter') ) {
 
         # Nothing to do.
     }
-    elsif ( my @cols = $app->param('filter') ) {
-        my @vals = $app->param('filter_val');
+    elsif ( my @cols = $app->multi_param('filter') ) {
+        my @vals = $app->multi_param('filter_val');
         my @items;
         my @labels;
         for my $col (@cols) {
@@ -1057,7 +1136,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr)
@@ -1073,7 +1152,7 @@ sub list {
                         if ( my $errstr = $prop->errstr ) {
                             push @messages,
                                 {
-                                cls => 'alert',
+                                cls => 'warning',
                                 msg => MT->translate(
                                     q{Invalid filter: [_1]},
                                     MT::Util::encode_html($errstr),
@@ -1093,7 +1172,7 @@ sub list {
             else {
                 push @messages,
                     {
-                    cls => 'alert invalid-filter',
+                    cls => 'warning invalid-filter',
                     msg => MT->translate(
                         q{Invalid filter: [_1]},
                         MT::Util::encode_html($col),
@@ -1113,8 +1192,8 @@ sub list {
     }
     elsif ($initial_sys_filter) {
         require MT::CMS::Filter;
-        $initial_filter
-            = MT::CMS::Filter::filter( $app, $type, $initial_sys_filter );
+        $initial_filter = MT::CMS::Filter::filter( $app, $type . $subtype,
+            $initial_sys_filter );
     }
     elsif ($last_filter) {
         my $filter = MT->model('filter')->load($last_filter);
@@ -1166,30 +1245,36 @@ sub list {
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
                 my $sdisp = $sub->{display} || 'optional';
-                push @subfields,
-                    {
-                      display => $sdisp eq 'force' ? 1
+                my $display
+                    = $sdisp eq 'force'   ? 1
                     : $sdisp eq 'none'    ? 0
                     : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
                     : $sdisp eq 'default' ? 1
-                    : 0,
+                    :                       0;
+                push @subfields,
+                    {
+                    display    => $display,
+                    id         => $id . '.' . $sub->{class},
                     class      => $sub->{class},
+                    parent_id  => $id,
                     label      => $app->translate( $sub->{label} ),
                     is_default => $sdisp eq 'default' ? 1 : 0,
+                    checked    => $display,
                     };
             }
         }
         push @list_columns,
             {
-            id        => $prop->id,
-            type      => $prop->type,
-            label     => $prop->label,
-            primary   => $primary_col{$id} ? 1 : 0,
-            col_class => $prop->col_class,
-            sortable  => $prop->can_sort($scope),
-            sorted    => $prop->id eq $default_sort ? 1 : 0,
-            display   => $show,
-            is_default => $force || $default,
+            id                 => $prop->id,
+            type               => $prop->type,
+            label              => MT::Util::encode_html( $prop->label ),
+            primary            => $primary_col{$id} ? 1 : 0,
+            col_class          => $prop->col_class,
+            sortable           => $prop->can_sort($scope),
+            sorted             => $prop->id eq $default_sort ? 1 : 0,
+            display            => $show,
+            is_default         => $force || $default,
+            checked            => $show,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,
@@ -1202,61 +1287,53 @@ sub list {
             : $a->{order} <=> $b->{order}
     } @list_columns;
 
-    my @filter_types = map {
-        {   prop                  => $_,
-            id                    => $_->id,
-            type                  => $_->type,
-            label                 => $_->filter_label || $_->label,
-            field                 => $_->filter_tmpl,
-            single_select_options => $_->single_select_options($app),
-            verb                  => defined $_->verb ? $_->verb
-            : $app->translate('__SELECT_FILTER_VERB'),
-            singleton => $_->singleton ? 1
-            : $_->has('filter_editable') ? !$_->filter_editable
-            : 0,
-            editable => $_->has('filter_editable') ? $_->filter_editable : 1,
-            base_type => $_->base_type,
-        }
-        }
-        sort {
-        ( $a->item_order && $b->item_order )
-            ? $a->item_order <=> $b->item_order
-            : ( !$a->item_order && $b->item_order )  ? 1
-            : ( $a->item_order  && !$b->item_order ) ? -1
-            : (
-            defined $a->filter_label
-            ? ( ref $a->filter_label
-                ? $a->filter_label->($screen_settings)
-                : $a->filter_label
-                )
-            : ( ref $a->label ? $a->label->($screen_settings) : $a->label )
-            ) cmp(
-            defined $b->filter_label
-            ? ( ref $b->filter_label
-                ? $b->filter_label->($screen_settings)
-                : $b->filter_label
-                )
-            : ( ref $b->label ? $b->label->($screen_settings) : $b->label )
-            );
-        }
-        grep { $_->can_filter($scope) } values %$list_props;
+    my @filter_types;
+    for my $prop ( values %$list_props ) {
+        next unless $prop->can_filter($scope);
 
-#for my $filter_type ( @filter_types ) {
-#    if ( my $options = $filter_type->{single_select_options} ) {
-#        require MT::Util;
-#        if ( 'ARRAY' ne ref $options ) {
-#            $options = MT->handler_to_coderef($options)
-#                unless ref $options;
-#            $filter_type->{single_select_options} = $options->( $filter_type->{prop} );
-#        }
-#        for my $option ( @{$filter_type->{single_select_options}} ) {
-#            $option->{label} = MT::Util::encode_js($option->{label});
-#        }
-#    }
-#}
+        my $label_for_sort;
+        if ( defined $prop->filter_label ) {
+            $label_for_sort
+                = ref $prop->filter_label
+                ? $prop->filter_label->($screen_settings)
+                : $prop->filter_label;
+        }
+        if ( !defined $label_for_sort ) {
+            $label_for_sort
+                = ref $prop->label
+                ? $prop->label->($screen_settings)
+                : $prop->label;
+            $label_for_sort = '' unless defined $label_for_sort;
+        }
+
+        push @filter_types,
+            {
+            prop => $prop,
+            id   => $prop->id,
+            type => $prop->type,
+            label =>
+                MT::Util::encode_html( $prop->filter_label || $prop->label ),
+            field                 => $prop->filter_tmpl,
+            single_select_options => $prop->single_select_options($app),
+            verb                  => defined $prop->verb ? $prop->verb
+            : $app->translate('__SELECT_FILTER_VERB'),
+            singleton => $prop->singleton ? 1
+            : $prop->has('filter_editable') ? !$prop->filter_editable
+            : 0,
+            editable => $prop->has('filter_editable') ? $prop->filter_editable
+            : 1,
+            base_type      => $prop->base_type,
+            item_order     => $prop->item_order || 0,
+            label_for_sort => $label_for_sort,
+            };
+    }
+    @filter_types = sort {
+               $a->{item_order} <=> $b->{item_order}
+            or $a->{label_for_sort} cmp $b->{label_for_sort}
+    } @filter_types;
 
     require MT::CMS::Filter;
-    my $filters = MT::CMS::Filter::filters( $app, $type, encode_html => 1 );
+    my $filters = MT::CMS::Filter::filters( $app, $type . $subtype );
 
     my $allpass_filter = {
         label => MT->translate(
@@ -1272,35 +1349,36 @@ sub list {
     };
     $initial_filter = $allpass_filter
         unless $initial_filter;
-    ## Encode all HTML in complex structure.
-    MT::Util::deep_do(
-        $initial_filter,
-        sub {
-            my $ref = shift;
-            $$ref = MT::Util::encode_html($$ref);
-        }
-    );
 
     require JSON;
     my $json = JSON->new->utf8(0);
 
-    $param{common_listing}   = 1;
-    $param{blog_id}          = $blog_id || '0';
-    $param{filters}          = $json->encode($filters);
-    $param{initial_filter}   = $json->encode($initial_filter);
-    $param{allpass_filter}   = $json->encode($allpass_filter);
-    $param{system_messages}  = $json->encode( \@messages );
-    $param{filters_raw}      = $filters;
-    $param{default_sort_key} = $default_sort;
-    $param{list_columns}     = \@list_columns;
-    $param{filter_types}     = \@filter_types;
-    $param{object_type}      = $type;
-    $param{page_title}       = $screen_settings->{screen_label};
-    $param{list_headers}     = \@list_headers;
-    $param{build_user_menus} = $screen_settings->{has_user_properties};
-    $param{use_filters}      = 1;
-    $param{use_actions}      = 1;
-    $param{object_label}     = $screen_settings->{object_label}
+    my $encode_filter = sub {
+        my $raw     = shift;
+        my $encoded = $json->encode($raw);
+        $encoded =~ s/(s)(cript)/$1\\$2/gi;
+        return $encoded;
+    };
+
+    $param{common_listing}     = 1;
+    $param{blog_id}            = $blog_id || '0';
+    $param{filters}            = $encode_filter->($filters),
+        $param{initial_filter} = $encode_filter->($initial_filter),
+        $param{allpass_filter} = $encode_filter->($allpass_filter);
+    $param{system_messages}   = $json->encode( \@messages );
+    $param{filters_raw}       = $filters;
+    $param{default_sort_key}  = $default_sort;
+    $param{list_columns}      = \@list_columns;
+    $param{list_columns_json} = $json->encode( \@list_columns );
+    $param{filter_types}      = \@filter_types;
+    $param{object_type}       = $type;
+    $param{subtype}           = $app->param('type');
+    $param{page_title}        = $screen_settings->{screen_label};
+    $param{list_headers}      = \@list_headers;
+    $param{build_user_menus}  = $screen_settings->{has_user_properties};
+    $param{use_filters}       = 1;
+    $param{use_actions}       = 1;
+    $param{object_label}      = $screen_settings->{object_label}
         || $obj_class->class_label;
     $param{object_label_plural}
         = $screen_settings->{object_label_plural}
@@ -1342,7 +1420,7 @@ sub list {
         # set component for template loading
         my @compo = MT::Component->select;
         foreach my $c (@compo) {
-            my $r = $c->registry( 'object_types' => $type );
+            my $r = $c->registry( 'object_types' => ($type) );
             if ($r) {
                 $component = $c->id;
                 last;
@@ -1357,7 +1435,8 @@ sub list {
     $feed_link = $feed_link->($app)
         if 'CODE' eq ref $feed_link;
     if ($feed_link) {
-        $param{feed_url} = $app->make_feed_link( $type,
+        my $view = $subtype ? $app->param('type') : $type;
+        $param{feed_url} = $app->make_feed_link( $view,
             $blog_id ? { blog_id => $blog_id } : undef );
         $param{object_type_feed}
             = $screen_settings->{feed_label}
@@ -1366,8 +1445,8 @@ sub list {
     }
 
     if ( $param{use_actions} ) {
-        $app->load_list_actions( $type, \%param );
-        $app->load_content_actions( $type, \%param );
+        $app->load_list_actions( ( $type . $subtype ), \%param );
+        $app->load_content_actions( ( $type . $subtype ), \%param );
     }
 
     push @{ $param{debug_panels} },
@@ -1391,9 +1470,8 @@ sub list {
 sub filtered_list {
     my $app              = shift;
     my (%forward_params) = @_;
-    my $q                = $app->param;
-    my $blog_id          = $q->param('blog_id') || 0;
-    my $filter_id        = $q->param('fid') || $forward_params{saved_fid};
+    my $blog_id          = $app->param('blog_id') || 0;
+    my $filter_id        = $app->param('fid') || $forward_params{saved_fid};
     my $blog             = $blog_id ? $app->blog : undef;
     my $scope
         = !$blog         ? 'system'
@@ -1433,7 +1511,7 @@ sub filtered_list {
         $debug->{section} = sub { };
     }
 
-    my $ds = $q->param('datasource');
+    my $ds = $app->param('datasource');
     my $setting = MT->registry( listing_screens => $ds )
         or return $app->json_error( $app->translate('Unknown list type') );
 
@@ -1471,7 +1549,16 @@ sub filtered_list {
         }
         my $allowed = 0;
         my @act;
-        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+        if ( 'CODE' eq ref $list_permission ) {
+            eval { $list_permission = $list_permission->($app); };
+            return $app->json_error(
+                $app->translate(
+                    'Error occurred during permission check: [_1]', $@
+                )
+            ) if $@;
+        }
+        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
+        {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
             eval { @act = $code->(); };
@@ -1481,18 +1568,12 @@ sub filtered_list {
                 )
             ) if $@;
         }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
+
+        if ( 'ARRAY' eq ref $list_permission ) {
             @act = @$list_permission;
         }
         else {
             @act = split /\s*,\s*/, $list_permission;
-        }
-        my $blog_ids = undef;
-        if ($blog_id) {
-            push @$blog_ids, $blog_id;
-            if ( $scope eq 'website' && $inherit_blogs ) {
-                push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
-            }
         }
         foreach my $p (@act) {
             $allowed = 1,
@@ -1509,7 +1590,7 @@ sub filtered_list {
 
     my $filteritems;
     my $allpass = 0;
-    if ( my $items = $q->param('items') ) {
+    if ( my $items = $app->param('items') ) {
         if ( $items =~ /^".*"$/ ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
@@ -1549,8 +1630,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $q->param('limit') || 50;    # FIXME: hard coded.
-    my $page = $q->param('page');
+    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $page = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
 
@@ -1559,10 +1640,11 @@ sub filtered_list {
     $MT::DebugMode && $debug->{section}->('initialize');
 
     ## FIXME: take identifical column from column defs.
-    my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
     my @cols = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type} ) || MT->model($ds);
+    my $class = MT->model( $setting->{object_type} || $ds );
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';
@@ -1585,8 +1667,8 @@ sub filtered_list {
     my %load_options = (
         terms      => {@blog_id_term},
         args       => {},
-        sort_by    => $q->param('sort_by') || '',
-        sort_order => $q->param('sort_order') || '',
+        sort_by    => $app->param('sort_by') || '',
+        sort_order => $app->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
         scope      => $scope,
@@ -1604,7 +1686,11 @@ sub filtered_list {
         blog_ids => $blog_ids,
     );
 
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+    my $callback_ds = $ds;
+    if ( $ds =~ m/(.*)\./ ) {
+        $callback_ds = $1;
+    }
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, \%count_options, \@cols );
 
     my $count_result = $filter->count_objects(%count_options);
@@ -1623,7 +1709,7 @@ sub filtered_list {
 
     my ( $objs, @data );
     if ($count) {
-        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);
@@ -1714,7 +1800,7 @@ sub filtered_list {
     $app->user->save;
 
     require MT::CMS::Filter;
-    my $filters = MT::CMS::Filter::filters( $app, $ds, encode_html => 1 );
+    my $filters = MT::CMS::Filter::filters( $app, $ds );
 
     require POSIX;
     my %res;
@@ -1779,8 +1865,7 @@ sub save_list_prefs {
 
 sub delete {
     my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('_type');
+    my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")
         unless $type;
@@ -1798,12 +1883,11 @@ sub delete {
     }
 
     return $app->errtrans("Invalid request.")
-        if is_disabled_mode( $app, 'delete', $type );
+        unless is_enabled_mode( $app, 'delete', $type );
 
-    my $parent  = $q->param('parent');
-    my $blog_id = $q->param('blog_id');
+    my $parent  = $app->param('parent');
+    my $blog_id = $app->param('blog_id');
     my $class   = $app->model($type) or return;
-    my $perms   = $app->permissions;
     my $author  = $app->user;
 
     $app->validate_magic() or return;
@@ -1817,7 +1901,7 @@ sub delete {
     my @not_deleted;
     my $delete_count = 0;
     my %return_arg;
-    for my $id ( $q->param('id') ) {
+    for my $id ( $app->multi_param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
             require MT::CMS::User;
@@ -1925,7 +2009,7 @@ sub delete {
         elsif ( $type eq 'author' ) {
             $app->run_callbacks( 'cms_delete_ext_author_filter',
                 $app, $obj, \%return_arg )
-                || return;
+                || next;
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
@@ -1942,10 +2026,44 @@ sub delete {
 
             # FIXME: enumeration of types
             if ( $obj->type
-                !~ /(custom|index|archive|page|individual|category|widget|backup)/
+                !~ /(custom|index|archive|page|individual|category|widget|backup|ct|ct_archive)/
                 )
             {
                 $required_items++;
+                next;
+            }
+        }
+        elsif ( $type eq 'content_type' ) {
+            my $template_class = $app->model('template');
+            my $count
+                = $template_class->count(
+                { content_type_id => $obj->id, type => { not => 'backup' } }
+                );
+            if ( $count > 0 ) {
+                push @not_deleted, $obj->id;
+                next;
+            }
+
+            my $used_in_content_type_field
+                = $app->model('content_field')->exist(
+                {   blog_id                 => $obj->blog_id,
+                    related_content_type_id => $obj->id,
+                }
+                );
+            if ($used_in_content_type_field) {
+                push @not_deleted, $obj->id;
+                next;
+            }
+        }
+        elsif ( $type eq 'category_set' ) {
+            my $used_in_categories_field
+                = $app->model('content_field')->exist(
+                {   blog_id            => $obj->blog_id,
+                    related_cat_set_id => $obj->id,
+                }
+                );
+            if ($used_in_categories_field) {
+                push @not_deleted, $obj->id;
                 next;
             }
         }
@@ -1992,7 +2110,7 @@ sub delete {
             = 1;
     }
 
-    if ( $q->param('is_power_edit') ) {
+    if ( $app->param('is_power_edit') ) {
         $return_arg{is_power_edit} = 1;
     }
     if ($required_items) {
@@ -2035,13 +2153,14 @@ sub build_revision_table {
     my $app = shift;
     my (%args) = @_;
 
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type);
-    my $param = $args{param};
-    my $obj   = $args{object};
-    my $blog  = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $lang  = $app->user ? $app->user->preferred_language : undef;
+    my $type    = $app->param('_type');
+    my $blog_id = $app->param('blog_id');
+    my $dialog  = $app->param('dialog');
+    my $class   = $app->model($type);
+    my $param   = $args{param};
+    my $obj     = $args{object};
+    my $blog    = $obj->blog || MT::Blog->load($blog_id);
+    my $lang    = $app->user ? $app->user->preferred_language : undef;
 
     my $js = $param->{rev_js};
     unless ($js) {
@@ -2088,7 +2207,7 @@ sub build_revision_table {
         #    $app->translate( $label );
         #} @{ $revision->[1] };
         #$row->{changed_columns} = \@changed;
-        if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
+        if ( $type =~ /^(entry|page|content_data)$/ ) {
             $row->{rev_status} = $revision->[0]->status;
         }
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
@@ -2099,19 +2218,19 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => scalar $q->param('dialog'), },
+            params => { dialog => $dialog, },
             %$param
         }
     );
 }
 
 sub list_revision {
-    my $app   = shift;
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $class = $app->model($type);
-    my $id    = $q->param('id');
-    my $rn    = $q->param('r');
+    my $app     = shift;
+    my $type    = $app->param('_type');
+    my $class   = $app->model($type);
+    my $id      = $app->param('id');
+    my $rn      = $app->param('r');
+    my $blog_id = $app->param('blog_id');
 
     return $app->errtrans('Invalid request')
         unless $class->isa('MT::Revisable');
@@ -2120,7 +2239,7 @@ sub list_revision {
     require MT::Promise;
     my $obj_promise = MT::Promise::delay(
         sub {
-            return $class->load($id) || undef;
+            return $class->load($id);
         }
     );
 
@@ -2128,15 +2247,17 @@ sub list_revision {
         $app, $id, $obj_promise )
         || return $app->permission_denied();
 
-    my $obj = $obj_promise->force();
-    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
-    my $js
-        = "parent.location.href='"
-        . $app->uri
-        . '?__mode=view&amp;_type='
-        . $type
-        . '&amp;id='
-        . $obj->id;
+    my $obj  = $obj_promise->force();
+    my $blog = $obj->blog || MT::Blog->load($blog_id);
+    my $js   = "parent.location.href='" . $app->uri;
+    if ( $type eq 'content_data' ) {
+        $js .= '?__mode=view&amp;_type=content_data&amp;content_type_id='
+            . $obj->content_type_id;
+    }
+    else {
+        $js .= '?__mode=view&amp;_type=' . $type;
+    }
+    $js .= '&amp;id=' . $obj->id;
     if ( defined $blog ) {
         $js .= '&amp;blog_id=' . $blog->id;
     }
@@ -2165,9 +2286,8 @@ sub list_revision {
 # Currently, not in use.
 sub save_snapshot {
     my $app   = shift;
-    my $q     = $app->param;
-    my $type  = $q->param('_type');
-    my $id    = $q->param('id');
+    my $type  = $app->param('_type');
+    my $id    = $app->param('id');
     my $param = {};
 
     return $app->errtrans("Invalid request.")
@@ -2207,7 +2327,7 @@ sub save_snapshot {
 
     my $original = $obj->clone();
     my $names    = $obj->column_names;
-    my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
+    my %values   = map { $_ => scalar $app->param($_) } @$names;
 
     if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
         $app->_translate_naughty_words($obj);
@@ -2239,7 +2359,8 @@ sub save_snapshot {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         }
-        my $revision = $obj->save_revision( $q->param('revision-note') );
+        my $revision_note = $app->param('revision-note');
+        my $revision      = $obj->save_revision($revision_note);
         $app->add_return_arg( r => $revision );
         if ($id) {
             my $obj_revision = $original->revision || 0;
@@ -2252,7 +2373,8 @@ sub save_snapshot {
             $original->current_revision($revision);
 
             # call update to bypass instance save method
-            $original->update or return $original->error( $original->errstr );
+            $original->update
+                or return $original->error( $original->errstr );
         }
 
         $app->run_callbacks( 'cms_post_save.' . "$type:revision",
@@ -2280,6 +2402,26 @@ sub is_disabled_mode {
 
     my $res;
     if ( my $reg = $app->registry( 'disable_object_methods', $type ) ) {
+        if ( defined $reg->{$mode} ) {
+            if ( 'CODE' eq ref $reg->{$mode} ) {
+                my $code = $reg->{$mode};
+                $code = MT->handler_to_coderef($code);
+                $res  = $code->();
+            }
+            else {
+                $res = $reg->{$mode};
+            }
+        }
+    }
+    return $res;
+}
+
+sub is_enabled_mode {
+    my $app = shift;
+    my ( $mode, $type ) = @_;
+
+    my $res;
+    if ( my $reg = $app->registry( 'enable_object_methods', $type ) ) {
         if ( defined $reg->{$mode} ) {
             if ( 'CODE' eq ref $reg->{$mode} ) {
                 my $code = $reg->{$mode};

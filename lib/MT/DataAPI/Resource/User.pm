@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,7 +19,7 @@ sub _private_bulk_from_object {
     sub {
         my ( $objs, $hashs ) = @_;
         my $app          = MT->instance;
-        my $user         = $app->user;
+        my $user         = $app->user or return;
         my $is_superuser = $user->is_superuser;
         for ( my $i = 0; $i < scalar @$objs; $i++ ) {
             my $obj = $objs->[$i];

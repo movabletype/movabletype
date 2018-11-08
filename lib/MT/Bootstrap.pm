@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Bootstrap;
 
 use strict;
+use warnings;
 
 sub BEGIN {
     my ( $dir, $orig_dir );
@@ -190,6 +191,7 @@ sub import {
                 $ENV{FAST_CGI} = 0;
                 $app = $class->new(%param) or die $class->errstr;
                 local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
+                $app->init_request;
                 $app->run;
             }
         };

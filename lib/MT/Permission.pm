@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,8 +7,10 @@
 package MT::Permission;
 
 use strict;
+use warnings;
 
 use MT::Blog;
+use MT::ContentData;
 use MT::Object;
 @MT::Permission::ISA = qw(MT::Object);
 
@@ -117,6 +119,8 @@ sub global_perms {
         my $regs = MT::Component->registry('permissions');
         my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
+        %perms = +( %perms,
+            %{ MT->app->model('content_type')->all_permissions } );
 
         \%perms;
     }
@@ -148,7 +152,7 @@ sub global_perms {
                 push @perms, "'$name'";
             }
         }
-        return join ',', @perms;
+        return join ',', sort @perms;
     }
 
     sub add_permissions {
@@ -158,7 +162,7 @@ sub global_perms {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
-            if ( $more =~ /\'manage_member_blogs\'/ ) {
+            if ( $more =~ /\'administer_site\'/ ) {
                 $more = _all_perms('blog');
             }
             else {
@@ -200,7 +204,7 @@ sub global_perms {
         my $perms = shift;
         my ($more_perm) = @_;
         if ( my $more = $more_perm->restrictions ) {
-            if ( $more =~ /'administer_blog' | 'administer_website'/ ) {
+            if ( $more =~ /'administer_site'/ ) {
                 $more = _all_perms('blog');
             }
             my $cur_perm = $perms->restrictions;
@@ -253,7 +257,7 @@ sub global_perms {
         for my $perm_name (@perms) {
             $cur_rest =~ s/'$perm_name',?//i;
         }
-        $perms->restrictions( $cur_rest || undef );
+        $perms->restrictions($cur_rest);
     }
 
     # Clears all permissions or those in a particular set
@@ -352,10 +356,7 @@ sub global_perms {
                         && $author->is_superuser );
                     return 1
                         if ( ( $_[0]->blog && $_[0]->blog->is_blog )
-                        && $_[0]->has('administer_blog') );
-                    return 1
-                        if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
-                        && $_[0]->has('administer_website') );
+                        && $_[0]->has('administer_site') );
                 }
             }
 
@@ -453,8 +454,15 @@ sub can_do {
         $perm =~ s/'(.+)'/$1/;
         return 1 if 'administer' eq $perm;
         next if $self->is_restricted($perm);
-        $perm = join( '.',
-            ( ( $self->blog_id != 0 ? 'blog' : 'system' ), $perm ) );
+        $perm = join(
+            '.',
+            (   (   ( defined $self->blog_id && $self->blog_id != 0 )
+                    ? 'blog'
+                    : 'system'
+                ),
+                $perm
+            )
+        );
         my $result = __PACKAGE__->_confirm_action( $perm, $action );
         return $result if defined $result;
     }
@@ -497,7 +505,8 @@ sub can_post {
 sub can_edit_authors {
     my $perms  = shift;
     my $author = $perms->user;
-    $perms->can_administer_blog || ( $author && $author->is_superuser() );
+    $perms->can_administer_site
+        || ( $author && $author->can_manage_users_groups() );
 }
 
 sub can_edit_entry {
@@ -582,6 +591,88 @@ sub can_upload {
 sub can_view_feedback {
     my $perms = shift;
     $perms->can_do('view_feedback');
+}
+
+sub can_edit_content_data {
+    my $self = shift;
+    my ( $content_data, $author ) = @_;
+
+    die unless $author->isa('MT::Author');
+
+    return 1
+        if $author->is_superuser
+        || $author->can_do('edit_all_content_data');
+
+    unless ( ref $content_data ) {
+        $content_data = MT::ContentData->load($content_data)
+            or return;
+    }
+
+    if (   !ref $self
+        || $self->author_id != $author->id
+        || $self->blog_id != $content_data->blog_id )
+    {
+        $self = $author->permissions( $content_data->blog_id )
+            or return;
+    }
+
+    return 1 if $self->can_do('edit_all_content_data');
+
+    my $content_type = $content_data->content_type or return 0;
+
+    return 1
+        if $self->can_do(
+        'edit_all_content_data_' . $content_type->unique_id );
+
+    my $own_content_data = $content_data->author_id == $author->id;
+
+    require MT::ContentStatus;
+    if ( $content_data->status == MT::ContentStatus::RELEASE() ) {
+        return 1
+            if $self->can_do(
+            'edit_all_published_content_data_' . $content_type->unique_id );
+        return $own_content_data
+            && $self->can_do(
+            'edit_own_published_content_data_' . $content_type->unique_id );
+    }
+    else {
+        return 1
+            if $self->can_do(
+            'edit_all_unpublished_content_data_' . $content_type->unique_id );
+        return $own_content_data
+            && $self->can_do(
+            'edit_own_unpublished_content_data_' . $content_type->unique_id );
+    }
+}
+
+sub can_republish_content_data {
+    my $perms = shift;
+    my ( $content_data, $author ) = @_;
+    die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
+    unless ( ref $content_data ) {
+        require MT::ContentData;
+        $content_data = MT::ContentData->load($content_data)
+            or return;
+    }
+
+    $perms = $author->permissions( $content_data->blog_id )
+        or return;
+
+    return 1
+        if $perms->can_do('rebuild')
+        || $perms->can_do('edit_all_content_data');
+
+    my $content_type_unique_id = $content_data->ct_unique_id;
+    return 1
+        if $perms->can_do(
+        'edit_all_content_data_' . $content_type_unique_id );
+    return 1
+        if $content_data->author_id == $author->id
+        && $perms->can_do(
+        'publish_own_content_data_' . $content_type_unique_id );
+
+    return 0;
 }
 
 sub is_empty {
@@ -748,7 +839,7 @@ sub _load_inheritance_permissions {
             my ( $s, $p ) = split /\./, $_;
             $hash->{$p} = 1;
         }
-        @$perms = keys %$hash;
+        @$perms = sort keys %$hash;
     }
 
     return $perms;
@@ -777,16 +868,54 @@ sub _load_recursive {
 }
 
 sub load_permissions_from_action {
-    my $pkg = shift;
-    my ($action) = @_;
-    my $permissions ||= __PACKAGE__->perms_from_registry();
+    my $pkg         = shift;
+    my ($action)    = @_;
+    my $permissions = __PACKAGE__->perms_from_registry();
     my $perms;
 
-    foreach my $p ( keys %$permissions ) {
+    foreach my $p ( sort keys %$permissions ) {
         push @$perms, $p
             if $pkg->_confirm_action( $p, $action, $permissions );
     }
     return $perms;
+}
+
+__PACKAGE__->add_trigger( pre_save => \&_rebuild_permissions );
+
+sub _rebuild_permissions {
+    my ( $perm, $orig ) = @_;
+    my $app = MT->instance;
+    return if !$app or $app->isa('MT::App::Upgrader');
+
+    # In restoring, nothing to do.
+    return if $app->request('__restore_in_progress');
+
+    # rebuild permissions for this user / blog
+    my $user_id = $perm->author_id;
+    my $blog_id = $perm->blog_id;
+
+    return unless $user_id && $blog_id;
+
+    # Clear all permissions then rebuild it.
+    $perm->permissions('');
+
+    # find all blogs for this user
+    my $user = MT::Author->load($user_id) or return;
+
+    my $role_iter = $user->role_iter( { blog_id => $blog_id } );
+    if ($role_iter) {
+        while ( my $role = $role_iter->() ) {
+            $perm->add_permissions($role);
+        }
+    }
+
+    # find all blogs for this user through groups
+    $role_iter = $user->group_role_iter( { blog_id => $blog_id } );
+    if ($role_iter) {
+        while ( my $role = $role_iter->() ) {
+            $perm->add_permissions($role);
+        }
+    }
 }
 
 1;
@@ -846,10 +975,10 @@ the following items:
 
     [ key, label, set ]
 
-The 'key' element is the value of that permission and is also a unique 
+The 'key' element is the value of that permission and is also a unique
 identifier that is used to identify the permission. Declared permissions
 may be tested through a 'can' method that is added to the MT::Permission
-namespace when registering them. So if you register with a 'key' value 
+namespace when registering them. So if you register with a 'key' value
 of 'foo', this creates a method 'can_foo', which may be tested for like this:
 
     my $perm = $app->permissions;
@@ -860,7 +989,7 @@ of 'foo', this creates a method 'can_foo', which may be tested for like this:
 The 'label' element is a phrase that identifies the permission.
 
 The 'set' element identifies which group or category of permissions the
-permission is associated with. Currently, there are two sets of 
+permission is associated with. Currently, there are two sets of
 permissions: 'blog' and 'system'.
 
 If you call the perms method with the $set parameter, it will only return
@@ -942,7 +1071,7 @@ permission.
 Returns true or false depending only on whether the bit identified by
 C<$permission_name> is set in this permission object.
 
-=head2 $perms->can_administer_blog
+=head2 $perms->can_administer_site
 
 Returns true if the user can administer the blog. This is a blog-level
 "superuser" capability.
@@ -1018,7 +1147,7 @@ Returns true if the user can set publishing paths, false otherwise.
 
 =head2 $perms->can_edit_authors()
 
-Returns true if the 'administer_blog' permission is set or the associated
+Returns true if the 'administer_site' permission is set or the associated
 author has superuser rights.
 
 =head2 $perms->can_edit_entry($entry, $author)
@@ -1060,11 +1189,11 @@ Returns true if the user can view system level activity log, false otherwise.
 
 =head2 $perms->can_create_blog
 
-Returns true if the user can create a new weblog, false otherwise.
+DEPRECATED: Returns true if the user can create a new weblog, false otherwise.
 
 =head2 $perms->can_create_website
 
-Returns true if the user can create a new website, false otherwise.
+DEPRECATED: Returns true if the user can create a new website, false otherwise.
 
 =head2 $perms->can_manage_plugins
 

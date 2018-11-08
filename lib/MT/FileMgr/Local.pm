@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 
 package MT::FileMgr::Local;
 use strict;
+use warnings;
 
 use MT::FileMgr;
 @MT::FileMgr::Local::ISA = qw( MT::FileMgr );
@@ -38,7 +39,7 @@ sub get_data {
     my $is_handle = $fmgr->is_handle($from);
     if ( !$is_handle ) {
         $fh = gensym();
-        open $fh,
+        open $fh, "<",
             _local($from)
             or return $fmgr->error(
             MT->translate(
@@ -71,7 +72,7 @@ sub put {
     my $rv;
     if ( !$fmgr->is_handle($from) ) {
         my $fh = gensym();
-        open $fh,
+        open $fh, "<",
             $from
             or return $fmgr->error(
             MT->translate(
@@ -209,7 +210,7 @@ sub content_is_updated {
     ## If the system has Digest::MD5, compare MD5 hashes; otherwise
     ## read in the file and compare the strings.
     my $fh = gensym();
-    open $fh, $file or return 1;
+    open $fh, "<", $file or return 1;
     if ( eval { require Digest::MD5; 1 } ) {
         my $ctx = Digest::MD5->new;
         $ctx->addfile($fh);
@@ -248,6 +249,16 @@ sub delete {
         or return $fmgr->error(
         MT->translate( "Deleting '[_1]' failed: [_2]", $file, _syserr("$!") )
         );
+    1;
+}
+
+sub rmdir {
+    my $fmgr = shift;
+    my ($dir) = @_;
+    return 1 unless -d $dir && ! -l $dir;
+    rmdir $dir
+        or return $fmgr->error( "Deleting '[_1]' directory failed: [_2]",
+        $dir, _syserr("$!") );
     1;
 }
 

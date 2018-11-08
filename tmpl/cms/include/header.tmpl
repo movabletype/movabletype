@@ -100,16 +100,17 @@
 
   <mt:var name="html_body">
 
-  <div id="header"<mt:if name="count_notification_dashboard"> class="has-notification"</mt:if>>
+  <div id="header">
     <div id="brand">
       <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><span><img alt="<mt:var name="mt_product_name">" src="<mt:var name="static_uri">images/logo/movable-type-logo.png" /></span></a>
     </div>
 
-  <mt:if name="author_name">
+  <$mt:var name="author_name" count_characters="1" setvar="author_name_length" $>
+  <mt:if name="author_name_length">
 
     <div id="utility-nav">
       <ul id="utility-nav-list">
-        <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="18" height="18" class="userpic" /> <span class="username"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></span></a></li>
+        <li id="user"><a href="<$mt:var name="mt_url"$>?blog_id=0&amp;__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="18" height="18" class="userpic" /> <span class="username"><mt:if name="author_display_name"><mt:var name="author_display_name" escape="html"><mt:else><mt:var name="author_name" escape="html"></mt:if></span></a></li>
         <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
     <mt:if name="can_logout">
         <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Sign out"></a></li>
@@ -142,7 +143,7 @@
             <div id="quick-search-form" class="detail search-form" style="display: none;">
               <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
                 <input type="hidden" name="__mode" value="search_replace" />
-                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type" escape="html"><mt:else><mt:if name="object_type"><$mt:var name="object_type" escape="html"$><mt:else>entry</mt:if></mt:if>" />
               <mt:if name="blog_id">
                 <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
               </mt:if>
@@ -181,13 +182,6 @@
       <!-- /Menu Bar Nav--></div>
     <!-- /Menu Bar --></div>
   </mt:if>
-  <mt:if name="count_notification_dashboard">
-  <div id="notification-indicator">
-    <div id="notification-indicator-content"> 
-      <p class="msg-text"><mt:unless name="scope_type" eq="user"><a href="<$mt:var name="mt_url"$>?__mode=dashboard"></mt:unless><__trans phrase="You have <strong>[quant,_1,message,messages]</strong> from the system." params="<mt:var name="count_notification_dashboard">"><mt:unless name="scope_type" eq="user"></a></mt:unless></p>
-    </div>
-  </div>
-  </mt:if>
   <!-- /Header --></div>
 
   <mt:if name="is_generic_website">
@@ -200,7 +194,8 @@
 
     <mt:var name="form_header">
 
-  <mt:if name="author_name">
+  <$mt:var name="author_name" count_characters="1" setvar="author_name_length" $>
+  <mt:if name="author_name_length">
     <mt:unless name="is_full_screen">
       <mt:if name="top_nav_loop">
       <div id="menu">
@@ -215,9 +210,9 @@
             <mt:loop name="sub_nav_loop">
             <mt:if name="allowed">
               <mt:if name="current">
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label" escape="html"></span></em></a></li>
               <mt:else>
-              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label"></span></a></li>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label" escape="html"></span></a></li>
               </mt:if>
             </mt:if>
             </mt:loop>

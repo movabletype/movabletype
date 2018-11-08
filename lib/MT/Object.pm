@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Object;
 
 use strict;
+use warnings;
 use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
 use MT;
@@ -925,7 +926,8 @@ sub _ts2db {
     if ( $_[0] =~ m{ \A \d{4} - }xms ) {
         return $_[0];
     }
-    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', unpack 'A4A2A2A2A2A2',
+    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d',
+        map { $_ || 0 } unpack 'A4A2A2A2A2A2',
         $_[0];
     return $ret;
 }
@@ -977,9 +979,8 @@ sub _translate_numeric_fields {
     my ( $obj, $orig_obj ) = @_;
 
     for my $field (
-        @{  $obj->columns_of_type(
-                'integer', 'boolean', 'smallint', 'float'
-            )
+        @{  $obj->columns_of_type( 'integer', 'boolean', 'smallint', 'float',
+                'double' )
         }
         )
     {
@@ -1222,8 +1223,8 @@ sub add_callback {
 
 sub init {
     my $obj = shift;
-    $obj->SUPER::init(@_);
     $obj->set_defaults();
+    $obj->SUPER::init(@_);
     return $obj;
 }
 
@@ -1330,42 +1331,40 @@ sub created_on_obj {
 }
 
 sub column_as_datetime {
-    my $obj = shift;
+    my $obj   = shift;
     my ($col) = @_;
-    if ( my $ts = $obj->column($col) ) {
-        my $blog;
-        if ( $obj->isa('MT::Blog') ) {
-            $blog = $obj;
-        }
-        else {
-            if ( my $blog_id = $obj->blog_id ) {
-                require MT::Blog;
-                $blog = MT::Blog->lookup($blog_id);
-            }
-        }
-        my ( $y, $mo, $d, $h, $m, $s )
-            = $ts
-            =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
-        require MT::DateTime;
-        my $four_digit_offset;
-        if ($blog) {
-            $four_digit_offset = sprintf( '%.02d%.02d',
-                int( $blog->server_offset ),
-                60 *
-                    abs( $blog->server_offset - int( $blog->server_offset ) )
-            );
-        }
-        return new MT::DateTime(
-            year      => $y,
-            month     => $mo,
-            day       => $d,
-            hour      => $h,
-            minute    => $m,
-            second    => $s,
-            time_zone => $four_digit_offset
-        );
+    my $ts    = $obj->column($col) or return;
+    my ( $y, $mo, $d, $h, $m, $s )
+        = $ts
+        =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/
+        or return;
+
+    my $blog;
+    if ( $obj->isa('MT::Blog') ) {
+        $blog = $obj;
     }
-    undef;
+    else {
+        if ( my $blog_id = $obj->blog_id ) {
+            require MT::Blog;
+            $blog = MT::Blog->lookup($blog_id);
+        }
+    }
+    require MT::DateTime;
+    my $four_digit_offset;
+    if ($blog) {
+        $four_digit_offset = sprintf( '%.02d%.02d',
+            int( $blog->server_offset ),
+            60 * abs( $blog->server_offset - int( $blog->server_offset ) ) );
+    }
+    return new MT::DateTime(
+        year      => $y,
+        month     => $mo,
+        day       => $d,
+        hour      => $h,
+        minute    => $m,
+        second    => $s,
+        time_zone => $four_digit_offset
+    );
 }
 
 sub join_on {
@@ -1466,19 +1465,32 @@ sub remove_children {
     return 1 unless @classes;
 
     $param ||= {};
-    my $key = $param->{key} || $obj->datasource . '_id';
+    my @keys;
+    if ( defined $param->{key} && $param->{key} ne '' ) {
+        @keys = ( $param->{key} );
+    }
+    else {
+        @keys = $obj->child_keys;
+    }
     my $obj_id = $obj->id;
     for my $class (@classes) {
         eval "# line " . __LINE__ . " " . __FILE__
             . "\nno warnings 'all';require $class;";
-        $class->remove_children_multi( { $key => $obj_id } );
+        for my $key (@keys) {
+            $class->remove_children_multi( { $key => $obj_id } );
+        }
     }
     1;
 }
 
-sub child_key {
+sub child_keys {
     my $class = shift;
-    $class->datasource . '_id';
+    if ( $class->long_datasource ne $class->datasource ) {
+        ( $class->datasource . '_id', $class->long_datasource . '_id', );
+    }
+    else {
+        ( $class->datasource . '_id' );
+    }
 }
 
 sub remove_children_multi {
@@ -1496,8 +1508,9 @@ sub remove_children_multi {
         for my $child (@classes) {
             eval "# line " . __LINE__ . " " . __FILE__
                 . "\nno warnings 'all';require $child;";
-            $child->remove_children_multi( { $class->child_key() => \@ids } )
-                if @ids;
+            for my $key ( $class->child_keys ) {
+                $child->remove_children_multi( { $key => \@ids } );
+            }
         }
 
         return $class->remove($terms);
@@ -1616,7 +1629,7 @@ sub __parse_def {
         if ( $props->{primary_key} ) && ( $props->{primary_key} eq $col );
     $def{auto}       = 1 if $def =~ m/\bauto[_ ]increment\b/i;
     $def{revisioned} = 1 if $def =~ m/\brevisioned\b/i;
-    $def{default} = $props->{defaults}{$col}
+    $def{default}    = $props->{defaults}{$col}
         if exists $props->{defaults}{$col};
     \%def;
 }
@@ -1675,7 +1688,7 @@ sub to_hash {
     my $obj    = shift;
     my $hash   = {};
     my $props  = $obj->properties;
-    my $pfx    = $obj->datasource;
+    my $pfx    = $obj->long_datasource;
     my $values = $obj->get_values;
     foreach ( keys %$values ) {
         $hash->{"${pfx}.$_"} = $values->{$_};
@@ -1789,6 +1802,11 @@ sub assets {
             )
         ];
     }
+}
+
+sub long_datasource {
+    my $class = shift;
+    $class->properties->{long_datasource} || $class->datasource;
 }
 
 package MT::Object::Meta;
@@ -1981,7 +1999,12 @@ For storing text data.
 
 =item * float
 
-For storing floating point values.
+For storing single-precision floating point values (Some ObjectDriver
+can save double-precision floating point value to float type).
+
+=item * double
+
+For storing double-precision floating point values.
 
 =back
 

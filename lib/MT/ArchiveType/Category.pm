@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType::Category;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 use MT::Util qw( remove_html encode_html );
@@ -17,6 +18,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("CATEGORY_ADV");
+}
+
+sub order {
+    return 120;
 }
 
 sub dynamic_template {
@@ -37,11 +42,11 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class              => "category-archive",
-        category_archive           => 1,
-        archive_template           => 1,
-        archive_listing            => 1,
-        'module_category_archives' => 1,
+        archive_class          => "category-archive",
+        category_archive       => 1,
+        archive_template       => 1,
+        archive_listing        => 1,
+        category_based_archive => 1,
     };
 }
 
@@ -173,11 +178,13 @@ sub display_name {
     my $ctx      = shift;
     my $tmpl     = $ctx->stash('template');
     my $cat      = '';
-    if (   !$tmpl
-        || ( $tmpl->type eq 'index' || $tmpl->type eq 'widget' )
+    if (!$tmpl
+        || (   ( $tmpl->type || '' ) eq 'index'
+            || ( $tmpl->type || '' ) eq 'widget' )
         || !$archiver
         || ( $archiver && !$archiver->category_based )
-        || !$ctx->{inside_archive_list} )
+        || !$ctx->{inside_archive_list}
+        )
     {
         $cat = $ctx->stash('archive_category') || $ctx->stash('category');
         $cat = $cat ? $cat->label . ': ' : '';

@@ -1,5 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Temporary Directory Configuration"></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
+
+<mt:setvarblock name="page_content">
 <form method="post">
   <input type="hidden" name="__mode" value="" />
   <input type="hidden" name="step" value="cfg_dir" />
@@ -7,7 +8,7 @@
   <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
   <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:unless name="success">
-  <p><__trans phrase="You should configure you temporary directory settings."></p>
+  <p><__trans phrase="You should configure your temporary directory settings."></p>
 <mt:else>
   <p><__trans phrase="Your TempDir has been successfully configured. Click 'Continue' below to continue configuration."></p>
 </mt:unless>
@@ -41,41 +42,40 @@
   <mtapp:setting
      id="temp_dir"
      label="<__trans phrase="TempDir">"
-     label_class="top-label"
-     hint="<__trans phrase="The physical path for temporary directory.">">
-    <input type="text" name="temp_dir" id="temp_dir" class="text full" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
+     label_class="top-label">
+    <input type="text" name="temp_dir" id="temp_dir" class="form-control text full" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
   </mtapp:setting>
 
-  <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
+  <div id="goback" class="actions-bar text-right" <mt:unless name="success">style="display: none"</mt:unless>>
     <button
        name="test"
        type="submit"
        onclick="go('test')"
-       class="test action button">
+       class="test action button btn btn-default">
       <__trans phrase="Test">
     </button>
     <button
        name="continue"
        type="submit"
        onclick="go('next_step');"
-       class="continue action primary button">
+       class="continue action primary button btn btn-primary">
       <__trans phrase="Continue">
     </button>
     <button
        name="back"
        type="submit"
        onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
   </div>
 
-  <div id="submit" class="actions-bar" <mt:if name="success">style="display: none"</mt:if>>
+  <div id="submit" class="actions-bar text-right" <mt:if name="success">style="display: none"</mt:if>>
     <button
        name="back"
        type="submit"
        onclick="this.form.reset(); go('previous_step');"
-       class="goback action button">
+       class="goback action button btn btn-default">
       <__trans phrase="Back">
     </button>
     <button
@@ -83,12 +83,14 @@
        type="submit"
        value="1"
        onclick="go('test')"
-       class="test action primary button">
+       class="test action primary button btn btn-primary">
       <__trans phrase="Test">
     </button>
   </div>
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 function go(mode) {
@@ -97,4 +99,8 @@ function go(mode) {
 }
 /* ]]> */
 </script>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

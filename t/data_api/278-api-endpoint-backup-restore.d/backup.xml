@@ -1,0 +1,3563 @@
+<?xml version='1.0'?>
+<movabletype xmlns='http://www.sixapart.com/ns/movabletype'
+backup_what='1' backup_by='admin(ID: 1)' schema_version='6.0008' backup_on='2014-11-14T12:13:53'>
+<website id='1' allow_comment_html='1' allow_commenter_regist='1' allow_comments_default='1' allow_pings='1' allow_pings_default='1' allow_reg_comments='1' allow_unreg_comments='0' archive_type='Monthly,Individual,Category,Page' archive_type_preferred='Individual' autolink_urls='1' basename_limit='100' children_modified_on='20141114211242' class='website' convert_paras='richtext' convert_paras_comments='1' created_by='1' created_on='20141114211152' custom_dynamic_templates='none' date_language='ja' days_on_index='0' email_new_comments='1' email_new_pings='1' entries_on_index='10' file_extension='html' internal_autodiscovery='0' junk_folder_expiry='14' junk_score_threshold='0' language='ja' moderate_pings='1' moderate_unreg_comments='2' modified_on='20141114211152' name='First Website' ping_blogs='0' ping_google='0' ping_technorati='0' ping_weblogs='0' require_comment_emails='0' sanitize_spec='0' server_offset='9' site_path='/var/www/html/mt2/first_website' site_url='http://centos5/mt2/first_website/' sort_order_comments='ascend' sort_order_posts='descend' status_default='2' theme_id='classic_website' use_comment_confirmation='1' use_revision='1' words_in_excerpt='40' template_set='HASH(0xa1430b8)' commenter_authenticators='MovableType' nofollow_urls='1' page_layout='layout-wtt' follow_auth_links='1'></website>
+<author id='1' api_password='aw4l6ql6' auth_type='MT' basename='admin' created_by='1' created_on='20141114211152' date_format='relative' email='masahiro.iuchi@gmail.com' locked_out_time='0' modified_on='20141114211152' name='admin' nickname='admin' password='$6$OP7buzpPKCMdjsYv$uyOG72bq3N6JnL9jwo3Tyd4ir3rj0GN77N2AsoVyg9MDab9SNszOUCvWmE/2Qz03O39r0WcxQDntVub231mvdg' preferred_language='ja' status='1' type='1'><widgets>U0VSRwAAAAAAAAACSAAAAAIAAAAQZGFzaGJvYXJkOmJsb2c6MUgAAAACAAAADHJlY2VudF9ibG9nc0gAAAACAAAABW9yZGVyLQAAAAMyMDAAAAADc2V0LQAAAARtYWluAAAACnNpdGVfc3RhdHNIAAAAAgAAAAVvcmRlci0AAAADMTAwAAAAA3NldC0AAAAEbWFpbgAAABBkYXNoYm9hcmQ6dXNlcjoxSAAAAAYAAAAQd2VsY29tZV90b19sb3VwZUgAAAACAAAABW9yZGVyLQAAAAMxNTAAAAADc2V0LQAAAARtYWluAAAADmZhdm9yaXRlX2Jsb2dzSAAAAAMAAAAFb3JkZXItAAAAAzMwMAAAAAVwYXJhbUgAAAABAAAAA3RhYi0AAAAHd2Vic2l0ZQAAAANzZXQtAAAABG1haW4AAAAOcGVyc29uYWxfc3RhdHNIAAAAAgAAAAVvcmRlci0AAAADNDAwAAAAA3NldC0AAAAHc2lkZWJhcgAAABZub3RpZmljYXRpb25fZGFzaGJvYXJkSAAAAAIAAAAFb3JkZXItAAAAAzEwMAAAAANzZXQtAAAABG1haW4AAAAHbXRfbmV3c0gAAAACAAAABW9yZGVyLQAAAAM1MDAAAAADc2V0LQAAAAdzaWRlYmFyAAAACnNpdGVfc3RhdHNIAAAAAgAAAAVvcmRlci0AAAADMjAwAAAAA3NldC0AAAAEbWFpbg==</widgets><favorite_websites>U0VSRwAAAAAAAAACQQAAAAEtAAAAATE=</favorite_websites></author>
+<template id='4' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='monthly_entry_listing' modified_on='20141114211152' name='月別記事リスト' rebuild_me='1' type='archive' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: &lt;$mt:ArchiveTitle$&gt;アーカイブ&lt;/title&gt;
+&lt;mt:Ignore&gt;
+    &lt;!-- Include Next and Previous links if publishing a date-based archive --&gt;
+&lt;/mt:Ignore&gt;
+&lt;mt:If name=&quot;datebased_archive&quot;&gt;
+    &lt;mt:ArchivePrevious&gt;&lt;link rel=&quot;prev&quot; href=&quot;&lt;$mt:ArchiveLink$&gt;&quot; title=&quot;&lt;$mt:ArchiveTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:ArchivePrevious&gt;
+    &lt;mt:ArchiveNext&gt;&lt;link rel=&quot;next&quot; href=&quot;&lt;$mt:ArchiveLink$&gt;&quot; title=&quot;&lt;$mt:ArchiveTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:ArchiveNext&gt;
+&lt;/mt:If&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:BlogThemeID$&gt;&quot; class=&quot;mt-archive-listing mt-&lt;$mt:Var name=&quot;archive_class&quot;$&gt; &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;archive-title&quot;&gt;&lt;$mt:ArchiveTitle$&gt;アーカイブ&lt;/h1&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Limit number of entries to the number set in Blog Entry Settings --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:Unless name=&quot;datebased_archive&quot;&gt;&lt;$mt:Var name=&quot;limit&quot; value=&quot;auto&quot;$&gt;&lt;/mt:Unless&gt;
+&lt;mt:Entries limit=&quot;$limit&quot;&gt;
+                            &lt;mt:Ignore&gt;&lt;!-- Use the Entry Summary module for each entry published on this page --&gt;&lt;/mt:Ignore&gt;
+                            &lt;$mt:Include module=&quot;記事の概要&quot;$&gt;
+&lt;/mt:Entries&gt;
+
+
+                            &lt;div class=&quot;content-nav&quot;&gt;
+                                &lt;mt:ArchivePrevious&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&amp;laquo; &lt;$mt:ArchiveTitle$&gt;&lt;/a&gt; |&lt;/mt:ArchivePrevious&gt;
+                                &lt;a href=&quot;&lt;$mt:Link template=&quot;main_index&quot;$&gt;&quot;&gt;メインページ&lt;/a&gt; |
+                                &lt;a href=&quot;&lt;$mt:Link template=&quot;archive_index&quot;$&gt;&quot;&gt;アーカイブ&lt;/a&gt;
+                                &lt;mt:ArchiveNext&gt;| &lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; &amp;raquo;&lt;/a&gt;&lt;/mt:ArchiveNext&gt;
+                            &lt;/div&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='36' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='category_entry_listing' modified_on='20141114211152' name='カテゴリ別記事リスト' rebuild_me='1' type='archive' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: &lt;$mt:ArchiveTitle$&gt;アーカイブ&lt;/title&gt;
+&lt;mt:Ignore&gt;
+    &lt;!-- Include Next and Previous links if publishing a date-based archive --&gt;
+&lt;/mt:Ignore&gt;
+&lt;mt:If name=&quot;datebased_archive&quot;&gt;
+    &lt;mt:ArchivePrevious&gt;&lt;link rel=&quot;prev&quot; href=&quot;&lt;$mt:ArchiveLink$&gt;&quot; title=&quot;&lt;$mt:ArchiveTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:ArchivePrevious&gt;
+    &lt;mt:ArchiveNext&gt;&lt;link rel=&quot;next&quot; href=&quot;&lt;$mt:ArchiveLink$&gt;&quot; title=&quot;&lt;$mt:ArchiveTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:ArchiveNext&gt;
+&lt;/mt:If&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:BlogThemeID$&gt;&quot; class=&quot;mt-archive-listing mt-&lt;$mt:Var name=&quot;archive_class&quot;$&gt; &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+&lt;mt:If name=&quot;datebased_archive&quot;&gt;
+                            &lt;mt:Ignore&gt;&lt;!-- Title for category-monthly entry listings --&gt;&lt;/mt:Ignore&gt;
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;archive-title&quot;&gt;&lt;$mt:ArchiveTitle$&gt;アーカイブ&lt;/h1&gt;
+&lt;mt:Else&gt;
+                            &lt;mt:Ignore&gt;&lt;!-- Title for category entry listings --&gt;&lt;/mt:Ignore&gt;
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;archive-title&quot;&gt;&lt;em&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/em&gt;の最近の記事&lt;/h1&gt;
+&lt;/mt:If&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Limit number of entries to the number set in Blog Entry Settings --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:Unless name=&quot;datebased_archive&quot;&gt;&lt;$mt:Var name=&quot;limit&quot; value=&quot;auto&quot;$&gt;&lt;/mt:Unless&gt;
+&lt;mt:Entries limit=&quot;$limit&quot;&gt;
+                            &lt;mt:Ignore&gt;&lt;!-- Use the Entry Summary module for each entry published on this page --&gt;&lt;/mt:Ignore&gt;
+                            &lt;$mt:Include module=&quot;記事の概要&quot;$&gt;
+&lt;/mt:Entries&gt;
+
+
+                            &lt;div class=&quot;content-nav&quot;&gt;
+                                &lt;mt:ArchivePrevious&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&amp;laquo; &lt;$mt:ArchiveTitle$&gt;&lt;/a&gt; |&lt;/mt:ArchivePrevious&gt;
+                                &lt;a href=&quot;&lt;$mt:Link template=&quot;main_index&quot;$&gt;&quot;&gt;メインページ&lt;/a&gt; |
+                                &lt;a href=&quot;&lt;$mt:Link template=&quot;archive_index&quot;$&gt;&quot;&gt;アーカイブ&lt;/a&gt;
+                                &lt;mt:ArchiveNext&gt;| &lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; &amp;raquo;&lt;/a&gt;&lt;/mt:ArchiveNext&gt;
+                            &lt;/div&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='41' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='comment_listing' modified_on='20141114211152' name='コメント一覧' rebuild_me='1' type='comment_listing' current_revision='0'><text>{
+    &quot;direction&quot;: &quot;&lt;mt:Var name=&quot;commentDirection&quot;&gt;&quot;,
+    &quot;comments&quot;: &quot;&lt;mt:Comments sort_order=&quot;$commentDirection&quot;&gt;&lt;$mt:Include module=&quot;コメント詳細&quot; replace=&quot;\&quot;,&quot;\\&quot; replace=&apos;&quot;&apos;,&apos;\&quot;&apos; regex_replace=&quot;/\t/g&quot;,&quot;\\t&quot; strip_linefeeds=&quot;1&quot;$&gt;&lt;/mt:Comments&gt;&quot;,
+    &quot;cacheKey&quot;: &quot;&lt;mt:Var name=&quot;cacheKey&quot;&gt;&quot;
+}
+</text></template>
+<template id='3' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='comment_preview' modified_on='20141114211152' name='コメントプレビュー' rebuild_me='1' type='comment_preview' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+    /* &lt;![CDATA[ */
+    var user = &lt;$mt:UserSessionState$&gt;;
+    var is_preview = true;
+    /* ]]&gt; */
+    &lt;/script&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: コメントのプレビュー&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-comment-preview &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot; onload=&quot;mtEntryOnLoad()&quot; onunload=&quot;mtEntryOnUnload()&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+
+                            &lt;h1 id=&quot;page-title&quot;&gt;&lt;$mt:Var name=&quot;page_title&quot;$&gt;&lt;/h1&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Comment Preview --&gt;&lt;/mt:Ignore&gt;
+                            &lt;div class=&quot;comment&quot; id=&quot;comment-&lt;$mt:CommentID$&gt;&quot;&gt;
+                                &lt;div class=&quot;inner&quot;&gt;
+                                    &lt;div class=&quot;comment-header&quot;&gt;
+                                        &lt;div class=&quot;asset-meta&quot;&gt;
+                                            &lt;span class=&quot;byline&quot;&gt;
+                                                &lt;$mt:CommentAuthorIdentity$&gt;
+    &lt;mt:IfCommentParent&gt;
+                                                &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:CommentAuthorLink$&gt;&lt;/span&gt;から&lt;a href=&quot;&lt;mt:CommentParent&gt;&lt;$mt:CommentLink$&gt;&lt;/mt:CommentParent&gt;&quot;&gt;&lt;mt:CommentParent&gt;&lt;$mt:CommentAuthor$&gt;&lt;/mt:CommentParent&gt;&lt;/a&gt;への返信
+    &lt;mt:Else&gt;
+                                                &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:CommentAuthorLink$&gt;&lt;/span&gt;
+    &lt;/mt:IfCommentParent&gt;
+                                                | &lt;a href=&quot;&lt;$mt:CommentLink$&gt;&quot;&gt;&lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:CommentDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:CommentDate$&gt;&lt;/abbr&gt;&lt;/a&gt;
+                                            &lt;/span&gt;
+                                        &lt;/div&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class=&quot;comment-content&quot;&gt;
+                                        &lt;$mt:CommentBody$&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Comment Form --&gt;&lt;/mt:Ignore&gt;
+                            &lt;div class=&quot;comments-open&quot; id=&quot;comments-open&quot;&gt;
+                                &lt;h2 class=&quot;comments-open-header&quot;&gt;コメントする&lt;/h2&gt;
+                                &lt;div class=&quot;comments-open-content&quot;&gt;
+                                    &lt;div id=&quot;comment-greeting&quot;&gt;&lt;/div&gt;
+                                    &lt;form method=&quot;post&quot; action=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;&quot; name=&quot;comments_form&quot; id=&quot;comments-form&quot; onsubmit=&quot;return mtCommentOnSubmit(this)&quot;&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;static&quot; value=&quot;1&quot; /&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;armor&quot; value=&quot;1&quot; /&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;preview&quot; value=&quot;&quot; /&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;entry_id&quot; value=&quot;&lt;$mt:EntryID$&gt;&quot; /&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;__lang&quot; value=&quot;&lt;$mt:BlogLanguage$&gt;&quot; /&gt;
+                                        &lt;input type=&quot;hidden&quot; name=&quot;sid&quot; value=&quot;&quot; /&gt;
+&lt;mt:IfCommentParent&gt;
+                                            &lt;input type=&quot;hidden&quot; name=&quot;parent_id&quot; value=&quot;&lt;$mt:CommentParentID escape=&quot;html&quot;$&gt;&quot; id=&quot;comment-parent-id&quot;&gt;
+&lt;/mt:IfCommentParent&gt;
+                                        &lt;div id=&quot;comments-open-data&quot;&gt;
+                                            &lt;div id=&quot;comment-form-name&quot;&gt;
+                                                &lt;label for=&quot;comment-author&quot;&gt;名前&lt;/label&gt;
+                                                &lt;input id=&quot;comment-author&quot; name=&quot;author&quot; size=&quot;30&quot; value=&quot;&lt;$mt:CommentAuthor encode_html=&quot;1&quot;$&gt;&quot; onfocus=&quot;mtShowCaptcha()&quot; /&gt;
+                                            &lt;/div&gt;
+                                            &lt;div id=&quot;comment-form-email&quot;&gt;
+                                                &lt;label for=&quot;comment-email&quot;&gt;電子メール&lt;/label&gt;
+                                                &lt;input id=&quot;comment-email&quot; name=&quot;email&quot; size=&quot;30&quot; value=&quot;&lt;$mt:CommentEmail encode_html=&quot;1&quot;$&gt;&quot; onfocus=&quot;mtShowCaptcha()&quot; /&gt;
+                                            &lt;/div&gt;
+                                            &lt;div id=&quot;comment-form-url&quot;&gt;
+                                                &lt;label for=&quot;comment-url&quot;&gt;URL&lt;/label&gt;
+                                                &lt;input id=&quot;comment-url&quot; name=&quot;url&quot; size=&quot;30&quot; value=&quot;&lt;$mt:CommentURL encode_html=&quot;1&quot;$&gt;&quot; onfocus=&quot;mtShowCaptcha()&quot; /&gt;
+                                            &lt;/div&gt;
+                                        &lt;/div&gt;
+&lt;mt:IfCommentParent&gt;
+                                        &lt;div id=&quot;comment-form-reply&quot;&gt;
+                                            &lt;input type=&quot;checkbox&quot; id=&quot;comment-reply&quot; name=&quot;comment_reply&quot; value=&quot;&lt;$mt:CommentParentID escape=&quot;html&quot;$&gt;&quot; checked=&quot;checked&quot; onclick=&quot;mtSetCommentParentID()&quot; /&gt;
+                                            &lt;label for=&quot;comment-reply&quot; id=&quot;comment-reply-label&quot;&gt;&lt;mt:CommentParent&gt;&lt;$mt:CommentAuthor$&gt;&lt;/mt:CommentParent&gt;からのコメントに返信&lt;/label&gt;
+                                        &lt;/div&gt;
+&lt;/mt:IfCommentParent&gt;
+                                        &lt;div id=&quot;comments-open-text&quot;&gt;
+                                            &lt;label for=&quot;comment-text&quot;&gt;コメント &lt;mt:IfAllowCommentHTML&gt;(スタイル用のHTMLタグを使えます)&lt;/mt:IfAllowCommentHTML&gt;&lt;/label&gt;
+                                            &lt;textarea id=&quot;comment-text&quot; name=&quot;text&quot; rows=&quot;15&quot; cols=&quot;50&quot; onfocus=&quot;mtShowCaptcha()&quot;&gt;&lt;$mt:CommentBody autolink=&quot;0&quot; sanitize=&quot;0&quot; convert_breaks=&quot;0&quot; encode_html=&quot;1&quot;$&gt;&lt;/textarea&gt;
+                                        &lt;/div&gt;
+                                        &lt;div id=&quot;comments-open-captcha&quot;&gt;&lt;/div&gt;
+                                        &lt;div id=&quot;comments-open-footer&quot;&gt;
+                                            &lt;input type=&quot;submit&quot; accesskey=&quot;v&quot; name=&quot;preview_button&quot; id=&quot;comment-preview&quot; value=&quot;プレビュー&quot; onclick=&quot;this.form.preview.value=&apos;1&apos;;&quot; /&gt;
+                                            &lt;input type=&quot;submit&quot; accesskey=&quot;s&quot; name=&quot;post&quot; id=&quot;comment-submit&quot; value=&quot;投稿&quot; /&gt;
+                                            &lt;input type=&quot;button&quot; name=&quot;cancel&quot; id=&quot;comment-cancel&quot; value=&quot;キャンセル&quot; onclick=&quot;window.location=&apos;&lt;$mt:EntryPermalink$&gt;&apos;&quot; /&gt;
+                                        &lt;/div&gt;
+                                    &lt;/form&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='34' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='comment_response' modified_on='20141114211152' name='コメント完了' rebuild_me='1' type='comment_response' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+
+
+&lt;mt:If name=&quot;comment_confirmation&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Success message when comment has been submitted --&gt;&lt;/mt:Ignore&gt;
+    &lt;$mt:Var name=&quot;page_title&quot; value=&quot;確認&quot;$&gt;
+    &lt;$mt:Var name=&quot;message&quot; value=&quot;&lt;p&gt;コメントを投稿しました。&lt;/p&gt;&quot;$&gt;
+&lt;mt:Else name=&quot;comment_pending&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Pending message when comment is being held for review --&gt;&lt;/mt:Ignore&gt;
+    &lt;$mt:Var name=&quot;page_title&quot; value=&quot;コメントありがとうございます。&quot;$&gt;
+    &lt;$mt:Var name=&quot;message&quot; value=&quot;&lt;p&gt;コメントは現在承認されるまで公開を保留されています。&lt;/p&gt;&quot;$&gt;
+&lt;mt:Else name=&quot;comment_error&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Error message when comment submission fails --&gt;&lt;/mt:Ignore&gt;
+    &lt;$mt:Var name=&quot;page_title&quot; value=&quot;コメント投稿エラー&quot;$&gt;
+    &lt;mt:SetVarBlock name=&quot;message&quot;&gt;&lt;p&gt;コメントを投稿できませんでした。エラー: &lt;$mt:ErrorMessage encode_html=&quot;1&quot;$&gt;&lt;/p&gt;&lt;/mt:SetVarBlock&gt;
+&lt;/mt:If&gt;
+
+
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: &lt;$mt:Var name=&quot;page_title&quot;$&gt;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;&lt;$mt:Var name=&quot;body_class&quot;$&gt; &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+                            &lt;h1 id=&quot;page-title&quot;&gt;&lt;$mt:Var name=&quot;page_title&quot;$&gt;&lt;/h1&gt;
+                            &lt;$mt:Var name=&quot;message&quot;$&gt;
+                            &lt;p&gt;
+                            &lt;mt:If name=&quot;comment_error&quot;&gt;
+                                &lt;a href=&quot;javascript:history.back()&quot;&gt;戻る&lt;/a&gt;
+                            &lt;mt:Else&gt;
+                                &lt;a href=&quot;&lt;$mt:EntryLink$&gt;&quot;&gt;元の記事&lt;/a&gt;に戻る
+                            &lt;/mt:If&gt;
+                            &lt;/p&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='1' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='trackbacks' modified_on='20141114211152' name='トラックバック' rebuild_me='1' type='custom' current_revision='0'><text>&lt;mt:Ignore&gt;&lt;!-- Display TrackBacks for the entry/page or TrackBack details if TrackBacks are being accepted --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:IfPingsActive&gt;
+&lt;div id=&quot;trackbacks&quot; class=&quot;trackbacks&quot;&gt;
+    &lt;h2 class=&quot;trackbacks-header&quot;&gt;&lt;$mt:EntryTrackbackCount singular=&quot;トラックバック(1)&quot; plural=&quot;トラックバック(#)&quot; none=&quot;トラックバック(0)&quot;$&gt;&lt;/h2&gt;
+
+    &lt;mt:Ignore&gt;&lt;!-- Display TrackBack details if TrackBacks are being accepted --&gt;&lt;/mt:Ignore&gt;
+    &lt;mt:IfPingsAccepted&gt;
+    &lt;div class=&quot;trackbacks-info&quot;&gt;
+        &lt;p&gt;トラックバックURL: &lt;$mt:EntryTrackbackLink$&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;/mt:IfPingsAccepted&gt;
+
+
+    &lt;mt:Ignore&gt;&lt;!-- Display TrackBacks --&gt;&lt;/mt:Ignore&gt;
+    &lt;mt:Pings&gt;
+        &lt;mt:PingsHeader&gt;
+    &lt;div class=&quot;trackbacks-content&quot;&gt;
+        &lt;/mt:PingsHeader&gt;
+        &lt;div class=&quot;trackback&quot; id=&quot;ping-&lt;$mt:PingID$&gt;&quot;&gt;
+            &lt;div class=&quot;inner&quot;&gt;
+                &lt;div class=&quot;trackback-header&quot;&gt;
+                    &lt;div class=&quot;asset-meta&quot;&gt;
+                        &lt;$mt:PingBlogName$&gt; - &lt;a href=&quot;&lt;$mt:PingURL$&gt;&quot;&gt;&lt;$mt:PingTitle$&gt;&lt;/a&gt; (&lt;a href=&quot;#ping-&lt;$mt:PingID$&gt;&quot;&gt;&lt;$mt:PingDate$&gt;&lt;/a&gt;)
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;trackback-content&quot;&gt;
+                    &lt;p&gt;
+                        &lt;$mt:PingExcerpt$&gt; &lt;a href=&quot;&lt;$mt:PingURL$&gt;&quot;&gt;続きを読む&lt;/a&gt;
+                    &lt;/p&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;mt:PingsFooter&gt;
+    &lt;/div&gt;
+        &lt;/mt:PingsFooter&gt;
+    &lt;/mt:Pings&gt;
+&lt;/div&gt;
+&lt;/mt:IfPingsActive&gt;
+</text></template>
+<template id='2' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='entry_summary' modified_on='20141114211152' name='記事の概要' rebuild_me='1' type='custom' current_revision='0'><text>&lt;$mt:EntryTrackbackData$&gt;
+&lt;div id=&quot;entry-&lt;$mt:EntryID$&gt;&quot; class=&quot;entry-asset asset hentry&quot;&gt;
+    &lt;div class=&quot;asset-header&quot;&gt;
+        &lt;h2 class=&quot;asset-name entry-title&quot;&gt;&lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;&quot; rel=&quot;bookmark&quot;&gt;&lt;$mt:EntryTitle$&gt;&lt;/a&gt;&lt;mt:If name=&quot;display_blog_name&quot;&gt; - &lt;a href=&quot;&lt;$mt:EntryBlogURL$&gt;&quot;&gt;&lt;$mt:EntryBlogName$&gt;&lt;/a&gt;&lt;/mt:If&gt;&lt;/h2&gt;
+        &lt;div class=&quot;asset-meta&quot;&gt;
+            &lt;span class=&quot;byline&quot;&gt;
+    &lt;mt:If tag=&quot;EntryAuthorDisplayName&quot;&gt;
+                &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:EntryAuthorLink show_hcard=&quot;1&quot;$&gt;&lt;/span&gt; (&lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:EntryDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:EntryDate format=&quot;%x %X&quot;$&gt;&lt;/abbr&gt;)
+    &lt;mt:Else&gt;
+                &lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:EntryDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:EntryDate format=&quot;%x %X&quot;$&gt;&lt;/abbr&gt;
+    &lt;/mt:If&gt;
+            &lt;/span&gt;
+&lt;mt:Unless name=&quot;hide_counts&quot; eq=&quot;1&quot;&gt;
+            &lt;mt:IfCommentsActive&gt;&lt;span class=&quot;separator&quot;&gt;|&lt;/span&gt; &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;#comments&quot;&gt;&lt;$mt:EntryCommentCount singular=&quot;コメント(1)&quot; plural=&quot;コメント(#)&quot; none=&quot;コメント(0)&quot;$&gt;&lt;/a&gt;&lt;/mt:IfCommentsActive&gt;
+            &lt;mt:IfPingsActive&gt;&lt;span class=&quot;separator&quot;&gt;|&lt;/span&gt; &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;#trackbacks&quot;&gt;&lt;$mt:EntryTrackbackCount singular=&quot;トラックバック(1)&quot; plural=&quot;トラックバック(#)&quot; none=&quot;トラックバック(0)&quot;$&gt;&lt;/a&gt;&lt;/mt:IfPingsActive&gt;
+&lt;/mt:Unless&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;asset-content entry-content&quot;&gt;
+&lt;mt:If tag=&quot;EntryBody&quot;&gt;
+        &lt;div class=&quot;asset-body&quot;&gt;
+            &lt;$mt:EntryBody$&gt;
+        &lt;/div&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;entry_archive&quot;&gt;
+    &lt;mt:EntryIfTagged&gt;
+        &lt;div class=&quot;entry-tags&quot;&gt;
+            &lt;h4&gt;タグ&lt;span class=&quot;delimiter&quot;&gt;:&lt;/span&gt;&lt;/h4&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;mt:EntryTags glue=&apos;&lt;span class=&quot;delimiter&quot;&gt;,&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&apos;&gt;&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;location.href=&apos;&lt;$mt:TagSearchLink encode_js=&quot;1&quot;$&gt;&apos;;return false;&quot; rel=&quot;tag&quot;&gt;&lt;$mt:TagName$&gt;&lt;/a&gt;&lt;/mt:EntryTags&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/mt:EntryIfTagged&gt;
+&lt;/mt:If&gt;
+&lt;mt:If tag=&quot;EntryMore&quot; convert_breaks=&quot;0&quot;&gt;
+        &lt;div class=&quot;asset-more-link&quot;&gt;
+            続きを読む: &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;#more&quot; rel=&quot;bookmark&quot;&gt;&lt;$mt:EntryTitle$&gt;&lt;/a&gt;
+        &lt;/div&gt;
+&lt;/mt:If&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;asset-footer&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='16' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='banner_header' modified_on='20141114211152' name='バナーヘッダー' rebuild_me='1' type='custom' current_revision='0'><text>&lt;div id=&quot;header&quot;&gt;
+    &lt;div id=&quot;header-inner&quot;&gt;
+        &lt;div id=&quot;header-content&quot;&gt;
+&lt;mt:Ignore&gt;&lt;!-- Use h1 and h2 html tags on the main index of the blog as the title, use divs on all other pages where there are page titles. --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:If name=&quot;main_index&quot;&gt;
+            &lt;h1 id=&quot;header-name&quot;&gt;&lt;a href=&quot;&lt;$mt:BlogURL$&gt;&quot; accesskey=&quot;1&quot;&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;&lt;/a&gt;&lt;/h1&gt;
+            &lt;h2 id=&quot;header-description&quot;&gt;&lt;$mt:BlogDescription$&gt;&lt;/h2&gt;
+&lt;mt:Else&gt;
+            &lt;div id=&quot;header-name&quot;&gt;&lt;a href=&quot;&lt;$mt:BlogURL$&gt;&quot; accesskey=&quot;1&quot;&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;&lt;/a&gt;&lt;/div&gt;
+            &lt;div id=&quot;header-description&quot;&gt;&lt;$mt:BlogDescription$&gt;&lt;/div&gt;
+&lt;/mt:If&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='23' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='comments' modified_on='20141114211152' name='コメント' rebuild_me='1' type='custom' current_revision='0'><text>&lt;mt:Ignore&gt;
+&lt;!-- Display comments for the entry/page or commenting form if entry/page is accepting comments --&gt;
+&lt;/mt:Ignore&gt;
+&lt;mt:IfCommentsActive&gt;
+
+&lt;div id=&quot;comments&quot; class=&quot;comments&quot;&gt;
+
+
+    &lt;mt:Ignore&gt;
+    &lt;!-- Display comments --&gt;
+    &lt;/mt:Ignore&gt;
+    &lt;mt:Comments lastn=&quot;$comments_per_page&quot;&gt;
+        &lt;mt:CommentsHeader&gt;
+    &lt;h2 class=&quot;comments-header&quot;&gt;&lt;$mt:EntryCommentCount singular=&quot;コメント(1)&quot; plural=&quot;コメント(#)&quot; none=&quot;コメント(0)&quot;$&gt;&lt;/h2&gt;
+            &lt;mt:If tag=&quot;EntryCommentCount&quot; gt=&quot;$comments_per_page&quot;&gt;
+    &lt;ul id=&quot;top-comment-nav&quot;&gt;
+        &lt;li id=&quot;top-prev-comments&quot;&gt;
+            &lt;a href=&quot;javascript://&quot; id=&quot;top-prev-comments-link&quot; title=&quot;前&quot;&gt;&amp;lt;&amp;lt;&amp;nbsp;前&lt;/a&gt;
+        &lt;/li&gt;
+        &lt;li id=&quot;top-num-comments&quot;&gt;
+            &lt;span id=&quot;top-current-comments&quot;&gt;&lt;/span&gt;
+        &lt;/li&gt;
+        &lt;li id=&quot;top-next-comments&quot;&gt;
+            &lt;a href=&quot;javascript://&quot; id=&quot;top-next-comments-link&quot; title=&quot;次&quot;&gt;次&amp;nbsp;&amp;gt;&amp;gt;&lt;/a&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+            &lt;/mt:If&gt;
+    &lt;div id=&quot;comments-content&quot; class=&quot;comments-content&quot;&gt;
+        &lt;/mt:CommentsHeader&gt;
+        &lt;$mt:Include module=&quot;コメント詳細&quot;$&gt;
+        &lt;mt:CommentsFooter&gt;
+    &lt;/div&gt;
+            &lt;mt:If tag=&quot;EntryCommentCount&quot; gt=&quot;$comments_per_page&quot;&gt;
+                &lt;mt:Ignore&gt;ページネーションスクリプトによって変更されています。&lt;/mt:Ignore&gt;
+    &lt;ul id=&quot;comment-nav&quot;&gt;
+        &lt;li id=&quot;prev-comments&quot;&gt;
+            &lt;a href=&quot;javascript://&quot; id=&quot;prev-comments-link&quot; title=&quot;前&quot;&gt;&amp;lt;&amp;lt;&amp;nbsp;前&lt;/a&gt;
+        &lt;/li&gt;
+        &lt;li id=&quot;num-comments&quot;&gt;
+            &lt;span id=&quot;current-comments&quot;&gt;&lt;/span&gt;
+        &lt;/li&gt;
+        &lt;li id=&quot;next-comments&quot;&gt;
+            &lt;a href=&quot;javascript://&quot; id=&quot;next-comments-link&quot; title=&quot;次&quot;&gt;次&amp;nbsp;&amp;gt;&amp;gt;&lt;/a&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+            &lt;/mt:If&gt;
+        &lt;/mt:CommentsFooter&gt;
+    &lt;/mt:Comments&gt;
+    &lt;mt:Ignore&gt;
+    &lt;!-- Display commenting form if entry/page is accepting comments --&gt;
+    &lt;/mt:Ignore&gt;
+    &lt;mt:IfCommentsAccepted&gt;
+    &lt;div class=&quot;comments-open&quot; id=&quot;comments-open&quot;&gt;
+        &lt;h2 class=&quot;comments-open-header&quot;&gt;コメントする&lt;/h2&gt;
+        &lt;div class=&quot;comments-open-content&quot;&gt;
+
+        &lt;mt:Ignore&gt;
+        &lt;!-- Display greeting for users if blog allows users to register locally --&gt;
+        &lt;/mt:Ignore&gt;
+            &lt;div id=&quot;comment-greeting&quot;&gt;&lt;/div&gt;
+
+            &lt;form method=&quot;post&quot; action=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;&quot; name=&quot;comments_form&quot; id=&quot;comments-form&quot; onsubmit=&quot;return mtCommentOnSubmit(this)&quot;&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;static&quot; value=&quot;1&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;entry_id&quot; value=&quot;&lt;$mt:EntryID$&gt;&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;__lang&quot; value=&quot;&lt;$mt:BlogLanguage$&gt;&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;parent_id&quot; value=&quot;&lt;$mt:CommentParentID escape=&quot;html&quot;$&gt;&quot; id=&quot;comment-parent-id&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;armor&quot; value=&quot;1&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;preview&quot; value=&quot;&quot; /&gt;
+                &lt;input type=&quot;hidden&quot; name=&quot;sid&quot; value=&quot;&quot; /&gt;
+                &lt;div id=&quot;comments-open-data&quot;&gt;
+                    &lt;div id=&quot;comment-form-name&quot;&gt;
+                        &lt;label for=&quot;comment-author&quot;&gt;名前&lt;/label&gt;
+                        &lt;input id=&quot;comment-author&quot; name=&quot;author&quot; size=&quot;30&quot; value=&quot;&quot; onfocus=&quot;mtCommentFormOnFocus()&quot; /&gt;
+                    &lt;/div&gt;
+                    &lt;div id=&quot;comment-form-email&quot;&gt;
+                        &lt;label for=&quot;comment-email&quot;&gt;電子メール&lt;/label&gt;
+                        &lt;input id=&quot;comment-email&quot; name=&quot;email&quot; size=&quot;30&quot; value=&quot;&quot; onfocus=&quot;mtCommentFormOnFocus()&quot; /&gt;
+                    &lt;/div&gt;
+                    &lt;div id=&quot;comment-form-url&quot;&gt;
+                        &lt;label for=&quot;comment-url&quot;&gt;URL&lt;/label&gt;
+                        &lt;input id=&quot;comment-url&quot; name=&quot;url&quot; size=&quot;30&quot; value=&quot;&quot; onfocus=&quot;mtCommentFormOnFocus()&quot; /&gt;
+                    &lt;/div&gt;
+                    &lt;div id=&quot;comment-form-remember-me&quot;&gt;
+                        &lt;input type=&quot;checkbox&quot; id=&quot;comment-bake-cookie&quot; name=&quot;bakecookie&quot; onclick=&quot;mtRememberMeOnClick(this)&quot; value=&quot;1&quot; accesskey=&quot;r&quot; /&gt;
+                        &lt;label for=&quot;comment-bake-cookie&quot;&gt;サインイン情報を記憶&lt;/label&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div id=&quot;comment-form-reply&quot; style=&quot;display:none&quot;&gt;
+                    &lt;input type=&quot;checkbox&quot; id=&quot;comment-reply&quot; name=&quot;comment_reply&quot; value=&quot;&quot; onclick=&quot;mtSetCommentParentID()&quot; /&gt;
+                    &lt;label for=&quot;comment-reply&quot; id=&quot;comment-reply-label&quot;&gt;&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;div id=&quot;comments-open-text&quot;&gt;
+                    &lt;label for=&quot;comment-text&quot;&gt;コメント
+                    &lt;mt:IfAllowCommentHTML&gt;(スタイル用のHTMLタグを使えます)&lt;/mt:IfAllowCommentHTML&gt;&lt;/label&gt;
+                    &lt;textarea id=&quot;comment-text&quot; name=&quot;text&quot; rows=&quot;15&quot; cols=&quot;50&quot; onfocus=&quot;mtCommentFormOnFocus()&quot;&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div id=&quot;comments-open-captcha&quot;&gt;&lt;/div&gt;
+                &lt;div id=&quot;comments-open-footer&quot;&gt;
+                    &lt;input type=&quot;submit&quot; accesskey=&quot;v&quot; name=&quot;preview_button&quot; id=&quot;comment-preview&quot; value=&quot;プレビュー&quot; onclick=&quot;this.form.preview.value=&apos;1&apos;;&quot; /&gt;
+                    &lt;input type=&quot;submit&quot; accesskey=&quot;s&quot; name=&quot;post&quot; id=&quot;comment-submit&quot; value=&quot;投稿&quot; /&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+    &lt;!--
+    mtAttachEvent(&quot;load&quot;, mtEntryOnLoad);
+    mtAttachEvent(&quot;unload&quot;, mtEntryOnUnload);
+    //--&gt;
+    &lt;/script&gt;
+    &lt;/mt:IfCommentsAccepted&gt;
+
+
+&lt;/div&gt;
+&lt;/mt:IfCommentsActive&gt;
+</text></template>
+<template id='24' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='sidebar' modified_on='20141114211152' name='サイドバー' rebuild_me='1' type='custom' current_revision='0'><text>&lt;mt:Ignore&gt;&lt;!-- 
+#
+#  The sidebar is made up of one or two columns.
+#  For 2-column designs, just beta.
+#  For 3-column designs, beta and gamma.
+#
+--&gt;&lt;/mt:Ignore&gt;
+
+
+&lt;div id=&quot;beta&quot;&gt;
+    &lt;div id=&quot;beta-inner&quot;&gt;
+
+&lt;mt:If name=&quot;page_columns&quot; eq=&quot;2&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Use the 2-column layout Sidebar if page layout is layout-wt or layout-tw. --&gt;&lt;/mt:Ignore&gt;
+    &lt;$mt:WidgetSet name=&quot;2カラムのサイドバー&quot;$&gt;
+&lt;mt:Else name=&quot;page_columns&quot; eq=&quot;3&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Use the 3-column layout Primary Sidebar if page layout is layout-wtt or layout-twt. --&gt;&lt;/mt:Ignore&gt;
+    &lt;$mt:WidgetSet name=&quot;3カラムのサイドバー(メイン)&quot;$&gt;
+&lt;/mt:If&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;mt:If name=&quot;page_columns&quot; eq=&quot;3&quot;&gt;
+    &lt;mt:Ignore&gt;&lt;!-- Use the 3-column layout Secondary Sidebar if page layout is layout-wtt or layout-twt. --&gt;&lt;/mt:Ignore&gt;
+&lt;div id=&quot;gamma&quot;&gt;
+    &lt;div id=&quot;gamma-inner&quot;&gt;
+    &lt;$mt:WidgetSet name=&quot;3カラムのサイドバー(サブ)&quot;$&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='26' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='comment_detail' modified_on='20141114211152' name='コメント詳細' rebuild_me='1' type='custom' current_revision='0'><text>&lt;div id=&quot;comment-&lt;$mt:CommentID$&gt;&quot; class=&quot;comment&lt;mt:IfCommentParent&gt; comment-reply&lt;/mt:IfCommentParent&gt;&lt;mt:IfCommenterIsEntryAuthor&gt; entry-author-comment&lt;/mt:IfCommenterIsEntryAuthor&gt;&quot;&gt;
+    &lt;div class=&quot;inner&quot;&gt;
+        &lt;div class=&quot;comment-header&quot;&gt;
+            &lt;div class=&quot;asset-meta&quot;&gt;
+                &lt;span class=&quot;byline&quot;&gt;
+                    &lt;$mt:CommentAuthorIdentity$&gt;
+&lt;mt:IfCommentParent&gt;
+                    &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:CommentAuthorLink$&gt;&lt;/span&gt;から&lt;a href=&quot;&lt;mt:CommentParent&gt;&lt;$mt:CommentLink$&gt;&lt;/mt:CommentParent&gt;&quot;&gt;&lt;mt:CommentParent&gt;&lt;$mt:CommentAuthor$&gt;&lt;/mt:CommentParent&gt;&lt;/a&gt;への返信
+&lt;mt:Else&gt;
+                    &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:CommentAuthorLink$&gt;&lt;/span&gt;
+&lt;/mt:IfCommentParent&gt;
+                    | &lt;a href=&quot;&lt;$mt:CommentLink$&gt;&quot;&gt;&lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:CommentDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:CommentDate$&gt;&lt;/abbr&gt;&lt;/a&gt;
+&lt;mt:IfCommentsAccepted&gt;
+                    | &lt;$mt:CommentReplyToLink$&gt;
+&lt;/mt:IfCommentsAccepted&gt;
+                &lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;comment-content&quot;&gt;
+            &lt;$mt:CommentBody$&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</text></template>
+<template id='33' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='banner_footer' modified_on='20141114211152' name='バナーフッター' rebuild_me='1' type='custom' current_revision='0'><text>&lt;div id=&quot;footer&quot;&gt;
+    &lt;div id=&quot;footer-inner&quot;&gt;
+        &lt;div id=&quot;footer-content&quot;&gt;
+            &lt;div class=&quot;widget-powered widget&quot;&gt;
+                &lt;div class=&quot;widget-content&quot;&gt;
+                    Powered by &lt;a href=&quot;http://www.sixapart.jp/movabletype/&quot;&gt;&lt;$MTProductName$&gt;&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+&lt;mt:BlogIfCCLicense&gt;
+            &lt;div class=&quot;widget-creative-commons widget&quot;&gt;
+                &lt;div class=&quot;widget-content&quot;&gt;
+                    このブログは&lt;a href=&quot;&lt;$mt:BlogCCLicenseURL$&gt;&quot;&gt;クリエイティブ・コモンズ&lt;/a&gt;でライセンスされています。
+                &lt;/div&gt;
+            &lt;/div&gt;
+&lt;/mt:BlogIfCCLicense&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='45' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='html_head' modified_on='20141114211152' name='HTMLヘッダー' rebuild_me='1' type='custom' current_revision='0'><text>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=&lt;$mt:PublishCharset$&gt;&quot; /&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;&lt;$mt:ProductName version=&quot;1&quot;$&gt;&quot; /&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;&lt;$mt:Link template=&quot;styles&quot;$&gt;&quot; type=&quot;text/css&quot; /&gt;
+&lt;link rel=&quot;start&quot; href=&quot;&lt;$mt:BlogURL$&gt;&quot; title=&quot;Home&quot; /&gt;
+&lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Recent Entries&quot; href=&quot;&lt;$mt:Link template=&quot;feed_recent&quot;$&gt;&quot; /&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;&lt;$mt:Link template=&quot;javascript&quot;$&gt;&quot;&gt;&lt;/script&gt;
+&lt;$mt:CCLicenseRDF$&gt;
+&lt;$mt:CanonicalLink$&gt;
+&lt;$mt:StatsSnippet$&gt;
+</text></template>
+<template id='39' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='dynamic_error' modified_on='20141114211152' name='ダイナミックパブリッシングエラー' rebuild_me='1' type='dynamic_error' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: ページが見つかりません。&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-dynamic-error &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+                            &lt;h1 id=&quot;page-title&quot;&gt;ページが見つかりません。&lt;/h1&gt;
+                            &lt;blockquote&gt;
+                                &lt;strong&gt;&lt;$mt:ErrorMessage$&gt;&lt;/strong&gt;
+                            &lt;/blockquote&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='7' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='rsd' modified_on='20141114211152' name='RSD' outfile='rsd.xml' rebuild_me='1' type='index' current_revision='0'><text>&lt;$mt:HTTPContentType type=&quot;application/rsd+xml&quot;$&gt;&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;rsd version=&quot;1.0&quot; xmlns=&quot;http://archipelago.phrasewise.com/rsd&quot;&gt;
+&lt;service&gt;
+&lt;engineName&gt;&lt;$mt:ProductName version=&quot;1&quot;$&gt;&lt;/engineName&gt;
+&lt;engineLink&gt;http://www.sixapart.com/movabletype/&lt;/engineLink&gt;
+&lt;homePageLink&gt;&lt;$mt:BlogURL$&gt;&lt;/homePageLink&gt;
+&lt;apis&gt;
+&lt;api name=&quot;MetaWeblog&quot; preferred=&quot;true&quot; apiLink=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:XMLRPCScript$&gt;&quot; blogID=&quot;&lt;$mt:BlogID$&gt;&quot; /&gt;
+&lt;api name=&quot;MovableType&quot; preferred=&quot;false&quot; apiLink=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:XMLRPCScript$&gt;&quot; blogID=&quot;&lt;$mt:BlogID$&gt;&quot; /&gt;
+&lt;api name=&quot;Blogger&quot; preferred=&quot;false&quot; apiLink=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:XMLRPCScript$&gt;&quot; blogID=&quot;&lt;$mt:BlogID$&gt;&quot; /&gt;
+&lt;api name=&quot;Atom&quot; preferred=&quot;false&quot; apiLink=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:AtomScript$&gt;/weblog&quot; blogID=&quot;&lt;$mt:BlogID$&gt;&quot; /&gt;
+&lt;/apis&gt;
+&lt;/service&gt;
+&lt;/rsd&gt;
+</text></template>
+<template id='9' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='styles' modified_on='20141114211152' name='スタイルシート' outfile='styles.css' rebuild_me='1' type='index' current_revision='0'><text>@import url(&lt;$mt:StaticWebPath$&gt;themes-base/blog.css);
+@import url(&lt;$mt:StaticWebPath$&gt;themes/minimalist-red/screen.css);
+</text></template>
+<template id='10' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='feed_recent' modified_on='20141114211152' name='最新記事のフィード' outfile='atom.xml' rebuild_me='1' type='index' current_revision='0'><text>&lt;$mt:HTTPContentType type=&quot;application/atom+xml&quot;$&gt;&lt;?xml version=&quot;1.0&quot; encoding=&quot;&lt;$mt:PublishCharset$&gt;&quot;?&gt;
+&lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot;&gt;
+    &lt;title&gt;&lt;$mt:BlogName remove_html=&quot;1&quot; encode_xml=&quot;1&quot;$&gt;&lt;/title&gt;
+    &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot; href=&quot;&lt;$mt:BlogURL encode_xml=&quot;1&quot;$&gt;&quot; /&gt;
+    &lt;link rel=&quot;self&quot; type=&quot;application/atom+xml&quot; href=&quot;&lt;$mt:Link template=&quot;feed_recent&quot;$&gt;&quot; /&gt;
+    &lt;id&gt;tag:&lt;$mt:BlogHost exclude_port=&quot;1&quot; encode_xml=&quot;1&quot;$&gt;,&lt;$mt:TemplateCreatedOn format=&quot;%Y-%m-%d&quot;$&gt;:&lt;$mt:BlogRelativeURL encode_xml=&quot;1&quot;$&gt;/&lt;$mt:BlogID$&gt;&lt;/id&gt;
+    &lt;updated&gt;&lt;mt:Entries blog_ids=&quot;children&quot; include_with_website=&quot;1&quot; lastn=&quot;1&quot;&gt;&lt;$mt:EntryModifiedDate utc=&quot;1&quot; format=&quot;%Y-%m-%dT%H:%M:%SZ&quot;$&gt;&lt;/mt:Entries&gt;&lt;/updated&gt;
+    &lt;mt:If tag=&quot;BlogDescription&quot;&gt;&lt;subtitle&gt;&lt;$mt:BlogDescription remove_html=&quot;1&quot; encode_xml=&quot;1&quot;$&gt;&lt;/subtitle&gt;&lt;/mt:If&gt;
+    &lt;generator uri=&quot;http://www.sixapart.com/movabletype/&quot;&gt;&lt;$mt:ProductName version=&quot;1&quot;$&gt;&lt;/generator&gt;
+&lt;mt:Entries blog_ids=&quot;children&quot; include_with_website=&quot;1&quot; lastn=&quot;15&quot;&gt;
+&lt;entry&gt;
+    &lt;title&gt;&lt;$mt:EntryTitle remove_html=&quot;1&quot; encode_xml=&quot;1&quot;$&gt; - &lt;$mt:EntryBlogName$&gt;&lt;/title&gt;
+    &lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot; href=&quot;&lt;$mt:EntryPermalink encode_xml=&quot;1&quot;$&gt;&quot; /&gt;
+    &lt;id&gt;&lt;$mt:EntryAtomID$&gt;&lt;/id&gt;
+
+    &lt;published&gt;&lt;$mt:EntryDate utc=&quot;1&quot; format=&quot;%Y-%m-%dT%H:%M:%SZ&quot;$&gt;&lt;/published&gt;
+    &lt;updated&gt;&lt;$mt:EntryModifiedDate utc=&quot;1&quot; format=&quot;%Y-%m-%dT%H:%M:%SZ&quot;$&gt;&lt;/updated&gt;
+
+    &lt;summary&gt;&lt;$mt:EntryExcerpt remove_html=&quot;1&quot; encode_xml=&quot;1&quot;$&gt;&lt;/summary&gt;
+    &lt;author&gt;
+        &lt;name&gt;&lt;$mt:EntryAuthorDisplayName encode_xml=&quot;1&quot;$&gt;&lt;/name&gt;
+        &lt;mt:If tag=&quot;EntryAuthorURL&quot;&gt;&lt;uri&gt;&lt;$mt:EntryAuthorURL encode_xml=&quot;1&quot;$&gt;&lt;/uri&gt;&lt;/mt:If&gt;
+    &lt;/author&gt;
+    &lt;mt:EntryCategories&gt;
+        &lt;category term=&quot;&lt;$mt:CategoryLabel encode_xml=&quot;1&quot;$&gt;&quot; scheme=&quot;http://www.sixapart.com/ns/types#category&quot; /&gt;
+    &lt;/mt:EntryCategories&gt;
+    &lt;mt:EntryIfTagged&gt;&lt;mt:EntryTags&gt;&lt;category term=&quot;&lt;$mt:TagName normalize=&quot;1&quot; encode_xml=&quot;1&quot;$&gt;&quot; label=&quot;&lt;$mt:TagName encode_xml=&quot;1&quot;$&gt;&quot; scheme=&quot;http://www.sixapart.com/ns/types#tag&quot; /&gt;
+    &lt;/mt:EntryTags&gt;&lt;/mt:EntryIfTagged&gt;
+    &lt;content type=&quot;html&quot; xml:lang=&quot;&lt;$mt:BlogLanguage ietf=&quot;1&quot;$&gt;&quot; xml:base=&quot;&lt;$mt:BlogURL encode_xml=&quot;1&quot;$&gt;&quot;&gt;
+        &lt;$mt:EntryBody encode_xml=&quot;1&quot;$&gt;
+        &lt;$mt:EntryMore encode_xml=&quot;1&quot;$&gt;
+    &lt;/content&gt;
+&lt;/entry&gt;
+&lt;/mt:Entries&gt;
+&lt;/feed&gt;
+</text></template>
+<template id='40' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='javascript' modified_on='20141114211152' name='JavaScript' outfile='mt.js' rebuild_me='1' type='index' current_revision='0'><text>&lt;mt:Ignore&gt;
+/*  The following functions and variables are here to support legacy MT templates.
+    If you have refreshed your JavaScript template but still use older MT comment
+    templates, you may need to uncomment this block in order for those templates 
+    to work properly. To use, simply remove the &apos;mt:Ignore&apos; tags wrapping this
+    block of code.
+*/
+    function hideDocumentElement(id) { return mtHide(id) }
+    function showDocumentElement(id) { return mtShow(id) }
+    function individualArchivesOnLoad() { return mtEntryOnLoad() }
+    function writeCommenterGreeting() { return mtShowGreeting() }
+    function rememberMe(f) { return mtRememberMe(f) }
+    function forgetMe(f) { return mtForgetMe(f) }
+    var commenter_name;
+    var commenter_id;
+    var commenter_url;
+    var commenter_blog_ids;
+    var mtcmtmail;
+    var mtcmtauth;
+    var mtcmthome;
+    var captcha_timer;
+&lt;/mt:Ignore&gt;
+
+// The cookie name to use for storing the blog-side comment session cookie.
+var mtCookieName = &quot;&lt;$mt:UserSessionCookieName$&gt;&quot;;
+var mtCookieDomain = &quot;&lt;$mt:UserSessionCookieDomain$&gt;&quot;;
+var mtCookiePath = &quot;&lt;$mt:UserSessionCookiePath$&gt;&quot;;
+var mtCookieTimeout = &lt;$mt:UserSessionCookieTimeout$&gt;;
+
+&lt;mt:Ignore&gt;
+/***
+ * Simple routine for showing a DOM element (applying a CSS display
+ * attribute of &apos;none&apos;).
+ */
+&lt;/mt:Ignore&gt;
+function mtHide(id) {
+    var el = (typeof id == &quot;string&quot;) ? document.getElementById(id) : id;
+    if (el) el.style.display = &apos;none&apos;;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Simple routine for showing a DOM element (applying a CSS display
+ * attribute of &apos;block&apos;).
+ */
+&lt;/mt:Ignore&gt;
+function mtShow(id) {
+    var el = (typeof id == &quot;string&quot;) ? document.getElementById(id) : id;
+    if (el) el.style.display = &apos;block&apos;;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * A utility function for assigning/adding handlers to window events.
+ */
+&lt;/mt:Ignore&gt;
+function mtAttachEvent(eventName,func) {
+    var onEventName = &apos;on&apos; + eventName;
+    var old = window[onEventName];
+    if( typeof old != &apos;function&apos; )
+        window[onEventName] = func;
+    else {
+        window[onEventName] = function( evt ) {
+            old( evt );
+            return func( evt );
+        };
+    }
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Calls the event named, if there are handlers for it.
+ */
+&lt;/mt:Ignore&gt;
+function mtFireEvent(eventName,param) {
+    var fn = window[&apos;on&apos; + eventName];
+    if (typeof fn == &apos;function&apos;) return fn(param);
+    return;
+}
+
+if(!this.JSON){JSON={};}(function(){function f(n){return n&lt;10?&apos;0&apos;+n:n;}if(typeof Date.prototype.toJSON!==&apos;function&apos;){Date.prototype.toJSON=function(key){return this.getUTCFullYear()+&apos;-&apos;+f(this.getUTCMonth()+1)+&apos;-&apos;+f(this.getUTCDate())+&apos;T&apos;+f(this.getUTCHours())+&apos;:&apos;+f(this.getUTCMinutes())+&apos;:&apos;+f(this.getUTCSeconds())+&apos;Z&apos;;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\&quot;\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={&apos;\b&apos;:&apos;\\b&apos;,&apos;\t&apos;:&apos;\\t&apos;,&apos;\n&apos;:&apos;\\n&apos;,&apos;\f&apos;:&apos;\\f&apos;,&apos;\r&apos;:&apos;\\r&apos;,&apos;&quot;&apos;:&apos;\\&quot;&apos;,&apos;\\&apos;:&apos;\\\\&apos;},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?&apos;&quot;&apos;+string.replace(escapable,function(a){var c=meta[a];return typeof c===&apos;string&apos;?c:&apos;\\u&apos;+(&apos;0000&apos;+a.charCodeAt(0).toString(16)).slice(-4);})+&apos;&quot;&apos;:&apos;&quot;&apos;+string+&apos;&quot;&apos;;}function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&amp;&amp;typeof value===&apos;object&apos;&amp;&amp;typeof value.toJSON===&apos;function&apos;){value=value.toJSON(key);}if(typeof rep===&apos;function&apos;){value=rep.call(holder,key,value);}switch(typeof value){case&apos;string&apos;:return quote(value);case&apos;number&apos;:return isFinite(value)?String(value):&apos;null&apos;;case&apos;boolean&apos;:case&apos;null&apos;:return String(value);case&apos;object&apos;:if(!value){return&apos;null&apos;;}gap+=indent;partial=[];if(Object.prototype.toString.apply(value)===&apos;[object Array]&apos;){length=value.length;for(i=0;i&lt;length;i+=1){partial[i]=str(i,value)||&apos;null&apos;;}v=partial.length===0?&apos;[]&apos;:gap?&apos;[\n&apos;+gap+partial.join(&apos;,\n&apos;+gap)+&apos;\n&apos;+mind+&apos;]&apos;:&apos;[&apos;+partial.join(&apos;,&apos;)+&apos;]&apos;;gap=mind;return v;}if(rep&amp;&amp;typeof rep===&apos;object&apos;){length=rep.length;for(i=0;i&lt;length;i+=1){k=rep[i];if(typeof k===&apos;string&apos;){v=str(k,value);if(v){partial.push(quote(k)+(gap?&apos;: &apos;:&apos;:&apos;)+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?&apos;: &apos;:&apos;:&apos;)+v);}}}}v=partial.length===0?&apos;{}&apos;:gap?&apos;{\n&apos;+gap+partial.join(&apos;,\n&apos;+gap)+&apos;\n&apos;+mind+&apos;}&apos;:&apos;{&apos;+partial.join(&apos;,&apos;)+&apos;}&apos;;gap=mind;return v;}}if(typeof JSON.stringify!==&apos;function&apos;){JSON.stringify=function(value,replacer,space){var i;gap=&apos;&apos;;indent=&apos;&apos;;if(typeof space===&apos;number&apos;){for(i=0;i&lt;space;i+=1){indent+=&apos; &apos;;}}else if(typeof space===&apos;string&apos;){indent=space;}rep=replacer;if(replacer&amp;&amp;typeof replacer!==&apos;function&apos;&amp;&amp;(typeof replacer!==&apos;object&apos;||typeof replacer.length!==&apos;number&apos;)){throw new Error(&apos;JSON.stringify&apos;);}return str(&apos;&apos;,{&apos;&apos;:value});};}if(typeof JSON.parse!==&apos;function&apos;){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&amp;&amp;typeof value===&apos;object&apos;){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}return reviver.call(holder,key,value);}cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return&apos;\\u&apos;+(&apos;0000&apos;+a.charCodeAt(0).toString(16)).slice(-4);});}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:[&quot;\\\/bfnrt]|u[0-9a-fA-F]{4})/g,&apos;@&apos;).replace(/&quot;[^&quot;\\\n\r]*&quot;|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,&apos;]&apos;).replace(/(?:^|:|,)(?:\s*\[)+/g,&apos;&apos;))){j=eval(&apos;(&apos;+text+&apos;)&apos;);return typeof reviver===&apos;function&apos;?walk({&apos;&apos;:j},&apos;&apos;):j;}throw new SyntaxError(&apos;JSON.parse&apos;);};}}());
+
+var MT = window.MT || {};
+
+MT.cons = function () {
+  return {
+    LOG : &apos;log&apos;,
+    WARN : &apos;warn&apos;,
+    DEBUG : &apos;debug&apos;,
+    INFO : &apos;info&apos;,
+    ERR : &apos;error&apos;,
+    JSON : &apos;json&apos;
+  };
+}();
+
+&lt;mt:Ignore&gt;
+/**
+ * Used for base functionality related to MT
+ * 
+ * @package MT
+ * @class core
+ * @global
+ * @param {Object} o optional configuration object
+ * Options:
+ */
+&lt;/mt:Ignore&gt;
+MT.core = function (o) {
+  var _debug = false;
+  
+  return {
+    &lt;mt:Ignore&gt;
+    /**
+     * Makes remote call and handles response
+     * 
+     * @param {String} url The URL endpoint
+     * @param {String} respType The type of response expected
+     * @param {Function} respHandler The function to handle the response
+     * @return void
+     */
+    &lt;/mt:Ignore&gt;
+    connect : function (url,respType,respHandler) {
+      var xh = mtGetXmlHttp();
+      if (!xh) return false;
+      
+      xh.onreadystatechange = function() {
+        if ( xh.readyState == 4 ) {
+          if ( xh.status &amp;&amp; ( xh.status != 200 ) ) {
+            // error - ignore
+          } else {
+            switch (respType) {
+              case &apos;json&apos;:
+                respHandler(JSON.parse(xh.responseText));
+                break;
+                
+              case &apos;xml&apos;:
+                break;
+                
+              case &apos;text&apos;:
+                break;
+            }
+          }
+        }
+      };
+      
+      xh.open(&apos;GET&apos;,url);
+      xh.send(null);
+    },
+    
+    getEl : function (el) {
+      return MT.util.checkNodeType(el)===&apos;element&apos; ? id : (document.getElementById(el) || false);
+    },
+    
+    addEvent : function (el,type,func,obj) {
+      if(!obj &amp;&amp; document.addEventListener) {
+        el.addEventListener(type,func,false);
+      } else if(obj &amp;&amp; document.addEventListener) {
+        el.addEventListener(type,function () {
+          func.call(obj,event);
+        },false);
+      } else {
+        if(obj) {
+          el.attachEvent(&apos;on&apos; + type,function () {
+            func.call(obj,event);
+          });
+        } else {
+          el.attachEvent(&apos;on&apos; + type,function () {          
+            func.call(el,event);
+          });
+        }
+      }
+    },
+    
+    &lt;mt:Ignore&gt;
+    /**
+     * Basic logging function
+     * 
+     * @param {String} level The log level (WARN|DEBUG|INFO|ERROR|LOG)
+     * Specified by one of the MT constants
+     * @param {String} msg The log message
+     * @return void
+     */
+    &lt;/mt:Ignore&gt;
+    log : function (level,msg) {
+      if(_debug &amp;&amp; window.console) {
+        switch(level) {
+          case &apos;warn&apos;:
+          case &apos;debug&apos;:
+          case &apos;info&apos;:
+          case &apos;error&apos;:
+          case &apos;log&apos;:
+            console[level](msg);
+            break;
+            
+          default:
+            return false; 
+        }
+      } else {
+        return false;
+      }
+    }
+  }
+}();
+
+&lt;mt:Ignore&gt;
+/**
+ * Utilities class
+ * 
+ * @package MT
+ * @class util
+ * @global
+ * Options:
+ */
+&lt;/mt:Ignore&gt;
+MT.util = function () {
+  return {
+    toggleVisibility : {
+      show : function () {
+        var i = arguments.length;
+        
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])===&apos;element&apos;) {
+            arguments[i].style.visibility = &apos;visible&apos;;
+          } else {
+            MT.core.getEl(arguments[i]).style.visibility = &apos;visible&apos;;
+          }
+        }
+      },
+      
+      hide : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])===&apos;element&apos;) {
+            arguments[i].style.visibility = &apos;hidden&apos;;
+          } else {
+            MT.core.getEl(arguments[i]).style.visibility = &apos;hidden&apos;;
+          }
+        }
+      }
+    },
+    
+    toggleDisplay : {
+      show : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])===&apos;element&apos;) {
+            arguments[i].style.display = &apos;&apos;;
+          } else {
+            MT.core.getEl(arguments[i]).style.display = &apos;&apos;;
+          }
+        }
+      },
+      
+      hide : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])===&apos;element&apos;) {
+            arguments[i].style.display = &apos;none&apos;;
+          } else {
+            MT.core.getEl(arguments[i]).style.display = &apos;none&apos;;
+          }
+        }
+      }
+    },
+    
+    &lt;mt:Ignore&gt;
+    /**
+     * Finds the nearest defining (i.e. with an id) parent to the given element
+     * 
+     * @param {HTMLElement} origin the node from which to start the search
+     * @return {HTMLElement|Boolean} The parent node with an id attribute or false
+     */
+    &lt;/mt:Ignore&gt;
+    findDefiningParent : function (origin) {
+      if(MT.util.checkNodeType(origin)===&apos;element&apos;) {
+        for(var node=origin.parentNode;node.parentNode;node=node.parentNode) {
+          if((node.hasAttribute &amp;&amp; node.hasAttribute(&apos;id&apos;)) || node.getAttribute(&apos;id&apos;)) {
+            return node;
+          }
+        }
+      }
+      return false;
+    },
+    
+    &lt;mt:Ignore&gt;
+    /**
+     * Tests objects to verify if they are DOM nodes
+     * 
+     * @param {Object} obj The object to be tested
+     * @return {String} the values &apos;element&apos;|&apos;textnode&apos;|&apos;whitespace&apos;
+     */
+    &lt;/mt:Ignore&gt;
+    checkNodeType : function (obj) {
+      if (obj &amp;&amp; obj.nodeName){
+        switch (obj.nodeType) {
+          case 1: return &apos;element&apos;;
+          case 3: return (/\S/).test(obj.nodeValue) ? &apos;textnode&apos; : &apos;whitespace&apos;;
+        }
+      }
+    }
+  }
+}();
+
+&lt;mt:Ignore&gt;
+/**
+ * mtPaginateComments takes the currently generated static page and either:
+ *  - Attempts to find an individual comment link in the query string
+ *  - If no link is found, the static page loads
+ * In either case, the pagination event is set
+ */
+&lt;/mt:Ignore&gt;
+(function () {
+  var M = MT.core,
+      c = MT.cons,
+      u = MT.util,
+      cache,
+      isLoading,
+      direction,
+      currentComments,
+      commentAnchor,
+      commentArrId,
+      commentsPerPage,
+      commentsTotalPages,
+      loadingIcon,
+      pageNum,
+      commentsOffset,
+      totalComments,
+      entryID,
+      commentContentDiv,
+      topNav,
+      nav,
+      currentCommentsSpan,
+      topCurrentCommentsSpan;
+            
+  M.addEvent(window,&apos;load&apos;,_init);
+  
+  /**
+   * Initializes the class
+   * 
+   * @return void
+   */
+  function _init () {
+    if(!MT.entryCommentCount) {
+      return;
+    }
+    
+    _initializeVariables();
+    _setCommentOffset(false);
+    _checkForAnchor();
+		_setCurrentComments();
+    _toggleNavLinks();
+    _initializeEvents();
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Initializes variables to their initial values
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _initializeVariables() {
+    cache = {};
+    isLoading = false;
+    commentAnchor = &apos;&apos;;
+    commentArrId = &apos;&apos;;
+    commentsPerPage = MT.commentsPerPage || 50;
+    currentComments = &apos;&apos;;
+    direction = &apos;ascend&apos;;
+    entryID = MT.entryID;
+    totalComments = MT.entryCommentCount;
+    commentsTotalPages = Math.ceil(totalComments / commentsPerPage);
+    pageNum = 1;
+    
+    loadingIcon = &quot;&lt;img title=&apos;Loading...&apos; src=&apos;&lt;$MTStaticWebPath$&gt;images/indicator.white.gif&apos; alt=&apos;Loading&apos; /&gt;&quot;;
+    
+    commentContentDiv = M.getEl(&quot;comments-content&quot;);
+    topNav = M.getEl(&quot;top-comment-nav&quot;);
+    nav = M.getEl(&quot;comment-nav&quot;);
+    
+    currentCommentsSpan = M.getEl(&quot;current-comments&quot;);
+    topCurrentCommentsSpan = M.getEl(&quot;top-current-comments&quot;);
+  }
+  
+  function _initializeEvents() {
+    if (commentsPerPage &lt; totalComments) {
+      M.addEvent(nav,&apos;click&apos;,_handleEvents);
+      M.addEvent(topNav,&apos;click&apos;,_handleEvents);
+    }
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Checks for an existing anchor tag in the query string
+   * If found, it looks for it on the current page
+   * If that fails, it tries to find it in comment list and loads
+   * the desired page
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _checkForAnchor() {
+    var found = String(window.location.hash).match( /comment-(\d{1,6})/ );
+		
+		if (found) {
+		  M.log(c.DEBUG,found);
+			if (!Object.prototype.hasOwnProperty.call(M.getEl(found[0]), &apos;className&apos;)) {
+				if (_findIdMatch(found[1])) {
+    			pageNum = Math.floor(commentArrId / commentsPerPage) + 1;
+    			M.log(c.DEBUG,&apos;Comment Array Id: &apos; + commentArrId);
+    			M.log(c.DEBUG,&apos;Comments Per Page: &apos; + commentsPerPage);
+    			M.log(c.DEBUG,&apos;Page Number: &apos; + pageNum);
+    			M.log(c.DEBUG,&apos;Comment Offset: &apos; + _getCommentOffset());
+    			_updateComments();
+    		}
+			}
+		}
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Sets commentsOffset (i.e. the offset number to the remote list)
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _setCommentOffset() {
+    commentsOffset = commentsPerPage * (pageNum-1);
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Gets the commentsOffset (i.e. the offset number to the remote list)
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _getCommentOffset() {
+    return commentsOffset;
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * General event handler
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _handleEvents (e) {
+    var origin = e.target || e.srcElement,
+        parentId;
+        
+    // stupid IE
+    origin = origin.id &amp;&amp; M.getEl(origin.id) || false;
+
+    if(origin) {
+      parentId = u.checkNodeType(origin.parentNode)===&apos;element&apos; &amp;&amp; origin.parentNode.getAttribute(&apos;id&apos;) &amp;&amp; origin.parentNode.id;
+    } else {
+      return false;
+    }
+    
+    switch(origin.nodeName) {
+      case &apos;A&apos;:
+        switch (parentId) {
+          case &apos;prev-comments&apos;:
+          case &apos;top-prev-comments&apos;:
+            if(e.preventDefault) {
+              e.preventDefault();
+            } else {
+              e.returnValue =	false;
+            }
+            if(!isLoading) {
+              _previousPage();
+            }
+            break;
+          case &apos;next-comments&apos;:
+          case &apos;top-next-comments&apos;:
+            if(e.preventDefault) {
+              e.preventDefault();
+            } else {
+              e.returnValue =	false;
+            }
+            if(!isLoading) {
+              _nextPage();
+            }
+            break;
+        }
+        break;
+    }
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Toggles the visibility of the navigation links
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _toggleNavLinks () {
+    M.log(c.DEBUG,M.getEl(&apos;top-prev-comments&apos;));
+    if(pageNum &lt;= commentsTotalPages &amp;&amp; pageNum !== 1) {
+      u.toggleVisibility.show(&apos;prev-comments&apos;);
+      u.toggleVisibility.show(&apos;top-prev-comments&apos;);
+    }
+    
+    if(pageNum &gt;= 1 &amp;&amp; pageNum !== commentsTotalPages) {
+      u.toggleVisibility.show(&apos;next-comments&apos;);
+      u.toggleVisibility.show(&apos;top-next-comments&apos;);
+    }
+    
+    if(pageNum===1 || nav.style.visibility===&apos;hidden&apos;) {
+      u.toggleVisibility.hide(&apos;prev-comments&apos;);
+      u.toggleVisibility.hide(&apos;top-prev-comments&apos;);
+    }
+    
+    if(pageNum===commentsTotalPages || nav.style.visibility===&apos;hidden&apos;) {
+      u.toggleVisibility.hide(&apos;next-comments&apos;);
+      u.toggleVisibility.hide(&apos;top-next-comments&apos;);
+    }
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Determines appropriate action based on the id of the parent
+   * clicked link. Decrements pageNum based on id.
+   * 
+   * @param {String} id the id of the parent of the clicked link
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _nextPage () {
+    if(pageNum &lt; commentsTotalPages) {
+      pageNum++;
+      _updateComments();
+    }
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Determines appropriate action based on the id of the parent
+   * clicked link. Increments/decrements pageNum based on id.
+   * 
+   * @param {String} id the id of the parent of the clicked link
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _previousPage() {
+    if(pageNum &gt; 1) {
+      pageNum--;
+      _updateComments();
+    }
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Searches for a particular comment in the list of ids
+   * 
+   * @param {String} id The id for which to search
+   * @return {Boolean} true, if found, false otherwise
+   */
+  &lt;/mt:Ignore&gt;
+  function _findIdMatch (id) {
+    var len = MT.commentIds.length;
+    
+  	while (len--) {
+  		if (MT.commentIds[len] == id) {
+  			commentAnchor = &quot;comment-&quot; + id;
+  			commentArrId = len;
+  			return true;
+  		}
+  	}
+  	
+  	return false;
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Sets the current comment counts on the page
+   *
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _setCurrentComments() {
+    var commentsOnPage = pageNum != commentsTotalPages ? commentsOffset + commentsPerPage : totalComments;
+    
+    _setCurrentCommentsContent([commentsOffset+1,&quot; - &quot;,commentsOnPage].join(&apos;&apos;));
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Sets the &quot;current-comments&quot; element with the HTML value
+   * 
+   * @param {String|Element} currentCommentsHTML The content to be set
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _setCurrentCommentsContent(currentCommentsHTML) {
+    currentCommentsSpan.innerHTML = currentCommentsHTML;
+    topCurrentCommentsSpan.innerHTML = currentCommentsHTML;
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Sets the content of the comment list
+   * 
+   * @param {String|Element} commentHTML The content to be set 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _setCommentContent(commentHTML) {
+    commentContentDiv.innerHTML = commentHTML;
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Builds the appropriate URL to make a remote call to get the
+   * next set of comments
+   * 
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _updateComments() {
+    var comments, jsonUrl, cacheKey, offset;
+    isLoading = true;
+    _setCurrentCommentsContent(loadingIcon);
+    _setCommentOffset();
+
+    offset   = _getCommentOffset();
+    cacheKey = [direction, entryID, commentsPerPage, offset]
+        .join(&apos;-&apos;)
+        .replace(/[^a-zA-Z0-9-]/g, &apos;&apos;);
+    jsonUrl  = [
+        &quot;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=comment_listing&amp;direction=&quot;,
+        direction,
+        &quot;&amp;entry_id=&quot;,
+        entryID,
+        &quot;&amp;limit=&quot;,
+        commentsPerPage,
+        &quot;&amp;offset=&quot;,
+        offset,
+        &quot;&amp;cacheKey=&quot;,
+        cacheKey,
+        &quot;&amp;jsonp=mtUpdateCommentsCallback&quot;,
+        &quot;&amp;ts=&quot;,
+        new Date().getTime()
+      ].join(&apos;&apos;);
+  	
+  	if (!commentAnchor) {
+      commentAnchor = &quot;comments-content&quot;;
+    }
+
+    if(cache.hasOwnProperty(cacheKey)) {
+      _refreshComments(cache[cacheKey]);
+      isLoading = false;
+    } else {
+      var script = document.createElement(&apos;script&apos;);
+      script.src = jsonUrl;
+      (document.getElementsByTagName(&apos;head&apos;))[0].appendChild(script);
+    }
+  }
+
+  window[&apos;mtUpdateCommentsCallback&apos;] = function(json) {
+    cache[json.cacheKey] = json.comments;
+    _refreshComments(json.comments);
+    isLoading = false;
+  }
+  
+  &lt;mt:Ignore&gt;
+  /**
+   * Refreshes the comment data with the current
+   * 
+   * @param {String} commentData The data used to replace current comments
+   * @return void
+   */
+  &lt;/mt:Ignore&gt;
+  function _refreshComments(commentData) {
+    _setCommentContent(commentData);
+    _setCurrentComments();
+    window.location.hash = &apos;reset&apos;;
+    window.location.hash = commentAnchor;
+    _toggleNavLinks();
+  }
+})();
+
+&lt;mt:Ignore&gt;
+/***
+ * Displays a relative date.
+ * &apos;ts&apos; is a Date object, &apos;fds&apos; is a string of the date which
+ * will be displayed if the given date is older than 1 week.
+ */
+&lt;/mt:Ignore&gt;
+function mtRelativeDate(ts, fds) {
+    var now = new Date();
+    var ref = ts;
+    var delta = Math.floor((now.getTime() - ref.getTime()) / 1000);
+
+    var str;
+    if (delta &lt; 60) {
+        str = &apos;直前&apos;;
+    } else if (delta &lt;= 86400) {
+        // less than 1 day
+        var hours = Math.floor(delta / 3600);
+        var min = Math.floor((delta % 3600) / 60);
+        if (hours == 1)
+            str = &apos;1 時間前&apos;;
+        else if (hours &gt; 1)
+            str = &apos;2 時間前&apos;.replace(/2/, hours);
+        else if (min == 1)
+            str = &apos;1 分前&apos;;
+        else
+            str = &apos;2 分前&apos;.replace(/2/, min);
+    } else if (delta &lt;= 604800) {
+        // less than 1 week
+        var days = Math.floor(delta / 86400);
+        var hours = Math.floor((delta % 86400) / 3600);
+        if (days == 1)
+            str = &apos;1 日前&apos;;
+        else if (days &gt; 1)
+            str = &apos;2 日前&apos;.replace(/2/, days);
+        else if (hours == 1)
+            str = &apos;1 時間前&apos;;
+        else
+            str = &apos;2 時間前&apos;.replace(/2/, hours);
+    }
+    return str ? str : fds;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Used to display an edit link for the given entry.
+ */
+&lt;/mt:Ignore&gt;
+function mtEditLink(entry_id, author_id) {
+    &lt;mt:Ignore&gt;
+    // This function has been inactivated by default because of the security issue.
+    // You can activate this function if &quot;AdminScript&quot; is already known by visitor.
+    &lt;/mt:Ignore&gt;
+    &lt;mt:Ignore&gt;
+
+    var u = mtGetUser();
+    if (! u) return;
+    if (! entry_id) return;
+    if (! author_id) return;
+    if (u.id != author_id) return;
+    var link = &apos;&lt;a href=&quot;&lt;$mt:AdminScript$&gt;?__mode=view&amp;amp;_type=entry&amp;amp;id=&apos; + entry_id + &apos;&quot;&gt;編集&lt;/a&gt;&apos;;
+    document.write(link);
+
+    &lt;/mt:Ignore&gt;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Called when an input field on the comment form receives focus.
+ */
+&lt;/mt:Ignore&gt;
+function mtCommentFormOnFocus() {
+    // if CAPTCHA is enabled, this causes the captcha image to be
+    // displayed if it hasn&apos;t been already.
+    mtShowCaptcha();
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Displays a captcha field for anonymous commenters.
+ */
+&lt;/mt:Ignore&gt;
+var mtCaptchaVisible = false;
+function mtShowCaptcha() {
+    var u = mtGetUser();
+    if ( u &amp;&amp; u.is_authenticated ) return;
+    if (mtCaptchaVisible) return;
+    var div = document.getElementById(&apos;comments-open-captcha&apos;);
+    if (div) {
+        div.innerHTML = &apos;&lt;$mt:CaptchaFields$&gt;&apos;;
+        mtCaptchaVisible = true;
+    }
+}
+
+&lt;mt:Ignore&gt;
+/* user object
+    -- saved in user cookie --
+    u.name (display name)
+    u.url (link to home page)
+    u.email (for anonymous only)
+    u.userpic (url for commenter/author)
+    u.profile (link to profile)
+    u.is_trusted (boolean)
+    u.is_author (user has posting rights)
+    u.is_banned (banned status; neither post/comment perms)
+    u.can_post (has permission to post)
+    u.can_comment (has permission to comment)
+
+    -- status fields --
+    u.is_authenticated (boolean)
+    u.is_anonymous (user is anonymous)
+*/
+&lt;/mt:Ignore&gt;
+
+var is_preview;
+var user;
+&lt;mt:Ignore&gt;
+/***
+ * Assigns a user object as the actively logged in user; also saves the
+ * user information in a browser cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtSetUser(u) {
+    if (u) {
+        // persist this
+        user = u;
+        mtSaveUser();
+        // sync up user greeting
+        mtFireEvent(&apos;usersignin&apos;);
+    }
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Simple function that escapes single quote characters for storing
+ * in a cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtEscapeJS(s) {
+    s = s.replace(/&apos;/g, &quot;&amp;apos;&quot;);
+    return s;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Simple function that unescapes single quote characters that were
+ * stored in a cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtUnescapeJS(s) {
+    s = s.replace(/&amp;apos;/g, &quot;&apos;&quot;);
+    return s;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Serializes a user object into a string, suitable for storing as a cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtBakeUserCookie(u) {
+    var str = &quot;&quot;;
+    if (u.name) str += &quot;name:&apos;&quot; + mtEscapeJS(u.name) + &quot;&apos;;&quot;;
+    if (u.url) str += &quot;url:&apos;&quot; + mtEscapeJS(u.url) + &quot;&apos;;&quot;;
+    if (u.email) str += &quot;email:&apos;&quot; + mtEscapeJS(u.email) + &quot;&apos;;&quot;;
+    if (u.is_authenticated) str += &quot;is_authenticated:&apos;1&apos;;&quot;;
+    if (u.profile) str += &quot;profile:&apos;&quot; + mtEscapeJS(u.profile) + &quot;&apos;;&quot;;
+    if (u.userpic) str += &quot;userpic:&apos;&quot; + mtEscapeJS(u.userpic) + &quot;&apos;;&quot;;
+    if (u.sid) str += &quot;sid:&apos;&quot; + mtEscapeJS(u.sid) + &quot;&apos;;&quot;;
+    str += &quot;is_trusted:&apos;&quot; + (u.is_trusted ? &quot;1&quot; : &quot;0&quot;) + &quot;&apos;;&quot;;
+    str += &quot;is_author:&apos;&quot; + (u.is_author ? &quot;1&quot; : &quot;0&quot;) + &quot;&apos;;&quot;;
+    str += &quot;is_banned:&apos;&quot; + (u.is_banned ? &quot;1&quot; : &quot;0&quot;) + &quot;&apos;;&quot;;
+    str += &quot;can_post:&apos;&quot; + (u.can_post ? &quot;1&quot; : &quot;0&quot;) + &quot;&apos;;&quot;;
+    str += &quot;can_comment:&apos;&quot; + (u.can_comment ? &quot;1&quot; : &quot;0&quot;) + &quot;&apos;;&quot;;
+    str = str.replace(/;$/, &apos;&apos;);
+    return str;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Unserializes a user cookie and returns a user object with the restored
+ * state.
+ */
+&lt;/mt:Ignore&gt;
+function mtUnbakeUserCookie(s) {
+    if (!s) return;
+
+    var u = {};
+    var m;
+    while (m = s.match(/^((name|url|email|is_authenticated|profile|userpic|sid|is_trusted|is_author|is_banned|can_post|can_comment):&apos;([^&apos;]+?)&apos;;?)/)) {
+        s = s.substring(m[1].length);
+        if (m[2].match(/^(is|can)_/)) // boolean fields
+            u[m[2]] = m[3] == &apos;1&apos; ? true : false;
+        else
+            u[m[2]] = mtUnescapeJS(m[3]);
+    }
+    if (u.is_authenticated) {
+        u.is_anonymous = false;
+    } else {
+        u.is_anonymous = true;
+        u.can_post = false;
+        u.is_author = false;
+        u.is_banned = false;
+        u.is_trusted = false;
+    }
+    return u;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Retrieves an object of the currently logged in user&apos;s state.
+ * If no user is logged in or cookied, this will return null.
+ */
+&lt;/mt:Ignore&gt;
+function mtGetUser() {
+    if (!user) {
+        var cookie = mtGetCookie(mtCookieName);
+        if (!cookie) return;
+        user = mtUnbakeUserCookie(cookie);
+        if (! user) {
+            user = {};
+            user.is_anonymous = true;
+            user.can_post = false;
+            user.is_author = false;
+            user.is_banned = false;
+            user.is_trusted = false;
+        }
+    }
+    return user;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Issues a request to the MT comment script to retrieve the currently
+ * logged-in user (if any).
+ */
+&lt;/mt:Ignore&gt;
+var mtFetchedUser = false;
+&lt;mt:IfWebsite&gt;
+function mtFetchUser(cb) {
+    if (!cb) cb = &apos;mtSetUser&apos;;
+    if ( ( cb == &apos;mtSetUser&apos; ) &amp;&amp; mtGetUser() ) {
+        var url = document.URL;
+        url = url.replace(/#.+$/, &apos;&apos;);
+        url += &apos;#comments-open&apos;;
+        location.href = url;
+    } else {
+        // we aren&apos;t using AJAX for this, since we may have to request
+        // from a different domain. JSONP to the rescue.
+        mtFetchedUser = true;
+        var u = mtGetUser();
+        var script = document.createElement(&apos;script&apos;);
+        var ts = new Date().getTime();
+        script.src = &apos;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=userinfo&amp;blog_id=&lt;$mt:BlogID$&gt;&amp;jsonp=&apos; + cb + &apos;&amp;ts=&apos; + ts + &apos;&amp;sid=&apos; + u.sid;
+        (document.getElementsByTagName(&apos;head&apos;))[0].appendChild(script);
+    }
+}
+
+function mtVerifySession(cb) {
+    if (!cb) return;
+    var script = document.createElement(&apos;script&apos;);
+    var ts = new Date().getTime();
+    var u = mtGetUser();
+    script.src = &apos;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=verify_session&amp;blog_id=&lt;$mt:BlogID$&gt;&amp;jsonp=&apos; + cb + &apos;&amp;ts=&apos; + ts + &apos;&amp;sid=&apos; + u.sid;
+    (document.getElementsByTagName(&apos;head&apos;))[0].appendChild(script);
+}
+&lt;/mt:IfWebsite&gt;
+
+&lt;mt:Ignore&gt;
+/***
+ * Called when the &apos;Remember me&apos; checkbox is changed. If the checkbox
+ * is cleared, the cached user cookie is immediately cleared.
+ */
+&lt;/mt:Ignore&gt;
+function mtRememberMeOnClick(b) {
+    if (!b.checked)
+        mtClearUser(b.form);
+    return true;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Called when comment form is sent.
+ * Required parameter: Form DOM object of comment form.
+ * If form has a &apos;bakecookie&apos; member, it will be used to signal
+ * storing the anonymous commenter information to a cookie.
+ * If form has a &apos;armor&apos; member, it will be used to store
+ * a token that is checked by the comment script.
+ */
+&lt;/mt:Ignore&gt;
+&lt;mt:IfWebsite&gt;
+var mtRequestSubmitted = false;
+function mtCommentOnSubmit(f) {
+    if (!mtRequestSubmitted) {
+        mtRequestSubmitted = true;
+
+        if (f.armor)
+            f.armor.value = &apos;&lt;$mt:BlogSitePath encode_sha1=&quot;1&quot;$&gt;&apos;;
+        if (f.bakecookie &amp;&amp; f.bakecookie.checked)
+            mtSaveUser(f);
+
+        // disable submit buttons
+        if (f.preview_button) f.preview_button.disabled = true;
+        if (f.post) f.post.disabled = true;
+
+        var u = mtGetUser();
+        if ( !is_preview &amp;&amp; ( u &amp;&amp; u.is_authenticated ) ) {
+            // validate session; then submit
+            mtVerifySession(&apos;mtCommentSessionVerify&apos;);
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
+function mtCommentSessionVerify(app_user) {
+    var f = document[&apos;comments_form&apos;];
+    if ( app_user &amp;&amp; app_user.verified ) {
+        f.submit();
+    } else {
+        alert(&apos;セッションの有効期限が切れています。再度サインインしてください。&apos;);
+        mtClearUser();
+        mtFireEvent(&apos;usersignin&apos;);
+&lt;mt:IfRegistrationRequired&gt;
+        mtShow(&apos;comments-form&apos;);
+        mtHide(&apos;comments-open-footer&apos;);
+&lt;/mt:IfRegistrationRequired&gt;
+    }
+}
+
+function mtUserOnLoad() {
+    var u = mtGetUser();
+
+    // if the user is authenticated, hide the &apos;anonymous&apos; fields
+    // and any captcha input if already shown
+    if ( document.getElementById(&apos;comments-form&apos;)) {
+        if ( u &amp;&amp; u.is_authenticated ) {
+            mtShow(&apos;comments-form&apos;);
+            mtHide(&apos;comments-open-data&apos;);
+            if (mtCaptchaVisible)
+                mtHide(&apos;comments-open-captcha&apos;);
+        } else {
+&lt;mt:IfRegistrationRequired&gt;
+            mtHide(&apos;comments-form&apos;);
+&lt;/mt:IfRegistrationRequired&gt;
+        }
+        if ( u &amp;&amp; u.is_banned )
+            mtHide(&apos;comments-form&apos;);
+
+        // if we&apos;re previewing a comment, make sure the captcha
+        // field is visible
+        if (is_preview)
+            mtShowCaptcha();
+        else
+            mtShowGreeting();
+
+        // populate anonymous comment fields if user is cookied as anonymous
+        var cf = document[&apos;comments_form&apos;];
+        if (cf) {
+            if (u &amp;&amp; u.is_anonymous) {
+                if (u.email) cf.email.value = u.email;
+                if (u.name) cf.author.value = u.name;
+                if (u.url) cf.url.value = u.url;
+                if (cf.bakecookie)
+                    cf.bakecookie.checked = u.name || u.email;
+            } else {
+                if (u &amp;&amp; u.sid &amp;&amp; cf.sid)
+                    cf.sid.value = u.sid;
+            }
+            if (cf.post &amp;&amp; cf.post.disabled)
+                cf.post.disabled = false;
+            if (cf.preview_button &amp;&amp; cf.preview_button.disabled)
+                cf.preview_button.disabled = false;
+            mtRequestSubmitted = false;
+        }
+    }
+}
+&lt;/mt:IfWebsite&gt;
+
+&lt;mt:Ignore&gt;
+/***
+ * Called when an entry archive page is loaded.
+ * This routine controls which elements of the comment form are shown
+ * or hidden, depending on commenter type and blog configuration.
+ */
+&lt;/mt:Ignore&gt;
+&lt;mt:IfWebsite&gt;
+function mtEntryOnLoad() {
+    var cf = document[&apos;comments_form&apos;];
+    if (cf &amp;&amp; cf.preview) cf.preview.value = &apos;&apos;;
+    &lt;mt:Unless tag=&quot;IfPingsAccepted&quot;&gt;mtHide(&apos;trackbacks-info&apos;);&lt;/mt:Unless&gt;
+    &lt;mt:Unless tag=&quot;IfCommentsAccepted&quot;&gt;mtHide(&apos;comments-open&apos;);&lt;/mt:Unless&gt;
+    mtFireEvent(&apos;usersignin&apos;);
+}
+
+function mtEntryOnUnload() {
+    if (mtRequestSubmitted) {
+        var cf = document[&apos;comments_form&apos;];
+        if (cf) {
+            if (cf.post &amp;&amp; cf.post.disabled)
+                cf.post.disabled = false;
+            if (cf.preview_button &amp;&amp; cf.preview_button.disabled)
+                cf.preview_button.disabled = false;
+        }
+        mtRequestSubmitted = false;
+    }
+    return true;
+}
+
+mtAttachEvent(&apos;usersignin&apos;, mtUserOnLoad);
+&lt;/mt:IfWebsite&gt;
+
+&lt;mt:Ignore&gt;
+/***
+ * Handles the action of the &quot;Sign in&quot; link. First clears any existing
+ * user cookie, then directs to the MT comment script to sign the user in.
+ */
+&lt;/mt:Ignore&gt;
+function mtSignIn() {
+    var doc_url = document.URL;
+    doc_url = doc_url.replace(/#.+/, &apos;&apos;);
+    var url = &apos;&lt;$mt:SignInLink$&gt;&apos;;
+    if (is_preview) {
+        if ( document[&apos;comments_form&apos;] ) {
+            var entry_id = document[&apos;comments_form&apos;].entry_id.value;
+            url += &apos;&amp;entry_id=&apos; + entry_id;
+        } else {
+            url += &apos;&amp;return_url=&lt;$mt:BlogURL encode_url=&quot;1&quot;$&gt;&apos;;
+        }
+    } else {
+        url += &apos;&amp;return_url=&apos; + encodeURIComponent(doc_url);
+    }
+    mtClearUser();
+    location.href = url;
+}
+
+function mtSignInOnClick(sign_in_element) {
+    var el;
+    if (sign_in_element) {
+        // display throbber
+        el = document.getElementById(sign_in_element);
+        if (!el)  // legacy MT 4.x element id
+            el = document.getElementById(&apos;comment-form-external-auth&apos;);
+    }
+    if (el)
+        el.innerHTML = &apos;サインインします... &lt;span class=&quot;status-indicator&quot;&gt;&amp;nbsp;&lt;/span&gt;&apos;;
+
+    mtClearUser(); // clear any &apos;anonymous&apos; user cookie to allow sign in
+    mtSignIn();
+    return false;
+}
+
+function mtSetUserOrLogin(u) {
+    if (u &amp;&amp; u.is_authenticated) {
+        mtSetUser(u);
+    } else {
+        // user really isn&apos;t logged in; so let&apos;s do this!
+        mtSignIn();
+    }
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Handles sign out from the web site.
+ * First clears any existing user cookie, then direts to the MT comment
+ * script to sign the user out.
+ */
+&lt;/mt:Ignore&gt;
+function mtSignOut(entry_id) {
+    mtClearUser();
+    var doc_url = document.URL;
+    doc_url = doc_url.replace(/#.+/, &apos;&apos;);
+    var url = &apos;&lt;$mt:SignOutLink$&gt;&apos;;
+    if (is_preview) {
+        if ( document[&apos;comments_form&apos;] ) {
+            var entry_id = document[&apos;comments_form&apos;].entry_id.value;
+            url += &apos;&amp;entry_id=&apos; + entry_id;
+        } else {
+            url += &apos;&amp;return_url=&lt;$mt:BlogURL encode_url=&quot;1&quot;$&gt;&apos;;
+        }
+    } else {
+        url += &apos;&amp;return_url=&apos; + encodeURIComponent(doc_url);
+    }
+    location.href = url;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Handles the action of the &quot;Sign out&quot; link.
+ */
+&lt;/mt:Ignore&gt;
+function mtSignOutOnClick() {
+    mtSignOut();
+    return false;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Handles the display of the greeting message, depending on what kind of
+ * user is logged in and blog comment policy.
+ */
+&lt;/mt:Ignore&gt;
+&lt;mt:IfWebsite&gt;
+function mtShowGreeting() {
+&lt;mt:IfRegistrationAllowed&gt;
+    var reg_reqd = &lt;mt:IfRegistrationRequired&gt;true&lt;mt:Else&gt;false&lt;/mt:IfRegistrationRequired&gt;;
+
+    var cf = document[&apos;comments_form&apos;];
+    if (!cf) return;
+
+    var el = document.getElementById(&apos;comment-greeting&apos;);
+    if (!el)  // legacy MT 4.x element id
+        el = document.getElementById(&apos;comment-form-external-auth&apos;);
+    if (!el) return;
+
+    var eid = cf.entry_id;
+    var entry_id;
+    if (eid) entry_id = eid.value;
+
+    var phrase;
+    var u = mtGetUser();
+
+    if ( u &amp;&amp; u.is_authenticated ) {
+        if ( u.is_banned ) {
+            phrase = &apos;このブログにコメントする権限を持っていません。(\&lt;a href=\&quot;javas\cript:void(0);\&quot; onclick=\&quot;return mtSignOutOnClick();\&quot;\&gt;サインアウトする\&lt;\/a\&gt;)&apos;;
+        } else {
+            var user_link;
+            if ( u.is_author ) {
+                user_link = &apos;&lt;a href=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=edit_profile&amp;blog_id=&lt;mt:BlogID&gt;&amp;return_url=&apos; + encodeURIComponent( location.href );
+                user_link += &apos;&quot;&gt;&apos; + u.name + &apos;&lt;/a&gt;&apos;;
+            } else {
+                // registered user, but not a user with posting rights
+                if (u.url)
+                    user_link = &apos;&lt;a href=&quot;&apos; + u.url + &apos;&quot;&gt;&apos; + u.name + &apos;&lt;/a&gt;&apos;;
+                else
+                    user_link = u.name;
+            }
+            // TBD: supplement phrase with userpic if one is available.
+            phrase = &apos;__NAME__としてサインインしています。(\&lt;a href=\&quot;javas\cript:void(0)\&quot; onclick=\&quot;return mtSignOutOnClick();\&quot;\&gt;サインアウト\&lt;\/a\&gt;)&apos;;
+            phrase = phrase.replace(/__NAME__/, user_link);
+        }
+    } else {
+        if (reg_reqd) {
+            phrase = &apos;コメントするにはまず\&lt;a href=\&quot;javas\cript:void(0)\&quot; onclick=\&quot;return mtSignInOnClick(\&apos;comment-greeting\&apos;)\&quot;\&gt;サインイン\&lt;\/a\&gt;してください。&apos;;
+        } else {
+            phrase = &apos;コメントする前に\&lt;a href=\&quot;javas\cript:void(0)\&quot; onclick=\&quot;return mtSignInOnClick(\&apos;comment-greeting\&apos;)\&quot;\&gt;サインイン\&lt;\/a\&gt;することもできます。&apos;;
+        }
+    }
+    el.innerHTML = phrase;
+&lt;mt:Else&gt;
+    mtShowCaptcha();
+&lt;/mt:IfRegistrationAllowed&gt;
+}
+&lt;/mt:IfWebsite&gt;
+
+&lt;mt:Ignore&gt;
+/***
+ * Handles the action of the &apos;Reply&apos; links.
+ */
+&lt;/mt:Ignore&gt;
+function mtReplyCommentOnClick(parent_id, author) {
+    mtShow(&apos;comment-form-reply&apos;);
+
+    var checkbox = document.getElementById(&apos;comment-reply&apos;);
+    var label = document.getElementById(&apos;comment-reply-label&apos;);
+    var text = document.getElementById(&apos;comment-text&apos;);
+
+    // Populate label with new values
+    var reply_text = &apos;\&lt;a href=\&quot;#comment-__PARENT__\&quot; onclick=\&quot;location.href=this.href; return false\&quot;\&gt;__AUTHOR__からのコメント\&lt;\/a\&gt;に返信&apos;;
+    reply_text = reply_text.replace(/__PARENT__/, parent_id);
+    reply_text = reply_text.replace(/__AUTHOR__/, author);
+    label.innerHTML = reply_text;
+
+    checkbox.value = parent_id; 
+    checkbox.checked = true;
+    try {
+        // text field may be hidden
+        text.focus();
+    } catch(e) {
+    }
+
+    mtSetCommentParentID();
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Sets the parent comment ID when replying to a comment.
+ */
+&lt;/mt:Ignore&gt;
+function mtSetCommentParentID() {
+    var checkbox = document.getElementById(&apos;comment-reply&apos;);
+    var parent_id_field = document.getElementById(&apos;comment-parent-id&apos;);
+    if (!checkbox || !parent_id_field) return;
+
+    var pid = 0;
+    if (checkbox.checked == true)
+        pid = checkbox.value;
+    parent_id_field.value = pid;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Persists a copy of the current user cookie into the browser cookie stash.
+ */
+&lt;/mt:Ignore&gt;
+function mtSaveUser(f) {
+    // We can&apos;t reliably store the user cookie during a preview.
+    if (is_preview) return;
+
+    var u = mtGetUser();
+
+    if (f &amp;&amp; (!u || u.is_anonymous)) {
+        if ( !u ) {
+            u = {};
+            u.is_authenticated = false;
+            u.can_comment = true;
+            u.is_author = false;
+            u.is_banned = false;
+            u.is_anonymous = true;
+            u.is_trusted = false;
+        }
+        if (f.author != undefined) u.name = f.author.value;
+        if (f.email != undefined) u.email = f.email.value;
+        if (f.url != undefined) u.url = f.url.value;
+    }
+
+    if (!u) return;
+
+    var cache_period = mtCookieTimeout * 1000;
+
+    // cache anonymous user info for a long period if the
+    // user has requested to be remembered
+    if (u.is_anonymous &amp;&amp; f &amp;&amp; f.bakecookie &amp;&amp; f.bakecookie.checked)
+        cache_period = 365 * 24 * 60 * 60 * 1000;
+
+    var now = new Date();
+    mtFixDate(now);
+    now.setTime(now.getTime() + cache_period);
+
+    var cmtcookie = mtBakeUserCookie(u);
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
+        location.protocol == &apos;https:&apos;);
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Clears the blog-side user cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtClearUser() {
+    user = null;
+    mtDeleteCookie(mtCookieName, mtCookiePath, mtCookieDomain,
+        location.protocol == &apos;https:&apos;);
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Sets a browser cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtSetCookie(name, value, expires, path, domain, secure) {
+    if (domain &amp;&amp; ( domain.match(/^\.?localhost$/) || domain.match(/^[0-9\.]+$/) ))
+        domain = null;
+    var curCookie = name + &quot;=&quot; + encodeURIComponent(value) +
+        (expires ? &quot;; expires=&quot; + expires.toGMTString() : &quot;&quot;) +
+        (path ? &quot;; path=&quot; + path : &quot;&quot;) +
+        (domain ? &quot;; domain=&quot; + domain : &quot;&quot;) +
+        (secure ? &quot;; secure&quot; : &quot;&quot;);
+    document.cookie = curCookie;
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Retrieves a browser cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtGetCookie(name) {
+    var prefix = name + &apos;=&apos;;
+    var c = document.cookie;
+    var cookieStartIndex = c.indexOf(prefix);
+    if (cookieStartIndex == -1)
+        return &apos;&apos;;
+    var cookieEndIndex = c.indexOf(&quot;;&quot;, cookieStartIndex + prefix.length);
+    if (cookieEndIndex == -1)
+        cookieEndIndex = c.length;
+    var this_cookie = c.substring(cookieStartIndex + prefix.length, cookieEndIndex);
+    if ( this_cookie.match(/\%u/i) ) {
+        return &apos;&apos;;
+    }
+    return decodeURIComponent( this_cookie );
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Deletes a browser cookie.
+ */
+&lt;/mt:Ignore&gt;
+function mtDeleteCookie(name, path, domain, secure) {
+    if (mtGetCookie(name)) {
+        if (domain &amp;&amp; domain.match(/^\.?localhost$/))
+            domain = null;
+        document.cookie = name + &quot;=&quot; +
+            (path ? &quot;; path=&quot; + path : &quot;&quot;) +
+            (domain ? &quot;; domain=&quot; + domain : &quot;&quot;) +
+            (secure ? &quot;; secure&quot; : &quot;&quot;) +
+            &quot;; expires=Thu, 01-Jan-70 00:00:01 GMT&quot;;
+    }
+}
+
+function mtFixDate(date) {
+    var skew = (new Date(0)).getTime();
+    if (skew &gt; 0)
+        date.setTime(date.getTime() - skew);
+}
+
+&lt;mt:Ignore&gt;
+/***
+ * Returns a XMLHttpRequest object (for Ajax operations).
+ */
+&lt;/mt:Ignore&gt;
+function mtGetXmlHttp() {
+    if ( !window.XMLHttpRequest ) {
+        window.XMLHttpRequest = function() {
+            var types = [
+                &quot;Microsoft.XMLHTTP&quot;,
+                &quot;MSXML2.XMLHTTP.5.0&quot;,
+                &quot;MSXML2.XMLHTTP.4.0&quot;,
+                &quot;MSXML2.XMLHTTP.3.0&quot;,
+                &quot;MSXML2.XMLHTTP&quot;
+            ];
+
+            for ( var i = 0; i &lt; types.length; i++ ) {
+                try {
+                    return new ActiveXObject( types[ i ] );
+                } catch( e ) {}
+            }
+
+            return undefined;
+        };
+    }
+    if ( window.XMLHttpRequest )
+        return new XMLHttpRequest();
+}
+
+// BEGIN: fast browser onload init
+// Modifications by David Davis, DWD
+// Dean Edwards/Matthias Miller/John Resig
+// http://dean.edwards.name/weblog/2006/06/again/?full#comment5338
+
+function mtInit() {
+    // quit if this function has already been called
+    if (arguments.callee.done) return;
+
+    // flag this function so we don&apos;t do the same thing twice
+    arguments.callee.done = true;
+
+    // kill the timer
+    // DWD - check against window
+    if ( window._timer ) clearInterval(window._timer);
+
+    // DWD - fire the window onload now, and replace it
+    if ( window.onload &amp;&amp; ( window.onload !== window.mtInit ) ) {
+        window.onload();
+        window.onload = function() {};
+    }
+&lt;mt:IfWebsite&gt;
+&lt;mt:IfRegistrationAllowed&gt;
+    mtInitCommenter();
+&lt;/mt:IfRegistrationAllowed&gt;
+&lt;/mt:IfWebsite&gt;
+}
+
+/* for Mozilla/Opera9 */
+if (document.addEventListener) {
+    document.addEventListener(&quot;DOMContentLoaded&quot;, mtInit, false);
+}
+
+/* for Internet Explorer */
+/*@cc_on @*/
+/*@if (@_win32)
+if (!document.addEventListener){
+  document.write(&quot;&lt;script id=__ie_onload defer src=//:&gt;&lt;\/script&gt;&quot;);
+  var script = document.getElementById(&quot;__ie_onload&quot;);
+  script.onreadystatechange = function() {
+      if (this.readyState == &quot;complete&quot;) {
+          mtInit(); // call the onload handler
+      }
+  };
+}
+/*@end @*/
+
+/* for Safari */
+if (/WebKit/i.test(navigator.userAgent)) { // sniff
+    _timer = setInterval(function() {
+        if (/loaded|complete/.test(document.readyState)) {
+            mtInit(); // call the onload handler
+        }
+    }, 10);
+}
+
+/* for other browsers */
+window.onload = mtInit;
+
+// END: fast browser onload init
+
+&lt;mt:IfWebsite&gt;
+&lt;mt:IfRegistrationAllowed&gt;
+
+function mtLoggedIn(ott) {
+    var script = document.createElement(&apos;script&apos;);
+    var ts = new Date().getTime();
+    script.src = &apos;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=userinfo&amp;jsonp=mtSaveUserInfo&amp;ott=&apos; + ott;
+    (document.getElementsByTagName(&apos;head&apos;))[0].appendChild(script);
+}
+
+function mtRefreshUserInfo(sid) {
+    var script = document.createElement(&apos;script&apos;);
+    var ts = new Date().getTime();
+    script.src = &apos;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=userinfo&amp;jsonp=mtSaveUserInfo&amp;sid=&apos; + sid;
+    (document.getElementsByTagName(&apos;head&apos;))[0].appendChild(script);
+}
+
+function mtSaveUserInfo (u) {
+    if ( u.error ) {
+        if ( !user ) {
+            alert(&apos;サインインできませんでした。&apos;);
+        }
+        return;
+    }
+    user = null;
+    var cmtcookie = mtBakeUserCookie(u);
+    var now = new Date();
+    var cache_period = mtCookieTimeout * 1000;
+
+    // cache anonymous user info for a long period if the
+    // user has requested to be remembered
+    mtFixDate(now);
+    now.setTime(now.getTime() + cache_period);
+    mtSetCookie(mtCookieName, cmtcookie, now, mtCookiePath, mtCookieDomain,
+        location.protocol == &apos;https:&apos;);
+    mtFireEvent(&apos;usersignin&apos;);
+}
+
+function mtInitCommenter () {
+    /***
+     * If request contains a &apos;#_login&apos; or &apos;#_logout&apos; hash, use this to
+     * also delete the blog-side user cookie, since we&apos;re coming back from
+     * a login, logout or edit profile operation.
+     */
+
+    var hash = ( window.location.hash );
+    hash.match( /^#_(.*)$/ );
+    var command = RegExp.$1 || &apos;&apos;;
+    if ( command === &apos;refresh&apos; ) {
+        // Back from profile edit screen.
+        // Reload userinfo with current session ID.
+        var u = mtGetUser();
+        user  = null;
+        mtRefreshUserInfo(u.sid);
+    }
+    else if ( command === &apos;logout&apos; ) {
+        // clear any logged in state
+        mtClearUser();
+        mtFireEvent(&apos;usersignin&apos;);
+    }
+    else if ( command.match( /^login_(.*)$/ ) ) {
+        var sid = RegExp.$1;
+        mtLoggedIn(sid);
+    }
+    else {
+        mtFireEvent(&apos;usersignin&apos;);
+    }
+}
+&lt;/mt:IfRegistrationAllowed&gt;
+&lt;/mt:IfWebsite&gt;
+</text></template>
+<template id='42' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='archive_index' modified_on='20141114211152' name='アーカイブインデックス' outfile='archives.html' rebuild_me='1' type='index' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: アーカイブ&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:BlogThemeID$&gt;&quot; class=&quot;mt-archive-index &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;archive-title&quot;&gt;アーカイブ&lt;/h1&gt;
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of monthly archives, if monthly archives are enabled --&gt;
+&lt;/mt:Ignore&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Monthly&quot;&gt;
+                            &lt;div class=&quot;archive-monthly archive-date-based archive&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+                                &lt;h2 class=&quot;archive-header&quot;&gt;月別アーカイブ&lt;/h2&gt;
+                                &lt;div class=&quot;archive-content&quot;&gt;
+                                    &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+                                        &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+                                    &lt;/ul&gt;
+                                &lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+                            &lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of category archives, if category archives are enabled --&gt;
+&lt;/mt:Ignore&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category&quot;&gt;
+                            &lt;div class=&quot;archive-category archive&quot;&gt;
+                                &lt;h2 class=&quot;archive-header&quot;&gt;カテゴリ&lt;/h2&gt;
+                                &lt;div class=&quot;archive-content&quot;&gt;
+    &lt;mt:TopLevelCategories&gt;
+        &lt;mt:SubCatIsFirst&gt;
+                                    &lt;ul&gt;
+        &lt;/mt:SubCatIsFirst&gt;
+        &lt;mt:If tag=&quot;CategoryCount&quot;&gt;
+                                        &lt;li&gt;&lt;a href=&quot;&lt;$mt:CategoryArchiveLink$&gt;&quot; title=&quot;&lt;$mt:CategoryDescription$&gt;&quot;&gt;&lt;$mt:CategoryLabel$&gt;&lt;/a&gt;
+        &lt;mt:Else&gt;
+                                        &lt;li&gt;&lt;$mt:CategoryLabel$&gt;
+        &lt;/mt:If&gt;
+        &lt;$mt:SubCatsRecurse$&gt;
+                                        &lt;/li&gt;
+        &lt;mt:SubCatIsLast&gt;
+                                    &lt;/ul&gt;
+        &lt;/mt:SubCatIsLast&gt;
+    &lt;/mt:TopLevelCategories&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of author archives, if category author are enabled --&gt;
+    &lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author&quot;&gt;
+                                &lt;div class=&quot;archive-author archive&quot;&gt;
+        &lt;mt:ArchiveList archive_type=&quot;Author&quot;&gt;
+            &lt;mt:ArchiveListHeader&gt;
+                                    &lt;h2 class=&quot;archive-header&quot;&gt;ユーザーアーカイブ&lt;/h2&gt;
+                                    &lt;div class=&quot;archive-content&quot;&gt;
+                                        &lt;ul&gt;
+            &lt;/mt:ArchiveListHeader&gt;
+                                            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;mt:ArchiveListFooter&gt;
+                                        &lt;/ul&gt;
+                                    &lt;/div&gt;
+            &lt;/mt:ArchiveListFooter&gt;
+        &lt;/mt:ArchiveList&gt;
+                                &lt;/div&gt;
+    &lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;/mt:Ignore&gt;
+
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of category archives by month, if category archives are enabled --&gt;
+    &lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Monthly&quot;&gt;
+                                &lt;div class=&quot;archive-category-monthly archive&quot;&gt;
+        &lt;mt:ArchiveList archive_type=&quot;Category-Monthly&quot;&gt;
+            &lt;mt:ArchiveListHeader&gt;
+                                    &lt;h2 class=&quot;archive-header&quot;&gt;月別カテゴリアーカイブ&lt;/h2&gt;
+                                    &lt;div class=&quot;archive-content&quot;&gt;
+                                        &lt;ul&gt;
+            &lt;/mt:ArchiveListHeader&gt;
+                                            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;mt:ArchiveListFooter&gt;
+                                        &lt;/ul&gt;
+                                    &lt;/div&gt;
+            &lt;/mt:ArchiveListFooter&gt;
+        &lt;/mt:ArchiveList&gt;
+                                &lt;/div&gt;
+    &lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;/mt:Ignore&gt;
+
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of author archives, if category archives are enabled --&gt;
+    &lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Monthly&quot;&gt;
+                                &lt;div class=&quot;archive-author-monthly archive&quot;&gt;
+        &lt;mt:ArchiveList archive_type=&quot;Author-Monthly&quot;&gt;
+            &lt;mt:ArchiveListHeader&gt;
+                                    &lt;h2 class=&quot;archive-header&quot;&gt;月別ユーザーアーカイブ&lt;/h2&gt;
+                                    &lt;div class=&quot;archive-content&quot;&gt;
+                                        &lt;ul&gt;
+            &lt;/mt:ArchiveListHeader&gt;
+                                            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;mt:ArchiveListFooter&gt;
+                                        &lt;/ul&gt;
+                                    &lt;/div&gt;
+            &lt;/mt:ArchiveListFooter&gt;
+        &lt;/mt:ArchiveList&gt;
+                                &lt;/div&gt;
+    &lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;/mt:Ignore&gt;
+
+
+&lt;mt:Ignore&gt;
+    &lt;!-- List of entry archives, if entry archives are enabled --&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Individual&quot;&gt;
+                            &lt;div class=&quot;archive-individual archive-date-based archive&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Individual&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+                                &lt;div class=&quot;archive-content&quot;&gt;
+                                    &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+                                        &lt;li&gt;&lt;$mt:ArchiveDate format=&quot;%Y.%m.%d&quot;$&gt;: &lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+                                    &lt;/ul&gt;
+                                &lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+                            &lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;/mt:Ignore&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='49' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='main_index' modified_on='20141114211153' name='メインページ' outfile='index.html' rebuild_me='1' type='index' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;link rel=&quot;EditURI&quot; type=&quot;application/rsd+xml&quot; title=&quot;RSD&quot; href=&quot;&lt;$mt:Link template=&quot;rsd&quot;$&gt;&quot; /&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-main-index &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+&lt;mt:Entries include_blogs=&quot;children&quot; include_with_website=&quot;1&quot; &gt;
+                            &lt;mt:Ignore&gt;&lt;!-- Use the Entry Summary module for each entry published on this page --&gt;&lt;/mt:Ignore&gt;
+                            &lt;$mt:Include module=&quot;記事の概要&quot; display_blog_name=&quot;1&quot;$&gt;
+&lt;/mt:Entries&gt;
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='11' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='entry' modified_on='20141114211152' name='記事' rebuild_me='1' type='individual' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;$mt:Var name=&quot;comments_per_page&quot; value=&quot;50&quot;$&gt;
+    &lt;mt:EntryPrevious&gt;&lt;link rel=&quot;prev bookmark&quot; href=&quot;&lt;$mt:EntryPermalink$&gt;&quot; title=&quot;&lt;$mt:EntryTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:EntryPrevious&gt;
+    &lt;mt:EntryNext&gt;&lt;link rel=&quot;next bookmark&quot; href=&quot;&lt;$mt:EntryPermalink$&gt;&quot; title=&quot;&lt;$mt:EntryTitle encode_html=&quot;1&quot;$&gt;&quot; /&gt;&lt;/mt:EntryNext&gt;
+    &lt;$mt:EntryTrackbackData$&gt;
+    &lt;mt:If tag=&quot;EntryCommentCount&quot; gt=&quot;$comments_per_page&quot;&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        MT.entryID = &lt;$mt:EntryID$&gt;;
+        MT.commentsPerPage = &lt;$mt:Var name=&quot;comments_per_page&quot;$&gt;;
+        MT.entryCommentCount = &lt;$mt:EntryCommentCount$&gt;;
+        MT.commentIds = [&lt;mt:Comments sort_order=&quot;ascend&quot; glue=&quot;,&quot;&gt;&lt;mt:CommentID&gt;&lt;/mt:Comments&gt;];
+    &lt;/script&gt;
+    &lt;/mt:If&gt;
+    &lt;title&gt;&lt;$mt:EntryTitle encode_html=&quot;1&quot;$&gt; - &lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-entry-archive &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+
+                            &lt;div id=&quot;entry-&lt;$mt:EntryID$&gt;&quot; class=&quot;entry-asset asset hentry&quot;&gt;
+                                &lt;div class=&quot;asset-header&quot;&gt;
+                                    &lt;h1 id=&quot;page-title&quot; class=&quot;asset-name entry-title&quot;&gt;&lt;$mt:EntryTitle$&gt;&lt;/h1&gt;
+                                    &lt;div class=&quot;asset-meta&quot;&gt;
+                                        &lt;span class=&quot;byline&quot;&gt;
+&lt;mt:If tag=&quot;EntryAuthorDisplayName&quot;&gt;
+                                            &lt;span class=&quot;vcard author&quot;&gt;&lt;$mt:EntryAuthorLink show_hcard=&quot;1&quot;$&gt;&lt;/span&gt; (&lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:EntryDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:EntryDate format=&quot;%x %X&quot;$&gt;&lt;/abbr&gt;)
+&lt;mt:Else&gt;
+                                            &lt;abbr class=&quot;published&quot; title=&quot;&lt;$mt:EntryDate format_name=&quot;iso8601&quot;$&gt;&quot;&gt;&lt;$mt:EntryDate format=&quot;%x %X&quot;$&gt;&lt;/abbr&gt;
+&lt;/mt:If&gt;
+                                        &lt;/span&gt;
+&lt;mt:IfCommentsActive&gt;
+                                        &lt;span class=&quot;separator&quot;&gt;|&lt;/span&gt; &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;#comments&quot;&gt;&lt;$mt:EntryCommentCount singular=&quot;コメント(1)&quot; plural=&quot;コメント(#)&quot; none=&quot;コメント(0)&quot;$&gt;&lt;/a&gt;
+&lt;/mt:IfCommentsActive&gt;
+&lt;mt:IfPingsActive&gt;
+                                        &lt;span class=&quot;separator&quot;&gt;|&lt;/span&gt; &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;#trackbacks&quot;&gt;&lt;$mt:EntryTrackbackCount singular=&quot;トラックバック(1)&quot; plural=&quot;トラックバック(#)&quot; none=&quot;トラックバック(0)&quot;$&gt;&lt;/a&gt;
+&lt;/mt:IfPingsActive&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;asset-content entry-content&quot;&gt;
+&lt;mt:If tag=&quot;EntryBody&quot;&gt;
+                                    &lt;div class=&quot;asset-body&quot;&gt;
+                                        &lt;$mt:EntryBody$&gt;
+                                    &lt;/div&gt;
+&lt;/mt:If&gt;
+&lt;mt:If tag=&quot;EntryMore&quot; convert_breaks=&quot;0&quot;&gt;
+                                    &lt;div id=&quot;more&quot; class=&quot;asset-more&quot;&gt;
+                                        &lt;$mt:EntryMore$&gt;
+                                    &lt;/div&gt;
+&lt;/mt:If&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;asset-footer&quot;&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category&quot;&gt;
+    &lt;mt:If tag=&quot;EntryCategories&quot;&gt;
+                                    &lt;div class=&quot;entry-categories&quot;&gt;
+                                        &lt;h4&gt;カテゴリ&lt;span class=&quot;delimiter&quot;&gt;:&lt;/span&gt;&lt;/h4&gt;
+                                        &lt;ul&gt;
+                                            &lt;li class=&quot;entry-category&quot;&gt;&lt;mt:EntryCategories glue=&apos;&lt;span class=&quot;delimiter&quot;&gt;,&lt;/span&gt;&lt;/li&gt; &lt;li class=&quot;entry-category&quot;&gt;&apos;&gt;&lt;a href=&quot;&lt;$mt:CategoryArchiveLink$&gt;&quot; rel=&quot;tag&quot;&gt;&lt;$mt:CategoryLabel$&gt;&lt;/a&gt;&lt;/mt:EntryCategories&gt;&lt;/li&gt;
+                                        &lt;/ul&gt;
+                                    &lt;/div&gt;
+    &lt;/mt:If&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;mt:EntryIfTagged&gt;
+                                    &lt;div class=&quot;entry-tags&quot;&gt;
+                                        &lt;h4&gt;タグ&lt;span class=&quot;delimiter&quot;&gt;:&lt;/span&gt;&lt;/h4&gt;
+                                        &lt;ul&gt;
+                                            &lt;li&gt;&lt;mt:EntryTags glue=&apos;&lt;span class=&quot;delimiter&quot;&gt;,&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&apos;&gt;&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;location.href=&apos;&lt;$mt:TagSearchLink encode_js=&quot;1&quot;$&gt;&apos;;return false;&quot; rel=&quot;tag&quot;&gt;&lt;$mt:TagName$&gt;&lt;/a&gt;&lt;/mt:EntryTags&gt;&lt;/li&gt;
+                                        &lt;/ul&gt;
+                                    &lt;/div&gt;
+&lt;/mt:EntryIfTagged&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;トラックバック&quot;$&gt;
+                    &lt;$mt:Include module=&quot;コメント&quot;$&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='25' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='page' modified_on='20141114211152' name='ウェブページ' rebuild_me='1' type='page' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;$mt:EntryTrackbackData$&gt;
+    &lt;$mt:Var name=&quot;comments_per_page&quot; value=&quot;50&quot;$&gt;
+    &lt;mt:If tag=&quot;EntryCommentCount&quot; gt=&quot;$comments_per_page&quot;&gt;
+	    &lt;script type=&quot;text/javascript&quot;&gt;
+         MT.entryID = &lt;$mt:PageID$&gt;;
+         MT.commentsPerPage = &lt;$mt:Var name=&quot;comments_per_page&quot;$&gt;;
+         MT.entryCommentCount = &lt;$mt:EntryCommentCount$&gt;;
+         MT.commentIds = [&lt;mt:Comments sort_order=&quot;ascend&quot; glue=&quot;,&quot;&gt;&lt;mt:CommentID&gt;&lt;/mt:Comments&gt;];
+	    &lt;/script&gt;
+    &lt;/mt:If&gt;
+    &lt;title&gt;&lt;$mt:PageTitle encode_html=&quot;1&quot;$&gt; - &lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-page-archive &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+
+                            &lt;div id=&quot;page-&lt;$mt:PageID$&gt;&quot; class=&quot;page-asset asset&quot;&gt;
+                                &lt;div class=&quot;asset-header&quot;&gt;
+                                    &lt;h1 id=&quot;page-title&quot; class=&quot;asset-name&quot;&gt;&lt;$mt:PageTitle$&gt;&lt;/h1&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;asset-content&quot;&gt;
+&lt;mt:If tag=&quot;PageBody&quot;&gt;
+                                    &lt;div class=&quot;asset-body&quot;&gt;
+                                        &lt;$mt:PageBody$&gt;
+                                    &lt;/div&gt;
+&lt;/mt:If&gt;
+&lt;mt:If tag=&quot;PageMore&quot;&gt;
+                                    &lt;div id=&quot;more&quot; class=&quot;asset-more&quot;&gt;
+                                        &lt;$mt:PageMore$&gt;
+                                    &lt;/div&gt;
+&lt;/mt:If&gt;
+                                &lt;/div&gt;
+                                &lt;div class=&quot;asset-footer&quot;&gt;&lt;/div&gt;
+                            &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;トラックバック&quot;$&gt;
+                    &lt;$mt:Include module=&quot;コメント&quot;$&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='14' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='popup_image' modified_on='20141114211152' name='ポップアップ画像' rebuild_me='1' type='popup_image' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;&lt;title&gt;&lt;$mt:ImageURL$&gt;&lt;/title&gt;&lt;/head&gt;
+&lt;body id=&quot;uploaded-image-popup&quot; class=&quot;popup&quot; style=&quot;margin: 0;padding: 0;&quot;&gt;
+    &lt;img src=&quot;&lt;$mt:ImageURL$&gt;&quot; width=&quot;&lt;$mt:ImageWidth$&gt;&quot; height=&quot;&lt;$mt:ImageHeight$&gt;&quot; alt=&quot;&lt;$mt:ImageURL$&gt;&quot; style=&quot;margin: 0;padding: 0;border: 0;&quot; /&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='5' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='search_results' modified_on='20141114211152' name='検索結果' rebuild_me='1' type='search_results' current_revision='0'><text>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+    &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; id=&quot;sixapart-standard&quot;&gt;
+&lt;head&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+    /* &lt;![CDATA[ */
+    var user = &lt;$mt:UserSessionState$&gt;;
+    /* ]]&gt; */
+    &lt;/script&gt;
+    &lt;$mt:Include module=&quot;HTMLヘッダー&quot;$&gt;
+    &lt;title&gt;&lt;$mt:BlogName encode_html=&quot;1&quot;$&gt;: 検索結果&lt;/title&gt;
+    &lt;mt:Ignore&gt;Below Javascript adds ajax search capability&lt;/mt:Ignore&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+    /* &lt;![CDATA[ */
+    &lt;mt:IfMoreResults&gt;
+    function getResults(page) {
+        page = parseInt(page);
+        if (timer) window.clearTimeout(timer);
+        var xh = mtGetXmlHttp();
+        if (!xh) return false;
+        var res = results[page];
+        if (!res) return;
+        var url = res[&apos;next_url&apos;];
+        if (!url) return;
+
+        xh.open(&apos;GET&apos;, url + &apos;&amp;format=js&apos;, true);
+        xh.onreadystatechange = function() {
+            if ( xh.readyState == 4 ) {
+                if ( xh.status &amp;&amp; ( xh.status != 200 ) ) {
+                    // error - ignore
+                } else {
+                    try {
+                        var page_results = eval(&quot;(&quot; + xh.responseText + &quot;)&quot;);
+                        if ( page_results[&apos;error&apos;] == null )
+                            results[page + 1] = page_results[&apos;result&apos;];
+                    } catch (e) {
+                    }
+                }
+            }
+        };
+        xh.send(null);
+    }
+
+    function swapContent(direction) {
+        if ( direction == undefined ) direction = 1;
+        var page_span = document.getElementById(&apos;current-page&apos;);
+        if (!page_span) return true;
+        var next_page = direction + parseInt(page_span.innerHTML);
+        var res = results[next_page];
+        if (!res) return true;
+        var content = res[&apos;content&apos;];
+        if (!content) return true;
+        var div = document.getElementById(&apos;search-results&apos;);
+        if (!div) return true;
+        div.innerHTML = content;
+        timer = window.setTimeout(&quot;getResults(&quot; + next_page + &quot;)&quot;, 1*1000);
+        window.scroll(0, 0);
+        return false;
+    }
+    &lt;mt:Else&gt;&lt;mt:IfPreviousResults&gt;
+    function swapContent(direction) {
+        return true;
+    }&lt;/mt:IfPreviousResults&gt;
+    &lt;/mt:IfMoreResults&gt;
+    /* ]]&gt; */
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body id=&quot;&lt;$mt:WebsiteThemeID$&gt;&quot; class=&quot;mt-search-results &lt;$mt:Var name=&quot;page_layout&quot;$&gt;&quot;&gt;
+    &lt;div id=&quot;container&quot;&gt;
+        &lt;div id=&quot;container-inner&quot;&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーヘッダー&quot;$&gt;
+
+
+            &lt;div id=&quot;content&quot;&gt;
+                &lt;div id=&quot;content-inner&quot;&gt;
+
+
+                    &lt;div id=&quot;alpha&quot;&gt;
+                        &lt;div id=&quot;alpha-inner&quot;&gt;
+
+&lt;mt:Ignore&gt;&lt;!--
+    Below is the block to show search results.
+    This makes an independent block to support
+    Ajax-based background retrieval of the next search results.
+--&gt;&lt;/mt:Ignore&gt;
+&lt;mt:SetVarTemplate id=&quot;search_results&quot; name=&quot;search_results&quot;&gt;  
+&lt;mt:SearchResults&gt;
+    &lt;mt:SearchResultsHeader&gt;
+                            &lt;div id=&quot;search-results&quot;&gt;
+                                &lt;span id=&quot;current-page&quot; class=&quot;hidden&quot;&gt;&lt;$mt:CurrentPage$&gt;&lt;/span&gt;
+                                &lt;h1 id=&quot;page-title&quot; class=&quot;search-results-header&quot;&gt;
+        &lt;mt:IfStraightSearch&gt;
+                                    「&lt;$mt:SearchString$&gt;」と一致するもの
+        &lt;/mt:IfStraightSearch&gt;
+        &lt;mt:IfTagSearch&gt;
+                                    タグ「&lt;$mt:SearchString$&gt;」が付けられているもの
+        &lt;/mt:IfTagSearch&gt;
+                                &lt;/h1&gt;
+                                &lt;div class=&quot;search-results-container autopagerize_page_element&quot;&gt;
+    &lt;/mt:SearchResultsHeader&gt;
+                                    &lt;$mt:Include module=&quot;記事の概要&quot; hide_counts=&quot;1&quot; display_blog_name=&quot;1&quot; local=&quot;1&quot;$&gt;
+    &lt;mt:SearchResultsFooter&gt;
+                                &lt;/div&gt;&lt;div class=&quot;autopagerize_insert_before&quot;&gt;&lt;/div&gt;
+
+    &lt;mt:Ignore&gt;&lt;!-- Used with the ajax search capability of the new search class --&gt;&lt;/mt:Ignore&gt;
+                                &lt;div class=&quot;content-nav&quot;&gt;
+                                    &lt;mt:IfPreviousResults&gt;&lt;a href=&quot;&lt;$mt:PreviousLink$&gt;&quot; rel=&quot;prev&quot; onclick=&quot;return swapContent(-1);&quot;&gt;&amp;lt; 前&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;/mt:IfPreviousResults&gt;&lt;mt:PagerBlock&gt;&lt;mt:IfCurrentPage&gt;&lt;$mt:Var name=&quot;__value__&quot;$&gt;&lt;mt:Else&gt;&lt;a href=&quot;&lt;$mt:PagerLink$&gt;&quot;&gt;&lt;$mt:Var name=&quot;__value__&quot;$&gt;&lt;/a&gt;&lt;/mt:IfCurrentPage&gt;&lt;mt:Unless name=&quot;__last__&quot;&gt;&amp;nbsp;&lt;/mt:Unless&gt;&lt;/mt:PagerBlock&gt;&lt;mt:IfMoreResults&gt;&amp;nbsp;&amp;nbsp;&lt;a href=&quot;&lt;$mt:NextLink$&gt;&quot; rel=&quot;next&quot; onclick=&quot;return swapContent();&quot;&gt;次 &amp;gt;&lt;/a&gt;&lt;/mt:IfMoreResults&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+    &lt;/mt:SearchResultsFooter&gt;
+&lt;/mt:SearchResults&gt;
+&lt;/mt:SetVarTemplate&gt;
+&lt;mt:Ignore&gt;&lt;!-- Display search results constructed in the block above --&gt;&lt;/mt:Ignore&gt;
+&lt;$mt:Var name=&quot;search_results&quot;$&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Display no results message --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:NoSearchResults&gt;
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;search-results-header&quot;&gt;
+    &lt;mt:IfStraightSearch&gt;
+                                「&lt;$mt:SearchString$&gt;」と一致するもの
+    &lt;/mt:IfStraightSearch&gt;
+    &lt;mt:IfTagSearch&gt;
+                                タグ「&lt;$mt:SearchString$&gt;」が付けられているもの
+    &lt;/mt:IfTagSearch&gt;
+                            &lt;/h1&gt;
+                            &lt;p&gt;「&lt;$mt:SearchString$&gt;」と一致する結果は見つかりませんでした。&lt;/p&gt;
+&lt;/mt:NoSearchResults&gt;
+
+
+&lt;mt:Ignore&gt;&lt;!-- Display instructions for searching if search script was accessed without a query --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:NoSearch&gt;
+                            &lt;h1 id=&quot;page-title&quot; class=&quot;search-results-header&quot;&gt;例&lt;/h1&gt;
+                            &lt;p&gt;すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。&lt;/p&gt;
+                            &lt;blockquote&gt;
+                                &lt;p&gt;&lt;code&gt;&quot;movable type&quot;&lt;/code&gt;&lt;/p&gt;
+                            &lt;/blockquote&gt;
+                            &lt;p&gt;AND、OR、NOTを入れることで論理検索を行うこともできます。&lt;/p&gt;
+                            &lt;blockquote&gt;
+                                &lt;p&gt;&lt;code&gt;個人 OR 出版&lt;/code&gt;&lt;/p&gt;
+                                &lt;p&gt;&lt;code&gt;個人 NOT 出版&lt;/code&gt;&lt;/p&gt;
+                            &lt;/blockquote&gt;
+&lt;/mt:NoSearch&gt;
+
+&lt;mt:Ignore&gt;&lt;!-- Used with the ajax search capability of the new search class --&gt;&lt;/mt:Ignore&gt;
+&lt;mt:IfMoreResults&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+&lt;!--
+var div = document.getElementById(&apos;search-results&apos;);
+var results = {
+    &apos;&lt;$mt:CurrentPage$&gt;&apos;: {
+        &apos;content&apos;: div.innerHTML,
+        &apos;next_url&apos;: &apos;&lt;$mt:NextLink$&gt;&apos;
+    }
+};
+var timer = window.setTimeout(&quot;getResults(&quot; + &lt;$mt:CurrentPage$&gt; + &quot;)&quot;, 1*1000);
+//--&gt;
+&lt;/script&gt;
+&lt;/mt:IfMoreResults&gt;
+
+
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    &lt;$mt:Include module=&quot;サイドバー&quot;$&gt;
+
+
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+
+            &lt;$mt:Include module=&quot;バナーフッター&quot;$&gt;
+
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</text></template>
+<template id='6' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='recent_assets' modified_on='20141114211152' name='アイテム' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:If tag=&quot;AssetCount&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+    &lt;mt:Assets type=&quot;image&quot; lastn=&quot;10&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+        &lt;mt:AssetsHeader&gt;
+&lt;div class=&quot;widget-recent-assets widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;アイテム&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:AssetsHeader&gt;
+        &lt;li class=&quot;item&quot;&gt;&lt;a class=&quot;asset-image&quot; href=&quot;&lt;$mt:AssetURL$&gt;&quot;&gt;&lt;img src=&quot;&lt;$mt:AssetThumbnailURL height=&quot;70&quot;$&gt;&quot; class=&quot;asset-img-thumb&quot; alt=&quot;&lt;$mt:AssetLabel$&gt;&quot; title=&quot;&lt;$mt:AssetLabel$&gt;&quot; /&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:AssetsFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:AssetsFooter&gt;
+    &lt;/mt:Assets&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='8' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='monthly_archive_dropdown' modified_on='20141114211152' name='月別アーカイブ(ドロップダウン)' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-monthly-dropdown widget-archive widget&quot;&gt;
+   &lt;h3 class=&quot;widget-header&quot;&gt;&lt;a href=&quot;&lt;$mt:BlogURL$&gt;archives.html&quot;&gt;アーカイブ&lt;/a&gt;&lt;/h3&gt;
+   &lt;div class=&quot;widget-content&quot;&gt;
+      &lt;select onchange=&quot;nav(this)&quot;&gt;
+         &lt;option&gt;月を選択...&lt;/option&gt;
+         &lt;/mt:ArchiveListHeader&gt;
+         &lt;option value=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/option&gt;
+         &lt;mt:ArchiveListFooter&gt;
+      &lt;/select&gt;
+   &lt;/div&gt;
+&lt;/div&gt;
+&lt;script type=&quot;text/javascript&quot; charset=&quot;utf-8&quot;&gt;
+/* &lt;![CDATA[ */
+function nav(sel) {
+   if (sel.selectedIndex == -1) return;
+   var opt = sel.options[sel.selectedIndex];
+   if (opt &amp;&amp; opt.value)
+      location.href = opt.value;
+}
+/* ]]&gt; */
+&lt;/script&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='12' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='category_archive_list' modified_on='20141114211152' name='カテゴリアーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category&quot;&gt;
+&lt;div class=&quot;widget-archive widget-archive-category widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;カテゴリ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+    &lt;mt:TopLevelCategories&gt;
+        &lt;mt:SubCatIsFirst&gt;
+        &lt;ul&gt;
+        &lt;/mt:SubCatIsFirst&gt;
+        &lt;mt:If tag=&quot;CategoryCount&quot;&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:CategoryArchiveLink$&gt;&quot;&lt;mt:If tag=&quot;CategoryDescription&quot;&gt; title=&quot;&lt;$mt:CategoryDescription remove_html=&quot;1&quot; encode_html=&quot;1&quot;$&gt;&quot;&lt;/mt:If&gt;&gt;&lt;$mt:CategoryLabel$&gt; (&lt;$mt:CategoryCount$&gt;)&lt;/a&gt;
+        &lt;mt:Else&gt;
+            &lt;li&gt;&lt;$mt:CategoryLabel$&gt;
+        &lt;/mt:If&gt;
+        &lt;$mt:SubCatsRecurse$&gt;
+            &lt;/li&gt;
+        &lt;mt:SubCatIsLast&gt;
+        &lt;/ul&gt;
+        &lt;/mt:SubCatIsLast&gt;
+    &lt;/mt:TopLevelCategories&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='13' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='monthly_archive_list' modified_on='20141114211152' name='月別アーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-monthly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;&lt;$mt:ArchiveTypeLabel$&gt; &lt;a href=&quot;&lt;$mt:Link template=&quot;archive_index&quot;$&gt;&quot;&gt;アーカイブ&lt;/a&gt;&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='15' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='tag_cloud' modified_on='20141114211152' name='タグクラウド' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:Tags top=&quot;20&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+&lt;mt:If name=&quot;__first__&quot;&gt;
+&lt;div class=&quot;widget-tag-cloud widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;タグクラウド&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+&lt;/mt:If&gt;
+            &lt;li class=&quot;rank-&lt;$mt:TagRank max=&quot;10&quot;$&gt;&quot;&gt;&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;location.href=&apos;&lt;$mt:TagSearchLink encode_js=&quot;1&quot;$&gt;&apos;;return false;&quot; rel=&quot;tag&quot;&gt;&lt;$mt:TagName$&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;mt:If name=&quot;__last__&quot;&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:If&gt;
+&lt;/mt:Tags&gt;
+</text></template>
+<template id='17' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='technorati_search' modified_on='20141114211152' name='Technorati Search' rebuild_me='1' type='widget' current_revision='0'><text>&lt;div class=&quot;widget-technorati widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;Techonrati&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;div id=&quot;technorati&quot;&gt;
+            &lt;form id=&quot;ts_s&quot; method=&quot;post&quot; action=&quot;http://technorati.com/search.php&quot;&gt;
+                &lt;fieldset&gt;
+                    &lt;legend&gt;&lt;a href=&apos;http://www.technorati.com/&apos;&gt;Technorati&lt;/a&gt; search&lt;/legend&gt;
+                    &lt;input type=&quot;hidden&quot; name=&quot;sub&quot; value=&quot;searchlet&quot; /&gt;
+                    &lt;input type=&quot;text&quot; id=&quot;ts_search&quot; name=&quot;s&quot; size=&quot;12&quot; maxlength=&quot;255&quot; value=&quot;&quot; /&gt;&lt;br /&gt;
+                    &lt;input type=&quot;radio&quot; checked=&quot;checked&quot; name=&quot;from&quot; id=&quot;ts_yb&quot; value=&quot;&lt;$mt:BlogURL$&gt;&quot; /&gt;
+                    &lt;label for=&quot;ts_yb&quot; title=&quot;&lt;$mt:BlogName$&gt;&quot;&gt;このブログ&lt;/label&gt;
+                    &lt;input type=&quot;radio&quot; name=&quot;from&quot; id=&quot;ts_www&quot; value=&quot;&quot; /&gt; &lt;label for=&quot;ts_www&quot;&gt;すべてのブログ&lt;/label&gt;
+                    &lt;input type=&quot;submit&quot; class=&quot;btn&quot; value=&quot;検索&quot; /&gt;
+                &lt;/fieldset&gt;
+            &lt;/form&gt;
+            &lt;p id=&quot;ts_l&quot; class=&quot;ts_l&quot;&gt;&lt;a href=&quot;http://technorati.com/search/&lt;$mt:BlogURL$&gt;&quot; id=&quot;ts_lh&quot;&gt;&amp;#187; リンクしているブログ&lt;/a&gt;&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='18' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='recent_entries' modified_on='20141114211152' name='最近の記事' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:If tag=&quot;BlogEntryCount&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+    &lt;mt:Entries lastn=&quot;10&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+        &lt;mt:EntriesHeader&gt;
+&lt;div class=&quot;widget-recent-entries widget-archives widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;最近の記事&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:EntriesHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;&quot;&gt;&lt;$mt:EntryTitle$&gt;&lt;/a&gt; - &lt;a href=&quot;&lt;$mt:EntryBlogURL$&gt;&quot;&gt;&lt;$mt:EntryBlogName$&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:EntriesFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:EntriesFooter&gt;
+    &lt;/mt:Entries&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='19' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='author_archive_list' modified_on='20141114211152' name='ユーザーアーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive widget-archive-author widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;ユーザー&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='20' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='powered_by' modified_on='20141114211152' name='Powered By' rebuild_me='1' type='widget' current_revision='0'><text>&lt;div class=&quot;widget-powered widget&quot;&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;a href=&quot;http://www.sixapart.jp/movabletype/&quot;&gt;&lt;img src=&quot;&lt;$mt:StaticWebPath$&gt;images/bug-pbmt-white.png&quot; alt=&quot;Powered by Movable Type &lt;$mt:Version$&gt;&quot; width=&quot;80&quot; height=&quot;61&quot; /&gt;&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='21' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='date_based_author_archives' modified_on='20141114211152' name='日付ベースのユーザーアーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Yearly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author-Yearly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-author-yearly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;年別ユーザーアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author-Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-author-monthly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;月別ユーザーアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Weekly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author-Weekly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-author-weekly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;週別ユーザーアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Daily&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author-Daily&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-author-daily widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;日別ユーザーアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+</text></template>
+<template id='22' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='pages_list' modified_on='20141114211152' name='ページ一覧' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Page&quot;&gt;
+&lt;div class=&quot;widget-pages widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;ウェブページ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+    &lt;mt:Pages no_folder=&quot;1&quot; sort_by=&quot;title&quot; sort_order=&quot;ascend&quot;&gt;
+            &lt;li class=&quot;page page-&lt;$mt:PageID$&gt;&quot;&gt;&lt;a href=&quot;&lt;$mt:PagePermalink$&gt;&quot;&gt;&lt;$mt:PageTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+    &lt;/mt:Pages&gt;
+    &lt;mt:TopLevelFolders&gt;
+            &lt;li class=&quot;folder folder-&lt;$mt:FolderID$&gt;&quot;&gt;&lt;strong&gt;&lt;$mt:FolderLabel$&gt;&lt;/strong&gt;
+        &lt;mt:Pages sort_by=&quot;title&quot; sort_order=&quot;ascend&quot;&gt;
+            &lt;mt:PagesHeader&gt;
+                &lt;ul&gt;
+            &lt;/mt:PagesHeader&gt;
+                    &lt;li class=&quot;page page-&lt;$mt:PageID$&gt;&quot;&gt;&lt;a href=&quot;&lt;$mt:PagePermalink$&gt;&quot;&gt;&lt;$mt:PageTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;mt:PagesFooter&gt;
+                &lt;/ul&gt;
+            &lt;/mt:PagesFooter&gt;
+        &lt;/mt:Pages&gt;
+            &lt;/li&gt;
+        &lt;$mt:SubFolderRecurse$&gt;
+    &lt;/mt:TopLevelFolders&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='27' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='signin' modified_on='20141114211152' name='サインイン' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfRegistrationAllowed&gt;
+&lt;div class=&quot;widget-sign-in widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;サインイン&lt;/h3&gt;
+    &lt;div id=&quot;signin-widget-content&quot; class=&quot;widget-content&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+/* &lt;![CDATA[ */
+function mtUpdateSignInWidget(u) {
+    var el = document.getElementById(&apos;signin-widget-content&apos;);
+    var content = &apos;&apos;;
+    if (!el) return;
+    if (u) {
+        if (u &amp;&amp; u.is_authenticated) {
+            user = u;
+            mtSaveUser();
+        } else {
+            // user really isn&apos;t logged in; so let&apos;s do this!
+            return mtSignIn();
+        }
+    } else {
+        u = mtGetUser();
+    }
+    if (u &amp;&amp; u.name) {
+        var url;
+        if (u.is_authenticated) {
+            if (u.is_author) {
+                url = &apos;&lt;$mt:CGIPath$&gt;&lt;$mt:CommentScript$&gt;?__mode=edit_profile&apos;;
+                url += &apos;&amp;return_url=&apos; + encodeURIComponent( location.href );
+            } else {
+                url = u.url;
+            }
+        } else if (u.url) {
+            url = u.url;
+        } else {
+            url = null;
+        }
+        var content = &apos;ユーザー名:&apos;;
+        if (url)
+            content += &apos;&lt;a href=&quot;&apos; + url + &apos;&quot;&gt;&apos; + u.name + &apos;&lt;/a&gt;&apos;;
+        else
+            content += u.name;
+        content += &apos;.  (&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;return mtSignOutOnClick()&quot;&gt;サインアウト&lt;/a&gt;)&apos;;
+    } else if (u &amp;&amp; u.is_banned) {
+        content = &apos;このブログにサインインする権限がありません。&apos;;
+    } else {
+        content = &apos;&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;return mtSignInOnClick(\&apos;signin-widget-content\&apos;)&quot;&gt;サインイン&lt;/a&gt;&apos;;
+    }
+    el.innerHTML = content;
+}
+mtAttachEvent(&apos;usersignin&apos;, mtUpdateSignInWidget);
+mtUpdateSignInWidget();
+/* ]]&gt; */
+&lt;/script&gt;
+&lt;/mt:IfRegistrationAllowed&gt;
+</text></template>
+<template id='28' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='current_category_monthly_archive_list' modified_on='20141114211152' name='カテゴリ月別アーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Category-Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-current-category-monthly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;&lt;$mt:CategoryLabel$&gt;: 月別アーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='29' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='about_this_page' modified_on='20141114211152' name='About' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:unless name=&quot;main_index&quot;&gt;
+&lt;div class=&quot;widget-about-this-page widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;
+&lt;mt:If name=&quot;entry_template&quot;&gt;
+        この記事について
+&lt;mt:Else&gt;
+    &lt;mt:If name=&quot;archive_template&quot;&gt;
+        このアーカイブについて
+    &lt;/mt:If&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;archive_index&quot;&gt;
+        このページについて
+&lt;/mt:If&gt;
+    &lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+&lt;mt:If name=&quot;archive_index&quot;&gt;
+        &lt;p&gt;このページには過去に書かれたすべてのコンテンツが含まれています。&lt;/p&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;entry_template&quot;&gt;
+        &lt;p class=&quot;first&quot;&gt;このページは、&lt;$mt:EntryAuthorLink$&gt;が&lt;$mt:EntryDate format=&quot;%x %X&quot;$&gt;に書いた記事です。&lt;/p&gt;
+    &lt;mt:EntryPrevious&gt;
+        &lt;p&gt;ひとつ前の記事は「&lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;&quot;&gt;&lt;$mt:EntryTitle remove_html=&quot;1&quot;$&gt;&lt;/a&gt;」です。&lt;/p&gt;
+    &lt;/mt:EntryPrevious&gt;
+    &lt;mt:EntryNext&gt;
+        &lt;p&gt;次の記事は「&lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;&quot;&gt;&lt;$mt:EntryTitle remove_html=&quot;1&quot;$&gt;&lt;/a&gt;」です。&lt;/p&gt;
+    &lt;/mt:EntryNext&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;category_archive&quot;&gt;
+    &lt;mt:If name=&quot;datebased_archive&quot;&gt;
+        &lt;p class=&quot;first&quot;&gt;このページには、&lt;strong&gt;&lt;$mt:ArchiveDate format=&quot;%B %Y&quot;$&gt;&lt;/strong&gt;以降に書かれた記事のうち&lt;strong&gt;&lt;$mt:CategoryLabel$&gt;&lt;/strong&gt;カテゴリに属しているものが含まれています。&lt;/p&gt;
+        &lt;mt:ArchivePrevious&gt;
+        &lt;p&gt;前のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:ArchivePrevious&gt;
+        &lt;mt:ArchiveNext&gt;
+        &lt;p&gt;次のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:ArchiveNext&gt;
+    &lt;mt:Else&gt;
+        &lt;p class=&quot;first&quot;&gt;このページには、過去に書かれた記事のうち&lt;strong&gt;&lt;$mt:CategoryLabel$&gt;&lt;/strong&gt;カテゴリに属しているものが含まれています。&lt;/p&gt;
+        &lt;mt:CategoryPrevious&gt;
+        &lt;p&gt;前のカテゴリは&lt;a href=&quot;&lt;$mt:CategoryArchiveLink$&gt;&quot;&gt;&lt;$mt:CategoryLabel$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:CategoryPrevious&gt;
+        &lt;mt:CategoryNext&gt;
+        &lt;p&gt;次のカテゴリは&lt;a href=&quot;&lt;$mt:CategoryArchiveLink$&gt;&quot;&gt;&lt;$mt:CategoryLabel$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:CategoryNext&gt;
+    &lt;/mt:If&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;author_archive&quot;&gt;
+    &lt;mt:If name=&quot;datebased_archive&quot;&gt;
+        &lt;p class=&quot;first&quot;&gt;このページには、&lt;strong&gt;&lt;$mt:AuthorDisplayName encode_html=&quot;1&quot;$&gt;&lt;/strong&gt;が&lt;strong&gt;&lt;$mt:ArchiveDate format=&quot;%B %Y&quot;$&gt;&lt;/strong&gt;に書いた記事が含まれています。&lt;/p&gt;
+        &lt;mt:ArchivePrevious&gt;
+        &lt;p&gt;前のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:ArchivePrevious&gt;
+        &lt;mt:ArchiveNext&gt;
+        &lt;p&gt;次のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+        &lt;/mt:ArchiveNext&gt;
+    &lt;mt:Else&gt;
+        &lt;p class=&quot;first&quot;&gt;このページには、&lt;strong&gt;&lt;$mt:AuthorDisplayName encode_html=&quot;1&quot;$&gt;&lt;/strong&gt;が最近書いた記事が含まれています。&lt;/p&gt;
+    &lt;/mt:If&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;datebased_only_archive&quot;&gt;
+        &lt;p class=&quot;first&quot;&gt;このページには、&lt;strong&gt;&lt;$mt:ArchiveDate format=&quot;%B %Y&quot;$&gt;&lt;/strong&gt;に書かれた記事が新しい順に公開されています。&lt;/p&gt;
+    &lt;mt:ArchivePrevious&gt;
+        &lt;p&gt;前のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+    &lt;/mt:ArchivePrevious&gt;
+    &lt;mt:ArchiveNext&gt;
+        &lt;p&gt;次のアーカイブは&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt;&lt;/a&gt;です。&lt;/p&gt;
+    &lt;/mt:ArchiveNext&gt;
+&lt;/mt:If&gt;
+&lt;mt:If name=&quot;archive_index&quot;&gt;
+        &lt;p&gt;最近のコンテンツは&lt;a href=&quot;&lt;$mt:BlogURL$&gt;&quot;&gt;インデックスページ&lt;/a&gt;で見られます。&lt;/p&gt;
+&lt;mt:Else&gt;
+        &lt;p&gt;最近のコンテンツは&lt;a href=&quot;&lt;$mt:BlogURL$&gt;&quot;&gt;インデックスページ&lt;/a&gt;で見られます。過去に書かれたものは&lt;a href=&quot;&lt;$mt:Link template=&quot;archive_index&quot;$&gt;&quot;&gt;アーカイブのページ&lt;/a&gt;で見られます。&lt;/p&gt;
+&lt;/mt:If&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:unless&gt;
+</text></template>
+<template id='30' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='openid' modified_on='20141114211152' name='OpenID対応' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfRegistrationAllowed type=&quot;OpenID&quot;&gt;
+&lt;div class=&quot;widget-openid widget&quot;&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;em&gt;&lt;strong&gt;OpenID&lt;/strong&gt;対応しています&lt;/em&gt;
+        &lt;a href=&quot;https://www.sixapart.jp/about/openid.html&quot;&gt;OpenIDについて&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:IfRegistrationAllowed&gt;
+</text></template>
+<template id='31' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='creative_commons' modified_on='20141114211152' name='クリエイティブ・コモンズ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:BlogIfCCLicense&gt;
+&lt;div class=&quot;widget-creative-commons widget&quot;&gt;
+   &lt;div class=&quot;widget-content&quot;&gt;
+      &lt;a href=&quot;&lt;$mt:BlogCCLicenseURL$&gt;&quot;&gt;&lt;img alt=&quot;Creative Commons License&quot; src=&quot;&lt;$mt:BlogCCLicenseImage$&gt;&quot; /&gt;&lt;/a&gt;&lt;br /&gt;
+      このブログは&lt;a href=&quot;&lt;$mt:BlogCCLicenseURL$&gt;&quot;&gt;クリエイティブ・コモンズ&lt;/a&gt;でライセンスされています。
+   &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:BlogIfCCLicense&gt;
+</text></template>
+<template id='32' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='blogs' modified_on='20141114211152' name='ブログ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:Blogs include_blogs=&quot;children&quot;&gt;
+    &lt;mt:If name=&quot;__first__&quot;&gt;
+&lt;div class=&quot;widget-blogs widget-archives widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;ブログ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:If&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:BlogURL$&gt;&quot;&gt;&lt;$mt:BlogName$&gt;&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:If name=&quot;__last__&quot;&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:If&gt;
+&lt;/mt:Blogs&gt;
+</text></template>
+<template id='35' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='archive_widgets_group' modified_on='20141114211152' name='アーカイブウィジェットグループ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:Ignore&gt;
+    アーカイブの種類に応じて異なる内容を表示するように設定されたウィジェットです。詳細: http://www.movabletype.org/documentation/designer/widget-sets.html
+&lt;/mt:Ignore&gt;
+&lt;mt:If name=&quot;category_archive&quot;&gt;
+    &lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Monthly&quot;&gt;
+        &lt;$mt:Include widget=&quot;カテゴリ月別アーカイブ&quot;$&gt;
+    &lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;/mt:If&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category&quot;&gt;
+    &lt;$mt:Include widget=&quot;カテゴリアーカイブ&quot;$&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Monthly&quot;&gt;
+    &lt;$mt:Include widget=&quot;月別アーカイブ&quot;$&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='37' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='syndication' modified_on='20141114211152' name='購読' rebuild_me='1' type='widget' current_revision='0'><text>&lt;div class=&quot;widget-syndication widget&quot;&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+            &lt;li&gt;&lt;img src=&quot;&lt;$mt:StaticWebPath$&gt;images/status_icons/feed.gif&quot; alt=&quot;購読する&quot; width=&quot;9&quot; height=&quot;9&quot; /&gt; &lt;a href=&quot;&lt;$mt:Link template=&quot;feed_recent&quot;$&gt;&quot;&gt;ウェブサイトを購読&lt;/a&gt;&lt;/li&gt;
+&lt;mt:If name=&quot;search_results&quot;&gt;
+    &lt;mt:If tag=&quot;SearchString&quot;&gt;
+            &lt;li class=&quot;search-results-feed&quot;&gt;&lt;img src=&quot;&lt;$mt:StaticWebPath$&gt;images/status_icons/feed.gif&quot; alt=&quot;購読する&quot; width=&quot;9&quot; height=&quot;9&quot; /&gt; &lt;a href=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:SearchScript$&gt;?&lt;mt:IfTagSearch&gt;tag&lt;mt:else&gt;search&lt;/mt:IfTagSearch&gt;=&lt;$mt:SearchString encode_url=&quot;1&quot;$&gt;&amp;amp;Template=feed&amp;amp;IncludeBlogs=&lt;$mt:SearchIncludeBlogs$&gt;&amp;amp;limit=&lt;$mt:SearchMaxResults$&gt;&quot; title=&quot;&lt;mt:IfTagSearch&gt;「&lt;$mt:SearchString$&gt;」の検索結果を購読&lt;mt:Else&gt;タグ「&lt;$mt:SearchString$&gt;」を購読&lt;/mt:IfTagSearch&gt;&quot;&gt;&lt;mt:IfTagSearch&gt;タグ「&lt;$mt:SearchString$&gt;」のフィード&lt;mt:Else&gt;「&lt;$mt:SearchString$&gt;」を検索した結果のフィード&lt;/mt:IfTagSearch&gt;&lt;/a&gt;&lt;/li&gt;
+    &lt;/mt:If&gt;
+&lt;/mt:If&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</text></template>
+<template id='38' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='calendar' modified_on='20141114211152' name='カレンダー' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Individual&quot;&gt;
+&lt;div class=&quot;widget-calendar widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;&lt;$mt:Date format=&quot;%B %Y&quot;$&gt;&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;table summary=&quot;リンク付きのカレンダー&quot;&gt;
+            &lt;tr&gt;
+                &lt;th abbr=&quot;日曜日&quot;&gt;日&lt;/th&gt;
+                &lt;th abbr=&quot;月曜日&quot;&gt;月&lt;/th&gt;
+                &lt;th abbr=&quot;火曜日&quot;&gt;火&lt;/th&gt;
+                &lt;th abbr=&quot;水曜日&quot;&gt;水&lt;/th&gt;
+                &lt;th abbr=&quot;木曜日&quot;&gt;木&lt;/th&gt;
+                &lt;th abbr=&quot;金曜日&quot;&gt;金&lt;/th&gt;
+                &lt;th abbr=&quot;土曜日&quot;&gt;土&lt;/th&gt;
+            &lt;/tr&gt;
+    &lt;mt:Calendar&gt;
+        &lt;mt:CalendarWeekHeader&gt;
+            &lt;tr&gt;
+        &lt;/mt:CalendarWeekHeader&gt;
+                &lt;td&gt;
+        &lt;mt:CalendarIfEntries&gt;
+            &lt;mt:Entries lastn=&quot;1&quot;&gt;
+                    &lt;a href=&quot;&lt;$mt:EntryPermalink$&gt;&quot;&gt;&lt;$mt:CalendarDay$&gt;&lt;/a&gt;
+            &lt;/mt:Entries&gt;
+        &lt;/mt:CalendarIfEntries&gt;
+        &lt;mt:CalendarIfNoEntries&gt;
+                    &lt;$mt:CalendarDay$&gt;
+        &lt;/mt:CalendarIfNoEntries&gt;
+        &lt;mt:CalendarIfBlank&gt;&amp;nbsp;&lt;/mt:CalendarIfBlank&gt;
+                &lt;/td&gt;
+        &lt;mt:CalendarWeekFooter&gt;
+            &lt;/tr&gt;
+        &lt;/mt:CalendarWeekFooter&gt;
+    &lt;/mt:Calendar&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='43' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='date_based_category_archives' modified_on='20141114211152' name='日付ベースのカテゴリアーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Yearly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Category-Yearly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-category-yearly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;年別カテゴリアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Category-Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-category-monthly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;月別カテゴリアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Weekly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Category-Weekly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-category-weekly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;週別カテゴリアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Category-Daily&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Category-Daily&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-category-daily widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;日別カテゴリアーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+
+</text></template>
+<template id='44' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='main_index_widgets_group' modified_on='20141114211152' name='ホームページウィジェットグループ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:Ignore&gt;
+    main_indexのテンプレートだけに表示されるように設定されているウィジェットのセットです。詳細: http://www.movabletype.org/documentation/designer/widget-sets.html
+&lt;/mt:Ignore&gt;
+&lt;mt:If name=&quot;main_index&quot;&gt;
+    &lt;$mt:Include widget=&quot;最近のコメント&quot;$&gt;
+    &lt;$mt:Include widget=&quot;最近の記事&quot;$&gt;
+    &lt;$mt:Include widget=&quot;アイテム&quot;$&gt;
+    &lt;$mt:Include widget=&quot;タグクラウド&quot;$&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='46' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211152' identifier='search' modified_on='20141114211152' name='検索' rebuild_me='1' type='widget' current_revision='0'><text>&lt;div class=&quot;widget-search widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;検索&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;form method=&quot;get&quot; action=&quot;&lt;$mt:CGIPath$&gt;&lt;$mt:SearchScript$&gt;&quot;&gt;
+            &lt;input type=&quot;text&quot; id=&quot;search&quot; class=&quot;ti&quot; name=&quot;search&quot; value=&quot;&lt;mt:IfStraightSearch&gt;&lt;$mt:SearchString$&gt;&lt;/mt:IfStraightSearch&gt;&quot; /&gt;
+&lt;mt:If name=&quot;search_results&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;IncludeBlogs&quot; value=&quot;&lt;$mt:SearchIncludeBlogs$&gt;&quot; /&gt;
+&lt;mt:Else&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;IncludeBlogs&quot; value=&quot;&lt;$mt:WebsiteID$&gt;&lt;mt:WebsiteHasBlog&gt;&lt;mt:Blogs include_blogs=&quot;children&quot;&gt;,&lt;mt:BlogID&gt;&lt;/mt:Blogs&gt;&lt;/mt:WebsiteHasBlog&gt;&quot; /&gt;
+&lt;/mt:If&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;limit&quot; value=&quot;&lt;$mt:SearchMaxResults$&gt;&quot; /&gt;
+            &lt;input type=&quot;submit&quot; accesskey=&quot;4&quot; value=&quot;検索&quot; /&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;mt:If name=&quot;search_results&quot;&gt;
+    &lt;mt:IfTagSearch&gt;
+&lt;div class=&quot;widget-tags widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;タグ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;mt:Tags&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;location.href=&apos;&lt;$mt:TagSearchLink encode_js=&quot;1&quot;$&gt;&apos;;return false;&quot;&gt;&lt;$mt:TagName$&gt; (&lt;$mt:TagCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;/mt:Tags&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+    &lt;/mt:IfTagSearch&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='47' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='recent_comments' modified_on='20141114211153' name='最近のコメント' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:If tag=&quot;BlogCommentCount&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+    &lt;mt:Comments lastn=&quot;10&quot; sort_order=&quot;descend&quot; include_blogs=&quot;children&quot; include_with_website=&quot;1&quot;&gt;
+        &lt;mt:CommentsHeader&gt;
+&lt;div class=&quot;widget-recent-comments widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;最近のコメント&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:CommentsHeader&gt;
+            &lt;li&gt;&lt;strong&gt;&lt;$mt:CommentAuthor$&gt;:&lt;/strong&gt; &lt;$mt:CommentBody remove_html=&quot;1&quot; words=&quot;10&quot;$&gt; &lt;a href=&quot;&lt;$mt:CommentLink$&gt;&quot; title=&quot;&lt;mt:CommentEntry&gt;&lt;$mt:EntryTitle$&gt;&lt;/mt:CommentEntry&gt;へのコメント&quot;&gt;続きを読む&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:CommentsFooter&gt;
+        &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/mt:CommentsFooter&gt;
+    &lt;/mt:Comments&gt;
+&lt;/mt:If&gt;
+</text></template>
+<template id='48' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='current_author_monthly_archive_list' modified_on='20141114211153' name='ユーザー月別アーカイブ' rebuild_me='1' type='widget' current_revision='0'><text>&lt;mt:IfArchiveTypeEnabled archive_type=&quot;Author-Monthly&quot;&gt;
+    &lt;mt:ArchiveList archive_type=&quot;Author-Monthly&quot;&gt;
+        &lt;mt:ArchiveListHeader&gt;
+&lt;div class=&quot;widget-archive-current-author-monthly widget-archive widget&quot;&gt;
+    &lt;h3 class=&quot;widget-header&quot;&gt;&lt;$mt:AuthorDisplayName encode_html=&quot;1&quot;$&gt;: 月別アーカイブ&lt;/h3&gt;
+    &lt;div class=&quot;widget-content&quot;&gt;
+        &lt;ul&gt;
+        &lt;/mt:ArchiveListHeader&gt;
+            &lt;li&gt;&lt;a href=&quot;&lt;$mt:ArchiveLink$&gt;&quot;&gt;&lt;$mt:ArchiveTitle$&gt; (&lt;$mt:ArchiveCount$&gt;)&lt;/a&gt;&lt;/li&gt;
+        &lt;mt:ArchiveListFooter&gt;
+        &lt;/ul&gt;
+        &lt;/mt:ArchiveListFooter&gt;
+    &lt;/mt:ArchiveList&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/mt:IfArchiveTypeEnabled&gt;
+</text></template>
+<template id='50' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='3column_layout_secondary_sidebar' modified_on='20141114211153' name='3カラムのサイドバー(サブ)' rebuild_me='1' type='widgetset' current_revision='0' modulesets='46,44,29'><text>&lt;mt:include widget=&quot;検索&quot;&gt;&lt;mt:include widget=&quot;ホームページウィジェットグループ&quot;&gt;&lt;mt:include widget=&quot;About&quot;&gt;</text></template>
+<template id='51' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='3column_layout_primary_sidebar' modified_on='20141114211153' name='3カラムのサイドバー(メイン)' rebuild_me='1' type='widgetset' current_revision='0' modulesets='32,35,22,37,30,20'><text>&lt;mt:include widget=&quot;ブログ&quot;&gt;&lt;mt:include widget=&quot;アーカイブウィジェットグループ&quot;&gt;&lt;mt:include widget=&quot;ページ一覧&quot;&gt;&lt;mt:include widget=&quot;購読&quot;&gt;&lt;mt:include widget=&quot;OpenID対応&quot;&gt;&lt;mt:include widget=&quot;Powered By&quot;&gt;</text></template>
+<template id='52' blog_id='1' build_dynamic='0' build_interval='0' build_type='1' created_by='1' created_on='20141114211153' identifier='2column_layout_sidebar' modified_on='20141114211153' name='2カラムのサイドバー' rebuild_me='1' type='widgetset' current_revision='0' modulesets='46,32,29,44,35,22,37,30,20'><text>&lt;mt:include widget=&quot;検索&quot;&gt;&lt;mt:include widget=&quot;ブログ&quot;&gt;&lt;mt:include widget=&quot;About&quot;&gt;&lt;mt:include widget=&quot;ホームページウィジェットグループ&quot;&gt;&lt;mt:include widget=&quot;アーカイブウィジェットグループ&quot;&gt;&lt;mt:include widget=&quot;ページ一覧&quot;&gt;&lt;mt:include widget=&quot;購読&quot;&gt;&lt;mt:include widget=&quot;OpenID対応&quot;&gt;&lt;mt:include widget=&quot;Powered By&quot;&gt;</text></template>
+<entry id='1' allow_comments='1' allow_pings='1' atom_id='tag:centos5,2014:/mt2/first_website//1.1' author_id='1' authored_on='20141114211236' basename='abc' blog_id='1' class='entry' comment_count='0' convert_breaks='richtext' created_by='1' created_on='20141114211241' modified_on='20141114211241' ping_count='0' status='2' title='abc' week_number='201446' current_revision='1' revision='1'><text>&lt;p&gt;def&lt;/p&gt;</text></entry>
+<templatemap id='1' archive_type='Monthly' blog_id='1' build_type='1' is_preferred='1' template_id='4'></templatemap>
+<templatemap id='2' archive_type='Individual' blog_id='1' build_type='1' is_preferred='1' template_id='11'></templatemap>
+<templatemap id='3' archive_type='Page' blog_id='1' build_type='1' is_preferred='1' template_id='25'></templatemap>
+<templatemap id='4' archive_type='Category' blog_id='1' build_type='1' is_preferred='1' template_id='36'></templatemap>
+<permission id='2' author_id='1' blog_id='1' created_by='1' created_on='20141114211153' modified_on='20141114211153' role_mask='0'><entry_prefs>Default|Bottom</entry_prefs><permissions>&apos;edit_categories&apos;,&apos;view_blog_log&apos;,&apos;manage_pages&apos;,&apos;set_publish_paths&apos;,&apos;edit_tags&apos;,&apos;manage_member_blogs&apos;,&apos;manage_themes&apos;,&apos;manage_feedback&apos;,&apos;publish_post&apos;,&apos;edit_all_posts&apos;,&apos;edit_assets&apos;,&apos;edit_config&apos;,&apos;administer_blog&apos;,&apos;send_notifications&apos;,&apos;create_post&apos;,&apos;rebuild&apos;,&apos;edit_notifications&apos;,&apos;comment&apos;,&apos;administer_website&apos;,&apos;edit_templates&apos;,&apos;manage_users&apos;,&apos;upload&apos;,&apos;administer&apos;,&apos;create_blog&apos;,&apos;create_website&apos;,&apos;manage_plugins&apos;,&apos;view_log&apos;</permissions></permission>
+<fileinfo id='1' archive_type='Monthly' blog_id='1' startdate='20141101000000' template_id='4' templatemap_id='1' url='/mt2/first_website/2014/11/index.html'><file_path>/var/www/html/mt2/first_website/2014/11/index.html</file_path></fileinfo>
+<fileinfo id='2' archive_type='Individual' blog_id='1' entry_id='1' template_id='11' templatemap_id='2' url='/mt2/first_website/2014/11/abc.html'><file_path>/var/www/html/mt2/first_website/2014/11/abc.html</file_path></fileinfo>
+<fileinfo id='3' archive_type='index' blog_id='1' template_id='7' url='/mt2/first_website/rsd.xml'><file_path>/var/www/html/mt2/first_website/rsd.xml</file_path></fileinfo>
+<fileinfo id='4' archive_type='index' blog_id='1' template_id='9' url='/mt2/first_website/styles.css'><file_path>/var/www/html/mt2/first_website/styles.css</file_path></fileinfo>
+<fileinfo id='5' archive_type='index' blog_id='1' template_id='10' url='/mt2/first_website/atom.xml'><file_path>/var/www/html/mt2/first_website/atom.xml</file_path></fileinfo>
+<fileinfo id='6' archive_type='index' blog_id='1' template_id='40' url='/mt2/first_website/mt.js'><file_path>/var/www/html/mt2/first_website/mt.js</file_path></fileinfo>
+<fileinfo id='7' archive_type='index' blog_id='1' template_id='42' url='/mt2/first_website/archives.html'><file_path>/var/www/html/mt2/first_website/archives.html</file_path></fileinfo>
+<fileinfo id='8' archive_type='index' blog_id='1' template_id='49' url='/mt2/first_website/index.html'><file_path>/var/www/html/mt2/first_website/index.html</file_path></fileinfo>
+<role id='1' created_by='1' created_on='20141114211152' is_system='0' modified_on='20141114211152' name='ウェブサイト管理者'><description>ウェブサイトを管理できます。</description><permissions>&apos;administer_website&apos;,&apos;manage_member_blogs&apos;</permissions></role>
+<trackback id='1' blog_id='1' category_id='0' created_by='1' created_on='20141114211241' entry_id='1' is_disabled='0' modified_on='20141114211241' title='abc' url='http://centos5/mt2/first_website/2014/11/abc.html'><description>def...</description></trackback>
+<association id='1' author_id='1' blog_id='1' created_by='1' created_on='20141114211153' group_id='0' modified_on='20141114211153' role_id='1' type='1'></association>
+</movabletype>

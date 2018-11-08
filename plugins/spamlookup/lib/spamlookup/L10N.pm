@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,6 +8,7 @@
 
 package spamlookup::L10N;
 use strict;
+use warnings;
 
 use MT::Plugin::L10N;
 @spamlookup::L10N::ISA = qw(MT::Plugin::L10N);

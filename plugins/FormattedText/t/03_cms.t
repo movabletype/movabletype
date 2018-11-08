@@ -2,14 +2,21 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw(t/lib lib extlib);
-use Test::More;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 
@@ -52,6 +59,8 @@ subtest 'menu in website scope' => sub {
 };
 
 subtest 'boilerplate listing screen in system scope' => sub {
+    plan 'skip_all';
+
     my $app = _run_app(
         'MT::App::CMS',
         {   __test_user => $admin,
@@ -63,13 +72,13 @@ subtest 'boilerplate listing screen in system scope' => sub {
     my $out = delete $app->{__test_output};
 
     my $option = quotemeta(
-        '<label for="custom-prefs-blog_name">Website/Blog Name</label>' );
+        '<label for="custom-prefs-blog_name">Website/Blog Name</label>');
     like( $out, qr/$option/,
         '"Website/Blog Name" option exists in boilerplate listing screen at system scope.'
     );
 
     my $column
-        = quotemeta( '<span class="col-label">Website/Blog Name</span>' );
+        = quotemeta('<span class="col-label">Website/Blog Name</span>');
     like( $out, qr/$column/,
         '"Website/Blog Name" column exists in boilerplate listing screen at system scope.'
     );

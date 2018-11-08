@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 
 package MT::Memcached;
 use strict;
+use warnings;
 
 sub new {
     my $class = shift;
@@ -65,12 +66,32 @@ sub purge_stale {
     1;
 }
 
+sub __validate_key {
+    my $method = shift;
+
+    return 1 if 'disconnect_all' eq $method or 'flush_all' eq $method;
+
+    my @keys;
+    if ( 'get_multi' eq $method ) {
+        (@keys) = @_;
+    }
+    else {
+        push @keys, shift;
+    }
+
+    foreach my $k (@keys) {
+        return if $k =~ /[\x00-\x20\x7f-\xff]/ || length($k) > 200;
+    }
+    1;
+}
+
 sub DESTROY { }
 
 sub AUTOLOAD {
     my $cache = shift;
     ( my $method = our $AUTOLOAD ) =~ s/^.*:://;
     return unless $cache->{memcached};
+    return unless __validate_key( $method, @_ );
     return $cache->{memcached}->$method(@_);
 }
 

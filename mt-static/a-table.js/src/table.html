@@ -1,0 +1,57 @@
+<!-- BEGIN showMenu:exist -->
+<ul class="a-table-menu" style="top:{menuY}px;left:{menuX}px;">
+	<!-- BEGIN mode:touch#cell -->
+	<li data-action-click="mergeCells">\{message.mergeCells\}</li>
+	<li data-action-click="splitCell">\{message.splitCell\}</li>
+	<li data-action-click="changeCellTypeTo(th)">\{message.changeToTh\}</li>
+	<li data-action-click="changeCellTypeTo(td)">\{message.changeToTd\}</li>
+	<li data-action-click="align(left)">\{message.alignLeft\}</li>
+	<li data-action-click="align(center)">\{message.alignCenter\}</li>
+	<li data-action-click="align(right)">\{message.alignRight\}</li>
+	<!-- END mode:touch#cell -->
+	<!-- BEGIN mode:touch#col -->
+	<li data-action-click="insertColLeft({selectedRowNo})">\{message.addColumnLeft\}</li>
+	<li data-action-click="insertColRight({selectedRowNo})">\{message.addColumnRight\}</li>
+	<li data-action-click="removeCol({selectedRowNo})">\{message.removeColumn\}</li>
+	<!-- END mode:touch#col -->
+	<!-- BEGIN mode:touch#row -->
+	<li data-action-click="insertRowAbove({selectedColNo})">\{message.addRowTop\}</li>
+	<li data-action-click="insertRowBelow({selectedColNo})">\{message.addRowBottom\}</li>
+	<li data-action-click="removeRow({selectedColNo})">\{message.removeRow\}</li>
+	<!-- END mode:touch#row -->
+</ul>
+<!-- END showMenu:exist -->
+<div class="a-table-wrapper">
+	<!-- BEGIN inputMode:touch#table -->
+	<table class="a-table">
+		<tr class="a-table-header js-table-header">
+			<th class="a-table-first"></th>
+			<!-- BEGIN highestRow:loop -->
+			<!-- \BEGIN selectedRowNo:touch#{i} -->
+			<th data-action-click="unselect()" class="selected"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedRowNo:touch#{i} -->
+			<!-- \BEGIN selectedRowNo:touchnot#{i} -->
+			<th data-action-click="selectRow({i})"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedRowNo:touchnot#{i} -->
+			
+			<!-- END highestRow:loop -->
+		</tr>
+		<!-- BEGIN row:loop -->
+		<tr>
+			<!-- \BEGIN selectedColNo:touchnot#{i} -->
+			<th class="a-table-side js-table-side" data-action-click="selectCol({i})"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedColNo:touchnot#{i} -->
+			<!-- \BEGIN selectedColNo:touch#{i} -->
+			<th class="a-table-side js-table-side selected" data-action-click="unselect()"><span class="a-table-toggle-btn"></span></th>
+			<!-- \END selectedColNo:touch#{i} -->
+			<!-- \BEGIN row.{i}.col:loop -->
+			<td colspan="\{colspan\}" rowspan="\{rowspan\}" data-action="updateTable(\{i\},{i})" data-cell-id="\{i\}-{i}" class="<!-- \BEGIN selected:exist -->a-table-selected<!-- \END selected:exist --><!-- \BEGIN type:touch#th --> a-table-th<!-- END \type:touch#th --><!-- \BEGIN mark.top:exist --> a-table-border-top<!-- \END mark.top:exist --><!-- \BEGIN mark.right:exist --> a-table-border-right<!-- \END mark.right:exist --><!-- \BEGIN mark.bottom:exist --> a-table-border-bottom<!-- \END mark.bottom:exist --><!-- \BEGIN mark.left:exist --> a-table-border-left<!-- \END mark.left:exist --><!-- \BEGIN cellClass:exist --> \{cellClass\}<!-- \END cellClass:exist -->"><div class="a-table-editable \{align\}" contenteditable>\{value\}</div></td>
+			<!-- \END row.{i}.col:loop -->
+		</tr>
+		<!-- END row:loop -->
+	</table>
+	<!-- END inputMode:touch#table -->
+	<!-- BEGIN inputMode:touch#source -->
+	<textarea data-bind="tableResult" class="a-table-textarea" data-action-input="updateResult"></textarea>
+	<!-- END inputMode:touch#source -->
+</div>

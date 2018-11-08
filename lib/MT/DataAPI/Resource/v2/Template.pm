@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -77,7 +77,7 @@ sub fields {
             },
             to_object => sub {
                 my ( $hash, $obj ) = @_;
-                return $obj->type ne 'index';
+                return if $obj->type ne 'index';
                 return $hash->{templateType};
             },
         },
@@ -99,7 +99,7 @@ sub fields {
             },
             to_object => sub {
                 my ( $hash, $obj ) = @_;
-                return $obj->type ne 'index';
+                return if $obj->type ne 'index';
 
                 my $build_type
                     = exists( $BUILD_TYPE_TABLE{ $hash->{buildType} } )

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::Template::Tags::Entry;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util
@@ -515,7 +516,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @cat_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @cat_ids;
                     $args{join} = MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
@@ -588,7 +590,8 @@ sub _hdlr_entries {
             };
             if ( !$entries ) {
                 if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_) unless @tag_ids;
+                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
+                        unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on(
                         'object_id',
                         {   tag_id            => \@tag_ids,
@@ -674,7 +677,7 @@ sub _hdlr_entries {
             }
         }
         if ($need_join) {
-            my $scored_by = $args->{scored_by} || undef;
+            my $scored_by = $args->{scored_by};
             if ($scored_by) {
                 require MT::Author;
                 my $author = MT::Author->load( { name => $scored_by } )
@@ -1197,16 +1200,17 @@ sub _hdlr_entries {
         local $ctx->{__stash}{entry}         = $e;
         local $ctx->{current_timestamp}      = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
-        my $this_day = substr $e->authored_on, 0, 8;
+        my $this_day = substr( ( $e->authored_on || '' ), 0, 8 );
         my $next_day = $this_day;
         my $footer   = 0;
 
         if ( defined $entries[ $i + 1 ] ) {
-            $next_day = substr( $entries[ $i + 1 ]->authored_on, 0, 8 );
+            $next_day
+                = substr( ( $entries[ $i + 1 ]->authored_on || '' ), 0, 8 );
             $footer = $this_day ne $next_day;
         }
         else { $footer++ }
-        my $allow_comments ||= 0;
+        my $allow_comments = 0;
         $published->{ $e->id }++;
         my $out = $builder->build(
             $ctx, $tok,
@@ -1866,8 +1870,10 @@ returned.
 
 sub _hdlr_entry_basename {
     my ( $ctx, $args ) = @_;
-    my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error();
+    my $e = $ctx->stash('entry');
+    return $ctx->invoke_handler( 'contentidentifier', $args, '' )
+        if !$e && $ctx->stash('content');
+    return $ctx->_no_entry_error() unless $e;
     my $basename = $e->basename() || '';
     if ( my $sep = $args->{separator} ) {
         if ( $sep eq '-' ) {
@@ -2359,6 +2365,19 @@ B<Example:>
 
 =cut
 
+=head2 EntrySiteID
+
+The numeric system ID of the site that is parent to the entry currently
+in context.
+
+B<Example:>
+
+    <$mt:EntrySiteID$>
+
+=for tags entries, sites
+
+=cut
+
 sub _hdlr_entry_blog_id {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
@@ -2379,6 +2398,19 @@ B<Example:>
     <$mt:EntryBlogName$>
 
 =for tags entries, blogs
+
+=cut
+
+=head2 EntrySiteName
+
+Returns the site name of the site to which the entry in context belongs.
+The site name is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:EntrySiteName$>
+
+=for tags entries, sites
 
 =cut
 
@@ -2407,6 +2439,19 @@ B<Example:>
 
 =cut
 
+=head2 EntrySiteDescription
+
+Returns the site description of the site to which the entry in context
+belongs. The site description is set in the General Site Settings.
+
+B<Example:>
+
+    <$mt:EntrySiteDescription$>
+
+=for tags sites, entries
+
+=cut
+
 sub _hdlr_entry_blog_description {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
@@ -2429,6 +2474,18 @@ B<Example:>
     <$mt:EntryBlogURL$>
 
 =for tags blogs, entries
+
+=cut
+
+=head2 EntrySiteURL
+
+Returns the site URL for the site to which the entry in context belongs.
+
+B<Example:>
+
+    <$mt:EntrySiteURL$>
+
+=for tags sites, entries
 
 =cut
 
@@ -2522,6 +2579,15 @@ Returns the number of published entries associated with the blog
 currently in context.
 
 =for tags multiblog, count, blogs, entries
+
+=cut
+
+=head2 SiteEntryCount
+
+Returns the number of published entries associated with the site
+currently in context.
+
+=for tags multiblog, count, sites, entries
 
 =cut
 

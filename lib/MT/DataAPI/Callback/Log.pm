@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,7 +33,7 @@ sub save_filter {
     my ( $eh, $app, $obj, $orig ) = @_;
 
     if ( !defined $obj->message || $obj->message eq '' ) {
-        return $app->errtrans( 'A paramter "[_1]" is required.', 'message' );
+        return $app->errtrans( 'A parameter "[_1]" is required.', 'message' );
     }
 
     if ( $obj->author_id && !MT->model('author')->load( $obj->author_id ) ) {

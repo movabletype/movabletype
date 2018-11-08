@@ -1,9 +1,8 @@
 package HTTP::Negotiate;
 
-$VERSION = "5.813";
+$VERSION = "6.01";
 sub Version { $VERSION; }
 
-require 5.002;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(choose);
@@ -19,7 +18,7 @@ sub choose ($;$)
 
     unless (defined $request) {
 	# Create a request object from the CGI environment variables
-	$request = new HTTP::Headers;
+	$request = HTTP::Headers->new;
 	$request->header('Accept', $ENV{HTTP_ACCEPT})
 	  if $ENV{HTTP_ACCEPT};
 	$request->header('Accept-Charset', $ENV{HTTP_ACCEPT_CHARSET})

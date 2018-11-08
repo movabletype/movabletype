@@ -1,9 +1,10 @@
-  </pre> 
-</div>
+        </code>
+      </pre>
+    </div>
 
 <script type="text/javascript">
 /* <![CDATA[ */
-var progress = getByID("progressbar");
+var progress = MT.Util.getByID("progressbar");
 if (progress) {
     progress.style.display = "none";
 }
@@ -11,15 +12,17 @@ if (progress) {
 </script>
 
 <mt:if name="backup_success">
-<h2><__trans phrase="All of the data has been backed up successfully!"></h2>
+<h2><__trans phrase="All of the data has been exported successfully!"></h2>
 <mt:if name="files_loop">
 <p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
-<h2><__trans phrase="Backup Files"></h2>
+<h2><__trans phrase="Export Files"></h2>
 <ul id="backup-files">
 <mt:loop name="files_loop">
   <li class="list-item">
   <mt:if name="url">
-    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">"><__trans phrase="Download: [_1]" params="<mt:var name="filename">"></a>
+    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">">
+      <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
+    </a>
   <mt:else>
     <mt:var name="filename">
   </mt:if>
@@ -42,7 +45,7 @@ var timer;
 
 function submit_form() {
     window.clearTimeout(timer);
-    var p = getByID('download_message');
+    var p = MT.Util.getByID('download_message');
     if (p)
         p.style.display = 'none';
     var f = document['file_download'];
@@ -58,7 +61,10 @@ timer = window.setTimeout("submit_form()", 3000);
 <p id="download_message"><strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
   </mt:if>
 <mt:else>
-<p><strong><__trans phrase="An error occurred during the backup process: [_1]" params="<mt:var name="error">"></strong></p>
+<p><strong><__trans phrase="An error occurred during the export process: [_1]" params="<mt:var name="error">"></strong></p>
 </mt:if>
 
-<mt:include name="include/footer.tmpl">
+  </div>
+</div>
+
+<mt:include name="layout/common/footer.tmpl">

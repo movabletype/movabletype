@@ -205,6 +205,10 @@ extend( DOM, {
             var t = e.getAttribute( "type" );
             t = t ? t.toLowerCase() : "";
         
+            var name = e.name;
+            if (!e.getAttribute('mt:raw-name')) {
+                name = name.cssToJS();
+            }
             var tn = e.tagName.toLowerCase();
             switch( tn ) {
                 case "input":
@@ -213,11 +217,10 @@ extend( DOM, {
                         
                     if ( t == "radio" ) {
                         if ( e.checked )
-                            d[ e.name.cssToJS() ] = e.value;
+                            d[ name ] = e.value;
                         break;
     
                     } else if ( t == "checkbox" ) {
-                        var name = e.name.cssToJS();
                         var value = ( e.checked ) ? e.value : "";
                         
                         if ( d.hasOwnProperty( name ) ) {
@@ -244,14 +247,35 @@ extend( DOM, {
                     }
                     
                 case "textarea":
-                    d[ e.name.cssToJS() ] = e.value;
+                    if ( d.hasOwnProperty( name ) ) {
+                        if ( !( d[ name ] instanceof Array ) ) {
+                            if ( d[ name ] ) {
+                                d[ name ] = [ d[ name ] ];
+                            } else {
+                                d[ name ] = [];
+                            }
+
+                            d[ name ].push( e.value );
+                        }
+                    } else {
+                        d[ name ] = e.value;
+                    }
+
                     break;
                 
                 case "select":
-                    if ( e.selectedIndex < 0 ) 
-                        d[ e.name.cssToJS() ] = undefined;
-                    else 
-                        d[ e.name.cssToJS() ] = e.options[ e.selectedIndex ].value;
+                    if ( e.selectedIndex < 0 ) {
+                        d[ name ] = undefined;
+                    } else if ( e.multiple ) {
+                        d[ name ] = [];
+                        for ( var j = 0; j < e.options.length; j++ ) {
+                            if ( e.options[ j ].selected ) {
+                                d[ name ].push( e.options[ j ].value );
+                            }
+                        }
+                    } else {
+                        d[ name ] = e.options[ e.selectedIndex ].value;
+                    }
                     break;                       
             }
         }
@@ -810,7 +834,7 @@ extend( DOM, {
     /* this and the following classname functions honor w3c case-sensitive classnames */
 
     getClassNames: function( e ) {
-        if( !e || !e.className )
+        if( !e || !e.className || typeof e.className != 'string' )
             return [];
         return e.className.split( /\s+/g );
     },

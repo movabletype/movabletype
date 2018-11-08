@@ -41,6 +41,12 @@ editor_js = mt-static/js/editor/editor_manager.js \
           mt-static/js/editor/app/editor_strategy/separator.js \
           mt-static/js/editor/editor/source.js
 
+jquery_js = mt-static/jquery/jquery.mt.js
+
+tinymce_plugin_mt_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
+
+tinymce_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.js
+
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
 	mt-static/css/form.css \
@@ -68,6 +74,18 @@ mt-static/js/editor.js: $(editor_js)
 	cat $(editor_js) > mt-static/js/editor.js
 	./build/minifier.pl mt-static/js/editor.js
 
+mt-static/jquery/jquery.mt.min.js: $(jquery_js)
+	cat $(jquery_js) > mt-static/jquery/jquery.mt.min.js
+	./build/minifier.pl mt-static/jquery/jquery.mt.min.js
+
+mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js: $(tinymce_plugin_mt_js)
+	cat $(tinymce_plugin_mt_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
+	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
+
+mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js: $(tinymce_plugin_mt_fullscreen_js)
+	cat $(tinymce_plugin_mt_fullscreen_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
+	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
+
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
 	./build/minifier.pl mt-static/css/main.css
@@ -81,6 +99,9 @@ mt-static/css/simple.css: $(simple_css)
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
         mt-static/js/editor.js \
+        mt-static/jquery/jquery.mt.min.js \
+	    mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js \
+	    mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
@@ -146,39 +167,7 @@ version_file:
 
 ##### Other useful targets
 
-.PHONY: test cover clean all
-
-cover:
-	-cover -delete
-	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
-
-covertags:
-	-cover -delete
-	HARNESS_PERL_SWITCHES=-MDevel::Cover \
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
-	-cover
-
-tags:
-	-rm -rf t/db/*
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
-
-test: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
-
-testall: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t addons/*/t/*.t plugins/*/t/*.t
-
-quick-test: code
-	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
-		t/00-compile.t t/01-serialize.t t/04-config.t \
-		t/05-errorhandler.t t/07-builder.t t/08-util.t           \
-		t/09-image.t t/10-filemgr.t t/11-sanitize.t t/12-dsa.t   \
-		t/13-dirify.t t/20-setup.t t/21-callbacks.t t/22-author.t\
-		t/23-entry.t t/26-pings.t t/27-context.t t/28-xmlrpc.t   \
-		t/29-cleanup.t t/32-mysql.t t/33-postgres.t   \
-		t/34-sqlite.t t/35-tags.t t/45-datetime.t t/46-i18n-en.t \
-		t/47-i18n-ja.t t/48-cache.t
+.PHONY: dist me clean
 
 dist:
 	perl build/exportmt.pl --local
@@ -190,7 +179,15 @@ clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
+	-rm -f mt-static/jquery/jquery.mt.min.js
+	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
+	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
+
+# test tasks
+-include t/test.mk
+-include t/docker-test.mk
+

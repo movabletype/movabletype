@@ -1,0 +1,19 @@
+<mt:loop name="assets">
+    <mt:Asset id="$id">
+    <mt:setvars>
+    option_alt=asset-option-alt-<mt:var name="id" escape="html">
+    option_title=asset-option-title-<mt:var name="id" escape="html">
+    option_width=thumb_width-<mt:var name="id" escape="html">
+    option_caption=asset-option-caption-<mt:var name="id" escape="html">
+    option_align=asset-option-align-<mt:var name="id" escape="html">
+    </mt:setvars>
+
+    <input type="hidden" class="asset-option-id" value="<mt:var name="id" escape="html">">
+    <input type="hidden" class="asset-option-url" value="<mt:AssetURL>">
+    <input type="hidden" class="asset-option-alt" value="<mt:var name="$option_alt" escape="html">">
+    <input type="hidden" class="asset-option-title" value="<mt:var name="$option_title" escape="html">">
+    <input type="hidden" class="asset-option-width" value="<mt:var name="$option_width" escape="html">">
+    <input type="hidden" class="asset-option-caption" value="<mt:var name="$option_caption" escape="html">">
+    <input type="hidden" class="asset-option-align" value="<mt:var name="$option_align" escape="html">">
+    </mt:Asset>
+</mt:loop>

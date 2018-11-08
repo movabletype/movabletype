@@ -1,8 +1,8 @@
-# $Id: Namespace.pm 4532 2004-05-11 05:15:40Z ezra $
-
 package XML::XPath::Node::Namespace;
 
-use strict;
+$VERSION = '1.42';
+
+use strict; use warnings;
 use vars qw/@ISA/;
 
 @ISA = ('XML::XPath::Node');
@@ -16,14 +16,14 @@ use XML::XPath::Node ':node_keys';
 sub new {
 	my $class = shift;
 	my ($prefix, $expanded) = @_;
-	
+
         my $pos = XML::XPath::Node->nextPos;
-        
+
         my @vals;
         @vals[node_global_pos, node_prefix, node_expanded] =
                 ($pos, $prefix, $expanded);
 	my $self = \@vals;
-        
+
 	bless $self, $class;
 }
 

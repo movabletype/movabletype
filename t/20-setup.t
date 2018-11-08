@@ -1,14 +1,17 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 # $Id: 20-setup.t 2562 2008-06-12 05:12:23Z bchoate $
-
-use Test::More qw(no_plan);
 
 use MT;
 use MT::Test;
@@ -21,11 +24,10 @@ use MT::Permission;
 use MT::Template;
 use MT::TemplateMap;
 
-use vars qw( $DB_DIR $T_CFG );
-use lib 't';
-
-use MT::Test qw(:db);
+use MT::Test;
 MT->instance;
+
+$test_env->prepare_fixture('db');
 
 my $BLOG_NAME = 'Fear of a Black Planet';
 my $BLOG_DESC = 'Wherein Chuck D expounds on the plight of the black man in '
@@ -145,3 +147,5 @@ for my $tmpl (@arch_tmpl) {
         ok( $test, "saved $map" );
     }
 }
+
+done_testing;

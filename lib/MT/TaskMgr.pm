@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::TaskMgr;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 
 use MT::Task;
@@ -176,7 +177,7 @@ sub _lock {
         my $max_lock_age = 60;         ## no. of seconds til we break the lock
         my $tries        = 10;         ## no. of seconds to keep trying
         my $lock_fh      = gensym();
-        open $lock_fh, ">$lock_tmp" or return;
+        open $lock_fh, ">", $lock_tmp or return;
         select( ( select($lock_fh), $| = 1 )[0] );    ## Turn off buffering
         my $got_lock = 0;
 

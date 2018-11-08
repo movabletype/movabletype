@@ -1,0 +1,15 @@
+table#listing thead,
+table#listing tfoot {
+    background-color: #f2f2f2;
+}
+
+.text {
+    border-radius: 2px;
+}
+.text.error{
+    border-color: #bf241f;
+}
+.text.error:focus{
+    border-color: #6d1418;
+}
+

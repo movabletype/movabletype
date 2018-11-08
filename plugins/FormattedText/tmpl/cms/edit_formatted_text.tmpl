@@ -6,6 +6,10 @@
 
 <$mt:setvar name="position_actions_bottom" value="1"$>
 
+<mt:setvarblock name="html_head" append="1">
+<mt:include name="include/libjs.tmpl" component="core">
+</mt:setvarblock>
+
 <mt:SetVarBlock name="system_msg">
 <mt:if name="error">
   <mtapp:statusmsg
@@ -31,10 +35,19 @@
 </mt:if>
 </mt:SetVarBlock>
 
-<mt:include name="include/editor_script.tmpl" id="editor_script_include">
-<mt:include name="include/header.tmpl" id="header_include">
+<mt:setvarblock name="css_include" append="1">
+<style>
+div.mce-notification-error {
+    display: none;
+}
+</style>
+</mt:setvarblock>
 
-<form method="post" action="<mt:var name="script_url">" id="edit_formatted_text">
+<mt:setvarblock name="page_content">
+
+<mt:include name="include/editor_script.tmpl" id="editor_script_include">
+
+<form method="post" action="<mt:var name="script_url">" id="edit_formatted_text" class="mb-5">
   <input type="hidden" id="blog-id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="<mt:var name="object_type">" />
@@ -47,23 +60,28 @@
     <mtapp:setting
        id="text"
        label_class="no-header"
-       label="<__trans phrase="Text">">
-      <textarea name="text" id="text" class="text highest"><mt:var name="text" escape="html"></textarea>
+       label="<__trans phrase="Text">"
+       label_for="text">
+      <textarea name="text" id="text" clas="text highest"><mt:var name="text" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
        id="label"
        label_class="top-label"
        label="<__trans phrase="Label">"
-       required="1">
-      <input type="text" name="label" id="label" class="text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
+       label_for="label"
+       required="1"
+       no_grid="1">
+      <input type="text" name="label" id="label" class="form-control text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
        label_class="top-label"
-       label="<__trans phrase="Description">">
-      <input type="text" name="description" id="description" class="text full" maxlength="255" value="<mt:var name="description" escape="html">" />
+       label_for="description"
+       label="<__trans phrase="Description">"
+       no_grid="1">
+      <input type="text" name="description" id="description" class="form-control text full" maxlength="255" value="<mt:var name="description" escape="html">" />
     </mtapp:setting>
 
   </mtapp:settinggroup>
@@ -73,13 +91,15 @@
        type="submit"
        accesskey="s"
        title="<__trans phrase="Save changes to this boilerplate (s)">"
-       class="save action button primary"
+       class="save action button primary btn btn-primary"
        ><__trans phrase="Save Changes"></button>
   </mt:setvarblock>
 
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
+
+</mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 (function($) {
@@ -124,4 +144,5 @@ $('#edit_formatted_text').submit(function () {
 })(jQuery);
 </mt:setvarblock>
 
-<mt:include name="include/footer.tmpl">
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

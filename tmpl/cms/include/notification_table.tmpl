@@ -2,28 +2,25 @@
 <mt:if name="__first__">
   <mt:setvarblock name="table_header">
     <tr>
-      <th class="col head cb" id="delete-col-head"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-      <th class="col head email primary"><span class="col-label"><__trans phrase="Email"></span></th>
-      <th class="col head url primary"><span class="col-label"><__trans phrase="URL"></span></th>
-      <th class="col head datetime"><span class="col-label"><__trans phrase="Date Added"></span></th>
+      <th class="head cb" id="delete-col-head"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head email primary"><span class="col-label"><__trans phrase="Email"></span></th>
+      <th class="head url primary"><span class="col-label"><__trans phrase="URL"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Date Added"></span></th>
     </tr>
   </mt:setvarblock>
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="col cb" id="delete-<mt:var name="id">"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
-      <td class="col email"><a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" class="edit-link" id="note-email-link-<mt:var name="id">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="email" escape="html"></a>
+      <td class="cb" id="delete-<mt:var name="id">"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+      <td class="email"><a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" class="edit-link" id="note-email-link-<mt:var name="id">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="email" escape="html"></a>
         <span id="note-email-field-<mt:var name="id">" style="display: none">
           <input type="text" name="note-email-<mt:var name="id">" id="note-email-<mt:var name="id">" value="<mt:var name="email" escape="html">" />
         </span>
       </td>
-      <td class="col url">
+      <td class="url">
         <span id="note-url-link-<mt:var name="id">">
           <a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="url" escape="html" default="-"></a>
         <mt:if name="url">
@@ -49,7 +46,7 @@
           </span>
         </span>
       </td>
-      <td class="col datetime">
+      <td class="datetime">
         <span title="<mt:var name="created_on_time_formatted">">
         <mt:if name="created_on_relative">
           <mt:if name="dates_relative">

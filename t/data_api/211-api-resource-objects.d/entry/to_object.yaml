@@ -1,0 +1,71 @@
+- 
+  note: Create a published entry
+  original: 
+    blog_id: 1
+  from: 
+    status: Publish
+    allowComments: !!perl/scalar:boolean 1
+    allowTrackbacks: !!perl/scalar:boolean 1
+    title: Title
+    body: Body
+    more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    date: 2013-01-18T10:10:10+00:00
+    tags:
+      - tag1
+      - tag2
+  to: 
+    status: 2
+    title: Title
+    text: Body
+    text_more: More
+    excerpt: Excerpt
+    keywords: Keywords
+    basename: a-basename
+    authored_on: 20130118064010
+    tags:
+      - tag1
+      - tag2
+- 
+  note: Create a draft entry
+  original: 
+    blog_id: 1
+  from: 
+    status: Draft
+  to: 
+    status: 1
+- 
+  note: Create a review entry
+  original: 
+    blog_id: 1
+  from: 
+    status: Review
+  to: 
+    status: 3
+- 
+  note: Create a future entry
+  original: 
+    blog_id: 1
+  from: 
+    status: Future
+  to: 
+    status: 4
+- 
+  note: Create a spam entry
+  original: 
+    blog_id: 1
+  from: 
+    status: Spam
+  to: 
+    status: 5
+- 
+  note: Update an entry
+  original: 
+    id: 1
+  from: 
+    title: Title
+  to: 
+    id: 1
+    title: Title

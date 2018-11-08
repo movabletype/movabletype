@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::CMS::Folder;
 
 use strict;
+use warnings;
 
 sub edit {
     require MT::CMS::Category;
@@ -15,7 +16,6 @@ sub edit {
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $author = $app->user;
-    return 1 if $author->is_superuser();
     return unless $id;
 
     my $obj = $objp->force();
@@ -63,6 +63,8 @@ sub can_delete {
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
+    return 1 unless defined $obj->basename;
+
     my $pkg      = $app->model('folder');
     my @siblings = $pkg->load(
         {   parent  => $obj->parent,
@@ -74,7 +76,7 @@ sub pre_save {
         return $eh->error(
             $app->translate(
                 "The folder '[_1]' conflicts with another folder. Folders with the same parent must have unique basenames.",
-                $_->label
+                $_->basename
             )
         ) if $_->basename eq $obj->basename;
     }
@@ -115,11 +117,11 @@ sub post_save {
 }
 
 sub save_filter {
-    my $eh = shift;
+    my $eh    = shift;
     my ($app) = @_;
-    return $app->errtrans( "The name '[_1]' is too long!",
-        $app->param('label') )
-        if ( length( $app->param('label') ) > 100 );
+    my $label = $app->param('label') or return 1;
+    return $app->errtrans( "The name '[_1]' is too long!", $label )
+        if ( length($label) > 100 );
     return 1;
 }
 

@@ -3,13 +3,19 @@
 
 use strict;
 use warnings;
-
-use lib 't/lib', 'lib', 'extlib';
 use FindBin;
+use lib "$FindBin::Bin/lib";    # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use File::Spec;
 use MT::Test;
-
-use Test::More;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -23,7 +29,7 @@ use_ok('MT::Tool');
 use_ok('MT::Core');
 use_ok('MT::Component');
 
-# All CMS modules
+# CMS modules
 use_ok('MT::App::CMS');
 use_ok('MT::CMS::AddressBook');
 use_ok('MT::CMS::Dashboard');
@@ -40,42 +46,29 @@ use_ok('MT::CMS::Template');
 use_ok('MT::CMS::Category');
 use_ok('MT::CMS::Import');
 use_ok('MT::CMS::Tools');
-use_ok('MT::CMS::Comment');
 use_ok('MT::CMS::Log');
-use_ok('MT::CMS::TrackBack');
 use_ok('MT::CMS::Common');
 use_ok('MT::CMS::Page');
 use_ok('MT::CMS::User');
 use_ok('MT::CMS::Website');
 use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
+use_ok('MT::CMS::RebuildTrigger');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
-use_ok('MT::App::Comments');
-use_ok('MT::App::Trackback');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Wizard');
 
 # Search apps
 use_ok('MT::App::Search');
 use_ok('MT::App::Search::FreeText');
-use_ok('MT::App::Search::Legacy');
 use_ok('MT::App::Search::TagSearch');
 
 # Auth framework
 use_ok('MT::Auth');
 use_ok('MT::Auth::MT');
 use_ok('MT::Auth::BasicAuth');
-use_ok('MT::Auth::LiveJournal');
-use_ok('MT::Auth::OpenID');
-use_ok('MT::Auth::TypeKey');
-use_ok('MT::Auth::Vox');
-use_ok('MT::Auth::WordPress');
-use_ok('MT::Auth::Hatena');
-use_ok('MT::Auth::AIM');
-use_ok('MT::Auth::Yahoo');
-use_ok('MT::Auth::GoogleOpenId');
 
 # MT::Objects
 use_ok('MT::Object');
@@ -116,6 +109,7 @@ use_ok('MT::Website');
 use_ok('MT::Filter');
 use_ok('MT::Page');
 use_ok('MT::Folder');
+use_ok('MT::RebuildTrigger');
 
 # Utility modules
 use_ok('MT::Builder');
@@ -126,6 +120,79 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+
+# Debug
+use_ok('MT::CMS::Debug');
+use_ok('MT::Debug::GitInfo');
+
+# MT7
+use_ok('MT::App::Search::ContentData');
+use_ok('MT::ArchiveType::ContentType');
+use_ok('MT::ArchiveType::ContentTypeAuthor');
+use_ok('MT::ArchiveType::ContentTypeAuthorDaily');
+use_ok('MT::ArchiveType::ContentTypeAuthorMonthly');
+use_ok('MT::ArchiveType::ContentTypeAuthorWeekly');
+use_ok('MT::ArchiveType::ContentTypeAuthorYearly');
+use_ok('MT::ArchiveType::ContentTypeCategory');
+use_ok('MT::ArchiveType::ContentTypeCategoryDaily');
+use_ok('MT::ArchiveType::ContentTypeCategoryMonthly');
+use_ok('MT::ArchiveType::ContentTypeCategoryWeekly');
+use_ok('MT::ArchiveType::ContentTypeCategoryYearly');
+use_ok('MT::ArchiveType::ContentTypeDaily');
+use_ok('MT::ArchiveType::ContentTypeDate');
+use_ok('MT::ArchiveType::ContentTypeMonthly');
+use_ok('MT::ArchiveType::ContentTypeWeekly');
+use_ok('MT::ArchiveType::ContentTypeYearly');
+use_ok('MT::BackupRestore::ContentTypePermission');
+use_ok('MT::CMS::CategorySet');
+use_ok('MT::CMS::ContentData');
+use_ok('MT::CMS::ContentType');
+use_ok('MT::CategorySet');
+use_ok('MT::ContentData');
+use_ok('MT::ContentField');
+use_ok('MT::ContentFieldIndex');
+use_ok('MT::ContentFieldType');
+use_ok('MT::ContentFieldType::Asset');
+use_ok('MT::ContentFieldType::Categories');
+use_ok('MT::ContentFieldType::Checkboxes');
+use_ok('MT::ContentFieldType::Common');
+use_ok('MT::ContentFieldType::ContentType');
+use_ok('MT::ContentFieldType::Date');
+use_ok('MT::ContentFieldType::DateTime');
+use_ok('MT::ContentFieldType::List');
+use_ok('MT::ContentFieldType::MultiLineText');
+use_ok('MT::ContentFieldType::Number');
+use_ok('MT::ContentFieldType::RadioButton');
+use_ok('MT::ContentFieldType::SelectBox');
+use_ok('MT::ContentFieldType::SingleLineText');
+use_ok('MT::ContentFieldType::Table');
+use_ok('MT::ContentFieldType::Tags');
+use_ok('MT::ContentFieldType::Time');
+use_ok('MT::ContentFieldType::URL');
+use_ok('MT::ContentPublisher');
+use_ok('MT::ContentStatus');
+use_ok('MT::ContentType');
+use_ok('MT::ContentType::UniqueID');
+use_ok('MT::DataAPI::Callback::CategorySet');
+use_ok('MT::DataAPI::Callback::ContentData');
+use_ok('MT::DataAPI::Callback::ContentField');
+use_ok('MT::DataAPI::Callback::ContentType');
+use_ok('MT::DataAPI::Endpoint::v4::Category');
+use_ok('MT::DataAPI::Endpoint::v4::CategorySet');
+use_ok('MT::DataAPI::Endpoint::v4::ContentData');
+use_ok('MT::DataAPI::Endpoint::v4::ContentField');
+use_ok('MT::DataAPI::Endpoint::v4::ContentType');
+use_ok('MT::DataAPI::Endpoint::v4::Publish');
+use_ok('MT::DataAPI::Endpoint::v4::Search');
+use_ok('MT::DataAPI::Resource::v4::CategorySet');
+use_ok('MT::DataAPI::Resource::v4::ContentData');
+use_ok('MT::DataAPI::Resource::v4::ContentField');
+use_ok('MT::DataAPI::Resource::v4::ContentType');
+use_ok('MT::EntryStatus');
+use_ok('MT::ObjectCategory');
+use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Util::ContentType');
+
 SKIP: {
 
     if ( eval { require Net::FTPSSL } ) {
@@ -305,12 +372,13 @@ use_ok('MT::ArchiveType::Weekly');
 use_ok('MT::ArchiveType::Yearly');
 
 # XMLRPC support
-use_ok('MT::XMLRPC');
 use_ok('MT::XMLRPCServer');
 
 # Atom support
-use_ok('MT::Atom');
-use_ok('MT::AtomServer');
+if ( eval { require XML::Parser } ) {
+    use_ok('MT::Atom');
+    use_ok('MT::AtomServer');
+}
 
 # Backup/Restore
 use_ok('MT::BackupRestore');
@@ -343,17 +411,16 @@ use_ok('MT::Template::Tags::Author');
 use_ok('MT::Template::Tags::Blog');
 use_ok('MT::Template::Tags::Calendar');
 use_ok('MT::Template::Tags::Category');
-use_ok('MT::Template::Tags::Comment');
-use_ok('MT::Template::Tags::Commenter');
+use_ok('MT::Template::Tags::CategorySet');
 use_ok('MT::Template::Tags::Entry');
 use_ok('MT::Template::Tags::Filters');
 use_ok('MT::Template::Tags::Folder');
 use_ok('MT::Template::Tags::Misc');
 use_ok('MT::Template::Tags::Page');
 use_ok('MT::Template::Tags::Pager');
-use_ok('MT::Template::Tags::Ping');
 use_ok('MT::Template::Tags::Score');
 use_ok('MT::Template::Tags::Search');
+use_ok('MT::Template::Tags::Site');
 use_ok('MT::Template::Tags::Tag');
 use_ok('MT::Template::Tags::Userpic');
 use_ok('MT::Template::Tags::Website');
@@ -367,6 +434,7 @@ use_ok('MT::Upgrade::v3');
 use_ok('MT::Upgrade::v4');
 use_ok('MT::Upgrade::v5');
 use_ok('MT::Upgrade::v6');
+use_ok('MT::Upgrade::v7');
 
 # Revision Management Framework
 use_ok('MT::Revisable');
@@ -382,6 +450,10 @@ use_ok('MT::Summary::Triggers');
 # Themes
 use_ok('MT::Theme');
 use_ok('MT::Theme::Category');
+use_ok('MT::Theme::CategorySet');
+use_ok('MT::Theme::Common');
+use_ok('MT::Theme::ContentData');
+use_ok('MT::Theme::ContentType');
 use_ok('MT::Theme::Element');
 use_ok('MT::Theme::Entry');
 use_ok('MT::Theme::Pref');
@@ -395,22 +467,18 @@ use_ok('MT::Lockout');
 # DataAPI
 use_ok('MT::App::DataAPI');
 use_ok('MT::App::CMS::Common');
-use_ok('MT::DataAPI::Callback::Comment');
 use_ok('MT::DataAPI::Callback::Entry');
 use_ok('MT::DataAPI::Callback::Permission');
-use_ok('MT::DataAPI::Callback::Trackback');
 use_ok('MT::DataAPI::Callback::User');
 use_ok('MT::DataAPI::Endpoint::Asset');
 use_ok('MT::DataAPI::Endpoint::Auth');
 use_ok('MT::DataAPI::Endpoint::Blog');
 use_ok('MT::DataAPI::Endpoint::Category');
-use_ok('MT::DataAPI::Endpoint::Comment');
 use_ok('MT::DataAPI::Endpoint::Common');
 use_ok('MT::DataAPI::Endpoint::Entry');
 use_ok('MT::DataAPI::Endpoint::Permission');
 use_ok('MT::DataAPI::Endpoint::Publish');
 use_ok('MT::DataAPI::Endpoint::Stats');
-use_ok('MT::DataAPI::Endpoint::Trackback');
 use_ok('MT::DataAPI::Endpoint::User');
 use_ok('MT::DataAPI::Endpoint::Util');
 use_ok('MT::DataAPI::Format');
@@ -419,11 +487,9 @@ use_ok('MT::DataAPI::Resource');
 use_ok('MT::DataAPI::Resource::Asset');
 use_ok('MT::DataAPI::Resource::Blog');
 use_ok('MT::DataAPI::Resource::Category');
-use_ok('MT::DataAPI::Resource::Comment');
 use_ok('MT::DataAPI::Resource::Common');
 use_ok('MT::DataAPI::Resource::Entry');
 use_ok('MT::DataAPI::Resource::Permission');
-use_ok('MT::DataAPI::Resource::Trackback');
 use_ok('MT::DataAPI::Resource::User');
 use_ok('MT::DataAPI::Resource::Website');
 use_ok('MT::AccessToken');
@@ -449,13 +515,11 @@ use_ok('MT::DataAPI::Callback::Plugin');
 use_ok('MT::DataAPI::Resource::v2::Asset');
 use_ok('MT::DataAPI::Resource::v2::Template');
 use_ok('MT::DataAPI::Resource::v2::Permission');
-use_ok('MT::DataAPI::Resource::v2::Comment');
 use_ok('MT::DataAPI::Resource::v2::Tag');
 use_ok('MT::DataAPI::Resource::v2::Page');
 use_ok('MT::DataAPI::Resource::v2::Category');
 use_ok('MT::DataAPI::Resource::v2::Folder');
 use_ok('MT::DataAPI::Resource::v2::TemplateMap');
-use_ok('MT::DataAPI::Resource::v2::Trackback');
 use_ok('MT::DataAPI::Resource::v2::Role');
 use_ok('MT::DataAPI::Resource::v2::Entry');
 use_ok('MT::DataAPI::Resource::v2::Association');
@@ -535,7 +599,7 @@ sub test_all_modules_are_checked {
     }
     if ( keys %$in_test ) {
         $res .= " " if $res;
-        $res .= "Modules not on HD: " . join( ", ", keys %$in_test );
+        $res .= "Modules not on HD: " . join( ", ", sort keys %$in_test );
     }
     if ($res) {
         ok( 0, $res );

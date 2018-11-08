@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 
 package MT::AtomServer;
 use strict;
+use warnings;
 
 use XML::Atom;
 use XML::Atom::Util qw( first textValue );
@@ -448,7 +449,7 @@ sub authenticate {
             $app->{perms} = new MT::Permission;
             $app->{perms}->blog_id($blog_id);
             $app->{perms}->author_id( $app->{user}->id );
-            $app->{perms}->can_administer_blog(1);
+            $app->{perms}->can_administer_site(1);
             return 1;
         }
         my $perms = $app->{perms} = MT::Permission->load(
@@ -566,7 +567,8 @@ sub get_categories {
     $doc->appendAttribute(
         XML::XPath::Node::Attribute->new( 'fixed', 'yes' ) );
 
-    my $iter = MT::Category->load_iter( { blog_id => $blog->id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog->id, category_set_id => 0 } );
     while ( my $cat = $iter->() ) {
         my $cat_node
             = XML::XPath::Node::Element->new( 'atom:category', 'atom' );
@@ -598,7 +600,9 @@ sub new_post {
     ## it's present, but we want to give an error now if necessary.
     my ($cat);
     if ( my $label = $atom->get( NS_DC, 'subject' ) ) {
-        $cat = MT::Category->load( { blog_id => $blog->id, label => $label } )
+        $cat
+            = MT::Category->load(
+            { blog_id => $blog->id, category_set_id => 0, label => $label } )
             or return $app->error( 400, "Invalid category '$label'" );
     }
 
@@ -660,7 +664,7 @@ sub new_post {
     }
 ## xxx mt/typepad-specific fields
     $app->apply_basename( $entry, $atom );
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     if ( my @link = $atom->link ) {
         my $i         = 0;
@@ -777,7 +781,7 @@ sub edit_post {
     }
 ## xxx mt/typepad-specific fields
     $app->apply_basename( $entry, $atom );
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( 'api_pre_save.entry', $app, $entry, $orig_entry )
         or return $app->error( 500,
@@ -968,8 +972,9 @@ sub delete_post {
         unless $app->{perms}->can_edit_entry( $entry, $app->{user} );
 
     # Delete archive file
-    $blog = MT::Blog->load( $entry->blog_id );
-    my %recipe = $app->publisher->rebuild_deleted_entry(
+    my %recipe;
+    $blog   = MT::Blog->load( $entry->blog_id );
+    %recipe = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
     ) if $entry->status eq MT::Entry::RELEASE();
@@ -1126,7 +1131,7 @@ sub _upload_to_asset {
         require MT::Image;
         my $fh;
         my $data = $content->body;
-        open( $fh, "+<", \$data );
+        open( $fh, "+<", \$data ) or die $!;
         close($fh),
             return $app->error(
             500,
@@ -1397,7 +1402,8 @@ sub get_weblogs {
 sub get_categories {
     my $app  = shift;
     my $blog = $app->{blog};
-    my $iter = MT::Category->load_iter( { blog_id => $blog->id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog->id, category_set_id => 0 } );
     my $doc;
     if (LIBXML) {
         $doc = XML::LibXML::Document->createDocument( '1.0', 'utf-8' );

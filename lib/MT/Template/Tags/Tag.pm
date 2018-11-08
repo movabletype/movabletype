@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::Template::Tags::Tag;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Util qw( encode_url );
@@ -23,7 +24,10 @@ sub _tags_for_blog {
     my @tags;
     my $cache_id;
     my $all_count;
-    my $class = MT->model($type);
+    my $class = $type eq 'content_type' ? MT->model('cd') : MT->model($type);
+    my $datasource
+        = $type eq 'content_type' ? 'content_data' : $class->datasource;
+    my $content_type_id = $ctx->{__stash}{content_type_id};
 
     if ( ref $terms->{blog_id} eq 'ARRAY' ) {
         $cache_id = join ',', @{ $terms->{blog_id} };
@@ -32,11 +36,12 @@ sub _tags_for_blog {
     else {
         $cache_id = $terms->{blog_id} || 'all';
     }
+    $cache_id .= ':' . $content_type_id if $content_type_id;
     if ( !$tag_cache->{$cache_id}{tags} ) {
         require MT::Tag;
         my %temp_terms = %$terms;
         $temp_terms{is_private} = 0 unless $include_private;
-        @tags = MT::Tag->load_by_datasource( $class->datasource,
+        @tags = MT::Tag->load_by_datasource( $datasource,
             {%temp_terms}, {%$args} );
         $tag_cache->{$cache_id} = { tags => \@tags };
         $r->stash( $cache_key, $tag_cache );
@@ -55,15 +60,16 @@ sub _tags_for_blog {
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
-        my %tags       = map { $_->id => $_ } @tags;
-        my $ext_terms  = $class->terms_for_tags();
+        my %tags = map { $_->id => $_ } @tags;
+        my $ext_terms = $class->terms_for_tags();
+        $ext_terms->{content_type_id} = $content_type_id if $content_type_id;
+
         my $count_iter = $class->count_group_by(
             { ( $ext_terms ? (%$ext_terms) : () ), %$terms, },
             {   group  => ['objecttag_tag_id'],
                 'join' => MT::ObjectTag->join_on(
                     'object_id',
-                    { object_datasource => $class->datasource, %$terms },
-                    $args
+                    { object_datasource => $datasource, %$terms }, $args
                 ),
                 'asset' eq lc $type ? ( no_class => 1 ) : (),
                 %$args
@@ -211,7 +217,30 @@ sub _hdlr_tags {
     require MT::Tag;
     require MT::ObjectTag;
     require MT::Entry;
-    my $type = $args->{type} || MT::Entry->datasource;
+
+    if (   $args->{content_type}
+        && $args->{type}
+        && $args->{type} ne 'content_type' )
+    {
+        return $ctx->error(
+            MT->translate(
+                'content_type modifier cannot be used with type "[_1]".',
+                $args->{type}
+            )
+        );
+    }
+    my $type
+        = $args->{type}         ? $args->{type}
+        : $args->{content_type} ? 'content_type'
+        :                         MT::Entry->datasource;
+
+    # Include/exclude_sites modifier
+    if ( $args->{include_sites} ) {
+        $args->{include_blogs} = delete $args->{include_sites};
+    }
+    if ( $args->{exclude_sites} ) {
+        $args->{exclude_blogs} = delete $args->{exclude_sites};
+    }
 
     unless ( $args->{blog_id}
         || $args->{include_blogs}
@@ -249,8 +278,15 @@ sub _hdlr_tags {
     my ( %blog_terms, %blog_args );
     $ctx->set_blog_load_context( $args, \%blog_terms, \%blog_args )
         or return $ctx->error( $ctx->errstr );
+    if ( $type eq 'content_type' ) {
+        $ctx->set_content_type_load_context( $args, $cond, \%blog_terms,
+            \%blog_args )
+            or return;
+    }
+    local $ctx->{__stash}{content_type_id}
+        = delete $blog_terms{content_type_id}
+        if $blog_terms{content_type_id};
 
-    my @tag_filter;
     my $include_private = defined $args->{include_private}
         && $args->{include_private} == 1 ? 1 : 0;
     my ( $tags, $min, $max, $all_count )
@@ -310,10 +346,11 @@ sub _hdlr_tags {
     local $ctx->{__stash}{exclude_blogs} = $args->{exclude_blogs};
     local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};
     local $ctx->{__stash}{include_with_website}
-        = $args->{include_with_website};
+        = $args->{include_parent_site} || $args->{include_with_website};
     local $ctx->{__stash}{tag_min_count} = $min;
     local $ctx->{__stash}{tag_max_count} = $max;
-    local $ctx->{__stash}{class_type}    = $type;
+    local $ctx->{__stash}{class_type}
+        = $type eq 'content_type' ? 'cd' : $type;
     my $vars = $ctx->{__stash}{vars} ||= {};
     my $i = 0;
 

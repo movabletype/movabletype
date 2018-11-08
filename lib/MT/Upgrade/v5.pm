@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Upgrade::v5;
 
 use strict;
+use warnings;
 
 sub upgrade_functions {
     return {
@@ -35,16 +36,6 @@ sub upgrade_functions {
             version_limit => 5.0008,
             priority      => 3.3,
             code          => \&_v5_migrate_default_site
-        },
-        'v5_migrate_dashboard_widget_settings' => {
-            version_limit => 5.0013,
-            priority      => 3.3,
-            updater       => {
-                type      => 'author',
-                label     => "Merging dashboard settings...",
-                condition => sub { $_[0]->status == 1 && $_[0]->type == 1 },
-                code      => \&_v5_migrate_dashboard,
-            },
         },
         'v5_migrate_theme_privilege' => {
             version_limit => 5.0014,
@@ -560,66 +551,6 @@ sub _v5_migrate_default_site {
     }
 }
 
-sub _v5_migrate_dashboard {
-    my $user = shift;
-    my $conf = $user->widgets;
-    return 1 unless $conf;
-
-    my $new_widgets;
-    my @keys = keys %$conf;
-    foreach my $key (@keys) {
-        my @widget_keys = keys %{ $conf->{$key} };
-        foreach my $widget (@widget_keys) {
-            if ( $widget eq 'mt_shortcuts' ) {
-                next;
-            }
-            elsif ($widget eq 'this_is_you-1'
-                || $widget eq 'new_install'
-                || $widget eq 'new_user' )
-            {
-                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
-                    ->{order} = $conf->{$key}->{$widget}->{order};
-                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
-                    ->{set} = 'main';
-                next;
-            }
-            elsif ( $widget eq 'mt_news' ) {
-                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
-                    ->{order} = $conf->{$key}->{$widget}->{order};
-                $new_widgets->{ 'dashboard:user:' . $user->id }->{$widget}
-                    ->{set} = 'sidebar';
-                next;
-            }
-            elsif ( $widget eq 'blog_stats' && $key eq 'dashboard:system' ) {
-                next;
-            }
-            $new_widgets->{$key}->{$widget} = $conf->{$key}->{$widget};
-        }
-    }
-
-    # New widgets from MT5
-    $new_widgets->{ 'dashboard:user:' . $user->id }->{'favorite_blogs'}
-        ->{order} = 3;
-    $new_widgets->{ 'dashboard:user:' . $user->id }->{'favorite_blogs'}->{set}
-        = 'main';
-    $new_widgets->{'dashboard:system'}->{'recent_websites'}->{order} = 1;
-    $new_widgets->{'dashboard:system'}->{'recent_websites'}->{set}   = 'main';
-
-    my $class = MT->model('website');
-    return unless $class;
-    my $generic_website
-        = $class->load( { name => MT->translate('Generic Website') } );
-    return unless $generic_website;
-
-    $new_widgets->{ 'dashboard:blog:' . $generic_website->id }
-        ->{'recent_blogs'}->{order} = 1;
-    $new_widgets->{ 'dashboard:blog:' . $generic_website->id }
-        ->{'recent_blogs'}->{set} = 'main';
-
-    $user->widgets($new_widgets);
-    $user->save;
-}
-
 sub _v5_generate_websites_place_blogs {
     my $self = shift;
 
@@ -831,7 +762,7 @@ sub _v5_remove_technorati {
         $blog->save;
         $self->progress(
             $self->translate_escape(
-                "Removing technorati update-ping service from [_1] (ID:[_2]).",
+                "Removing Technorati update-ping service from [_1] (ID:[_2]).",
                 $blog->name,
                 $blog->id,
             )

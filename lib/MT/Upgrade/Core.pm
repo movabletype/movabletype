@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Upgrade::Core;
 
 use strict;
+use warnings;
 
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
@@ -148,9 +149,7 @@ sub seed_database {
     return undef if MT::Author->exist;
 
     $self->progress(
-        $self->translate_escape(
-            "Creating initial website and user records...")
-    );
+        $self->translate_escape("Creating initial user records...") );
 
     local $MT::CallbacksEnabled = 1;
 
@@ -185,8 +184,7 @@ sub seed_database {
         : ''
     );
     $author->is_superuser(1);
-    $author->can_create_blog(1);
-    $author->can_create_website(1);
+    $author->can_create_site(1);
     $author->can_view_log(1);
     $author->can_manage_plugins(1);
     $author->preferred_language($lang);
@@ -222,48 +220,7 @@ sub seed_database {
             MT::Role->errstr
         )
         );
-
-    require MT::Website;
-    $param{website_name}
-        = exists $param{website_name}
-        ? _uri_unescape_utf8( $param{website_name} )
-        : MT->translate('First Website');
-    $param{website_path}
-        = exists $param{website_path}
-        ? _uri_unescape_utf8( $param{website_path} )
-        : '';
-    $param{website_url}
-        = exists $param{website_url}
-        ? _uri_unescape_utf8( $param{website_url} )
-        : '';
-    my $website = MT::Website->create_default_website(
-        $param{website_name},
-        site_theme    => $param{website_theme},
-        site_url      => $param{website_url},
-        site_path     => $param{website_path},
-        site_timezone => $param{website_timezone},
-        )
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            MT::Website->errstr
-        )
-        );
-    $website->save
-        or return $self->error(
-        $self->translate_escape(
-            "Error saving record: [_1].",
-            $website->errstr
-        )
-        );
-    MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
     $author->save;
-
-    require MT::Association;
-    require MT::Role;
-    my ($website_admin_role)
-        = MT::Role->load_by_permission("administer_website");
-    MT::Association->link( $website => $website_admin_role => $author );
 
     if ( $param{use_system_email} ) {
         my $cfg = MT->config;
@@ -383,7 +340,7 @@ sub upgrade_templates {
         for my $map_set (@arch_tmpl) {
             my $tmpl     = $map_set->{template};
             my $mappings = $map_set->{mappings};
-            foreach my $map_key ( keys %$mappings ) {
+            foreach my $map_key ( sort keys %$mappings ) {
                 my $m  = $mappings->{$map_key};
                 my $at = $m->{archive_type};
 

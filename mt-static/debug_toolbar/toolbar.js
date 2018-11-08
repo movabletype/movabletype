@@ -1,5 +1,5 @@
 jQuery.noConflict();
-jQuery(function($j) {
+(function($j) {
     var COOKIE_NAME = 'dj_debug_panel';
     $j.djDebug = function(data, klass) {
         $j.djDebug.init();
@@ -143,7 +143,5 @@ jQuery(function($j) {
             return;
         }
     });
-});
-jQuery(function() {
-    jQuery.djDebug();
-});
+    $j.djDebug();
+})(jQuery);

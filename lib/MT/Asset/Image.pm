@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Asset::Image;
 
 use strict;
+use warnings;
 use base qw( MT::Asset );
 use MT;
 use MT::Blog;
@@ -65,6 +66,7 @@ sub metadata {
     $meta->{image_width}  = $width  if defined $width;
     $meta->{image_height} = $height if defined $height;
     $meta->{image_dimensions} = $meta->{ MT->translate("Actual Dimensions") }
+        = $meta->{'Actual Dimensions'}
         = MT->translate( "[_1] x [_2] pixels", $width, $height )
         if defined $width && defined $height;
 
@@ -431,48 +433,9 @@ sub as_html {
 
 # Return a HTML snippet of form options for inserting this asset
 # into a web page. Default behavior is no options.
-# DEPRECATED: v6.2
-sub insert_options_compat {
-    my $asset = shift;
-    my ($param) = @_;
-
-    my $app   = MT->instance;
-    my $perms = $app->{perms};
-    my $blog  = $asset->blog or return;
-
-    $param->{do_thumb}
-        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
-
-    $param->{can_save_image_defaults}
-        = $perms->can_do('save_image_defaults') ? 1 : 0;
-
-    #$param->{constrain} = $blog->image_default_constrain ? 1 : 0;
-    $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
-    $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
-    $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
-    $param->{ 'align_' . $_ }
-        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
-        for qw(none left center right);
-    $param->{ 'unit_w' . $_ }
-        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
-        for qw(percent pixels);
-    $param->{thumb_width}
-        = $blog->image_default_width
-        || $asset->image_width
-        || 0;
-
-    return $app->build_page( 'dialog/asset_options_image.tmpl', $param );
-}
-
-# Return a HTML snippet of form options for inserting this asset
-# into a web page. Default behavior is no options.
 sub insert_options {
     my $asset = shift;
     my ($param) = @_;
-
-    # Backward compatibility
-    return insert_options_compat( $asset, @_ )
-        if MT->config('EnableUploadCompat');
 
     my $app   = MT->instance;
     my $perms = $app->{perms};
@@ -519,9 +482,8 @@ sub on_upload {
     my $blog = $asset->blog or return;
     my $blog_id = $blog->id;
 
-    my ( $thumb, $thumb_width, $thumb_height );
-    $thumb_width = $param->{thumb_width};
-    $thumb       = $param->{thumb};
+    my $thumb_width = $param->{thumb_width};
+    my $thumb       = $param->{thumb};
     if ($thumb) {
         if ( $thumb_width && ( $thumb_width !~ m/^\d+$/ ) ) {
             undef $thumb_width;
@@ -536,12 +498,6 @@ sub on_upload {
         undef $thumb;
     }
     if ( $param->{image_defaults} ) {
-        return $app->error(
-            $app->translate(
-                'Permission denied setting image defaults for blog #[_1]',
-                $blog_id
-            )
-        ) unless $app->{perms}->can_do('save_image_defaults');
 
         # Save new defaults if requested.
         $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
@@ -1098,12 +1054,13 @@ sub has_gps_metadata {
 sub has_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+    my $file_ext = lc( $asset->file_ext || '' );
+    return 0 if $file_ext !~ /^(jpe?g|tiff?)$/;
 
     require Image::ExifTool;
     my $exif    = $asset->exif or return;
-    my $is_jpeg = lc( $asset->file_ext ) =~ /^jpe?g$/;
-    my $is_tiff = lc( $asset->file_ext ) =~ /^tiff?$/;
+    my $is_jpeg = $file_ext =~ /^jpe?g$/;
+    my $is_tiff = $file_ext =~ /^tiff?$/;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'

@@ -1,0 +1,66 @@
+<mt:app:ContentFieldOptionGroup
+   type="categories">
+
+  <mtapp:ContentFieldOption
+     id="categories-multiple"
+     label="<__trans phrase="Allow users to select multiple categories?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="categories-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="categories-multiple"><__trans phrase="Allow users to select multiple categories?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-min"
+     label="<__trans phrase="Minimum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="categories-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-max"
+     label="<__trans phrase="Maximum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="categories-max" class="form-control w-25" min="1" value={ options.max }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-can_add"
+     label="<__trans phrase="Allow users to create new categories?">">
+    <input ref="can_add" type="checkbox" class="mt-switch form-control" id="categories-can_add" name="can_add" checked={ options.can_add }><label for="categories-can_add"><__trans phrase="Allow users to create new categories?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="categories-category_set"
+     label="<__trans phrase="Source Category Set">"
+     required="1">
+    <mt:if name="category_sets">
+      <select ref="category_set" name="category_set" id="categories-category_set" class="custom-select form-control html5-form">
+      <mt:loop name="category_sets">
+        <option value="<mt:var name="id" escape="html">" if={ options.category_set == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
+        <option value="<mt:var name="id" escape="html">" if={ options.category_set != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>
+      </mt:loop>
+      </select>
+    <mt:else>
+      <mtapp:statusmsg
+        id="no-cateogry-set"
+        class="warning"
+        can_close="0"
+      >
+        <__trans phrase="There is no content type that can be selected. Please create new content type if you use Content Type field type.">
+      </mtapp:statusmsg>
+    </mt:if>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    if ( this.options.multiple === "0" ) {
+      this.options.multiple = 0
+    }
+
+    if ( this.options.can_add === "0" ) {
+      this.options.can_add = 0
+    }
+
+    changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+    }
+  </mtapp:ContentFieldOptionScript>
+
+</mt:app:ContentFieldOptionGroup>

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -214,7 +214,7 @@ sub _retrieve_site_and_widget {
     my $site;
     if ($site_id) {
         $site = $app->model('blog')->load($site_id)
-            or return $app->error( $app->tranlsate('Site not found'), 404 );
+            or return $app->error( $app->translate('Site not found'), 404 );
     }
     else {
         $site = $app->model('blog')->new;
@@ -242,7 +242,7 @@ sub _retrieve_site_and_widgetset {
     my $site;
     if ($site_id) {
         $site = $app->model('blog')->load($site_id)
-            or return $app->error( $app->tranlsate('Site not found'), 404 );
+            or return $app->error( $app->translate('Site not found'), 404 );
     }
     else {
         $site = $app->model('blog')->new;

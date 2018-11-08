@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Worker::Sync;
 
 use strict;
+use warnings;
 use base qw( TheSchwartz::Worker );
 use Time::HiRes qw(gettimeofday tv_interval);
 use TheSchwartz::Job;
@@ -83,9 +84,9 @@ sub work {
         require File::Spec;
         my $file = File::Spec->catfile( $mt->config('TempDir'),
             "publishq-rsync-$$.lst" );
-        open FOUT, ">$file";
-        print FOUT join( "\n", @files ) . "\n";
-        close FOUT;
+        open my $FOUT, ">", $file or die "Couldn't open $file: $!";
+        print $FOUT join( "\n", @files ) . "\n";
+        close $FOUT;
         foreach my $target (@targets) {
             my $cmd
                 = "$rsync_cmd $rsync_opt --files-from=\"$file\" / \"$target\"";
@@ -121,7 +122,7 @@ sub work {
                 my $elapsed
                     = sprintf( "done! (%0.02fs)", tv_interval($start) );
                 $mt->log(
-                    {   message => $mt->translate('Done Synchornizing Files'),
+                    {   message => $mt->translate('Done Synchronizing Files'),
                         metadata => log_time() . ' '
                             . $mt->translate(
                             'Done syncing files to [_1] ([_2])', $target,

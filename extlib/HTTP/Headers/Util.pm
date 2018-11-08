@@ -1,15 +1,13 @@
 package HTTP::Headers::Util;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT_OK);
+use warnings;
 
-$VERSION = "5.817";
+our $VERSION = '6.14';
 
-require Exporter;
-@ISA=qw(Exporter);
+use base 'Exporter';
 
-@EXPORT_OK=qw(split_header_words _split_header_words join_header_words);
-
+our @EXPORT_OK=qw(split_header_words _split_header_words join_header_words);
 
 
 sub split_header_words {
@@ -95,11 +93,17 @@ sub join_header_words
 
 1;
 
-__END__
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
 HTTP::Headers::Util - Header value parsing utility functions
+
+=head1 VERSION
+
+version 6.14
 
 =head1 SYNOPSIS
 
@@ -115,7 +119,6 @@ exported by default.
 The following functions are available:
 
 =over 4
-
 
 =item split_header_words( @header_values )
 
@@ -153,7 +156,7 @@ the requirement for tokens).
 Each I<header> is represented by an anonymous array of key/value
 pairs.  The keys will be all be forced to lower case.
 The value for a simple token (not part of a parameter) is C<undef>.
-Syntactically incorrect headers will not necessary be parsed as you
+Syntactically incorrect headers will not necessarily be parsed as you
 would want.
 
 This is easier to describe with some examples:
@@ -190,10 +193,21 @@ will both return the string:
 
 =back
 
-=head1 COPYRIGHT
+=head1 AUTHOR
 
-Copyright 1997-1998, Gisle Aas
+Gisle Aas <gisle@activestate.com>
 
-This library is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 1994-2017 by Gisle Aas.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+__END__
+
+
+#ABSTRACT: Header value parsing utility functions
 

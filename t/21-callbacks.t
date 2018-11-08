@@ -2,13 +2,18 @@
 # $Id: 21-callbacks.t 2562 2008-06-12 05:12:23Z bchoate $
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use Test::More tests => 5;
+plan tests => 5;
 use CGI;
-
-use lib 'extlib';
-use lib 't/lib';
-use lib 'lib';
 
 use MT;
 use MT::Test;
@@ -17,13 +22,9 @@ use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
 
-use vars qw($T_CFG);
+$test_env->prepare_fixture('db_data');
 
-use lib 't';
-require 'test-common.pl';
-require 'blog-common.pl';
-
-my $mt = MT->new(Config => $T_CFG);
+my $mt = MT->new;
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;
 
 sub rot13 {

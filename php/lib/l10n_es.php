@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -40,6 +40,9 @@ $Lexicon_es = array(
 
 ## php/lib/block.mtentries.php
 
+## php/lib/block.mthasplugin.php
+	'name is required.' => 'el nombre es obligatorio.',
+
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => 'Utilizó una etiqueta [_1] sin un atributo de nombre válido.',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
@@ -69,17 +72,6 @@ $Lexicon_es = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anónimo',
-
-## php/lib/function.mtcommentauthor.php
-
-## php/lib/function.mtcommenternamethunk.php
-	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'La etiqueta \'[_1]\' está obsoleta. Por favor, utilice en su lugar la etiqueta \'[_2]\'.',
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Responder',
-
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Entrada',
 
@@ -103,9 +95,6 @@ $Lexicon_es = array(
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
-## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'La autentificación de TypePad no está activada para este blog. No se puede utilizar MTRemoteSignInLink.',
-
 ## php/lib/function.mtsetvar.php
 
 ## php/lib/function.mttagsearchlink.php
@@ -123,6 +112,7 @@ $Lexicon_es = array(
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
+
 
 );
 function translate_phrase($str, $params = null) {

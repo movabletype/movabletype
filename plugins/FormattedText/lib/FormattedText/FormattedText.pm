@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -155,7 +155,7 @@ sub list_props {
             display => 'default',
         },
         blog_name => {
-            label     => 'Website/Blog Name',
+            label     => 'Site Name',
             base      => '__virtual.blog_name',
             order     => 400,
             display   => 'default',
@@ -177,7 +177,8 @@ sub list_props {
                 my %site_ids = map { $_->parent_id => 1 }
                     grep { $_->parent_id && !$blog_map{ $_->parent_id } }
                     @blogs;
-                my @sites
+                my @sites;
+                @sites
                     = MT->model('website')
                     ->load( { id => [ keys %site_ids ], },
                     { fetchonly => { id => 1, name => 1, }, } )
@@ -201,7 +202,7 @@ sub list_props {
                     }
                     my $blog = $blog_site_map{ $obj->blog_id };
                     unless ($blog) {
-                        push @out, MT->translate('*Website/Blog deleted*');
+                        push @out, MT->translate('*Site/Child Site deleted*');
                         next;
                     }
 
@@ -234,9 +235,10 @@ sub list_props {
             order => 600,
         },
         description => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Description',
+            auto      => 1,
+            display   => 'none',
+            label     => 'Description',
+            use_blank => 1,
         },
         blog_id => {
             auto            => 1,

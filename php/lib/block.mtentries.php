@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,11 +7,16 @@
 
 function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
+
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
         return $ctx->error($ctx->mt->translate('sort_by="score" must be used together with a namespace.'));
     }
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
         // If we have a set of entries that were set based on context,
         // but the user has specified attributes that effectively
         // break that context, clear the stashed entries so fetch_entries

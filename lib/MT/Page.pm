@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Page;
 
 use strict;
+use warnings;
 use base qw( MT::Entry );
 use MT::Util qw( archive_file_for );
 
@@ -38,6 +39,26 @@ MT->add_callback( 'api_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
+
+# Register page post-save callback for rebuild triggers
+MT->add_callback(
+    'cms_post_save.page', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'api_post_save.page', 10,
+    MT->component('core'),
+    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
+);
+MT->add_callback(
+    'cms_post_bulk_save.pages',
+    10,
+    MT->component('core'),
+    sub {
+        MT->model('rebuild_trigger')->runner( 'post_entries_bulk_save', @_ );
+    }
+);
 
 __PACKAGE__->add_callback(
     'post_remove', 0,
@@ -74,10 +95,16 @@ sub list_props {
             category_class   => 'folder',
             zero_state_label => '(root)',
             label_via_param  => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                my $id    = $app->param('filter_val');
-                my $cat   = MT->model('folder')->load($id);
+                my $prop = shift;
+                my ( $app, $val ) = @_;
+                my $cat = MT->model('folder')->load($val)
+                    or return $prop->error(
+                    MT->translate(
+                        '[_1] ( id:[_2] ) does not exists.',
+                        $prop->datasource->container_label,
+                        defined $val ? $val : ''
+                    )
+                    );
                 my $label = MT->translate(
                     'Pages in folder: [_1]',
                     $cat->label . " (ID:" . $cat->id . ")",
@@ -93,16 +120,9 @@ sub list_props {
             display => 'default',
         },
         unpublished_on => { base => 'entry.unpublished_on', },
-        comment_count  => {
-            display => 'optional',
-            base    => 'entry.comment_count',
-            order   => 800,
-        },
-        ping_count => { base => 'entry.ping_count', order => 900, },
-
-        text      => { base => 'entry.text' },
-        text_more => { base => 'entry.text_more' },
-        excerpt   => {
+        text           => { base => 'entry.text' },
+        text_more      => { base => 'entry.text_more' },
+        excerpt        => {
             base    => 'entry.excerpt',
             display => 'none',
             label   => 'Excerpt',
@@ -132,9 +152,8 @@ sub list_props {
                 },
             ],
         },
-        basename     => { base => 'entry.basename' },
-        commented_on => { base => 'entry.commented_on' },
-        tag          => {
+        basename => { base => 'entry.basename' },
+        tag      => {
             base   => 'entry.tag',
             tag_ds => 'entry',
         },
@@ -147,7 +166,7 @@ sub list_props {
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
         },
-        blog_id         => {
+        blog_id => {
             auto            => 1,
             col             => 'blog_id',
             display         => 'none',
@@ -192,15 +211,6 @@ sub system_filters {
             },
             order => 500,
         },
-        commented_in_last_7_days => {
-            label => 'Pages with comments in the last 7 days',
-            items => [
-                {   type => 'commented_on',
-                    args => { option => 'days', days => 7 }
-                }
-            ],
-            order => 600,
-        },
     };
 }
 
@@ -237,9 +247,9 @@ sub archive_url {
     my $blog = $page->blog()
         || return $page->error(
         MT->translate( "Loading blog failed: [_1]", MT::Blog->errstr ) );
+    my $file = $page->archive_file(@_) or return;
     my $url = $blog->site_url || "";
-    $url .= '/' unless $url =~ m!/$!;
-    return $url . $page->archive_file(@_);
+    MT::Util::caturl( $url, $file );
 }
 
 sub permalink {

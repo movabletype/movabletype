@@ -1,4 +1,4 @@
-<mt:include name="dialog/header.tmpl">
+<mt:setvarblock name="page_content">
 <script type="text/javascript">
 /* <![CDATA[ */
 var field = window.parent.getByID( '<mt:var name="edit_field" escape="js">' );
@@ -7,12 +7,13 @@ var author_userpic = '<mt:var name="author_userpic" escape="JS">';
 if (author_userpic != '') {
     var preview = window.parent.getByID( 'userpic-preview-userpic' );
     preview.innerHTML = author_userpic;
-    if (window.parent.DOM.hasClassName( 'remove-userpic', 'hidden' ))
-        window.parent.toggleHidden( 'remove-userpic' );
-    if (window.parent.DOM.hasClassName( 'userpic-preview', 'hidden' ))
-        window.parent.toggleHidden( 'userpic-preview' );
+    window.parent.jQuery('#remove-userpic').show();
+    window.parent.jQuery('#userpic-preview').show();
 }
-parent.jQuery.fn.mtDialog.close();
+jQuery.fn.mtModal.close();
 /* ]]> */
 </script>
-<mt:include name="dialog/footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

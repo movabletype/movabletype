@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::CMS::Log;
 
 use strict;
+use warnings;
 
 use MT::Util
     qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
@@ -15,7 +16,6 @@ sub view {
     my $app     = shift;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    my $perms   = $app->permissions;
 PERMCHECK: {
         if ($blog_id) {
             last PERMCHECK
@@ -205,6 +205,10 @@ sub build_log_table {
             blog_id     => $log->blog_id
         };
         if ( my $ts = $log->created_on ) {
+            ## All Log records are saved with GMT, so do trick here.
+            my $epoch = ts2epoch( undef, $ts, 1 );
+            $epoch = offset_time( $epoch, ( $blog || undef ) );
+            $ts = epoch2ts( ( $blog || undef ), $epoch, 1 );
             if ($blog_view) {
                 $row->{created_on_formatted} = format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
@@ -346,7 +350,6 @@ sub reset {
 sub export {
     my $app       = shift;
     my $user      = $app->user;
-    my $perms     = $app->permissions;
     my $blog      = $app->blog;
     my $blog_view = $blog ? 1 : 0;
     my $blog_ids;
@@ -463,7 +466,7 @@ PERMCHECK: {
                 $app->user ? $app->user->preferred_language : undef
                 );
         }
-        push @col, $log->ip;
+        push @col, $log->ip || '';
         my $blog;
         if ( $log->blog_id ) {
             $blog = $blogs{ $log->blog_id }
@@ -479,6 +482,7 @@ PERMCHECK: {
             push @col, '';
         }
         my $msg = $log->message;
+        $msg = '' unless defined $msg;
         $msg =~ s/"/\\"/gs;
         $msg =~ s/[\r\n]+/ /gs;
         push @col, '"' . $msg . '"';
@@ -542,6 +546,9 @@ sub template_param_list {
             abs($so), $partial_hour_offset );
         $param->{time_offset} = $tz;
     }
+
+    pop @{ $app->{breadcrumbs} };
+    $app->add_breadcrumb( $app->translate('Activity Log') );
 }
 
 sub cms_pre_load_filtered_list {

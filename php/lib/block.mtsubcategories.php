@@ -25,6 +25,12 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         $sort_method = $args['sort_method'];
         $sort_by = isset($args['sort_by']) ? $args['sort_by'] : 'user_custom';
 
+        if ($ctx->stash('category_set')) {
+            $category_set_id = $ctx->stash('category_set')->id;
+        } else {
+            $category_set_id = $args['category_set_id'] || 0;
+        }
+
         # Store the tokens for recursion
         $ctx->stash('subCatTokens', $token_fn);
         $ctx->stash('current_archive_type', 'Category');
@@ -33,7 +39,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         if (!$top) {
             if ($args['category']) {
                 require_once("MTUtil.php");
-                $current_cat = cat_path_to_category($args['category'], $blog_id);
+                $current_cat = cat_path_to_category($args['category'], $blog_id, $class, $category_set_id);
                 if ( is_array( $current_cat ) )
                     $current_cat = $current_cat[0];
             }
@@ -61,6 +67,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
             # Otherwise, use the top level categories
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
+                'category_set_id' => $category_set_id,
                 'top_level_categories' => 1,
                 'show_empty' => 1,
                 'sort_order' => $sort_order,

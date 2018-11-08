@@ -2,25 +2,23 @@
 
 use strict;
 use warnings;
-
-use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib"    : 'lib';
-use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/extlib" : 'extlib';
-use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/t/lib"  : 't/lib';
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+my $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} ||= 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use Plack::Loader;
 use Getopt::Long;
 
 use MT;
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
-die $@ if $@;
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $port         = 5000;
 my @plugin_paths = ();

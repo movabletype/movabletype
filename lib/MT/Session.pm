@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 
 package MT::Session;
 use strict;
+use warnings;
 
 use MT::Object;
 @MT::Session::ISA = qw( MT::Object );
@@ -229,6 +230,10 @@ Tag Cache is the cache of a particular tag data.
 =item DU
 
 Disk Usage is the cache for notify free disk space alert. Cloud.pack only.
+
+=item DW
+
+Cache for the dashboard widget content. Each widget should be separated by its ID.
 
 =back
 

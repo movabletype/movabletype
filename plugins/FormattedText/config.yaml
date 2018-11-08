@@ -1,6 +1,6 @@
 id: FormattedText
 name: FormattedText
-version: 1.22
+version: 1.4
 author_link: http://www.movabletype.org/
 author_name: Six Apart, Ltd.
 description: <MT_TRANS phrase="Manage boilerplate.">
@@ -12,6 +12,11 @@ object_types:
 
 applications:
     cms:
+        enable_object_methods:
+            formatted_text:
+                delete: 1
+                edit: 1
+                save: 1
         menus:
             entry:manage_formatted_text:
                 label: Boilerplate
@@ -30,28 +35,29 @@ applications:
                         return 1 if $app->user->is_superuser;
 
                         # Blog context
-                        if ($app->blog) {
-                            return
-                                $app->permissions
-                                ->can_do('access_to_formatted_text_list');
+                        if ( $app->blog ) {
+                            my $perm = $app->permissions;
+                            return 0 unless $perm;
+                            return $perm->can_do(
+                                'access_to_formatted_text_list');
                         }
 
                         # System context
                         my $iter = $app->model('permission')->load_iter(
                             {   author_id => $app->user->id,
-                                    blog_id => { not => 0 }
+                                blog_id   => { not => 0 }
                             }
                         );
 
                         while ( my $p = $iter->() ) {
                             return 1
-                                if $p->can_do('access_to_formatted_text_list');
+                                if $p->can_do(
+                                    'access_to_formatted_text_list');
                         }
 
                         return 0;
                     }
                 view:
-                    - system
                     - website
                     - blog
             entry:view_formatted_text:
@@ -60,7 +66,6 @@ applications:
                 args:
                     _type: formatted_text
                 view:
-                    - system
                     - website
                     - blog
                 display: 0

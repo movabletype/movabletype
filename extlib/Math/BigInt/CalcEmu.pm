@@ -1,11 +1,10 @@
 package Math::BigInt::CalcEmu;
 
-use 5.006002;
+use 5.006001;
 use strict;
-# use warnings;	# dont use warnings for older Perls
-use vars qw/$VERSION/;
+use warnings;
 
-$VERSION = '1.997';
+our $VERSION = '1.999811';
 
 package Math::BigInt;
 
@@ -15,7 +14,7 @@ my $CALC_EMU;
 
 BEGIN
   {
-  $CALC_EMU = Math::BigInt->config()->{'lib'};
+  $CALC_EMU = Math::BigInt->config('lib');
   # register us with MBI to get notified of future lib changes
   Math::BigInt::_register_callback( __PACKAGE__, sub { $CALC_EMU = $_[0]; } );
   }
@@ -25,7 +24,7 @@ sub __emu_band
   my ($self,$x,$y,$sx,$sy,@r) = @_;
 
   return $x->bzero(@r) if $y->is_zero() || $x->is_zero();
-  
+
   my $sign = 0;					# sign of result
   $sign = 1 if $sx == -1 && $sy == -1;
 
@@ -75,7 +74,7 @@ sub __emu_band
     # if $xx eq "\x00", we can cut $by, otherwise we need to padd $bx
     $bx .= $xx x abs($diff);
     }
-  
+
   # and the strings together
   my $r = $bx & $by;
 
@@ -282,7 +281,10 @@ sub __emu_bxor
 ##############################################################################
 
 1;
+
 __END__
+
+=pod
 
 =head1 NAME
 
@@ -305,16 +307,79 @@ using a call to the native lib.
 
 =head1 METHODS
 
-=head2 __emu_bxor
+=over
 
-=head2 __emu_band
+=item __emu_bxor
 
-=head2 __emu_bior
+=item __emu_band
+
+=item __emu_bior
+
+=back
+
+=head1 BUGS
+
+Please report any bugs or feature requests to
+C<bug-math-bigint at rt.cpan.org>, or through the web interface at
+L<https://rt.cpan.org/Ticket/Create.html?Queue=Math-BigInt>
+(requires login).
+We will be notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Math::BigInt::CalcEmu
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Math-BigInt>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Math-BigInt>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/dist/Math-BigInt>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/Math-BigInt/>
+
+=item * CPAN Testers Matrix
+
+L<http://matrix.cpantesters.org/?dist=Math-BigInt>
+
+=item * The Bignum mailing list
+
+=over 4
+
+=item * Post to mailing list
+
+C<bignum at lists.scsys.co.uk>
+
+=item * View mailing list
+
+L<http://lists.scsys.co.uk/pipermail/bignum/>
+
+=item * Subscribe/Unsubscribe
+
+L<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/bignum>
+
+=back
+
+=back
 
 =head1 LICENSE
 
 This program is free software; you may redistribute it and/or modify it under
-the same terms as Perl itself. 
+the same terms as Perl itself.
 
 =head1 AUTHORS
 
@@ -323,7 +388,7 @@ Tels from 2001-2003.
 
 =head1 SEE ALSO
 
-L<Math::BigInt>, L<Math::BigFloat>, L<Math::BigInt::BitVect>,
+L<Math::BigInt>, L<Math::BigFloat>,
 L<Math::BigInt::GMP> and L<Math::BigInt::Pari>.
 
 =cut

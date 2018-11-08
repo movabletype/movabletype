@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -239,6 +239,9 @@ sub type2db {
     elsif ( $type eq 'float' ) {
         return 'float';
     }
+    elsif ( $type eq 'double' ) {
+        return 'float';
+    }
     Carp::croak( "undefined type: " . $type );
 }
 
@@ -281,7 +284,7 @@ sub add_column_sql {
             $default_value
                 = $dbh->quote( $driver->dbd->ts2db($default_value) );
         }
-        elsif ( $def->{type} !~ m/int|float|boolean/ ) {
+        elsif ( $def->{type} !~ m/int|float|double|boolean/ ) {
             $default_value = $dbh->quote($default_value);
         }
         push @stmt,

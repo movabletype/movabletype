@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,10 +9,12 @@ global $restricted_include_filenames;
 $restricted_include_filenames = array('mt-config.cgi' => 1, 'passwd' => 1);
 
 function smarty_function_mtinclude($args, &$ctx) {
+    require_once('multiblog.php');
+    multiblog_MTInclude($args, $ctx);
+
     // status: partial
     // parameters: module, file
     // notes: file case needs work -- search through blog site archive path, etc...
-
     // push to ctx->vars
     $ext_args = array();
     while(list ($key, $val) = each($args)) {
@@ -23,7 +25,8 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    $blog_id = $args['blog_id'];
+    $blog_id = $args['site_id'];
+    $blog_id or $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
     if ($args['local'])
         $blog_id = $ctx->stash('local_blog_id');

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,13 +6,14 @@
 
 package MT::XMLRPCServer::Util;
 use strict;
+use warnings;
 use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
 
 sub mt_new {
     my $cfg
-        = $ENV{MOD_PERL}
+        = MT::Util::is_mod_perl1()
         ? Apache->request->dir_config('MTConfig')
         : ( $ENV{MT_CONFIG} || $MT::XMLRPCServer::MT_DIR . '/mt-config.cgi' );
     my $mt = MT->new( Config => $cfg )
@@ -253,9 +254,10 @@ sub _save_placements {
             require MT::Folder;
             for my $basename (@$folders) {
                 $folder = MT::Folder->load(
-                    {   blog_id  => $entry->blog_id,
-                        parent   => $parent_id,
-                        basename => $basename,
+                    {   blog_id         => $entry->blog_id,
+                        parent          => $parent_id,
+                        basename        => $basename,
+                        category_set_id => 0,
                     }
                 );
 
@@ -287,10 +289,12 @@ sub _save_placements {
             my $cat_class = MT->model('category');
 
             # The spec says to ignore invalid category names.
-            @categories
-                = grep {defined}
-                $cat_class->search(
-                { blog_id => $entry->blog_id, label => $cats, } );
+            @categories = grep {defined} $cat_class->search(
+                {   blog_id         => $entry->blog_id,
+                    label           => $cats,
+                    category_set_id => 0,
+                }
+            );
         }
     }
 
@@ -454,7 +458,7 @@ sub _new_entry {
             ) > 0
             );
     }
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( "api_pre_save.$obj_type", $mt, $entry, $orig_entry )
         || die MT::XMLRPCServer::_fault(
@@ -667,7 +671,7 @@ sub _edit_entry {
             b    => { value => time(), type => 'epoch' }
             ) > 0;
     }
-    $entry->discover_tb_from_entry();
+    $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
 
     MT->run_callbacks( "api_pre_save.$obj_type", $mt, $entry, $orig_entry )
         || die MT::XMLRPCServer::_fault(
@@ -1007,8 +1011,9 @@ sub _delete_entry {
         && ( !$perms || !$perms->can_edit_entry( $entry, $author ) );
 
     # Delete archive file
-    my $blog   = MT::Blog->load( $entry->blog_id );
-    my %recipe = $mt->publisher->rebuild_deleted_entry(
+    my $blog = MT::Blog->load( $entry->blog_id );
+    my %recipe;
+    %recipe = $mt->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog
     ) if $entry->status eq MT::Entry::RELEASE();
@@ -1223,7 +1228,8 @@ sub getCategoryList {
         && ( !$perms
         || !$perms->can_do('get_category_list_via_xmlrpc_server') );
     require MT::Category;
-    my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog_id, category_set_id => 0 } );
     my @data;
 
     while ( my $cat = $iter->() ) {
@@ -1250,7 +1256,8 @@ sub getCategories {
         && ( !$perms
         || !$perms->can_do('get_categories_via_xmlrpc_server') );
     require MT::Category;
-    my $iter = MT::Category->load_iter( { blog_id => $blog_id } );
+    my $iter = MT::Category->load_iter(
+        { blog_id => $blog_id, category_set_id => 0 } );
     my @data;
     my $blog = MT::Blog->load($blog_id);
     require File::Spec;
@@ -1404,22 +1411,11 @@ sub getTrackbackPings {
 
     _validate_params( [$entry_id] ) or return;
 
-    require MT::Trackback;
-    require MT::TBPing;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    my $tb = MT::Trackback->load( { entry_id => $entry_id } ) or return [];
-    my $iter = MT::TBPing->load_iter( { tb_id => $tb->id } );
-    my @data;
+    return unless MT->has_plugin('Trackback');
 
-    while ( my $ping = $iter->() ) {
-        push @data,
-            {
-            pingTitle => SOAP::Data->type( string => $ping->title || '' ),
-            pingURL => SOAP::Data->type( string => $ping->source_url || '' ),
-            pingIP  => SOAP::Data->type( string => $ping->ip         || '' ),
-            };
-    }
-    \@data;
+    require Trackback::XMLRPCServer;
+    Trackback::XMLRPCServer::_getTrackbackPings($entry_id);
 }
 
 sub publishPost {
@@ -1494,13 +1490,12 @@ sub publishScheduledFuturePosts {
 
     my $changed       = 0;
     my $total_changed = 0;
-    my @results;
     my %types;
     foreach my $entry_id (@queue) {
         my $entry = MT::Entry->load($entry_id);
         if ( $entry && $entry->authored_on <= $now ) {
             $entry->status( MT::Entry::RELEASE() );
-            $entry->discover_tb_from_entry();
+            $entry->discover_tb_from_entry() if MT->has_plugin('Trackback');
             $entry->save or die $entry->errstr;
 
             $types{ $entry->class } = 1;
@@ -1658,7 +1653,7 @@ sub newMediaObject {
         require MT::Image;
         my $fh;
         my $data = $file->{bits};
-        open( $fh, "+<", \$data );
+        open( $fh, "+<", \$data ) or die $!;
         close($fh),
             die _fault(
             MT->translate(

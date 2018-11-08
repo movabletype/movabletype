@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,17 +7,63 @@
 package MT::App::Search;
 
 use strict;
+use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
 use MT::App::Search::Common;
 
-sub id {'new_search'}
+sub id                   {'new_search'}
+sub archive_listing_type {'archive'}
+sub default_type         {'entry'}
+sub search_template_type {'search_results'}
+
+sub search_params {
+    qw( searchTerms search category archive_type author year month day );
+}
+
+sub context_params {
+    qw( limit_by author category page year month day archive_type template_id );
+}
+
+sub ExcludeBlogs                { $_[0]->config->ExcludeBlogs }
+sub IncludeBlogs                { $_[0]->config->IncludeBlogs }
+sub SearchAlwaysAllowTemplateID { $_[0]->config->SearchAlwaysAllowTemplateID }
+
+sub SearchAltTemplates {
+    +(  $_[0]->config->default('SearchAltTemplate'),
+        $_[0]->config->SearchAltTemplate
+    );
+}
+
+sub SearchCacheTTL {
+    _get_config_value( $_[0], 'SearchCacheTTL' );
+}
+sub SearchDefaultTemplate { $_[0]->config->SearchDefaultTemplate }
+sub SearchMaxResults      { $_[0]->config->SearchMaxResults }
+sub SearchNoOverride      { $_[0]->config->SearchNoOverride }
+sub SearchResultDisplay   { $_[0]->config->SearchResultDisplay }
+sub SearchSortBy          { $_[0]->config->SearchSortBy }
+sub SearchTemplatePath    { $_[0]->config->SearchTemplatePath }
+
+sub SearchThrottleIPWhitelist {
+    _get_config_value( $_[0], 'SearchThrottleIPWhitelist' );
+}
+
+sub SearchThrottleSeconds {
+    _get_config_value( $_[0], 'SearchThrottleSeconds' );
+}
+
+sub _get_config_value {
+    my ( $app, $key ) = @_;
+    $app->isa('MT::App::Search::ContentData')
+        ? $app->$key
+        : $app->config->$key;
+}
 
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->set_no_cache;
     $app->{default_mode} = 'default';
 
     ## process pathinfo
@@ -60,8 +106,8 @@ sub core_parameters {
                     text      => 'like',
                     text_more => 'like'
                 },
-                'sort' => 'authored_on',
-                terms  => \&_filter_terms,
+                'sort'       => 'authored_on',
+                terms        => \&_filter_terms,
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -72,7 +118,9 @@ sub core_parameters {
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
 
-    my @filters = ( $app->param('filter'), $app->param('filter_on') );
+    my @filters
+        = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+        ;    # XXX: filter_on is gone?
     if (@filters) {
         $core->{types}->{entry}->{columns}
             = { map { $_ => 'like' } @filters };
@@ -84,7 +132,7 @@ sub core_parameters {
 sub _filter_terms {
     my $app = shift;
 
-    my $class_param = scalar $app->param('class') || undef;
+    my $class_param = scalar $app->param('class');
     my $class
         = $class_param
         && ( 'entry' eq lc $class_param || 'page' eq lc $class_param )
@@ -100,42 +148,39 @@ sub _filter_terms {
 sub init_request {
     my $app = shift;
 
-    if ( $app->isa('MT::App::Search') ) {
+    if ( $app->isa('MT::App::Search') && !$app->isa('MT::App::DataAPI') ) {
         $app->SUPER::init_request(@_);
-        $app->mode('tag') if $app->param('tag');
+        $app->mode('tag')
+            if $app->param('tag')
+            && !$app->isa('MT::App::Search::ContentData');
     }
 
-    my $q = $app->param;
+    $app->set_no_cache;
 
-    my $cfg = $app->config;
     my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
+        = defined $app->param('blog_id')
+        ? $app->param('blog_id')
         : $app->first_blog_id();
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
-    my $page = $q->param('page') ? $q->param('page') : 1;
-    my $limit
-        = $q->param('limit') ? $q->param('limit')
-        : (
-          $blog->entries_on_index ? $blog->entries_on_index
-        : $cfg->SearchMaxResults
-        );
-    my $offset = ( $page - 1 ) * $limit if ( $page && $limit );
-    $q->param( 'limit',  $limit )  if $limit;
-    $q->param( 'offset', $offset ) if $offset;
+    my $page = $app->param('page') || 1;
+    my $limit = $app->get_limit($blog);
+    my $offset;
+    $offset = ( $page - 1 ) * $limit if ( $page && $limit );
+    $app->param( 'limit',  $limit )  if $limit;
+    $app->param( 'offset', $offset ) if $offset;
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
     foreach my $param (qw( blog_id limit offset SearchMaxResults )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if $val !~ m/^\d+$/;
     }
     foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
-        my $val = $q->param($param);
+        my $val = $app->param($param);
         next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
@@ -151,26 +196,21 @@ sub init_request {
     }
     delete $app->{__have_throttle} if exists $app->{__have_throttle};
 
-    my %no_override;
-    foreach my $no ( split /\s*,\s*/, $app->config->SearchNoOverride ) {
-        $no_override{$no} = 1;
-        $no_override{"Search$no"} = 1
-            if $no !~ /^Search.+/;
-    }
+    my %no_override = $app->_get_no_override;
 
     ## Set other search params--prefer per-query setting, default to
     ## config file.
     for my $key (qw( SearchResultDisplay SearchMaxResults SearchSortBy )) {
         $app->{searchparam}{$key}
             = $no_override{$key}
-            ? $app->config->$key()
-            : ( $q->param($key) || $app->config->$key() );
+            ? $app->$key()
+            : ( $app->param($key) || $app->$key() );
     }
     $app->{searchparam}{SearchMaxResults} =~ s/\D//g
         if defined( $app->{searchparam}{SearchMaxResults} );
 
-    $app->{searchparam}{Type} = 'entry';
-    if ( my $type = $q->param('type') ) {
+    $app->{searchparam}{Type} = $app->default_type;
+    if ( my $type = $app->param('type') ) {
         return $app->errtrans( 'Invalid type: [_1]', encode_html($type) )
             if $type !~ /[\w\.]+/;
         $app->{searchparam}{Type} = $type;
@@ -181,8 +221,8 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
-    $q->param( 'IncludeBlogs', $blog_id )
-        unless $q->param('IncludeBlogs');
+    $app->param( 'IncludeBlogs', $blog_id )
+        unless $app->param('IncludeBlogs');
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
@@ -207,22 +247,51 @@ sub init_request {
     }
 }
 
+sub get_limit {
+    my $app = shift;
+    my ($blog) = @_;
+    my $limit
+        = $app->param('limit')
+        || $blog->entries_on_index
+        || $app->SearchMaxResults;
+    $limit;
+}
+
+sub _get_no_override {
+    my $app = shift;
+
+    my $no_override = $app->request('no_override');
+
+    unless ($no_override) {
+        $no_override = {};
+        foreach my $no ( split /\s*,\s*/, $app->SearchNoOverride ) {
+            $no_override->{$no} = 1;
+            $no_override->{"Search$no"} = 1
+                if $no !~ /^Search.+/;
+        }
+
+        $app->request( 'no_override', $no_override );
+    }
+
+    @_ ? $no_override->{ $_[0] } : %$no_override;
+}
+
 sub takedown {
     my $app = shift;
     delete $app->{searchparam};
     delete $app->{search_string};
     delete $app->{cache_keys};
-    $app->SUPER::takedown(@_) if $app->isa('MT::App::Search');
+    $app->SUPER::takedown(@_)
+        if $app->isa('MT::App::Search') && !$app->isa('MT::App::DataAPI');
 }
 
 sub generate_cache_keys {
     my $app = shift;
 
-    my $q = $app->param;
-    my @p = sort { $a cmp $b } $q->param;
+    my @p = sort { $a cmp $b } $app->multi_param;
     my ( $key, $count_key );
     foreach my $p (@p) {
-        foreach my $pp ( $q->param($p) ) {
+        foreach my $pp ( $app->multi_param($p) ) {
             $key .= lc($p) . encode_url($pp);
             $count_key .= lc($p) . encode_url($pp)
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
@@ -247,7 +316,7 @@ sub generate_cache_keys {
 sub init_cache_driver {
     my $app = shift;
 
-    unless ( $app->config->SearchCacheTTL ) {
+    unless ( $app->SearchCacheTTL ) {
         require MT::Cache::Null;
         $app->{cache_driver} = MT::Cache::Null->new;
         return;
@@ -272,7 +341,7 @@ sub init_cache_driver {
         return;
     }
     $app->{cache_driver} = $cache_driver->new(
-        ttl  => $app->config->SearchCacheTTL,
+        ttl  => $app->SearchCacheTTL,
         kind => 'CS',
     );
 }
@@ -280,36 +349,25 @@ sub init_cache_driver {
 sub create_blog_list {
     my $app = shift;
     my (%no_override) = @_;
-
-    my $q   = $app->param;
-    my $cfg = $app->config;
-
-    unless (%no_override) {
-        my %no_override;
-        foreach my $no ( split /\s*,\s*/, $app->config->SearchNoOverride ) {
-            $no_override{$no} = 1;
-            $no_override{"Search$no"} = 1
-                if $no !~ /^Search.+/;
-        }
-    }
+    %no_override = $app->_get_no_override unless %no_override;
 
     my %blog_list;
 
     ## If IncludeBlogs is all, then set IncludeBlogs to ""
     ## this will get all the blogs by default later on
-    if ( $q->param('IncludeBlogs') eq 'all' ) {
-        $q->param( 'IncludeBlogs', '' );
+    if ( ( $app->param('IncludeBlogs') || '' ) eq 'all' ) {
+        $app->param( 'IncludeBlogs', '' );
     }
 
     ## Combine user-selected included/excluded blogs
     ## with config file settings.
     for my $type (qw( IncludeBlogs ExcludeBlogs )) {
         $blog_list{$type} = ();
-        if ( my $list = $cfg->$type() ) {
+        if ( my $list = $app->$type() ) {
             push @{ $blog_list{$type} }, ( split /\s*,\s*/, $list );
         }
         next if exists( $no_override{$type} ) && $no_override{$type};
-        for my $blog_id ( $q->param($type) ) {
+        for my $blog_id ( $app->multi_param($type) ) {
             if ( $blog_id =~ m/,/ ) {
                 my @ids = split /,/, $blog_id;
                 s/\D+//g for @ids;    # only numeric values.
@@ -346,15 +404,16 @@ sub check_cache {
     my $cache
         = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
-    my $count = $cache->{ $app->{cache_keys}{count} }
+    my ( $count, $result );
+    $count = $cache->{ $app->{cache_keys}{count} }
         if exists $cache->{ $app->{cache_keys}{count} };
-    my $result = $cache->{ $app->{cache_keys}{result} }
+    $result = $cache->{ $app->{cache_keys}{result} }
         if exists $cache->{ $app->{cache_keys}{result} };
     if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-    if ( !Encode::is_utf8($result) ) {
+    if ( $result and !Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
         $result = Encode::decode( $enc, $result );
     }
@@ -380,15 +439,7 @@ sub process {
         return $out;
     }
     my $iter;
-    if (   $app->param('searchTerms')
-        || $app->param('search')
-        || $app->param('category')
-        || $app->param('archive_type')
-        || $app->param('author')
-        || $app->param('year')
-        || $app->param('month')
-        || $app->param('day') )
-    {
+    if ( grep { $app->param($_) } $app->search_params ) {
         MT::Util::Log->info(' Start search_terms.');
         my @arguments = $app->search_terms();
         MT::Util::Log->info(' End   search_terms.');
@@ -452,7 +503,7 @@ sub count {
 
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{count},
-        $count, $app->config->SearchCacheTTL );
+        $count, $app->SearchCacheTTL );
 
     $count;
 }
@@ -482,7 +533,6 @@ sub execute {
 
 sub search_terms {
     my $app = shift;
-    my $q   = $app->param;
 
     if ( my $limit = $app->param('limit_by') ) {
         if ( $limit eq 'all' ) {
@@ -510,12 +560,12 @@ sub search_terms {
             unless ( $archiver || $at eq 'Index' );
     }
 
-    my $search_string = $q->param('searchTerms') || $q->param('search');
+    my $search_string = $app->param('searchTerms') || $app->param('search');
     $app->{search_string} = $search_string;
-    my $offset = $q->param('startIndex') || $q->param('offset') || 0;
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
     return $app->errtrans( 'Invalid value: [_1]', encode_html($offset) )
         if $offset && $offset !~ /^\d+$/;
-    my $limit = $q->param('count') || $q->param('limit');
+    my $limit = $app->param('count') || $app->param('limit');
     return $app->errtrans( 'Invalid value: [_1]', encode_html($limit) )
         if $limit && $limit !~ /^\d+$/;
     my $max = $app->{searchparam}{SearchMaxResults};
@@ -529,7 +579,7 @@ sub search_terms {
         if ( 'HASH' ne ref $params->{terms} ) {
             my $code = $params->{terms};
             $code = MT->handler_to_coderef($code);
-            eval { %def_terms = %{ $code->( $app ) }; };
+            eval { %def_terms = %{ $code->($app) }; };
         }
         else {
             %def_terms = %{ $params->{terms} };
@@ -634,7 +684,6 @@ sub search_terms {
         $terms->[1]->{authored_on}
             = { between => [ $date_start, $date_end ] };
     }
-
     ( \@terms, \%args );
 }
 
@@ -655,14 +704,14 @@ sub _cache_out {
     }
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{result},
-        $result, $app->config->SearchCacheTTL );
+        $result, SearchCacheTTL($app) );
     if ( exists( $app->{response_content_type} )
         && ( 'text/html' ne $app->{response_content_type} ) )
     {
         $cache_driver->set(
             $app->{cache_keys}{content_type},
             $app->{response_content_type},
-            $app->config->SearchCacheTTL
+            SearchCacheTTL($app)
         );
     }
 }
@@ -693,15 +742,15 @@ sub _log_search {
 sub template_paths {
     my $app   = shift;
     my @paths = $app->SUPER::template_paths;
-    ( $app->config->SearchTemplatePath, @paths );
+    ( $app->SearchTemplatePath, @paths );
 }
 
 sub first_blog_id {
     my $app = shift;
-    my $q   = $app->param;
 
     my $blog_id;
-    if (   !$q->param('IncludeBlogs')
+    my $include_blogs = $app->param('IncludeBlogs') || '';
+    if (   !$include_blogs
         && exists( $app->{searchparam}{IncludeBlogs} )
         && @{ $app->{searchparam}{IncludeBlogs} } )
     {
@@ -710,8 +759,8 @@ sub first_blog_id {
     else {
 
         # if IncludeBlogs is empty or all, get the first blog id available
-        if (   $q->param('IncludeBlogs') eq ''
-            || $q->param('IncludeBlogs') eq 'all' )
+        if (  !$include_blogs
+            || $include_blogs eq 'all' )
         {
             my @blogs = $app->model('blog')
                 ->load( {}, { no_class => 1, limit => 1 } );
@@ -720,7 +769,7 @@ sub first_blog_id {
 
         # all other normal requests with a list of blog ids
         else {
-            my @ids = split ',', $q->param('IncludeBlogs');
+            my @ids = split ',', $include_blogs;
             $blog_id = $ids[0];
         }
     }
@@ -729,7 +778,6 @@ sub first_blog_id {
 
 sub prepare_context {
     my $app = shift;
-    my $q   = $app->param;
     my ( $count, $iter ) = @_;
 
     ## Initialize and set up the context object.
@@ -738,31 +786,34 @@ sub prepare_context {
     if ( my $str = $app->{search_string} ) {
         $ctx->stash( 'search_string', encode_html($str) );
     }
-    if ( $q->param('type') ) {
+    if ( $app->param('type') ) {
         $ctx->stash( 'type', $app->{searchparam}{Type} );
     }
     if ( $app->{default_mode} ne $app->mode ) {
         $ctx->stash( 'mode', $app->mode );
     }
-    if ( my $template = $q->param('Template') ) {
+    if ( my $template = $app->param('Template') ) {
         $template =~ s/[^\w\-\.]//g;
         $ctx->stash( 'template_id', $template );
     }
+
+    my $limit = $app->param('count') || $app->param('limit');
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
+    my $format = $app->param('format');
+
     $ctx->stash( 'stash_key',  $app->{searchparam}{Type} );
     $ctx->stash( 'maxresults', $app->{searchparam}{SearchMaxResults} );
     $ctx->stash( 'include_blogs', join ',',
         @{ $app->{searchparam}{IncludeBlogs} } );
     $ctx->stash( 'results', $iter );
     $ctx->stash( 'count',   $count );
-    $ctx->stash( 'offset',
-        $q->param('startIndex') || $q->param('offset') || 0 );
-    $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
-    $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
+    $ctx->stash( 'offset',  $offset );
+    $ctx->stash( 'limit',   $limit );
+    $ctx->stash( 'format',  $format ) if $format;
 
-    my $blog_id
-        = defined $q->param('blog_id')
-        ? $q->param('blog_id')
-        : $app->first_blog_id();
+    my $blog_id = $app->param('blog_id');
+    $blog_id = $app->first_blog_id() unless defined $blog_id;
+
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
@@ -772,21 +823,21 @@ sub prepare_context {
     }
 
     # some basic search parameters
-    for my $key (
-        qw( limit_by author category page year month day archive_type template_id )
-        )
-    {
+    for my $key ( $app->context_params ) {
         if ( my $val = $app->param($key) ) {
             $ctx->stash( 'search_' . $key, $val );
         }
-        my @filters = ( $app->param('filter'), $app->param('filter_on') );
-        if (@filters) {
-            $ctx->stash( 'search_filters', \@filters );
-        }
+    }
+
+    my @filters
+        = ( $app->multi_param('filter'), $app->multi_param('filter_on') )
+        ;    # XXX: filter_on is gone?
+    if (@filters) {
+        $ctx->stash( 'search_filters', \@filters );
     }
 
     # now we need to figure out the archive types
-    if ( my $at = $q->param('archive_type') ) {
+    if ( my $at = $app->param('archive_type') ) {
         $ctx->stash( 'archive_count', $count );
         $ctx->{current_archive_type} = $at;
         my $archiver = MT->publisher->archiver($at);
@@ -795,20 +846,21 @@ sub prepare_context {
             map { $ctx->var( $_, $params->{$_} ) } keys %$params;
         }
     }
-    $ctx->{current_timestamp}
-        = $app->param('context_date_start')
-        ? $app->param('context_date_start')
-        : MT::Util::epoch2ts( $blog_id, time );
-    if ( $app->param('author') && $app->param('author') =~ /^[0-9]*$/ ) {
+    $ctx->{current_timestamp} = $app->param('context_date_start')
+        || MT::Util::epoch2ts( $blog_id, time );
+
+    my $author_id   = $app->param('author');
+    my $category_id = $app->param('category');
+    if ( $author_id && $author_id =~ /^[0-9]*$/ ) {
         require MT::Author;
-        if ( my $author = MT::Author->load( $app->param('author') ) ) {
+        if ( my $author = MT::Author->load($author_id) ) {
             $ctx->stash( 'author', $author );
             $ctx->var( 'author_archive', 1 );
         }
     }
-    if ( $app->param('category') && $app->param('category') =~ /^[0-9]*$/ ) {
+    if ( $category_id && $category_id =~ /^[0-9]*$/ ) {
         require MT::Category;
-        if ( my $category = MT::Category->load( $app->param('category') ) ) {
+        if ( my $category = MT::Category->load($category_id) ) {
             $ctx->stash( 'category', $category );
             $ctx->var( 'category_archive', 1 );
         }
@@ -818,25 +870,20 @@ sub prepare_context {
 }
 
 sub load_search_tmpl {
-    my $app   = shift;
-    my $q     = $app->param;
+    my $app = shift;
     my ($ctx) = @_;
 
     my $tmpl;
-    if ( $q->param('Template') && ( 'default' ne $q->param('Template') ) ) {
+    my $param_template = $app->param('Template');
+    if ( $param_template && ( 'default' ne $param_template ) ) {
 
         # load specified template
         my $filename;
-        if (my @tmpls = (
-                $app->config->default('SearchAltTemplate'),
-                $app->config->SearchAltTemplate
-            )
-            )
-        {
+        if ( my @tmpls = $app->SearchAltTemplates ) {
             for my $tmpl_ (@tmpls) {
                 next unless defined $tmpl_;
                 my ( $nickname, $file ) = split /\s+/, $tmpl_;
-                if ( $nickname eq $q->param('Template') ) {
+                if ( $nickname eq $param_template ) {
                     $filename = $file;
                     last;
                 }
@@ -844,7 +891,7 @@ sub load_search_tmpl {
         }
         return $app->errtrans(
             "No alternate template is specified for template '[_1]'",
-            encode_html( $q->param('Template') ) )
+            encode_html($param_template) )
             unless $filename;
 
         # template_paths method does the magic
@@ -855,7 +902,7 @@ sub load_search_tmpl {
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
-        my $tmpl_id = $q->param('template_id');
+        my $tmpl_id = $app->param('template_id');
         if ( $tmpl_id && $tmpl_id =~ /^\d+$/ ) {
             $tmpl = $app->model('template')->lookup($tmpl_id);
             return $app->errtrans('No such template')
@@ -867,13 +914,12 @@ sub load_search_tmpl {
                 'Output file cannot be of the type asp or php')
                 if (
                    $tmpl->outfile
-                && !$app->config->SearchAlwaysAllowTemplateID
+                && !$app->SearchAlwaysAllowTemplateID
                 && (   $tmpl->outfile =~ /\.asp/i
                     || $tmpl->outfile =~ /\.php/i )
                 );
 
-            if ( $q->param('archive_type') ) {
-                my $at       = $q->param('archive_type');
+            if ( my $at = $app->param('archive_type') ) {
                 my $archiver = MT->publisher->archiver($at);
                 return
                     return $app->errtrans(
@@ -882,16 +928,16 @@ sub load_search_tmpl {
 
                 if ( $at ne 'Index' ) {
                     return $app->errtrans(
-                        'Template must be an entry_listing for non-Index archive types'
+                        'Template must be archive listing for non-Index archive types'
                         )
-                        unless ( $app->config->SearchAlwaysAllowTemplateID
-                        || $tmpl->identifier =~ /entry_listing$/ );
+                        unless ( $app->SearchAlwaysAllowTemplateID
+                        || $tmpl->type eq $app->archive_listing_type );
                     my $blog = $app->model('blog')->load( $tmpl->blog_id );
                     return $app->errtrans(
                         'Filename extension cannot be asp or php for these archives'
                         )
                         if (
-                        !$app->config->SearchAlwaysAllowTemplateID
+                        !$app->SearchAlwaysAllowTemplateID
                         && (   $blog->file_extension =~ /^php$/i
                             || $blog->file_extension =~ /^asp$/i )
                         );
@@ -900,7 +946,7 @@ sub load_search_tmpl {
                     return $app->errtrans(
                         'Template must be a main_index for Index archive type'
                         )
-                        unless ( $app->config->SearchAlwaysAllowTemplateID
+                        unless ( $app->SearchAlwaysAllowTemplateID
                         || $tmpl->identifier eq 'main_index' );
                 }
             }
@@ -916,13 +962,13 @@ sub load_search_tmpl {
         elsif ( my $blog_id = $ctx->stash('blog_id') ) {
             my $tmpl_class = $app->model('template');
             $tmpl = $tmpl_class->load(
-                { blog_id => $blog_id, type => 'search_results' } );
+                { blog_id => $blog_id, type => $app->search_template_type } );
         }
         unless ($tmpl) {
 
             # load template from search_template path
             # template_paths method does the magic
-            $tmpl = $app->load_tmpl( $app->config->SearchDefaultTemplate );
+            $tmpl = $app->load_tmpl( $app->SearchDefaultTemplate );
             $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
     }
@@ -979,7 +1025,7 @@ sub renderfeed {
         or return;
     my $out = $app->build_page($tmpl);
     my $ctx = $tmpl->context;
-    if ( my $content_type = $ctx->stash('content_type') ) {
+    if ( my $content_type = $ctx->stash('http_content_type') ) {
         $app->{response_content_type} = $content_type;
     }
     return $out;
@@ -995,7 +1041,7 @@ sub query_parse {
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
-        my @filters = $app->param($type);
+        my @filters = $app->multi_param($type);
         foreach my $filter (@filters) {
             if ( $filter =~ m/\s/ ) {
                 $filter = '"' . $filter . '"';
@@ -1006,7 +1052,10 @@ sub query_parse {
 
     require Lucene::QueryParser;
     my $lucene_struct = eval { Lucene::QueryParser::parse_query($search); };
-    return if $@;
+    if ($@) {
+        warn $@ if $MT::DebugMode;
+        return;
+    }
     my ( $terms, $joins )
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
@@ -1040,25 +1089,27 @@ sub _create_join_arg {
     $args->{'join'} = $join;
 }
 
+sub _get_rvalue {
+    my $app = shift;
+
+    my $val = $_[1];
+    $val =~ s/\\([^\\])/$1/g;
+    $val =~ s/%/\\%/;
+
+    my %rvalues = (
+        REQUIREDlike   => { like     => '%' . $val . '%' },
+        REQUIRED1      => $val,
+        NORMALlike     => { like     => '%' . $val . '%' },
+        NORMAL1        => $val,
+        PROHIBITEDlike => { not_like => '%' . $val . '%' },
+        PROHIBITED1    => { not      => $val },
+    );
+    $rvalues{ $_[0] };
+}
+
 sub _query_parse_core {
     my $app = shift;
     my ( $lucene_struct, $columns, $filter_types ) = @_;
-
-    my $rvalue = sub {
-        my $val = $_[1];
-        $val =~ s/\\([^\\])/$1/g;
-        $val =~ s/%/\\%/;
-
-        my %rvalues = (
-            REQUIREDlike   => { like     => '%' . $val . '%' },
-            REQUIRED1      => $val,
-            NORMALlike     => { like     => '%' . $val . '%' },
-            NORMAL1        => $val,
-            PROHIBITEDlike => { not_like => '%' . $val . '%' },
-            PROHIBITED1    => { not      => $val }
-        );
-        $rvalues{ $_[0] };
-    };
 
     my ( @structure, @joins );
     while ( my $term = shift @$lucene_struct ) {
@@ -1081,7 +1132,6 @@ sub _query_parse_core {
         my @tmp;
         if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) )
         {
-            my $test;
             if ( exists( $term->{field} ) ) {
                 if (   $filter_types
                     && %$filter_types
@@ -1090,13 +1140,20 @@ sub _query_parse_core {
                     my $code = $app->handler_to_coderef(
                         $filter_types->{ $term->{field} } );
                     if ($code) {
-                        my $join_args = $code->( $app, $term );
-                        push @joins, $join_args;
+                        my $join_args = $code->( $app, $term ) or next;
+                        if ( 'ARRAY' eq ref $join_args->[0] ) {
+                            foreach my $j (@$join_args) {
+                                push @joins, $j;
+                            }
+                        }
+                        else {
+                            push @joins, $join_args;
+                        }
                         next;
                     }
                 }
                 elsif ( exists $columns->{ $term->{field} } ) {
-                    my $test_ = $rvalue->(
+                    my $test_ = $app->_get_rvalue(
                         ( $term->{type} || '' )
                         . $columns->{ $term->{field} },
                         $term->{term}
@@ -1108,10 +1165,10 @@ sub _query_parse_core {
                 my @cols   = keys %$columns;
                 my $number = scalar @cols;
                 for ( my $i = 0; $i < $number; $i++ ) {
-                    my $test_ = $rvalue->(
+                    my $test_
+                        = $app->_get_rvalue(
                         ( $term->{type} || '' ) . $columns->{ $cols[$i] },
-                        $term->{term}
-                    );
+                        $term->{term} );
                     if ( 'PROHIBITED' eq $term->{type} ) {
                         my @this_term;
                         push @this_term, { $cols[$i] => $test_ };
@@ -1151,7 +1208,7 @@ sub _query_parse_core {
                 push @structure, [ $prev, -or => \@tmp ];
             }
         }
-        else {
+        elsif (@tmp) {
             if (@structure) {
                 push @structure, '-and';
             }
@@ -1165,8 +1222,11 @@ sub _query_parse_core {
 sub _join_category {
     my ( $app, $term ) = @_;
     my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
+    if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ) {
         $query =~ s/'/"/g;
+        if ( !exists $term->{field} && $query =~ /^[^\"].*\s.*[^\"]$/ ) {
+            $query = '"' . $term->{term} . '"';
+        }
     }
 
     my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
@@ -1177,25 +1237,62 @@ sub _join_category {
     }
 
     # search for exact match
-    my ($terms)
-        = $app->_query_parse_core( $lucene_struct,
-        { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
-    return unless $terms && @$terms;
-    push @$terms, '-and',
-        {
-        id      => \'= placement_category_id',
-        blog_id => \'= entry_blog_id',
-        };
-
-    require MT::Placement;
-    require MT::Category;
-    return MT::Placement->join_on(
-        undef,
-        { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
-        {   join   => MT::Category->join_on( undef, $terms, {} ),
-            unique => 1
+    my $joins;
+    if (scalar @$lucene_struct > 1
+        && (   $lucene_struct->[1]->{conj}
+            && $lucene_struct->[1]->{conj} eq 'AND' )
+        )
+    {
+        while ( my $t = shift @$lucene_struct ) {
+            my $j = _join_category( $app, $t );
+            push @$joins, $j;
         }
-    );
+    }
+    else {
+        my $make_alias = sub {
+            my $length = shift @_ || 8;
+            my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+            my $str = '';
+            while ( length $str < $length ) {
+                $str .= @seed[ int rand( scalar @seed ) ];
+            }
+
+            return $str;
+        };
+        require MT::Placement;
+        require MT::Category;
+        my $place_class = $app->model('placement');
+        my $cat_class   = $app->model('category');
+        my $trail       = $make_alias->(4);
+        my $p_alias     = $place_class->datasource . '_' . $trail;
+        my $c_alias     = $cat_class->datasource . '_' . $trail;
+
+        my ($terms)
+            = $app->_query_parse_core( $lucene_struct,
+            { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
+        next unless $terms && @$terms;
+
+        push @$terms, '-and',
+            {
+            id      => \"= $p_alias.placement_category_id",
+            blog_id => \'= entry_blog_id',
+            };
+
+        my $join = MT::Placement->join_on(
+            undef,
+            { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
+            {   join => MT::Category->join_on(
+                    undef, $terms, { alias => $c_alias }
+                ),
+                unique => 1,
+                alias  => $p_alias
+            }
+        );
+
+        push @$joins, @$join;
+    }
+    return $joins;
+
 }
 
 # add author filter to entry search
@@ -1219,7 +1316,8 @@ sub _join_author {
         { ( $can_search_by_id ? ( id => 1 ) : () ), nickname => 'like', },
         {} );
     return unless $terms && @$terms;
-    push @$terms, '-and', { id => \'= entry_author_id', };
+    my $datasource = $app->model( $app->default_type )->datasource;
+    push @$terms, '-and', { id => \"= ${datasource}_author_id", };
     require MT::Author;
     return MT::Author->join_on( undef, $terms, { unique => 1 } );
 }
@@ -1277,8 +1375,7 @@ sub throttle_response {
     my $tmpl       = $app->param('Template') || '';
     if ( $tmpl eq 'feed' ) {
         $app->response_code(503);
-        $app->set_header(
-            'Retry-After' => $app->config->SearchThrottleSeconds );
+        $app->set_header( 'Retry-After' => $app->SearchThrottleSeconds );
         $app->send_http_header("text/plain");
         $app->{no_print_body} = 1;
     }
@@ -1314,7 +1411,7 @@ sub _default_throttle {
     }
 
     my $ip        = $app->remote_ip;
-    my $whitelist = $app->config->SearchThrottleIPWhitelist;
+    my $whitelist = SearchThrottleIPWhitelist($app);
     if ($whitelist) {
 
         # check for $ip in $whitelist
@@ -1343,7 +1440,7 @@ sub _default_throttle {
             die $msg;
         };
         $app->{__have_throttle} = 1;
-        alarm( $app->config->SearchThrottleSeconds );
+        alarm( SearchThrottleSeconds($app) );
         $$result = 1;
     }
     1;
@@ -1353,7 +1450,7 @@ sub _default_takedown {
     my ( $cb, $app ) = @_;
     alarm(0) if $app->{__have_throttle};
     if ( my $cache_driver = $app->{cache_driver} ) {
-        $cache_driver->purge_stale( 2 * $app->config->SearchCacheTTL );
+        $cache_driver->purge_stale( 2 * SearchCacheTTL($app) );
     }
     delete $app->{searchparam};
     1;

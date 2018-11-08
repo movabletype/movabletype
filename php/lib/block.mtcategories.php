@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,8 +9,18 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
     $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
+
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        require_once('multiblog.php');
+        multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
+        if ($ctx->stash('category_set')) {
+            $args['category_set_id'] = $ctx->stash('category_set')->id;
+        } elseif (!isset($args['category_set_id'])) {
+            $args['category_set_id'] = 0;
+        }
         $args['sort_by'] = 'label';
         $args['sort_order'] = 'ascend';
         $categories = $ctx->mt->db()->fetch_categories($args);

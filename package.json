@@ -1,0 +1,43 @@
+{
+  "name": "movabletype",
+  "version": "1.0.0",
+  "description": "Welcome to Movable Type",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build-riot": "yarn build-riot-listing; yarn build-riot-contenttype",
+    "build-riot-listing": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
+    "build-riot-contenttype": "riot mt-static/js/contenttype/tag mt-static/js/contenttype/contenttype.js",
+    "build-riot-ss": "cd mt-static/riot-ss && yarn && yarn build",
+    "copy": "yarn copy-bootstrap && yarn copy-popper && yarn copy-riot && yarn copy-svg4everybody && yarn copy-mt-data-api-sdk && yarn copy-mt7-style-guide",
+    "copy-bootstrap": "cp -rf node_modules/bootstrap/dist/* mt-static/bootstrap/",
+    "copy-popper": "cp -rf node_modules/popper.js/dist/umd/* mt-static/popper/",
+    "copy-riot": "cd node_modules/riot && cp -f LICENSE.txt riot.js riot.min.js riot+compiler.js riot+compiler.min.js ../../mt-static/riot/",
+    "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
+    "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/v4 mt-static/data-api",
+    "copy-mt7-style-guide": "yarn copy-mt7-style-guide-css && yarn copy-mt7-style-guide-gif && yarn copy-mt7-style-guide-svg && yarn copy-mt7-style-guide-icons",
+    "copy-mt7-style-guide-css": "cp -rf node_modules/mt7-style-guide/dist/css/mt.* mt-static/css/",
+    "copy-mt7-style-guide-gif": "cp -rf node_modules/mt7-style-guide/html/images/*.gif mt-static/images/",
+    "copy-mt7-style-guide-svg": "cp -rf node_modules/mt7-style-guide/html/images/*.svg mt-static/images/",
+    "copy-mt7-style-guide-icons": "rm -rf mt-static/image/icons/* && cp -rf node_modules/mt7-style-guide/html/images/icons/* mt-static/images/icons/",
+    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-riot-ss\" && test `git status -s | wc -l` = 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movabletype/movabletype.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/movabletype/movabletype/issues"
+  },
+  "homepage": "https://github.com/movabletype/movabletype#readme",
+  "dependencies": {
+    "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git#develop",
+    "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
+    "popper.js": "^1.12.1",
+    "riot": "^3.6.1",
+    "svg4everybody": "^2.1.9"
+  }
+}

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType::CategoryDaily;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Category MT::ArchiveType::Daily );
 use MT::Util qw( dirify start_end_day );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('CATEGORY-DAILY_ADV');
+}
+
+sub order {
+    return 130;
 }
 
 sub default_archive_templates {
@@ -41,6 +46,7 @@ sub template_params {
         archive_template       => 1,
         archive_listing        => 1,
         datebased_archive      => 1,
+        category_based_archive => 1,
     };
 }
 

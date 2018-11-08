@@ -6,6 +6,9 @@ use warnings;
 use URI ();
 use URI::Escape qw(uri_unescape);
 
+our $VERSION = '1.73';
+$VERSION = eval $VERSION;
+
 sub query
 {
     my $self = shift;
@@ -38,7 +41,7 @@ sub query_form {
         }
         elsif (ref($r) eq "HASH") {
             $delim = $_[1];
-            @_ = %$r;
+            @_ = map { $_ => $r->{$_} } sort keys %$r;
         }
         $delim = pop if @_ % 2;
 

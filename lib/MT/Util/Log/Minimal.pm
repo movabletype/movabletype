@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,10 +19,10 @@ sub new {
     $ENV{LM_DEBUG} = 1;
 
     my $fh;
-    open( $fh, '>>', $log_file );
+    open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
     local $SIG{HUP} = sub {
         undef $fh;
-        open( $fh, '>>', $log_file );
+        open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
     };
 
     $Log::Minimal::PRINT = sub {

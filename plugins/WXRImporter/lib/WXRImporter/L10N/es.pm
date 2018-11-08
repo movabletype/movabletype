@@ -5,6 +5,7 @@
 package WXRImporter::L10N::es;
 
 use strict;
+use warnings;
 use base 'WXRImporter::L10N::en_us';
 use vars qw( %Lexicon );
 
@@ -17,6 +18,7 @@ use vars qw( %Lexicon );
 	'"Download WP attachments via HTTP."' => '"Descargar los adjuntos de WP vía HTTP."',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
+	'No Site' => 'No hay sitios', # Translate - New
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'El fichero no está en el formato WXR.',
@@ -27,12 +29,16 @@ use vars qw( %Lexicon );
 	' and asset will be tagged (\'[_1]\')...' => ' y el elemento será etiquetado (\'[_1]\')...',
 	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'Se encontró un duplicado de la entrada (\'[_1]\'). Ignorada.',
 	'Saving page (\'[_1]\')...' => 'Guardando página (\'[_1]\')...',
+	'Creating new comment (from \'[_1]\')...' => 'Creando nuevo comentario (de \'[_1]\')...',
+	'Saving comment failed: [_1]' => 'Fallo guardando comentario: [_1]',
 	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
+	'Creating new ping (\'[_1]\')...' => 'Creando nuevo ping (\'[_1]\')...',
+	'Saving ping failed: [_1]' => 'Fallo guardando ping: [_1]',
 	'Assigning permissions for new user...' => 'Asignar permisos al nuevo usuario...',
 	'Saving permission failed: [_1]' => 'Fallo guardando permisos: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
-	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Antes de importar las entradas de WordPress a Movable Type, le recomendamos que primero <a href='[_1]'>configure las rutas de publicación del blog</a>.},
+	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your site's publishing paths</a> first.} => q{Antes de importar las entradas de WordPress en Movable Type, le recomendamos que primero <a href='[_1]'>configure las rutas de publicación</a> del sitio.}, # Translate - New
 	'Upload path for this WordPress blog' => 'Ruta de transferencia para este blog de WordPress',
 	'Replace with' => 'Reemplazar con',
 	'Download attachments' => 'Descargar adjuntos',

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::TheSchwartz;
 
 use strict;
+use warnings;
 use base qw( TheSchwartz );
 use MT::ObjectDriver::Driver::Cache::RAM;
 use List::Util qw( shuffle );
@@ -62,7 +63,7 @@ sub new {
         unless ($workers) {
             $workers = [];
 
-            my $all_workers ||= MT->registry("task_workers") || {};
+            my $all_workers = MT->registry("task_workers") || {};
 
             foreach my $id ( keys %$all_workers ) {
                 my $w = $all_workers->{$id};

@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2003-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2003-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -563,7 +563,7 @@ TC.setAttributes = function( element, attr )
 // this and the following classname functions honor w3c case-sensitive classnames
 TC.hasClassName = function( element, className )
 {
-	if( !element || !element.className || !className )
+	if( !element || !element.className || typeof element.className != 'string' || !className )
 		return false;
 	var classNames = element.className.split( TC.matchSpace );
 	for( var i = 0; i < classNames.length; i++ )

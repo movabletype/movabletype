@@ -47,7 +47,7 @@
             id="not_enabled"
             class="error"
             can_close="0">
-            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]'>activity log</a> for more details." params="<mt:var name="request.not_enabled" escape="html">%%<mt:var name="script_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id">">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='[_2]' class="alert-link">activity log</a> for more details." params="<mt:var name="request.not_enabled" escape="html">%%<mt:var name="script_url">?__mode=list&_type=log&blog_id=<mt:var name="blog_id">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="request.error">
@@ -55,7 +55,7 @@
             id="error"
             class="error"
             can_close="0">
-            <__trans phrase="An error occurred during synchronization.  See the <a href='[_1]'>activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=list&_type=log&blog_id=0">
+            <__trans phrase="An error occurred during synchronization.  See the <a href='[_1]' class="alert-link">activity log</a> for detailed information." params="<mt:var name="script_url">?__mode=list&_type=log&blog_id=0">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>

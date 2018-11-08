@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::TemplateMap;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 __PACKAGE__->install_properties(
@@ -14,11 +15,13 @@ __PACKAGE__->install_properties(
             'id'             => 'integer not null auto_increment',
             'blog_id'        => 'integer not null',
             'template_id'    => 'integer not null',
-            'archive_type'   => 'string(25) not null',
+            'archive_type'   => 'string(100) not null',
             'file_template'  => 'string(255)',
             'is_preferred'   => 'boolean',
             'build_type'     => 'smallint',
             'build_interval' => 'integer',
+            'cat_field_id'   => 'integer',
+            'dt_field_id'    => 'integer',
         },
         indexes => {
             blog_id      => 1,
@@ -51,12 +54,13 @@ sub save {
     my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
     my $blog_at = $blog->archive_type;
-    my @ats = map {$_}
+    my @ats;
+    @ats = map {$_}
         grep { $map->archive_type ne $_ }
         split /,/, $blog_at
         if $blog_at ne 'None';
     push @ats, $map->archive_type;
-    my $new_at = join ',', @ats;
+    my $new_at = join ',', sort @ats;
 
     if ( $new_at ne $blog_at ) {
         $blog->archive_type($new_at);
@@ -71,18 +75,27 @@ sub remove {
     my $result = $map->SUPER::remove(@_);
 
     if ( ref $map ) {
-        my $remaining = MT::TemplateMap->load(
-            {   blog_id      => $map->blog_id,
-                archive_type => $map->archive_type,
-                id           => [ $map->id ],
-            },
-            {   limit => 1,
-                not   => { id => 1 }
-            }
-        );
+        my $terms = {
+            blog_id      => $map->blog_id,
+            archive_type => $map->archive_type,
+            id           => [ $map->id ],
+        };
+        my $args = {
+            limit => 1,
+            not   => { id => 1 }
+        };
+        my $remaining = MT::TemplateMap->load( $terms, $args );
         if ($remaining) {
-            $remaining->is_preferred(1);
-            $remaining->save;
+            if ( $map->_is_for_content_type ) {
+                $args->{join} = _generate_join_on_template($map);
+                $remaining = MT::TemplateMap->load( $terms, $args );
+            }
+            $terms->{is_preferred} = 1;
+            my $preferred = MT::TemplateMap->load( $terms, $args );
+            if ( $remaining && !$preferred ) {
+                $remaining->is_preferred(1);
+                $remaining->save;
+            }
         }
         else {
             my $blog = MT->model('blog')->load( $map->blog_id )
@@ -146,24 +159,43 @@ sub remove {
                 : '' );
             $blog->save;
             for my $at ( @{ $ats{ $blog->id } } ) {
-                unless (
-                    __PACKAGE__->exist(
-                        {   blog_id      => $blog->id,
-                            archive_type => $at,
-                            is_preferred => 1
+                my $ct_iter
+                    = MT->model('content_type')
+                    ->load_iter( { blog_id => $blog->id } );
+                while ( my $content_type = $ct_iter->() ) {
+                    unless (
+                        __PACKAGE__->exist(
+                            {   blog_id      => $blog->id,
+                                archive_type => $at,
+                                is_preferred => 1
+                            },
+                            {   join => MT::Template->join_on(
+                                    undef,
+                                    {   id => \'= templatemap_template_id',
+                                        content_type_id => $content_type->id,
+                                    },
+                                )
+                            }
+                        )
+                        )
+                    {
+                        my $remaining = __PACKAGE__->load(
+                            {   blog_id      => $blog->id,
+                                archive_type => $at,
+                            },
+                            {   limit => 1,
+                                join  => MT::Template->join_on(
+                                    undef,
+                                    {   id => \'= templatemap_template_id',
+                                        content_type_id => $content_type->id,
+                                    },
+                                )
+                            }
+                        );
+                        if ($remaining) {
+                            $remaining->is_preferred(1);
+                            $remaining->save;
                         }
-                    )
-                    )
-                {
-                    my $remaining = __PACKAGE__->load(
-                        {   blog_id      => $blog->id,
-                            archive_type => $at,
-                        },
-                        { limit => 1, }
-                    );
-                    if ($remaining) {
-                        $remaining->is_preferred(1);
-                        $remaining->save;
                     }
                 }
             }
@@ -179,11 +211,16 @@ sub prefer {
 
     if ($prefer) {
         return 1 if $map->is_preferred;
+        my $args
+            = $map->_is_for_content_type
+            ? { join => _generate_join_on_template($map) }
+            : {};
         my $preferred = MT::TemplateMap->load(
             {   blog_id      => $map->blog_id,
                 archive_type => $map->archive_type,
                 is_preferred => 1,
-            }
+            },
+            $args
         ) or return;
         $preferred->is_preferred(0);
         $preferred->save or return $map->error( $preferred->errstr );
@@ -201,10 +238,15 @@ sub prefer {
 
 sub _prefer_next_map {
     my $map = shift;
+    my $args
+        = $map->_is_for_content_type
+        ? { join => _generate_join_on_template($map) }
+        : {};
     my @all = MT::TemplateMap->load(
         {   blog_id      => $map->blog_id,
             archive_type => $map->archive_type
-        }
+        },
+        $args
     );
     @all = grep { $_->id != $map->id } @all;
     if (@all) {
@@ -213,6 +255,19 @@ sub _prefer_next_map {
         return 1;
     }
     return 0;
+}
+
+sub _generate_join_on_template {
+    my $map = shift;
+    my $template
+        = MT->model('template')
+        ->load( { id => $map->template_id, blog_id => $map->blog_id } );
+    return MT->model('template')->join_on(
+        undef,
+        {   id              => \'= templatemap_template_id',
+            content_type_id => $template->content_type_id,
+        },
+    );
 }
 
 sub list_props {
@@ -248,6 +303,35 @@ sub list_props {
             ],
         },
     };
+}
+
+sub dt_field {
+    my $self = shift;
+    $self->cache_property(
+        'dt_field',
+        sub {
+            return unless $self->_is_for_content_type;
+            return unless $self->dt_field_id;
+            MT->model('content_field')->load( $self->dt_field_id );
+        },
+    );
+}
+
+sub cat_field {
+    my $self = shift;
+    $self->cache_property(
+        'cat_field',
+        sub {
+            return unless $self->_is_for_content_type;
+            return unless $self->cat_field_id;
+            MT->model('content_field')->load( $self->cat_field_id );
+        },
+    );
+}
+
+sub _is_for_content_type {
+    my $self = shift;
+    $self->archive_type =~ /^ContentType/;
 }
 
 1;
@@ -322,6 +406,16 @@ any others defined for this archive type. This is used when generating links
 to archives of this archive type--the link will always link to the preferred
 archive type.
 
+=item * cat_field_id
+
+MT::ContentField ID related to this mapping's category field.
+This is used when this mapping is for Content Type.
+
+=item * dt_field_id
+
+MT::ContentField ID related to this mapping's date & time field.
+This is used when this mapping is for Content Type.
+
 =back
 
 =head1 METHODS
@@ -360,6 +454,16 @@ the first of the other objects will be set as the preferred object.
 Its I<is_preferred> flag will be set to true.  If the map is the only 
 I<MT::TemplateMap> object for the blog and the archive type, the method does
 nothing - the map continues to be preferred.
+
+=item * dt_field()
+
+Returns MT::ContentField related to this mapping's date & time field.
+Returns nothing when dt_field_id is invalid or this mapping is not for Content Type.
+
+=item * cat_field()
+
+Returns MT::ContentField related to this mapping's category field.
+Returns nothing when cat_field_id is invalid or this mapping is not for Content Type.
 
 =back
 

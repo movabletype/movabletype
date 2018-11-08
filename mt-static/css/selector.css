@@ -1,0 +1,17 @@
+.selector.scope {
+    background-color: #333;
+}
+
+#scope_selector_menu {
+    z-index: 1100;
+}
+
+#scope_selector_menu :not(.dropdown-header) {
+    color: #2b2b2b;
+    font-size: 14px;
+}
+
+.cms-search ul {
+    width: 300px;
+}
+

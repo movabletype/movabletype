@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,6 +6,7 @@
 package MT::Template::Tags::Folder;
 
 use strict;
+use warnings;
 
 use MT;
 use MT::Template::Tags::Category;
@@ -197,6 +198,8 @@ sub _hdlr_folders {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
+    local $args->{category_set_id};
+    local $ctx->{__stash}{category_set};
     $ctx->invoke_handler( 'categories', $args, $cond );
 }
 
@@ -276,6 +279,8 @@ sub _hdlr_sub_folders {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
+    local $args->{category_set_id};
+    local $ctx->{__stash}{category_set};
     $ctx->invoke_handler( 'subcategories', $args, $cond );
 }
 
@@ -357,6 +362,8 @@ sub _hdlr_top_level_folders {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
+    local $args->{category_set_id};
+    local $ctx->{__stash}{category_set};
     $ctx->invoke_handler( 'toplevelcategories', $args, $cond );
 }
 

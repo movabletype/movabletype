@@ -1,10 +1,11 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 package MT::Theme;
 use strict;
+use warnings;
 use MT;
 use base qw( MT::Component );
 
@@ -174,7 +175,6 @@ sub _load_from_registry {
     my $theme = $pkg->new($props);
     $theme->registry(
         {   id           => "$id",
-            label        => $reg->{label},
             description  => $reg->{description},
             l10n_class   => $reg->{l10n_class},
             l10n_lexicon => $reg->{l10n_lexicon},
@@ -238,7 +238,6 @@ sub _load_from_themes_directory {
     }
     $class->registry(
         {   id          => $theme_id,
-            label       => $y->{label},
             name        => $y->{name},
             description => $y->{description},
             label       => sub { $class->translate( $y->{label} ) },
@@ -256,7 +255,7 @@ sub _load_pseudo_theme_from_template_set {
         or return;
     my $set = $sets->{$id}
         or return;
-    my $plugin = $set->{plugin} || undef;
+    my $plugin = $set->{plugin};
     my $label
         = $set->{label}
         || ( $plugin && $plugin->registry('name') )
@@ -415,12 +414,13 @@ sub install_static_files {
         MT->config->ThemeStaticFileExtensions;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
+    require File::Basename;
     require File::Find;
     my $sub = sub {
         my $name = $File::Find::name;
         return if -d $name;
         my $dir      = $File::Find::dir;
-        my $filename = $_;
+        my $filename = File::Basename::basename($name);
         my ($suffix) = $name =~ m/^.*\.(\w+)$/;
         if ( $allowed{ lc $suffix } ) {
             my $rel = File::Spec->abs2rel( $dir, $src );
@@ -440,7 +440,7 @@ sub install_static_files {
                 );
         }
     };
-    File::Find::find( $sub, $src );
+    File::Find::find( { wanted => $sub, no_chdir => 1, }, $src );
 }
 
 sub validate_versions {
@@ -678,6 +678,29 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Pref::info',
             },
         },
+        default_folders => {
+            label    => 'Folders',
+            order    => 200,
+            importer => {
+                import => '$Core::MT::Theme::Category::import_folders',
+                info   => '$Core::MT::Theme::Category::info_folders',
+            },
+            exporter => {
+                params => 'default_folder_export_ids',
+                template =>
+                    '$Core::MT::Theme::Category::folder_export_template',
+                export    => '$Core::MT::Theme::Category::export_folder',
+                condition => '$Core::MT::Theme::Category::folder_condition',
+            },
+        },
+        default_pages => {
+            label    => 'Default Pages',
+            order    => 300,
+            importer => {
+                import => '$Core::MT::Theme::Entry::import_pages',
+                info   => '$Core::MT::Theme::Entry::info_pages',
+            },
+        },
         default_categories => {
             label    => 'Categories',
             order    => 400,
@@ -693,19 +716,33 @@ sub core_theme_element_handlers {
                 condition => '$Core::MT::Theme::Category::category_condition',
             },
         },
-        default_folders => {
-            label    => 'Folders',
-            order    => 200,
+        default_category_sets => {
+            label    => 'Category Sets',
+            order    => 420,
             importer => {
-                import => '$Core::MT::Theme::Category::import_folders',
-                info   => '$Core::MT::Theme::Category::info_folders',
+                import => '$Core::MT::Theme::CategorySet::apply',
+                info   => '$Core::MT::Theme::CategorySet::info',
             },
             exporter => {
-                params => 'default_folder_export_ids',
-                template =>
-                    '$Core::MT::Theme::Category::folder_export_template',
-                export    => '$Core::MT::Theme::Category::export_folder',
-                condition => '$Core::MT::Theme::Category::folder_condition',
+                params    => 'default_category_set_export_ids',
+                template  => '$Core::MT::Theme::CategorySet::template',
+                export    => '$Core::MT::Theme::CategorySet::export',
+                condition => '$Core::MT::Theme::CategorySet::condition',
+            },
+        },
+        default_content_types => {
+            label    => 'Content Types',
+            order    => 450,
+            importer => {
+                import    => '$Core::MT::Theme::ContentType::apply',
+                info      => '$Core::MT::Theme::ContentType::info',
+                validator => '$Core::MT::Theme::ContentType::validator',
+            },
+            exporter => {
+                params    => 'default_content_type_export_ids',
+                template  => '$Core::MT::Theme::ContentType::template',
+                export    => '$Core::MT::Theme::ContentType::export',
+                condition => '$Core::MT::Theme::ContentType::condition',
             },
         },
         template_set => {
@@ -723,6 +760,14 @@ sub core_theme_element_handlers {
                 condition => '$Core::MT::Theme::TemplateSet::condition',
             },
         },
+        default_content_data => {
+            label    => 'Default Content Data',
+            order    => 550,
+            importer => {
+                import => '$Core::MT::Theme::ContentData::apply',
+                info   => '$Core::MT::Theme::ContentData::info',
+            },
+        },
         blog_static_files => {
             label    => 'Static Files',
             order    => 600,
@@ -736,14 +781,6 @@ sub core_theme_element_handlers {
                 template => '$Core::MT::Theme::StaticFiles::export_template',
                 export   => '$Core::MT::Theme::StaticFiles::export',
                 finalize => '$Core::MT::Theme::StaticFiles::finalize',
-            },
-        },
-        default_pages => {
-            label    => 'Default Pages',
-            order    => 300,
-            importer => {
-                import => '$Core::MT::Theme::Entry::import_pages',
-                info   => '$Core::MT::Theme::Entry::info_pages',
             },
         },
     };

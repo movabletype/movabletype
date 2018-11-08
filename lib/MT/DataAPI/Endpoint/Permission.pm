@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,7 +30,7 @@ sub list {
 
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';
-        $filter_keys =~ s/blogIds/ids/;
+        $filter_keys =~ s/blogIds/ids/ if $filter_keys;
         $app->param( 'filterKeys', $filter_keys );
         $app->param( 'ids',        $blog_ids );
         my @blog_ids = split ',', $blog_ids;

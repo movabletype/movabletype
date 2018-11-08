@@ -6,6 +6,7 @@
 
 package WXRImporter::Import;
 use strict;
+use warnings;
 
 use base qw(MT::ErrorHandler);
 
@@ -16,7 +17,7 @@ sub import_contents {
     my %param = @_;
     my $iter  = $param{Iter};
     my $blog  = $param{Blog}
-        or return $class->error( MT->translate("No Blog") );
+        or return $class->error( MT->translate("No Site") );
     my $cb = $param{Callback} || sub { };
     my $encoding = $param{Encoding};
 
@@ -59,7 +60,7 @@ sub import_contents {
         return $class->error(
             MT->translate(
                       "You need to provide a password if you are going to "
-                    . "create new users for each user listed in your blog."
+                    . "create new users for each user listed in your site."
             )
             )
             if MT::Auth->password_exists

@@ -4,7 +4,7 @@
 <button
    accesskey="p"
    title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
-   class="button mt-publish-trachbacks">
+   class="button mt-publish-trachbacks btn btn-default">
   <__trans phrase="Publish">
 </button>
     </mt:if>
@@ -12,7 +12,7 @@
 <button
    accesskey="x"
    title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-   class="button mt-delete-trachbacks">
+   class="button mt-delete-trachbacks btn btn-default">
   <__trans phrase="Delete">
 </button>
 </mt:setvarblock>
@@ -21,43 +21,56 @@
   <mt:if name="__first__">
     <mt:setvarblock name="table_header">
     <tr>
-      <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
     <mt:unless name="tab_junk">
-      <th class="col head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
     </mt:unless>
-      <th class="col head from primary"><span class="col-label"><__trans phrase="From"></span></th>
+      <th class="head from primary"><span class="col-label"><__trans phrase="From"></span></th>
     <mt:unless name="is_blog">
-      <th class="col head blog"><span class="col-label"><__trans phrase="Website/Blog"></span></th>
+      <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
     </mt:unless>
-      <th class="col head target"><span class="col-label"><__trans phrase="Target"></span></th>
-      <th class="col head datetime"><span class="col-label"><__trans phrase="Date"></span></th>
+      <th class="head target"><span class="col-label"><__trans phrase="Target"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Date"></span></th>
     <mt:if name="show_ip_info">
-      <th class="col head ip"><span class="col-label"><__trans phrase="IP address"></span></th>
+      <th class="head ip"><span class="col-label"><__trans phrase="IP address"></span></th>
     </mt:if>
     </tr>
     </mt:setvarblock>
   <thead>
     <mt:var name="table_header">
   </thead>
-  <tfoot>
-    <mt:var name="table_header">
-  </tfoot>
   <tbody>
   </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-      <td class="col cb">
+      <td class="cb">
   <mt:if name="has_edit_access">
-        <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
   <mt:else>
         &nbsp;
   </mt:if>
       </td>
   <mt:unless name="tab_junk">
-      <td class="col si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
-        <img src="<mt:var name="static_uri">images/spacer.gif" alt="" class="status-icon" width="9" height="9" />
+      <td class="si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
+    <mt:if name="visible">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
+    <mt:elseif name="junk_status">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+    <mt:else>
+        <mtapp:svgicon id="ic_draft" title="<__trans phrase="Moderated">" size="sm">
+    </mt:if>
       </td>
   </mt:unless>
-      <td class="col excerpt" colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>">
+      <td class="excerpt">
   <mt:if name="excerpt">
     <mt:var name="excerpt" escape="html">
     <mt:if name="has_edit_access">
@@ -68,21 +81,16 @@
   <mt:else>
         &nbsp;
   </mt:if>
+        <br/>
+        <mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;
       </td>
-    </tr>
-    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
-      <td class="col">&nbsp;</td>
-  <mt:unless name="tab_junk">
-      <td class="col">&nbsp;</td>
-  </mt:unless>
-      <td class="col from"><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
   <mt:unless name="is_blog">
-      <td class="col blog"><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
+      <td class="blog"><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
   </mt:unless>
-      <td class="col target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
-      <td class="col datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+      <td class="target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
+      <td class="datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
   <mt:if name="show_ip_info">
-      <td class="col ip"><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a></td>
+      <td class="ip"><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a></td>
   </mt:if>
     </tr>
   <mt:if name="__last__">

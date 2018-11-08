@@ -1,4 +1,4 @@
-<h2><__trans phrase="Google Analytics"></h2>
+<h5><__trans phrase="Google Analytics"></h5>
 
 <mt:If name="missing_modules">
 <p><mt:Var name="missing_modules" /></p>
@@ -23,32 +23,35 @@
    label="<__trans phrase="Redirect URI of the OAuth2 application">"
    hint="$hint"
    show_hint="1">
+  <div>
     <span id="ga_redirect_uri_text"></span>
     <input type="hidden" id="ga_redirect_uri" value="<mt:Var name="redirect_uri" encode_html="1" />" />
+  </div>
 </mtapp:setting>
 
 <mtapp:setting
    id="ga_client_id"
    label="<__trans phrase="Client ID of the OAuth2 application">"
-   show_hint="0">
-    <input type="text" id="ga_client_id" name="ga_client_id" value="<mt:Var name="ga_client_id" encode_html="1" />" />
+   label_for="ga_client_id">
+    <input type="text" id="ga_client_id" class="form-control" name="ga_client_id" value="<mt:Var name="ga_client_id" encode_html="1" />" />
 </mtapp:setting>
 
 <mtapp:setting
    id="client_secret"
    label="<__trans phrase="Client secret of the OAuth2 application">"
-   show_hint="0">
-    <input type="text" id="ga_client_secret" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
+   label_for="ga_client_secret">
+    <input type="text" id="ga_client_secret" class="form-control" name="ga_client_secret" value="<mt:Var name="ga_client_secret" encode_html="1" />" />
 </mtapp:setting>
 </div>
 
 <mtapp:setting
    id="ga_profile"
-   label="<__trans phrase="Google Analytics profile">"
-   show_hint="0">
+   label="<__trans phrase="Google Analytics profile">">
     <span id="ga_profile" class="items"></span>
 <input type="hidden" id="ga_profile_id" name="ga_profile_id" value="<mt:Var name="ga_profile_id" encode_html="1" />" />
-<a href="#" id="ga_select_profile" class="button"><__trans phrase="Select Google Analytics profile" /></a>
+<button id="ga_select_profile" class="button btn btn-default">
+  <__trans phrase="Select Google Analytics profile" />
+</button>
 </mtapp:setting>
 
 
@@ -110,10 +113,10 @@ jQuery(function($) {
                 ($('#ga_client_id').val() && $('#ga_client_secret').val()) ||
                 ($('#use-parent-client:visible').length === 1)
             ) {
-                $('#ga_select_profile').removeClass('disabled');
+                $('#ga_select_profile').removeAttr('disabled');
             }
             else {
-                $('#ga_select_profile').addClass('disabled');
+                $('#ga_select_profile').attr('disabled', 'disabled');
             }
         })
         .triggerHandler('input');

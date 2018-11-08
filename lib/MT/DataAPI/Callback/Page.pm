@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -36,7 +36,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     my $terms = $load_options->{terms} ||= {};
-    my $blog_ids = delete $terms->{blog_id}
+    my $blog_ids;
+    $blog_ids = delete $terms->{blog_id}
         if exists $terms->{blog_id};
 
     my $make_week_perm_filter = sub {

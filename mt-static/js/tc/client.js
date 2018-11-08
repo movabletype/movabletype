@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2003-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2003-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -84,8 +84,15 @@ TC.Client.call = function( param )
         } else {
             var args = new Array();
             var e = encodeURIComponent || escapeURI || escape;
-            for( var a in param['arguments'] )
-                args.push( a + '=' + e( param['arguments'][a] ) );
+            for( var a in param['arguments'] ) {
+                if ( param['arguments'][a] instanceof Array ) {
+                    for ( var i = 0; i < param['arguments'][a].length; i++ ) {
+                        args.push( a + '=' + e( param['arguments'][a][i] ) );
+                    }
+                } else {
+                    args.push( a + '=' + e( param['arguments'][a] ) );
+                }
+            }
             contents = args.join('&');
         }
         c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8' );

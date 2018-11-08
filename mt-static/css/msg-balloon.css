@@ -1,0 +1,11 @@
+.msg-balloon {
+    margin-top: 3px;
+    padding: 0.3em 0.5em;
+    background-color: #2b2b2b;
+    color: #f3f3f3;
+    border-radius: 2px;
+    opacity: 0.8;
+    -ms-filter: 'alpha(opacity=80)';
+    filter: alpha(opacity=80);
+}
+

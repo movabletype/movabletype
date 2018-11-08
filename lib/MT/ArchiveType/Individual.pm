@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType::Individual;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 use MT::Util qw( remove_html encode_html );
@@ -17,6 +18,10 @@ sub name {
 
 sub archive_label {
     return MT->translate("INDIVIDUAL_ADV");
+}
+
+sub order {
+    return 10;
 }
 
 sub template_params {

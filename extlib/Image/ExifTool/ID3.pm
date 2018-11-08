@@ -16,7 +16,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.43';
+$VERSION = '1.48';
 
 sub ProcessID3v2($$$);
 sub ProcessPrivate($$$);
@@ -403,7 +403,7 @@ my %genre = (
         ExifTool extracts mainly text-based tags from ID3v2 information.  The tags
         in the tables below are those extracted by ExifTool, and don't represent a
         complete list of available ID3v2 tags.
-        
+
         ID3 version 2.2 tags.  (These are the tags written by iTunes 5.0.)
     },
     CNT => 'PlayCounter',
@@ -411,7 +411,7 @@ my %genre = (
     IPL => 'InvolvedPeople',
     PIC => {
         Name => 'Picture',
-        Groups => { 2 => 'Image' },
+        Groups => { 2 => 'Preview' },
         Binary => 1,
         Notes => 'the 3 tags below are also extracted from this PIC frame',
     },
@@ -451,7 +451,7 @@ my %genre = (
     TLE => 'Length',
     TMT => 'Media',
     TOA => { Name => 'OriginalArtist', Groups => { 2 => 'Author' } },
-    TOF => 'OriginalFilename',
+    TOF => 'OriginalFileName',
     TOL => 'OriginalLyricist',
     TOR => 'OriginalReleaseYear',
     TOT => 'OriginalAlbum',
@@ -496,11 +496,11 @@ my %id3v2_common = (
   # AENC => 'AudioEncryption', # Owner, preview start, preview length, encr data
     APIC => {
         Name => 'Picture',
-        Groups => { 2 => 'Image' },
+        Groups => { 2 => 'Preview' },
         Binary => 1,
         Notes => 'the 3 tags below are also extracted from this APIC frame',
     },
-    'APIC-1' => { Name => 'PictureMimeType',    Groups => { 2 => 'Image' } },
+    'APIC-1' => { Name => 'PictureMIMEType',    Groups => { 2 => 'Image' } },
     'APIC-2' => {
         Name => 'PictureType',
         Groups => { 2 => 'Image' },
@@ -561,7 +561,7 @@ my %id3v2_common = (
     },
     TMED => 'Media',
     TOAL => 'OriginalAlbum',
-    TOFN => 'OriginalFilename',
+    TOFN => 'OriginalFileName',
     TOLY => 'OriginalLyricist',
     TOPE => { Name => 'OriginalArtist', Groups => { 2 => 'Author' } },
     TOWN => 'FileOwner',
@@ -609,6 +609,10 @@ my %id3v2_common = (
     XSOA => 'AlbumSortOrder',
     XSOP => 'PerformerSortOrder',
     XSOT => 'TitleSortOrder',
+    XOLY => {
+        Name => 'OlympusDSS',
+        SubDirectory => { TagTable => 'Image::ExifTool::Olympus::DSS' },
+    },
 );
 
 # Tags for ID3v2.3 (http://www.id3.org/id3v2.3.0)
@@ -1034,6 +1038,7 @@ sub ProcessID3v2($$$)
     my $len;    # frame data length
 
     $verbose and $et->VerboseDir($tagTablePtr->{GROUPS}->{1}, 0, $size);
+    Image::ExifTool::HexDump($dataPt, $size, Start => $offset) if $verbose > 2;
 
     for (;;$offset+=$len) {
         my ($id, $flags, $hi);
@@ -1076,7 +1081,7 @@ sub ProcessID3v2($$$)
             my $otherTable = $otherTable{$tagTablePtr};
             $tagInfo = $et->GetTagInfo($otherTable, $id) if $otherTable;
             if ($tagInfo) {
-                $et->WarnOnce("Frame '$id' is not valid for this ID3 version", 1);
+                $et->WarnOnce("Frame '${id}' is not valid for this ID3 version", 1);
             } else {
                 next unless $verbose or $et->Options('Unknown');
                 $id =~ tr/-A-Za-z0-9_//dc;
@@ -1088,7 +1093,7 @@ sub ProcessID3v2($$$)
             }
         }
         # decode v2.3 and v2.4 flags
-        my %flags;
+        my (%flags, %extra);
         if ($flags) {
             if ($vers < 0x0400) {
                 # version 2.3 flags
@@ -1150,13 +1155,16 @@ sub ProcessID3v2($$$)
             $dataLen == length($val) or $et->Warn("Wrong length for $id frame"), next;
         }
         unless ($tagInfo) {
-            $verbose and $et->VerboseInfo($id, $tagInfo,
+            next unless $verbose;
+            %flags and $extra{Extra} = ', Flags=' . join(',', sort keys %flags);
+            $et->VerboseInfo($id, $tagInfo,
                 Table   => $tagTablePtr,
                 Value   => $val,
                 DataPt  => $dataPt,
                 DataPos => $$dirInfo{DataPos},
                 Size    => $len,
                 Start   => $offset,
+                %extra
             );
             next;
         }
@@ -1303,12 +1311,14 @@ sub ProcessID3v2($$$)
         if ($lang and $lang =~ /^[a-z]{3}$/i and $lang ne 'eng') {
             $tagInfo = Image::ExifTool::GetLangInfo($tagInfo, lc $lang);
         }
+        %flags and $extra{Extra} = ', Flags=' . join(',', sort keys %flags);
         $et->HandleTag($tagTablePtr, $id, $val,
             TagInfo => $tagInfo,
             DataPt  => $dataPt,
             DataPos => $$dirInfo{DataPos},
             Size    => $len,
             Start   => $offset,
+            %extra
         );
     }
 }
@@ -1539,7 +1549,7 @@ other types of audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

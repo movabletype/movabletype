@@ -137,7 +137,7 @@ it under the same terms as Perl itself.
 
 =cut
 
-use Exporter 'import';
+use Exporter 5.57 'import';
 our %escapes;
 our @EXPORT = qw(uri_escape uri_unescape uri_escape_utf8);
 our @EXPORT_OK = qw(%escapes);
@@ -181,6 +181,7 @@ sub _fail_hi {
 
 sub uri_escape_utf8 {
     my $text = shift;
+    return undef unless defined $text;
     utf8::encode($text);
     return uri_escape($text, @_);
 }

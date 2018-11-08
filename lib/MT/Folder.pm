@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Folder;
 
 use strict;
+use warnings;
 use base qw( MT::Category );
 
 __PACKAGE__->install_properties(
@@ -43,6 +44,10 @@ sub list_props {
             class => 'folder',
             base  => 'category.custom_sort',
         },
+        user_custom => {
+            base    => 'folder.custom_sort',
+            display => 'none',
+        },
         blog_id => {
             auto            => 1,
             col             => 'blog_id',
@@ -54,6 +59,14 @@ sub list_props {
 
 sub basename_prefix {
     "folder";
+}
+
+sub category_set_id {0}
+
+sub save {
+    my $self = shift;
+    $self->column( 'category_set_id', 0 );
+    $self->SUPER::save(@_);
 }
 
 sub remove {

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,7 @@ $Lexicon_de = array(
 	'Daily' => 'Täglich',
 	'Weekly' => 'Wöchentlich',
 	'Author' => 'Autor',
-	'(Display Name not set)' => '(Kein Anzeigename gewählt)',
+	'(Display Name not set)' => '(Kein Anzeigename festgelegt)',
 	'Author Yearly' => 'Autor jährlich',
 	'Author Monthly' => 'Autor monatlich',
 	'Author Daily' => 'Autor täglich',
@@ -38,6 +38,9 @@ $Lexicon_de = array(
 	'You used an [_1] tag without establishing a date context.' => 'Befehl [_1] ohne Datums-Kontext verwendet.',
 
 ## php/lib/block.mtentries.php
+
+## php/lib/block.mthasplugin.php
+	'name is required.' => 'Name erforderlich',
 
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => 'Befehl [_1] ohne gültiges Namens-Attribut verwendet.',
@@ -68,17 +71,6 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anonym',
-
-## php/lib/function.mtcommentauthor.php
-
-## php/lib/function.mtcommenternamethunk.php
-	'The \'[_1]\' tag has been deprecated. Please use the \'[_2]\' tag in its place.' => 'Der Befehl &#8222;[_1]&#8220; ist veraltet. Bitte verwenden Sie stattdessen \'[_2]\'',
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Antworten',
-
 ## php/lib/function.mtentryclasslabel.php
 	'Entry' => 'Eintrag',
 
@@ -101,9 +93,6 @@ $Lexicon_de = array(
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
-
-## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled for this blog.  MTRemoteSignInLink cannot be used.' => 'TypePad-Authentifizierung ist in diesem Blog nicht aktiviert. MTRemoteSignInLink kann daher nicht verwendet werden.',
 
 ## php/lib/function.mtsetvar.php
 

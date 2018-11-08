@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,9 +8,10 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
 
 use strict;
+use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
@@ -22,6 +23,8 @@ use MT;
 use MT::Mail;
 
 use Cwd qw( abs_path );
+use URI;
+use URI::QueryParam;
 
 # Speed-up tests on Windows.
 if ( $^O eq 'MSWin32' ) {
@@ -91,7 +94,7 @@ BEGIN {
 }
 
 # Suppress output when "MailTransfer debug"
-{
+unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
 }
@@ -111,9 +114,7 @@ sub import {
         }
     }
 
-    # We need *some* instance created up front, to initialize the database
-    # factory etc properly, so do so now.
-    MT->instance;
+    MT->instance unless $ENV{MT_TEST_ROOT};
 
     # Export requested or all exportable functions.
     $pkg->export_to_level( 1, @to_export || qw( :DEFAULT ) );
@@ -129,10 +130,10 @@ sub init_app {
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1;" or die "Can't load $app";
 
-    $app->instance( $cfg ? ( Config => $cfg ) : () );
+    $app->set_instance( $app->new( $cfg ? ( Config => $cfg ) : () ) );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
+        [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
 
     # kill __test_output for a new request
     require MT;
@@ -183,7 +184,7 @@ sub init_cms {
     my ($cfg) = @_;
 
     require MT::App::CMS;
-    MT::App::CMS->instance( $cfg ? ( Config => $cfg ) : () );
+    MT->set_instance( MT::App::CMS->new( $cfg ? ( Config => $cfg ) : () ) );
 }
 
 sub init_time {
@@ -231,7 +232,7 @@ sub init_testdb {
             },
         }
     );
-    $pkg->init_db();
+    $pkg->init_db( not_create_website => 1 );
 }
 
 our $MEMCACHED_SEARCHED;
@@ -342,7 +343,7 @@ sub init_memcached {
     };
 }
 
-sub init_newdb {
+sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
 
@@ -372,6 +373,13 @@ sub init_newdb {
                 or die $@;
         }
     }
+    @classes;
+}
+
+sub init_newdb {
+    my $pkg = shift;
+
+    my @classes = $pkg->_load_classes(@_);
 
     # Clear existing database tables
     my $driver = MT::Object->driver();
@@ -393,7 +401,8 @@ sub init_newdb {
 }
 
 sub init_upgrade {
-    my $pkg = shift;
+    my $pkg  = shift;
+    my %args = @_;
 
     require MT::Upgrade;
 
@@ -410,7 +419,20 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Page->remove;
         MT::Comment->remove;
+
+        unless ( $args{not_create_website} ) {
+            my $website
+                = MT::Website->create_default_website('First Website');
+            $website->save;
+            my $author = MT::Author->load;
+            my ($website_admin_role)
+                = MT::Role->load_by_permission('administer_site');
+            MT::Association->link(
+                $website => $website_admin_role => $author );
+        }
     };
+    warn $@ if $@;
+
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -432,11 +454,9 @@ sub error {
 sub init_data {
     my $pkg = shift;
 
-    # nix the old site just in case
-    rmtree('t/site') if ( -d 't/site' );
-
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
 
     require MT::Website;
@@ -444,7 +464,7 @@ sub init_data {
     $website->set_values(
         {   name                     => 'Test site',
             site_url                 => 'http://narnia.na/',
-            site_path                => 't',
+            site_path                => $test_root,
             description              => "Narnia None Test Website",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
@@ -467,7 +487,6 @@ sub init_data {
     );
     $website->id(2);
     $website->class('website');
-    $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website 2: " . $website->errstr;
     my $classic_website = MT::Theme->load('classic_website')
         or die MT::Theme->errstr;
@@ -483,8 +502,8 @@ sub init_data {
         {   name         => 'none',
             site_url     => '/::/nana/',
             archive_url  => '/::/nana/archives/',
-            site_path    => 'site/',
-            archive_path => 'site/archives/',
+            site_path    => "$test_root/site/",
+            archive_path => "$test_root/site/archives/",
             archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
             archive_type_preferred   => 'Individual',
             description              => "Narnia None Test Blog",
@@ -511,7 +530,6 @@ sub init_data {
     $blog->id(1);
     $blog->class('blog');
     $blog->parent_id(2);
-    $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
     my $classic_blog = MT::Theme->load('classic_blog')
@@ -558,6 +576,8 @@ sub init_data {
     $bobd->set_password("flute");
     $bobd->type( MT::Author::AUTHOR() );
     $bobd->id(3);
+    $bobd->can_sign_in_cms(1);
+    $bobd->can_sign_in_data_api(1);
     $bobd->save() or die "Couldn't save author record 3: " . $bobd->errstr;
     $bobd->set_score( 'unit test', MT::Author->load(1), 3, 1 );
 
@@ -573,6 +593,8 @@ sub init_data {
     $johnd->type( MT::Author::COMMENTER() );
     $johnd->password('(none)');
     $johnd->id(4);
+    $johnd->can_sign_in_cms(1);
+    $johnd->can_sign_in_data_api(1);
     $johnd->save() or die "Couldn't save author record 4: " . $johnd->errstr;
 
     my $hiro = MT::Author->new();
@@ -588,23 +610,25 @@ sub init_data {
     $hiro->password('time');
     $hiro->id(5);
     $hiro->status(2);
+    $hiro->can_sign_in_cms(1);
+    $hiro->can_sign_in_data_api(1);
     $hiro->save() or die "Couldn't save author record 5: " . $hiro->errstr;
 
     require MT::Role;
     my ( $admin_role, $author_role )
         = map { MT::Role->load( { name => $_ } ) }
-        ( 'Blog Administrator', 'Author' );
+        ( 'Site Administrator', 'Author' );
 
     unless ( $admin_role && $author_role ) {
         my @default_roles = (
-            {   name        => 'Blog Administrator',
-                description => 'Can administer the blog.',
+            {   name        => 'Site Administrator',
+                description => 'Can administer the site.',
                 role_mask   => 2**12,
-                perms       => ['administer_blog']
+                perms       => ['administer_site']
             },
             {   name => 'Author',
                 description =>
-                    'Can create entries, edit their own entries, upload files, and publish.',
+                    'Can create entries, edit their own entries, upload files and publish.',
                 perms => [
                     'comment',      'create_post',
                     'publish_post', 'upload',
@@ -629,7 +653,7 @@ sub init_data {
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => $_ } ) }
-            ( 'Blog Administrator', 'Author' );
+            ( 'Site Administrator', 'Author' );
     }
 
     require MT::Association;
@@ -904,16 +928,16 @@ It\'s a hard rain\'s a-gonna fall',
         if ( !$entry ) {
             $entry = MT::Entry->new();
             $entry->set_values(
-                {   blog_id   => 1,
-                    title     => "Verse $i",
-                    text      => $verses[$i],
-                    author_id => ( $i == 3 ? $bobd->id : $chuckd->id ),
-                    created_on  => sprintf( "%04d0131074501", $i + 1960 ),
-                    authored_on => sprintf( "%04d0131074501", $i + 1960 ),
-                    modified_on => sprintf( "%04d0131074601", $i + 1960 ),
-                    authored_on => sprintf( "%04d0131074501", $i + 1960 ),
+                {   blog_id        => 1,
+                    title          => "Verse $i",
+                    text           => $verses[$i],
+                    author_id      => ( $i == 3 ? $bobd->id : $chuckd->id ),
+                    created_on     => sprintf( "%04d0131074501", $i + 1960 ),
+                    authored_on    => sprintf( "%04d0131074501", $i + 1960 ),
+                    modified_on    => sprintf( "%04d0131074601", $i + 1960 ),
+                    authored_on    => sprintf( "%04d0131074501", $i + 1960 ),
                     allow_comments => ( $i <= 2 ? 0 : 1 ),
-                    status => MT::Entry::RELEASE(),
+                    status         => MT::Entry::RELEASE(),
                 }
             );
             $entry->id( $i + 3 );
@@ -1260,6 +1284,62 @@ It\'s a hard rain\'s a-gonna fall',
     $asset->tags('not_exists');
     $asset->save or die "Couldn't save asset record 4: " . $asset->errstr;
 
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_1.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_1.jpg' ) );
+    $asset->file_name('test_1.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074500');
+    $asset->save or die "Couldn't save asset record 5: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 8, 5 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_2.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_2.jpg' ) );
+    $asset->file_name('test_2.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074600');
+    $asset->save or die "Couldn't save asset record 6: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 9, 6 );
+
+    $asset = new $img_pkg;
+    $asset->blog_id(1);
+    $asset->url('http://narnia.na/nana/images/test_3.jpg');
+    $asset->file_path(
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_3.jpg' ) );
+    $asset->file_name('test_3.jpg');
+    $asset->file_ext('jpg');
+    $asset->image_width(640);
+    $asset->image_height(480);
+    $asset->mime_type('image/jpeg');
+    $asset->label('Image photo');
+    $asset->description('This is a test photo.');
+    $asset->tags( 'alpha', 'beta', 'gamma' );
+    $asset->created_by(1);
+    $asset->created_on('20000131074700');
+    $asset->save or die "Couldn't save asset record 7: " . $asset->errstr;
+
+    $asset->set_score( 'unit test', $bobd, 7, 7 );
     ## ObjectScore
     my $e5 = MT::Entry->load(5);
     $e5->set_score( 'unit test', $bobd,               5, 1 );
@@ -1497,7 +1577,7 @@ It\'s a hard rain\'s a-gonna fall',
         MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
-    MT->instance->rebuild( BlogId => 1, );
+    MT->instance->rebuild( BlogID => 1, );
 
     ### Make ObjectAsset mappings
     require MT::ObjectAsset;
@@ -1506,16 +1586,44 @@ It\'s a hard rain\'s a-gonna fall',
     if ($entry) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $entry->blog_id );
-        $map->asset_id(1);
+        $map->asset_id(5);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $entry->datasource );
+        $map->object_id( $entry->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $entry->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $entry->datasource );
         $map->object_id( $entry->id );
         $map->save;
     }
     $page = MT::Page->load(20);
-    if ($entry) {
+    if ($page) {
         $map = new MT::ObjectAsset;
         $map->blog_id( $page->blog_id );
-        $map->asset_id(2);
+        $map->asset_id(5);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(6);
+        $map->object_ds( $page->datasource );
+        $map->object_id( $page->id );
+        $map->save;
+
+        $map = new MT::ObjectAsset;
+        $map->blog_id( $page->blog_id );
+        $map->asset_id(7);
         $map->object_ds( $page->datasource );
         $map->object_id( $page->id );
         $map->save;
@@ -1652,17 +1760,23 @@ sub _run_app {
         }
         elsif ( $k eq '__test_upload' ) {
             my ( $param, $src ) = @$v;
-            my $seqno = unpack( "%16C*",
-                join( '', localtime, grep { defined $_ } values %ENV ) );
-            my $filename = basename($src);
-            $CGITempFile::TMPDIRECTORY = '/tmp';
-            my $tmpfile = new CGITempFile($seqno) or die "CGITempFile: $!";
-            my $tmp     = $tmpfile->as_string;
-            my $cgi_fh  = Fh->new( $filename, $tmp, 0 ) or die "FH? $!";
+            require CGI::File::Temp;
+            my ($cgi_fh) = new CGI::File::Temp( UNLINK => 1 )
+                or die "CGI::File::Temp: $!";
+            my $basename = basename($src);
+            if ( $^O eq 'MSWin32' ) {
+                require Encode;
+                Encode::from_to( $basename, 'cp932', 'utf8' );
+            }
+            $cgi_fh->_mp_filename($basename);
+            $CGI::DefaultClass->binmode($cgi_fh)
+                if $CGI::needs_binmode
+                && defined fileno($cgi_fh);
 
             {
                 local $/ = undef;
                 open my $upload, "<", $src or die "Can't open $src: $!";
+                binmode $upload if $basename =~ /\.(?:gif|png|jpg)$/;
                 my $d = <$upload>;
                 close $upload;
                 print $cgi_fh $d;
@@ -1681,7 +1795,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SeachTemplatePath ) );
+        [ abs_path( $app->config->SeachTemplatePath ) ] );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1833,8 +1947,41 @@ sub _run_tasks {
         MT::Session->remove( { id => "Task:$t" } );
     }
 
+    MT->set_instance( MT->new );
+
     require MT::TaskMgr;
     MT::TaskMgr->run_tasks(@$tasks);
+}
+
+sub location_param_contains {
+    my ( $out, $expects, $message ) = @_;
+    my ($location_url) = $out =~ /^Location:\s*(\S+)/m;
+    unless ($location_url) {
+        fail "$message: no Location url";
+        return;
+    }
+    query_param_contains( $location_url, $expects, $message );
+}
+
+sub query_param_contains {
+    my ( $url, $expects, $message ) = @_;
+    my $uri  = URI->new($url);
+    my $fail = 0;
+    for my $key ( sort keys %$expects ) {
+        is $uri->query_param($key) => $expects->{$key},
+            "$key: $expects->{$key}"
+            or $fail++;
+    }
+    ok !$fail, $message;
+}
+
+my $HasPHP;
+
+sub has_php {
+    return $HasPHP if defined $HasPHP;
+    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
 }
 
 1;

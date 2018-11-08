@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1226,7 +1226,7 @@ function category_label_path($cat) {
     return $result;
 }
 
-function cat_path_to_category($path, $blogs = null, $class = 'category') {
+function cat_path_to_category($path, $blogs = null, $class = 'category', $category_set_id = 0) {
     $mt = MT::get_instance();
     if (!$blogs) {
         $ctx = $mt->context();
@@ -1243,7 +1243,7 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
         }
         $last_cat_ids = array(0);
         foreach ($cat_path as $label) {
-            $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $label, 'parent' => $last_cat_ids, 'show_empty' => 1, 'class' => $class)));
+            $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $label, 'parent' => $last_cat_ids, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
             if (!$cats)
                 break;
             $last_cat_ids = array();
@@ -1254,7 +1254,7 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
     if ($cats)
         return $cats;
     if (!$cats && $path) {
-        $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $path, 'show_empty' => 1, 'class' => $class)));
+        $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $path, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
         if ($cats)
             return $cats;
     }
@@ -1395,9 +1395,9 @@ function asset_path($path, $blog) {
     $site_path = preg_replace('/\/$/', '', $site_path);
     $path = preg_replace('/^%r/', $site_path, $path);
 
-    $static_file_path = support_directory_path();
-    $static_file_path = preg_replace('/\/$/', '', $static_file_path);
-    $path = preg_replace('/^%s/', $static_file_path, $path);
+    $support_directory_path = support_directory_path();
+    $support_directory_path = preg_replace('/\/$/', '', $support_directory_path);
+    $path = preg_replace('/^%s/', $support_directory_path, $path);
 
     $archive_path = $blog->archive_path();
     if ($archive_path) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType::AuthorDaily;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Daily );
 use MT::Util qw( dirify start_end_day );
 
@@ -16,6 +17,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('AUTHOR-DAILY_ADV');
+}
+
+sub order {
+    return 80;
 }
 
 sub default_archive_templates {
@@ -41,6 +46,7 @@ sub template_params {
         archive_template     => 1,
         archive_listing      => 1,
         datebased_archive    => 1,
+        author_based_archive => 1,
     };
 }
 
@@ -56,14 +62,14 @@ sub archive_title {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $timestamp = $param{Timestamp};
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $entry     = $ctx->{__stash}{entry};
+    my $obj       = $archiver->get_content($ctx);
     my $file;
-    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {

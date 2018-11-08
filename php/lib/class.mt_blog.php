@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -57,7 +57,7 @@ class Blog extends BaseObject
         $raw_path = $this->blog_site_path;
         if ( 1 == preg_match( '/^\//', $raw_path ) )
             return true;
-        if ( 1 == preg_match( '/^[a-zA-Z]:'.preg_quote('\\').'/', $raw_path ) )
+        if ( 1 == preg_match( '/^[a-zA-Z]:[\\/]/', $raw_path ) )
             return true;
         if ( 1 == preg_match( '/^\\\\[a-zA-Z0-9\.]+/', $raw_path ) )
             return true;

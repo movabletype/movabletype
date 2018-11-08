@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,7 +19,7 @@ sub search {
 
     local $app->{mode} = $tag_search ? 'tag' : 'default';
 
-    # Check "search" paramter.
+    # Check "search" parameter.
     my $search;
     if ($tag_search) {
         $search = $app->param('tag') || $app->param('search');
@@ -37,8 +37,17 @@ sub search {
         );
     }
 
+    my $search_class
+        = $app->param('freeText')
+        ? 'MT::App::Search::FreeText'
+        : 'MT::App::Search';
+    local @MT::App::DataAPI::ISA = ($search_class);
+
     MT::App::Search::init_request($app);
     return $app->error( $app->errstr, 400 ) if $app->errstr;
+
+    $app->param( 'format', 'data_api' );
+    local *MT::App::Search::renderdata_api = \&_renderdata_api;
 
     my $result;
     if ($tag_search) {
@@ -60,6 +69,27 @@ sub search {
     $app->print_encode($result);
 
     return;
+}
+
+sub _renderdata_api {
+    my $app = shift;
+    my ( $count, $iter ) = @_;
+
+    my @objects;
+    if ($iter) {
+        while ( my $obj = $iter->() ) {
+            push @objects, $obj;
+        }
+    }
+
+    require MT::DataAPI::Resource;
+    my $result = {
+        totalResults => ( $count || 0 ),
+        items => MT::DataAPI::Resource->from_object( \@objects ),
+    };
+
+    my $json = $app->current_format->{serialize}->($result);
+    return $json;
 }
 
 1;

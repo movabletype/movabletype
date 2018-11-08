@@ -1,0 +1,10 @@
+<mt:setvarblock name="system_msg" append="1">
+  <mt:if name="request.not_deleted">
+    <mtapp:statusmsg
+      id="not-deleted"
+      class="error"
+      can_close="0">
+      <__trans phrase="Some category sets were not deleted. You need to delete categories fields from the category set first.">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>

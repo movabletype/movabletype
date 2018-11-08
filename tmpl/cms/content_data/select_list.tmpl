@@ -1,0 +1,23 @@
+<mt:setvar name="screen_id" value="select-content-type">
+<mt:setvar name="page_title" value="<__trans phrase="Select List Content Type">">
+
+<mt:setvarblock name="page_content">
+<mtapp:settinggroup id="content_type">
+<mt:if name="content_types">
+<ul>
+  <mt:loop name="content_types">
+  <li>
+    <a href="<mt:var name="mt_url">?__mode=list&_type=content_data_<mt:var name="id">&blog_id=<mt:var name="blog_id">">
+      <mt:var name="name">
+    </a>
+  </li>
+  </mt:loop>
+</ul>
+<mt:else>
+  <__trans phrase="No Content Type.">
+</mt:if>
+</mtapp:settinggroup>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

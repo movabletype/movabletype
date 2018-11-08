@@ -1,121 +1,70 @@
-
-        <!-- /Main Content --></div>
-
-      <mt:if name="related_content">
-        <div id="related-content">
-          <mt:var name="related_content">
-        <!-- /Related Content --></div>
-      </mt:if>
-
-      <!-- /Content Body --></div>
-    <!-- /Main --></div>
-
-    <mt:var name="form_footer">
-  <!-- /Content --></div>
-
-  <div id="footer">
-
-  <mt:if name="mt_beta">
-    <div id="msg-beta">
-      <p><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
+<div class="row">
+  <div class="mt-footer">
+  <mt:if name="mt_alpha_or_beta">
+    <div id="msg-beta" class="text-center">
+      <p>
+    <mt:if name="mt_alpha">
+        <span class="badge badge-info"><__trans phrase="DEVELOPER PREVIEW"></span>
+        <__trans phrase="This is a alpha version of Movable Type and is not recommended for production use.">
+    <mt:elseif name="mt_beta">
+        <span class="badge badge-info"><__trans phrase="BETA"></span>
+        <__trans phrase="This is a beta version of Movable Type and is not recommended for production use.">
+    </mt:if>
+      </p>
     </div>
   </mt:if>
 
-  <mt:if name="author_name">
-    <ul id="footer-nav" class="inline-nav">
-      <li><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
-      <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
-      <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
-      <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
-      <li><a href="<mt:var name="mt_support">"><__trans phrase="Support"></a></li>
-      <li><a href="<__trans phrase="http://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
-      <li><a href="<mt:var name="mt_feedback_url">"><__trans phrase="Send Us Feedback"></a></li>
-    </ul>
-  </mt:if>
+  <ul class="list-inline">
+    <li class="list-inline-item">
+      <a href="<__trans phrase="https://www.movabletype.org">">
+        <__trans phrase="MovableType.org">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<__trans phrase="https://plugins.movabletype.org/">">
+        <__trans phrase="Plugins">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<__trans phrase="https://www.movabletype.org/documentation/">">
+        <__trans phrase="Documentation">
+      </a>
+    </li>
+    <li class="list-inline-item">
+      <a href="<mt:var name="mt_support">">
+        <__trans phrase="Support">
+      </a>
+    </li><mt:if name="language_id" eq="ja">
+    <li class="list-inline-item">
+      <a href="<__trans phrase="https://forums.movabletype.org/">">
+        <__trans phrase="Forums">
+      </a>
+    </li></mt:if>
+    <li class="list-inline-item">
+      <a href="<mt:var name="mt_feedback_url">">
+        <__trans phrase="Send Us Feedback">
+      </a>
+    </li>
+  </ul>
 
-  <mt:include name="include/copyright.tmpl">
-
-    <p id="version">
-      <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
-    <mt:if name="packs_installed">
-      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><mt:if name="link"><a href="<mt:var name="link" escape="html">"></mt:if><mt:var name="label" escape="html"> <mt:var name="version" escape="html"><mt:if name="link"></a></mt:if></mt:loop>
+    <p>
+      <small>
+        <MT_TRANS phrase="Copyright &copy; 2001 Six Apart. All Rights Reserved."><br>
+        <__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_release_version_id">">
+<mt:if name="packs_installed">
+  <__trans phrase="with">:
+  <mt:loop name="packs_installed" glue=", ">
+    <mt:if name="link">
+      <a href="<mt:var name="link" escape="html">">
     </mt:if>
-    </p>
-  <!-- /Footer --></div>
-
-  <mt:var name="html_body_footer">
-
-<!-- /container --></div>
-
-<div id="bootstrapper" class="hidden"></div>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-<mt:if name="open_dialog">
-jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">');
+        <mt:var name="label" escape="html">
+        <mt:var name="version" escape="html">
+    <mt:if name="link">
+      </a>
+    </mt:if>
+  </mt:loop>
 </mt:if>
-<mt:unless name="delayed_bootstrap">
-App.bootstrapInline( false );
-</mt:unless>
-jQuery(function() {
-<mt:var name="jq_js_include">
-    if (typeof document.body.style.maxHeight == "undefined") {
-        if (jQuery.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
-    }
-    jQuery.mtAddEdgeClass();
-    jQuery.mtMenu();
-    jQuery.mtSelector();
-    jQuery('a.mt-open-dialog').mtDialog();
-    jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
-    jQuery('#main').on('click','.mt-close-msg',function(){
-        jQuery(this).parents('div.msg').remove();
-    });
-    jQuery('input.mt-edit-field').mtEditInput({
-        edit: '<__trans phrase="Edit">'
-    });
-    jQuery('div.has-option').mtCheckboxOption();
-    jQuery('.msg, .display-options').mtToggleField();
-    jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
-    jQuery('#cms-search').mtToggleField({hide_clicked: true}, function(){
-        jQuery('#quick-search').focus();
-    });
-    jQuery('input.text-date').datepicker({
-        dateFormat: 'yy-mm-dd',
-        dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
-        monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
-        showMonthAfterYear: true,
-        prevText: '&lt;',
-        nextText: '&gt;',
-        onClose: function(dateText, inst){
-          var $this = jQuery(this);
-          var ns = jQuery.data( this, 'mtValidator' );
-          if ( !ns ) return true;
-          $this.mtValid({ focus: false });
-        }
-    });
-    jQuery('.button.toolbar').button();
-    jQuery('#brand > a').hover(
-        function() {
-            jQuery(this).after('<span class="tips"><__trans phrase="Your Dashboard"></span>');
-        },
-        function(){
-            jQuery('#brand span.tips').remove();
-        }
-    );
-    jQuery('input').each(function() {
-        jQuery(this).addClass(jQuery(this).attr('type'));
-    });
-    jQuery('#quick-search').mtPlaceholder();
-
-    jQuery("#notification_dashboard li span.detail").css("display","none");
-    jQuery('#notification_dashboard li').click(function() {
-        jQuery(this).find("span.detail").toggle("fast");
-    });
-});
-/* ]]> */
-</script>
-
-<mt:if name="mt_debug"><mt:Include name="include/debug_hover.tmpl"></mt:if>
-
-</body>
-</html>
+      </small>
+    </p>
+  </div>
+</div>

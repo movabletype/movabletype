@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -190,6 +190,9 @@ sub type2db {
     }
     elsif ( $type eq 'float' ) {
         return 'float';
+    }
+    elsif ( $type eq 'double' ) {
+        return 'double';
     }
     Carp::croak( "undefined type: " . $type );
 }

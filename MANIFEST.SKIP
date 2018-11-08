@@ -56,8 +56,20 @@ themes/broken_blog_theme
 #?package=MT ^addons/Sync.pack
 #?package=MT ^mt-static/addons/Sync.pack
 #?package=MT ^addons/AWS.pack
-#?package=MT ^plugins/P-M-SizeLimit
+#?package=MT ^mt-sp.cgi
+#?package=MT ^plugins/SmartphoneOption
+#?package=MT ^mt-static/SmartphoneOption
+#?package=MT ^plugins/Motion
+#?package=MT ^mt-static/plugins/Motion
+#?package=MT ^mt-static/jquery/themes/Motion
 
+#?package=MT ^mt-cp.cgi
+#?package=MT ^addons/Community.pack
+#?package=MT ^mt-static/addons/Community.pack
+
+#?pacakge=MT ^plugins/mixiComment
+#?pacakge=MT ^mt-static/plugins/mixiComment
+#?package=MT ^plugins/P-M-SizeLimit
 
 #?package=MTAWS ^COPYING
 #?package=MTAWS ^COPYRIGHT
@@ -73,19 +85,20 @@ themes/broken_blog_theme
 #?package=MTAWS ^addons/Sync.pack
 #?package=MTAWS ^mt-static/addons/Sync.pack
 #?package=MTAWS ^plugins/P-M-SizeLimit
+#?package=MTAWS ^mt-cp.cgi
+#?package=MTAWS ^addons/Community.pack
+#?package=MTAWS ^mt-static/addons/Community.pack
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
 #?package=MTOS ^mt-static/addons
 #?package=MTOS ^mt-static/themes/tristan-blue
 #?package=MTOS ^mt-static/themes/tristan-blue-4.2
-#?package=MTOS ^mt-static/plugins/feeds-app-lite
 #?package=MTOS ^mt-static/plugins/Motion
 #?package=MTOS ^mt-static/jquery/themes/Motion
 #?package=MTOS ^mt-static/plugins/ActionStreams
 #?package=MTOS ^mt-static/plugins/FacebookCommenters
 #?package=MTOS ^mt-static/plugins/mixiComment
-#?package=MTOS ^plugins/feeds-app-lite
 #?package=MTOS ^plugins/Motion
 #?package=MTOS ^plugins/ActionStreams
 #?package=MTOS ^plugins/FacebookCommenters
@@ -164,6 +177,9 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^tools/migrate-mssql
 #?package=MTCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTCLOUD ^addons/AWS.pack
+#?package=MTCLOUD ^mt-cp.cgi
+#?package=MTCLOUD ^addons/Community.pack
+#?package=MTCLOUD ^mt-static/addons/Community.pack
 
 #?language=ja ^plugins/zemanta
 
@@ -240,11 +256,7 @@ lang-it
 ^tools/write-default-templates
 
 # Plugins
-#plugins/StyleCatcher
 #plugins/WidgetManager
-#plugins/feeds-app-lite
-plugins/feeds-app-lite/tools/
-plugins/feeds-app-lite/t/
 plugins/MultiBlog/t/
 plugins/FormattedText/t/
 plugins/Loupe
@@ -272,6 +284,10 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 ^exports/
+^Gruntfile.js
+^package-lock.json
+^package.json
+^node_modules/
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
@@ -282,6 +298,23 @@ build-language-stamp
 ^plugins/CommunityActionStreams
 ^plugins/TypePadAntiSpam
 
+# a-table.js
+^mt-static/a-table.js/.babelrc
+^mt-static/a-table.js/.editorconfig
+^mt-static/a-table.js/.eslintrc
+^mt-static/a-table.js/.gitignore
+^mt-static/a-table.js/.node-version
+^mt-static/a-table.js/_config.yml
+^mt-static/a-table.js/bin/
+^mt-static/a-table.js/circle.yml
+^mt-static/a-table.js/examples/
+^mt-static/a-table.js/lib/
+^mt-static/a-table.js/node_modules/
+^mt-static/a-table.js/package.json
+^mt-static/a-table.js/src/
+^mt-static/a-table.js/test/
+^mt-static/a-table.js/yarn.lock
+
 # Travis
 \.travis.yml
 
@@ -291,3 +324,14 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
+\.circleci
+
+# Etc
+\.perltidyrc
+\.gitattributes
+shippable.yml
+yarn.lock
+\.circleci
+
+# Test
+\.proverc

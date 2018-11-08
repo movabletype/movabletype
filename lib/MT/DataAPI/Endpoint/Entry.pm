@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -23,9 +23,12 @@ sub build_post_save_sub {
         ? archive_file_for( $orig_entry, $blog, $archive_type )
         : undef;
 
-    my $primary_category_old = $orig_entry->category;
-    my $categories_old       = $orig_entry->categories;
-    my $categories_old_ids   = join( ',', map { $_->id } @$categories_old );
+    my ( $primary_category_old, $categories_old, $categories_old_ids );
+    if ( $orig_entry->id ) {
+        $primary_category_old = $orig_entry->category;
+        $categories_old       = $orig_entry->categories;
+        $categories_old_ids   = join( ',', map { $_->id } @$categories_old );
+    }
 
     my ( $previous_old, $next_old );
     if ( $orig_entry->id && $entry->authored_on != $orig_entry->authored_on )
@@ -89,25 +92,28 @@ sub build_post_save_sub {
             );
             return unless $res;
 
-            my $list = $app->needs_ping(
-                Entry     => $entry,
-                Blog      => $blog,
-                OldStatus => $orig_entry->status,
-            );
-            require MT::Entry;
-            if ( $entry->status == MT::Entry::RELEASE() && $list ) {
-                MT::CMS::Entry::do_send_pings(
-                    $app,
-                    $blog->id,
-                    $entry->id,
-                    $orig_entry->status,
-                    sub {
-                        my ($has_errors) = @_;
-
-                        # Ignore errros
-                        return 1;
-                    }
+            if ( MT->has_plugin('Trackback') ) {
+                my $list = $app->needs_ping(
+                    Entry     => $entry,
+                    Blog      => $blog,
+                    OldStatus => $orig_entry->status,
                 );
+                require MT::Entry;
+                if ( $entry->status == MT::Entry::RELEASE() && $list ) {
+                    require Trackback::CMS::Entry;
+                    Trackback::CMS::Entry::do_send_pings(
+                        $app,
+                        $blog->id,
+                        $entry->id,
+                        $orig_entry->status,
+                        sub {
+                            my ($has_errors) = @_;
+
+                            # Ignore errros
+                            return 1;
+                        }
+                    );
+                }
             }
         }
     };

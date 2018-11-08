@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -6,13 +6,13 @@
 package MT::CMS::Website;
 
 use strict;
+use warnings;
 use MT::CMS::Blog;
 
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    my $q       = $app->param;
     my $cfg     = $app->config;
     my $blog    = $obj || $app->blog;
     my $blog_id = $id;
@@ -21,13 +21,13 @@ sub edit {
         if $blog && !$id;
 
     return $app->permission_denied()
-        if !$id && !$app->user->can_create_website();
+        if !$id && !$app->user->can_create_site();
 
     my $lang;
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
-        $param->{need_full_rebuild}  = 1 if $q->param('need_full_rebuild');
-        $param->{need_index_rebuild} = 1 if $q->param('need_index_rebuild');
+        $param->{need_full_rebuild}  = 1 if $app->param('need_full_rebuild');
+        $param->{need_index_rebuild} = 1 if $app->param('need_index_rebuild');
         $param->{show_ip_info} = $cfg->ShowIPInformation;
         $param->{use_plugins}  = $cfg->UsePlugins;
 
@@ -42,8 +42,6 @@ sub edit {
             && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
-        $param->{identity_system}     = $app->config('IdentitySystem');
-        $param->{handshake_return}    = $app->base . $app->mt_uri;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
         $param->{ "moderate_comments_"
                 . ( $obj->moderate_unreg_comments || 0 ) } = 1;
@@ -116,6 +114,8 @@ sub edit {
             }
             $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_cd'}
+                = ( $obj->max_revisions_cd || $MT::Revisable::MAX_REVISIONS );
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
@@ -149,6 +149,8 @@ sub edit {
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
             $param->{'max_revisions_entry'} = ( $obj->max_revisions_entry
                     || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_cd'}
+                = ( $obj->max_revisions_cd || $MT::Revisable::MAX_REVISIONS );
             $param->{'max_revisions_template'}
                 = (    $obj->max_revisions_template
                     || $MT::Revisable::MAX_REVISIONS );
@@ -230,9 +232,8 @@ sub edit {
             else {
                 $param->{system_disallow_registration} = 1;
             }
-            $param->{allow_reg_comments}     = $blog->allow_reg_comments;
-            $param->{allow_unreg_comments}   = $blog->allow_unreg_comments;
-            $param->{require_typekey_emails} = $obj->require_typekey_emails;
+            $param->{allow_reg_comments}   = $blog->allow_reg_comments;
+            $param->{allow_unreg_comments} = $blog->allow_unreg_comments;
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
@@ -267,7 +268,17 @@ sub edit {
         $param->{error} = $app->errstr if $app->errstr;
     }
     else {
-        $app->add_breadcrumb( $app->translate('New Website') );
+        $app->add_breadcrumb(
+            $app->translate('Sites'),
+            $app->uri(
+                mode => 'list',
+                args => {
+                    _type   => 'website',
+                    blog_id => 0,
+                },
+            ),
+        );
+        $app->add_breadcrumb( $app->translate('Create Site') );
 
         my $tz;
         if ( defined( $param->{server_offset} ) ) {
@@ -347,16 +358,20 @@ sub pre_save {
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
-        unless ( $fmgr->exists($site_path) ) {
-            my @dirs = File::Spec->splitdir($site_path);
-            pop @dirs;
-            $site_path = File::Spec->catdir(@dirs);
+        if ($site_path) {
+            unless ( $fmgr->exists($site_path) ) {
+                my @dirs = File::Spec->splitdir($site_path);
+                pop @dirs;
+                $site_path = File::Spec->catdir(@dirs);
+            }
         }
         return $app->errtrans(
             "The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.",
             $app->translate('Website Root')
             )
-            unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
+            unless $site_path
+            && $fmgr->exists($site_path)
+            && $fmgr->can_write($site_path);
     }
 
     return 1;
@@ -394,12 +409,15 @@ sub can_view {
 }
 
 sub can_view_website_list {
-    my $app = shift;
+    my $app  = shift;
+    my $blog = $app->blog;
+
+    return 0 if $blog;
 
     return 1 if $app->user->is_superuser;
     return 1 if $app->user->permissions(0)->can_do('edit_templates');
+    return 1 if $app->user->permissions(0)->can_do('access_to_website_list');
 
-    my $blog = $app->blog;
     my $blog_ids
         = !$blog         ? undef
         : $blog->is_blog ? [ $blog->id ]
@@ -459,7 +477,6 @@ sub dialog_select_website {
     my $user = $app->user;
 
     my $favorites = $app->param('select_favorites');
-    my %favorite;
     my $confirm_js;
     my $terms = {};
     my $args  = {};
@@ -487,15 +504,16 @@ sub dialog_select_website {
     $app->listing(
         {   type     => 'website',
             code     => $hasher,
-            template => 'dialog/select_weblog.tmpl',
-            terms    => $terms,
-            args     => $args,
-            params   => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+            template => $app->param('json') ? 'include/listing_panel.tmpl'
+            : 'dialog/select_weblog.tmpl',
+            terms  => $terms,
+            args   => $args,
+            params => {
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
                     "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => defined $app->param('multi')
@@ -507,7 +525,7 @@ sub dialog_select_website {
                 list_noncron     => 1,
                 return_url       => $app->base
                     . $app->uri . '?'
-                    . ( $app->param('return_args') || '' ),
+                    . '__mode=dashboard',
                 confirm_js  => $confirm_js,
                 idfield     => ( $app->param('idfield') || '' ),
                 namefield   => ( $app->param('namefield') || '' ),
@@ -519,6 +537,8 @@ sub dialog_select_website {
 
 sub dialog_move_blogs {
     my $app = shift;
+
+    $app->{hide_goback_button} = 1;
 
     my $blog_id = $app->param('blog_id');
 
@@ -533,20 +553,27 @@ sub dialog_move_blogs {
         $row->{'link'} = $row->{site_url};
     };
 
-    my @id = $app->param('id');
+    my @id = $app->multi_param('id');
+    if ( MT->model('website')->exist( { id => \@id, class => 'website' } ) ) {
+        return $app->error(
+            $app->translate('This action cannot move a top-level site.') );
+    }
+
     my $ids = join ',', @id;
     $app->listing(
         {   type     => 'website',
             code     => $hasher,
-            template => 'dialog/move_blogs.tmpl',
-            terms    => $terms,
-            args     => $args,
-            params   => {
-                dialog_title  => $app->translate("Select Website"),
-                items_prompt  => $app->translate("Selected Website"),
+            template => $app->param('json')
+            ? 'include/listing_panel.tmpl'
+            : 'dialog/move_blogs.tmpl',
+            terms  => $terms,
+            args   => $args,
+            params => {
+                dialog_title  => $app->translate("Select Site"),
+                items_prompt  => $app->translate("Selected Site"),
                 search_prompt => $app->translate(
-                    "Type a website name to filter the choices below."),
-                panel_label       => $app->translate("Website Name"),
+                    "Type a site name to filter the choices below."),
+                panel_label       => $app->translate("Site Name"),
                 panel_description => $app->translate("Description"),
                 panel_type        => 'blog',
                 panel_multi       => 0,
@@ -611,9 +638,7 @@ sub build_website_table {
     my (%args) = @_;
 
     my $website_class = $app->model('website');
-    my $tbp_class     = $app->model('ping');
     my $blog_class    = $app->model('blog');
-    my $comment_class = $app->model('comment');
     my $entry_class   = $app->model('entry');
     my $page_class    = $app->model('page');
 
@@ -634,10 +659,6 @@ sub build_website_table {
     my $author           = $app->user;
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
-    my $i;
-    my ($blog_count, $entry_count, $page_count,
-        $ping_count, $comment_count
-    );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -648,49 +669,14 @@ sub build_website_table {
         };
 
         if ( $app->mode ne 'dialog_select_website' ) {
-            $row->{num_blogs} = (
-                  $blog_count
-                ? $blog_count->{$blog_id}
-                : $blog_count->{$blog_id}
-                    = $blog_class->count( { parent_id => $blog_id } )
-                )
-                || 0;
+            $row->{num_blogs}
+                = $blog_class->count( { parent_id => $blog_id } ) || 0;
 
             # we should use count by group here...
-            $row->{num_entries} = (
-                  $entry_count
-                ? $entry_count->{$blog_id}
-                : $entry_count->{$blog_id}
-                    = $entry_class->count( { blog_id => $blog_id } )
-                )
-                || 0;
-            $row->{num_pages} = (
-                  $page_count
-                ? $page_count->{$blog_id}
-                : $page_count->{$blog_id}
-                    = $page_class->count( { blog_id => $blog_id } )
-                )
-                || 0;
-            $row->{num_comments} = (
-                  $comment_count
-                ? $comment_count->{$blog_id}
-                : $comment_count->{$blog_id} = $comment_class->count(
-                    {   blog_id     => $blog_id,
-                        junk_status => MT::Comment::NOT_JUNK()
-                    }
-                )
-                )
-                || 0;
-            $row->{num_pings} = (
-                  $ping_count
-                ? $ping_count->{$blog_id}
-                : $ping_count->{$blog_id} = MT::TBPing->count(
-                    {   blog_id     => $blog_id,
-                        junk_status => MT::TBPing::NOT_JUNK()
-                    }
-                )
-                )
-                || 0;
+            $row->{num_entries}
+                = $entry_class->count( { blog_id => $blog_id } ) || 0;
+            $row->{num_pages}
+                = $page_class->count( { blog_id => $blog_id } ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
                 $row->{can_edit_entries}      = 1;
@@ -730,7 +716,7 @@ sub cms_pre_load_filtered_list {
 
     my $terms = $load_options->{terms};
     delete $terms->{blog_id};
-    $terms->{class} = 'website';
+    $terms->{class} = '*';
 
     my $user = $app->user;
     return if $user->is_superuser;

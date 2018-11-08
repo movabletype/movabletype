@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -96,6 +96,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $cats = $ctx->mt->db()->fetch_categories(array(
             'blog_id' => $blog_id,
             'parent' => $parent,
+            'category_set_id' => $cat->category_category_set_id,
             'show_empty' => 1,
             'class' => $class,
             'sort_order' => $sort_order,

@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -66,12 +66,12 @@ function toggleAssetDetails(id) {
         }
         radio_val = true;
         button_val = false;
-    }        
+    }
     var radio = getByID("asset-radio-"+id);
     if (radio) {
         radio.checked = radio_val;
     }
-    
+
 
     if (window.dlg) {
         var panel = window.dlg.panel;
@@ -143,7 +143,7 @@ function showPage(id) {
         var noPreview = trans('No Preview Available.');
         preview = ""
         + "<div class=\"msg msg-error\">"
-        + "<p class=\"msg-text\">" + noPreview + "</p>" 
+        + "<p class=\"msg-text\">" + noPreview + "</p>"
         + "</div>";
     }
     var labelDims = trans('Dimensions');
@@ -156,12 +156,11 @@ function showPage(id) {
         metadata = ""
     };
     var labelFileName = trans('File Name');
-    detail.innerHTML = preview 
-        + "<ul>"
+    detail.innerHTML = preview
+        + "<ul class=\"list-unstyled\">"
         + "<li class=\"asset-preview-title\"><strong>" + labelFileName + "</strong>: " + asset['file_name'] + "</li>"
         + metadata
         + "<ul>";
     show("asset-" + id + "-preview");
     return false;
 }
-

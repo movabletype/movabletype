@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,8 +11,9 @@ use warnings;
 sub can_list {
     my ( $eh, $app, $terms, $args, $options ) = @_;
 
-    if (   defined( $app->param('status') )
-        && lc( $app->param('status') ) ne 'publish'
+    my $status = $app->param('status');
+    if (   defined($status)
+        && lc($status) ne 'publish'
         && $app->user->is_anonymous )
     {
         return 0;
@@ -41,7 +42,8 @@ sub cms_pre_load_filtered_list {
     return if $user->is_superuser;
 
     my $terms = $load_options->{terms} ||= {};
-    my $blog_ids = delete $terms->{blog_id}
+    my $blog_ids;
+    $blog_ids = delete $terms->{blog_id}
         if exists $terms->{blog_id};
 
     my $make_week_perm_filter = sub {

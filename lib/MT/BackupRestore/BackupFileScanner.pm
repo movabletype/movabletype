@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::BackupRestore::BackupFileScanner;
 
 use strict;
+use warnings;
 use XML::SAX::Base;
 use MIME::Base64;
 
@@ -44,7 +45,7 @@ sub start_element {
         my $pass = $attrs->{"{}password"}->{Value};
         if ( $pass =~ m/^\$6\$/ ) {
             die MT->translate(
-                "Cannot restore requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator."
+                "Cannot import requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator."
             );
         }
     }
@@ -76,7 +77,7 @@ sub end_document {
 
         unless ($count) {
             die MT->translate(
-                "Cannot restore requested file because a website was not found in either the existing Movable Type system or the backup data. A website must be created first."
+                "Cannot import requested file because a site was not found in either the existing Movable Type system or the exported data. A site must be created first."
             );
         }
     }

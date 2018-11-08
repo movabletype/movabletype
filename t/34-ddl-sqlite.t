@@ -1,1 +1,0 @@
-ddl-tests.pl

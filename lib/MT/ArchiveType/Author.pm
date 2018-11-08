@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::ArchiveType::Author;
 
 use strict;
+use warnings;
 use base qw( MT::ArchiveType );
 
 use MT::Util qw( remove_html encode_html );
@@ -17,6 +18,10 @@ sub name {
 
 sub archive_label {
     return MT->translate('AUTHOR_ADV');
+}
+
+sub order {
+    return 70;
 }
 
 sub default_archive_templates {
@@ -37,11 +42,11 @@ sub dynamic_template {
 
 sub template_params {
     return {
-        archive_class                    => "author-archive",
-        'module_author-monthly_archives' => 1,
-        author_archive                   => 1,
-        archive_template                 => 1,
-        archive_listing                  => 1,
+        archive_class        => "author-archive",
+        author_archive       => 1,
+        archive_template     => 1,
+        archive_listing      => 1,
+        author_based_archive => 1,
     };
 }
 
@@ -57,14 +62,14 @@ sub archive_title {
 }
 
 sub archive_file {
-    my $obj = shift;
+    my $archiver = shift;
     my ( $ctx, %param ) = @_;
     my $file_tmpl = $param{Template};
     my $author    = $ctx->{__stash}{author};
-    my $entry     = $ctx->{__stash}{entry};
+    my $obj       = $archiver->get_content($ctx);
     my $file;
 
-    my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
+    my $this_author = $author ? $author : ( $obj ? $obj->author : undef );
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {
@@ -196,6 +201,11 @@ sub author_based {
 
 sub group_based {
     return 1;
+}
+
+sub get_content {
+    my ( $archiver, $ctx ) = @_;
+    return $ctx->{__stash}{entry};
 }
 
 1;

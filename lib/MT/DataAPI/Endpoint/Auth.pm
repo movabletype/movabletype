@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -113,6 +113,29 @@ sub _authentication {
     my $session = $app->{session}
         or return $app->error( 'Invalid login', 401 );
 
+    # Check user permission
+    if ( !$author->can_sign_in_data_api ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])",
+                    $author->name,
+                    $author->id,
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
+
+        # Invalidate user session
+        if ( my $session = $app->session ) {
+            $session->remove;
+        }
+        $app->clear_login_cookie;
+
+        return $app->error( 'Invalid login', 401 );
+    }
+
     my $access_token = make_access_token( $app, $session );
 
     my $response = {
@@ -168,6 +191,16 @@ sub _authentication {
             );
         $response = { oneTimeToken => $ott->id, };
     }
+
+    $app->log(
+        $app->translate(
+            "User '[_1]' (ID:[_2]) logged in successfully via data api.",
+            $author->name, $author->id
+        ),
+        level    => MT::Log::INFO(),
+        class    => 'author',
+        category => 'login_user',
+    );
 
     $response;
 }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,8 +7,10 @@
 package MT::App::ActivityFeeds;
 
 use strict;
+use warnings;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
+use MT::ContentStatus;
 use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
     encode_html encode_url encode_xml);
 use HTTP::Date qw(time2isoz str2time time2str);
@@ -34,24 +36,37 @@ sub init_core_callbacks {
     my $app = shift;
 
     MT->_register_core_callbacks(
-        {   'ActivityFeed.system'  => \&_feed_system,
-            'ActivityFeed.comment' => \&_feed_comment,
-            'ActivityFeed.blog'    => \&_feed_blog,
-            'ActivityFeed.ping'    => \&_feed_ping,
-            'ActivityFeed.debug'   => \&_feed_debug,
-            'ActivityFeed.entry'   => \&_feed_entry,
-            'ActivityFeed.page'    => \&_feed_page,
+        {   'ActivityFeed.system' => \&_feed_system,
+            'ActivityFeed.blog'   => \&_feed_blog,
+            'ActivityFeed.debug'  => \&_feed_debug,
+            'ActivityFeed.entry'  => \&_feed_entry,
+            'ActivityFeed.page'   => \&_feed_page,
 
             # Alias
             'ActivityFeed.log' => \&_feed_system,
 
             # Filter
-            'ActivityFeed.filter_object.entry'   => \&_filter_entry,
-            'ActivityFeed.filter_object.page'    => \&_filter_page,
-            'ActivityFeed.filter_object.comment' => \&_filter_comment,
-            'ActivityFeed.filter_object.ping'    => \&_filter_ping,
+            'ActivityFeed.filter_object.entry' => \&_filter_entry,
+            'ActivityFeed.filter_object.page'  => \&_filter_page,
+
+            # Content Data
+            $app->_generate_content_data_callbacks,
         }
     );
+}
+
+sub _generate_content_data_callbacks {
+    require MT::ContentType;
+    my %callbacks;
+    my $iter = MT::ContentType->load_iter;
+    while ( my $ct = $iter->() ) {
+        my $cd_name = 'content_data_' . $ct->id;
+        $callbacks{"ActivityFeed.${cd_name}"} = \&_feed_content_data;
+        $callbacks{"ActivityFeed.filter_object.${cd_name}"}
+            = \&_filter_content_data;
+        $ct->generate_object_log_class;
+    }
+    %callbacks;
 }
 
 # authenticate with user package using the web services password instead
@@ -255,6 +270,10 @@ sub process_log_feed {
             = entity_translate( encode_html( $item->{'log.message'}, 1 ) );
         my $class = $log->class || 'system';
 
+        if ( $class =~ /^content_data_/ ) {
+            $class = 'content_data';
+        }
+
         if ( !$templates{$class} ) {
             $templates{$class} = $app->load_tmpl("feed_$class.tmpl")
                 || $app->load_tmpl("feed_system.tmpl");
@@ -278,11 +297,10 @@ sub process_log_feed {
     my $chrome_tmpl = $app->load_tmpl('feed_chrome.tmpl');
     $param->{loop_entries} = \@entries;
     my $str = qq();
-    for my $key ( $app->param ) {
-        $str
-            .= "&amp;"
-            . encode_url($key) . "="
-            . encode_url( $app->param($key) );
+    for my $key ( $app->multi_param ) {
+        my $value = $app->param($key);
+        $value = '' unless defined $value;
+        $str .= "&amp;" . encode_url($key) . "=" . encode_url($value);
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self}    = $app->base . $app->path . $app->script . $str;
@@ -347,150 +365,6 @@ sub apply_log_filter {
             if $param->{blog_id};
     }
     \%arg;
-}
-
-sub _feed_ping {
-    my ( $cb, $app, $view, $feed ) = @_;
-
-    my $user = $app->user;
-
-    require MT::Blog;
-    my $blog;
-
-    # verify user has permission to view pings for given weblog
-    my $blog_id = $app->param('blog_id');
-    if ($blog_id) {
-        my $blog_ids;
-        my $blog = MT->model('blog')->load($blog_id)
-            or return $cb->error( $app->translate("Invalid request.") );
-        if ( !$blog->is_blog ) {
-            push @$blog_ids, map { $_->id } @{ $blog->blogs };
-        }
-        push @$blog_ids, $blog_id;
-
-        my $iter = MT->model('permission')
-            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
-
-        $blog_ids = ();
-        while ( my $p = $iter->() ) {
-            push @$blog_ids, $p->blog_id
-                if $p->can_do('get_trackback_feed');
-        }
-
-        return $cb->error( $app->translate("No permissions.") )
-            unless $blog_ids;
-
-        $blog_id = join ',', @$blog_ids;
-    }
-    else {
-        if ( !$user->is_superuser ) {
-
-       # limit activity log view to only weblogs this user has permissions for
-            require MT::Permission;
-            my @perms = MT::Permission->load( { author_id => $user->id } );
-            return $cb->error( $app->translate("No permissions.") )
-                unless @perms;
-            my @blog_list = map { $_->blog_id }
-                grep { $_->can_do('get_trackback_feed') } @perms;
-            push @blog_list, $_->blog_id foreach @perms;
-            $blog_id = join ',', @blog_list;
-        }
-    }
-
-    my $link = $app->base
-        . $app->mt_uri(
-        mode => 'list',
-        args => {
-            '_type' => 'ping',
-            ( $blog ? ( blog_id => $blog_id ) : () ),
-        }
-        );
-    my $param = {
-        feed_link  => $link,
-        feed_title => $blog
-        ? $app->translate( '[_1] TrackBacks', $blog->name )
-        : $app->translate("All TrackBacks")
-    };
-
-    # user has permissions to view this type of feed... continue
-    my $terms = $app->apply_log_filter(
-        {   filter     => 'class',
-            filter_val => 'ping',
-            $blog_id ? ( blog_id => $blog_id ) : (),
-        }
-    );
-    $$feed = $app->process_log_feed( $terms, $param );
-}
-
-sub _feed_comment {
-    my ( $cb, $app, $view, $feed ) = @_;
-
-    my $user = $app->user;
-
-    require MT::Blog;
-    my $blog;
-
-    # verify user has permission to view comments for given weblog
-    my $blog_id = $app->param('blog_id');
-    if ($blog_id) {
-        my $blog_ids;
-        $blog = MT->model('blog')->load($blog_id)
-            or return $cb->error( $app->translate("Invalid request.") );
-        if ( !$blog->is_blog ) {
-            push @$blog_ids, map { $_->id } @{ $blog->blogs };
-        }
-        push @$blog_ids, $blog_id;
-
-        my $iter = MT->model('permission')
-            ->load_iter( { author_id => $user->id, blog_id => $blog_ids } );
-
-        $blog_ids = ();
-        while ( my $p = $iter->() ) {
-            push @$blog_ids, $p->blog_id
-                if $p->can_do('get_comment_feed');
-        }
-
-        return $cb->error( $app->translate("No permissions.") )
-            unless $blog_ids;
-
-        $blog_id = join ',', @$blog_ids;
-    }
-    else {
-
-       # limit activity log view to only weblogs this user has permissions for
-        if ( !$user->is_superuser ) {
-            my @perms = MT::Permission->load( { author_id => $user->id } );
-            return $cb->error( $app->translate("No permissions.") )
-                unless @perms;
-            my @blog_list = map { $_->blog_id }
-                grep { $_->can_do('get_comment_feed') } @perms;
-            $blog_id = join ',', @blog_list;
-        }
-    }
-
-    my $link = $app->base
-        . $app->mt_uri(
-        mode => 'list',
-        args => {
-            _type => 'comment',
-            ( $blog ? ( blog_id => $blog_id ) : () )
-        }
-        );
-    my $param = {
-        feed_link  => $link,
-        feed_title => $blog
-        ? $app->translate( '[_1] Comments', $blog->name )
-        : $app->translate("All Comments")
-    };
-
-    # user has permissions to view this type of feed... continue
-    my $terms = $app->apply_log_filter(
-        {   filter     => 'class',
-            filter_val => 'comment',
-            $blog_id ? ( blog_id => $blog_id ) : (),
-        }
-    );
-    $$feed = $app->process_log_feed( $terms, $param );
 }
 
 sub _feed_entry {
@@ -788,6 +662,70 @@ sub _feed_page {
     $$feed = $app->process_log_feed( $terms, $param );
 }
 
+sub _feed_content_data {
+    my ( $cb, $app, $view, $feed ) = @_;
+
+    my $user = $app->user;
+
+    my $blog;
+
+    # verify user has permission to view content data for given site
+    my $blog_id = $app->param('blog_id');
+    if ($blog_id) {
+        if ( !$user->is_superuser ) {
+            my $perm = MT->model('permission')
+                ->load( { author_id => $user->id, blog_id => $blog_id } );
+            return $cb->error( $app->translate("No permissions.") )
+                unless ( $perm && $perm->can_do("get_${view}_feed") )
+                ;    # TODO: fix permission
+        }
+
+        $blog = MT->model('blog')->load($blog_id) or return;
+    }
+    else {
+        if ( !$user->is_superuser ) {
+
+       # limit activity log view to only weblogs this user has permissions for
+            my @perms
+                = MT->model('permission')->load( { author_id => $user->id } );
+            return $cb->error( $app->translate("No permissions.") )
+                unless @perms;
+            my @blog_list = map { $_->blog_id }
+                grep { $_->can_do("get_${view}_feed") }
+                @perms;    # TODO: fix permission
+            $blog_id = join ',', @blog_list;
+        }
+    }
+
+    my ($content_type_id) = $view =~ /content_data_(\d+)/;
+    my $content_type = MT->model('content_type')->load($content_type_id);
+
+    my $link = $app->base
+        . $app->mt_uri(
+        mode => 'list',
+        args => {
+            '_type' => $view,
+            ( $blog ? ( blog_id => $blog_id ) : () )
+        }
+        );
+    my $param = {
+        feed_link  => $link,
+        feed_title => $blog
+        ? $app->translate( '[_1] "[_2]" Content Data',
+            $blog->name, $content_type->name )
+        : $app->translate( 'All "[_1]" Content Data', $content_type->name )
+    };
+
+    # user has permissions to view this type of feed... continue
+    my $terms = $app->apply_log_filter(
+        {   filter     => 'class',
+            filter_val => $view,
+            $blog_id ? ( blog_id => $blog_id ) : (),
+        }
+    );
+    $$feed = $app->process_log_feed( $terms, $param );
+}
+
 sub _filter_entry {
     my ( $cb, $app, $item ) = @_;
     my $user = $app->user;
@@ -841,56 +779,37 @@ sub _filter_page {
     return 1;
 }
 
-sub _filter_comment {
+sub _filter_content_data {
     my ( $cb, $app, $item ) = @_;
     my $user = $app->user;
+    my $view = $app->param('view');
 
-    return 0 if !exists $item->{'log.comment.id'};
-    my $own  = $item->{'log.comment.entry.author.id'} == $user->id;
-    my $perm = $user->permissions( $item->{'log.comment.blog.id'} )
+    return 0 if !exists $item->{'log.content_data.id'};
+
+    my $content_data
+        = MT->model('content_data')->load( $item->{'log.content_data.id'} )
+        or return 0;
+
+    my $own  = $content_data->author_id == $user->id;
+    my $perm = $user->permissions( $content_data->blog_id )
         or return 0;
 
     if (   !$app->can_do('get_all_system_feed')
         && !$perm->can_do('get_system_feed') )
     {
-        if ( !$perm->can_do('view_all_comments') ) {
-            return 0 if !$own;
-            return 0 if $own && !$perm->can_do('view_own_entry_comment');
-        }
+        return 0
+            if !$own
+            && !$perm->can_do("edit_all_${view}");    # TODO: fix permission
     }
 
-    $item->{'log.comment.can_edit'} = 1
-        if $own && $perm->can_do('edit_own_entry_comment_without_status')
-        || $perm->can_do('view_all_comments');
-    $item->{'log.comment.can_change_status'}
-        = $perm->can_do('edit_comment_status') ? 1 : 0;
+    $item->{'log.content_data.can_edit'}
+        = $perm->can_edit_content_data( $content_data, $user ) ? 1 : 0;
 
-    return 1;
-}
-
-sub _filter_ping {
-    my ( $cb, $app, $item ) = @_;
-    my $user = $app->user;
-
-    return 0 if !exists $item->{'log.tbping.id'};
-    my $own  = $item->{'log.tbping.entry.author.id'} == $user->id;
-    my $perm = $user->permissions( $item->{'log.tbping.blog.id'} )
-        or return 0;
-
-    if (   !$app->can_do('get_all_system_feed')
-        && !$perm->can_do('get_system_feed') )
-    {
-        if ( !$perm->can_do('view_all_trackbacks') ) {
-            return 0 if !$own;
-            return 0 if $own && !$perm->can_do('view_own_entry_trackback');
-        }
-    }
-
-    $item->{'log.tbping.can_edit'} = 1
-        if $own && $perm->can_do('edit_own_entry_trackback_without_status')
-        || $perm->can_do('view_all_trackback');
-    $item->{'log.tbping.can_change_status'}
-        = $perm->can_do('edit_trackback_status') ? 1 : 0;
+    # TODO: fix permission
+    $item->{'log.content_data.can_change_status'}
+        = $perm->can_do("publish_all_${view}") ? 1
+        : $own && $perm->can_do("publish_own_${view}") ? 1
+        :                                                0;
 
     return 1;
 }
@@ -943,7 +862,7 @@ Registers the core callbacks for the standard activity feeds.
 
 =head2 $app->login
 
-Method to override L<MT::App->login> to do token based authentication
+Method to override L<MT::App>->login to do token based authentication
 for feed clients.
 
 =head2 $app->mode_default

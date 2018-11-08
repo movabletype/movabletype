@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::App::Search::TagSearch;
 
 use strict;
+use warnings;
 use MT::Util qw( epoch2ts offset_time_list );
 use HTTP::Date qw( str2time );
 
@@ -110,15 +111,14 @@ sub add_join {
 
 sub search_terms {
     my $app = shift;
-    my $q   = $app->param;
 
-    my $offset = $q->param('startIndex') || $q->param('offset') || 0;
-    my $limit = $q->param('count') || $q->param('limit');
+    my $offset = $app->param('startIndex') || $app->param('offset') || 0;
+    my $limit = $app->param('count') || $app->param('limit');
     my $max = $app->{searchparam}{SearchMaxResults};
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
     my $tag_class = $app->model('tag');
-    my $search_string = $q->param('tag') || $q->param('search');
+    my $search_string = $app->param('tag') || $app->param('search');
     $app->{search_string} = $search_string;
 
     my @or_tag_names;
@@ -173,7 +173,7 @@ sub search_terms {
         if ( 'HASH' ne ref $params->{terms} ) {
             my $code = $params->{terms};
             $code = MT->handler_to_coderef($code);
-            eval { %terms = %{ $code->( $app ) }; };
+            eval { %terms = %{ $code->($app) }; };
         }
         else {
             %terms = %{ $params->{terms} };

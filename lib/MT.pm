@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT;
 
 use strict;
+use warnings;
 use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
@@ -16,8 +17,8 @@ use MT::I18N qw( const );
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
-    $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
-    $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL
+    $PRODUCT_NAME,   $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID,
+    $RELEASE_NUMBER, $PORTAL_URL,   $RELEASE_VERSION_ID
 );
 our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
@@ -33,14 +34,16 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.3', '6.0020' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0042' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
+        $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.6',              '__PRODUCT_VERSION_ID__',
-        '__RELEASE_NUMBER__', '__PORTAL_URL__'
+        '7.0.4',                '__PRODUCT_VERSION_ID__',
+        '__RELEASE_NUMBER__', '__PORTAL_URL__',
+        '__RELEASE_VERSION_ID__',
         );
 
   # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -49,14 +52,18 @@ BEGIN {
         $PRODUCT_NAME = 'Movable Type';
     }
     if ( $PORTAL_URL eq '__PORTAL' . '_URL__' ) {
-        $PORTAL_URL = 'http://www.movabletype.org/';
+        $PORTAL_URL = 'https://www.movabletype.org/';
     }
     if ( $VERSION_ID eq '__PRODUCT_VERSION' . '_ID__' ) {
         $VERSION_ID = $PRODUCT_VERSION;
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 6;
+        $RELEASE_NUMBER = 4;
+    }
+
+    if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
+        $RELEASE_VERSION_ID = 'r.4211';
     }
 
     $DebugMode = 0;
@@ -92,13 +99,14 @@ sub VERSION {
     return UNIVERSAL::VERSION(@_);
 }
 
-sub version_number  {$VERSION}
-sub version_id      {$VERSION_ID}
-sub product_code    {$PRODUCT_CODE}
-sub product_name    {$PRODUCT_NAME}
-sub product_version {$PRODUCT_VERSION}
-sub schema_version  {$SCHEMA_VERSION}
-sub release_number  {$RELEASE_NUMBER}
+sub version_number     {$VERSION}
+sub version_id         {$VERSION_ID}
+sub product_code       {$PRODUCT_CODE}
+sub product_name       {$PRODUCT_NAME}
+sub product_version    {$PRODUCT_VERSION}
+sub schema_version     {$SCHEMA_VERSION}
+sub release_number     {$RELEASE_NUMBER}
+sub release_version_id {$RELEASE_VERSION_ID}
 
 sub portal_url {
     if ( my $url = const('PORTAL_URL') ) {
@@ -122,7 +130,7 @@ sub version_slug {
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
-<__trans phrase="http://www.movabletype.com/">
+<__trans phrase="https://www.movabletype.com/">
 SLUG
 }
 
@@ -130,160 +138,6 @@ sub build_id {
     my $build_id = '__BUILD_ID__';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
-}
-
-sub import {
-    my $pkg = shift;
-    return unless @_;
-
-    my (%param) = @_;
-    my $app_pkg;
-    if ( $app_pkg = $param{app} || $param{App} || $ENV{MT_APP} ) {
-        if ( $app_pkg !~ m/::/ ) {
-            my $apps = $pkg->registry('applications');
-            $app_pkg = $apps->fetch($app_pkg);
-            if ( ref $app_pkg ) {
-
-                # pick first one??
-                $app_pkg = $app_pkg->[0];
-
-                # pick last one??
-                # $app_pkg = pop @$app_pkg;
-            }
-        }
-    }
-    elsif ( $param{run} || $param{Run} ) {
-
-        # my $script = File::Spec->rel2abs($0);
-        my ( $filename, $path, $suffix ) = fileparse( $0, qr{\..+$} );
-        $SCRIPT_SUFFIX = $suffix;
-        my $script = lc $filename;
-        $script =~ s/^mt-//;
-        my $apps = $pkg->registry('applications');
-        $app_pkg = $apps->fetch( lc $script );
-        unless ($app_pkg) {
-            die "cannot determine application for script $0, stopped at";
-        }
-    }
-    $pkg->run_app( $app_pkg, \%param )
-        if $app_pkg;
-}
-
-sub run_app {
-    my $pkg = shift;
-    my ( $class, $param ) = @_;
-
-    # When running under FastCGI, the initial invocation of the
-    # script has a bare environment. We can use this to test
-    # for FastCGI.
-    require MT::Util;
-    my $fast_cgi = MT::Util::check_fast_cgi( $param->{FastCGI} );
-
-    # ready to run now... run inside an eval block so we can gracefully
-    # die if something bad happens
-    my $app;
-    eval {
-        eval "require $class; 1;" or die $@;
-        if ($fast_cgi) {
-            my ( $max_requests, $max_time, $cfg );
-            while ( my $cgi = new CGI::Fast ) {
-                $app = $class->new( %$param, CGIObject => $cgi )
-                    or die $class->errstr;
-
-                $app->{fcgi_startup_time} ||= time;
-                $app->{fcgi_request_count}
-                    = ( $app->{fcgi_request_count} || 0 ) + 1;
-
-                unless ($cfg) {
-                    $cfg          = $app->config;
-                    $max_requests = $cfg->FastCGIMaxRequests;
-                    $max_time     = $cfg->FastCGIMaxTime;
-                }
-
-                local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
-                $pkg->set_instance($app);
-                $app->init_request( CGIObject => $cgi );
-                $app->run;
-
-                # Check for timeout for this process
-                if ( $max_time
-                    && ( time - $app->{fcgi_startup_time} >= $max_time ) )
-                {
-                    last;
-                }
-
-                # Check for max executions for this process
-                if ( $max_requests
-                    && ( $app->{fcgi_request_count} >= $max_requests ) )
-                {
-                    last;
-                }
-            }
-        }
-        else {
-            $app = $class->new(%$param) or die $class->errstr;
-            local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
-            $app->run;
-        }
-    };
-    if ( my $err = $@ ) {
-        my $charset = 'utf-8';
-        eval {
-            $app ||= MT->instance;
-            my $cfg = $app->config;
-            my $c   = $app->find_config;
-            $cfg->read_config($c);
-            $charset = $cfg->PublishCharset;
-        };
-        if ( $app && UNIVERSAL::isa( $app, 'MT::App' ) ) {
-            eval {
-                my %param = ( error => $err );
-                if ( $err =~ m/Bad ObjectDriver/ ) {
-                    $param{error_database_connection} = 1;
-                }
-                elsif ( $err =~ m/Bad CGIPath/ ) {
-                    $param{error_cgi_path} = 1;
-                }
-                elsif ( $err =~ m/Missing configuration file/ ) {
-                    $param{error_config_file} = 1;
-                }
-                my $page = $app->build_page( 'error.tmpl', \%param )
-                    or die $app->errstr;
-                print "Content-Type: text/html; charset=$charset\n\n";
-                print $page;
-            };
-            if ( my $err = $@ ) {
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app
-                    ? $app->translate( "Got an error: [_1]", $err )
-                    : "Got an error: $err";
-            }
-        }
-        else {
-            if ( $err =~ m/Missing configuration file/ ) {
-                my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
-                $host =~ s/:\d+//;
-                my $port = $ENV{SERVER_PORT};
-                my $uri = $ENV{REQUEST_URI} || $ENV{PATH_INFO};
-                $uri =~ s/mt(\Q$SCRIPT_SUFFIX\E)?.*$//;
-                my $cgipath = '';
-                $cgipath = $port == 443 ? 'https' : 'http';
-                $cgipath .= '://' . $host;
-                $cgipath
-                    .= ( $port == 443 || $port == 80 ) ? '' : ':' . $port;
-                $cgipath .= $uri;
-
-                print "Status: 302 Moved\n";
-                print "Location: " . $cgipath . "mt-wizard.cgi\n\n";
-            }
-            else {
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app
-                    ? $app->translate( "Got an error: [_1]", $err )
-                    : "Got an error: $err\n";
-            }
-        }
-    }
 }
 
 sub instance {
@@ -633,6 +487,16 @@ sub remove_callback {
     @$cbarr = grep { $_ != $cb } @$cbarr;
 }
 
+sub is_callback_registered {
+    my $class = shift;
+    my ($meth) = @_;
+
+    foreach my $list (@Callbacks) {
+        return 1 if exists $list->{$meth};
+    }
+    return 0;
+}
+
 # For use by MT internal code
 sub _register_core_callbacks {
     my $class = shift;
@@ -825,8 +689,14 @@ sub init_schema {
 }
 
 sub init_permissions {
+    my $app = shift;
+
     require MT::Permission;
     MT::Permission->init_permissions;
+
+    $app->component('core')
+        ->registry( 'permissions',
+        $app->model('content_type')->all_permissions );
 }
 
 sub init_config {
@@ -883,18 +753,22 @@ sub init_config {
         if ( defined $path ) {
             if ( $type eq 'ARRAY' ) {
                 my @paths = $cfg->get($meth);
-                local $_;
-                foreach (@paths) {
-                    next if File::Spec->file_name_is_absolute($_);
-                    $_ = File::Spec->catfile( $config_dir, $_ );
+                foreach my $path (@paths) {
+                    next if File::Spec->file_name_is_absolute($path);
+                    my $abs_path = File::Spec->catfile( $config_dir, $path );
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                        unless -d $abs_path;
+                    $path = $abs_path;
                 }
                 $cfg->$meth( \@paths );
             }
             else {
                 next if ref($path);    # unexpected referene, ignore
                 if ( !File::Spec->file_name_is_absolute($path) ) {
-                    $path = File::Spec->catfile( $config_dir, $path );
-                    $cfg->$meth($path);
+                    my $abs_path = File::Spec->catfile( $config_dir, $path );
+                    $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                        unless -d $abs_path;
+                    $cfg->$meth($abs_path);
                 }
             }
         }
@@ -902,7 +776,10 @@ sub init_config {
             next if $type eq 'ARRAY';
             my $path = $cfg->default($meth);
             if ( defined $path ) {
-                $cfg->$meth( File::Spec->catfile( $config_dir, $path ) );
+                my $abs_path = File::Spec->catfile( $config_dir, $path );
+                $abs_path = File::Spec->catfile( $mt->{mt_dir}, $path )
+                    unless -d $abs_path;
+                $cfg->$meth($abs_path);
             }
         }
     }
@@ -1020,7 +897,7 @@ sub init_config {
                 . $DBI::VERSION
                 . "; DBD/"
                 . $drh->{Version} . "\n";
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 print $PERFLOG "# App Mode: mod_perl\n";
             }
             elsif ( $ENV{FAST_CGI} ) {
@@ -1347,6 +1224,11 @@ sub init_debug_mode {
                     '$Core::MT::Summary::Triggers::post_init_add_triggers',
             }
         );
+        MT->_register_core_callbacks(
+            {   'post_init' =>
+                    '$Core::MT::CMS::ContentType::init_content_type',
+            }
+        );
         $callbacks_added = 1;
     }
 }
@@ -1415,8 +1297,36 @@ sub init_plugins {
     my $use_plugins  = $cfg->UsePlugins;
     my @PluginPaths  = $cfg->PluginPath;
     my $PluginSwitch = $cfg->PluginSwitch || {};
-    return $mt->_init_plugins_core( $PluginSwitch, $use_plugins,
-        \@PluginPaths );
+    my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
+    $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
+
+    unless (%$PluginSwitch) {
+        for my $plugin_sig ( keys %Plugins ) {
+            if ( !exists $PluginSwitch->{$plugin_sig} ) {
+                $PluginSwitch->{$plugin_sig} = 1
+                    if !exists $Plugins{$plugin_sig}{enabled}
+                    or $Plugins{$plugin_sig}{enabled};
+            }
+        }
+    }
+
+    if ( $plugin_sigs ne join ',', sort keys %$PluginSwitch ) {
+        for my $plugin_sig ( keys %$PluginSwitch ) {
+            delete $PluginSwitch->{$plugin_sig}
+                unless exists $Plugins{$plugin_sig};
+        }
+
+        $mt->config->PluginSwitch( $PluginSwitch, 1 );
+
+        my %PluginAlias;
+        for my $plugin_sig ( keys %$PluginSwitch ) {
+            next unless ref $Plugins{$plugin_sig}{object};
+            my $alias = $Plugins{$plugin_sig}{object}->name or next;
+            $PluginAlias{$alias} = $plugin_sig if $alias ne $plugin_sig;
+        }
+        $mt->config->PluginAlias( \%PluginAlias, 1 );
+    }
+    return 1;
 }
 
 {
@@ -1519,6 +1429,7 @@ sub init_plugins {
             }
         }
         $Plugins{$plugin_sig}{enabled} = 1;
+        $PluginSwitch->{$plugin_sig} = 1;
         return 1;
     }
 
@@ -1553,6 +1464,7 @@ sub init_plugins {
 
         # rebless? based on config?
         local $plugin_sig = $plugin_dir;
+        $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
         $p->init_callbacks();
     }
@@ -1612,7 +1524,7 @@ sub init_plugins {
                         closedir $subdir;
                     }
                     else {
-                        warn "Can not read directory: $plugin_full_path";
+                        warn "Cannot read directory: $plugin_full_path";
                     }
                     for my $plugin (@plugins) {
                         next if $plugin !~ /\.pl$/;
@@ -1638,6 +1550,15 @@ sub init_plugins {
         1;
     }
 
+    sub has_plugin {
+        my ( $mt, $plugin ) = @_;
+        return 0 unless defined $plugin;
+        return 0 unless exists $MT::Plugins{$plugin};
+        return 0
+            if defined $MT::Plugins{$plugin}{enabled}
+            && !$MT::Plugins{$plugin}{enabled};
+        return 1;
+    }
 }
 
 my %addons;
@@ -1701,9 +1622,9 @@ sub component {
 sub publisher {
     my $mt = shift;
     $mt = $mt->instance unless ref $mt;
-    require MT::WeblogPublisher;
-    $mt->request('WeblogPublisher')
-        || $mt->request( 'WeblogPublisher', new MT::WeblogPublisher() );
+    require MT::ContentPublisher;
+    $mt->request('ContentPublisher')
+        || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
 }
 
 sub rebuild {
@@ -1715,6 +1636,12 @@ sub rebuild {
 sub rebuild_entry {
     my $mt = shift;
     $mt->publisher->rebuild_entry(@_)
+        or return $mt->error( $mt->publisher->errstr );
+}
+
+sub rebuild_content_data {
+    my $mt = shift;
+    $mt->publisher->rebuild_content_data(@_)
         or return $mt->error( $mt->publisher->errstr );
 }
 
@@ -1730,272 +1657,20 @@ sub rebuild_archives {
         or return $mt->error( $mt->publisher->errstr );
 }
 
-sub ping {
-    my $mt    = shift;
-    my %param = @_;
-    my $blog;
-    require MT::Entry;
-    require MT::Util;
-    unless ( $blog = $param{Blog} ) {
-        my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
-            or return $mt->trans_error( "Loading of blog '[_1]' failed: [_2]",
-            $blog_id, MT::Blog->errstr );
-    }
-
-    my (@res);
-
-    my $send_updates = 1;
-    if ( exists $param{OldStatus} ) {
-        ## If this is a new entry (!$old_status) OR the status was previously
-        ## set to draft, and is now set to publish, send the update pings.
-        my $old_status = $param{OldStatus};
-        if ( $old_status && $old_status eq MT::Entry::RELEASE() ) {
-            $send_updates = 0;
-        }
-    }
-
-    if ( $send_updates && !( MT->config->DisableNotificationPings ) ) {
-        ## Send update pings.
-        my @updates = $mt->update_ping_list($blog);
-        for my $url (@updates) {
-            require MT::XMLRPC;
-            if (MT::XMLRPC->ping_update( 'weblogUpdates.ping', $blog, $url ) )
-            {
-                push @res, { good => 1, url => $url, type => "update" };
-            }
-            else {
-                my $err = MT::XMLRPC->errstr;
-                $err = Encode::decode_utf8($err)
-                    if ( $err && !Encode::is_utf8($err) );
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $url,
-                    type  => "update",
-                    error => $err,
-                    };
-            }
-        }
-        if ( $blog->mt_update_key ) {
-            require MT::XMLRPC;
-            if ( MT::XMLRPC->mt_ping($blog) ) {
-                push @res,
-                    {
-                    good => 1,
-                    url  => $mt->{cfg}->MTPingURL,
-                    type => "update"
-                    };
-            }
-            else {
-                my $err = MT::XMLRPC->errstr;
-                $err = Encode::decode_utf8($err)
-                    if ( $err && !Encode::is_utf8($err) );
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $mt->{cfg}->MTPingURL,
-                    type  => "update",
-                    error => $err,
-                    };
-            }
-        }
-    }
-
-    my $cfg     = $mt->{cfg};
-    my $send_tb = $cfg->OutboundTrackbackLimit;
-    return \@res if $send_tb eq 'off';
-
-    my @tb_domains;
-    if ( $send_tb eq 'selected' ) {
-        @tb_domains = $cfg->OutboundTrackbackDomains;
-    }
-    elsif ( $send_tb eq 'local' ) {
-        my $iter = MT::Blog->load_iter();
-        while ( my $b = $iter->() ) {
-            next if $b->id == $blog->id;
-            push @tb_domains, MT::Util::extract_domains( $b->site_url );
-        }
-    }
-    my $tb_domains = join '|', map { lc quotemeta $_ } @tb_domains;
-    $tb_domains = qr/(?:^|\.)$tb_domains$/ if $tb_domains;
-
-    ## Send TrackBack pings.
-    if ( my $entry = $param{Entry} ) {
-        my $pings = $entry->to_ping_url_list;
-
-        my %pinged = map { $_ => 1 } @{ $entry->pinged_url_list };
-        my $cats = $entry->categories;
-        for my $cat (@$cats) {
-            push @$pings, grep !$pinged{$_}, @{ $cat->ping_url_list };
-        }
-
-        my $ua = MT->new_ua;
-
-        # Get the hostname of MT in HTTPS.
-        my $base = MT->config->CGIPath;
-        $base =~ s/^http:/https:/;
-
-        ## Build query string to be sent on each ping.
-        my @qs;
-        push @qs, 'title=' . MT::Util::encode_url( $entry->title );
-        push @qs, 'url=' . MT::Util::encode_url( $entry->permalink );
-        push @qs, 'excerpt=' . MT::Util::encode_url( $entry->get_excerpt );
-        push @qs, 'blog_name=' . MT::Util::encode_url( $blog->name );
-        my $qs = join '&', @qs;
-
-        ## Character encoding--best guess.
-        my $enc = $mt->{cfg}->PublishCharset;
-
-        for my $url (@$pings) {
-            $url =~ s/^\s*//;
-            $url =~ s/\s*$//;
-            my $url_domain;
-            ($url_domain) = MT::Util::extract_domains($url);
-            next if $tb_domains && ( lc($url_domain) !~ $tb_domains );
-
-            # Do not verify SSL certificate
-            # when sending a trackback ping to self.
-            my %ssl_opts;
-            my $changed_ssl_opts;
-            if ( $base && $url =~ m/^$base/ ) {
-                $ssl_opts{verify_hostname} = $ua->ssl_opts('verify_hostname');
-                $ua->ssl_opts( verify_hostname => 0 );
-                $changed_ssl_opts = 1;
-            }
-
-            my $req = HTTP::Request->new( POST => $url );
-            $req->content_type(
-                "application/x-www-form-urlencoded; charset=$enc");
-            $req->content($qs);
-            my $res = $ua->request($req);
-
-            # Restore ssl_opts.
-            if ($changed_ssl_opts) {
-                $ua->ssl_opts(
-                    'verify_hostname' => $ssl_opts{verify_hostname} );
-            }
-
-            if ( substr( $res->code, 0, 1 ) eq '2' ) {
-                my $c = $res->content;
-                $c = Encode::decode_utf8($c) if !Encode::is_utf8($c);
-                my ( $error, $msg )
-                    = $c =~ m!<error>(\d+).*<message>(.+?)</message>!s;
-                if ($error) {
-                    push @res,
-                        {
-                        good  => 0,
-                        url   => $url,
-                        type  => 'trackback',
-                        error => $msg,
-                        };
-                }
-                else {
-                    push @res,
-                        { good => 1, url => $url, type => 'trackback' };
-                }
-            }
-            else {
-                push @res,
-                    {
-                    good  => 0,
-                    url   => $url,
-                    type  => 'trackback',
-                    error => "HTTP error: " . $res->status_line
-                    };
-            }
-        }
-    }
-    \@res;
-}
+sub ping { return [] }
 
 sub ping_and_save {
     my $mt    = shift;
     my %param = @_;
     if ( my $entry = $param{Entry} ) {
-        my $results = MT::ping( $mt, @_ ) or return;
-        my %still_ping;
-        my $pinged = $entry->pinged_url_list;
-        for my $res (@$results) {
-            next if $res->{type} ne 'trackback';
-            if ( !$res->{good} ) {
-                $still_ping{ $res->{url} } = 1;
-            }
-            push @$pinged,
-                $res->{url}
-                . (
-                $res->{good}
-                ? ''
-                : ' ' . $res->{error}
-                );
-        }
-        $entry->pinged_urls( join "\n", @$pinged );
-        $entry->to_ping_urls( join "\n", keys %still_ping );
         $entry->save or return $mt->error( $entry->errstr );
-        return $results;
+        return [];
     }
     1;
 }
 
-sub needs_ping {
-    my $mt    = shift;
-    my %param = @_;
-    my $blog  = $param{Blog};
-    my $entry = $param{Entry};
-    require MT::Entry;
-    return unless $entry->status == MT::Entry::RELEASE();
-    my $old_status = $param{OldStatus};
-    my %list;
-    ## If this is a new entry (!$old_status) OR the status was previously
-    ## set to draft, and is now set to publish, send the update pings.
-    if ( ( !$old_status || $old_status ne MT::Entry::RELEASE() )
-        && !( MT->config->DisableNotificationPings ) )
-    {
-        my @updates = $mt->update_ping_list($blog);
-        @list{@updates} = (1) x @updates;
-        $list{ $mt->{cfg}->MTPingURL } = 1 if $blog && $blog->mt_update_key;
-    }
-    if ($entry) {
-        @list{ @{ $entry->to_ping_url_list } } = ();
-        my %pinged = map { $_ => 1 } @{ $entry->pinged_url_list };
-        my $cats = $entry->categories;
-        for my $cat (@$cats) {
-            @list{ grep !$pinged{$_}, @{ $cat->ping_url_list } } = ();
-        }
-    }
-    my @list = keys %list;
-    return unless @list;
-    \@list;
-}
-
-sub update_ping_list {
-    my $mt = shift;
-    my ($blog) = @_;
-
-    my @updates;
-    if ( my $pings = MT->registry('ping_servers') ) {
-        my $up = $blog->update_pings;
-        if ($up) {
-            foreach ( split ',', $up ) {
-                next unless exists $pings->{$_};
-                push @updates, $pings->{$_}->{url};
-            }
-        }
-    }
-    if ( my $others = $blog->ping_others ) {
-        push @updates, split /\r?\n/, $others;
-    }
-    my %updates;
-    for my $url (@updates) {
-        for ($url) {
-            s/^\s*//;
-            s/\s*$//;
-        }
-        next unless $url =~ /\S/;
-        $updates{$url}++;
-    }
-    keys %updates;
-}
+sub needs_ping       {return}
+sub update_ping_list {return}
 
 {
     my $LH;
@@ -2387,63 +2062,22 @@ sub load_tmpl {
     $tmpl;
 }
 
-sub _svn_revision {
-    my $mt      = shift;
-    my $wc_base = $mt->mt_dir;
-    return unless -d File::Spec->catdir( $wc_base, '.git' );
-
-    # Currently, we are on the Github.
-    return
-        unless ( -e $wc_base && open my $fh, '-|', "git status" );
-
-    my $revision = '';
-    if ( -e $wc_base && open my $fh,
-        '-|', "git log --pretty=format:'' | wc -l" )
-    {
-        $revision = do { local $/ = undef; <$fh> };
-        chomp $revision;
-        $revision =~ s/\s*(.*)/r$1/;
-        close $fh;
-    }
-
-    my $hash = '';
-    if ( -e $wc_base && open my $fh, '-|', "git log -1 | grep commit" ) {
-        $hash = do { local $/ = undef; <$fh> };
-        chomp $hash;
-        if ( $hash =~ s/commit (.*)/$1/ ) {
-            $hash = substr( $hash, 0, 8 );
-        }
-        close $fh;
-    }
-
-    my $branch = '';
-    if ( -e $wc_base && open my $fh, '-|', "git branch" ) {
-        $branch = do { local $/ = undef; <$fh> };
-        chomp $branch;
-        if ( $branch =~ m/\*\s(.*)/ ) {
-            $branch = $1;
-        }
-        close $fh;
-    }
-
-    return { revision => "$revision-$hash", branch => $branch };
-}
-
 sub set_default_tmpl_params {
     my $mt     = shift;
     my ($tmpl) = @_;
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
     if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        $param->{mt_svn_revision} = $mt->_svn_revision();
-        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
+        require MT::Debug::GitInfo;
+        $param->{mt_vcs_revision} = MT::Debug::GitInfo->is_repository;
+        if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
             $param->{mt_headers} = $mt->{apache}->headers_in();
         }
         else {
             $param->{mt_headers} = \%ENV;
         }
         unless ( $mt->{cookies} ) {
-            if ( $ENV{MOD_PERL} ) {
+            if ( MT::Util::is_mod_perl1() ) {
                 eval { require Apache::Cookie };
                 $mt->{cookies} = Apache::Cookie->fetch;
             }
@@ -2483,15 +2117,18 @@ sub set_default_tmpl_params {
             }
         }
     }
-    $param->{mt_beta}         = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
-    $param->{static_uri}      = $mt->static_path;
-    $param->{mt_version}      = MT->version_number;
-    $param->{mt_version_id}   = MT->version_id;
-    $param->{mt_product_code} = MT->product_code;
-    $param->{mt_product_name} = $mt->translate( MT->product_name );
-    $param->{language_tag}    = substr( $mt->current_language, 0, 2 );
-    $param->{language_encoding} = $mt->charset;
-    $param->{optimize_ui} = $mt->build_id && !$MT::DebugMode;
+    $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
+    $param->{mt_beta}  = 1 if MT->version_id =~ m/^\d+\.\d+(?:b|rc)/;
+    $param->{mt_alpha_or_beta}      = $param->{mt_alpha} || $param->{mt_beta};
+    $param->{static_uri}            = $mt->static_path;
+    $param->{mt_version}            = MT->version_number;
+    $param->{mt_version_id}         = MT->version_id;
+    $param->{mt_release_version_id} = MT->release_version_id;
+    $param->{mt_product_code}       = MT->product_code;
+    $param->{mt_product_name}       = $mt->translate( MT->product_name );
+    $param->{language_tag}          = substr( $mt->current_language, 0, 2 );
+    $param->{language_encoding}     = $mt->charset;
+    $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
@@ -2516,6 +2153,20 @@ sub set_default_tmpl_params {
             $param->{template_filename} = $fname;
         }
     }
+
+    my $switch = $mt->config->PluginSwitch || {};
+    my %enabled_plugins;
+    for my $plugin_sig ( keys %MT::Plugins ) {
+        next
+            if defined $MT::Plugins{$plugin_sig}{enabled}
+            && !$MT::Plugins{$plugin_sig}{enabled};
+        next if defined $switch->{$plugin_sig} && !$switch->{$plugin_sig};
+        $enabled_plugins{$plugin_sig} = 1;
+    }
+    $enabled_plugins{CommentsTrackback} = 1
+        if $enabled_plugins{Comments} or $enabled_plugins{Trackback};
+    $param->{enabled_plugins} = \%enabled_plugins;
+
     $tmpl->param($param);
 }
 
@@ -2617,9 +2268,9 @@ sub build_page {
                     && ( $_ ne 'password' )
                     && ( $_ ne 'submit' )
                     && ( $mode eq 'logout' ? ( $_ ne '__mode' ) : 1 )
-            } $q->param;
+            } $mt->multi_param;
             for my $query_key (@query_keys) {
-                my @vals = $q->param($query_key);
+                my @vals = $mt->multi_param($query_key);
                 for my $val (@vals) {
                     push @query, { name => $query_key, value => $val };
                 }
@@ -2728,8 +2379,8 @@ sub build_email {
     my $mt = $class->instance;
 
     # basically, try to load from database
-    my $blog = $param->{blog} || undef;
-    my $id = $file;
+    my $blog = $param->{blog};
+    my $id   = $file;
     $id =~ s/(\.tmpl|\.mtml)$//;
 
     require MT::Template;
@@ -2854,176 +2505,84 @@ sub commenter_authenticators {
     return values %auths;
 }
 
-sub _commenter_auth_params {
-    my ( $key, $blog_id, $entry_id, $static ) = @_;
-    my $params = {
-        blog_id => $blog_id,
-        static  => $static,
-    };
-    $params->{entry_id} = $entry_id if defined $entry_id;
-    return $params;
-}
-
-sub _openid_commenter_condition {
-    my ( $blog, $reason ) = @_;
-    eval { require Digest::SHA1; };
-    return 1 unless $@;
-    $$reason
-        = MT->translate(
-        'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.'
-        );
-    return 0;
-}
-
 sub core_commenter_authenticators {
     return {
         'OpenID' => {
-            class             => 'MT::Auth::OpenID',
-            label             => 'OpenID',
-            login_form        => 'comment/auth_openid.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/signin_openid.png',
-            logo_small        => 'images/comment/openid_logo.png',
-            order             => 10,
+            label      => 'OpenID',
+            logo       => 'images/comment/signin_openid.png',
+            logo_small => 'images/comment/openid_logo.png',
+            order      => 10,
+            disable => 1,    # overriden by OpenID plugin
         },
         'LiveJournal' => {
-            class             => 'MT::Auth::LiveJournal',
-            label             => 'LiveJournal',
-            login_form        => 'comment/auth_livejournal.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/signin_livejournal.png',
-            logo_small        => 'images/comment/livejournal_logo.png',
-            order             => 11,
+            label      => 'LiveJournal',
+            logo       => 'images/comment/signin_livejournal.png',
+            logo_small => 'images/comment/livejournal_logo.png',
+            order      => 11,
+            disable => 1,    # overriden by OpenID plugin
         },
         'Vox' => {
-            class             => 'MT::Auth::Vox',
-            label             => 'Vox',
-            login_form        => 'comment/auth_vox.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/signin_vox.png',
-            logo_small        => 'images/comment/vox_logo.png',
-            order             => 12,
-            disable           => 1,
+            label      => 'Vox',
+            logo       => 'images/comment/signin_vox.png',
+            logo_small => 'images/comment/vox_logo.png',
+            order      => 12,
+            disable    => 1,
         },
         'Google' => {
             label      => 'Google',
-            class      => 'MT::Auth::GoogleOpenId',
-            login_form => 'comment/auth_googleopenid.tmpl',
-            condition  => sub {
-                my ( $blog, $reason ) = @_;
-                my @missing;
-                eval { require Digest::SHA1; };
-                push @missing, 'Digest::SHA1' if $@;
-                eval { require Crypt::SSLeay; };
-                push @missing, 'Crypt::SSLeay' if $@;
-                return 1 unless @missing;
-                $$reason = MT->translate(
-                    'A Perl module required for Google ID commenter authentication is missing: [_1].',
-                    join( ',', @missing )
-                );
-                return 0;
-            },
-            login_form_params => \&_commenter_auth_params,
-            logo              => 'images/comment/google.png',
-            logo_small        => 'images/comment/google_logo.png',
-            order             => 13,
-            disable           => 1,
+            logo       => 'images/comment/google.png',
+            logo_small => 'images/comment/google_logo.png',
+            order      => 13,
+            disable    => 1,
         },
         'Yahoo' => {
-            class             => 'MT::Auth::Yahoo',
-            label             => 'Yahoo!',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/yahoo.png',
-            logo_small        => 'images/comment/favicon_yahoo.png',
-            login_form        => 'comment/auth_yahoo.tmpl',
-            order             => 14,
+            label      => 'Yahoo!',
+            logo       => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            order      => 14,
+            disable => 1,    # overriden by OpenID plugin
         },
         AIM => {
-            class             => 'MT::Auth::AIM',
-            label             => 'AIM',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/aim.png',
-            logo_small        => 'images/comment/aim_logo.png',
-            login_form        => 'comment/auth_aim.tmpl',
-            order             => 15,
+            label      => 'AIM',
+            logo       => 'images/comment/aim.png',
+            logo_small => 'images/comment/aim_logo.png',
+            order      => 15,
+            disable => 1,    # overriden by OpenID plugin
         },
         'WordPress' => {
-            class             => 'MT::Auth::WordPress',
-            label             => 'WordPress.com',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/wordpress.png',
-            logo_small        => 'images/comment/wordpress_logo.png',
-            login_form        => 'comment/auth_wordpress.tmpl',
-            order             => 16,
+            label      => 'WordPress.com',
+            logo       => 'images/comment/wordpress.png',
+            logo_small => 'images/comment/wordpress_logo.png',
+            order      => 16,
+            disable => 1,    # overriden by OpenID plugin
         },
         'TypeKey' => {
-            disable           => 1,
-            class             => 'MT::Auth::TypeKey',
-            label             => 'TypePad',
-            login_form        => 'comment/auth_typepad.tmpl',
-            login_form_params => sub {
-                my ( $key, $blog_id, $entry_id, $static ) = @_;
-                my $entry;
-                $entry = MT::Entry->load($entry_id) if $entry_id;
-
-                ## TypeKey URL
-                require MT::Template::Context;
-                my $ctx = MT::Template::Context->new;
-                $ctx->stash( 'blog_id', $blog_id );
-                my $blog = MT::Blog->load($blog_id);
-                $ctx->stash( 'blog',  $blog );
-                $ctx->stash( 'entry', $entry );
-                my $params = {};
-                require MT::Template::Tags::Comment;
-                $params->{tk_signin_url}
-                    = MT::Template::Tags::Comment::_hdlr_remote_sign_in_link(
-                    $ctx, { static => $static } );
-                return $params;
-            },
+            disable    => 1,
+            label      => 'TypePad',
             logo       => 'images/comment/signin_typepad.png',
             logo_small => 'images/comment/typepad_logo.png',
-            condition  => sub {
-                my ($blog) = @_;
-                return 1 unless $blog;
-                return $blog->remote_auth_token ? 1 : 0;
-            },
-            order => 17,
+            order      => 17,
         },
         'YahooJP' => {
-            class             => 'MT::Auth::Yahoo',
-            label             => 'Yahoo! JAPAN',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/yahoo.png',
-            logo_small        => 'images/comment/favicon_yahoo.png',
-            login_form        => 'comment/auth_yahoojapan.tmpl',
-            order             => 18,
+            label      => 'Yahoo! JAPAN',
+            logo       => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            order      => 18,
+            disable => 1,    # overriden by OpenID plugin
         },
         'livedoor' => {
-            class             => 'MT::Auth::OpenID',
-            label             => 'livedoor',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/signin_livedoor.png',
-            logo_small        => 'images/comment/livedoor_logo.png',
-            login_form        => 'comment/auth_livedoor.tmpl',
-            order             => 20,
+            label      => 'livedoor',
+            logo       => 'images/comment/signin_livedoor.png',
+            logo_small => 'images/comment/livedoor_logo.png',
+            order      => 20,
+            disable => 1,    # overriden by OpenID plugin
         },
         'Hatena' => {
-            class             => 'MT::Auth::Hatena',
-            label             => 'Hatena',
-            login_form        => 'comment/auth_hatena.tmpl',
-            login_form_params => \&_commenter_auth_params,
-            condition         => \&_openid_commenter_condition,
-            logo              => 'images/comment/signin_hatena.png',
-            logo_small        => 'images/comment/hatena_logo.png',
-            order             => 21,
+            label      => 'Hatena',
+            logo       => 'images/comment/signin_hatena.png',
+            logo_small => 'images/comment/hatena_logo.png',
+            order      => 21,
+            disable => 1,    # overriden by OpenID plugin
         },
     };
 }
@@ -3231,7 +2790,7 @@ sub help_url {
 
     my $url = $pkg->config->HelpURL;
     return $url if defined $url;
-    $url = $pkg->translate('http://www.movabletype.org/documentation/');
+    $url = $pkg->translate('https://www.movabletype.org/documentation/');
     if ($append) {
         $url .= $append;
     }
@@ -3449,21 +3008,6 @@ Constructs a new instance of the MT subclass identified by C<$class>.
 
 Assigns the active MT instance object. This value is returned when
 C<MT-E<gt>instance> is invoked.
-
-=head2 MT->run_app( $pkg, $params )
-
-Instantiates and runs a MT application (identified by C<$pkg>), passing
-the C<$params> hashref as the parameters to the constructor method. This
-method is a self-contained version found in L<MT::Bootstrap> and will
-eventually be the manner in which MT applications are run (eliminating
-the need for the bootstrap module). The MT::import function calls this
-method when the MT module is used with an 'App' parameter. So, you can
-write a mt.cgi script that looks like this:
-
-    #!/usr/bin/perl
-    use strict;
-    use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
-    use MT App => 'MT::App::CMS';
 
 =head2 $mt->find_config($params)
 
@@ -3814,6 +3358,9 @@ Registers several callbacks simultaneously. Each element in the array
 parameter given should be a hashref containing these elements: C<name>,
 C<priority>, C<plugin> and C<code>.
 
+=head2 MT->is_callback_registered( $method )
+Return tru if a callback registered.
+
 =head2 MT->run_callbacks($meth[, $arg1, $arg2, ...])
 
 Invokes a particular callback, running any associated callback handlers.
@@ -3978,6 +3525,12 @@ Returns the version of the MT database schema.
 
 Returns the release number of MT. For example, if I<version_id> returned C<5.2.7>,
 I<release_number> would return C<7>.
+
+=head2 MT->release_version_id
+
+Returns the public release numbner of MT. This number contains schema version and
+build number. For example, if I<schema_version> returned C<7.0024> and build number
+returned C<1>, I<release_version_id> would return C<r.2401>.
 
 =head2 $mt->id
 
@@ -4367,7 +3920,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2017 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2018 Six Apart.
 All rights reserved.
 
 =cut

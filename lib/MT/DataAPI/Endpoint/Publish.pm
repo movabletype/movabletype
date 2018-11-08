@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,6 +33,12 @@ sub _iso2epoch {
 
 sub entries {
     my ( $app, $endpoint ) = @_;
+    publish_common( $app, $endpoint, \&MT::App::CMS::rebuild_these );
+}
+
+sub publish_common {
+    my ( $app, $endpoint, $rebuild_these_sub ) = @_;
+
     my $rebuild_phase_params;
 
     my $blog_id;
@@ -43,12 +49,13 @@ sub entries {
         $app->param( 'start_time', _iso2epoch( $blog_id, $v ) );
     }
     if ( my $v = $app->param('blogIds') ) {
-        $app->param( 'blog_ids', split ',', $v );
+        $app->multi_param( 'blog_ids', split ',', $v );
     }
     my $start_time = $app->param('start_time');
     my %ids = map { $_ => 1 }
-        grep {m/\A\d+\z/o} map { split ',', $_ } $app->param('ids');
-    MT::App::CMS::rebuild_these(
+        grep {m/\A\d+\z/o} map { split ',', $_ } $app->multi_param('ids');
+
+    $rebuild_these_sub->(
         $app,
         \%ids,
         (   $start_time

@@ -2,15 +2,22 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw(t/lib lib extlib);
-use Test::More;
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 
@@ -101,10 +108,10 @@ subtest 'In system scope' => sub {
         like( $out, qr/\(system\)/, 'blog_name is "(system)"' );
     };
 
-    subtest 'Deleted website/blog boilerplate' => sub {
+    subtest 'Deleted site/child site boilerplate' => sub {
         $ft->set_values(
             {   blog_id => 10,
-                label   => 'Website/Blog deleted',
+                label   => 'Site/Child Site deleted',
             }
         );
         $ft->save or die $ft->errstr;
@@ -122,8 +129,8 @@ subtest 'In system scope' => sub {
         $out = delete $app->{__test_output};
         like(
             $out,
-            qr/\*Website\/Blog deleted\*/,
-            'blog_name is "*Website/Blog deleted*"'
+            qr/\*Site\/Child Site deleted\*/,
+            'blog_name is "*Site/Child Site deleted*"'
         );
     };
 };

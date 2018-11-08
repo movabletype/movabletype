@@ -1,10 +1,11 @@
 <mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="no_page_header" value="1">
 <mt:setvar name="complete" value="1">
 <mt:setvar name="screen_id" value="sign-in">
 <mt:setvar name="screen_class" value="sign-in">
 <mt:setvarblock name="html_head" append="1">  <meta name='robots' content='noindex,nofollow' /></mt:setvarblock>
-<mt:include name="include/chromeless_header.tmpl">
 
+<mt:setvarblock name="page_content">
 <form method="post" action="<mt:var name="script_url">">
 <mt:loop name="query_params">
   <input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
@@ -12,6 +13,8 @@
 
   <div id="msg-block"></div>
 
+  <div class="row">
+    <div class="col-12">
 <mt:if name="logged_out">
   <mt:if name="delegate_auth">
     <mtapp:statusmsg
@@ -40,35 +43,43 @@
     <mt:if name="error">
       <mtapp:statusmsg
          id="generic-error"
-         class="error"
+         class="danger"
          can_close="0">
         <mt:var name="error">
       </mtapp:statusmsg>
     </mt:if>
   </mt:if>
 </mt:if>
+    </div>
+  </div>
 
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
-  <div class="actions-bar actions-bar-login">
-    <button
-       type="submit"
-       id="sign-in-button"
-       accesskey="s"
-       title="<__trans phrase="Sign In (s)">"
-       class="sign-in action primary button">
-      <__trans phrase="Sign In">
-    </button>
+  <div class="row align-items-center actions-bar actions-bar-login">
+    <div id="forget-password" class="col-8">
     <mt:if name="can_recover_password">
-      <div id="forget-password">
-        <a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a>
-      </div>
+      <a href="<mt:var name="mt_url">?__mode=start_recover">
+        <__trans phrase="Forgot your password?">
+      </a>
     </mt:if>
+    </div>
+    <div class="col-4 text-right">
+      <button
+         type="submit"
+         id="sign-in-button"
+         accesskey="s"
+         title="<__trans phrase="Sign In (s)">"
+         class="btn btn-primary">
+        <__trans phrase="Sign In">
+      </button>
+    </div>
   </div>
 
 </mt:unless>
 </form>
+</mt:setvarblock>
 
+<mt:setvarblock name="js_include" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
 if (window.top && (window.top.location != window.location)) {
@@ -112,4 +123,7 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
-<mt:include name="include/chromeless_footer.tmpl">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

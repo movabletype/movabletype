@@ -1,5 +1,5 @@
 <mt:setvartemplate name="filter_form_legacy">
-<input type="text" disabled="disabled" class="prop-legacy <mt:var name="type">-label text med" value="" />
+<input type="text" disabled="disabled" class="form-control m-1 prop-legacy <mt:var name="type">-label text med" value="" />
 <input type="hidden" class="prop-legacy <mt:var name="type">-filter_key text med" value="" />
 <input type="hidden" class="prop-legacy <mt:var name="type">-filter_val text med" value="" />
 <input type="hidden" class="prop-legacy <mt:var name="type">-ds text med" value="" />
@@ -7,7 +7,7 @@
 
 <mt:setvartemplate name="filter_form_string">
   <mt:setvarblock name="string_options">
-  <select class="<mt:var name="type">-option">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option">
     <option value="contains"><__trans phrase="contains" escape="js"></option>
     <option value="not_contains"><__trans phrase="does not contain" escape="js"></option>
     <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL" escape="js"></option>
@@ -16,14 +16,31 @@
   </select>
   </mt:setvarblock>
   <__trans phrase="[_1] [_2] [_3]"
-           params="<mt:var name="label" escape="js">%%<mt:var name="string_options">%%
-                   <input type="text" class="prop-string <mt:var name="type">-string text med" value="" />">
+           params="<mt:var name="label" escape="html" escape="js">%%<mt:var name="string_options">%%
+                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_blank_string">
+  <mt:setvarblock name="string_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
+    <option value="contains"><__trans phrase="contains" escape="js"></option>
+    <option value="not_contains"><__trans phrase="does not contain" escape="js"></option>
+    <option value="equal"><__trans phrase="__STRING_FILTER_EQUAL" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+    <option value="beginning"><__trans phrase="starts with" escape="js"></option>
+    <option value="end"><__trans phrase="ends with" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+  <__trans phrase="[_1] [_2] [_3]"
+           params="<mt:var name="label" escape="html" escape="js">%%<mt:var name="string_options">%%
+                   <input type="text" class="form-control m-1 prop-string <mt:var name="type">-string text med required" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_integer">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
-                 <select class="<mt:var name="type">-option">
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
                    <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
@@ -31,13 +48,59 @@
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
                  </select>%%
-                 <input type="text" class="prop-integer <mt:var name="type">-value text num required digit" value="" />">
+                 <input type="text" class="form-control m-1 prop-integer <mt:var name="type">-value text num required digit" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_signed_integer">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-integer <mt:var name="type">-value text required signed-digit" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_blank_integer">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-integer <mt:var name="type">-value text num required digit" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_blank_signed_integer">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-integer <mt:var name="type">-value text required signed-digit" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_float">
 <__trans phrase="[_1] [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
-                 <select class="<mt:var name="type">-option">
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option">
                    <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
                    <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
                    <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
@@ -45,12 +108,58 @@
                    <option value="less_than"><__trans phrase="is less than" escape="js"></option>
                    <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
                  </select>%%
-                 <input type="text" class="prop-float <mt:var name="type">-value text number required" value="" />">
+                 <input type="text" class="form-control m-1 prop-float <mt:var name="type">-value text number required" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_signed_float">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-float <mt:var name="type">-value text signed-number required" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_blank_float">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-float <mt:var name="type">-value text number required" value="" />">
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_blank_signed_float">
+<__trans phrase="[_1] [_2] [_3]"
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-option filter-blank">
+                   <option value="equal"><__trans phrase="__INTEGER_FILTER_EQUAL" escape="js"></option>
+                   <option value="not_equal"><__trans phrase="__INTEGER_FILTER_NOT_EQUAL" escape="js"></option>
+                   <option value="greater_than"><__trans phrase="is greater than" escape="js"></option>
+                   <option value="greater_equal"><__trans phrase="is greater than or equal to" escape="js"></option>
+                   <option value="less_than"><__trans phrase="is less than" escape="js"></option>
+                   <option value="less_equal"><__trans phrase="is less than or equal to" escape="js"></option>
+                   <option value="blank"><__trans phrase="is blank" escape="js"></option>
+                   <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+                 </select>%%
+                 <input type="text" class="form-control m-1 prop-float <mt:var name="type">-value text signed-number required" value="" />">
 </mt:setvartemplate>
 
 <mt:setvartemplate name="filter_form_future_date">
   <mt:setvarblock name="future_date_filter_options">
-  <select class="<mt:var name="type">-option filter-date">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
     <option value="range"><__trans phrase="is between" escape="js"></option>
     <option value="days"><__trans phrase="is within the last" escape="js"></option>
     <option value="before"><__trans phrase="is before" escape="js"></option>
@@ -60,12 +169,25 @@
   </select>
   </mt:setvarblock>
 
+  <mt:setvarblock name="future_blank_date_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="days"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="future"><__trans phrase="is after now" escape="js"></option>
+    <option value="past"><__trans phrase="is before now" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
   <mt:setvarblock name="future_date_filter_contents">
   <span class="date-options">
-    <mt:setvarblock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required digit days" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_from"><input type="text" class="form-control m-1 <mt:var name="type">-from text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_to"><input type="text" class="form-control m-1 <mt:var name="type">-to text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_origin"><input type="text" class="form-control m-1 <mt:var name="type">-origin text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_days"><input type="text" class="form-control m-1 <mt:var name="type">-days text required digit days" /></mt:setvarblock>
     <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">" escape="js"></span>
     <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">" escape="js"></span>
     <span class="date-option days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">" escape="js"></span>
@@ -75,7 +197,7 @@
 
 <mt:setvartemplate name="filter_form_date">
   <mt:setvarblock name="date_filter_options">
-  <select class="<mt:var name="type">-option filter-date">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
     <option value="range"><__trans phrase="is between" escape="js"></option>
     <option value="days"><__trans phrase="is within the last" escape="js"></option>
     <option value="before"><__trans phrase="is before" escape="js"></option>
@@ -83,12 +205,23 @@
   </select>
   </mt:setvarblock>
 
+  <mt:setvarblock name="blank_date_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="days"><__trans phrase="is within the last" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
   <mt:setvarblock name="date_filter_contents">
   <span class="date-options">
-    <mt:setvarblock name="date_input_from"><input type="text" class="<mt:var name="type">-from text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_to"><input type="text" class="<mt:var name="type">-to text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_origin"><input type="text" class="<mt:var name="type">-origin text required date" /></mt:setvarblock>
-    <mt:setvarblock name="date_input_days"><input type="text" class="<mt:var name="type">-days text required digit days" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_from"><input type="text" class="form-control m-1 <mt:var name="type">-from text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_to"><input type="text" class="form-control m-1 <mt:var name="type">-to text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_origin"><input type="text" class="form-control m-1 <mt:var name="type">-origin text required date" /></mt:setvarblock>
+    <mt:setvarblock name="date_input_days"><input type="text" class="form-control m-1 <mt:var name="type">-days text required digit days" /></mt:setvarblock>
     <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">" escape="js"></span>
     <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">" escape="js"></span>
     <span class="date-option days"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">" escape="js"></span>
@@ -96,10 +229,134 @@
   </mt:setvarblock>
 </mt:setvartemplate>
 
+<mt:setvartemplate name="filter_form_time">
+  <mt:setvarblock name="time_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="__TIME_FILTER_HOURS" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="blank_time_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="__TIME_FILTER_HOURS" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="time_filter_contents">
+  <span class="date-options">
+    <mt:setvarblock name="time_input_from"><input type="text" class="form-control m-1 <mt:var name="type">-from text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_to"><input type="text" class="form-control m-1 <mt:var name="type">-to text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_origin"><input type="text" class="form-control m-1 <mt:var name="type">-origin text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_hours">
+    <select class="custom-select form-control m-1 <mt:var name="type">-hours required hour">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+    </select>
+    </mt:setvarblock>
+    <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="time_input_origin">" escape="js"></span>
+    <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="time_input_from">%%<mt:var name="time_input_to">" escape="js"></span>
+    <span class="date-option hours"><__trans phrase="[_1] hours" params="<mt:var name="time_input_hours">" escape="js"></span>
+  </span>
+  </mt:setvarblock>
+</mt:setvartemplate>
+
+<mt:setvartemplate name="filter_form_future_time">
+  <mt:setvarblock name="future_time_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="__TIME_FILTER_HOURS" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="future"><__trans phrase="is after now" escape="js"></option>
+    <option value="past"><__trans phrase="is before now" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="future_blank_time_filter_options">
+  <select class="custom-select form-control m-1 <mt:var name="type">-option filter-date">
+    <option value="range"><__trans phrase="is between" escape="js"></option>
+    <option value="hours"><__trans phrase="__TIME_FILTER_HOURS" escape="js"></option>
+    <option value="before"><__trans phrase="is before" escape="js"></option>
+    <option value="after"><__trans phrase="is after" escape="js"></option>
+    <option value="future"><__trans phrase="is after now" escape="js"></option>
+    <option value="past"><__trans phrase="is before now" escape="js"></option>
+    <option value="blank"><__trans phrase="is blank" escape="js"></option>
+    <option value="not_blank"><__trans phrase="is not blank" escape="js"></option>
+  </select>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="future_time_filter_contents">
+  <span class="date-options">
+    <mt:setvarblock name="time_input_from"><input type="text" class="form-control m-1 <mt:var name="type">-from text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_to"><input type="text" class="form-control m-1 <mt:var name="type">-to text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_origin"><input type="text" class="form-control m-1 <mt:var name="type">-origin text required time" placeholder="HH:mm:ss" /></mt:setvarblock>
+    <mt:setvarblock name="time_input_hours">
+    <select class="custom-select form-control m-1 <mt:var name="type">-hours required hour">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+      <option value="19">19</option>
+      <option value="20">20</option>
+      <option value="21">21</option>
+      <option value="22">22</option>
+      <option value="23">23</option>
+    </select>
+    </mt:setvarblock>
+    <span class="date-option date"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="time_input_origin">" escape="js"></span>
+    <span class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="time_input_from">%%<mt:var name="time_input_to">" escape="js"></span>
+    <span class="date-option hours"><__trans phrase="[_1] hours" params="<mt:var name="time_input_hours">" escape="js"></span>
+  </span>
+  </mt:setvarblock>
+</mt:setvartemplate>
+
 <mt:setvartemplate name="filter_form_single_select">
 <__trans phrase="[_1] [_3] [_2]"
-         params="<mt:var name="label" escape="js">%%
-                 <select class="<mt:var name="type">-value">
+         params="<mt:var name="label" escape="html" escape="js">%%
+                 <select class="custom-select form-control m-1 <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
                    <option value="<mt:var name="value">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
                  </mt:loop>
@@ -109,6 +366,6 @@
 <mt:setvartemplate name="filter_form_hidden">
 <input type="hidden" class="prop-hidden <mt:var name="type">-value" value="" />
 <input type="hidden" class="prop-hidden <mt:var name="type">-label" value="" />
-<mt:var name="label" escape="js">
+<mt:var name="label" escape="html" escape="js">
 </mt:setvartemplate>
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -49,10 +49,10 @@ sub fields {
 
                     $hash->{meta} = +{
                         width => $obj->has_meta('image_width')
-                        ? ( $obj->image_width || undef )
+                        ? $obj->image_width
                         : undef,
                         height => $obj->has_meta('image_height')
-                        ? ( $obj->image_height || undef )
+                        ? $obj->image_height
                         : undef,
                         fileSize => $size,
                     };

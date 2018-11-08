@@ -1,3 +1,4 @@
+<mt:setvarblock name="page_content">
 <form method="get" action="<mt:var name="script_url">">
   <input type="hidden" name="__mode" value="upload_file" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -43,7 +44,7 @@
        type="submit"
        accesskey="s"
        title="<__trans phrase="Yes (s)">"
-       class="action primary button">
+       class="action primary button btn btn-primary">
       <__trans phrase="Yes"></button>
     <button
        onclick="submit_form(this.form, 'no');"
@@ -51,8 +52,9 @@
        value="1"
        type="submit"
        title="<__trans phrase="No">"
-       class="action button">
+       class="action button btn btn-default">
       <__trans phrase="No"></button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
+</mt:setvarblock>

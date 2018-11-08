@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::DefaultTemplates;
 
 use strict;
+use warnings;
 use utf8;
 use open ':utf8';
 
@@ -86,19 +87,6 @@ BEGIN {
             },
         },
         'system' => {
-            'comment_listing' => {
-                label             => 'Comment Listing',
-                description_label => 'Improved listing of comments.'
-            },
-            'comment_response' => {
-                label => 'Comment Response',
-                description_label =>
-                    'Displays error, pending or confirmation message for comments.'
-            },
-            'comment_preview' => {
-                label             => 'Comment Preview',
-                description_label => 'Displays preview of comment.',
-            },
             'dynamic_error' => {
                 label => 'Dynamic Error',
                 description_label =>
@@ -115,14 +103,11 @@ BEGIN {
             },
         },
         'module' => {
-            'comment_detail' => { label => 'Comment Detail', },
-            'banner_header'  => { label => 'Banner Header', },
-            'banner_footer'  => { label => 'Banner Footer', },
-            'entry_summary'  => { label => 'Entry Summary', },
-            'html_head'      => { label => 'HTML Head', },
-            'sidebar'        => { label => 'Sidebar', },
-            'comments'       => { label => 'Comments', },
-            'trackbacks'     => { label => 'Trackbacks', },
+            'banner_header' => { label => 'Banner Header', },
+            'banner_footer' => { label => 'Banner Footer', },
+            'entry_summary' => { label => 'Entry Summary', },
+            'html_head'     => { label => 'HTML Head', },
+            'sidebar'       => { label => 'Sidebar', },
         },
         'widget' => {
             'about_this_page'       => { label => 'About This Page', },
@@ -143,7 +128,6 @@ BEGIN {
             'pages_list'           => { label => 'Page Listing', },
             'recent_assets'        => { label => 'Recent Assets', },
             'powered_by'           => { label => 'Powered By', },
-            'recent_comments'      => { label => 'Recent Comments', },
             'recent_entries'       => { label => 'Recent Entries', },
             'search'               => { label => 'Search', },
             'signin'               => { label => 'Sign In', },
@@ -194,15 +178,10 @@ BEGIN {
         },
         'global:module' => { 'footer-email' => { label => 'Mail Footer', }, },
         'global:email'  => {
-            'comment_throttle'  => { label => 'Comment throttle', },
-            'commenter_confirm' => { label => 'Commenter Confirm', },
-            'commenter_notify'  => { label => 'Commenter Notify', },
-            'new-comment'       => { label => 'New Comment', },
-            'new-ping'          => { label => 'New Ping', },
-            'notify-entry'      => { label => 'Entry Notify', },
-            'recover-password'  => { label => 'Password Recovery', },
-            'lockout-user'      => { label => 'User Lockout', },
-            'lockout-ip'        => { label => 'IP Address Lockout', },
+            'notify-entry'     => { label => 'Entry Notify', },
+            'recover-password' => { label => 'Password Recovery', },
+            'lockout-user'     => { label => 'User Lockout', },
+            'lockout-ip'       => { label => 'IP Address Lockout', },
         },
     };
 }
@@ -347,7 +326,8 @@ sub templates {
                             = File::Spec->catfile( $base_path, $filename );
                         if ( ( -e $file ) && ( -r $file ) ) {
                             local $/ = undef;
-                            open my $fin, '<', $file;
+                            open my $fin, '<', $file
+                                or die "Couldn't open $file: $!";
                             my $data = <$fin>;
                             close $fin;
                             $tmpl->{text} = $data;
@@ -394,8 +374,13 @@ sub _template_sort {
     }
 
     # both a, b == widgetset or both a, b != widgetset
-    return $a->{order} <=> $b->{order};
+    return $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key};
 }
+
+#trans('Comment Form')
+#trans('Navigation')
+#trans('Blog Index')
+#trans('Search Results for Content Data')
 
 1;
 __END__

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package TinyMCE::L10N::fr;
 
 use strict;
+use warnings;
 use utf8;
 use base 'TinyMCE::L10N::en_us';
 use vars qw( %Lexicon );

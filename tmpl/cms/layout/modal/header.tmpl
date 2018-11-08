@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id">"</mt:if>>
+<head>
+  <meta charset="<mt:var name="language_encoding">"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+
+  <mt:unless name="optimize_ui">
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:else>
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  </mt:unless>
+
+  <mt:var name="css_include">
+
+  <mt:include name="include/libjs.tmpl">
+
+  <mt:var name="html_head">
+
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:if name="local_lang_id" ne="en-us">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  </mt:if>
+  <mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  </mt:unless>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+  <mt:var name="js_include">
+
+  <script type="text/javascript">
+  /* <![CDATA[ */
+  ScriptURI = '<mt:var name="script_url">';
+  ScriptBaseURI = '<mt:var name="script_base_url">';
+  StaticURI = '<mt:var name="static_uri">';
+  __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+  HelpBaseURI = '<mt:var name="help_url">';
+  window.onkeypress = dialogKeyPress;
+  /* ]]> */
+  </script>
+</head>
+<body>
+

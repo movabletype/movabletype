@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,28 +46,7 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::Folder::updatable_fields",
             },
         ],
-        'comment' => [
-            {   version          => 1,
-                fields           => "${pkg}Comment::fields",
-                updatable_fields => "${pkg}Comment::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Comment::fields",
-                updatable_fields => "${pkg}v2::Comment::updatable_fields",
-            },
-        ],
-        'trackback' => [
-            {   version          => 1,
-                fields           => "${pkg}Trackback::fields",
-                updatable_fields => "${pkg}Trackback::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Trackback::fields",
-                updatable_fields => "${pkg}v2::Trackback::updatable_fields",
-            },
-        ],
-        'tbping' => 'trackback',
-        'user'   => [
+        'user' => [
             {   version          => 1,
                 fields           => "${pkg}User::fields",
                 updatable_fields => "${pkg}User::updatable_fields",
@@ -167,6 +146,33 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::TemplateMap::updatable_fields",
             },
         ],
+        'category_set' => [
+            {   version          => 4,
+                fields           => "${pkg}v4::CategorySet::fields",
+                updatable_fields => "${pkg}v4::CategorySet::updatable_fields",
+            },
+        ],
+        'content_type' => [
+            {   version          => 4,
+                fields           => "${pkg}v4::ContentType::fields",
+                updatable_fields => "${pkg}v4::ContentType::updatable_fields",
+            },
+        ],
+        'cf' => [
+            {   version => 4,
+                fields  => "${pkg}v4::ContentField::fields",
+                updatable_fields =>
+                    "${pkg}v4::ContentField::updatable_fields",
+            },
+        ],
+        'content_field' => 'cf',
+        'cd'            => [
+            {   version          => 4,
+                fields           => "${pkg}v4::ContentData::fields",
+                updatable_fields => "${pkg}v4::ContentData::updatable_fields",
+            },
+        ],
+        'content_data' => 'cd',
     };
 }
 

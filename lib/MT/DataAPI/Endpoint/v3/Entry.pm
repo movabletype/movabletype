@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -123,12 +123,9 @@ sub create {
             or return $app->error( $new_entry->errstr );
     }
 
-    my $do_publish
-        = defined scalar $app->param('publish')
-        ? scalar $app->param('publish')
-        : 1;
+    my $do_publish = $app->param('publish');
     $post_save->()
-        if $do_publish;
+        if !defined $do_publish || $do_publish;
 
     # Remove autosave object
     remove_autosave_session_obj( $app, $new_entry->class );
@@ -237,19 +234,14 @@ sub update {
             or return $app->error( $new_entry->errstr );
     }
 
-    my $do_publish
-        = defined scalar $app->param('publish')
-        ? scalar $app->param('publish')
-        : 1;
+    my $do_publish = $app->param('publish');
     $post_save->()
-        if $do_publish;
+        if !defined $do_publish || $do_publish;
 
     # Remove autosave object
     remove_autosave_session_obj( $app, $new_entry->class, $new_entry->id );
 
     $new_entry;
 }
-
-
 
 1;

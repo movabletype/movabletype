@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2003-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2003-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -151,6 +151,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         if ((element.type == "checkbox") || (element.type == "radio"))
             var parent = TC.getParentByTagName( element, "tr" );
             if (parent) this.setFocus( parent );
+            evt.preventDefault();
             return this.select( element );
     }
 
@@ -158,7 +159,17 @@ TC.TableSelect.prototype.click = function( evt ) {
     if ( !this.rowSelect && tagName != "td" ) return;
     if ( ( tagName == 'a') || ( TC.getParentByTagName( element, "a" ) ) )
         return;
-    var parent = TC.getParentByTagName( element, "tr" );
+
+    var parent;
+    if ( ( tagName == "li" || tagName == "label" || tagName == "span" ) && TC.hasClassName( TC.getParentByTagName( element, "div" ), "mt-table__hierarchy" ) ) {
+        if(tagName == "li") {
+            parent = element;
+        } else {
+            parent = TC.getParentByTagName( element, "li" );
+        }
+    } else {
+        parent = TC.getParentByTagName( element, "tr" );
+    }
     while ( TC.hasClassName( parent, "slave" ) )
         parent = this.getPreviousSibling( parent );
 
@@ -170,14 +181,15 @@ TC.TableSelect.prototype.click = function( evt ) {
             if ( (element.type == "checkbox") || (element.type == "radio") ) {
                 if ( element.disabled ) return;
                 element.checked = !element.checked;
-                return this.select( element );
+                evt.preventDefault();
+                return this.select( element, parent );
             }
         }
     }
 }
 
 
-TC.TableSelect.prototype.select = function( checkbox ) {
+TC.TableSelect.prototype.select = function( checkbox, row ) {
     // setup
     this.thisClicked = checkbox;
     var checked = checkbox.checked ? true : false; // important, trinary value (null is valid)
@@ -190,7 +202,6 @@ TC.TableSelect.prototype.select = function( checkbox ) {
         return this.selectAll( checkbox );
     }
 
-    var row = TC.getParentByTagName( checkbox, "tr" );
     if (this.selectRow( row, checked )) {
         if (this.onChange) this.onChange(this, row, checked);
         if (checkbox.type == "radio") {
@@ -392,13 +403,13 @@ TC.TableSelect.prototype.selectRow = function( row, checked ) {
     if ( !row ) return false;
     var changed = false;
     if( checked ) {
-        if (!TC.hasClassName( row, "selected" )) {
-            TC.addClassName( row, "selected" );
+        if (!TC.hasClassName( row, "mt-table__highlight" )) {
+            TC.addClassName( row, "mt-table__highlight" );
             changed = true;
         }
     } else {
-        if (TC.hasClassName( row, "selected" )) {
-            TC.removeClassName( row, "selected" );
+        if (TC.hasClassName( row, "mt-table__highlight" )) {
+            TC.removeClassName( row, "mt-table__highlight" );
             changed = true;
         }
     }
@@ -416,9 +427,9 @@ TC.TableSelect.prototype.selectRow = function( row, checked ) {
         var next = this.getNextSibling( row );
         while (next && TC.hasClassName( next, "slave" )) {
             if ( checked )
-                TC.addClassName( next, "selected" );
+                TC.addClassName( next, "mt-table__highlight" );
             else
-                TC.removeClassName( next, "selected" );
+                TC.removeClassName( next, "mt-table__highlight" );
             next = this.getNextSibling( next );
         }
     }

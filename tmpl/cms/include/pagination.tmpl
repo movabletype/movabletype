@@ -1,4 +1,6 @@
-<div id="pagination-<$mt:var name="bar_position" default="top"$>" class="pagination">
+<nav aria-label="Page Navigation">
+  <ul id="pagination-<$mt:var name="bar_position" default="top"$>"<mt:if name="pull_right_pagination"> class="pagination float-right"</mt:if>>
+
 <mt:unless name="limit_none">
   <mt:unless name="pager_json">
     <mt:if name="offset">
@@ -24,7 +26,8 @@
     </mt:if>
   </mt:unless>
 </mt:unless>
-</div>
+  </ul>
+</nav>
 <mt:if name="pager_json">
 <script type="text/javascript" charset="utf-8">
 /* <![CDATA[ */

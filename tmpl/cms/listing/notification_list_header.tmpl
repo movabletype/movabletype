@@ -7,11 +7,18 @@
     <mt:var name="error">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="request.saved">
+<mt:if name="request.saved_changes">
+  <mtapp:statusmsg
+     id="saved-changes"
+     class="success">
+    <__trans phrase="You have updated your contact in your address book.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="request.saved_added">
   <mtapp:statusmsg
      id="saved"
      class="success">
-    <__trans phrase="You have added [_1] to your address book." params="<strong><$mt:var name="saved" escape="html"$></strong>">
+    <__trans phrase="You have added new contact to your address book.">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="request.saved_deleted">
@@ -24,28 +31,35 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header" append="1">
-<form class="create-inline" id="create-inline-notification" style="display: none;">
-    <mtapp:setting
+<form class="create-inline" id="create-inline-notification" method="post" action="<$mt:var name="script_url"$>" style="display: none;">
+  <input type="hidden" name="__mode" value="save">
+  <input type="hidden" name="_type" value="notification">
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">">
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">">
+  <input type="hidden" name="id" value="">
+  
+  <mtapp:setting
        id="email"
        required="1"
        label="<__trans phrase="Email">">
-      <input type="text" name="email" id="email" class="text required email" value="<mt:var name="email" escape="html">" />
+      <input type="text" name="email" id="email" class="form-control text required email" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
     <mtapp:setting
        id="website"
        label="<__trans phrase="Website URL">">
-      <input type="text" name="url" id="url" class="text url" value="<mt:var name="url" escape="html">">
+      <input type="text" name="url" id="url" class="form-control text url" value="<mt:var name="url" escape="html">">
     </mtapp:setting>
     <div class="actions-bar settings-actions-bar">
         <button
            type="submit"
            id="submit-new-contact"
-           class="button action primary">
+           class="btn btn-default">
           <__trans phrase="Add">
         </button>
         <button
            type="button"
-           class="button action mt-cancel-action">
+           class="btn btn-default mt-cancel-action">
           <__trans phrase="Cancel">
         </button>
     </div>
@@ -127,30 +141,24 @@
         }
         $note_email.mtUnvalidate();
         $note_url.mtUnvalidate();
-        return submit_edit_form(id);
+        return submit_edit_form(id, new_note_email, new_note_url);
     }
 
-    function submit_edit_form(id) {
-        var note_email = jQuery('#note-email-' + id).val();
-        var note_url = jQuery('#note-url-' + id).val();
-        renderList({
-            __mode: 'save',
-            _type: 'notification',
-            email: note_email,
-            url: note_url,
-            id: id,
-            forward_list: 1,
-            magic_token: 1
-        });
-        cancelCreateMode();
-        return false;
+    function submit_edit_form(id, new_note_email, new_note_url) {
+      var $form = jQuery('#create-inline-notification');
+      $form.find('input[name="email"]').val(new_note_email);
+      $form.find('input[name="url"]').val(new_note_url);
+      $form.find('input[name="id"]').val(id);
+      $form.submit();
     }
 
     function setCreateMode () {
-        jQuery('#create-inline-notification').show();
-        jQuery('#url').val('');
-        jQuery('#email').val('').focus();
-        jQuery('#content-actions').hide();
+      var $form = jQuery('#create-inline-notification');
+      $form.find('input[name="email"]').val('');
+      $form.find('input[name="url"]').val('');
+      $form.find('input[name="id"]').val('');
+      $form.show();
+      jQuery('#content-actions').hide();
     }
 
     function cancelCreateMode () {
@@ -161,18 +169,8 @@
         current_edit = 0;
     }
 
-    jQuery('#submit-new-contact').click(function() {
-        if ( !jQuery('#create-inline-notification input').mtValidate('simple') )
-            return false;
-        renderList({
-            __mode: 'save',
-            _type: 'notification',
-            email: jQuery('#email').val(),
-            url: jQuery('#url').val(),
-            forward_list: 1,
-            magic_token: 1
-        });
-        cancelCreateMode();
+    jQuery('#action-create-contact').click( function() {
+        setCreateMode();
         return false;
     });
 
@@ -181,30 +179,21 @@
         return false;
     });
 
-    jQuery('#action-create-contact').click( function() {
-        setCreateMode();
-        return false;
-    });
-    
-    jQuery('#listing-table')
+    jQuery(document)
       .on('click','.start-edit',function(){
-        jQuery(this).attr('href').match(/#(\d+)/);
-        var id = RegExp.$1;
+        var id = jQuery(this).attr('data-id');
         edit_note(id);
         return false;
       })
       .on('click','.cancel-edit',function(){
-        jQuery(this).attr('href').match(/#(\d+)/);
-        var id = RegExp.$1;
+        var id = jQuery(this).attr('data-id');
         cancel_edit(id);
         return false;
       })
       .on('click','.submit-note',function(){
-        jQuery(this).attr('href').match(/#(\d+)/);
-        var id = RegExp.$1;
+        var id = jQuery(this).attr('data-id');
         submit_edit(id);
         return false;
       });
 
 </mt:setvarblock>
-

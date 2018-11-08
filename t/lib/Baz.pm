@@ -2,6 +2,7 @@
 
 package Baz;
 use strict;
+use warnings;
 
 use MT::Object;
 use base qw( MT::Object );

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Auth::BasicAuth;
 
 use strict;
+use warnings;
 use base 'MT::Auth::MT';
 use MT::Author qw(AUTHOR);
 
@@ -26,7 +27,7 @@ sub new_user {
 sub remote_user {
     my $auth = shift;
     my ($ctx) = @_;
-    if ( $ENV{MOD_PERL} ) {
+    if ( MT::Util::is_mod_perl1() ) {
         my $app = $ctx->{app} or return;
         return $app->{apache}->connection->user;
     }

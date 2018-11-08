@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Category;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 use MT::Util qw( weaken );
 
@@ -14,15 +15,16 @@ use MT::Blog;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
-            'id'          => 'integer not null auto_increment',
-            'blog_id'     => 'integer not null',
-            'label'       => 'string(100) not null',
-            'author_id'   => 'integer',
-            'ping_urls'   => 'text',
-            'description' => 'text',
-            'parent'      => 'integer',
-            'allow_pings' => 'boolean',
-            'basename'    => 'string(255)',
+            'id'              => 'integer not null auto_increment',
+            'blog_id'         => 'integer not null',
+            'label'           => 'string(100) not null',
+            'author_id'       => 'integer',
+            'ping_urls'       => 'text',
+            'description'     => 'text',
+            'parent'          => 'integer',
+            'allow_pings'     => 'boolean',
+            'basename'        => 'string(255)',
+            'category_set_id' => 'integer not null',
 
             # META
             'show_fields' => 'text meta',
@@ -35,8 +37,9 @@ __PACKAGE__->install_properties(
             blog_class    => { columns => [ 'blog_id', 'class' ], },
         },
         defaults => {
-            parent      => 0,
-            allow_pings => 0,
+            parent          => 0,
+            allow_pings     => 0,
+            category_set_id => 0,
         },
         class_type    => 'category',
         child_of      => 'MT::Blog',
@@ -47,6 +50,36 @@ __PACKAGE__->install_properties(
         primary_key   => 'id',
     }
 );
+
+__PACKAGE__->add_trigger( pre_search => \&_set_category_set_id_if_needed );
+
+sub _set_category_set_id_if_needed {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
+    my $no_category_set_id = 0;
+    if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
+        delete $args->{no_category_set_id};
+        $no_category_set_id = 1;
+    }
+    if ( ref $terms eq 'HASH' ) {
+        if ( ( $terms->{category_set_id} || '' ) eq '*'
+            || $no_category_set_id )
+        {
+            delete $terms->{category_set_id};
+        }
+        elsif (!exists $terms->{category_set_id}
+            && !exists $terms->{id}
+            && !$terms->{parent} )
+        {
+            $terms->{category_set_id} = 0;
+        }
+    }
+    elsif ( ref $terms eq 'ARRAY' ) {
+        for my $term (@$terms) {
+            $class->_set_category_set_id_if_needed( $term, $args );
+        }
+    }
+}
 
 sub list_props {
     return {
@@ -117,10 +150,19 @@ sub list_props {
                 require MT::Category;
                 require MT::Blog;
                 my $rep = $objs->[0] or return;
-                my $blog = MT::Blog->load( { id => $rep->blog_id },
-                    { no_class => 1 } );
-                my $meta = $prop->class . '_order';
-                my $text = $blog->$meta || '';
+                my $text;
+                if ( $rep->category_set_id ) {
+                    my $set
+                        = MT->model('category_set')
+                        ->load( $rep->category_set_id );
+                    $text = $set->order || '';
+                }
+                else {
+                    my $blog = MT::Blog->load( { id => $rep->blog_id },
+                        { no_class => 1 } );
+                    my $meta = $prop->class . '_order';
+                    $text = $blog->$meta || '';
+                }
                 my @cats = _sort_by_id_list(
                     $text,
                     $objs,
@@ -152,6 +194,10 @@ sub list_props {
             col             => 'blog_id',
             display         => 'none',
             filter_editable => 0,
+        },
+        category_set_id => {
+            auto    => 1,
+            display => 'none',
         },
     };
 }
@@ -202,7 +248,11 @@ sub publish_path {
     # parent category basenames are changed.
     $orig->{__path} = $result;
 }
-*category_path = \&publish_path;
+
+{
+    no warnings 'once';
+    *category_path = \&publish_path;
+}
 
 sub category_label_path {
     my $cat = shift;
@@ -319,40 +369,11 @@ sub save {
 
     ## If pings are allowed on this entry, create or update
     ## the corresponding Trackback object for this entry.
-    require MT::Trackback;
-    if ( $cat->allow_pings ) {
-        my $tb;
-        unless ( $tb = MT::Trackback->load( { category_id => $cat->id } ) ) {
-            $tb = MT::Trackback->new;
-            $tb->blog_id( $cat->blog_id );
-            $tb->category_id( $cat->id );
-            $tb->entry_id(0);    ## entry_id can't be NULL
-        }
-        if ( defined( my $pass = $cat->{__tb_passphrase} ) ) {
-            $tb->passphrase($pass);
-        }
-        $tb->title( $cat->label );
-        $tb->description( $cat->description );
-        my $blog = MT::Blog->load( $cat->blog_id )
-            or return;
-        my $url = $blog->archive_url;
-        $url .= '/' unless $url =~ m!/$!;
-        $url .= MT::Util::archive_file_for( undef, $blog, 'Category', $cat );
-        $tb->url($url);
-        $tb->is_disabled(0);
-        $tb->save
-            or return $cat->error( $tb->errstr );
+    if ( MT->has_plugin('Trackback') ) {
+        require Trackback::Category;
+        Trackback::Category::_save_trackback($cat) or return;
     }
-    else {
-        ## If there is a TrackBack item for this category, but
-        ## pings are now disabled, make sure that we mark the
-        ## object as disabled.
-        if ( my $tb = MT::Trackback->load( { category_id => $cat->id } ) ) {
-            $tb->is_disabled(1);
-            $tb->save
-                or return $cat->error( $tb->errstr );
-        }
-    }
+
     if ($clear_cache) {
         $pkg->clear_cache( 'blog_id' => $cat->blog_id );
     }
@@ -503,7 +524,6 @@ sub _buildCatHier {
     unless ($all_cats) {
         $r->cache( 'sub_cats_cats', $all_cats = {} );
     }
-    my $cats;
     if ( defined $all_cats->{$blog_id} ) {
         my $children = $all_cats->{$blog_id}{'children'};
         return ($children);
@@ -632,6 +652,64 @@ sub entry_count {
     );
 }
 
+sub content_data_count {
+    my $self = shift;
+    my ($terms) = @_;
+    $terms ||= {};
+
+    my $content_type_id  = $terms->{content_type_id};
+    my $content_field_id = $terms->{content_field_id};
+
+    if ( !$content_field_id && $terms->{content_field_name} ) {
+        my $cf = MT->model('content_field')->load(
+            {   blog_id => $self->blog_id,
+                name    => $terms->{content_field_name},
+                $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : (),
+            }
+        );
+        return 0 unless $cf;
+        $content_field_id = $cf->id;
+    }
+
+    my $key_suffix = '';
+    if ($content_type_id) {
+        $key_suffix = ":ct-$content_type_id";
+    }
+    elsif ($content_field_id) {
+        $key_suffix = ":cf-$content_field_id";
+    }
+
+    require MT::ContentFieldIndex;
+    require MT::ContentData;
+    require MT::Entry;
+    return $self->cache_property(
+        "content_data_count$key_suffix",
+        sub {
+            return MT::ContentData->count(
+                {   blog_id => $self->blog_id,
+                    status  => MT::Entry::RELEASE(),
+                },
+                {   join => MT::ContentFieldIndex->join_on(
+                        'content_data_id',
+                        {   value_integer => $self->id,
+                            $content_type_id
+                            ? ( content_type_id => $content_type_id )
+                            : (),
+                            $content_field_id
+                            ? ( content_field_id => $content_field_id )
+                            : (),
+                        },
+                        { unique => 1 },
+                    ),
+                }
+            );
+        },
+        ( $terms->{count} ? ( $terms->{count} ) : () ),
+    );
+}
+
 sub populate_category_hierarchy {
     my $class = shift;
     my ( $blog_id, $parent_id, $depth ) = @_;
@@ -660,6 +738,17 @@ sub populate_category_hierarchy {
 sub is_category {
     my $class = shift;
     return $class->class eq 'category';
+}
+
+sub category_set {
+    my $self = shift;
+    $self->cache_property(
+        'cateogry_list',
+        sub {
+            require MT::CategorySet;
+            MT::CategorySet->load( $self->category_set_id || 0 );
+        },
+    );
 }
 
 1;
@@ -769,6 +858,25 @@ I<MT::Object> for more information.
 When you remove a category using I<MT::Category::remove>, in addition to
 removing the category record, all of the entry-category mappings
 (I<MT::Placement> objects) will be removed.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item * content_data_count([ $terms ])
+
+When no $terms is set, this returns total count of all published content data
+that has this category in any category field.
+
+When $terms->{content_type_id} is set, this returns total count of published content
+data that has this category in any category field of the specified content type.
+
+When $terms->{content_field_id} or $terms->{category_field_name} is set, this returns
+total count of published content data that has this category in specified category field.
+
+This result will be cached while a request.
 
 =back
 

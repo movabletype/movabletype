@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -185,7 +185,6 @@ sub _system_permissions_bulk_from_object {
             $perm->{can_do} = $obj->id ? $user_perms{$key} : undef;
 
             if ( exists $perms->{$key}->{inherit_from} ) {
-                my @inherit;
                 my $inherit_from = $perms->{$key}->{inherit_from};
                 if ($inherit_from) {
                     my @child;

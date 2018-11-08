@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,7 @@
 package MT::Core;
 
 use strict;
+use warnings;
 use MT;
 use base 'MT::Component';
 
@@ -168,6 +169,18 @@ BEGIN {
             'failedlogin'     => 'MT::FailedLogin',
             'accesstoken'     => 'MT::AccessToken',
 
+            # MT7
+            'category_set'        => 'MT::CategorySet',
+            'cd'                  => 'MT::ContentData',
+            'content_data'        => 'MT::ContentData',
+            'cf'                  => 'MT::ContentField',
+            'content_field'       => 'MT::ContentField',
+            'cf_idx'              => 'MT::ContentFieldIndex',
+            'content_field_index' => 'MT::ContentFieldIndex',
+            'content_type'        => 'MT::ContentType',
+            'objectcategory'      => 'MT::ObjectCategory',
+            'rebuild_trigger'     => 'MT::RebuildTrigger',
+
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
             'ts_error'      => 'MT::TheSchwartz::Error',
@@ -232,13 +245,21 @@ BEGIN {
                             $query = { like => "%$query%" };
                         }
                         elsif ( 'not_contains' eq $option ) {
-                            $query = { not_like => "%$query%" };
+                            $query
+                                = [ { not_like => "%$query%" }, \'IS NULL' ];
                         }
                         elsif ( 'beginning' eq $option ) {
                             $query = { like => "$query%" };
                         }
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
+                        }
+                        elsif ( 'blank' eq $option ) {
+                            $query = [ \'IS NULL', '' ];
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query
+                                = [ '-and', \'IS NOT NULL', { not => '' } ];
                         }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
@@ -247,7 +268,14 @@ BEGIN {
                             return { $col => $query };
                         }
                     },
-                    filter_tmpl    => '<mt:var name="filter_form_string">',
+                    filter_tmpl => sub {
+                        my $prop = shift;
+                        my $tmpl
+                            = $prop->use_blank
+                            ? 'filter_form_blank_string'
+                            : 'filter_form_string';
+                        qq{<mt:var name="${tmpl}">};
+                    },
                     base_type      => 'string',
                     args_via_param => sub {
                         my $prop = shift;
@@ -287,7 +315,7 @@ BEGIN {
                             $query = $value;
                         }
                         elsif ( 'not_equal' eq $option ) {
-                            $query = { not => $value };
+                            $query = [ { not => $value }, \'IS NULL' ];
                         }
                         elsif ( 'greater_than' eq $option ) {
                             $query = { '>' => $value };
@@ -301,6 +329,12 @@ BEGIN {
                         elsif ( 'less_equal' eq $option ) {
                             $query = { '<=' => $value };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query = \'IS NOT NULL';
+                        }
                         if ( $prop->is_meta ) {
                             return $prop->join_meta( $db_args, $query );
                         }
@@ -313,15 +347,22 @@ BEGIN {
                         my ( $app, $val ) = @_;
                         return { option => 'equal', value => $val };
                     },
-                    filter_tmpl => '<mt:Var name="filter_form_integer">',
-                    base_type   => 'integer',
-                    priority    => 4,
+                    filter_tmpl => sub {
+                        my $prop       = shift;
+                        my $base_type  = $prop->base_type;
+                        my $use_blank  = $prop->use_blank ? 'blank_' : '';
+                        my $use_signed = $prop->use_signed ? 'signed_' : '';
+                        my $tmpl
+                            = "filter_form_${use_blank}${use_signed}${base_type}";
+                        qq{<mt:Var name="${tmpl}">};
+                    },
+                    base_type          => 'integer',
+                    priority           => 4,
                     default_sort_order => 'descend',
                 },
                 float => {
                     base        => '__virtual.integer',
                     col_class   => 'num',
-                    filter_tmpl => '<mt:Var name="filter_form_float">',
                     data_format => '%.1f',
                     html        => sub {
                         my ( $prop, $obj ) = @_;
@@ -330,7 +371,8 @@ BEGIN {
                     },
                     base_type => 'float',
                 },
-                date => {
+                double => { base => '__virtual.float' },
+                date   => {
                     base          => '__virtual.base',
                     col_class     => 'date',
                     use_future    => 0,
@@ -356,8 +398,7 @@ BEGIN {
                                 if ( $key eq 'days' ) {
                                     return $prop->error(
                                         MT->translate(
-                                            q{Days must be a number.}
-                                        )
+                                            q{Days must be a number.})
                                     ) if $args->{days} =~ /\D/;
                                 }
                                 elsif ( $key ne 'option' ) {
@@ -385,9 +426,9 @@ BEGIN {
                         my $blog = MT->app ? MT->app->blog : undef;
                         require MT::Util;
                         my $now = MT::Util::epoch2ts( $blog, time() );
-                        my $from   = $args->{from}   || undef;
-                        my $to     = $args->{to}     || undef;
-                        my $origin = $args->{origin} || undef;
+                        my $from   = $args->{from}   || '';
+                        my $to     = $args->{to}     || '';
+                        my $origin = $args->{origin} || '';
                         $from =~ s/\D//g;
                         $to =~ s/\D//g;
                         $origin =~ s/\D//g;
@@ -451,6 +492,12 @@ BEGIN {
                                 value => $now
                             };
                         }
+                        elsif ( 'blank' eq $option ) {
+                            $query = \'IS NULL';
+                        }
+                        elsif ( 'not_blank' eq $option ) {
+                            $query = \'IS NOT NULL';
+                        }
 
                         if ( $prop->is_meta ) {
                             $prop->join_meta( $db_args, $query );
@@ -495,7 +542,6 @@ BEGIN {
                         my $prop = shift;
                         my ( $app, $val ) = @_;
                         require MT::Util;
-                        my ( $mode, $from, $to );
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
@@ -567,10 +613,26 @@ BEGIN {
                             = $prop->use_future
                             ? 'filter_form_future_date'
                             : 'filter_form_date';
-                        my $opts
-                            = $prop->use_future
-                            ? '<mt:var name="future_date_filter_options">'
-                            : '<mt:var name="date_filter_options">';
+                        my $opts;
+                        if ( $prop->use_future ) {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="future_blank_date_filter_options">';
+                            }
+                            else {
+                                $opts
+                                    = '<mt:var name="future_date_filter_options">';
+                            }
+                        }
+                        else {
+                            if ( $prop->use_blank ) {
+                                $opts
+                                    = '<mt:var name="blank_date_filter_options">';
+                            }
+                            else {
+                                $opts = '<mt:var name="date_filter_options">';
+                            }
+                        }
                         my $contents
                             = $prop->use_future
                             ? '<mt:var name="future_date_filter_contents">'
@@ -743,12 +805,12 @@ BEGIN {
                             undef,
                             [   { id => \"= $colname" },
                                 '-and',
-                                [   {%$name_query},
+                                [   $name_query,
                                     (   $args->{'option'} eq 'not_contains'
                                         ? '-and'
                                         : '-or'
                                     ),
-                                    {%$nick_query},
+                                    $nick_query,
                                 ]
                             ],
                             {}
@@ -762,13 +824,19 @@ BEGIN {
                             ? 'author_id'
                             : 'created_by';
                         my %author_id
-                            = map { $_->$col => 1 if $_->$col } @$objs;
+                            = map { ( $_->$col ) ? ( $_->$col => 1 ) : () }
+                            @$objs;
                         my @authors = MT->model('author')
                             ->load( { id => [ keys %author_id ] } );
-                        my %nickname
-                            = map { $_->id => $_->nickname } @authors;
+                        my %nickname = map {
+                                  $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
                         return sort {
-                            $nickname{ $a->$col } cmp $nickname{ $b->$col }
+                            $nickname{ $a->$col || 0 }
+                                cmp $nickname{ $b->$col || 0 }
                         } @$objs;
                     },
                 },
@@ -812,24 +880,29 @@ BEGIN {
                                 ),
                             }
                         );
-
                         my $tag_ds = $prop->tag_ds || $ds;
+
                         my @objecttag_terms_args = (
-                            { object_datasource => $tag_ds, },
+                            { object_datasource => $tag_ds },
                             {   fetchonly => { object_id => 1 },
                                 unique    => 1,
                                 joins     => [
                                     MT->model('tag')->join_on(
                                         undef,
-                                        {   name => $query,
-                                            id   => \'= objecttag_tag_id',
+                                        {   (          $option eq 'blank'
+                                                    || $option eq 'not_blank'
+                                                )
+                                            ? ()
+                                            : ( name => $query ),
+                                            id => \'= objecttag_tag_id',
                                         },
                                     ),
                                     $ds_join,
                                 ],
                             }
                         );
-                        if ( 'not_contains' eq $option ) {
+                        if ( 'not_contains' eq $option || 'blank' eq $option )
+                        {
                             my @ids = map( $_->object_id,
                                 MT->model('objecttag')
                                     ->load(@objecttag_terms_args) );
@@ -1028,8 +1101,8 @@ BEGIN {
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
                 blog_name => {
-                    label        => 'Website/Blog Name',
-                    filter_label => '__WEBSITE_BLOG_NAME',
+                    label        => 'Site Name',
+                    filter_label => 'Site Name',
                     order        => 10000,
                     display      => 'default',
                     site_name    => 1,
@@ -1053,7 +1126,8 @@ BEGIN {
                             $_->parent_id
                                 && !$blog_map{ $_->parent_id }
                             } @blogs;
-                        my @sites
+                        my @sites;
+                        @sites
                             = MT->model('website')
                             ->load( { id => [ keys %site_ids ], },
                             { fetchonly => { id => 1, name => 1, }, } )
@@ -1073,9 +1147,10 @@ BEGIN {
                                     MT->translate('*Website/Blog deleted*');
                                 next;
                             }
-                            if ((   my $site
-                                    = $blog_site_map{ $blog->parent_id }
-                                )
+                            my $site;
+                            if ($blog->parent_id
+                                && ( $site
+                                    = $blog_site_map{ $blog->parent_id } )
                                 && $prop->site_name
                                 )
                             {
@@ -1146,7 +1221,7 @@ BEGIN {
                         my $prop = shift;
                         my ($settings) = @_;
                         return MT->translate(
-                            '[_1] of this Website',
+                            '[_1] of this Site',
                             $settings->{object_label_plural}
                                 || $prop->datasource->class_label_plural,
                         );
@@ -1205,44 +1280,42 @@ BEGIN {
                     },
                 },
             },
-            website      => '$Core::MT::Website::list_props',
-            blog         => '$Core::MT::Blog::list_props',
-            entry        => '$Core::MT::Entry::list_props',
-            page         => '$Core::MT::Page::list_props',
-            asset        => '$Core::MT::Asset::list_props',
-            category     => '$Core::MT::Category::list_props',
-            folder       => '$Core::MT::Folder::list_props',
-            comment      => '$Core::MT::Comment::list_props',
-            ping         => '$Core::MT::TBPing::list_props',
-            author       => '$Core::MT::Author::list_props',
-            member       => '$Core::MT::Author::member_list_props',
-            commenter    => '$Core::MT::Author::commenter_list_props',
-            tag          => '$Core::MT::Tag::list_props',
-            banlist      => '$Core::MT::IPBanList::list_props',
-            association  => '$Core::MT::Association::list_props',
-            role         => '$Core::MT::Role::list_props',
-            notification => '$Core::MT::Notification::list_props',
-            log          => '$Core::MT::Log::list_props',
-            filter       => '$Core::MT::Filter::list_props',
-            permission   => '$Core::MT::Permission::list_props',
-            template     => '$Core::MT::Template::list_props',
-            templatemap  => '$Core::MT::TemplateMap::list_props',
+            website       => '$Core::MT::Website::list_props',
+            blog          => '$Core::MT::Blog::list_props',
+            entry         => '$Core::MT::Entry::list_props',
+            page          => '$Core::MT::Page::list_props',
+            asset         => '$Core::MT::Asset::list_props',
+            category      => '$Core::MT::Category::list_props',
+            folder        => '$Core::MT::Folder::list_props',
+            author        => '$Core::MT::Author::list_props',
+            member        => '$Core::MT::Author::member_list_props',
+            tag           => '$Core::MT::Tag::list_props',
+            banlist       => '$Core::MT::IPBanList::list_props',
+            association   => '$Core::MT::Association::list_props',
+            role          => '$Core::MT::Role::list_props',
+            notification  => '$Core::MT::Notification::list_props',
+            log           => '$Core::MT::Log::list_props',
+            filter        => '$Core::MT::Filter::list_props',
+            permission    => '$Core::MT::Permission::list_props',
+            template      => '$Core::MT::Template::list_props',
+            templatemap   => '$Core::MT::TemplateMap::list_props',
+            category_set  => '$Core::MT::CategorySet::list_props',
+            content_type  => '$Core::MT::ContentType::list_props',
+            content_field => '$Core::MT::ContentField::list_props',
+            content_data => '$Core::MT::ContentData::list_props_for_data_api',
         },
         system_filters => {
-            entry     => '$Core::MT::Entry::system_filters',
-            page      => '$Core::MT::Page::system_filters',
-            comment   => '$Core::MT::Comment::system_filters',
-            ping      => '$Core::MT::TBPing::system_filters',
-            tag       => '$Core::MT::Tag::system_filters',
-            asset     => '$Core::MT::Asset::system_filters',
-            author    => '$Core::MT::Author::system_filters',
-            member    => '$Core::MT::Author::member_system_filters',
-            commenter => '$Core::MT::Author::commenter_system_filters',
-            log       => '$Core::MT::Log::system_filters',
+            entry  => '$Core::MT::Entry::system_filters',
+            page   => '$Core::MT::Page::system_filters',
+            tag    => '$Core::MT::Tag::system_filters',
+            asset  => '$Core::MT::Asset::system_filters',
+            author => '$Core::MT::Author::system_filters',
+            member => '$Core::MT::Author::member_system_filters',
+            log    => '$Core::MT::Log::system_filters',
         },
         listing_screens => {
             website => {
-                object_label     => 'Website',
+                object_label     => 'Site',
                 primary          => 'name',
                 view             => 'system',
                 default_sort_key => 'name',
@@ -1254,7 +1327,7 @@ BEGIN {
                 },
             },
             blog => {
-                object_label     => 'Blog',
+                object_label     => 'Child Site',
                 view             => [qw( system website )],
                 primary          => 'name',
                 default_sort_key => 'name',
@@ -1272,6 +1345,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => "access_to_entry_list",
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
@@ -1304,6 +1378,7 @@ BEGIN {
                 data_api_scope_mode => 'this',
                 permission          => 'access_to_page_list',
                 data_api_permission => undef,
+                view                => [ 'website', 'blog' ],
                 feed_link           => sub {
                     my ($app) = @_;
                     return 1 if $app->user->is_superuser;
@@ -1422,9 +1497,14 @@ BEGIN {
                 template              => 'list_category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
-                permission            => {
-                    permit_action => 'access_to_category_list',
-                    inherit       => 0,
+                permission            => sub {
+                    my $app = shift;
+                    if ( $app->param('is_category_set') ) {
+                        return 'access_to_category_set_list';
+                    }
+                    else {
+                        return 'access_to_category_list';
+                    }
                 },
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
@@ -1453,92 +1533,14 @@ BEGIN {
                     ( $app->param('_type') || '' ) ne 'filter';
                 },
             },
-            comment => {
-                object_label        => 'Comment',
-                default_sort_key    => 'created_on',
-                data_api_scope_mode => 'this',
-                permission          => 'access_to_comment_list',
-                data_api_permission => undef,
-                primary             => 'comment',
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_comment_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_comment_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
-            },
-            ping => {
-                primary             => 'excerpt',
-                object_label        => 'Trackback',
-                default_sort_key    => 'created_on',
-                data_api_scope_mode => 'this',
-                permission          => 'access_to_trackback_list',
-                data_api_permission => undef,
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_trackback_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_trackback_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
-            },
             author => {
                 object_label        => 'Author',
                 primary             => 'name',
-                permission          => 'administer',
+                permission          => 'manage_users_groups',
                 data_api_permission => undef,
                 default_sort_key    => 'name',
                 view                => 'system',
                 scope_mode          => 'none',
-            },
-            commenter => {
-                primary             => 'name',
-                object_label        => 'Commenter',
-                object_label_plural => 'Commenters',
-                object_type         => 'author',
-                permission          => 'administer',
-                default_sort_key    => 'name',
-                condition           => sub {
-                    return MT->config->SingleCommunity;
-                },
-                view         => 'system',
-                scope_mode   => 'none',
-                screen_label => 'Manage Commenters',
             },
             member => {
                 primary             => 'name',
@@ -1570,11 +1572,9 @@ BEGIN {
                 object_label_plural => 'Permissions',
                 object_type         => 'association',
                 search_type         => 'author',
-
-                #permission => 'access_to_permission_list',
-                default_sort_key => 'created_on',
-                primary          => [ 'user_name', 'role_name' ],
-                view             => 'system',
+                default_sort_key    => 'created_on',
+                primary             => [ 'user_name', 'role_name' ],
+                view                => 'system',
             },
             role => {
                 object_label     => 'Role',
@@ -1628,7 +1628,50 @@ BEGIN {
                 data_api_condition  => sub {1},
                 data_api_scope_mode => 'this',
             },
-            template => { data_api_scope_mode => 'strict', },
+            template     => { data_api_scope_mode => 'strict', },
+            category_set => {
+                object_label        => 'Category Set',
+                primary             => 'name',
+                view                => [ 'website', 'blog' ],
+                default_sort_key    => 'name',
+                data_api_permission => undef,
+                scope_mode          => 'this',
+                permission          => 'access_to_category_set_list',
+            },
+            content_type => {
+                screen_label        => 'Manage Content Type',
+                object_label        => 'Content Type',
+                object_label_plural => 'Content Types',
+                object_type         => 'content_type',
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'name',
+                permission          => 'access_to_content_type_list',
+            },
+            content_field => {
+                object_label        => 'Content Field',
+                object_label_plural => 'Content Fields',
+                object_type         => 'content_field',
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'name',
+            },
+            content_data => {
+                object_label        => 'Content Data',
+                object_label_plural => 'Content Data',
+                object_type         => 'content_data',
+                condition           => sub {0},
+                data_api_condition  => sub {1},
+                scope_mode          => 'this',
+                use_filters         => 0,
+                view                => [ 'website', 'blog' ],
+                primary             => 'id',
+                default_sort_key    => 'modified_on',
+            },
         },
         summaries => {
             'author' => {
@@ -1691,7 +1734,6 @@ BEGIN {
             'MTReleaseNumber'              => undef,
             'RequiredCompatibility'        => { default => 0 },
             'EnableSessionKeyCompat'       => { default => 0 },
-            'EnableUploadCompat'           => { default => 0 },
             'NotifyUpgrade'                => { default => 1 },
             'Database'                     => undef,
             'DBHost'                       => undef,
@@ -1740,6 +1782,9 @@ BEGIN {
                 default => 'search_templates',
                 path    => 1,
                 type    => 'ARRAY',
+            },
+            'ContentDataSearchTemplatePath' => {
+                default => sub { $_[0]->SearchTemplatePath }
             },
             'ThemesDirectory' => {
                 default => 'themes',
@@ -1841,35 +1886,45 @@ BEGIN {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
-            'FreeTextSearchScript' => { default => 'mt-ftsearch.cgi', },
-            'XMLRPCScript'         => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'           => { default => 'mt-atom.cgi', },
-            'UpgradeScript'        => { default => 'mt-upgrade.cgi', },
-            'CheckScript'          => { default => 'mt-check.cgi', },
-            'DataAPIScript'        => { default => 'mt-data-api.cgi', },
-            'PublishCharset'       => { default => 'utf-8', },
-            'SafeMode'             => { default => 1, },
-            'AllowFileInclude'     => { default => 0, },
-            'GlobalSanitizeSpec'   => {
+            'FreeTextSearchScript'    => { default => 'mt-ftsearch.cgi', },
+            'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
+            'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
+            'AtomScript'              => { default => 'mt-atom.cgi', },
+            'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
+            'CheckScript'             => { default => 'mt-check.cgi', },
+            'DataAPIScript'           => { default => 'mt-data-api.cgi', },
+            'PublishCharset'          => { default => 'utf-8', },
+            'SafeMode'                => { default => 1, },
+            'AllowFileInclude'        => { default => 0, },
+            'GlobalSanitizeSpec'      => {
                 default =>
                     'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'GenerateTrackBackRSS'        => { default => 0, },
-            'DBIRaiseError'               => { default => 0, },
-            'SearchAlwaysAllowTemplateID' => { default => 0, },
-            'PreviewInNewWindow'          => { default => 1, },
-            'BasenameCheckCompat'         => { default => 0, },
+            'GenerateTrackBackRSS'                   => { default => 0, },
+            'DBIRaiseError'                          => { default => 0, },
+            'SearchAlwaysAllowTemplateID'            => { default => 0, },
+            'ContentDataSearchAlwaysAllowTemplateID' => {
+                default => sub { $_[0]->SearchAlwaysAllowTemplateID }
+            },
+            'PreviewInNewWindow'  => { default => 1, },
+            'BasenameCheckCompat' => { default => 0, },
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
-            'NoOverride'          => { default => '', },
-            'RegexSearch'         => { default => 0, },
-            'CaseSearch'          => { default => 0, },
-            'ResultDisplay'       => { default => 'descend', },
-            'ExcerptWords'        => { default => 40, },
-            'SearchElement'       => { default => 'entries', },
-            'ExcludeBlogs'        => undef,
-            'IncludeBlogs'        => undef,
+            'NoOverride'              => { default => '', },
+            'RegexSearch'             => { default => 0, },
+            'CaseSearch'              => { default => 0, },
+            'ResultDisplay'           => { default => 'descend', },
+            'ExcerptWords'            => { default => 40, },
+            'SearchElement'           => { default => 'entries', },
+            'ExcludeBlogs'            => undef,
+            'ContentDataExcludeBlogs' => {
+                default => sub { $_[0]->ExcludeBlogs }
+            },
+            'IncludeBlogs'            => undef,
+            'ContentDataIncludeBlogs' => {
+                default => sub { $_[0]->IncludeBlogs }
+            },
             'DefaultTemplate'     => { default => 'default.tmpl', },
             'Type'                => { default => 'straight', },
             'MaxResults'          => { default => '20', },
@@ -1879,59 +1934,67 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'             => undef,
-            'SearchSortOrder'          => { default => 'ascend', },
-            'SearchNoOverride'         => { default => 'SearchMaxResults', },
-            'SearchResultDisplay'      => { alias => 'ResultDisplay', },
-            'SearchExcerptWords'       => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate'    => { alias => 'DefaultTemplate', },
-            'SearchMaxResults'         => { alias => 'MaxResults', },
-            'SearchAltTemplate'        => { alias => 'AltTemplate' },
-            'SearchPrivateTags'        => { default => 0 },
-            'DeepCopyRecursiveLimit'   => { default => 2 },
-            'BulkLoadMetaObjectsLimit' => { default => 100 },
-            'DisableMetaObjectCache'   => { default => 1, },
-            'RegKeyURL' =>
-                { default => 'http://www.typekey.com/extras/regkeys.txt', },
-            'IdentitySystem' =>
-                { default => 'http://www.typekey.com/t/typekey', },
-            'SignOnURL' =>
-                { default => 'https://www.typekey.com/t/typekey/login?', },
-            'SignOffURL' =>
-                { default => 'https://www.typekey.com/t/typekey/logout?', },
-            'IdentityURL' => { default => "http://profile.typekey.com/", },
-            'ReturnToURL' => undef,
+            'SearchSortBy'            => undef,
+            'ContentDataSearchSortBy' => {
+                default => sub { $_[0]->SearchSortBy }
+            },
+            'SearchSortOrder'  => { default => 'ascend', },
+            'SearchNoOverride' => { default => 'SearchMaxResults', },
+            'ContentDataSearchNoOverride' => {
+                default => sub { $_[0]->SearchNoOverride }
+            },
+            'SearchResultDisplay'            => { alias => 'ResultDisplay', },
+            'ContentDataSearchResultDisplay' => {
+                default => sub { $_[0]->SearchResultDisplay }
+            },
+            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
+            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
+            'ContentDataSearchDefaultTemplate' =>
+                { default => 'content_data_default.tmpl' },
+            'SearchMaxResults'            => { alias => 'MaxResults', },
+            'ContentDataSearchMaxResults' => {
+                default => sub { $_[0]->SearchMaxResults }
+            },
+            'SearchAltTemplate'            => { alias => 'AltTemplate' },
+            'ContentDataSearchAltTemplate' => {
+                type    => 'ARRAY',
+                default => 'feed content_data_results_feed.tmpl',
+            },
+            'SearchPrivateTags'         => { default => 0 },
+            'DeepCopyRecursiveLimit'    => { default => 2 },
+            'BulkLoadMetaObjectsLimit'  => { default => 100 },
+            'DisableMetaObjectCache'    => { default => 1, },
+            'ReturnToURL'               => undef,
             'DynamicComments'           => { default => 0, },
             'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
             'SearchCacheTTL'            => { default => 20, },
-            'SearchThrottleSeconds'     => { default => 5 },
-            'SearchThrottleIPWhitelist' => undef,
-            'CMSSearchLimit'            => { default => 125 },
-            'OneHourMaxPings'           => { default => 10, },
-            'OneDayMaxPings'            => { default => 50, },
-            'SupportURL'                => {
+            'ContentDataSearchCacheTTL' => {
+                default => sub { $_[0]->SearchCacheTTL }
+            },
+            'SearchThrottleSeconds'            => { default => 5 },
+            'ContentDataSearchThrottleSeconds' => {
+                default => sub { $_[0]->SearchThrottleSeconds }
+            },
+            'SearchThrottleIPWhitelist'            => undef,
+            'ContentDataSearchThrottleIPWhitelist' => {
+                default => sub { $_[0]->SearchThrottleIPWhitelist }
+            },
+            'SearchContentTypes' => undef,
+            'CMSSearchLimit'     => { default => 125 },
+            'OneHourMaxPings'    => { default => 10, },
+            'OneDayMaxPings'     => { default => 50, },
+            'SupportURL'         => {
                 default => 'http://www.sixapart.com/movabletype/support/',
             },
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
-                default =>
-                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+                default => 'https://www.movabletype.org/news/newsbox.json',
             },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
 
-# 'MTNewsURL' => {
-#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-# },
-#            'LearningNewsURL' => {
-#                default => 'http://learning.movabletype.org/newsbox.html',
-#            },
-
-            # 'HackingNewsURL' => {
-            #     default => 'http://hacking.movabletype.org/newsbox.html',
-            # },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },
@@ -1943,7 +2006,6 @@ BEGIN {
             'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
-            'TypeKeyVersion'           => { default => '1.1' },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
@@ -1955,6 +2017,7 @@ BEGIN {
             #    default => 'http://www.sixapart.com/movabletype/docs/4.0/',
             #},
             'UsePlugins'               => { default => 1, },
+            'PluginAlias'              => { type    => 'HASH', },
             'PluginSwitch'             => { type    => 'HASH', },
             'PluginSchemaVersion'      => { type    => 'HASH', },
             'YAMLModule'               => { default => undef },
@@ -1982,12 +2045,10 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserAutoProvisioning' =>
-                { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'rainier' },
             'NewUserDefaultWebsiteId' => undef,
             'NewUserTemplateBlogId'   => undef,
-            'DefaultSiteURL'          => undef,    ## DEPRECATED
+            'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
@@ -2041,11 +2102,10 @@ BEGIN {
             'ProcessMemoryCommand' => { default => \&ProcessMemoryCommand },
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
-            'EnableBlogStats'      => { default => 0 },
             'SingleCommunity'      => { default => 1 },
             'DefaultTemplateSet'   => { default => 'mt_blog' },
-            'DefaultWebsiteTheme'  => { default => 'rainier' },
-            'DefaultBlogTheme'     => { default => 'rainier' },
+            'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
+            'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
                 default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
             },
@@ -2114,12 +2174,33 @@ BEGIN {
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
+            'XXSSProtection'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
             'LoggerLevel'  => { default => 'none' },
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
+
+            # Notification Center
+            'NotificationCacheTTL' => { default => 3600 },
+
+            # Dashboard
+            'DisableVersionCheck' => undef,
+
+            # Content Field Type - MT7
+            'NumberFieldDecimalPlaces' => { default => 5 },
+            'NumberFieldMaxValue'      => { default => 2147483647 },
+            'NumberFieldMinValue'      => { default => -2147483648 },
+
+            # RebuildTrigger - MT7
+            'DefaultAccessAllowed' => { default => 1 },
+            'AccessOverrides'      => undef,
+
+            'JSONCanonicalization' => { default => 1 },
+
+            'RequiredUserEmail'       => { default => 1 },
+            'DefaultClassParamFilter' => { default => 'all' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2137,10 +2218,6 @@ BEGIN {
                 handler => 'MT::App::ActivityFeeds',
                 script  => sub { MT->config->ActivityFeedScript },
             },
-            'tb' => {
-                handler => 'MT::App::Trackback',
-                script  => sub { MT->config->TrackbackScript },
-            },
             'wizard' => {
                 handler => 'MT::App::Wizard',
                 script  => sub {'mt-wizard.cgi'},
@@ -2149,15 +2226,6 @@ BEGIN {
             'check' => {
                 script => sub { MT->config->CheckScript },
                 type   => 'run_once',
-            },
-            'comments' => {
-                handler => 'MT::App::Comments',
-                script  => sub { MT->config->CommentScript },
-                tags    => sub { MT->app->load_core_tags },
-            },
-            'search' => {
-                handler => 'MT::App::Search::Legacy',
-                tags    => sub { MT->app->load_core_tags },
             },
             'new_search' => {
                 handler => 'MT::App::Search',
@@ -2179,6 +2247,16 @@ BEGIN {
                 methods => sub { MT->app->core_methods() },
                 default => sub { MT->app->core_parameters() },
             },
+            'cd_search' => {
+                handler => 'MT::App::Search::ContentData',
+                script  => sub { MT->config->ContentDataSearchScript },
+                tags    => sub {
+                    require MT::Template::Context::Search;
+                    return MT::Template::Context::Search->load_core_tags();
+                },
+                methods => sub { MT->app->core_methods() },
+                default => sub { MT->app->core_parameters() },
+            },
             'cms' => {
                 handler         => 'MT::App::CMS',
                 script          => sub { MT->config->AdminScript },
@@ -2187,22 +2265,23 @@ BEGIN {
                 page_actions    => sub { MT->app->core_page_actions(@_) },
                 content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions    => sub { MT->app->core_list_actions(@_) },
+                menu_actions    => sub { MT->app->core_menu_actions(@_) },
+                user_actions    => sub { MT->app->core_user_actions(@_) },
                 search_apis     => sub {
                     require MT::CMS::Search;
                     return MT::CMS::Search::core_search_apis( MT->app, @_ );
                 },
-                menus           => sub { MT->app->core_menus() },
-                methods         => sub { MT->app->core_methods() },
-                widgets         => sub { MT->app->core_widgets() },
-                blog_stats_tabs => sub { MT->app->core_blog_stats_tabs() },
-                import_formats  => sub {
+                menus          => sub { MT->app->core_menus() },
+                methods        => sub { MT->app->core_methods() },
+                widgets        => sub { MT->app->core_widgets() },
+                import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
                 compose_menus => sub { MT->app->core_compose_menus() },
                 user_menus    => sub { MT->app->core_user_menus() },
-                disable_object_methods =>
-                    sub { MT->app->core_disable_object_methods() },
+                enable_object_methods =>
+                    sub { MT->app->core_enable_object_methods() },
                 site_stats_lines =>
                     sub { MT::CMS::Dashboard->site_stats_widget_lines() },
             },
@@ -2224,8 +2303,7 @@ BEGIN {
                     '$Core::MT::DataAPI::Endpoint::Common::query_builder',
 
                 # This is for search endpoint.
-                default =>
-                    sub { MT::App::Search::core_parameters( MT->app ) },
+                default        => sub { MT->app->core_parameters() },
                 import_formats => sub {
                     require MT::Import;
                     return MT::Import->core_import_formats();
@@ -2254,16 +2332,6 @@ BEGIN {
             'archetype' => {
                 label    => 'Movable Type Default',
                 template => 'archetype_editor.tmpl',
-            },
-        },
-        ping_servers => {
-            'weblogs' => {
-                label => 'weblogs.com',
-                url   => 'http://rpc.weblogs.com/RPC2',
-            },
-            'google' => {
-                label => 'google.com',
-                url   => 'http://blogsearch.google.com/ping/RPC2',
             },
         },
         commenter_authenticators => \&load_core_commenter_auth,
@@ -2406,6 +2474,8 @@ BEGIN {
                 content => '<$mt:WidgetSet name="$0"$>',
             },
         },
+        content_field_types =>
+            '$Core::MT::ContentFieldType::core_content_field_types',
     };
 }
 
@@ -2433,6 +2503,20 @@ sub load_core_tasks {
             frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
             code      => sub {
                 MT->instance->publisher->unpublish_past_entries;
+            }
+        },
+        'FutureContent' => {
+            label     => 'Publish Scheduled Contents',
+            frequency => $cfg->FuturePostFrequency * 60,     # once per minute
+            code      => sub {
+                MT->instance->publisher->publish_future_contents;
+            }
+        },
+        'UnpublishingContent' => {
+            label     => 'Unpublish Past Contents',
+            frequency => $cfg->UnpublishPostFrequency * 60,  # once per minute
+            code      => sub {
+                MT->instance->publisher->unpublish_past_contents;
             }
         },
         'AddSummaryWatcher' => {
@@ -2538,7 +2622,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
@@ -2617,38 +2701,39 @@ sub load_backup_instructions {
 }
 
 sub load_core_permissions {
+    require MT::ContentType;
+    my @content_type_permissions
+        = keys %{ MT->app->model('content_type')->all_permissions };
+
     return {
-        'blog.administer_website' => {
-            'group'            => 'blog_admin',
-            'inherit_from'     => ['blog.administer_blog'],
-            'label'            => 'Manage Website',
-            'order'            => 200,
+        'blog.administer_site' => {
+            'group'        => 'blog_admin',
+            'label'        => 'Manage Sites',
+            'order'        => 100,
+            'inherit_from' => [
+                'blog.comment',              'blog.create_post',
+                'blog.edit_all_posts',       'blog.edit_assets',
+                'blog.edit_categories',      'blog.edit_config',
+                'blog.edit_notifications',   'blog.edit_tags',
+                'blog.edit_templates',       'blog.manage_pages',
+                'blog.manage_users',         'blog.publish_post',
+                'blog.rebuild',              'blog.send_notifications',
+                'blog.set_publish_paths',    'blog.upload',
+                'blog.view_blog_log',        'blog.manage_feedback',
+                'blog.manage_themes',        'blog.create_site',
+                'blog.manage_category_set',  'blog.manage_content_data',
+                'blog.manage_content_types', @content_type_permissions
+            ],
             'permitted_action' => {
+
+                # administer_website
                 'save_all_settings_for_website' => 1,
                 'access_to_website_list'        => 1,
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
                 'delete_website'                => 1,
-                'remove_user_assoc'             => 1,
-            },
-        },
-        'blog.administer_blog' => {
-            'group'        => 'blog_admin',
-            'inherit_from' => [
-                'blog.comment',            'blog.create_post',
-                'blog.edit_all_posts',     'blog.edit_assets',
-                'blog.edit_categories',    'blog.edit_config',
-                'blog.edit_notifications', 'blog.edit_tags',
-                'blog.edit_templates',     'blog.manage_pages',
-                'blog.manage_users',       'blog.publish_post',
-                'blog.rebuild',            'blog.save_image_defaults',
-                'blog.send_notifications', 'blog.set_publish_paths',
-                'blog.upload',             'blog.view_blog_log',
-                'blog.manage_feedback',    'blog.manage_themes',
-            ],
-            'label'            => 'Manage Blog',
-            'order'            => 300,
-            'permitted_action' => {
+
+                # administer_blog
                 'access_to_blog_association_list'  => 1,
                 'access_to_member_list'            => 1,
                 'access_to_blog_list'              => 1,
@@ -2659,7 +2744,6 @@ sub load_core_permissions {
                 'create_association'               => 1,
                 'delete_association'               => 1,
                 'delete_blog'                      => 1,
-                'force_post_comment'               => 1,
                 'get_blog_feed'                    => 1,
                 'get_system_feed'                  => 1,
                 'grant_administer_role'            => 1,
@@ -2676,74 +2760,87 @@ sub load_core_permissions {
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
-                'remove_user_assoc'                => 1,
-                'edit_global_commenter_status'     => 1,
-            },
-        },
-        'blog.manage_member_blogs' => {
-            'group'            => 'blog_admin',
-            'label'            => 'Manage Website with Blogs',
-            'inherit_from'     => ['blog.administer_website'],
-            'order'            => 100,
-            'permitted_action' => {
+
+                'remove_user_assoc'            => 1,
+                'administer_site'              => 1,
                 'manage_member_blogs'          => 1,
                 'open_blog_listing_screen'     => 1,
                 'open_all_blog_listing_screen' => 1,
-            },
+            }
+        },
+        'blog.administer_website' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website',
+            'order'   => 100,
+            'display' => 0,
+        },
+        'blog.administer_blog' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Blog',
+            'order'   => 100,
+            'display' => 0,
+        },
+        'blog.manage_member_blogs' => {
+            'group'   => 'blog_admin',
+            'label'   => 'Manage Website with Blogs',
+            'order'   => 100,
+            'display' => 0,
+        },
+        'blog.create_site' => {
+            'group'            => 'blog_admin',
+            'label'            => 'Create Sites',
+            'order'            => 200,
+            'permitted_action' => {
+                'create_blog'                  => 1,
+                'create_new_blog'              => 1,
+                'use_blog:create_menu'         => 1,
+                'edit_new_blog_config'         => 1,
+                'open_new_blog_screen'         => 1,
+                'set_new_blog_publish_paths'   => 1,
+                'use_tools:search'             => 1,
+                'create_site'                  => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
+            }
         },
         'blog.comment' => {
-            'group'            => 'blog_comment',
-            'label'            => 'Post Comments',
-            'order'            => 100,
-            'permitted_action' => {
-                'comment'      => 1,
-                'post_comment' => 1,
-            }
+            'group' => 'blog_comment',
+            'label' => 'Post Comments',
+            'order' => 100,
         },
         'blog.create_post' => {
             'group'            => 'auth_pub',
             'label'            => 'Create Entries',
             'order'            => 100,
             'permitted_action' => {
-                'access_to_insert_asset_list'             => 1,
-                'access_to_atom_server'                   => 1,
-                'access_to_entry_list'                    => 1,
-                'access_to_new_entry_editor'              => 1,
-                'access_to_trackback_list'                => 1,
-                'access_to_comment_list'                  => 1,
-                'create_new_entry'                        => 1,
-                'create_new_entry_via_xmlrpc_server'      => 1,
-                'create_post'                             => 1,
-                'edit_own_entry'                          => 1,
-                'delete_own_entry_unpublished_trackback'  => 1,
-                'delete_own_entry_unpublished_comment'    => 1,
-                'edit_own_entry_comment_without_status'   => 1,
-                'edit_own_entry_trackback_without_status' => 1,
-                'edit_own_unpublished_entry'              => 1,
-                'get_blog_info_via_atom_server'           => 1,
-                'get_blog_info_via_xmlrpc_server'         => 1,
-                'get_categories_via_xmlrpc_server'        => 1,
-                'get_category_list_via_xmlrpc_server'     => 1,
-                'get_entries_via_xmlrpc_server'           => 1,
-                'get_post_categories_via_xmlrpc_server'   => 1,
-                'get_tag_list_via_xmlrpc_server'          => 1,
-                'insert_asset'                            => 1,
-                'open_existing_own_entry_screen'          => 1,
-                'open_new_entry_screen'                   => 1,
-                'open_own_entry_comment_edit_screen'      => 1,
-                'open_own_entry_trackback_edit_screen'    => 1,
-                'view_feedback'                           => 1,
-                'use_entry:manage_menu'                   => 1,
-                'use_tools:search'                        => 1,
-                'view_own_entry_comment'                  => 1,
-                'view_own_entry_trackback'                => 1,
-                'get_entry_feed'                          => 1,
-                'get_comment_feed'                        => 1,
-                'get_trackback_feed'                      => 1,
-                'add_tags_to_entry_via_list'              => 1,
-                'remove_tags_from_entry_via_list'         => 1,
-                'edit_entry_authored_on'                  => 1,
-                'edit_entry_unpublished_on'               => 1,
+                'access_to_insert_asset_list'           => 1,
+                'access_to_atom_server'                 => 1,
+                'access_to_entry_list'                  => 1,
+                'access_to_new_entry_editor'            => 1,
+                'create_new_entry'                      => 1,
+                'create_new_entry_via_xmlrpc_server'    => 1,
+                'create_post'                           => 1,
+                'edit_own_entry'                        => 1,
+                'edit_own_unpublished_entry'            => 1,
+                'get_blog_info_via_atom_server'         => 1,
+                'get_blog_info_via_xmlrpc_server'       => 1,
+                'get_categories_via_xmlrpc_server'      => 1,
+                'get_category_list_via_xmlrpc_server'   => 1,
+                'get_entries_via_xmlrpc_server'         => 1,
+                'get_post_categories_via_xmlrpc_server' => 1,
+                'get_tag_list_via_xmlrpc_server'        => 1,
+                'insert_asset'                          => 1,
+                'open_existing_own_entry_screen'        => 1,
+                'open_new_entry_screen'                 => 1,
+                'view_feedback'                         => 1,
+                'use_entry:manage_menu'                 => 1,
+                'use_tools:search'                      => 1,
+                'get_entry_feed'                        => 1,
+                'add_tags_to_entry_via_list'            => 1,
+                'remove_tags_from_entry_via_list'       => 1,
+                'edit_entry_authored_on'                => 1,
+                'edit_entry_unpublished_on'             => 1,
+                'save_edit_prefs'                       => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2758,13 +2855,10 @@ sub load_core_permissions {
                 'edit_all_posts'                   => 1,
                 'edit_all_published_entry'         => 1,
                 'edit_all_unpublished_entry'       => 1,
-                'edit_comment_status'              => 1,
-                'edit_trackback_status'            => 1,
                 'handle_junk'                      => 1,
                 'handle_not_junk'                  => 1,
                 'list_asset'                       => 1,
                 'load_next_scheduled_entry'        => 1,
-                'open_all_trackback_edit_screen'   => 1,
                 'open_batch_entry_editor_via_list' => 1,
                 'publish_all_entry'                => 1,
                 'remove_tags_from_entry_via_list'  => 1,
@@ -2774,16 +2868,16 @@ sub load_core_permissions {
                 'get_entry_feed'                   => 1,
                 'save_multiple_entries'            => 1,
                 'open_select_author_dialog'        => 1,
-                'send_update_pings_entry'          => 1,
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
+                'save_edit_prefs'                  => 1,
             }
         },
         'blog.edit_assets' => {
-            'group'        => 'blog_upload',
-            'inherit_from' => [ 'blog.upload', 'blog.save_image_defaults' ],
-            'label'        => 'Manage Assets',
-            'order'        => 300,
+            'group'            => 'blog_upload',
+            'inherit_from'     => ['blog.upload'],
+            'label'            => 'Manage Assets',
+            'order'            => 200,
             'permitted_action' => {
                 'access_to_asset_list'             => 1,
                 'add_tags_to_assets'               => 1,
@@ -2802,25 +2896,19 @@ sub load_core_permissions {
         'blog.edit_categories' => {
             'group'            => 'blog_admin',
             'label'            => 'Manage Categories',
-            'order'            => 500,
+            'order'            => 400,
             'permitted_action' => {
-                'access_to_category_list'             => 1,
-                'bulk_edit_category_trackbacks'       => 1,
-                'delete_category'                     => 1,
-                'delete_category_trackback'           => 1,
-                'edit_categories'                     => 1,
-                'handle_junk_for_category_trackback'  => 1,
-                'open_category_edit_screen'           => 1,
-                'open_category_trackback_edit_screen' => 1,
-                'save_category'                       => 1,
-                'save_category_trackback'             => 1,
-                'search_category_trackbacks'          => 1,
+                'access_to_category_list'   => 1,
+                'delete_category'           => 1,
+                'edit_categories'           => 1,
+                'open_category_edit_screen' => 1,
+                'save_category'             => 1,
             }
         },
         'blog.edit_config' => {
             'group'            => 'blog_admin',
             'label'            => 'Change Settings',
-            'order'            => 400,
+            'order'            => 300,
             'permitted_action' => {
                 'access_to_blog_config_screen' => 1,
                 'access_to_blog_list'          => 1,
@@ -2834,13 +2922,12 @@ sub load_core_permissions {
                 'open_blog_config_screen'      => 1,
                 'open_start_import_screen'     => 1,
                 'save_blog_config'             => 1,
-                'update_welcome_message'       => 1,
             }
         },
         'blog.edit_notifications' => {
             'group'            => 'blog_admin',
             'label'            => 'Manage Address Book',
-            'order'            => 600,
+            'order'            => 500,
             'permitted_action' => {
                 'access_to_notification_list' => 1,
                 'edit_notifications'          => 1,
@@ -2852,7 +2939,7 @@ sub load_core_permissions {
         'blog.edit_tags' => {
             'group'            => 'blog_admin',
             'label'            => 'Manage Tags',
-            'order'            => 700,
+            'order'            => 600,
             'permitted_action' => {
                 'access_to_tag_list' => 1,
                 'edit_tags'          => 1,
@@ -2869,68 +2956,73 @@ sub load_core_permissions {
                 'copy_template_via_list'    => 1,
                 'edit_templates'            => 1,
                 'refresh_template_via_list' => 1,
-                'reset_blog_templates'      => 1,
                 'search_templates'          => 1,
                 'use_tools:search'          => 1,
-                'refresh_templates'         => 1.
+                'refresh_templates'         => 1,
+                'save_template_prefs'       => 1,
             }
         },
+
         'blog.manage_feedback' => {
             'group'            => 'blog_comment',
             'label'            => 'Manage Feedback',
             'order'            => 200,
             'permitted_action' => {
-                'access_to_comment_list'                => 1,
-                'access_to_trackback_list'              => 1,
-                'approve_all_comment'                   => 1,
-                'approve_all_trackback'                 => 1,
-                'ban_commenters_via_list'               => 1,
-                'bulk_edit_all_comments'                => 1,
-                'bulk_edit_all_entry_trackbacks'        => 1,
-                'delete_all_trackbacks'                 => 1,
-                'delete_every_comment'                  => 1,
-                'delete_junk_comments'                  => 1,
-                'delete_junk_feedbacks'                 => 1,
-                'edit_all_comments'                     => 1,
-                'edit_all_trackbacks'                   => 1,
-                'edit_comment_status'                   => 1,
-                'edit_commenter'                        => 1,
-                'edit_commenter_status'                 => 1,
-                'edit_trackback_status'                 => 1,
-                'edit_trackback_status_via_notify_mail' => 1,
-                'get_comment_feed'                      => 1,
-                'get_trackback_feed'                    => 1,
-                'handle_junk'                           => 1,
-                'handle_junk_for_all_trackbacks'        => 1,
-                'handle_not_junk'                       => 1,
-                'open_all_trackback_edit_screen'        => 1,
-                'open_all_comment_edit_screen'          => 1,
-                'open_blog_config_screen'               => 1,
-                'open_comment_edit_screen'              => 1,
-                'open_commenter_edit_screen'            => 1,
-                'open_own_entry_comment_edit_screen'    => 1,
-                'publish_trackback'                     => 1,
-                'reply_comment_from_cms'                => 1,
-                'save_all_trackback'                    => 1,
-                'save_banlist'                          => 1,
-                'delete_banlist'                        => 1,
-                'save_existing_comment'                 => 1,
-                'trust_commenters_via_list'             => 1,
-                'unapprove_comments_via_list'           => 1,
-                'unapprove_trackbacks_via_list'         => 1,
-                'approve_comments_via_list'             => 1,
-                'approve_trackback_via_list'            => 1,
-                'unban_commenters_via_list'             => 1,
-                'untrust_commenters_via_list'           => 1,
-                'view_commenter'                        => 1,
-                'view_feedback'                         => 1,
-                'access_to_banlist'                     => 1,
-                'use_tools:search'                      => 1,
-                'view_all_comments'                     => 1,
-                'view_all_trackbacks'                   => 1,
-                'manage_feedback'                       => 1,
-                'delete_comments_via_list'              => 1,
+                'delete_junk_feedbacks'   => 1,
+                'handle_junk'             => 1,
+                'handle_not_junk'         => 1,
+                'open_blog_config_screen' => 1,
+                'save_banlist'            => 1,
+                'delete_banlist'          => 1,
+                'view_feedback'           => 1,
+                'access_to_banlist'       => 1,
+                'use_tools:search'        => 1,
+                'manage_feedback'         => 1,
             }
+        },
+        'blog.manage_content_types' => {
+            group              => 'blog_design',
+            label              => 'Manage Content Types',
+            order              => 300,
+            'permitted_action' => {
+                'create_new_content_type'     => 1,
+                'delete_content_type'         => 1,
+                'edit_all_content_types'      => 1,
+                'edit_own_content_type'       => 1,
+                'manage_content_types'        => 1,
+                'save_multiple_content_type'  => 1,
+                'access_to_content_type_list' => 1,
+            }
+        },
+        'blog.manage_content_data' => {
+            group            => 'auth_pub',
+            label            => 'Manage Content Data',
+            order            => 700,
+            permitted_action => {
+                'access_to_content_data_list'             => 1,
+                'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
+                'edit_all_content_data'                   => 1,
+                'edit_all_published_content_data'         => 1,
+                'edit_all_unpublished_content_data'       => 1,
+                'handle_junk'                             => 1,
+                'handle_not_junk'                         => 1,
+                'list_asset'                              => 1,
+                'load_next_scheduled_content_data'        => 1,
+                'open_batch_content_data_editor_via_list' => 1,
+                'publish_all_content_data'                => 1,
+                'remove_tags_from_content_data_via_list'  => 1,
+                'set_content_data_draft_via_list'         => 1,
+                'use_content_data:manage_menu'            => 1,
+                'use_tools:search'                        => 1,
+                'get_content_data_feed'                   => 1,
+                'save_multiple_content_data'              => 1,
+                'open_select_author_dialog'               => 1,
+                'insert_asset'                            => 1,
+                'access_to_insert_asset_list'             => 1,
+                'manage_content_data'                     => 1,
+                'use_tools:search'                        => 1,
+            },
         },
         'blog.manage_pages' => {
             'group'            => 'auth_pub',
@@ -2948,7 +3040,6 @@ sub load_core_permissions {
                 'edit_own_page'                   => 1,
                 'get_page_feed'                   => 1,
                 'manage_pages'                    => 1,
-                'open_all_comment_edit_screen'    => 1,
                 'open_batch_page_editor_via_list' => 1,
                 'open_folder_edit_screen'         => 1,
                 'open_page_edit_screen'           => 1,
@@ -2960,23 +3051,23 @@ sub load_core_permissions {
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
                 'publish_page_via_list'           => 1,
-                'view_all_comments'               => 1,
                 'open_select_author_dialog'       => 1,
-                'send_update_pings_page'          => 1,
                 'insert_asset'                    => 1,
                 'edit_page_basename'              => 1,
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
+                'save_edit_prefs'                 => 1,
             }
         },
         'blog.manage_users' => {
             'group'            => 'blog_admin',
             'label'            => 'Manage Users',
-            'order'            => 800,
+            'order'            => 700,
             'permitted_action' => {
                 'access_to_blog_member_list' => 1,
                 'grant_role_for_blog'        => 1,
                 'manage_users'               => 1,
+                'search_members'             => 1,
                 'search_authors'             => 1,
                 'remove_user_assoc'          => 1,
                 'revoke_role'                => 1,
@@ -3003,41 +3094,19 @@ sub load_core_permissions {
             'label'            => 'Publish Entries',
             'order'            => 200,
             'permitted_action' => {
-                'publish_entry_via_list'                => 1,
-                'approve_own_entry_comment'             => 1,
-                'approve_own_entry_trackback'           => 1,
-                'bulk_edit_own_entry_comments'          => 1,
-                'bulk_edit_own_entry_trackbacks'        => 1,
-                'delete_own_entry_trackback'            => 1,
-                'delete_own_entry_comment'              => 1,
-                'edit_entry_basename'                   => 1,
-                'edit_own_entry_trackback'              => 1,
-                'edit_own_entry_trackback_status'       => 1,
-                'edit_own_entry_comment_status'         => 1,
-                'edit_own_published_entry'              => 1,
-                'edit_trackback_status'                 => 1,
-                'edit_trackback_status_via_notify_mail' => 1,
-                'handle_junk_for_own_entry'             => 1,
-                'handle_junk_for_own_entry_trackback'   => 1,
-                'handle_not_junk_for_own_entry'         => 1,
-                'load_next_scheduled_entry'             => 1,
-                'publish_entry_via_xmlrpc_server'       => 1,
-                'publish_new_post_via_atom_server'      => 1,
-                'publish_new_post_via_xmlrpc_server'    => 1,
-                'publish_own_entry'                     => 1,
-                'publish_own_entry_trackback'           => 1,
-                'publish_post'                          => 1,
-                'set_entry_draft_via_list'              => 1,
-                'unapprove_comments_via_list'           => 1,
-                'unapprove_trackbacks_via_list'         => 1,
-                'approve_comments_via_list'             => 1,
-                'approve_trackback_via_list'            => 1,
-                'delete_comments_via_list'              => 1,
-                'use_tools:search'                      => 1,
-                'reply_comment_from_cms'                => 1,
-                'edit_comment_status_of_own_entry'      => 1,
-                'send_update_pings_entry'               => 1,
-                'edit_own_entry_comment'                => 1,
+                'publish_entry_via_list'             => 1,
+                'edit_entry_basename'                => 1,
+                'edit_own_published_entry'           => 1,
+                'handle_junk_for_own_entry'          => 1,
+                'handle_not_junk_for_own_entry'      => 1,
+                'load_next_scheduled_entry'          => 1,
+                'publish_entry_via_xmlrpc_server'    => 1,
+                'publish_new_post_via_atom_server'   => 1,
+                'publish_new_post_via_xmlrpc_server' => 1,
+                'publish_own_entry'                  => 1,
+                'publish_post'                       => 1,
+                'set_entry_draft_via_list'           => 1,
+                'use_tools:search'                   => 1,
             }
         },
         'blog.rebuild' => {
@@ -3045,16 +3114,10 @@ sub load_core_permissions {
             'label'            => 'Publish Site',
             'order'            => 600,
             'permitted_action' => {
-                'rebuild'                => 1,
-                'publish_entry_via_list' => 1,
+                'rebuild'                       => 1,
+                'publish_entry_via_list'        => 1,
+                'publish_content_data_via_list' => 1,
             }
-        },
-        'blog.save_image_defaults' => {
-            'group'            => 'blog_upload',
-            'inherit_from'     => ['blog.upload'],
-            'label'            => 'Save Image Defaults',
-            'order'            => 200,
-            'permitted_action' => { 'save_image_defaults' => 1 }
         },
         'blog.send_notifications' => {
             'group'            => 'auth_pub',
@@ -3071,11 +3134,39 @@ sub load_core_permissions {
             'group'            => 'blog_admin',
             'inherit_from'     => ['blog.edit_config'],
             'label'            => 'Set Publishing Paths',
-            'order'            => 900,
+            'order'            => 800,
             'permitted_action' => {
                 'edit_blog_pathinfo' => 1,
                 'save_blog_pathinfo' => 1,
                 'set_publish_paths'  => 1,
+            }
+        },
+        'blog.view_blog_log' => {
+            'group'            => 'blog_admin',
+            'label'            => 'View Activity Log',
+            'order'            => 900,
+            'permitted_action' => {
+                'export_blog_log'      => 1,
+                'get_system_feed'      => 1,
+                'open_blog_log_screen' => 1,
+                'reset_blog_log'       => 1,
+                'search_blog_log'      => 1,
+                'view_blog_log'        => 1,
+                'use_tools:search'     => 1,
+            }
+        },
+        'blog.manage_category_set' => {
+            'group'            => 'blog_admin',
+            'label'            => 'Manage Category Set',
+            'order'            => 1000,
+            'permitted_action' => {
+                'edit_category_set'                      => 1,
+                'save_category_set'                      => 1,
+                'access_to_category_set_list'            => 1,
+                'delete_category_set'                    => 1,
+                'manage_category_set'                    => 1,
+                'open_category_set_category_edit_screen' => 1,
+                'save_catefory_set_category'             => 1,
             }
         },
         'blog.upload' => {
@@ -3088,93 +3179,49 @@ sub load_core_permissions {
                 'upload_asset_via_xmlrpc_server' => 1,
             }
         },
-        'blog.view_blog_log' => {
-            'group'            => 'blog_admin',
-            'label'            => 'View Activity Log',
-            'order'            => 1000,
-            'permitted_action' => {
-                'export_blog_log'      => 1,
-                'get_system_feed'      => 1,
-                'open_blog_log_screen' => 1,
-                'reset_blog_log'       => 1,
-                'search_blog_log'      => 1,
-                'view_blog_log'        => 1,
-                'use_tools:search'     => 1,
-            }
-        },
         'system.administer' => {
             'group'        => 'sys_admin',
             'label'        => 'System Administrator',
             'inherit_from' => [
-                'system.create_blog',    'system.create_website',
-                'system.edit_templates', 'system.manage_plugins',
-                'system.view_log',
+                'system.edit_templates',      'system.manage_plugins',
+                'system.view_log',            'system.create_site',
+                'system.sign_in_cms',         'system.sign_in_data_api',
+                'system.manage_users_groups', 'system.manage_content_types',
+                'system.manage_content_data'
             ],
             'order'            => 0,
             'permitted_action' => {
-                'access_to_all_association_list' => 1,
-                'access_to_system_author_list'   => 1,
-                'access_to_system_dashboard'     => 1,
-                'access_to_all_commenter_list'   => 1,
-                'administer'                     => 1,
-                'create_role'                    => 1,
-                'create_user'                    => 1,
-                'create_any_association'         => 1,
-                'access_to_any_permission_list'  => 1,
-                'delete_all_junk_comments'       => 1,
-                'delete_user_via_list'           => 1,
-                'edit_authors'                   => 1,
-                'edit_other_profile'             => 1,
-                'edit_role'                      => 1,
-                'get_debug_feed'                 => 1,
-                'grant_role_for_all_blogs'       => 1,
-                'restore_blog'                   => 1,
-                'save_role'                      => 1,
-                'uninstall_theme_package'        => 1,
-                'move_blogs'                     => 1,
-                'use_tools:search'               => 1,
-                'open_system_check_screen'       => 1,
-                'use_tools:system_info_menu'     => 1,
-                'edit_commenter_status'          => 1,
-                'delete_any_filters'             => 1,
-                'open_dialog_select_theme'       => 1,
+                'access_to_system_dashboard' => 1,
+                'administer'                 => 1,
+                'create_role'                => 1,
+                'edit_role'                  => 1,
+                'get_debug_feed'             => 1,
+                'grant_role_for_all_blogs'   => 1,
+                'restore_blog'               => 1,
+                'save_role'                  => 1,
+                'uninstall_theme_package'    => 1,
+                'move_blogs'                 => 1,
+                'use_tools:search'           => 1,
+                'open_system_check_screen'   => 1,
+                'use_tools:system_info_menu' => 1,
+                'delete_any_filters'         => 1,
+                'open_dialog_select_theme'   => 1,
             }
         },
         'system.create_blog' => {
-            'group'            => 'sys_admin',
-            'label'            => 'Create Blogs',
-            'order'            => 200,
-            'permitted_action' => {
-                'create_blog'                => 1,
-                'create_new_blog'            => 1,
-                'use_blog:create_menu'       => 1,
-                'edit_new_blog_config'       => 1,
-                'open_new_blog_screen'       => 1,
-                'set_new_blog_publish_paths' => 1,
-                'access_to_system_dashboard' => 1,
-                'use_tools:search'           => 1,
-            }
-        },
-        'system.create_website' => {
-            'group'            => 'sys_admin',
-            'label'            => 'Create Websites',
-            'order'            => 100,
-            'permitted_action' => {
-                'create_new_website'            => 1,
-                'create_website'                => 1,
-                'use_website:create_menu'       => 1,
-                'edit_new_website_config'       => 1,
-                'open_new_website_screen'       => 1,
-                'set_new_website_publish_paths' => 1,
-                'access_to_system_dashboard'    => 1,
-                'use_tools:search'              => 1,
-            }
+            'group'   => 'sys_admin',
+            'label'   => 'Create Child Sites',
+            'order'   => 200,
+            'display' => 0,
         },
         'system.edit_templates' => {
             'group'        => 'sys_admin',
-            'inherit_from' => [ 'blog.edit_templates', 'blog.manage_themes' ],
-            'label'        => 'Manage Templates',
-            'order'        => 250,
+            'inherit_from' => [
+                'system.sign_in_cms', 'blog.edit_templates',
+                'blog.manage_themes'
+            ],
+            'label'            => 'Manage Templates',
+            'order'            => 250,
             'permitted_action' => {
                 'access_to_website_list'       => 1,
                 'access_to_blog_list'          => 1,
@@ -3188,6 +3235,7 @@ sub load_core_permissions {
         },
         'system.manage_plugins' => {
             'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
             'label'            => 'Manage Plugins',
             'order'            => 300,
             'permitted_action' => {
@@ -3201,6 +3249,7 @@ sub load_core_permissions {
         },
         'system.view_log' => {
             'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
             'label'            => 'View System Activity Log',
             'order'            => 400,
             'permitted_action' => {
@@ -3213,7 +3262,152 @@ sub load_core_permissions {
                 'access_to_system_dashboard' => 1,
                 'use_tools:search'           => 1,
             }
-        }
+        },
+        'system.sign_in_cms' => {
+            'group'            => 'sys_admin',
+            'label'            => 'Sign In(CMS)',
+            'order'            => 500,
+            'permitted_action' => { 'sign_in_cms' => 1 },
+        },
+        'system.sign_in_data_api' => {
+            'group'            => 'sys_admin',
+            'label'            => 'Sign In(Data API)',
+            'order'            => 600,
+            'permitted_action' => { 'sign_in_data_api' => 1 },
+        },
+        'system.create_site' => {
+            'group'            => 'sys_admin',
+            'inherit_from'     => ['system.sign_in_cms'],
+            'label'            => 'Create Sites',
+            'order'            => 700,
+            'permitted_action' => {
+
+                # create website
+                'create_new_website'            => 1,
+                'create_website'                => 1,
+                'use_website:create_menu'       => 1,
+                'edit_new_website_config'       => 1,
+                'open_new_website_screen'       => 1,
+                'set_new_website_publish_paths' => 1,
+                'access_to_system_dashboard'    => 1,
+                'use_tools:search'              => 1,
+
+                # create blog
+                'create_blog'                => 1,
+                'create_new_blog'            => 1,
+                'use_blog:create_menu'       => 1,
+                'edit_new_blog_config'       => 1,
+                'open_new_blog_screen'       => 1,
+                'set_new_blog_publish_paths' => 1,
+
+                'create_new_site'            => 1,
+                'create_site'                => 1,
+                'use_site:create_menu'       => 1,
+                'edit_new_site_config'       => 1,
+                'open_new_site_screen'       => 1,
+                'set_new_site_publish_paths' => 1,
+                }
+
+        },
+        'system.create_website' => {
+            'group'   => 'sys_admin',
+            'label'   => 'Create Websites',
+            'order'   => 700,
+            'display' => 0,
+        },
+        'system.manage_users_groups' => {
+            'group'        => 'sys_admin',
+            'label'        => 'Manage Users & Groups',
+            'order'        => 800,
+            'inherit_from' => [ 'system.sign_in_cms', 'blog.manage_users' ],
+            'permitted_action' => {
+                'access_to_blog_member_list'     => 1,
+                'manage_users_groups'            => 1,
+                'search_members'                 => 1,
+                'search_authors'                 => 1,
+                'remove_user_assoc'              => 1,
+                'revoke_role'                    => 1,
+                'use_tools:search'               => 1,
+                'access_to_any_group_list'       => 1,
+                'access_to_system_dashboard'     => 1,
+                'grant_administer_role'          => 1,
+                'grant_role_for_blog'            => 1,
+                'access_to_all_association_list' => 1,
+                'access_to_system_author_list'   => 1,
+                'create_user'                    => 1,
+                'create_any_association'         => 1,
+                'access_to_any_permission_list'  => 1,
+                'edit_authors'                   => 1,
+                'edit_other_profile'             => 1,
+                'access_to_website_list'         => 1,
+                'access_to_blog_list'            => 1,
+                'delete_user_via_list'           => 1,
+                'access_to_permission_list'      => 1,
+                'create_any_association'         => 1,
+                'grant_role_for_all_blogs'       => 1,
+                'use_tools:search'               => 1,
+            },
+        },
+        'system.manage_content_data' => {
+            group        => 'sys_admin',
+            label        => 'Manage Content Data',
+            order        => 900,
+            inherit_from => [
+                'system.sign_in_cms', 'blog.manage_content_data',
+                'blog.edit_assets'
+            ],
+            permitted_action => {
+                'access_to_content_data_list'             => 1,
+                'add_tags_to_content_data_via_list'       => 1,
+                'create_new_content_data'                 => 1,
+                'edit_all_content_data'                   => 1,
+                'edit_all_published_content_data'         => 1,
+                'edit_all_unpublished_content_data'       => 1,
+                'handle_junk'                             => 1,
+                'handle_not_junk'                         => 1,
+                'list_asset'                              => 1,
+                'load_next_scheduled_content_data'        => 1,
+                'open_batch_content_data_editor_via_list' => 1,
+                'publish_all_content_data'                => 1,
+                'remove_tags_from_content_data_via_list'  => 1,
+                'set_content_data_draft_via_list'         => 1,
+                'use_content_data:manage_menu'            => 1,
+                'use_tools:search'                        => 1,
+                'get_content_data_feed'                   => 1,
+                'save_multiple_content_data'              => 1,
+                'open_select_author_dialog'               => 1,
+                'insert_asset'                            => 1,
+                'access_to_insert_asset_list'             => 1,
+                'access_to_system_dashboard'              => 1,
+                'access_to_website_list'                  => 1,
+                'access_to_blog_list'                     => 1,
+                'use_tools:search'                        => 1,
+            },
+        },
+        'system.manage_content_types' => {
+            group          => 'sys_admin',
+            'inherit_from' => ['system.sign_in_cms'],
+            label          => 'Manage Content Types',
+            order          => 1000,
+            inherit_from   => [
+                'system.manage_content_data', 'blog.manage_category_set',
+                'system.sign_in_cms'
+            ],
+            permitted_action => {
+                'access_to_system_dashboard'  => 1,
+                'create_new_content_type'     => 1,
+                'delete_content_type'         => 1,
+                'edit_all_content_types'      => 1,
+                'edit_own_content_type'       => 1,
+                'manage_content_types'        => 1,
+                'save_multiple_content_type'  => 1,
+                'access_to_website_list'      => 1,
+                'access_to_blog_list'         => 1,
+                'use_tools:search'            => 0,
+                'access_to_content_type_list' => 1,
+                'edit_category_set'           => 1,
+            },
+        },
     };
 }
 
@@ -3227,8 +3421,8 @@ sub init_registry {
 # Config handlers for these settings...
 
 sub load_archive_types {
-    require MT::WeblogPublisher;
-    return MT::WeblogPublisher->core_archive_types;
+    require MT::ContentPublisher;
+    return MT::ContentPublisher->core_archive_types;
 }
 
 sub PerformanceLoggingPath {
@@ -3351,13 +3545,6 @@ sub DefaultUserTagDelimiter {
     else {
         return ord(',');
     }
-}
-
-sub NewUserAutoProvisioning {
-    my $mgr = shift;
-    return $mgr->set_internal( 'NewUserAutoProvisioning', @_ ) if @_;
-    return 0 unless $mgr->NewUserDefaultWebsiteId;
-    $mgr->get_internal('NewUserAutoProvisioning');
 }
 
 sub UserSessionCookieName {

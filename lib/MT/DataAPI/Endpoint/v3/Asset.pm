@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -52,9 +52,9 @@ sub upload {
         }
     }
 
-    if ( defined $app->param('autoRenameNonAscii') ) {
-        $app->param( 'auto_rename_non_ascii',
-            $app->param('autoRenameNonAscii') );
+    my $autoRenameNonAscii = $app->param('autoRenameNonAscii');
+    if ( defined $autoRenameNonAscii ) {
+        $app->param( 'auto_rename_non_ascii', $autoRenameNonAscii );
     }
 
     MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );

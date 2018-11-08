@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -37,6 +37,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
 
     $cats = $ctx->mt->db()->fetch_categories(array(
         'blog_id' => $ctx->stash('blog_id'),
+        'category_set_id' => $cat->category_category_set_id,
         'category_id' => $cat->category_id,
         'children' => 1,
         'show_empty' => 1,
