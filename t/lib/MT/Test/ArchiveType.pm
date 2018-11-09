@@ -125,7 +125,7 @@ sub _run_perl_test {
 
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
-            if ($skip) { skip "$skip $test_info", 1 }
+            if ($skip) { skip $block->name . "$skip $test_info", 1 }
 
             $ctx->stash( template_map => $map );
 
@@ -236,7 +236,7 @@ sub _run_php_test {
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs,
                 'dynamic' );
-            if ($skip) { skip "$skip $test_info", 1 }
+            if ($skip) { skip $block->name . "$skip $test_info", 1 }
 
             MT->publisher->rebuild(
                 BlogID      => $blog_id,
