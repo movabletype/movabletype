@@ -66,27 +66,53 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            my $expected_method = 'expected_' . lc($archive_type);
-            $expected_method =~ s/-/_/g;
-            if ( !$expected_method or !exists $block->{$expected_method} ) {
-                $expected_method = 'expected';
-            }
-
             my $result = eval { $tmpl->build };
-            if ( !$block->expected_error ) {
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
-                    if defined $result;
-                is( $result,
-                    _filter_vars( $block->$expected_method ),
-                    $test_name_prefix . $block->name
+
+            ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
+
+            if ( my $error = $ctx->errstr ) {
+                my $expected_error_method = "expected";
+                my @extra_error_methods   = (
+                    "expected_todo_error_$method_name",
+                    "expected_error_$method_name",
+                    "expected_error"
+                );
+                for my $method (@extra_error_methods) {
+                    if ( exists $block->{$method} ) {
+                        $expected_error_method = $method;
+                        last;
+                    }
+                }
+                $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                local $TODO = "may fail"
+                    if $expected_error_method =~ /^expected_todo_/;
+                is( $error,
+                    _filter_vars( $block->$expected_error_method ),
+                    $test_name_prefix . $block->name . ' (error)'
                 );
             }
             else {
-                $result = $ctx->errstr;
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                my $expected_method = 'expected';
+                my @extra_methods   = (
+                    "expected_todo_$method_name",
+                    "expected_$method_name", "expected_todo"
+                );
+                for my $method (@extra_methods) {
+                    if ( exists $block->{$method} ) {
+                        $expected_method = $method;
+                        last;
+                    }
+                }
+
+                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
+                    if defined $result;
+
+                local $TODO = "may fail"
+                    if $expected_method =~ /^expected_todo/;
+
                 is( $result,
-                    _filter_vars( $block->expected_error ),
-                    $test_name_prefix . $block->name . ' (error)'
+                    _filter_vars( $block->$expected_method ),
+                    $test_name_prefix . $block->name
                 );
             }
         }
