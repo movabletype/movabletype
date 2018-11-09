@@ -49,7 +49,6 @@ MTCategoryArchiveLink must be used in a category context
 <mt:CategoryArchiveLink>
 --- expected_error
 MTCategoryArchiveLink must be used in a category context
---- expected
 --- expected_individual
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
 --- expected_page
@@ -64,6 +63,18 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_author
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_author_daily
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_author_monthly
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_author_weekly
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_author_yearly
+http://narnia.na/cat-strawberry/cat-orange/
 --- expected_contenttype_category
 http://narnia.na/cat-strawberry/cat-orange/
 --- expected_contenttype_category_daily
@@ -73,4 +84,12 @@ http://narnia.na/cat-strawberry/cat-orange/
 --- expected_contenttype_category_monthly
 http://narnia.na/cat-strawberry/cat-orange/
 --- expected_contenttype_category_yearly
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_daily
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_monthly
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_weekly
+http://narnia.na/cat-strawberry/cat-orange/
+--- expected_contenttype_yearly
 http://narnia.na/cat-strawberry/cat-orange/
