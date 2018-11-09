@@ -11,9 +11,8 @@ our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DeleteFilesAtRebuild    => 1,
-        RebuildAtDelete         => 1,
-        MT_TEST_ARCHIVETYPE_PHP => 1,
+        DeleteFilesAtRebuild => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
