@@ -404,6 +404,40 @@ sub load_objs {
 
     my $blog_id = $objs{blog_id};
 
+    my @category_labels
+        = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
+    my @entry_categories = MT::Category->load(
+        {   blog_id => $blog_id,
+            label   => \@category_labels,
+        }
+    );
+    $objs{category} = { map { $_->label => $_ } @entry_categories };
+
+    my @folder_labels
+        = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
+    my @folders = MT::Folder->load(
+        {   blog_id => $blog_id,
+            label   => \@folder_labels,
+        }
+    );
+    $objs{folder} = { map { $_->label => $_ } @folders };
+
+    my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
+    my @entries = MT::Entry->load(
+        {   blog_id  => $blog_id,
+            basename => \@entry_names,
+        }
+    );
+    $objs{entry} = { map { $_->basename => $_ } @entries };
+
+    my @page_names = map { $_->{basename} } @{ $spec->{page} };
+    my @pages = MT::Page->load(
+        {   blog_id  => $blog_id,
+            basename => \@page_names,
+        }
+    );
+    $objs{page} = { map { $_->basename => $_ } @pages };
+
     my @category_set_names = keys %{ $spec->{category_set} };
     my @category_sets      = MT::CategorySet->load(
         {   blog_id => $blog_id,
