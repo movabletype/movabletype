@@ -125,7 +125,7 @@ sub _run_perl_test {
 
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
-            if ($skip) { skip "$skip $test_info", 1 }
+            if ($skip) { skip $block->name . "$skip $test_info", 1 }
 
             $ctx->stash( template_map => $map );
 
@@ -236,7 +236,7 @@ sub _run_php_test {
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs,
                 'dynamic' );
-            if ($skip) { skip "$skip $test_info", 1 }
+            if ($skip) { skip $block->name . "$skip $test_info", 1 }
 
             MT->publisher->rebuild(
                 BlogID      => $blog_id,
@@ -487,11 +487,19 @@ sub _set_stash {
             }
         }
         else {
+            my $entry_spec;
             my $entry_name = $names->{entry};
-            my $entry_spec
-                = $entry_name ? $fixture_spec->{entry}{$entry_name}
-                : $cd_name    ? $fixture_spec->{content_data}{$cd_name}
-                :               undef;
+            if ($entry_name) {
+                ($entry_spec)
+                    = grep { $_->{basename} eq $entry_name }
+                    @{ $fixture_spec->{entry} || [] };
+            }
+            if ($cd_name) {
+                $entry_spec ||=
+                    $cd_name
+                    ? ( $fixture_spec->{content_data} || {} )->{$cd_name}
+                    : undef;
+            }
             my $author_name
                 = exists $names->{author} ? $names->{author}
                 : $entry_spec             ? $entry_spec->{author}
