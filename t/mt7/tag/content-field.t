@@ -511,6 +511,8 @@ Footer
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected_todo_error
 No Content Field could be found.
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26114
 
 === mt:ContentField content_field="multi line text"
 --- template
