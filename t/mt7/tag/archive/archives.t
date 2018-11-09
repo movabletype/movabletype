@@ -39,7 +39,6 @@ my $archive_types = join ',', @archive_types;
 plan tests => 2 * @archive_types * blocks;
 
 foreach my $archive_type (@archive_types) {
-    note $archive_type;
     MT::Test::Tag->run_perl_tests(
         $blog_id,
         sub {

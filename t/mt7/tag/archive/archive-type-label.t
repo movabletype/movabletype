@@ -38,7 +38,6 @@ my $default_language = MT->config->DefaultLanguage;
 my $blog_id = 1;
 
 for my $archive_type ( MT->publisher->archive_types ) {
-    note $archive_type;
 
     # Run Perl Tests
     MT::Test::Tag->run_perl_tests(

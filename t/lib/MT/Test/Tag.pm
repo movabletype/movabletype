@@ -26,6 +26,11 @@ sub vars {
     $vars;
 }
 
+sub _test_name_prefix {
+    my ($archive_type) = @_;
+    $archive_type ? "$archive_type: " : '';
+}
+
 sub run_perl_tests {
     my ( $blog_id, $callback, $archive_type ) = @_;
 
@@ -37,6 +42,8 @@ sub run_perl_tests {
         $vars->{archive_type} = $archive_type;
     }
     $archive_type ||= '';
+
+    my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
     MT->instance;
 
@@ -69,15 +76,17 @@ sub run_perl_tests {
             if ( !$block->expected_error ) {
                 $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
                     if defined $result;
-                is( $result, _filter_vars( $block->$expected_method ),
-                    $block->name );
+                is( $result,
+                    _filter_vars( $block->$expected_method ),
+                    $test_name_prefix . $block->name
+                );
             }
             else {
                 $result = $ctx->errstr;
                 $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 is( $result,
                     _filter_vars( $block->expected_error ),
-                    $block->name . ' (error)'
+                    $test_name_prefix . $block->name . ' (error)'
                 );
             }
         }
@@ -100,6 +109,8 @@ SKIP: {
             $vars->{archive_type} = $archive_type;
         }
         $archive_type ||= '';
+
+        my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
         run {
             my $block = shift;
@@ -132,7 +143,7 @@ SKIP: {
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
 
-                my $name = $block->name . ' - dynamic';
+                my $name = $test_name_prefix . $block->name . ' - dynamic';
                 is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
                     _filter_vars(
                         MT::I18N::encode_text( $expected, undef, 'utf-8' )
