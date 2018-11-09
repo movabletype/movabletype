@@ -43,10 +43,10 @@ __END__
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author
 --- expected_php_todo_author
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
+--- expected_todo_error_author_daily
+--- expected_todo_error_author_monthly
+--- expected_todo_error_author_weekly
+--- expected_todo_error_author_yearly
 --- expected_todo_category
 --- expected_todo_category_daily
 --- expected_todo_category_monthly
@@ -99,10 +99,10 @@ October 28, 2018 - November  3, 2018 | 2
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
+--- expected_todo_error_author_daily
+--- expected_todo_error_author_monthly
+--- expected_todo_error_author_weekly
+--- expected_todo_error_author_yearly
 --- expected_todo_category
 --- expected_todo_category_daily
 --- expected_todo_category_monthly
@@ -151,10 +151,10 @@ September 22, 2019 - September 28, 2019 | 1
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
+--- expected_todo_error_author_daily
+--- expected_todo_error_author_monthly
+--- expected_todo_error_author_weekly
+--- expected_todo_error_author_yearly
 --- expected_todo_category
 --- expected_todo_category_daily
 --- expected_todo_category_monthly
