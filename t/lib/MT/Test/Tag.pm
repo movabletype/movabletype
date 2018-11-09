@@ -27,12 +27,16 @@ sub vars {
 }
 
 sub run_perl_tests {
-    my ( $blog_id, $callback, $original_expected_method ) = @_;
+    my ( $blog_id, $callback, $archive_type ) = @_;
 
     if ( $callback && !ref $callback ) {
-        $original_expected_method = $callback;
-        $callback                 = undef;
+        $archive_type = $callback;
+        $callback     = undef;
     }
+    if ($archive_type) {
+        $vars->{archive_type} = $archive_type;
+    }
+    $archive_type ||= '';
 
     MT->instance;
 
@@ -55,7 +59,8 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            my $expected_method = $original_expected_method;
+            my $expected_method = 'expected_' . lc($archive_type);
+            $expected_method =~ s/-/_/g;
             if ( !$expected_method or !exists $block->{$expected_method} ) {
                 $expected_method = 'expected';
             }
@@ -80,7 +85,7 @@ sub run_perl_tests {
 }
 
 sub run_php_tests {
-    my ( $blog_id, $callback, $expected_method ) = @_;
+    my ( $blog_id, $callback, $archive_type ) = @_;
 
 SKIP: {
         unless ( has_php() ) {
@@ -88,9 +93,13 @@ SKIP: {
         }
 
         if ( $callback && !ref $callback ) {
-            $expected_method = $callback;
-            $callback        = undef;
+            $archive_type = $callback;
+            $callback     = undef;
         }
+        if ($archive_type) {
+            $vars->{archive_type} = $archive_type;
+        }
+        $archive_type ||= '';
 
         run {
             my $block = shift;
@@ -111,6 +120,8 @@ SKIP: {
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 $php_result = Encode::decode_utf8($php_result);
 
+                my $expected_method = 'expected_' . lc($archive_type);
+                $expected_method =~ s/-/_/g;
                 my $expected
                     = $block->expected_error ? $block->expected_error
                     : $block->error          ? $block->error
