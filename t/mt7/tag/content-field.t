@@ -38,9 +38,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -453,7 +453,7 @@ __END__
 === mt:ContentField without contents context
 --- template
 <mt:ContentField content_field="single line text"><mt:var name="__value__"></mt:ContentField>
---- error
+--- expected_error
 No Content Type could be found.
 
 === mt:ContentField content_field="single line text" (unique_id)
@@ -509,7 +509,7 @@ Footer
 <mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
---- error
+--- expected_todo_error
 No Content Field could be found.
 
 === mt:ContentField content_field="multi line text"

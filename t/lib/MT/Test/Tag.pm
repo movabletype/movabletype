@@ -74,6 +74,7 @@ sub run_perl_tests {
                 my $expected_error_method = "expected";
                 my @extra_error_methods   = (
                     "expected_todo_error_$method_name",
+                    "expected_todo_error",
                     "expected_error_$method_name",
                     "expected_error"
                 );
@@ -160,8 +161,9 @@ SKIP: {
                 my $expected_method = 'expected_' . lc($archive_type);
                 $expected_method =~ s/-/_/g;
                 my $expected
-                    = $block->expected_error ? $block->expected_error
-                    : $block->error          ? $block->error
+                    = $block->expected_todo_error
+                    ? $block->expected_todo_error
+                    : $block->expected_error ? $block->expected_error
                     : ( $expected_method
                         && exists $block->{$expected_method} )
                     ? $block->$expected_method

@@ -43,9 +43,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( var chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture('db');
@@ -273,7 +273,7 @@ aaaaa
 === MT:Contents with content_type modifier and wrong blog_id
 --- template
 <mt:Contents content_type="test content type 1" blog_id="2">a</mt:Contents>
---- error
+--- expected_todo_error
 No Content Type could be found.
 
 === MT:Contents with limit
