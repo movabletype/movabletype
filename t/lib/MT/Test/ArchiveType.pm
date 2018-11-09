@@ -358,6 +358,16 @@ require_once('class.mt_author.php');
 PHP
             }
 
+            if ( my $entry = $stash->{entry} ) {
+                my $entry_id = $entry->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_entry.php');
+\$entry = new Entry;
+\$entry->Load($entry_id);
+\$ctx->stash('entry', \$entry);
+PHP
+            }
+
             $test_script .= <<'PHP';
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
@@ -424,8 +434,7 @@ sub _set_stash {
     my %stash;
     my $names = $block->stash || {};    # or return;
 
-    my $cd_name  = $names->{content_data} || $names->{cd};
-    my $cat_name = $names->{category}     || $names->{cat};
+    my $cd_name = $names->{content_data} || $names->{cd};
 
     if ( $archiver->contenttype_based or $archiver->contenttype_group_based )
     {
@@ -447,21 +456,62 @@ sub _set_stash {
             $dynamic );
     }
 
-    if ( $archiver->author_based ) {
-        if ( $archiver->contenttype_author_based ) {
-            my $cd_spec = $fixture_spec->{content_data}{$cd_name}
-                or croak "unknown content_data: $cd_name";
+    if ( $archiver->entry_based ) {
+        my $key = "entry";
+        $key = "page" if $archiver->name eq 'Page';
 
-            my $author = $objs->{author}{ $cd_spec->{author} };
+        my $entry_name = $names->{$key}
+            or return ( undef, " requires $key" );
+
+        my ($entry_spec)
+            = grep { $_->{basename} eq $entry_name }
+            @{ $fixture_spec->{$key} || [] };
+
+        unless ($entry_spec) {
+            croak "unknown $key: $entry_name";
+        }
+        my $entry = $objs->{$key}{$entry_name};
+        $stash{entry} = $entry;
+    }
+
+    if ( $archiver->author_based ) {
+        my $author;
+        if ( $archiver->contenttype_author_based ) {
+            my $cd_spec = $fixture_spec->{content_data}{$cd_name};
+            unless ($cd_spec) {
+                croak "unknown content_data: $cd_name";
+            }
+            $author = $objs->{author}{ $cd_spec->{author} };
             if ( !$author ) {
                 return ( undef, " requires content_data's author" );
             }
-            $stash{author} = $author;
         }
+        else {
+            my $entry_name = $names->{entry};
+            my $entry_spec
+                = $entry_name ? $fixture_spec->{entry}{$entry_name}
+                : $cd_name    ? $fixture_spec->{content_data}{$cd_name}
+                :               undef;
+            my $author_name
+                = exists $names->{author} ? $names->{author}
+                : $entry_spec             ? $entry_spec->{author}
+                :                           undef;
+            if ( defined $author_name ) {
+                $author = $objs->{author}{$author_name};
+            }
+            if ( !$author ) {
+                return ( undef, " requires author or content_data's author" );
+            }
+        }
+        $stash{author} = $author;
     }
 
     if ( $archiver->category_based ) {
         if ( $archiver->contenttype_category_based ) {
+            my $cat_name
+                = $names->{category}
+                || $names->{cat}
+                || $names->{content_category};
             return ( undef, " requires category" ) unless $cat_name;
 
             my $cat_field_id = $map->cat_field_id || 0;
@@ -488,6 +538,18 @@ sub _set_stash {
             $stash{archive_category} = $category;
             $stash{category_set}     = $set->{category_set};
         }
+        else {
+            # Support folder as well?
+            my $cat_name
+                = $names->{entry_category}
+                || $names->{entry_cat}
+                || $names->{cat};
+            return ( undef, " requires entry_category" ) unless $cat_name;
+            my $category = $objs->{category}{$cat_name}
+                or croak "unknown entry_category: $cat_name";
+            $stash{category}         = $category;
+            $stash{archive_category} = $category;
+        }
     }
 
     if ( $archiver->date_based ) {
@@ -500,6 +562,11 @@ sub _set_stash {
             }
             else {
                 $start = $cd->authored_on;
+            }
+        }
+        else {
+            if ( my $entry = $stash{entry} ) {
+                $start = $entry->authored_on;
             }
         }
         if ($start) {
