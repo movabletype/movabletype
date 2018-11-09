@@ -77,7 +77,7 @@ sub _get_category_context {
             return '' if ( !$map || !$map->cat_field_id );
             my ($objectcategory) = MT->model('objectcategory')->load(
                 {   object_ds  => 'content_data',
-                    object_id  => $content_data->content_type_id,
+                    object_id  => $content_data->id,
                     cf_id      => $map->cat_field_id,
                     is_primary => 1,
                 }
