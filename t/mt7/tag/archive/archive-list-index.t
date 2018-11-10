@@ -50,7 +50,6 @@ foreach my $archive_type (@archive_types) {
         },
         $archive_type
     );
-    next;  # skip php tests
     MT::Test::Tag->run_php_tests(
         $blog_id,
         sub {
@@ -85,6 +84,7 @@ https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_author
 author1
 author2
+--- expected_php_todo_author
 --- expected_author_daily
 author1: December  3, 2018
 author1: December  3, 2017
@@ -152,6 +152,7 @@ author2: 2016
 --- expected_contenttype_category
 cat_apple
 cat_peach
+--- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -228,6 +229,7 @@ https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_author
 author1
 author2
+--- expected_php_todo_author
 --- expected_author_daily
 author1: December  3, 2018
 author1: December  3, 2017
@@ -295,6 +297,7 @@ author2: 2016
 --- expected_contenttype_category
 cat_apple
 cat_peach
+--- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -362,38 +365,33 @@ page_author1_coffee
 === Empty with type
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26109
---- skip_php
-1
 --- archive_type
-
 --- template
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
+--- expected_php_todo
 
 === Empty with archive_type
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26109
---- skip_php
-1
 --- archive_type
-
 --- template
 <mt:ArchiveList archive_type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
+--- expected_php_todo
 
 === None with type
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26109
---- skip_php
-1
 --- archive_type
 None
 --- template
 <mt:ArchiveList type="[% archive_type %]"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
+--- expected_php_todo
 
 === sort_order="ascend"
 --- template
@@ -469,6 +467,7 @@ author2: 2016
 --- expected_contenttype_category
 cat_apple
 cat_peach
+--- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2017
 cat_apple: October 31, 2018
