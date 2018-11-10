@@ -456,7 +456,10 @@ sub _set_stash {
             $dynamic );
     }
 
-    if ( $archiver->entry_based ) {
+    my $entry;
+    if ( $archiver->entry_based
+        || ( $archiver->date_based && !$archiver->contenttype_date_based ) )
+    {
         my $key = "entry";
         $key = "page" if $archiver->name eq 'Page';
 
@@ -470,8 +473,10 @@ sub _set_stash {
         unless ($entry_spec) {
             croak "unknown $key: $entry_name";
         }
-        my $entry = $objs->{$key}{$entry_name};
-        $stash{entry} = $entry;
+        $entry = $objs->{$key}{$entry_name};
+        if ( $archiver->entry_based ) {
+            $stash{entry} = $entry;
+        }
     }
 
     if ( $archiver->author_based ) {
@@ -572,10 +577,8 @@ sub _set_stash {
                 $start = $cd->authored_on;
             }
         }
-        else {
-            if ( my $entry = $stash{entry} ) {
-                $start = $entry->authored_on;
-            }
+        elsif ($entry) {
+            $start = $entry->authored_on;
         }
         if ($start) {
             ( $start, $end ) = $archiver->date_range($start);
