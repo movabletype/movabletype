@@ -63,23 +63,20 @@ __END__
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 --- expected_php_todo_contenttype
---- expected_todo_contenttype_author
-author1 | http://narnia.na/author/author1/
+--- expected_contenttype_author
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_daily
 author1: October 31, 2017 | http://narnia.na/author/author1/2017/10/31/
 --- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 author1: October 2017 | http://narnia.na/author/author1/2017/10/
---- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 author1: October 29, 2017 - November  4, 2017 | http://narnia.na/author/author1/2017/10/29-week/
---- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 author1: 2017 | http://narnia.na/author/author1/2017/
---- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
---- expected_php_todo_contenttype_category
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017 | http://narnia.na/cat-apple/2017/10/31/
 --- expected_php_todo_contenttype_category_daily
@@ -92,13 +89,13 @@ cat_apple: October 29, 2017 - November  4, 2017 | http://narnia.na/cat-apple/201
 --- expected_contenttype_category_yearly
 cat_apple: 2017 | http://narnia.na/cat-apple/2017/
 --- expected_php_todo_contenttype_category_yearly
---- expected_todo_contenttype_daily
+--- expected_contenttype_daily
 October 31, 2017 | http://narnia.na/2017/10/31/
---- expected_todo_contenttype_monthly
+--- expected_contenttype_monthly
 October 2017 | http://narnia.na/2017/10/
---- expected_todo_contenttype_weekly
+--- expected_contenttype_weekly
 October 29, 2017 - November  4, 2017 | http://narnia.na/2017/10/29-week/
---- expected_todo_contenttype_yearly
+--- expected_contenttype_yearly
 2017 | http://narnia.na/2017/
 --- expected_error_daily
 You used an MTarchiveprevious tag without a date context set up.
@@ -152,8 +149,10 @@ You used an <mtarchiveprevious> without a date context set up.
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 --- expected_php_todo_contenttype
---- expected_todo_contenttype_author
+--- expected_contenttype_author
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_daily
 --- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
@@ -168,17 +167,15 @@ cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_pe
 --- expected_contenttype_category_monthly
 --- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
---- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
---- expected_php_todo_contenttype_category_yearly
---- expected_todo_contenttype_daily
-September 26, 2020 | http://narnia.na/2020/09/26/
---- expected_todo_contenttype_monthly
-September 2020 | http://narnia.na/2020/09/
---- expected_todo_contenttype_weekly
-October 29, 2017 - November  4, 2017 | http://narnia.na/2017/10/29-week/
---- expected_todo_contenttype_yearly
-2020 | http://narnia.na/2020/
+--- expected_contenttype_daily
+--- expected_php_todo_contenttype_daily
+--- expected_contenttype_monthly
+--- expected_php_todo_contenttype_monthly
+--- expected_contenttype_weekly
+--- expected_php_todo_contenttype_weekly
+--- expected_contenttype_yearly
+--- expected_php_todo_contenttype_yearly
 --- expected_error_daily
 You used an MTarchiveprevious tag without a date context set up.
 --- expected_php_todo_daily
@@ -217,7 +214,6 @@ You used an <mtarchiveprevious> without a date context set up.
 </mt:ArchivePrevious>
 --- expected_author
 --- expected_php_todo_author
-author1 | http://narnia.na/author/author1/
 --- expected_todo_author_daily
 --- expected_todo_author_monthly
 --- expected_todo_author_weekly
@@ -230,9 +226,10 @@ author1 | http://narnia.na/author/author1/
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 --- expected_php_todo_contenttype
---- expected_todo_contenttype_author
-author1 | http://narnia.na/author/author1/
+--- expected_contenttype_author
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_daily
 author1: November  1, 2006 | http://narnia.na/author/author1/2006/11/01/
 --- expected_php_todo_contenttype_author_daily
@@ -245,8 +242,7 @@ author1: October 29, 2006 - November  4, 2006 | http://narnia.na/author/author1/
 --- expected_contenttype_author_yearly
 author1: 2006 | http://narnia.na/author/author1/2006/
 --- expected_php_todo_contenttype_author_yearly
---- expected_todo_contenttype_category
-cat_apple | http://narnia.na/cat-apple/
+--- expected_contenttype_category
 --- expected_contenttype_category_daily
 cat_apple: November  1, 2006 | http://narnia.na/cat-apple/2006/11/01/
 --- expected_php_todo_contenttype_category_daily
@@ -317,8 +313,7 @@ No Content Type could be found.
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 --- expected_php_todo_contenttype
---- expected_todo_contenttype_author
-author1 | http://narnia.na/author/author1/
+--- expected_contenttype_author
 --- expected_contenttype_author_daily
 author1: October 31, 2017 | http://narnia.na/author/author1/2017/10/31/
 --- expected_contenttype_author_monthly
@@ -327,24 +322,21 @@ author1: October 2017 | http://narnia.na/author/author1/2017/10/
 author1: October 29, 2017 - November  4, 2017 | http://narnia.na/author/author1/2017/10/29-week/
 --- expected_contenttype_author_yearly
 author1: 2017 | http://narnia.na/author/author1/2017/
---- expected_todo_contenttype_category
-cat_apple | http://narnia.na/cat-apple/
+--- expected_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017 | http://narnia.na/cat-apple/2017/10/31/
 --- expected_php_todo_contenttype_category_daily
-cat_apple: November  1, 2008 | http://narnia.na/cat-apple/2008/11/01/
 --- expected_contenttype_category_monthly
 cat_apple: October 2017 | http://narnia.na/cat-apple/2017/10/
 --- expected_php_todo_contenttype_category_monthly
-cat_apple: November 2008 | http://narnia.na/cat-apple/2008/11/
 --- expected_contenttype_category_weekly
 cat_apple: October 29, 2017 - November  4, 2017 | http://narnia.na/cat-apple/2017/10/29-week/
 --- expected_php_todo_contenttype_category_weekly
-cat_apple: October 26, 2008 - November  1, 2008 | http://narnia.na/cat-apple/2008/10/26-week/
 --- expected_contenttype_category_yearly
 cat_apple: 2017 | http://narnia.na/cat-apple/2017/
 --- expected_php_todo_contenttype_category_yearly
-cat_apple: 2008 | http://narnia.na/cat-apple/2008/
 --- expected_contenttype_daily
 October 31, 2017 | http://narnia.na/2017/10/31/
 --- expected_contenttype_monthly
