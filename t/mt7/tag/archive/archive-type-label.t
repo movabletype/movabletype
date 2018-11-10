@@ -38,10 +38,6 @@ my $default_language = MT->config->DefaultLanguage;
 my $blog_id = 1;
 
 for my $archive_type ( MT->publisher->archive_types ) {
-    note $archive_type;
-    ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
-    my $expected_method = 'expected_' . $name;
-    MT::Test::Tag->vars->{archive_type} = $archive_type;
 
     # Run Perl Tests
     MT::Test::Tag->run_perl_tests(
@@ -56,7 +52,7 @@ for my $archive_type ( MT->publisher->archive_types ) {
             );
             $site->archive_type($archive_type);
         },
-        $expected_method
+        $archive_type
     );
 
     # Run PHP Tests
@@ -81,7 +77,7 @@ for my $archive_type ( MT->publisher->archive_types ) {
 \$site->save();
 PHP
         },
-        $expected_method
+        $archive_type
     );
 }
 

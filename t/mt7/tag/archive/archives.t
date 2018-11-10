@@ -39,10 +39,6 @@ my $archive_types = join ',', @archive_types;
 plan tests => 2 * @archive_types * blocks;
 
 foreach my $archive_type (@archive_types) {
-    note $archive_type;
-    my $expected_method = 'expected_' . lc($archive_type);
-    $expected_method =~ s/-/_/g;
-    MT::Test::Tag->vars->{archive_type} = $archive_type;
     MT::Test::Tag->run_perl_tests(
         $blog_id,
         sub {
@@ -54,7 +50,7 @@ foreach my $archive_type (@archive_types) {
                 : $archive_types
             );
         },
-        $expected_method
+        $archive_type
     );
     MT::Test::Tag->run_php_tests(
         $blog_id,
@@ -70,7 +66,7 @@ foreach my $archive_type (@archive_types) {
 \$site->save();
 PHP
         },
-        $expected_method
+        $archive_type
     );
 }
 
