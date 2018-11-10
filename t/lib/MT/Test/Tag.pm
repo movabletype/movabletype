@@ -163,6 +163,7 @@ SKIP: {
                 my @extra_methods = (
                     "expected_php_error_$method_name",
                     "expected_php_todo_$method_name",
+                    "expected_php_todo",
                     "expected_todo_$method_name",
                     "expected_$method_name",
                     "expected_todo",
