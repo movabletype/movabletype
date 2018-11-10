@@ -158,18 +158,30 @@ SKIP: {
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 $php_result = Encode::decode_utf8($php_result);
 
-                my $expected_method = 'expected_' . lc($archive_type);
-                $expected_method =~ s/-/_/g;
-                my $expected
-                    = $block->expected_todo_error
-                    ? $block->expected_todo_error
-                    : $block->expected_error ? $block->expected_error
-                    : ( $expected_method
-                        && exists $block->{$expected_method} )
-                    ? $block->$expected_method
-                    : $block->expected;
+                ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
+
+                my @extra_methods = (
+                    "expected_php_error_$method_name",
+                    "expected_php_todo_$method_name",
+                    "expected_todo_$method_name",
+                    "expected_$method_name",
+                    "expected_todo",
+                );
+                my $expected_method = "expected";
+                for my $method (@extra_methods) {
+
+                    if ( exists $block->{$method} ) {
+                        $expected_method = $method;
+                        last;
+                    }
+                }
+                my $expected = $block->$expected_method;
+                $expected = '' unless defined $expected;
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
+
+                local $TODO = "may fail"
+                    if $expected_method =~ /^expected_(?:php_)?todo/;
 
                 my $name = $test_name_prefix . $block->name . ' - dynamic';
                 is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
