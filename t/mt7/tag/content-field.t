@@ -38,9 +38,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -363,10 +363,10 @@ $test_env->prepare_fixture(
                 },
                 unique_id => $cf_image->unique_id,
             },
-            {   id        => $cf_content_type->id,
-                order     => 17,
-                type      => $cf_content_type->type,
-                options   => {
+            {   id      => $cf_content_type->id,
+                order   => 17,
+                type    => $cf_content_type->type,
+                options => {
                     label  => $cf_content_type->name,
                     source => $ct2->id,
                 },
@@ -376,25 +376,25 @@ $test_env->prepare_fixture(
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
         $ct2->fields(
-            [
-            {   id        => $cf_single_line_text->id,
-                order     => 1,
-                type      => $cf_single_line_text->type,
-                options   => { label => $cf_single_line_text->name },
-                unique_id => $cf_single_line_text->unique_id,
-            },
-            {   id        => $cf_single_line_text_no_data->id,
-                order     => 2,
-                type      => $cf_single_line_text_no_data->type,
-                options   => { label => $cf_single_line_text_no_data->name },
-                unique_id => $cf_single_line_text_no_data->unique_id,
-            },
-            {   id        => $cf_number->id,
-                order     => 3,
-                type      => $cf_number->type,
-                options   => { label => $cf_number->name },
-                unique_id => $cf_number->unique_id,
-            },
+            [   {   id        => $cf_single_line_text->id,
+                    order     => 1,
+                    type      => $cf_single_line_text->type,
+                    options   => { label => $cf_single_line_text->name },
+                    unique_id => $cf_single_line_text->unique_id,
+                },
+                {   id    => $cf_single_line_text_no_data->id,
+                    order => 2,
+                    type  => $cf_single_line_text_no_data->type,
+                    options =>
+                        { label => $cf_single_line_text_no_data->name },
+                    unique_id => $cf_single_line_text_no_data->unique_id,
+                },
+                {   id        => $cf_number->id,
+                    order     => 3,
+                    type      => $cf_number->type,
+                    options   => { label => $cf_number->name },
+                    unique_id => $cf_number->unique_id,
+                },
             ]
         );
         $ct2->save or die $ct2->errstr;
@@ -405,7 +405,7 @@ $test_env->prepare_fixture(
             data            => {
                 $cf_single_line_text->id         => 'test single line text2',
                 $cf_single_line_text_no_data->id => '',
-                $cf_number->id => '12345',
+                $cf_number->id                   => '12345',
             },
         );
         my $cd = MT::Test::Permission->make_content_data(
@@ -429,9 +429,9 @@ $test_env->prepare_fixture(
                 $cf_table->id => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
-                $cf_tag->id      => [ $tag2->id,      $tag1->id ],
-                $cf_category->id => [ $category2->id, $category1->id ],
-                $cf_image->id    => [ $image1->id,    $image2->id ],
+                $cf_tag->id          => [ $tag2->id,      $tag1->id ],
+                $cf_category->id     => [ $category2->id, $category1->id ],
+                $cf_image->id        => [ $image1->id,    $image2->id ],
                 $cf_content_type->id => [ $cd2->id ],
             },
         );
@@ -453,7 +453,7 @@ __END__
 === mt:ContentField without contents context
 --- template
 <mt:ContentField content_field="single line text"><mt:var name="__value__"></mt:ContentField>
---- error
+--- expected_error
 No Content Type could be found.
 
 === mt:ContentField content_field="single line text" (unique_id)
@@ -509,8 +509,10 @@ Footer
 <mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
---- error
+--- expected_todo_error
 No Content Field could be found.
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26114
 
 === mt:ContentField content_field="multi line text"
 --- template
