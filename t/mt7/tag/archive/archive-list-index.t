@@ -531,3 +531,131 @@ December  2, 2018 - December  8, 2018
 2016
 2017
 2018
+
+=== sort_order="descend"
+--- template
+<mt:ArchiveList type="[% archive_type %]" sort_order="descend" content_type="ct_with_same_catset"><mt:ArchiveTitle>
+</mt:ArchiveList>
+--- expected_author
+author2
+author1
+--- expected_author_daily
+author2: December  3, 2016
+author2: December  3, 2015
+author1: December  3, 2018
+author1: December  3, 2017
+--- expected_author_monthly
+author2: December 2016
+author2: December 2015
+author1: December 2018
+author1: December 2017
+--- expected_author_weekly
+author2: November 27, 2016 - December  3, 2016
+author2: November 29, 2015 - December  5, 2015
+author1: December  2, 2018 - December  8, 2018
+author1: December  3, 2017 - December  9, 2017
+--- expected_author_yearly
+author2: 2016
+author2: 2015
+author1: 2018
+author1: 2017
+--- expected_category
+cat_ruler
+cat_pencil
+cat_compass
+--- expected_php_todo_category
+--- expected_category_daily
+cat_ruler: December  3, 2018
+cat_pencil: December  3, 2016
+cat_compass: December  3, 2017
+--- expected_category_monthly
+cat_ruler: December 2018
+cat_pencil: December 2016
+cat_compass: December 2017
+--- expected_category_weekly
+cat_ruler: December  2, 2018 - December  8, 2018
+cat_pencil: November 27, 2016 - December  3, 2016
+cat_compass: December  3, 2017 - December  9, 2017
+--- expected_category_yearly
+cat_ruler: 2018
+cat_pencil: 2016
+cat_compass: 2017
+--- expected_todo_contenttype
+cd_same_apple_orange
+cd_same_same_date
+cd_same_apple_orange_peach
+cd_same_peach
+--- expected_contenttype_author
+author2
+author1
+--- expected_contenttype_author_daily
+author2: October 31, 2016
+author1: October 31, 2018
+author1: October 31, 2017
+--- expected_contenttype_author_monthly
+author2: October 2016
+author1: October 2018
+author1: October 2017
+--- expected_contenttype_author_weekly
+author2: October 30, 2016 - November  5, 2016
+author1: October 28, 2018 - November  3, 2018
+author1: October 29, 2017 - November  4, 2017
+--- expected_contenttype_author_yearly
+author2: 2016
+author1: 2018
+author1: 2017
+--- expected_contenttype_category
+cat_peach
+cat_apple
+--- expected_php_todo_contenttype_category
+--- expected_todo_contenttype_category_daily
+--- expected_todo_contenttype_category_monthly
+--- expected_todo_contenttype_category_weekly
+--- expected_todo_contenttype_category_yearly
+--- expected_contenttype_daily
+October 31, 2018
+October 31, 2017
+October 31, 2016
+--- expected_contenttype_monthly
+October 2018
+October 2017
+October 2016
+--- expected_contenttype_weekly
+October 28, 2018 - November  3, 2018
+October 29, 2017 - November  4, 2017
+October 30, 2016 - November  5, 2016
+--- expected_contenttype_yearly
+2018
+2017
+2016
+--- expected_daily
+December  3, 2018
+December  3, 2017
+December  3, 2016
+December  3, 2015
+--- expected_individual
+entry_author1_ruler_eraser
+entry_author1_ruler_eraser
+entry_author1_compass
+entry_author2_pencil_eraser
+entry_author2_no_category
+--- expected_monthly
+December 2018
+December 2017
+December 2016
+December 2015
+--- expected_page
+page_author2_no_folder
+page_author2_water
+page_author1_coffee
+page_author1_coffee
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+December  3, 2017 - December  9, 2017
+November 27, 2016 - December  3, 2016
+November 29, 2015 - December  5, 2015
+--- expected_yearly
+2018
+2017
+2016
+2015
