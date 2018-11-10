@@ -134,9 +134,9 @@ cat_eraser: 2018
 cat_eraser: 2016
 cat_pencil: 2016
 cat_ruler: 2018
---- expected_todo_contenttype
-cd_same_same_date
+--- expected_contenttype
 cd_same_apple_orange
+cd_same_same_date
 cd_same_apple_orange_peach
 cd_same_peach
 --- expected_contenttype_author
@@ -290,9 +290,9 @@ cat_eraser: 2018
 cat_eraser: 2016
 cat_pencil: 2016
 cat_ruler: 2018
---- expected_todo_contenttype
-cd_same_same_date
+--- expected_contenttype
 cd_same_apple_orange
+cd_same_same_date
 cd_same_apple_orange_peach
 cd_same_peach
 --- expected_contenttype_author
@@ -471,10 +471,10 @@ cat_eraser: 2016
 cat_eraser: 2018
 cat_pencil: 2016
 cat_ruler: 2018
---- expected_todo_contenttype
-cd_same_apple_orange
-cd_same_apple_orange_peach
+--- expected_contenttype
 cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
 cd_same_same_date
 --- expected_contenttype_author
 author1
@@ -622,7 +622,7 @@ cat_pencil: 2016
 cat_eraser: 2018
 cat_eraser: 2016
 cat_compass: 2017
---- expected_todo_contenttype
+--- expected_contenttype
 cd_same_apple_orange
 cd_same_same_date
 cd_same_apple_orange_peach
