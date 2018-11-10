@@ -29,7 +29,7 @@ filters {
     expected     => [qw( chomp )],
 };
 
-$test_env->prepare_fixture('archive_type_simple');
+$test_env->prepare_fixture('archive_type');
 my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id};
 
@@ -107,22 +107,31 @@ author2: 2016
 author2: 2015
 --- expected_category
 cat_compass
+cat_eraser
 cat_pencil
 cat_ruler
 --- expected_category_daily
 cat_compass: December  3, 2017
+cat_eraser: December  3, 2018
+cat_eraser: December  3, 2016
 cat_pencil: December  3, 2016
 cat_ruler: December  3, 2018
 --- expected_category_monthly
 cat_compass: December 2017
+cat_eraser: December 2018
+cat_eraser: December 2016
 cat_pencil: December 2016
 cat_ruler: December 2018
 --- expected_category_weekly
 cat_compass: December  3, 2017 - December  9, 2017
+cat_eraser: December  2, 2018 - December  8, 2018
+cat_eraser: November 27, 2016 - December  3, 2016
 cat_pencil: November 27, 2016 - December  3, 2016
 cat_ruler: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_compass: 2017
+cat_eraser: 2018
+cat_eraser: 2016
 cat_pencil: 2016
 cat_ruler: 2018
 --- expected_todo_contenttype
@@ -151,7 +160,9 @@ author1: 2017
 author2: 2016
 --- expected_contenttype_category
 cat_apple
+cat_orange
 cat_peach
+cat_strawberry
 --- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
@@ -252,22 +263,31 @@ author2: 2016
 author2: 2015
 --- expected_category
 cat_compass
+cat_eraser
 cat_pencil
 cat_ruler
 --- expected_category_daily
 cat_compass: December  3, 2017
+cat_eraser: December  3, 2018
+cat_eraser: December  3, 2016
 cat_pencil: December  3, 2016
 cat_ruler: December  3, 2018
 --- expected_category_monthly
 cat_compass: December 2017
+cat_eraser: December 2018
+cat_eraser: December 2016
 cat_pencil: December 2016
 cat_ruler: December 2018
 --- expected_category_weekly
 cat_compass: December  3, 2017 - December  9, 2017
+cat_eraser: December  2, 2018 - December  8, 2018
+cat_eraser: November 27, 2016 - December  3, 2016
 cat_pencil: November 27, 2016 - December  3, 2016
 cat_ruler: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_compass: 2017
+cat_eraser: 2018
+cat_eraser: 2016
 cat_pencil: 2016
 cat_ruler: 2018
 --- expected_todo_contenttype
@@ -296,7 +316,9 @@ author1: 2017
 author2: 2016
 --- expected_contenttype_category
 cat_apple
+cat_orange
 cat_peach
+cat_strawberry
 --- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
@@ -422,22 +444,31 @@ author2: 2015
 author2: 2016
 --- expected_category
 cat_compass
+cat_eraser
 cat_pencil
 cat_ruler
 --- expected_category_daily
 cat_compass: December  3, 2017
+cat_eraser: December  3, 2016
+cat_eraser: December  3, 2018
 cat_pencil: December  3, 2016
 cat_ruler: December  3, 2018
 --- expected_category_monthly
 cat_compass: December 2017
+cat_eraser: December 2016
+cat_eraser: December 2018
 cat_pencil: December 2016
 cat_ruler: December 2018
 --- expected_category_weekly
 cat_compass: December  3, 2017 - December  9, 2017
+cat_eraser: November 27, 2016 - December  3, 2016
+cat_eraser: December  2, 2018 - December  8, 2018
 cat_pencil: November 27, 2016 - December  3, 2016
 cat_ruler: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_compass: 2017
+cat_eraser: 2016
+cat_eraser: 2018
 cat_pencil: 2016
 cat_ruler: 2018
 --- expected_todo_contenttype
@@ -466,7 +497,9 @@ author1: 2018
 author2: 2016
 --- expected_contenttype_category
 cat_apple
+cat_orange
 cat_peach
+cat_strawberry
 --- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2017
@@ -562,23 +595,32 @@ author1: 2017
 --- expected_category
 cat_ruler
 cat_pencil
+cat_eraser
 cat_compass
 --- expected_php_todo_category
 --- expected_category_daily
 cat_ruler: December  3, 2018
 cat_pencil: December  3, 2016
+cat_eraser: December  3, 2018
+cat_eraser: December  3, 2016
 cat_compass: December  3, 2017
 --- expected_category_monthly
 cat_ruler: December 2018
 cat_pencil: December 2016
+cat_eraser: December 2018
+cat_eraser: December 2016
 cat_compass: December 2017
 --- expected_category_weekly
 cat_ruler: December  2, 2018 - December  8, 2018
 cat_pencil: November 27, 2016 - December  3, 2016
+cat_eraser: December  2, 2018 - December  8, 2018
+cat_eraser: November 27, 2016 - December  3, 2016
 cat_compass: December  3, 2017 - December  9, 2017
 --- expected_category_yearly
 cat_ruler: 2018
 cat_pencil: 2016
+cat_eraser: 2018
+cat_eraser: 2016
 cat_compass: 2017
 --- expected_todo_contenttype
 cd_same_apple_orange
@@ -605,7 +647,9 @@ author2: 2016
 author1: 2018
 author1: 2017
 --- expected_contenttype_category
+cat_strawberry
 cat_peach
+cat_orange
 cat_apple
 --- expected_php_todo_contenttype_category
 --- expected_todo_contenttype_category_daily
