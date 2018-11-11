@@ -73,11 +73,6 @@ done_testing;
 __END__
 
 === Some ArchiveTitles with type
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26105
-https://movabletype.atlassian.net/browse/MTC-26106
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26108
 --- template
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 </mt:ArchiveList>
@@ -85,6 +80,8 @@ https://movabletype.atlassian.net/browse/MTC-26108
 author1
 author2
 --- expected_php_todo_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26105
 --- expected_author_daily
 author1: December  3, 2018
 author1: December  3, 2017
@@ -164,22 +161,50 @@ cat_orange
 cat_peach
 cat_strawberry
 --- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26036
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
+cat_orange: October 31, 2017
 cat_peach: October 31, 2016
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_monthly
 cat_apple: October 2018
 cat_apple: October 2017
+cat_orange: October 2017
 cat_peach: October 2016
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_weekly
 cat_apple: October 28, 2018 - November  3, 2018
 cat_apple: October 29, 2017 - November  4, 2017
+cat_orange: October 29, 2017 - November  4, 2017
 cat_peach: October 30, 2016 - November  5, 2016
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_yearly
 cat_apple: 2018
 cat_apple: 2017
+cat_orange: 2017
 cat_peach: 2016
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_daily
 October 31, 2018
 October 31, 2017
@@ -231,7 +256,6 @@ page_author1_coffee
 === Some ArchiveTitles with archive_type
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26105
-https://movabletype.atlassian.net/browse/MTC-26106
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26108
 --- template
