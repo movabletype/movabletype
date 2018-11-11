@@ -126,9 +126,6 @@ You used an MTarchiveprevious tag without a date context set up.
 You used an <mtarchiveprevious> without a date context set up.
 0101 |
 
-
-
-
 === mt:ArchivePrevious (date, cat_apple)
 --- stash
 { cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
@@ -204,7 +201,6 @@ You used an MTarchiveprevious tag without a date context set up.
 --- expected_php_todo_yearly
 You used an <mtarchiveprevious> without a date context set up.
 0101 |
-
 
 === mt:ArchivePrevious (datetime, cat_apple)
 --- stash
@@ -292,7 +288,6 @@ You used an MTarchiveprevious tag without a date context set up.
 You used an <mtarchiveprevious> without a date context set up.
 0101 |
 
-
 === mt:ArchivePrevious with content_type
 --- stash
 { cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple'}
@@ -345,6 +340,325 @@ October 2017 | http://narnia.na/2017/10/
 October 29, 2017 - November  4, 2017 | http://narnia.na/2017/10/29-week/
 --- expected_contenttype_yearly
 2017 | http://narnia.na/2017/
+--- expected_error_daily
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_daily
+You used an <mtarchiveprevious> without a date context set up.
+, 0000 |
+--- expected_error_individual
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_individual
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_monthly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_monthly
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_error_page
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_page
+--- expected_error_weekly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_weekly
+You used an <mtarchiveprevious> without a date context set up.
+December 31, 0000 -   6, 0000 |
+--- expected_error_yearly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_yearly
+You used an <mtarchiveprevious> without a date context set up.
+0101 |
+
+=== mt:ArchiveNext (authored_on, cat_apple)
+--- stash
+{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+--- template
+<mt:ArchiveNext><mt:ArchiveTitle> | <mt:ArchiveLink>
+</mt:ArchiveNext>
+--- expected_todo_author
+--- expected_php_todo_author
+author2 | http://narnia.na/author/author2/
+--- expected_todo_author_daily
+--- expected_todo_author_monthly
+--- expected_todo_author_weekly
+--- expected_todo_author_yearly
+--- expected_todo_category
+--- expected_todo_category_daily
+--- expected_todo_category_monthly
+--- expected_todo_category_weekly
+--- expected_todo_category_yearly
+--- expected_contenttype
+cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
+--- expected_php_todo_contenttype
+--- expected_contenttype_author
+author2 | http://narnia.na/author/author2/
+--- expected_php_todo_contenttype_author
+--- expected_contenttype_author_daily
+--- expected_php_todo_contenttype_author_daily
+--- expected_contenttype_author_monthly
+--- expected_contenttype_author_weekly
+--- expected_contenttype_author_yearly
+--- expected_contenttype_category
+cat_peach | http://narnia.na/cat-peach/
+--- expected_php_todo_contenttype_category
+--- expected_contenttype_category_daily
+--- expected_php_todo_contenttype_category_daily
+--- expected_contenttype_category_monthly
+--- expected_php_todo_contenttype_category_monthly
+--- expected_contenttype_category_weekly
+--- expected_php_todo_contenttype_category_weekly
+--- expected_contenttype_category_yearly
+--- expected_php_todo_contenttype_category_yearly
+--- expected_contenttype_daily
+--- expected_contenttype_monthly
+--- expected_contenttype_weekly
+--- expected_contenttype_yearly
+--- expected_error_daily
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_daily
+You used an <mtarchiveprevious> without a date context set up.
+, 0000 |
+--- expected_error_individual
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_individual
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_monthly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_monthly
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_error_page
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_page
+--- expected_error_weekly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_weekly
+You used an <mtarchiveprevious> without a date context set up.
+December 31, 0000 -   6, 0000 |
+--- expected_error_yearly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_yearly
+You used an <mtarchiveprevious> without a date context set up.
+0101 |
+
+=== mt:ArchiveNext (date, cat_apple)
+--- stash
+{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+--- template
+<mt:ArchiveNext><mt:ArchiveTitle> | <mt:ArchiveLink>
+</mt:ArchiveNext>
+--- expected_todo_author
+--- expected_php_todo_author
+--- expected_todo_author_daily
+--- expected_todo_author_monthly
+--- expected_todo_author_weekly
+--- expected_todo_author_yearly
+--- expected_todo_category
+--- expected_todo_category_daily
+--- expected_todo_category_monthly
+--- expected_todo_category_weekly
+--- expected_todo_category_yearly
+--- expected_contenttype
+cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
+--- expected_php_todo_contenttype
+--- expected_contenttype_author
+author2 | http://narnia.na/author/author2/
+--- expected_contenttype_author_daily
+author1: September 26, 2020 | http://narnia.na/author/author1/2020/09/26/
+--- expected_php_todo_contenttype_author_daily
+--- expected_contenttype_author_monthly
+author1: September 2020 | http://narnia.na/author/author1/2020/09/
+--- expected_php_todo_contenttype_author_monthly
+--- expected_contenttype_author_weekly
+author1: September 20, 2020 - September 26, 2020 | http://narnia.na/author/author1/2020/09/20-week/
+--- expected_php_todo_contenttype_author_weekly
+--- expected_contenttype_author_yearly
+author1: 2020 | http://narnia.na/author/author1/2020/
+--- expected_php_todo_contenttype_author_yearly
+--- expected_contenttype_category
+cat_peach | http://narnia.na/cat-peach/
+--- expected_php_todo_contenttype_category
+--- expected_contenttype_category_daily
+cat_apple: September 26, 2020 | http://narnia.na/cat-apple/2020/09/26/
+--- expected_php_todo_contenttype_category_daily
+--- expected_contenttype_category_monthly
+cat_apple: September 2020 | http://narnia.na/cat-apple/2020/09/
+--- expected_php_todo_contenttype_category_monthly
+--- expected_contenttype_category_weekly
+cat_apple: September 20, 2020 - September 26, 2020 | http://narnia.na/cat-apple/2020/09/20-week/
+--- expected_php_todo_contenttype_category_weekly
+--- expected_contenttype_category_yearly
+cat_apple: 2020 | http://narnia.na/cat-apple/2020/
+--- expected_php_todo_contenttype_category_yearly
+--- expected_contenttype_daily
+September 26, 2020 | http://narnia.na/2020/09/26/
+--- expected_php_todo_contenttype_daily
+--- expected_contenttype_monthly
+September 2020 | http://narnia.na/2020/09/
+--- expected_php_todo_contenttype_monthly
+--- expected_contenttype_weekly
+September 20, 2020 - September 26, 2020 | http://narnia.na/2020/09/20-week/
+--- expected_php_todo_contenttype_weekly
+--- expected_contenttype_yearly
+2020 | http://narnia.na/2020/
+--- expected_php_todo_contenttype_yearly
+--- expected_error_daily
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_daily
+You used an <mtarchiveprevious> without a date context set up.
+, 0000 |
+--- expected_error_individual
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_individual
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_monthly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_monthly
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_error_page
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_page
+--- expected_error_weekly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_weekly
+You used an <mtarchiveprevious> without a date context set up.
+December 31, 0000 -   6, 0000 |
+--- expected_error_yearly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_yearly
+You used an <mtarchiveprevious> without a date context set up.
+0101 |
+
+=== mt:ArchiveNext (datetime, cat_apple)
+--- stash
+{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+--- template
+<mt:ArchiveNext><mt:ArchiveTitle> | <mt:ArchiveLink>
+</mt:ArchiveNext>
+--- expected_todo_author
+--- expected_php_todo_author
+--- expected_todo_author_daily
+--- expected_todo_author_monthly
+--- expected_todo_author_weekly
+--- expected_todo_author_yearly
+--- expected_todo_category
+--- expected_todo_category_daily
+--- expected_todo_category_monthly
+--- expected_todo_category_weekly
+--- expected_todo_category_yearly
+--- expected_contenttype
+cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
+--- expected_php_todo_contenttype
+--- expected_contenttype_author
+author2 | http://narnia.na/author/author2/
+--- expected_php_todo_contenttype_author
+--- expected_contenttype_author_daily
+--- expected_php_todo_contenttype_author_daily
+--- expected_contenttype_author_monthly
+--- expected_php_todo_contenttype_author_monthly
+--- expected_contenttype_author_weekly
+--- expected_php_todo_contenttype_author_weekly
+--- expected_contenttype_author_yearly
+--- expected_php_todo_contenttype_author_yearly
+--- expected_contenttype_category
+cat_peach | http://narnia.na/cat-peach/
+--- expected_php_todo_contenttype_category
+--- expected_contenttype_category_daily
+--- expected_php_todo_contenttype_category_daily
+--- expected_contenttype_category_monthly
+--- expected_php_todo_contenttype_category_monthly
+--- expected_contenttype_category_weekly
+--- expected_php_todo_contenttype_category_weekly
+--- expected_contenttype_category_yearly
+--- expected_php_todo_contenttype_category_yearly
+--- expected_contenttype_daily
+--- expected_php_todo_contenttype_daily
+--- expected_contenttype_monthly
+--- expected_php_todo_contenttype_monthly
+--- expected_contenttype_weekly
+--- expected_php_todo_contenttype_weekly
+--- expected_contenttype_yearly
+--- expected_php_todo_contenttype_yearly
+--- expected_error_daily
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_daily
+You used an <mtarchiveprevious> without a date context set up.
+, 0000 |
+--- expected_error_individual
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_individual
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_monthly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_monthly
+You used an <mtarchiveprevious> without a date context set up.
+0000 |
+--- expected_error_error_page
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_page
+--- expected_error_weekly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_weekly
+You used an <mtarchiveprevious> without a date context set up.
+December 31, 0000 -   6, 0000 |
+--- expected_error_yearly
+You used an MTarchiveprevious tag without a date context set up.
+--- expected_php_todo_yearly
+You used an <mtarchiveprevious> without a date context set up.
+0101 |
+
+=== mt:ArchiveNext with content_type
+--- stash
+{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple'}
+--- template
+<mt:ArchiveNext content_type="[% cd_same_apple_orange_unique_id %]"><mt:ArchiveTitle> | <mt:ArchiveLink>
+</mt:ArchiveNext>
+--- expected_error
+No Content Type could be found.
+--- expected_author
+--- expected_php_todo_author
+author2 | http://narnia.na/author/author2/
+--- expected_todo_author_daily
+--- expected_todo_author_monthly
+--- expected_todo_author_weekly
+--- expected_todo_author_yearly
+--- expected_todo_category
+--- expected_todo_category_daily
+--- expected_todo_category_monthly
+--- expected_todo_category_weekly
+--- expected_todo_category_yearly
+--- expected_contenttype
+cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
+--- expected_php_todo_contenttype
+--- expected_contenttype_author
+author2 | http://narnia.na/author/author2/
+--- expected_contenttype_author_daily
+--- expected_contenttype_author_monthly
+--- expected_contenttype_author_weekly
+--- expected_contenttype_author_yearly
+--- expected_contenttype_category
+cat_peach | http://narnia.na/cat-peach/
+--- expected_php_todo_contenttype_category
+--- expected_contenttype_category_daily
+--- expected_php_todo_contenttype_category_daily
+--- expected_contenttype_category_monthly
+--- expected_php_todo_contenttype_category_monthly
+--- expected_contenttype_category_weekly
+--- expected_php_todo_contenttype_category_weekly
+--- expected_contenttype_category_yearly
+--- expected_php_todo_contenttype_category_yearly
+--- expected_contenttype_daily
+--- expected_php_todo_contenttype_daily
+--- expected_contenttype_monthly
+--- expected_php_todo_contenttype_monthly
+--- expected_contenttype_weekly
+--- expected_php_todo_contenttype_weekly
+--- expected_contenttype_yearly
+--- expected_php_todo_contenttype_yearly
 --- expected_error_daily
 You used an MTarchiveprevious tag without a date context set up.
 --- expected_php_todo_daily
