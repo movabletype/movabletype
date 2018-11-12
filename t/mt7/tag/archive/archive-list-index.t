@@ -16,6 +16,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::Test::ArchiveType;
 use MT::Test::Tag;
 
 use MT;
