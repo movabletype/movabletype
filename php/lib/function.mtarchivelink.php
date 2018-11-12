@@ -29,7 +29,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
         return $ctx->tag('ContentPermalink', $args);
     } elseif ($at == 'Category' || $at == 'ContentType-Category') {
         if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
-            return $cx->error($ctx->mt->translate('No Category Set could be found.'));
+            return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
         }
         $args['category_set_id'] = $ctx->stash('category_set')->id;
         return $ctx->tag('CategoryArchiveLink', $args);
