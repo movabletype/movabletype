@@ -26,13 +26,24 @@ sub vars {
     $vars;
 }
 
+sub _test_name_prefix {
+    my ($archive_type) = @_;
+    $archive_type ? "$archive_type: " : '';
+}
+
 sub run_perl_tests {
-    my ( $blog_id, $callback, $original_expected_method ) = @_;
+    my ( $blog_id, $callback, $archive_type ) = @_;
 
     if ( $callback && !ref $callback ) {
-        $original_expected_method = $callback;
-        $callback                 = undef;
+        $archive_type = $callback;
+        $callback     = undef;
     }
+    if ($archive_type) {
+        $vars->{archive_type} = $archive_type;
+    }
+    $archive_type ||= '';
+
+    my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
     MT->instance;
 
@@ -43,7 +54,7 @@ sub run_perl_tests {
 
             MT::Request->instance->reset;
 
-            my $tmpl = MT::Template->new( type => '' );  # empty type for test
+            my $tmpl = MT::Template->new( type => 'index' );
             $tmpl->text( _filter_vars( $block->template ) );
             my $ctx = $tmpl->context;
 
@@ -55,24 +66,54 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            my $expected_method = $original_expected_method;
-            if ( !$expected_method or !exists $block->{$expected_method} ) {
-                $expected_method = 'expected';
-            }
-
             my $result = eval { $tmpl->build };
-            if ( !$block->expected_error ) {
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
-                    if defined $result;
-                is( $result, _filter_vars( $block->$expected_method ),
-                    $block->name );
+
+            ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
+
+            if ( my $error = $ctx->errstr ) {
+                my $expected_error_method = "expected";
+                my @extra_error_methods   = (
+                    "expected_todo_error_$method_name",
+                    "expected_todo_error",
+                    "expected_error_$method_name",
+                    "expected_error"
+                );
+                for my $method (@extra_error_methods) {
+                    if ( exists $block->{$method} ) {
+                        $expected_error_method = $method;
+                        last;
+                    }
+                }
+                $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                local $TODO = "may fail"
+                    if $expected_error_method =~ /^expected_todo_/;
+                is( $error,
+                    _filter_vars( $block->$expected_error_method ),
+                    $test_name_prefix . $block->name . ' (error)'
+                );
             }
             else {
-                $result = $ctx->errstr;
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                my $expected_method = 'expected';
+                my @extra_methods   = (
+                    "expected_todo_$method_name",
+                    "expected_$method_name", "expected_todo"
+                );
+                for my $method (@extra_methods) {
+                    if ( exists $block->{$method} ) {
+                        $expected_method = $method;
+                        last;
+                    }
+                }
+
+                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
+                    if defined $result;
+
+                local $TODO = "may fail"
+                    if $expected_method =~ /^expected_todo/;
+
                 is( $result,
-                    _filter_vars( $block->expected_error ),
-                    $block->name . ' (error)'
+                    _filter_vars( $block->$expected_method ),
+                    $test_name_prefix . $block->name
                 );
             }
         }
@@ -80,7 +121,7 @@ sub run_perl_tests {
 }
 
 sub run_php_tests {
-    my ( $blog_id, $callback, $expected_method ) = @_;
+    my ( $blog_id, $callback, $archive_type ) = @_;
 
 SKIP: {
         unless ( has_php() ) {
@@ -88,9 +129,15 @@ SKIP: {
         }
 
         if ( $callback && !ref $callback ) {
-            $expected_method = $callback;
-            $callback        = undef;
+            $archive_type = $callback;
+            $callback     = undef;
         }
+        if ($archive_type) {
+            $vars->{archive_type} = $archive_type;
+        }
+        $archive_type ||= '';
+
+        my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
         run {
             my $block = shift;
@@ -111,9 +158,12 @@ SKIP: {
                 $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
                 $php_result = Encode::decode_utf8($php_result);
 
+                my $expected_method = 'expected_' . lc($archive_type);
+                $expected_method =~ s/-/_/g;
                 my $expected
-                    = $block->expected_error ? $block->expected_error
-                    : $block->error          ? $block->error
+                    = $block->expected_todo_error
+                    ? $block->expected_todo_error
+                    : $block->expected_error ? $block->expected_error
                     : ( $expected_method
                         && exists $block->{$expected_method} )
                     ? $block->$expected_method
@@ -121,8 +171,13 @@ SKIP: {
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
 
-                my $name = $block->name . ' - dynamic';
-                is( MT::I18N::encode_text($php_result, undef, 'utf-8'), _filter_vars(MT::I18N::encode_text($expected, undef, 'utf-8')), $name );
+                my $name = $test_name_prefix . $block->name . ' - dynamic';
+                is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
+                    _filter_vars(
+                        MT::I18N::encode_text( $expected, undef, 'utf-8' )
+                    ),
+                    $name
+                );
             }
         }
     }
@@ -165,6 +220,8 @@ $mt->init_plugins();
 
 $db = $mt->db();
 $ctx =& $mt->context();
+
+$ctx->stash('index_archive', true);
 
 $ctx->stash('blog_id', $blog_id);
 $ctx->stash('local_blog_id', $blog_id);
