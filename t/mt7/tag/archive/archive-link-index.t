@@ -118,6 +118,7 @@ http://narnia.na/author/author1/
 http://narnia.na/author/author2/
 --- expected_php_todo_author
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26105
 --- expected_author_daily
 http://narnia.na/author/author1/2018/12/03/
 http://narnia.na/author/author1/2017/12/03/
@@ -149,24 +150,36 @@ http://narnia.na/cat-eraser/2018/12/03/
 http://narnia.na/cat-eraser/2016/12/03/
 http://narnia.na/cat-pencil/2016/12/03/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/03/
+--- expected_php_todo_category_daily
+---FIXME
+https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_weekly
 http://narnia.na/cat-clip/cat-compass/2017/12/03-week/
 http://narnia.na/cat-eraser/2018/12/02-week/
 http://narnia.na/cat-eraser/2016/11/27-week/
 http://narnia.na/cat-pencil/2016/11/27-week/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/02-week/
+--- expected_php_todo_category_weekly
+---FIXME
+https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_monthly
 http://narnia.na/cat-clip/cat-compass/2017/12/
 http://narnia.na/cat-eraser/2018/12/
 http://narnia.na/cat-eraser/2016/12/
 http://narnia.na/cat-pencil/2016/12/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
+--- expected_php_todo_category_monthly
+---FIXME
+https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/2017/
 http://narnia.na/cat-eraser/2018/
 http://narnia.na/cat-eraser/2016/
 http://narnia.na/cat-pencil/2016/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
+--- expected_php_todo_category_yearly
+---FIXME
+https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_contenttype
 http://narnia.na/2018/10/[% cd_same_apple_orange_unique_id %].html
 http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
@@ -176,9 +189,15 @@ http://narnia.na/2008/11/[% cd_other_apple_unique_id %].html
 http://narnia.na/2006/11/[% cd_other_apple_orange_dog_cat_unique_id %].html
 http://narnia.na/2004/11/[% cd_other_all_fruit_rabbit_unique_id %].html
 http://narnia.na/2004/11/[% cd_other_same_date_unique_id %].html
+--- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26128
 --- expected_contenttype_author
 http://narnia.na/author/author1/
 http://narnia.na/author/author2/
+--- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26126
 --- expected_contenttype_author_daily
 http://narnia.na/author/author1/2018/10/31/
 http://narnia.na/author/author1/2017/10/31/
@@ -186,6 +205,9 @@ http://narnia.na/author/author1/2004/11/01/
 http://narnia.na/author/author2/2016/10/31/
 http://narnia.na/author/author2/2008/11/01/
 http://narnia.na/author/author2/2006/11/01/
+--- expected_php_todo_contenttype_author_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_weekly
 http://narnia.na/author/author1/2018/10/28-week/
 http://narnia.na/author/author1/2017/10/29-week/
@@ -193,6 +215,9 @@ http://narnia.na/author/author1/2004/10/31-week/
 http://narnia.na/author/author2/2016/10/30-week/
 http://narnia.na/author/author2/2008/10/26-week/
 http://narnia.na/author/author2/2006/10/29-week/
+--- expected_php_todo_contenttype_author_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_monthly
 http://narnia.na/author/author1/2018/10/
 http://narnia.na/author/author1/2017/10/
@@ -200,6 +225,9 @@ http://narnia.na/author/author1/2004/11/
 http://narnia.na/author/author2/2016/10/
 http://narnia.na/author/author2/2008/11/
 http://narnia.na/author/author2/2006/11/
+--- expected_php_todo_contenttype_author_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_yearly
 http://narnia.na/author/author1/2018/
 http://narnia.na/author/author1/2017/
@@ -207,6 +235,9 @@ http://narnia.na/author/author1/2004/
 http://narnia.na/author/author2/2016/
 http://narnia.na/author/author2/2008/
 http://narnia.na/author/author2/2006/
+--- expected_php_todo_contenttype_author_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_category
 http://narnia.na/cat-apple/
 http://narnia.na/cat-strawberry/cat-orange/
@@ -215,6 +246,8 @@ http://narnia.na/cat-strawberry/
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26036
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_contenttype_category_daily
 http://narnia.na/cat-apple/2008/11/01/
 http://narnia.na/cat-apple/2006/11/01/
@@ -225,6 +258,10 @@ http://narnia.na/cat-peach/2004/11/01/
 http://narnia.na/cat-strawberry/2004/11/01/
 --- expected_php_todo_contenttype_category_daily
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_category_weekly
 http://narnia.na/cat-apple/2008/10/26-week/
 http://narnia.na/cat-apple/2006/10/29-week/
@@ -235,6 +272,10 @@ http://narnia.na/cat-peach/2004/10/31-week/
 http://narnia.na/cat-strawberry/2004/10/31-week/
 --- expected_php_todo_contenttype_category_weekly
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_category_monthly
 http://narnia.na/cat-apple/2008/11/
 http://narnia.na/cat-apple/2006/11/
@@ -245,6 +286,10 @@ http://narnia.na/cat-peach/2004/11/
 http://narnia.na/cat-strawberry/2004/11/
 --- expected_php_todo_contenttype_category_monthly
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_category_yearly
 http://narnia.na/cat-apple/2008/
 http://narnia.na/cat-apple/2006/
@@ -255,27 +300,32 @@ http://narnia.na/cat-peach/2004/
 http://narnia.na/cat-strawberry/2004/
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26038
+https://movabletype.atlassian.net/browse/MTC-26039
+https://movabletype.atlassian.net/browse/MTC-26107
+https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_daily
 http://narnia.na/2008/11/01/
 http://narnia.na/2006/11/01/
 http://narnia.na/2004/11/01/
 --- expected_php_todo_contenttype_daily
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_contenttype_weekly
 http://narnia.na/2008/10/26-week/
 http://narnia.na/2006/10/29-week/
 http://narnia.na/2004/10/31-week/
 --- expected_php_todo_contenttype_weekly
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_contenttype_monthly
 http://narnia.na/2008/11/
 http://narnia.na/2006/11/
 http://narnia.na/2004/11/
 --- expected_php_todo_contenttype_monthly
 --- FIXME
+https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_contenttype_yearly
 http://narnia.na/2008/
 http://narnia.na/2006/
 http://narnia.na/2004/
---- expected_php_todo_contenttype_yearly
---- FIXME
