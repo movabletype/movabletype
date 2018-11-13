@@ -155,7 +155,7 @@ http://narnia.na/cat-eraser/2016/12/03/
 http://narnia.na/cat-pencil/2016/12/03/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/03/
 --- expected_php_todo_category_daily
----FIXME
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_weekly
 http://narnia.na/cat-clip/cat-compass/2017/12/03-week/
@@ -164,7 +164,7 @@ http://narnia.na/cat-eraser/2016/11/27-week/
 http://narnia.na/cat-pencil/2016/11/27-week/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/02-week/
 --- expected_php_todo_category_weekly
----FIXME
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_monthly
 http://narnia.na/cat-clip/cat-compass/2017/12/
@@ -173,7 +173,7 @@ http://narnia.na/cat-eraser/2016/12/
 http://narnia.na/cat-pencil/2016/12/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
 --- expected_php_todo_category_monthly
----FIXME
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/2017/
@@ -182,7 +182,7 @@ http://narnia.na/cat-eraser/2016/
 http://narnia.na/cat-pencil/2016/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- expected_php_todo_category_yearly
----FIXME
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_contenttype
 http://narnia.na/2018/10/[% cd_same_apple_orange_unique_id %].html
