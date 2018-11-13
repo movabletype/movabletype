@@ -37,7 +37,6 @@ for my $cd_label ( keys %{ $objs->{content_data} } ) {
     my $key = $cd_label . '_unique_id';
     my $cd  = $objs->{content_data}->{$cd_label};
     MT::Test::Tag->vars->{$key} = $cd->unique_id;
-    warn "$key : " . $cd->unique_id;
 }
 
 my @archive_types = sort MT->publisher->archive_types;
