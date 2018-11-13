@@ -209,9 +209,6 @@ http://narnia.na/author/author1/2004/11/01/
 http://narnia.na/author/author2/2016/10/31/
 http://narnia.na/author/author2/2008/11/01/
 http://narnia.na/author/author2/2006/11/01/
---- expected_php_todo_contenttype_author_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_weekly
 http://narnia.na/author/author1/2018/10/28-week/
 http://narnia.na/author/author1/2017/10/29-week/
@@ -219,9 +216,6 @@ http://narnia.na/author/author1/2004/10/31-week/
 http://narnia.na/author/author2/2016/10/30-week/
 http://narnia.na/author/author2/2008/10/26-week/
 http://narnia.na/author/author2/2006/10/29-week/
---- expected_php_todo_contenttype_author_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_monthly
 http://narnia.na/author/author1/2018/10/
 http://narnia.na/author/author1/2017/10/
@@ -229,9 +223,6 @@ http://narnia.na/author/author1/2004/11/
 http://narnia.na/author/author2/2016/10/
 http://narnia.na/author/author2/2008/11/
 http://narnia.na/author/author2/2006/11/
---- expected_php_todo_contenttype_author_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_author_yearly
 http://narnia.na/author/author1/2018/
 http://narnia.na/author/author1/2017/
