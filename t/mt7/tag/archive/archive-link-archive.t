@@ -45,7 +45,7 @@ __END__
 
 === mt:ArchiveLink
 --- stash
-{ entry => 'entry_author1_ruler_eraser', page => 'page_author1_coffee', cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
+{ entry => 'entry_author1_ruler_eraser', entry_category => 'cat_ruler', page => 'page_author1_coffee', cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
 --- template
 <mt:ArchiveLink>
 --- expected_individual
@@ -73,13 +73,13 @@ http://narnia.na/author/author1/2018/
 --- expected_category
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
 --- expected_category_daily
-http://narnia.na/cat-clip/cat-compass/cat-ruler/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/03/
 --- expected_category_weekly
-http://narnia.na/cat-clip/cat-compass/cat-ruler/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/02-week/
 --- expected_category_monthly
-http://narnia.na/cat-clip/cat-compass/cat-ruler/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
 --- expected_category_yearly
-http://narnia.na/cat-clip/cat-compass/cat-ruler/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- expected_contenttype
 http://narnia.na/2019/09/[% cd_same_apple_orange_unique_id %].html
 --- expected_contenttype_author
