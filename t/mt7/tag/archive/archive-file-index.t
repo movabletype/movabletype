@@ -48,16 +48,30 @@ __END__
 --- expected_error
 Could not determine entry
 
-=== mt:ArchiveFile in object loop
---- skip
-1
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26132
+=== mt:ArchiveFile in entriies/pages loop
 --- template
 <mt:Entries><mt:ArchiveFile>
 </mt:Entries>
 <mt:Pages><mt:ArchiveFile>
 </mt:Pages>
+--- expected
+entry_author1_ruler_eraser_1.html
+entry_author1_ruler_eraser.html
+entry_author1_compass.html
+entry_author2_pencil_eraser.html
+entry_author2_no_category.html
+
+page_author2_no_folder.html
+page_author2_water.html
+page_author1_publish.html
+page_author1_coffee.html
+
+=== mt:ArchiveFile in contents loop
+--- skip
+1
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26132
+--- template
 <mt:Contents content_type="ct_with_same_catset"><mt:ArchiveFile>
 </mt:Contents>
---- exepted
+--- expected
