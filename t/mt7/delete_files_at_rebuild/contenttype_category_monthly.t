@@ -179,14 +179,21 @@ $publisher->rebuild(
 );
 
 ok !-e $archive;
-ok !-e $updated_archive;
+
+SKIP: {
+    local $TODO = 'reverted for now';
+    ok !-e $updated_archive;
+}
 
 my $updated_archive2 = File::Spec->catfile( $test_env->root,
     "site/archive/category2/2018/10/index.html" );
 ok -e $updated_archive2;
 
-my @updated_finfos2 = MT::FileInfo->load({ blog_id => $blog_id });
-is @updated_finfos2 => 1, "only one FileInfo";
+SKIP: {
+    local $TODO = 'reverted for now';
+    my @updated_finfos2 = MT::FileInfo->load({ blog_id => $blog_id });
+    is @updated_finfos2 => 1, "only one FileInfo";
+}
 
 File::Find::find(
     {   wanted => sub {
@@ -213,15 +220,21 @@ $publisher->rebuild(
 );
 
 ok !-e $archive;
-ok !-e $updated_archive;
+SKIP: {
+    local $TODO = 'reverted for now';
+    ok !-e $updated_archive;
+}
 ok -e $updated_archive2;
 
 my $new_archive = File::Spec->catfile( $test_env->root,
     "site/archive/category2/2018/12/index.html" );
 ok -e $new_archive;
 
-my @new_finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @new_finfos => 2, "two FileInfo";
+SKIP: {
+    local $TODO = 'reverted for now';
+    my @new_finfos = MT::FileInfo->load({ blog_id => $blog_id });
+    is @new_finfos => 2, "two FileInfo";
+}
 
 File::Find::find(
     {   wanted => sub {
