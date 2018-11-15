@@ -180,6 +180,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category
 --- expected_category_daily
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -197,6 +198,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -214,6 +216,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -231,6 +234,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -248,6 +252,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_apple
 %-c: cat-apple
@@ -265,6 +270,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -286,6 +292,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -307,6 +314,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -328,6 +336,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -349,6 +358,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -370,6 +380,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
 %-c: cat-apple
@@ -387,6 +398,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -404,6 +416,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -421,6 +434,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -438,6 +452,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -455,6 +470,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_apple
 %-c: cat-apple
@@ -472,6 +488,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -489,6 +506,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -506,6 +524,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -523,6 +542,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_yearly
 --- expected_individual
 %b: entry_author1_ruler_eraser
 %-b: entry-author1-ruler-eraser
@@ -544,6 +564,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_individual
 --- expected_daily
 %f: index.html
 %-f: index.html
@@ -585,6 +606,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_page
 --- expected_weekly
 %f: index.html
 %-f: index.html
@@ -742,6 +764,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category
 --- expected_category_daily
 %c: cat_pencil
 %-c: cat-pencil
@@ -759,6 +782,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_pencil
 %-c: cat-pencil
@@ -776,6 +800,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_pencil
 %-c: cat-pencil
@@ -793,6 +818,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_pencil
 %-c: cat-pencil
@@ -810,6 +836,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -827,6 +854,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -848,6 +876,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -869,6 +898,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -890,6 +920,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -911,6 +942,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -932,6 +964,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -949,6 +982,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category
 --- expected_contenttype_category_daily
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -966,6 +1000,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -983,6 +1018,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1000,6 +1036,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1017,6 +1054,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1034,6 +1072,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1051,6 +1090,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1068,6 +1108,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1085,6 +1126,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_yearly
 --- expected_daily
 %f: index.html
 %-f: index.html
@@ -1116,6 +1158,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_individual
 --- expected_monthly
 %f: index.html
 %-f: index.html
@@ -1147,6 +1190,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_page
 --- expected_weekly
 %f: index.html
 %-f: index.html
@@ -1304,6 +1348,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category
 --- expected_category_daily
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1321,6 +1366,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1338,6 +1384,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1355,6 +1402,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1372,6 +1420,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_apple
 %-c: cat-apple
@@ -1389,6 +1438,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -1410,6 +1460,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -1431,6 +1482,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -1452,6 +1504,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -1473,6 +1526,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -1494,6 +1548,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
 %-c: cat-apple
@@ -1511,6 +1566,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -1528,6 +1584,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -1545,6 +1602,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -1562,6 +1620,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -1579,6 +1638,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_apple
 %-c: cat-apple
@@ -1596,6 +1656,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -1613,6 +1674,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -1630,6 +1692,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -1647,6 +1710,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_contenttype_yearly
 --- expected_daily
 %f: index.html
 %-f: index.html
@@ -1678,6 +1742,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_individual
 --- expected_monthly
 %f: index.html
 %-f: index.html
@@ -1705,6 +1770,7 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_page
 --- expected_weekly
 %f: index.html
 %-f: index.html
