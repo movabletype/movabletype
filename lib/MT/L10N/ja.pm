@@ -1449,7 +1449,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => '\'[_1]\'は他のフォルダと衝突しています。同じ階層にあるフォルダの名前(ベースネーム)は一意でなければなりません。',
 	'Folder \'[_1]\' created by \'[_2]\'' => '\'[_2]\'がフォルダ\'[_1]\'を作成しました。',
-	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_2]\'がフォルダ\'[_1]\'(ID:[_2])を編集しました。',
+	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => '\'[_3]\'がフォルダ\'[_1]\'(ID:[_2])を編集しました。',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がフォルダ\'[_1]\'(ID:[_2])を削除しました。',
 
 ## lib/MT/CMS/Import.pm
