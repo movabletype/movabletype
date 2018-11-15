@@ -37,12 +37,13 @@ sub MT::Test::ArchiveType::filter_spec {
     );
     for my $archive_type ( MT->publisher->archive_types ) {
         ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
-        $filters{"expected_$name"}            = [qw/ var chomp /];
-        $filters{"expected_todo_$name"}       = [qw/ var chomp /];
-        $filters{"expected_php_todo_$name"}   = [qw/ var chomp /];
-        $filters{"expected_todo_error_$name"} = [qw/ var chomp /];
-        $filters{"expected_error_$name"}      = [qw/ var chomp /];
-        $filters{"expected_php_error_$name"}  = [qw/ var chomp /];
+        $filters{"expected_$name"}                = [qw/ var chomp /];
+        $filters{"expected_todo_$name"}           = [qw/ var chomp /];
+        $filters{"expected_php_todo_$name"}       = [qw/ var chomp /];
+        $filters{"expected_todo_error_$name"}     = [qw/ var chomp /];
+        $filters{"expected_error_$name"}          = [qw/ var chomp /];
+        $filters{"expected_php_error_$name"}      = [qw/ var chomp /];
+        $filters{"expected_php_todo_error_$name"} = [qw/ var chomp /];
     }
     %filters;
 }
@@ -388,6 +389,7 @@ PHP
                 or die $?;
 
             my @extra_methods = (
+                "expected_php_todo_error_$method_name",
                 "expected_php_error_$method_name",
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
