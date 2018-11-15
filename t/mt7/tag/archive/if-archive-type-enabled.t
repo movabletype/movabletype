@@ -71,6 +71,22 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 <mt:IfArchiveTypeEnabled type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
 [% expected %]
+--- expected_php_todo_author
+--- expected_php_todo_author_daily
+--- expected_php_todo_author_monthly
+--- expected_php_todo_author_weekly
+--- expected_php_todo_author_yearly
+--- expected_php_todo_category
+--- expected_php_todo_category_daily
+--- expected_php_todo_category_monthly
+--- expected_php_todo_category_weekly
+--- expected_php_todo_category_yearly
+--- expected_php_todo_daily
+--- expected_php_todo_individual
+--- expected_php_todo_monthly
+--- expected_php_todo_page
+--- expected_php_todo_weekly
+--- expected_php_todo_yearly
 
 === mt:IfArchiveTypeEnabled with archive_type
 --- stash
@@ -86,6 +102,22 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 <mt:IfArchiveTypeEnabled archive_type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
 [% expected %]
+--- expected_php_todo_author
+--- expected_php_todo_author_daily
+--- expected_php_todo_author_monthly
+--- expected_php_todo_author_weekly
+--- expected_php_todo_author_yearly
+--- expected_php_todo_category
+--- expected_php_todo_category_daily
+--- expected_php_todo_category_monthly
+--- expected_php_todo_category_weekly
+--- expected_php_todo_category_yearly
+--- expected_php_todo_daily
+--- expected_php_todo_individual
+--- expected_php_todo_monthly
+--- expected_php_todo_page
+--- expected_php_todo_weekly
+--- expected_php_todo_yearly
 
 === mt:IfArchiveTypeEnabled with else
 --- stash

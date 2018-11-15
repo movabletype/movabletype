@@ -52,7 +52,9 @@ __END__
 index.html
 --- expected_individual
 entry_author1_ruler_eraser.html
+--- expected_php_todo_page
 --- expected_page
 page_author1_coffee.html
+--- expected_php_todo_contenttype
 --- expected_contenttype
 [% cd_same_apple_orange_unique_id %].html

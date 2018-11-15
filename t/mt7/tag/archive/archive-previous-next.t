@@ -275,6 +275,7 @@ December  3, 2016 | http://narnia.na/2016/12/03/
 entry_author2_pencil_eraser | http://narnia.na/2016/12/entry-author2-pencil-eraser.html
 --- expected_monthly
 December 2016 | http://narnia.na/2016/12/
+--- expected_php_todo_page
 --- expected_page
 page_author2_water | http://narnia.na/folder-water/page-author2-water.html
 --- expected_weekly
@@ -394,6 +395,7 @@ entry_author1_ruler_eraser | http://narnia.na/2018/12/entry-author1-ruler-eraser
 https://movabletype.atlassian.net/browse/MTC-26123
 --- expected_monthly
 December 2017 | http://narnia.na/2017/12/
+--- expected_php_todo_error_page
 --- expected_todo_error_page
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123

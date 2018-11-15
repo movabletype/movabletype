@@ -49,20 +49,32 @@ https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 }
 --- template
 <mt:ArchiveDate>
+--- expected_php_todo_error_author
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 12:00 AM
+--- expected_author_monthly
+December  1, 2018 12:00 AM
+--- expected_author_weekly
+December  2, 2018 12:00 AM
+--- expected_author_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_category
 --- expected_error_category
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 12:00 AM
+--- expected_category_monthly
+December  1, 2018 12:00 AM
+--- expected_category_weekly
+December  2, 2018 12:00 AM
+--- expected_category_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
@@ -73,6 +85,7 @@ October  1, 2018 12:00 AM
 October 28, 2018 12:00 AM
 --- expected_contenttype_author_yearly
 January  1, 2018 12:00 AM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_category_daily
@@ -91,14 +104,20 @@ October  1, 2018 12:00 AM
 October 28, 2018 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2018 12:00 AM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 12:00 AM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_monthly
+--- expected_monthly
+December  1, 2018 12:00 AM
+--- expected_php_todo_error_page
 --- expected_error_page
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  2, 2018 12:00 AM
+--- expected_yearly
+January  1, 2018 12:00 AM
 
 === mt:ArchiveDate (dt_field: date)
 --- FIXME
@@ -115,20 +134,32 @@ https://movabletype.atlassian.net/browse/MTC-26070
 }
 --- template
 <mt:ArchiveDate>
+--- expected_php_todo_error_author
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 12:00 AM
+--- expected_author_monthly
+December  1, 2018 12:00 AM
+--- expected_author_weekly
+December  2, 2018 12:00 AM
+--- expected_author_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_category
 --- expected_error_category
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 12:00 AM
+--- expected_category_monthly
+December  1, 2018 12:00 AM
+--- expected_category_weekly
+December  2, 2018 12:00 AM
+--- expected_category_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
@@ -139,6 +170,7 @@ September  1, 2019 12:00 AM
 September 22, 2019 12:00 AM
 --- expected_contenttype_author_yearly
 January  1, 2019 12:00 AM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_category_daily
@@ -147,7 +179,7 @@ September 26, 2019 12:00 AM
 September  1, 2019 12:00 AM
 --- expected_contenttype_category_weekly
 September 22, 2019 12:00 AM
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 September  1, 2019 12:00 AM
 --- expected_contenttype_category_yearly
 January  1, 2019 12:00 AM
@@ -159,14 +191,20 @@ September  1, 2019 12:00 AM
 September 22, 2019 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2019 12:00 AM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 12:00 AM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_monthly
+--- expected_monthly
+December  1, 2018 12:00 AM
+--- expected_php_todo_error_page
 --- expected_error_page
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  2, 2018 12:00 AM
+--- expected_yearly
+January  1, 2018 12:00 AM
 
 === mt:ArchiveDate (dt_field: datetime)
 --- FIXME
@@ -183,20 +221,32 @@ https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 }
 --- template
 <mt:ArchiveDate>
+--- expected_php_todo_error_author
 --- expected_error_author
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 12:00 AM
+--- expected_author_monthly
+December  1, 2018 12:00 AM
+--- expected_author_weekly
+December  2, 2018 12:00 AM
+--- expected_author_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_category
 --- expected_error_category
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 12:00 AM
+--- expected_category_monthly
+December  1, 2018 12:00 AM
+--- expected_category_weekly
+December  2, 2018 12:00 AM
+--- expected_category_yearly
+January  1, 2018 12:00 AM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 You used an MTArchiveDate tag without a date context set up.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_author_daily
@@ -207,6 +257,7 @@ November  1, 2008 12:00 AM
 October 26, 2008 12:00 AM
 --- expected_contenttype_author_yearly
 January  1, 2008 12:00 AM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 You used an MTArchiveDate tag without a date context set up.
 --- expected_contenttype_category_daily
@@ -225,14 +276,20 @@ November  1, 2008 12:00 AM
 October 26, 2008 12:00 AM
 --- expected_contenttype_yearly
 January  1, 2008 12:00 AM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 12:00 AM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_monthly
+--- expected_monthly
+December  1, 2018 12:00 AM
+--- expected_php_todo_error_page
 --- expected_error_page
 You used an MTArchiveDate tag without a date context set up.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  2, 2018 12:00 AM
+--- expected_yearly
+January  1, 2018 12:00 AM
 
 === mt:ArchiveDateEnd (authored_on)
 --- stash
@@ -246,20 +303,32 @@ You used an MTArchiveDate tag without a date context set up.
 }
 --- template
 <mt:ArchiveDateEnd>
+--- expected_php_todo_error_author
 --- expected_error_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 11:59 PM
+--- expected_author_monthly
+December 31, 2018 11:59 PM
+--- expected_author_weekly
+December  8, 2018 11:59 PM
+--- expected_author_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_category
 --- expected_error_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 11:59 PM
+--- expected_category_monthly
+December 31, 2018 11:59 PM
+--- expected_category_weekly
+December  8, 2018 11:59 PM
+--- expected_category_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_author_daily
@@ -270,6 +339,7 @@ October 31, 2018 11:59 PM
 November  3, 2018 11:59 PM
 --- expected_contenttype_author_yearly
 December 31, 2018 11:59 PM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_category_daily
@@ -288,14 +358,20 @@ October 31, 2018 11:59 PM
 November  3, 2018 11:59 PM
 --- expected_contenttype_yearly
 December 31, 2018 11:59 PM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 11:59 PM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_monthly
+--- expected_monthly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_page
 --- expected_error_page
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  8, 2018 11:59 PM
+--- expected_yearly
+December 31, 2018 11:59 PM
 
 === mt:ArchiveDateEnd (dt_field: date)
 --- stash
@@ -310,20 +386,32 @@ December 31, 2018 11:59 PM
 }
 --- template
 <mt:ArchiveDateEnd>
+--- expected_php_todo_error_author
 --- expected_error_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 11:59 PM
+--- expected_author_monthly
+December 31, 2018 11:59 PM
+--- expected_author_weekly
+December  8, 2018 11:59 PM
+--- expected_author_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_category
 --- expected_error_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 11:59 PM
+--- expected_category_monthly
+December 31, 2018 11:59 PM
+--- expected_category_weekly
+December  8, 2018 11:59 PM
+--- expected_category_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_author_daily
@@ -334,6 +422,7 @@ September 30, 2019 11:59 PM
 September 28, 2019 11:59 PM
 --- expected_contenttype_author_yearly
 December 31, 2019 11:59 PM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_category_daily
@@ -352,14 +441,20 @@ September 30, 2019 11:59 PM
 September 28, 2019 11:59 PM
 --- expected_contenttype_yearly
 December 31, 2019 11:59 PM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 11:59 PM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_monthly
+--- expected_monthly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_page
 --- expected_error_page
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  8, 2018 11:59 PM
+--- expected_yearly
+December 31, 2018 11:59 PM
 
 === mt:ArchiveDateEnd (dt_field: datetime)
 --- stash
@@ -374,20 +469,32 @@ December 31, 2019 11:59 PM
 }
 --- template
 <mt:ArchiveDateEnd>
+--- expected_php_todo_error_author
 --- expected_error_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
+--- expected_author_daily
+December  3, 2018 11:59 PM
+--- expected_author_monthly
+December 31, 2018 11:59 PM
+--- expected_author_weekly
+December  8, 2018 11:59 PM
+--- expected_author_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_category
 --- expected_error_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_category_daily
---- expected_todo_error_category_monthly
---- expected_todo_error_category_weekly
---- expected_todo_error_category_yearly
+--- expected_category_daily
+December  3, 2018 11:59 PM
+--- expected_category_monthly
+December 31, 2018 11:59 PM
+--- expected_category_weekly
+December  8, 2018 11:59 PM
+--- expected_category_yearly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_contenttype
 --- expected_error_contenttype
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
+--- expected_php_todo_error_contenttype_author
 --- expected_error_contenttype_author
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_author_daily
@@ -398,6 +505,7 @@ November 30, 2008 11:59 PM
 November  1, 2008 11:59 PM
 --- expected_contenttype_author_yearly
 December 31, 2008 11:59 PM
+--- expected_php_todo_error_contenttype_category
 --- expected_error_contenttype_category
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
 --- expected_contenttype_category_daily
@@ -418,11 +526,17 @@ November 30, 2008 11:59 PM
 November  1, 2008 11:59 PM
 --- expected_contenttype_yearly
 December 31, 2008 11:59 PM
---- expected_todo_error_daily
+--- expected_daily
+December  3, 2018 11:59 PM
+--- expected_php_todo_error_individual
 --- expected_error_individual
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_monthly
+--- expected_monthly
+December 31, 2018 11:59 PM
+--- expected_php_todo_error_page
 --- expected_error_page
 <$MTArchiveDateEnd$> can be used only with Daily, Weekly, or Monthly archives.
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_weekly
+December  8, 2018 11:59 PM
+--- expected_yearly
+December 31, 2018 11:59 PM

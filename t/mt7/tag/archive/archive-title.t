@@ -48,20 +48,27 @@ __END__
 }
 --- template
 <mt:ArchiveTitle>
---- expected_todo_author
---- expected_php_todo_author
+--- expected_author
 author1
-author2
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
---- expected_contenttype
+--- expected_author_daily
+author1: December  3, 2018
+--- expected_author_monthly
+author1: December 2018
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018
+--- expected_author_yearly
+author1: 2018
+--- expected_category
+cat_eraser
+--- expected_category_daily
+cat_eraser: December  3, 2018
+--- expected_category_monthly
+cat_eraser: December 2018
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018
+--- expected_category_yearly
+cat_eraser: 2018
+--- expected_todo_contenttype
 cd_same_apple_orange
 --- expected_contenttype_author
 author1
@@ -77,16 +84,12 @@ author1: 2018
 cat_apple
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2018
---- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 cat_apple: October 2018
---- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 cat_apple: October 28, 2018 - November  3, 2018
---- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 cat_apple: 2018
---- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 October 31, 2018
 --- expected_contenttype_monthly
@@ -95,12 +98,18 @@ October 2018
 October 28, 2018 - November  3, 2018
 --- expected_contenttype_yearly
 2018
---- expected_todo_daily
---- expected_todo_error_individual
---- expected_todo_monthly
---- expected_todo_error_page
---- expected_todo_weekly
---- expected_todo_yearly
+--- expected_daily
+December  3, 2018
+--- expected_individual
+entry_author1_ruler_eraser
+--- expected_monthly
+December 2018
+--- expected_page
+page_author1_coffee
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+--- expected_yearly
+2018
 
 === mt:ArchiveTitle (date, cat_orange)
 --- stash
@@ -115,17 +124,27 @@ October 28, 2018 - November  3, 2018
 }
 --- template
 <mt:ArchiveTitle>
---- expected_todo_author
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
---- expected_contenttype
+--- expected_author
+author1
+--- expected_author_daily
+author1: December  3, 2018
+--- expected_author_monthly
+author1: December 2018
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018
+--- expected_author_yearly
+author1: 2018
+--- expected_category
+cat_eraser
+--- expected_category_daily
+cat_eraser: December  3, 2018
+--- expected_category_monthly
+cat_eraser: December 2018
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018
+--- expected_category_yearly
+cat_eraser: 2018
+--- expected_todo_contenttype
 cd_same_apple_orange
 --- expected_contenttype_author
 author1
@@ -155,12 +174,18 @@ September 2019
 September 22, 2019 - September 28, 2019
 --- expected_contenttype_yearly
 2019
---- expected_todo_daily
---- expected_todo_error_individual
---- expected_todo_monthly
---- expected_todo_error_page
---- expected_todo_weekly
---- expected_todo_yearly
+--- expected_daily
+December  3, 2018
+--- expected_individual
+entry_author1_ruler_eraser
+--- expected_monthly
+December 2018
+--- expected_page
+page_author1_coffee
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+--- expected_yearly
+2018
 
 === mt:ArchiveTitle (datetime, cat_orange)
 --- stash
@@ -175,17 +200,27 @@ September 22, 2019 - September 28, 2019
 }
 --- template
 <mt:ArchiveTitle>
---- expected_todo_author
---- expected_todo_author_daily
---- expected_todo_author_monthly
---- expected_todo_author_weekly
---- expected_todo_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
---- expected_contenttype
+--- expected_author
+author1
+--- expected_author_daily
+author1: December  3, 2018
+--- expected_author_monthly
+author1: December 2018
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018
+--- expected_author_yearly
+author1: 2018
+--- expected_category
+cat_eraser
+--- expected_category_daily
+cat_eraser: December  3, 2018
+--- expected_category_monthly
+cat_eraser: December 2018
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018
+--- expected_category_yearly
+cat_eraser: 2018
+--- expected_todo_contenttype
 cd_same_apple_orange_peach
 --- expected_contenttype_author
 author1
@@ -215,9 +250,15 @@ November 2006
 October 29, 2006 - November  4, 2006
 --- expected_contenttype_yearly
 2006
---- expected_todo_daily
---- expected_todo_error_individual
---- expected_todo_monthly
---- expected_todo_error_page
---- expected_todo_weekly
---- expected_todo_yearly
+--- expected_daily
+December  3, 2018
+--- expected_individual
+entry_author1_ruler_eraser
+--- expected_monthly
+December 2018
+--- expected_page
+page_author1_coffee
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+--- expected_yearly
+2018
