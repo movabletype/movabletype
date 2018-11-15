@@ -58,7 +58,7 @@ __END__
 %_c: <mt:FileTemplate format="%_c">
 %C: <mt:FileTemplate format="%C">
 %-C: <mt:FileTemplate format="%-C"></mt:If>
-<mt:If tag="ArchivrDate">%d: <mt:FileTemplate format="%d">
+<mt:If tag="ArchiveDate">%d: <mt:FileTemplate format="%d">
 %D: <mt:FileTemplate format="%D"></mt:If>
 <mt:If tag="EntryID">%e: <mt:FileTemplate format="%e">
 %E: <mt:FileTemplate format="%E"></mt:If>
@@ -66,16 +66,16 @@ __END__
 %-f: <mt:FileTemplate format="%-f">
 %F: <mt:FileTemplate format="%F">
 %-F: <mt:FileTemplate format="%-F">
-<mt:If tag="ArchivrDate">%h: <mt:FileTemplate format="%h">
+<mt:If tag="ArchiveDate">%h: <mt:FileTemplate format="%h">
 %H: <mt:FileTemplate format="%H"></mt:If>
 %i: <mt:FileTemplate format="%i">
 %I: <mt:FileTemplate format="%I">
-<mt:If tag="ArchivrDate">%j: <mt:FileTemplate format="%j">
+<mt:If tag="ArchiveDate">%j: <mt:FileTemplate format="%j">
 %m: <mt:FileTemplate format="%m">
 %n: <mt:FileTemplate format="%n">
 %s: <mt:FileTemplate format="%s"></mt:If>
 %x: <mt:FileTemplate format="%x">
-<mt:If tag="ArchivrDate">%y: <mt:FileTemplate format="%y">
+<mt:If tag="ArchiveDate">%y: <mt:FileTemplate format="%y">
 %Y: <mt:FileTemplate format="%Y"></mt:If>
 --- expected_author
 %a: author1
@@ -101,68 +101,96 @@ __END__
 %_a: author1
 
 
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_author_monthly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_author_weekly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 02
+%D: 2
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_author_yearly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_category
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -187,17 +215,24 @@ __END__
 %_c: cat_clip/cat_compass/cat_ruler
 %C: cat_ruler
 %-C: cat-ruler
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_clip/cat_compass/cat_ruler
@@ -205,17 +240,24 @@ __END__
 %_c: cat_clip/cat_compass/cat_ruler
 %C: cat_ruler
 %-C: cat-ruler
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_clip/cat_compass/cat_ruler
@@ -223,17 +265,24 @@ __END__
 %_c: cat_clip/cat_compass/cat_ruler
 %C: cat_ruler
 %-C: cat-ruler
-
+%d: 02
+%D: 2
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_clip/cat_compass/cat_ruler
@@ -241,17 +290,24 @@ __END__
 %_c: cat_clip/cat_compass/cat_ruler
 %C: cat_ruler
 %-C: cat-ruler
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_apple
@@ -303,17 +359,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 31
+%D: 31
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 304
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
@@ -325,17 +388,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 274
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
@@ -347,17 +417,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 28
+%D: 28
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 301
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
@@ -369,17 +446,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
@@ -405,17 +489,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 31
+%D: 31
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 304
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_apple
@@ -423,17 +514,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 274
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_apple
@@ -441,17 +539,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 28
+%D: 28
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 301
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_apple
@@ -459,17 +564,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_apple
@@ -477,17 +589,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 31
+%D: 31
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 304
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_apple
@@ -495,17 +614,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 274
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_apple
@@ -513,17 +639,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 28
+%D: 28
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 301
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_apple
@@ -531,17 +664,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_php_todo_contenttype_yearly
 --- expected_individual
 %b: entry_author1_ruler_eraser
@@ -566,25 +706,43 @@ __END__
 %x: .html
 --- expected_php_todo_individual
 --- expected_daily
+%d: 03
+%D: 3
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_monthly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_page
 %b: page_author1_coffee
 %-b: page-author1-coffee
@@ -608,25 +766,43 @@ __END__
 %x: .html
 --- expected_php_todo_page
 --- expected_weekly
+%d: 02
+%D: 2
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 --- expected_yearly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2018
+%Y: 18
 
 === mt:FileTemplate (date, cat_orange)
 --- stash
@@ -643,7 +819,7 @@ __END__
 %_c: <mt:FileTemplate format="%_c">
 %C: <mt:FileTemplate format="%C">
 %-C: <mt:FileTemplate format="%-C"></mt:If>
-<mt:If tag="ArchivrDate">%d: <mt:FileTemplate format="%d">
+<mt:If tag="ArchiveDate">%d: <mt:FileTemplate format="%d">
 %D: <mt:FileTemplate format="%D"></mt:If>
 <mt:If tag="EntryID">%e: <mt:FileTemplate format="%e">
 %E: <mt:FileTemplate format="%E"></mt:If>
@@ -651,16 +827,16 @@ __END__
 %-f: <mt:FileTemplate format="%-f">
 %F: <mt:FileTemplate format="%F">
 %-F: <mt:FileTemplate format="%-F">
-<mt:If tag="ArchivrDate">%h: <mt:FileTemplate format="%h">
+<mt:If tag="ArchiveDate">%h: <mt:FileTemplate format="%h">
 %H: <mt:FileTemplate format="%H"></mt:If>
 %i: <mt:FileTemplate format="%i">
 %I: <mt:FileTemplate format="%I">
-<mt:If tag="ArchivrDate">%j: <mt:FileTemplate format="%j">
+<mt:If tag="ArchiveDate">%j: <mt:FileTemplate format="%j">
 %m: <mt:FileTemplate format="%m">
 %n: <mt:FileTemplate format="%n">
 %s: <mt:FileTemplate format="%s"></mt:If>
 %x: <mt:FileTemplate format="%x">
-<mt:If tag="ArchivrDate">%y: <mt:FileTemplate format="%y">
+<mt:If tag="ArchiveDate">%y: <mt:FileTemplate format="%y">
 %Y: <mt:FileTemplate format="%Y"></mt:If>
 --- expected_author
 %a: author2
@@ -679,74 +855,103 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_author
 --- expected_author_daily
 %a: author2
 %-a: author2
 %_a: author2
 
 
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 338
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_author_monthly
 %a: author2
 %-a: author2
 %_a: author2
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_author_weekly
 %a: author2
 %-a: author2
 %_a: author2
 
 
-
+%d: 27
+%D: 27
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 332
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_author_yearly
 %a: author2
 %-a: author2
 %_a: author2
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_category
 %c: cat_pencil
 %-c: cat-pencil
@@ -771,17 +976,24 @@ __END__
 %_c: cat_pencil
 %C: cat_pencil
 %-C: cat-pencil
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 338
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_pencil
@@ -789,17 +1001,24 @@ __END__
 %_c: cat_pencil
 %C: cat_pencil
 %-C: cat-pencil
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_pencil
@@ -807,17 +1026,24 @@ __END__
 %_c: cat_pencil
 %C: cat_pencil
 %-C: cat-pencil
-
+%d: 27
+%D: 27
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 332
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_pencil
@@ -825,17 +1051,24 @@ __END__
 %_c: cat_pencil
 %C: cat_pencil
 %-C: cat-pencil
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_strawberry/cat_orange
@@ -887,17 +1120,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 269
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
@@ -909,17 +1149,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 244
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
@@ -931,17 +1178,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 22
+%D: 22
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 265
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
@@ -953,17 +1207,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_strawberry/cat_orange
@@ -989,17 +1250,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 269
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_strawberry/cat_orange
@@ -1007,17 +1275,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 244
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_strawberry/cat_orange
@@ -1025,17 +1300,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 22
+%D: 22
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 265
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_strawberry/cat_orange
@@ -1043,17 +1325,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_strawberry/cat_orange
@@ -1061,17 +1350,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 269
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_strawberry/cat_orange
@@ -1079,17 +1375,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 244
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_strawberry/cat_orange
@@ -1097,17 +1400,24 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 22
+%D: 22
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 265
+%m: 09
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_strawberry/cat_orange
@@ -1115,28 +1425,44 @@ __END__
 %_c: cat_strawberry/cat_orange
 %C: cat_orange
 %-C: cat-orange
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2019
+%Y: 19
 --- expected_php_todo_contenttype_yearly
 --- expected_daily
+%d: 03
+%D: 3
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 338
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_individual
 %b: entry_author2_pencil_eraser
 %-b: entry-author2-pencil-eraser
@@ -1160,15 +1486,24 @@ __END__
 %x: .html
 --- expected_php_todo_individual
 --- expected_monthly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 336
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_page
 %b: page_author2_water
 %-b: page-author2-water
@@ -1192,25 +1527,43 @@ __END__
 %x: .html
 --- expected_php_todo_page
 --- expected_weekly
+%d: 27
+%D: 27
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 332
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 --- expected_yearly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2016
+%Y: 16
 
 === mt:ArchivePrevious (datetime, cat_apple)
 --- stash
@@ -1227,7 +1580,7 @@ __END__
 %_c: <mt:FileTemplate format="%_c">
 %C: <mt:FileTemplate format="%C">
 %-C: <mt:FileTemplate format="%-C"></mt:If>
-<mt:If tag="ArchivrDate">%d: <mt:FileTemplate format="%d">
+<mt:If tag="ArchiveDate">%d: <mt:FileTemplate format="%d">
 %D: <mt:FileTemplate format="%D"></mt:If>
 <mt:If tag="EntryID">%e: <mt:FileTemplate format="%e">
 %E: <mt:FileTemplate format="%E"></mt:If>
@@ -1235,16 +1588,16 @@ __END__
 %-f: <mt:FileTemplate format="%-f">
 %F: <mt:FileTemplate format="%F">
 %-F: <mt:FileTemplate format="%-F">
-<mt:If tag="ArchivrDate">%h: <mt:FileTemplate format="%h">
+<mt:If tag="ArchiveDate">%h: <mt:FileTemplate format="%h">
 %H: <mt:FileTemplate format="%H"></mt:If>
 %i: <mt:FileTemplate format="%i">
 %I: <mt:FileTemplate format="%I">
-<mt:If tag="ArchivrDate">%j: <mt:FileTemplate format="%j">
+<mt:If tag="ArchiveDate">%j: <mt:FileTemplate format="%j">
 %m: <mt:FileTemplate format="%m">
 %n: <mt:FileTemplate format="%n">
 %s: <mt:FileTemplate format="%s"></mt:If>
 %x: <mt:FileTemplate format="%x">
-<mt:If tag="ArchivrDate">%y: <mt:FileTemplate format="%y">
+<mt:If tag="ArchiveDate">%y: <mt:FileTemplate format="%y">
 %Y: <mt:FileTemplate format="%Y"></mt:If>
 --- expected_author
 %a: author1
@@ -1263,74 +1616,103 @@ __END__
 %I: index
 
 %x: .html
+--- expected_php_todo_author
 --- expected_author_daily
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_author_monthly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_author_weekly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_author_yearly
 %a: author1
 %-a: author1
 %_a: author1
 
 
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_category
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1355,17 +1737,24 @@ __END__
 %_c: cat_clip/cat_compass
 %C: cat_compass
 %-C: cat-compass
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_php_todo_category_daily
 --- expected_category_monthly
 %c: cat_clip/cat_compass
@@ -1373,17 +1762,24 @@ __END__
 %_c: cat_clip/cat_compass
 %C: cat_compass
 %-C: cat-compass
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_php_todo_category_monthly
 --- expected_category_weekly
 %c: cat_clip/cat_compass
@@ -1391,17 +1787,24 @@ __END__
 %_c: cat_clip/cat_compass
 %C: cat_compass
 %-C: cat-compass
-
+%d: 03
+%D: 3
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_php_todo_category_weekly
 --- expected_category_yearly
 %c: cat_clip/cat_compass
@@ -1409,17 +1812,24 @@ __END__
 %_c: cat_clip/cat_compass
 %C: cat_compass
 %-C: cat-compass
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_php_todo_category_yearly
 --- expected_contenttype
 %c: cat_apple
@@ -1471,17 +1881,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
@@ -1493,17 +1910,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
@@ -1515,17 +1939,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 300
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
@@ -1537,17 +1968,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
@@ -1573,17 +2011,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 %c: cat_apple
@@ -1591,17 +2036,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 %c: cat_apple
@@ -1609,17 +2061,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 300
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 %c: cat_apple
@@ -1627,17 +2086,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 %c: cat_apple
@@ -1645,17 +2111,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %c: cat_apple
@@ -1663,17 +2136,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 306
+%m: 11
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %c: cat_apple
@@ -1681,17 +2161,24 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 26
+%D: 26
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 300
+%m: 10
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %c: cat_apple
@@ -1699,28 +2186,44 @@ __END__
 %_c: cat_apple
 %C: cat_apple
 %-C: cat-apple
-
+%d: 01
+%D: 1
 
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2008
+%Y: 08
 --- expected_php_todo_contenttype_yearly
 --- expected_daily
+%d: 03
+%D: 3
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_individual
 %b: entry_author1_compass
 %-b: entry-author1-compass
@@ -1744,15 +2247,24 @@ __END__
 %x: .html
 --- expected_php_todo_individual
 --- expected_monthly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 335
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_page
 %b: page_author2_no_folder
 %-b: page-author2-no-folder
@@ -1772,22 +2284,40 @@ __END__
 %x: .html
 --- expected_php_todo_page
 --- expected_weekly
+%d: 03
+%D: 3
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 337
+%m: 12
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
 --- expected_yearly
+%d: 01
+%D: 1
+
 %f: index.html
 %-f: index.html
 %F: index
 %-F: index
-
+%h: 00
+%H: 0
 %i: index.html
 %I: index
-
+%j: 001
+%m: 01
+%n: 00
+%s: 00
 %x: .html
+%y: 2017
+%Y: 17
