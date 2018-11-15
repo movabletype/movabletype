@@ -39,7 +39,14 @@ __END__
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 --- stash
-{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDate>
 --- expected_error_author
@@ -97,7 +104,15 @@ You used an MTArchiveDate tag without a date context set up.
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26070
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_date',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDate>
 --- expected_error_author
@@ -157,7 +172,15 @@ You used an MTArchiveDate tag without a date context set up.
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26070 (PHP)
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_datetime',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDate>
 --- expected_error_author
@@ -213,7 +236,14 @@ You used an MTArchiveDate tag without a date context set up.
 
 === mt:ArchiveDateEnd (authored_on)
 --- stash
-{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDateEnd>
 --- expected_error_author
@@ -269,7 +299,15 @@ December 31, 2018 11:59 PM
 
 === mt:ArchiveDateEnd (dt_field: date)
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_date',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDateEnd>
 --- expected_error_author
@@ -325,7 +363,15 @@ December 31, 2019 11:59 PM
 
 === mt:ArchiveDateEnd (dt_field: datetime)
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_datetime',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveDateEnd>
 --- expected_error_author

@@ -36,9 +36,16 @@ done_testing;
 
 __END__
 
-=== mt:ArchiveCount(authored_on, cat_apple))
+=== mt:ArchiveCount(authored_on, cat_apple)
 --- stash
-{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author
@@ -95,7 +102,15 @@ October 28, 2018 - November  3, 2018 | 2
 
 === mt:ArchiveCount (date, cat_orange)
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_date',
+    cat_field => 'cf_same_catset_other_fruit',
+    category => 'cat_orange',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author
@@ -147,7 +162,15 @@ September 22, 2019 - September 28, 2019 | 1
 
 === mt:ArchiveCount (datetime, cat_orange)
 --- stash
-{ cd => 'cd_same_apple_orange_peach', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_orange' }
+{
+    cd => 'cd_same_apple_orange_peach',
+    dt_field => 'cf_same_datetime',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_orange',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
 --- expected_todo_author

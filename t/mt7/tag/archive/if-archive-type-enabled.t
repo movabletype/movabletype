@@ -59,7 +59,14 @@ __END__
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following tests)
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:IfArchiveTypeEnabled type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
@@ -67,7 +74,14 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 
 === mt:IfArchiveTypeEnabled with archive_type
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:IfArchiveTypeEnabled archive_type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
@@ -75,7 +89,14 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 
 === mt:IfArchiveTypeEnabled with else
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:IfArchiveTypeEnabled archive_type="ContentType" content_type="ct_with_same_catset">true<mt:Else>false</mt:IfArchiveTypeEnabled>
 --- expected
@@ -83,7 +104,14 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 
 === mt:IfArchiveTypeEnabled without content_type (always false... or error?)
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:IfArchiveTypeEnabled archive_type="ContentType">true<mt:Else>false</mt:IfArchiveTypeEnabled>
 --- expected_todo
@@ -91,7 +119,14 @@ false
 
 === mt:IfArchiveTypeEnabled with an inconsistent content type
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:IfArchiveTypeEnabled archive_type="ContentType" content_type="ct_with_other_catset">true<mt:Else>false</mt:IfArchiveTypeEnabled>
 --- expected_todo
