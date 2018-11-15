@@ -79,8 +79,9 @@ sub run_tests {
 
             $self->_run_perl_test( $blog_id, $map, $objs );
 
-            # PHP: not ready yet
-            if ( $ENV{MT_TEST_ARCHIVETYPE_PHP} ) {
+            if ( !defined $ENV{MT_TEST_ARCHIVETYPE_PHP}
+                or $ENV{MT_TEST_ARCHIVETYPE_PHP} )
+            {
                 if ( !has_php() ) {
                     skip "Can't find executable file: php", 1 * blocks;
                 }
