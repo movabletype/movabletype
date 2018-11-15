@@ -415,7 +415,8 @@ PHP
             my $name = $block->name;
 
             local $TODO = "may fail"
-                if $expected_method =~ /^expected_(?:php_)?todo/;
+                if $expected_method =~ /^expected_(?:php_)?todo/
+                or $ENV{MARK_ALL_PHP_TESTS_TODO};
             is( $result, $self->_filter_vars($expected), "$name $test_info" );
         }
     }
