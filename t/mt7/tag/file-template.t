@@ -607,7 +607,6 @@ __END__
 %x: .html
 
 === mt:FileTemplate (date, cat_orange)
---- ONLY
 --- stash
 { entry => 'entry_author2_pencil_eraser', entry_category => 'cat_pencil', page => 'page_author2_water', cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
 --- template
@@ -1143,6 +1142,564 @@ __END__
 %-f: page-author2-water.html
 %F: page_author2_water
 %-F: page-author2-water
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_weekly
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_yearly
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+
+=== mt:ArchivePrevious (datetime, cat_apple)
+--- stash
+{ entry => 'entry_author1_compass', entry_category => 'cat_compass', page => 'page_author2_no_folder', cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+--- template
+<mt:If tag="AuthorBasename">%a: <mt:FileTemplate format="%a">
+%-a: <mt:FileTemplate format="%-a">
+%_a: <mt:FileTemplate format="%_a"></mt:If>
+<mt:If tag="EntryID">%b: <mt:FileTemplate format="%b">
+%-b: <mt:FileTemplate format="%-b">
+%_b: <mt:FileTemplate format="%_b"></mt:If>
+<mt:If tag="CategoryLabel">%c: <mt:FileTemplate format="%c">
+%-c: <mt:FileTemplate format="%-c">
+%_c: <mt:FileTemplate format="%_c">
+%C: <mt:FileTemplate format="%C">
+%-C: <mt:FileTemplate format="%-C"></mt:If>
+<mt:If tag="ArchivrDate">%d: <mt:FileTemplate format="%d">
+%D: <mt:FileTemplate format="%D"></mt:If>
+<mt:If tag="EntryID">%e: <mt:FileTemplate format="%e">
+%E: <mt:FileTemplate format="%E"></mt:If>
+%f: <mt:FileTemplate format="%f">
+%-f: <mt:FileTemplate format="%-f">
+%F: <mt:FileTemplate format="%F">
+%-F: <mt:FileTemplate format="%-F">
+<mt:If tag="ArchivrDate">%h: <mt:FileTemplate format="%h">
+%H: <mt:FileTemplate format="%H"></mt:If>
+%i: <mt:FileTemplate format="%i">
+%I: <mt:FileTemplate format="%I">
+<mt:If tag="ArchivrDate">%j: <mt:FileTemplate format="%j">
+%m: <mt:FileTemplate format="%m">
+%n: <mt:FileTemplate format="%n">
+%s: <mt:FileTemplate format="%s"></mt:If>
+%x: <mt:FileTemplate format="%x">
+<mt:If tag="ArchivrDate">%y: <mt:FileTemplate format="%y">
+%Y: <mt:FileTemplate format="%Y"></mt:If>
+--- expected_author
+%a: author1
+%-a: author1
+%_a: author1
+
+
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_author_daily
+%a: author1
+%-a: author1
+%_a: author1
+
+
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_author_monthly
+%a: author1
+%-a: author1
+%_a: author1
+
+
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_author_weekly
+%a: author1
+%-a: author1
+%_a: author1
+
+
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_author_yearly
+%a: author1
+%-a: author1
+%_a: author1
+
+
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_category
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_category_daily
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_category_monthly
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_category_weekly
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_category_yearly
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: [% cd_same_apple_orange_unique_id %].html
+%-f: [% cd_same_apple_orange_unique_id %].html
+%F: [% cd_same_apple_orange_unique_id %]
+%-F: [% cd_same_apple_orange_unique_id %]
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_author
+%a: author1
+%-a: author1
+%_a: author1
+
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_author_daily
+%a: author1
+%-a: author1
+%_a: author1
+
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_author_monthly
+%a: author1
+%-a: author1
+%_a: author1
+
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_author_weekly
+%a: author1
+%-a: author1
+%_a: author1
+
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_author_yearly
+%a: author1
+%-a: author1
+%_a: author1
+
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_category
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_category_daily
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_category_monthly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_category_weekly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_category_yearly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_daily
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_monthly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_weekly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_contenttype_yearly
+%c: cat_apple
+%-c: cat-apple
+%_c: cat_apple
+%C: cat_apple
+%-C: cat-apple
+
+
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_daily
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_individual
+%b: entry_author1_compass
+%-b: entry-author1-compass
+%_b: entry_author1_compass
+%c: cat_clip/cat_compass
+%-c: cat-clip/cat-compass
+%_c: cat_clip/cat_compass
+%C: cat_compass
+%-C: cat-compass
+
+%e: 000003
+%E: 3
+%f: entry_author1_compass.html
+%-f: entry-author1-compass.html
+%F: entry_author1_compass
+%-F: entry-author1-compass
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_monthly
+%f: index.html
+%-f: index.html
+%F: index
+%-F: index
+
+%i: index.html
+%I: index
+
+%x: .html
+--- expected_page
+%b: page_author2_no_folder
+%-b: page-author2-no-folder
+%_b: page_author2_no_folder
+
+
+%e: 000010
+%E: 10
+%f: page_author2_no_folder.html
+%-f: page-author2-no-folder.html
+%F: page_author2_no_folder
+%-F: page-author2-no-folder
 
 %i: index.html
 %I: index
