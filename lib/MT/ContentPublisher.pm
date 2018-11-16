@@ -960,7 +960,7 @@ sub rebuild_file {
         my %terms;
         $terms{blog_id}     = $blog->id;
         $terms{category_id} = $category->id
-            if $archiver->category_based && !$archiver->date_based;
+            if $archiver->category_based;
         $terms{author_id} = $author->id
             if $archiver->author_based;
         $terms{entry_id} = $entry->id

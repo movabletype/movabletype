@@ -37,12 +37,13 @@ sub MT::Test::ArchiveType::filter_spec {
     );
     for my $archive_type ( MT->publisher->archive_types ) {
         ( my $name = $archive_type ) =~ tr/A-Z-/a-z_/;
-        $filters{"expected_$name"}            = [qw/ var chomp /];
-        $filters{"expected_todo_$name"}       = [qw/ var chomp /];
-        $filters{"expected_php_todo_$name"}   = [qw/ var chomp /];
-        $filters{"expected_todo_error_$name"} = [qw/ var chomp /];
-        $filters{"expected_error_$name"}      = [qw/ var chomp /];
-        $filters{"expected_php_error_$name"}  = [qw/ var chomp /];
+        $filters{"expected_$name"}                = [qw/ var chomp /];
+        $filters{"expected_todo_$name"}           = [qw/ var chomp /];
+        $filters{"expected_php_todo_$name"}       = [qw/ var chomp /];
+        $filters{"expected_todo_error_$name"}     = [qw/ var chomp /];
+        $filters{"expected_error_$name"}          = [qw/ var chomp /];
+        $filters{"expected_php_error_$name"}      = [qw/ var chomp /];
+        $filters{"expected_php_todo_error_$name"} = [qw/ var chomp /];
     }
     %filters;
 }
@@ -78,8 +79,9 @@ sub run_tests {
 
             $self->_run_perl_test( $blog_id, $map, $objs );
 
-            # PHP: not ready yet
-            if ( $ENV{MT_TEST_ARCHIVETYPE_PHP} ) {
+            if ( !defined $ENV{MT_TEST_ARCHIVETYPE_PHP}
+                or $ENV{MT_TEST_ARCHIVETYPE_PHP} )
+            {
                 if ( !has_php() ) {
                     skip "Can't find executable file: php", 1 * blocks;
                 }
@@ -388,6 +390,7 @@ PHP
                 or die $?;
 
             my @extra_methods = (
+                "expected_php_todo_error_$method_name",
                 "expected_php_error_$method_name",
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
@@ -412,7 +415,8 @@ PHP
             my $name = $block->name;
 
             local $TODO = "may fail"
-                if $expected_method =~ /^expected_(?:php_)?todo/;
+                if $expected_method =~ /^expected_(?:php_)?todo/
+                or $ENV{MARK_ALL_PHP_TESTS_TODO};
             is( $result, $self->_filter_vars($expected), "$name $test_info" );
         }
     }
@@ -436,20 +440,21 @@ sub _set_stash {
 
     my $cd_name = $names->{content_data} || $names->{cd};
 
+    my $cd;
     if ( $archiver->contenttype_based or $archiver->contenttype_group_based )
     {
         return ( undef, " requires content_data" ) unless $cd_name;
 
         my $cd_spec = $fixture_spec->{content_data}{$cd_name}
             or croak "unknown content_data: $cd_name";
-        my $cd      = $objs->{content_data}{$cd_name};
+        $cd = $objs->{content_data}{$cd_name};
         my $ct_name = $cd_spec->{content_type};
         my $ct      = $objs->{content_type}{$ct_name}{content_type};
 
         return ( undef, " this mapping is not for $ct_name" )
             unless $ct->id == $tmpl->content_type_id;
 
-        $stash{content}      = $cd;
+        $stash{content} = $cd if $archiver->contenttype_based;
         $stash{content_type} = $ct;
 
         $self->_update_map( $block, $map, $archiver, $objs, $ct, $cd,
@@ -569,7 +574,6 @@ sub _set_stash {
         my ( $start, $end );
 
         if ( $archiver->contenttype_date_based ) {
-            my $cd = $stash{content};
             if ( my $dt_field_id = $map->dt_field_id ) {
                 $start = $cd->data->{$dt_field_id};
             }

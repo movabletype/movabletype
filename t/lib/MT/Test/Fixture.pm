@@ -376,7 +376,7 @@ sub prepare_content_data {
     return unless $spec->{content_data};
 
     if ( ref $spec->{content_data} eq 'HASH' ) {
-        for my $name ( keys %{ $spec->{content_data} } ) {
+        for my $name ( sort keys %{ $spec->{content_data} } ) {
             my $item = $spec->{content_data}{$name};
             if ( ref $item eq 'HASH' ) {
                 my %arg     = %$item;
