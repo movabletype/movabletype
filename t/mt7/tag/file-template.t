@@ -50,7 +50,7 @@ __END__
 <mt:If tag="AuthorBasename">%a: <mt:FileTemplate format="%a">
 %-a: <mt:FileTemplate format="%-a">
 %_a: <mt:FileTemplate format="%_a"></mt:If>
-<mt:If tag="EntryID">%b: <mt:FileTemplate format="%b">
+<mt:setvarblock name="can_use_%b"><mtif tag="entryid">1<mtelseif tag="contentid">1</mtif></mtsetvarblock><mt:If name="can_use_%b">%b: <mt:FileTemplate format="%b">
 %-b: <mt:FileTemplate format="%-b">
 %_b: <mt:FileTemplate format="%_b"></mt:If>
 <mt:If tag="CategoryLabel">%c: <mt:FileTemplate format="%c">
@@ -310,6 +310,9 @@ __END__
 %Y: 18
 --- expected_php_todo_category_yearly
 --- expected_contenttype
+%b: [% cd_same_apple_orange_unique_id %]
+%-b: [% cd_same_apple_orange_unique_id %]
+%_b: [% cd_same_apple_orange_unique_id %]
 %c: cat_apple
 %-c: cat-apple
 %_c: cat_apple
@@ -771,7 +774,7 @@ __END__
 <mt:If tag="AuthorBasename">%a: <mt:FileTemplate format="%a">
 %-a: <mt:FileTemplate format="%-a">
 %_a: <mt:FileTemplate format="%_a"></mt:If>
-<mt:If tag="EntryID">%b: <mt:FileTemplate format="%b">
+<mt:setvarblock name="can_use_%b"><mtif tag="entryid">1<mtelseif tag="contentid">1</mtif></mtsetvarblock><mt:If name="can_use_%b">%b: <mt:FileTemplate format="%b">
 %-b: <mt:FileTemplate format="%-b">
 %_b: <mt:FileTemplate format="%_b"></mt:If>
 <mt:If tag="CategoryLabel">%c: <mt:FileTemplate format="%c">
@@ -1031,6 +1034,9 @@ __END__
 %Y: 16
 --- expected_php_todo_category_yearly
 --- expected_contenttype
+%b: [% cd_same_apple_orange_unique_id %]
+%-b: [% cd_same_apple_orange_unique_id %]
+%_b: [% cd_same_apple_orange_unique_id %]
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
 %_c: cat_strawberry/cat_orange
@@ -1492,7 +1498,7 @@ __END__
 <mt:If tag="AuthorBasename">%a: <mt:FileTemplate format="%a">
 %-a: <mt:FileTemplate format="%-a">
 %_a: <mt:FileTemplate format="%_a"></mt:If>
-<mt:If tag="EntryID">%b: <mt:FileTemplate format="%b">
+<mt:setvarblock name="can_use_%b"><mtif tag="entryid">1<mtelseif tag="contentid">1</mtif></mtsetvarblock><mt:If name="can_use_%b">%b: <mt:FileTemplate format="%b">
 %-b: <mt:FileTemplate format="%-b">
 %_b: <mt:FileTemplate format="%_b"></mt:If>
 <mt:If tag="CategoryLabel">%c: <mt:FileTemplate format="%c">
@@ -1752,6 +1758,9 @@ __END__
 %Y: 17
 --- expected_php_todo_category_yearly
 --- expected_contenttype
+%b: [% cd_same_apple_orange_unique_id %]
+%-b: [% cd_same_apple_orange_unique_id %]
+%_b: [% cd_same_apple_orange_unique_id %]
 %c: cat_apple
 %-c: cat-apple
 %_c: cat_apple
