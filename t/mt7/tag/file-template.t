@@ -1485,7 +1485,7 @@ __END__
 %y: 2016
 %Y: 16
 
-=== mt:ArchivePrevious (datetime, cat_apple)
+=== mt:FileTemplate (datetime, cat_apple)
 --- stash
 { entry => 'entry_author1_compass', entry_category => 'cat_compass', page => 'page_author2_no_folder', cd => 'cd_same_apple_orange', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
