@@ -71,6 +71,8 @@ true
 <mt:IfArchiveType archive_type="ContentType">true<mt:Else>false</mt:IfArchiveType>
 --- expected
 false
+--- FIXME
+--- expected_php_todo_contenttype
 
 === mt:IfArchiveType with an inconsistent content type
 --- stash

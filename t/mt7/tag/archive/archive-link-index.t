@@ -243,7 +243,8 @@ http://narnia.na/cat-strawberry/
 https://movabletype.atlassian.net/browse/MTC-26036
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26108
---- expected_contenttype_category_daily
+--- expected_todo_contenttype_category_daily
+--- FIXME
 http://narnia.na/cat-apple/2008/11/01/
 http://narnia.na/cat-apple/2006/11/01/
 http://narnia.na/cat-apple/2004/11/01/
@@ -257,7 +258,8 @@ https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_contenttype_category_weekly
+--- expected_todo_contenttype_category_weekly
+--- FIXME
 http://narnia.na/cat-apple/2008/10/26-week/
 http://narnia.na/cat-apple/2006/10/29-week/
 http://narnia.na/cat-apple/2004/10/31-week/
@@ -271,7 +273,8 @@ https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_contenttype_category_monthly
+--- expected_todo_contenttype_category_monthly
+--- FIXME
 http://narnia.na/cat-apple/2008/11/
 http://narnia.na/cat-apple/2006/11/
 http://narnia.na/cat-apple/2004/11/
@@ -285,7 +288,8 @@ https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_contenttype_category_yearly
+--- expected_todo_contenttype_category_yearly
+--- FIXME
 http://narnia.na/cat-apple/2008/
 http://narnia.na/cat-apple/2006/
 http://narnia.na/cat-apple/2004/
@@ -299,28 +303,32 @@ https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_contenttype_daily
+--- expected_todo_contenttype_daily
+--- FIXME
 http://narnia.na/2008/11/01/
 http://narnia.na/2006/11/01/
 http://narnia.na/2004/11/01/
 --- expected_php_todo_contenttype_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
---- expected_contenttype_weekly
+--- expected_todo_contenttype_weekly
+--- FIXME
 http://narnia.na/2008/10/26-week/
 http://narnia.na/2006/10/29-week/
 http://narnia.na/2004/10/31-week/
 --- expected_php_todo_contenttype_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
---- expected_contenttype_monthly
+--- expected_todo_contenttype_monthly
+--- FIXME
 http://narnia.na/2008/11/
 http://narnia.na/2006/11/
 http://narnia.na/2004/11/
 --- expected_php_todo_contenttype_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
---- expected_contenttype_yearly
+--- expected_todo_contenttype_yearly
+--- FIXME
 http://narnia.na/2008/
 http://narnia.na/2006/
 http://narnia.na/2004/

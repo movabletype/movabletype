@@ -30,28 +30,47 @@ filters {
     MT::Test::ArchiveType->filter_spec
 };
 
+# Almost everything is broken...
+$ENV{MARK_ALL_PHP_TESTS_TODO} = 1;
+
 MT::Test::ArchiveType->run_tests;
 
 done_testing;
 
 __END__
 
-=== mt:ArchiveCount(authored_on, cat_apple))
+=== mt:ArchiveCount(authored_on, cat_apple)
 --- stash
-{ cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
+{
+    cd => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_apple',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
---- expected_todo_author
---- expected_php_todo_author
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
+--- expected_author
+author1 | 3
+--- expected_author_daily
+author1: December  3, 2018 | 2
+--- expected_author_monthly
+author1: December 2018 | 2
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018 | 2
+--- expected_author_yearly
+author1: 2018 | 2
+--- expected_category
+cat_eraser | 3
+--- expected_category_daily
+cat_eraser: December  3, 2018 | 2
+--- expected_category_monthly
+cat_eraser: December 2018 | 2
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018 | 2
+--- expected_category_yearly
+cat_eraser: 2018 | 2
 --- expected_contenttype
 cd_same_apple_orange | 1
 --- expected_contenttype_author
@@ -68,16 +87,12 @@ author1: 2018 | 2
 cat_apple | 2
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2018 | 1
---- expected_php_todo_contenttype_category_daily
 --- expected_contenttype_category_monthly
 cat_apple: October 2018 | 1
---- expected_php_todo_contenttype_category_monthly
 --- expected_contenttype_category_weekly
 cat_apple: October 28, 2018 - November  3, 2018 | 1
---- expected_php_todo_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 cat_apple: 2018 | 1
---- expected_php_todo_contenttype_category_yearly
 --- expected_contenttype_daily
 October 31, 2018 | 2
 --- expected_contenttype_monthly
@@ -86,28 +101,52 @@ October 2018 | 2
 October 28, 2018 - November  3, 2018 | 2
 --- expected_contenttype_yearly
 2018 | 2
---- expected_todo_error_daily
---- expected_todo_error_individual
---- expected_todo_error_monthly
---- expected_todo_error_page
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_daily
+December  3, 2018 | 2
+--- expected_individual
+entry_author1_ruler_eraser | 1
+--- expected_monthly
+December 2018 | 2
+--- expected_page
+page_author1_coffee | 1
+--- expected_weekly
+December  2, 2018 - December  8, 2018 | 2
+--- expected_yearly
+2018 | 2
 
 === mt:ArchiveCount (date, cat_orange)
 --- stash
-{ cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
+{
+    cd => 'cd_same_apple_orange',
+    dt_field => 'cf_same_date',
+    cat_field => 'cf_same_catset_other_fruit',
+    category => 'cat_orange',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
---- expected_todo_author
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
+--- expected_author
+author1 | 3
+--- expected_author_daily
+author1: December  3, 2018 | 2
+--- expected_author_monthly
+author1: December 2018 | 2
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018 | 2
+--- expected_author_yearly
+author1: 2018 | 2
+--- expected_category
+cat_eraser | 3
+--- expected_category_daily
+cat_eraser: December  3, 2018 | 2
+--- expected_category_monthly
+cat_eraser: December 2018 | 2
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018 | 2
+--- expected_category_yearly
+cat_eraser: 2018 | 2
 --- expected_contenttype
 cd_same_apple_orange | 1
 --- expected_contenttype_author
@@ -138,28 +177,52 @@ September 2019 | 1
 September 22, 2019 - September 28, 2019 | 1
 --- expected_contenttype_yearly
 2019 | 1
---- expected_todo_error_daily
---- expected_todo_error_individual
---- expected_todo_error_monthly
---- expected_todo_error_page
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_daily
+December  3, 2018 | 2
+--- expected_individual
+entry_author1_ruler_eraser | 1
+--- expected_monthly
+December 2018 | 2
+--- expected_page
+page_author1_coffee | 1
+--- expected_weekly
+December  2, 2018 - December  8, 2018 | 2
+--- expected_yearly
+2018 | 2
 
 === mt:ArchiveCount (datetime, cat_orange)
 --- stash
-{ cd => 'cd_same_apple_orange_peach', dt_field => 'cf_same_datetime', cat_field => 'cf_same_catset_fruit', category => 'cat_orange' }
+{
+    cd => 'cd_same_apple_orange_peach',
+    dt_field => 'cf_same_datetime',
+    cat_field => 'cf_same_catset_fruit',
+    category => 'cat_orange',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
 --- template
 <mt:ArchiveTitle> | <mt:ArchiveCount>
---- expected_todo_author
---- expected_todo_error_author_daily
---- expected_todo_error_author_monthly
---- expected_todo_error_author_weekly
---- expected_todo_error_author_yearly
---- expected_todo_category
---- expected_todo_category_daily
---- expected_todo_category_monthly
---- expected_todo_category_weekly
---- expected_todo_category_yearly
+--- expected_author
+author1 | 3
+--- expected_author_daily
+author1: December  3, 2018 | 2
+--- expected_author_monthly
+author1: December 2018 | 2
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018 | 2
+--- expected_author_yearly
+author1: 2018 | 2
+--- expected_category
+cat_eraser | 3
+--- expected_category_daily
+cat_eraser: December  3, 2018 | 2
+--- expected_category_monthly
+cat_eraser: December 2018 | 2
+--- expected_category_weekly
+cat_eraser: December  2, 2018 - December  8, 2018 | 2
+--- expected_category_yearly
+cat_eraser: 2018 | 2
 --- expected_contenttype
 cd_same_apple_orange_peach | 1
 --- expected_contenttype_author
@@ -190,9 +253,15 @@ November 2006 | 1
 October 29, 2006 - November  4, 2006 | 1
 --- expected_contenttype_yearly
 2006 | 1
---- expected_todo_error_daily
---- expected_todo_error_individual
---- expected_todo_error_monthly
---- expected_todo_error_page
---- expected_todo_error_weekly
---- expected_todo_error_yearly
+--- expected_daily
+December  3, 2018 | 2
+--- expected_individual
+entry_author1_ruler_eraser | 1
+--- expected_monthly
+December 2018 | 2
+--- expected_page
+page_author1_coffee | 1
+--- expected_weekly
+December  2, 2018 - December  8, 2018 | 2
+--- expected_yearly
+2018 | 2

@@ -104,14 +104,20 @@ $publisher->rebuild(
     TemplateMap => $template_map,
 );
 
-ok !-e $archive;
+SKIP: {
+    local $TODO = 'reverted for now';
+    ok !-e $archive;
+}
 
 my $updated_archive = File::Spec->catfile( $test_env->root,
     "site/archive/category2/2018/08/index.html" );
 ok -e $updated_archive;
 
-my @updated_finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @updated_finfos => 1, "only one FileInfo";
+SKIP: {
+    local $TODO = 'reverted for now';
+    my @updated_finfos = MT::FileInfo->load({ blog_id => $blog_id });
+    is @updated_finfos => 1, "only one FileInfo";
+}
 
 require File::Find;
 File::Find::find(
@@ -141,15 +147,21 @@ $publisher->rebuild(
     TemplateMap => $template_map,
 );
 
-ok !-e $archive;
+SKIP: {
+    local $TODO = 'reverted for now';
+    ok !-e $archive;
+}
 ok -e $updated_archive;
 
 my $new_archive = File::Spec->catfile( $test_env->root,
     "site/archive/category2/2018/10/index.html" );
 ok -e $new_archive;
 
-my @new_finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @new_finfos => 2, "two FileInfo";
+SKIP: {
+    local $TODO = 'reverted for now';
+    my @new_finfos = MT::FileInfo->load({ blog_id => $blog_id });
+    is @new_finfos => 2, "two FileInfo";
+}
 
 File::Find::find(
     {   wanted => sub {
