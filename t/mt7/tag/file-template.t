@@ -95,6 +95,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_author_daily
 %a: author1
 %-a: author1
@@ -209,6 +211,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -234,6 +239,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -259,6 +266,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -284,6 +293,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -309,6 +320,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -330,6 +343,10 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26060
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -348,6 +365,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -372,7 +391,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -397,7 +415,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -422,7 +439,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -447,7 +463,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
 %-c: cat-apple
@@ -466,6 +481,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -491,6 +509,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_contenttype_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -516,6 +536,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_contenttype_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -541,6 +563,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_contenttype_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -566,6 +590,8 @@ __END__
 %y: 2018
 %Y: 18
 --- expected_php_todo_contenttype_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 31
 %D: 31
@@ -585,7 +611,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %d: 01
 %D: 1
@@ -605,7 +630,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %d: 28
 %D: 28
@@ -625,7 +649,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %d: 01
 %D: 1
@@ -645,7 +668,6 @@ __END__
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_yearly
 --- expected_individual
 %b: entry_author1_ruler_eraser
 %-b: entry-author1-ruler-eraser
@@ -668,6 +690,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_individual
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_daily
 %d: 03
 %D: 3
@@ -728,6 +753,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 02
 %D: 2
@@ -819,6 +847,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_author_daily
 %a: author2
 %-a: author2
@@ -933,6 +963,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_pencil
 %-c: cat-pencil
@@ -958,6 +991,8 @@ __END__
 %y: 2016
 %Y: 16
 --- expected_php_todo_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_pencil
 %-c: cat-pencil
@@ -983,6 +1018,8 @@ __END__
 %y: 2016
 %Y: 16
 --- expected_php_todo_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_pencil
 %-c: cat-pencil
@@ -1008,6 +1045,8 @@ __END__
 %y: 2016
 %Y: 16
 --- expected_php_todo_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_pencil
 %-c: cat-pencil
@@ -1033,6 +1072,8 @@ __END__
 %y: 2016
 %Y: 16
 --- expected_php_todo_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -1054,6 +1095,10 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26060
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -1072,6 +1117,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -1096,7 +1143,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -1121,7 +1167,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -1146,7 +1191,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -1171,7 +1215,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1190,6 +1233,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1215,6 +1261,8 @@ __END__
 %y: 2019
 %Y: 19
 --- expected_php_todo_contenttype_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1240,6 +1288,8 @@ __END__
 %y: 2019
 %Y: 19
 --- expected_php_todo_contenttype_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1265,6 +1315,8 @@ __END__
 %y: 2019
 %Y: 19
 --- expected_php_todo_contenttype_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1290,6 +1342,8 @@ __END__
 %y: 2019
 %Y: 19
 --- expected_php_todo_contenttype_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 26
 %D: 26
@@ -1309,7 +1363,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %d: 01
 %D: 1
@@ -1329,7 +1382,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %d: 22
 %D: 22
@@ -1349,7 +1401,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %d: 01
 %D: 1
@@ -1369,7 +1420,6 @@ __END__
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_yearly
 --- expected_daily
 %d: 03
 %D: 3
@@ -1411,6 +1461,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_individual
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_monthly
 %d: 01
 %D: 1
@@ -1452,6 +1505,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 27
 %D: 27
@@ -1543,6 +1599,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_author_daily
 %a: author1
 %-a: author1
@@ -1657,6 +1715,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1682,6 +1743,8 @@ __END__
 %y: 2017
 %Y: 17
 --- expected_php_todo_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1707,6 +1770,8 @@ __END__
 %y: 2017
 %Y: 17
 --- expected_php_todo_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1732,6 +1797,8 @@ __END__
 %y: 2017
 %Y: 17
 --- expected_php_todo_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1757,6 +1824,8 @@ __END__
 %y: 2017
 %Y: 17
 --- expected_php_todo_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -1778,6 +1847,10 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26060
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -1796,6 +1869,8 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author_daily
 %a: author1
 %-a: author1
@@ -1820,7 +1895,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_author_daily
 --- expected_contenttype_author_monthly
 %a: author1
 %-a: author1
@@ -1845,7 +1919,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_author_monthly
 --- expected_contenttype_author_weekly
 %a: author1
 %-a: author1
@@ -1870,7 +1943,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_author_weekly
 --- expected_contenttype_author_yearly
 %a: author1
 %-a: author1
@@ -1895,7 +1967,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_author_yearly
 --- expected_contenttype_category
 %c: cat_apple
 %-c: cat-apple
@@ -1914,6 +1985,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -1939,6 +2013,8 @@ __END__
 %y: 2008
 %Y: 08
 --- expected_php_todo_contenttype_category_daily
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -1964,6 +2040,8 @@ __END__
 %y: 2008
 %Y: 08
 --- expected_php_todo_contenttype_category_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -1989,6 +2067,8 @@ __END__
 %y: 2008
 %Y: 08
 --- expected_php_todo_contenttype_category_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -2014,6 +2094,8 @@ __END__
 %y: 2008
 %Y: 08
 --- expected_php_todo_contenttype_category_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 01
 %D: 1
@@ -2033,7 +2115,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_daily
 --- expected_contenttype_monthly
 %d: 01
 %D: 1
@@ -2053,7 +2134,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_monthly
 --- expected_contenttype_weekly
 %d: 26
 %D: 26
@@ -2073,7 +2153,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_weekly
 --- expected_contenttype_yearly
 %d: 01
 %D: 1
@@ -2093,7 +2172,6 @@ __END__
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_yearly
 --- expected_daily
 %d: 03
 %D: 3
@@ -2135,6 +2213,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_individual
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_monthly
 %d: 01
 %D: 1
@@ -2172,6 +2253,9 @@ __END__
 
 %x: .html
 --- expected_php_todo_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26148
+https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 03
 %D: 3
