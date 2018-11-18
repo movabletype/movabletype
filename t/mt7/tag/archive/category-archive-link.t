@@ -36,12 +36,6 @@ done_testing;
 
 __END__
 
-=== mt:CategoryArchiveLink without stash
---- template
-<mt:CategoryArchiveLink>
---- expected_error
-MTCategoryArchiveLink must be used in a category context
-
 === mt:CategoryArchiveLink with stash
 --- stash
 { entry => 'entry_author1_ruler_eraser', page => 'page_author1_coffee', cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange' }
