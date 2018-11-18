@@ -82,9 +82,6 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- expected_contenttype
 http://narnia.na/2019/09/[% cd_same_apple_orange_unique_id %].html
---- FIXME
---- expected_php_todo_contenttype
-http://narnia.na/2019/09/[% cd_same_apple_orange_unique_id %].html
 --- expected_contenttype_author
 http://narnia.na/author/author1/
 --- expected_contenttype_author_daily
@@ -97,10 +94,9 @@ http://narnia.na/author/author1/2019/09/
 http://narnia.na/author/author1/2019/
 --- expected_contenttype_category
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-
 --- expected_php_todo_contenttype_category
-http://narnia.na/cat-strawberry/cat-orange/
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26155
 --- expected_contenttype_category_daily
 http://narnia.na/cat-strawberry/cat-orange/2019/09/26/
 --- expected_contenttype_category_weekly
