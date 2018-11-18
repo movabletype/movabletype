@@ -370,6 +370,16 @@ require_once('class.mt_entry.php');
 PHP
             }
 
+            if ( my $cd = $stash->{content} ) {
+                my $cd_id = $cd->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_content_data.php');
+\$cd = new ContentData;
+\$cd->Load($cd_id);
+\$ctx->stash('content', \$cd);
+PHP
+            }
+
             $test_script .= <<'PHP';
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
