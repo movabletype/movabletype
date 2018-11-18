@@ -193,6 +193,8 @@ entry_author2_no_category | http://narnia.na/2015/12/entry-author2-no-category.h
 --- expected_monthly
 December 2015 | http://narnia.na/2015/12/
 --- expected_todo_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26122
 --- expected_weekly
 November 29, 2015 - December  5, 2015 | http://narnia.na/2015/11/29-week/
 --- expected_yearly
@@ -276,6 +278,8 @@ entry_author2_pencil_eraser | http://narnia.na/2016/12/entry-author2-pencil-eras
 --- expected_monthly
 December 2016 | http://narnia.na/2016/12/
 --- expected_php_todo_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26122
 --- expected_page
 page_author2_water | http://narnia.na/folder-water/page-author2-water.html
 --- expected_weekly
@@ -336,6 +340,7 @@ https://movabletype.atlassian.net/browse/MTC-26071
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
 --- expected_todo_category_yearly
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26071
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
@@ -396,6 +401,8 @@ https://movabletype.atlassian.net/browse/MTC-26123
 --- expected_monthly
 December 2017 | http://narnia.na/2017/12/
 --- expected_php_todo_error_page
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26122
 --- expected_todo_error_page
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
@@ -557,6 +564,7 @@ entry_author1_compass | http://narnia.na/2017/12/entry-author1-compass.html
 --- expected_monthly
 December 2017 | http://narnia.na/2017/12/
 --- expected_todo_page
+--- FIXME
 https://movabletype.atlassian.net/browse/MTC-26122
 --- expected_weekly
 December  3, 2017 - December  9, 2017 | http://narnia.na/2017/12/03-week/
