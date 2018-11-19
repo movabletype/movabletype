@@ -712,8 +712,18 @@ sub _hdlr_if_archive_type {
                 return 1;
             }
         }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "You used an [_1] tag without a valid [_2] attribute.",
+                    "<MTIfArchiveType>",
+                    "content_type"
+                )
+            );
+        }
+        return 0;
     }
-    return 0;
+    return lc $at eq lc $cat;
 }
 
 ###########################################################################

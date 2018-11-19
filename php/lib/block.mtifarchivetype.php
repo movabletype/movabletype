@@ -10,6 +10,12 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $at = $args['type'];
         $at or $at = $args['archive_type'];
+        $cat = $ctx->stash('current_archive_type');
+        $cat or $at = $ctx->stash('archive_type');
+        $same = ($at && $cat) && ($at == $cat);
+        if(!$same){
+          return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
+        }
 
         $content_type_doesnt_match = 0;
         if (preg_match('/ContentType/i', $at)) {
@@ -21,17 +27,21 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
                         || $args['content_type'] === $content_type->content_type_name )
                     )
                 {
-                    $content_type_doesnt_match = 0;
+                    $same = true;
                 }
                 else {
-                    $content_type_doesnt_match = 1;
+                    $same = false;
                 }
+            } else {
+              $repeat = false;
+              return $ctx->error(
+                $ctx->mt->translate(
+                  "You used an [_1] tag without a valid [_2] attribute.",
+                  array("<MTIfArchiveType>", "content_type")
+                )
+              );
             }
         }
-
-        $cat = $ctx->stash('current_archive_type');
-        $cat or $at = $ctx->stash('archive_type');
-        $same = ($at && $cat) && ($at == $cat) && !$content_type_doesnt_match;
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
