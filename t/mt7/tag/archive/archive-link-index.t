@@ -82,21 +82,17 @@ __END__
 --- template
 <mt:ArchiveList type="[% archive_type %]"><mt:ArchiveLink type="[% archive_type %]">
 </mt:ArchiveList>
---- expected_todo_individual
+--- expected_individual
 http://narnia.na/2018/12/entry-author1-ruler-eraser.html
 http://narnia.na/2018/12/entry-author1-ruler-eraser-1.html
 http://narnia.na/2017/12/entry-author1-compass.html
 http://narnia.na/2016/12/entry-author2-pencil-eraser.html
 http://narnia.na/2015/12/entry-author2-no-category.html
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26131
---- expected_todo_page
+--- expected_page
 http://narnia.na/page-author2-no-folder.html
 http://narnia.na/folder-water/page-author2-water.html
 http://narnia.na/folder-green-tea/folder-cola/folder-coffee/page-author1-coffee.html
 http://narnia.na/folder-green-tea/folder-cola/folder-coffee/page-author1-publish.html
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26131
 --- expected_daily
 http://narnia.na/2018/12/03/
 http://narnia.na/2017/12/03/
