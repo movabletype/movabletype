@@ -1485,8 +1485,13 @@ Adds leading zeros to create a 6 character string. The default is 0 (false). Thi
 
 sub _hdlr_entry_id {
     my ( $ctx, $args ) = @_;
-    my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error();
+    my $e = $ctx->stash('entry');
+    if ( !$e && $ctx->stash('content') ) {
+        return $ctx->invoke_handler( 'contentid', $args );
+    }
+    if ( !$e ) {
+        return $ctx->_no_entry_error();
+    }
     return $args && $args->{pad} ? ( sprintf "%06d", $e->id ) : $e->id;
 }
 
