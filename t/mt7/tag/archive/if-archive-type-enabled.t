@@ -56,8 +56,6 @@ done_testing;
 __END__
 
 === mt:IfArchiveTypeEnabled with type
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following tests)
 --- stash
 {
     cd => 'cd_same_apple_orange',
@@ -71,22 +69,6 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 <mt:IfArchiveTypeEnabled type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
 [% expected %]
---- expected_php_todo_author
---- expected_php_todo_author_daily
---- expected_php_todo_author_monthly
---- expected_php_todo_author_weekly
---- expected_php_todo_author_yearly
---- expected_php_todo_category
---- expected_php_todo_category_daily
---- expected_php_todo_category_monthly
---- expected_php_todo_category_weekly
---- expected_php_todo_category_yearly
---- expected_php_todo_daily
---- expected_php_todo_individual
---- expected_php_todo_monthly
---- expected_php_todo_page
---- expected_php_todo_weekly
---- expected_php_todo_yearly
 
 === mt:IfArchiveTypeEnabled with archive_type
 --- stash
@@ -102,22 +84,6 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 <mt:IfArchiveTypeEnabled archive_type="[% archive_type %]" content_type="ct_with_same_catset">true</mt:IfArchiveTypeEnabled>
 --- expected
 [% expected %]
---- expected_php_todo_author
---- expected_php_todo_author_daily
---- expected_php_todo_author_monthly
---- expected_php_todo_author_weekly
---- expected_php_todo_author_yearly
---- expected_php_todo_category
---- expected_php_todo_category_daily
---- expected_php_todo_category_monthly
---- expected_php_todo_category_weekly
---- expected_php_todo_category_yearly
---- expected_php_todo_daily
---- expected_php_todo_individual
---- expected_php_todo_monthly
---- expected_php_todo_page
---- expected_php_todo_weekly
---- expected_php_todo_yearly
 
 === mt:IfArchiveTypeEnabled with else
 --- stash
@@ -134,7 +100,7 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 --- expected
 [% expected_else %]
 
-=== mt:IfArchiveTypeEnabled without content_type (always false... or error?)
+=== mt:IfArchiveTypeEnabled without content_type (always error)
 --- stash
 {
     cd => 'cd_same_apple_orange',
@@ -146,8 +112,85 @@ https://movabletype.atlassian.net/browse/MTC-26062 (same for all the following t
 }
 --- template
 <mt:IfArchiveTypeEnabled archive_type="ContentType">true<mt:Else>false</mt:IfArchiveTypeEnabled>
---- expected_todo
-false
+--- expected_error
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+
+=== mt:IfArchiveTypeEnabled without content_type (contenttype_* is error)
+--- stash
+{
+    cd => 'cd_same_apple_orange',
+    category => 'cat_apple',
+    cat_field => 'cf_same_catset_fruit',
+    entry => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page => 'page_author1_coffee',
+}
+--- template
+<mt:IfArchiveTypeEnabled archive_type="[% archive_type %]">true</mt:IfArchiveTypeEnabled>
+--- expected
+[% expected %]
+--- expected_error_contenttype
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_author
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_author
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_author_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_author_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_author_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_author_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_author_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_author_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_author_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_author_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_category
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_category
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_category_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_category_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_category_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_category_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_category_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_category_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_category_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_category_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_monthly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_weekly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_error_contenttype_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_yearly
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
 
 === mt:IfArchiveTypeEnabled with an inconsistent content type
 --- stash
@@ -160,6 +203,6 @@ false
     page => 'page_author1_coffee',
 }
 --- template
-<mt:IfArchiveTypeEnabled archive_type="ContentType" content_type="ct_with_other_catset">true<mt:Else>false</mt:IfArchiveTypeEnabled>
---- expected_todo
+<mt:IfArchiveTypeEnabled archive_type="ContentType" content_type="ct_null">true<mt:Else>false</mt:IfArchiveTypeEnabled>
+--- expected
 false

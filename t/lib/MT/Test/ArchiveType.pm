@@ -402,6 +402,7 @@ PHP
             my @extra_methods = (
                 "expected_php_todo_error_$method_name",
                 "expected_php_error_$method_name",
+                "expected_php_error",
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
                 "expected_$method_name",
