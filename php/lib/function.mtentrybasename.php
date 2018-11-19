@@ -7,6 +7,10 @@
 
 function smarty_function_mtentrybasename($args, &$ctx) {
     $entry = $ctx->stash('entry');
+    if (!$entry && $ctx->stash('content')) {
+        require_once('function.mtcontentidentifier.php');
+        return smarty_function_mtcontentidentifier($args, $ctx);
+    }
     if (!$entry) return '';
     $basename = $entry->entry_basename;
     if ($sep = $args['separator']) {
