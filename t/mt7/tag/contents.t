@@ -464,3 +464,11 @@ Content is not found.
 </mt:Contents>
 --- expected
 4
+
+=== MT:Contents with unique
+--- template
+<mt:Contents content_type="[% ct_name %]" limit="3"><mt:ContentID></mt:Contents>
+<mt:Contents content_type="[% ct_name %]" limit="3" unique="1"><mt:ContentID></mt:Contents>
+--- expected
+543
+21

@@ -792,6 +792,7 @@ sub _hdlr_contents {
         my $content_type = MT::ContentType->load($ct_id);
         local $ctx->{__stash}{content_type} = $content_type;
 
+        $published->{ $content_data->id }++;
         defined(
             my $out = $builder->build(
                 $ctx, $tok,
