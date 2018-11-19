@@ -68,7 +68,7 @@ cat_eraser: December 2018
 cat_eraser: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_eraser: 2018
---- expected_todo_contenttype
+--- expected_contenttype
 cd_same_apple_orange
 --- expected_contenttype_author
 author1
@@ -144,7 +144,7 @@ cat_eraser: December 2018
 cat_eraser: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_eraser: 2018
---- expected_todo_contenttype
+--- expected_contenttype
 cd_same_apple_orange
 --- expected_contenttype_author
 author1
@@ -220,7 +220,7 @@ cat_eraser: December 2018
 cat_eraser: December  2, 2018 - December  8, 2018
 --- expected_category_yearly
 cat_eraser: 2018
---- expected_todo_contenttype
+--- expected_contenttype
 cd_same_apple_orange_peach
 --- expected_contenttype_author
 author1

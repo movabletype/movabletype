@@ -31,6 +31,7 @@ filters {
 };
 
 # Almost everything is broken...
+# https://movabletype.atlassian.net/browse/MTC-26158
 $ENV{MARK_ALL_PHP_TESTS_TODO} = 1;
 
 MT::Test::ArchiveType->run_tests;
