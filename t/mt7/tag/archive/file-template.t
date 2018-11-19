@@ -332,7 +332,8 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %C: cat_apple
 %-C: cat-apple
 
-
+%e: 000006
+%E: 6
 %f: [% cd_same_apple_orange_unique_id %].html
 %-f: [% cd_same_apple_orange_unique_id %].html
 %F: [% cd_same_apple_orange_unique_id %]
@@ -1084,7 +1085,8 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %C: cat_orange
 %-C: cat-orange
 
-
+%e: 000006
+%E: 6
 %f: [% cd_same_apple_orange_unique_id %].html
 %-f: [% cd_same_apple_orange_unique_id %].html
 %F: [% cd_same_apple_orange_unique_id %]
@@ -1836,7 +1838,8 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %C: cat_apple
 %-C: cat-apple
 
-
+%e: 000006
+%E: 6
 %f: [% cd_same_apple_orange_unique_id %].html
 %-f: [% cd_same_apple_orange_unique_id %].html
 %F: [% cd_same_apple_orange_unique_id %]
