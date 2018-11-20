@@ -71,8 +71,33 @@ sub archive_group_iter {
 
     my $order
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
-
     my $blog_id = $ctx->stash('blog')->id;
+
+    my $map = $ctx->stash('template_map') || MT->model('templatemap')->load(
+        {   blog_id      => $blog_id,
+            archive_type => 'ContentType',
+            is_preferred => 1,
+        }
+    );
+    my $dt_field = $map ? $map->dt_field : undef;
+
+    my $iter_args = { $args->{lastn} ? ( limit => $args->{lastn} ) : () };
+    if ($dt_field) {
+        $iter_args->{join} = MT->model('content_field_index')->join_on(
+            undef,
+            {   content_field_id => $dt_field->id,
+                content_data_id  => \'= cd_id',
+            },
+            {   direction => $order,
+                sort      => 'value_datetime',
+            },
+        );
+    }
+    else {
+        $iter_args->{direction} = $order;
+        $iter_args->{sort}      = 'authored_on';
+    }
+
     require MT::ContentData;
     my $iter = MT::ContentData->load_iter(
         {   blog_id => $blog_id,
@@ -82,10 +107,7 @@ sub archive_group_iter {
                 : ()
             ),
         },
-        {   'sort'    => 'authored_on',
-            direction => $order,
-            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
-        }
+        $iter_args,
     );
     return sub {
         while ( my $content = $iter->() ) {
