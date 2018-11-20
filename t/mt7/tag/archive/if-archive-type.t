@@ -37,26 +37,43 @@ done_testing;
 __END__
 
 === mt:IfArchiveType with type
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26020 (same for all the following tests)
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
+
 --- template
 <mt:IfArchiveType type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveType></mt:IfArchiveType>
---- expected_todo
+--- expected
 [% archive_type %]
 
 === mt:IfArchiveType with archive_type
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
 --- template
 <mt:IfArchiveType archive_type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveType></mt:IfArchiveType>
---- expected_todo
+--- expected
 [% archive_type %]
 
 === mt:IfArchiveType with else
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
 --- template
 <mt:IfArchiveType archive_type="ContentType" content_type="ct_with_same_catset">true<mt:Else>false</mt:IfArchiveType>
 --- expected
@@ -64,18 +81,51 @@ false
 --- expected_contenttype
 true
 
-=== mt:IfArchiveType without content_type (always false... or error?)
+=== mt:IfArchiveType archive_type="ContentType" without content_type (always false or error)
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
 --- template
 <mt:IfArchiveType archive_type="ContentType">true<mt:Else>false</mt:IfArchiveType>
 --- expected
 false
---- expected_php_todo_contenttype
+--- expected_error_contenttype
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+
+=== mt:IfArchiveType archive_type="ContentType-Daily" without content_type (always false or error)
+--- stash
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
+--- template
+<mt:IfArchiveType archive_type="ContentType-Daily">true<mt:Else>false</mt:IfArchiveType>
+--- expected
+false
+--- expected_error_contenttype_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
 
 === mt:IfArchiveType with an inconsistent content type
 --- stash
-{ cd => 'cd_same_apple_orange', category => 'cat_apple', cat_field => 'cf_same_catset_fruit' }
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
 --- template
 <mt:IfArchiveType archive_type="ContentType" content_type="ct_with_other_catset">true<mt:Else>false</mt:IfArchiveType>
 --- expected

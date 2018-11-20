@@ -703,17 +703,21 @@ sub _hdlr_if_archive_type {
     if ( $at =~ /ContentType/ ) {
         if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
             my $content_type = $ctx->stash('content_type');
-            if (defined $content_type
-                && (   $args->{content_type} eq $content_type->unique_id
-                    || $args->{content_type} eq $content_type->id
-                    || $args->{content_type} eq $content_type->name )
+            return defined $content_type
+                && ( $args->{content_type} eq $content_type->unique_id
+                || $args->{content_type} eq $content_type->id
+                || $args->{content_type} eq $content_type->name );
+        }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "You used an [_1] tag without a valid [_2] attribute.",
+                    "<MTIfArchiveType>", "content_type"
                 )
-            {
-                return 1;
-            }
+            );
         }
     }
-    return 0;
+    1;
 }
 
 ###########################################################################
