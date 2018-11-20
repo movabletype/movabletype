@@ -52,9 +52,6 @@ __END__
 index.html
 --- expected_individual
 entry_author1_ruler_eraser.html
---- expected_php_todo_page
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26156
 --- expected_page
 page_author1_coffee.html
 --- expected_contenttype

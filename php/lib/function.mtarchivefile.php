@@ -8,7 +8,7 @@
 function smarty_function_mtarchivefile($args, &$ctx) {
     $at = $ctx->stash('archive_type');
     $at or $at = $ctx->stash('current_archive_type');
-    if (!$at or $at == 'Individual') {
+    if (!$at or $at == 'Individual' or $at == 'Page') {
         $e = $ctx->stash('entry');
         if (!$e) {
             $entries = $ctx->stash('entries');
