@@ -657,9 +657,6 @@ cat_ruler
 cat_pencil
 cat_eraser
 cat_compass
---- expected_php_todo_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26034
 --- expected_category_daily
 cat_ruler: December  3, 2018
 cat_pencil: December  3, 2016
