@@ -166,41 +166,45 @@ cat_strawberry
 https://movabletype.atlassian.net/browse/MTC-26036
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26108
---- expected_todo_contenttype_category_daily
+--- expected_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
 cat_orange: October 31, 2017
 cat_peach: October 31, 2016
+--- expected_php_todo_contenttype_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 cat_apple: October 2018
 cat_apple: October 2017
 cat_orange: October 2017
 cat_peach: October 2016
+--- expected_php_todo_contenttype_category_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
+--- expected_contenttype_category_weekly
 cat_apple: October 28, 2018 - November  3, 2018
 cat_apple: October 29, 2017 - November  4, 2017
 cat_orange: October 29, 2017 - November  4, 2017
 cat_peach: October 30, 2016 - November  5, 2016
+--- expected_php_todo_contenttype_category_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
+--- expected_contenttype_category_yearly
 cat_apple: 2018
 cat_apple: 2017
 cat_orange: 2017
 cat_peach: 2016
+--- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
@@ -347,41 +351,45 @@ cat_strawberry
 https://movabletype.atlassian.net/browse/MTC-26036
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26108
---- expected_todo_contenttype_category_daily
+--- expected_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
 cat_orange: October 31, 2017
 cat_peach: October 31, 2016
+--- expected_php_todo_contenttype_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 cat_apple: October 2018
 cat_apple: October 2017
 cat_orange: October 2017
 cat_peach: October 2016
+--- expected_php_todo_contenttype_category_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
+--- expected_contenttype_category_weekly
 cat_apple: October 28, 2018 - November  3, 2018
 cat_apple: October 29, 2017 - November  4, 2017
 cat_orange: October 29, 2017 - November  4, 2017
 cat_peach: October 30, 2016 - November  5, 2016
+--- expected_php_todo_contenttype_category_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
+--- expected_contenttype_category_yearly
 cat_apple: 2018
 cat_apple: 2017
 cat_orange: 2017
 cat_peach: 2016
+--- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
