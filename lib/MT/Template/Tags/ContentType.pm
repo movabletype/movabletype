@@ -666,11 +666,13 @@ sub _hdlr_contents {
             my $j   = 0;
             my $off = $args->{offset} || 0;
             my $n   = $args->{limit};
+            my %seen;
         CONTENT_DATA: while ( my $c = $iter->() ) {
                 for (@filters) {
                     next CONTENT_DATA unless $_->($c);
                 }
                 next if $off && $j++ < $off;
+                next if $seen{ $c->id }++;
                 push @contents, $c;
                 $i++;
                 $iter->end, last if $n && $i >= $n;

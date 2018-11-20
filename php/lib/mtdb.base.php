@@ -4685,6 +4685,7 @@ abstract class MTDatabase {
         $limit = $post_select_limit ? $post_select_limit : 0;
         $id_list = array();
         $_total_count = 0;
+        $_seen = array();
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
@@ -4703,6 +4704,10 @@ abstract class MTDatabase {
                     }
                 }
             }
+
+            if (array_key_exists($cd->id, $_seen)) continue;
+            $_seen[$cd->id] = 1;
+
             $_total_count++;
             if ( !is_null($total_count) ) {
                 if ( ($orig_limit > 0)
