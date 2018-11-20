@@ -653,7 +653,8 @@ sub _hdlr_contents {
             @contents = $class->load( \%terms, \%args );
         }
         else {
-            $args{direction} = $args->{sort_order} || 'descend';
+            $args{direction} = $args->{sort_order} || 'descend'
+                unless $sort_by_cf;
             $no_resort = 1 unless $args->{sort_by};
             my $iter;
 
