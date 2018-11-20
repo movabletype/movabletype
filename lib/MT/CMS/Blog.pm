@@ -1157,7 +1157,7 @@ sub rebuild_pages {
             my $type            = $order;
             my $is_one_index    = $order =~ /index template/;
             my $is_entry        = $order =~ /entry/;
-            my $is_content_data = $order =~ /cotnent data/;
+            my $is_content_data = $order =~ /content data/;
             my $built_type;
             if ( $is_entry || $is_content_data || $is_one_index ) {
                 ( $built_type = $type )
