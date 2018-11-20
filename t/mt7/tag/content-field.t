@@ -509,10 +509,10 @@ Footer
 <mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
---- expected_todo_error
+--- expected_error
+Error in <mtContentField> tag: No Content Field could be found.
+--- expected_php_error
 No Content Field could be found.
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26114
 
 === mt:ContentField content_field="multi line text"
 --- template
