@@ -346,7 +346,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -1098,7 +1097,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1
@@ -1850,7 +1848,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26150
 --- expected_contenttype_author
 %a: author1
 %-a: author1

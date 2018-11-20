@@ -999,6 +999,38 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
             if (!isset($cat)) {
                 return null;
             }
+        } else if ($ctx->stash('content')) {
+            $content_data = $ctx->stash('content');
+            if ($ctx->stash('_fileinfo') && $ctx->stash('_fileinfo')->templatemap()) {
+                $maps = array($ctx->stash('_fileinfo')->templatemap());
+            }
+            if (!isset($maps)) {
+                $maps = $ctx->mt->db()->fetch_templatemap(array(
+                    'content_type_id' => $content_data->cd_content_type_id,
+                    'preferred' => 1,
+                    'type' => 'ContentType'
+                ));
+            }
+            if (!isset($maps) || !is_array($maps) || !$maps[0]->templatemap_cat_field_id) {
+                return null;
+            }
+            $objcats = $ctx->mt->db()->fetch_objectcategories(array(
+                'category_field_id' => $maps[0]->templatemap_cat_field_id,
+                'object_id' => $content_data->cd_id
+            ));
+            if (!isset($objcats) || !is_array($objcats)) {
+                return null;
+            }
+            foreach ($objcats as $objcat) {
+                if ($objcat->objectcategory_is_primary) {
+                    $objectcategory = $objcat;
+                    break;
+                }
+            }
+            if (!isset($objectcategory)) {
+                return null;
+            }
+            $cat = $ctx->mt->db()->fetch_category($objectcategory->objectcategory_category_id);
         } else {
             if($error_avoid)
                 return null;
