@@ -49,8 +49,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
                 $maps = $ctx->mt->db()->fetch_templatemap(array(
                     'type' => $at,
                     'blog_id' => $blog_id,
-                    'preferred' => 1,
-                    'build_type' => 3
+                    'preferred' => 1
                 ));
                 if (isset($maps)) {
                     $cat_field = $maps[0]->cat_field();

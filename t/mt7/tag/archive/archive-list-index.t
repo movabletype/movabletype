@@ -161,11 +161,6 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26036
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -342,11 +337,6 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26036
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -551,11 +541,6 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26036
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 cat_apple: October 31, 2017
 cat_apple: October 31, 2018
@@ -730,7 +715,6 @@ cat_orange
 cat_apple
 --- expected_php_todo_contenttype_category
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26036
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily

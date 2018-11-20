@@ -238,11 +238,6 @@ http://narnia.na/cat-apple/
 http://narnia.na/cat-strawberry/cat-orange/
 http://narnia.na/cat-peach/
 http://narnia.na/cat-strawberry/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26036
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 --- FIXME
 http://narnia.na/cat-apple/2008/11/01/
