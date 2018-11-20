@@ -37,8 +37,6 @@ done_testing;
 __END__
 
 === mt:IfArchiveType with type
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26020 (same for all the following tests)
 --- stash
 {   cd             => 'cd_same_apple_orange',
     category       => 'cat_apple',
