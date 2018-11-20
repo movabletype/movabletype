@@ -710,10 +710,6 @@ cat_strawberry
 cat_peach
 cat_orange
 cat_apple
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26108
 --- expected_todo_contenttype_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26038
