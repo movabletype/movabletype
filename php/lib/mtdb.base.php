@@ -479,7 +479,11 @@ abstract class MTDatabase {
             $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
         }
         if (isset($args['content_type'])) {
-            $content_types = $this->fetch_content_types(array('content_type' => $args['content_type']));
+            $params = array('content_type' => $args['content_type']);
+            if (isset($args['blog_id'])) {
+                $params['blog_id'] = $args['blog_id'];
+            }
+            $content_types = $this->fetch_content_types($params);
             if (isset($content_types)) {
                 $content_type = $content_types[0];
                 $extras['join'] = array(
