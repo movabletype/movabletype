@@ -81,7 +81,7 @@ false
 --- expected_contenttype
 true
 
-=== mt:IfArchiveType without content_type (always false or error)
+=== mt:IfArchiveType archive_type="ContentType" without content_type (always false or error)
 --- stash
 {   cd             => 'cd_same_apple_orange',
     category       => 'cat_apple',
@@ -97,6 +97,24 @@ false
 --- expected_error_contenttype
 You used an <MTIfArchiveType> tag without a valid content_type attribute.
 --- expected_php_error_contenttype
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+
+=== mt:IfArchiveType archive_type="ContentType-Daily" without content_type (always false or error)
+--- stash
+{   cd             => 'cd_same_apple_orange',
+    category       => 'cat_apple',
+    cat_field      => 'cf_same_catset_fruit',
+    entry          => 'entry_author1_ruler_eraser',
+    entry_category => 'cat_eraser',
+    page           => 'page_author1_coffee'
+}
+--- template
+<mt:IfArchiveType archive_type="ContentType-Daily">true<mt:Else>false</mt:IfArchiveType>
+--- expected
+false
+--- expected_error_contenttype_daily
+You used an <MTIfArchiveType> tag without a valid content_type attribute.
+--- expected_php_error_contenttype_daily
 You used an <MTIfArchiveType> tag without a valid content_type attribute.
 
 === mt:IfArchiveType with an inconsistent content type
