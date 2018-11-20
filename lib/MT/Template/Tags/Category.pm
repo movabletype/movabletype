@@ -1682,7 +1682,7 @@ sub _hdlr_category_archive {
 
     my $cat_at_label
         = $ctx->stash('content')
-        || $args->{category_set_id}
+        || $cat->category_set_id
         ? 'ContentType-Category'
         : 'Category';
 
