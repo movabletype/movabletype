@@ -331,7 +331,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 %x: .html
 --- expected_php_todo_contenttype
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author
 %a: author1
@@ -1054,7 +1053,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 %x: .html
 --- expected_php_todo_contenttype
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author
 %a: author1
@@ -1777,7 +1775,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 %x: .html
 --- expected_php_todo_contenttype
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26060
 https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_contenttype_author
 %a: author1
