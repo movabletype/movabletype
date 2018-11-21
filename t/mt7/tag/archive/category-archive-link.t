@@ -93,38 +93,28 @@ http://narnia.na/cat-strawberry/cat-orange/
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26154
---- expected_todo_contenttype_category
+--- expected_contenttype_category
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26040
 --- expected_php_todo_contenttype_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26154
---- expected_todo_contenttype_category_daily
+--- expected_contenttype_category_daily
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26040
 --- expected_php_todo_contenttype_category_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26154
---- expected_todo_contenttype_category_weekly
+--- expected_contenttype_category_weekly
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26040
 --- expected_php_todo_contenttype_category_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26154
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26040
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26154
---- expected_todo_contenttype_category_yearly
+--- expected_contenttype_category_yearly
 http://narnia.na/cat-strawberry/cat-orange/
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26040
 --- expected_php_todo_contenttype_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26153
