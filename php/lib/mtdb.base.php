@@ -4232,7 +4232,6 @@ abstract class MTDatabase {
         }
 
         # a context hash for filter routines
-        $filter_ctx = array();
         $filters = array();
 
         if (!isset($_REQUEST['content_ids_published'])) {
@@ -4240,8 +4239,10 @@ abstract class MTDatabase {
         }
 
         if (isset($args['unique']) && $args['unique']) {
-            $filters[] = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
+            $filter_ctx = array();
+            $filter_func = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
             $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+            $filters[] = array($filter_func, $filter_ctx);
         }
 
         # special case for selecting a particular content
@@ -4551,8 +4552,9 @@ abstract class MTDatabase {
                                         $content_list[$o->objectcategory_oject_id] = 1;
                                 }
                             }
-                            $filter_ctx['c'] =& $cmap;
-                            $filters[] = $cexpr;
+                            $filter_ctx = array();
+                            $filter_ctx['c'] = $cmap;
+                            $filters[] = array($cexpr, $filter_ctx);
                         } else {
                             return null;
                         }
@@ -4596,8 +4598,9 @@ abstract class MTDatabase {
                                     $cd_list[$o->objecttag_object_id] = 1;
                             }
                         }
-                        $filter_ctx['t'] =& $tmap;
-                        $filters[] = $cexpr;
+                        $filter_ctx = array();
+                        $filter_ctx['t'] = $tmap;
+                        $filters[] = array($cexpr, $filter_ctx);;
                     } else {
                         return null;
                     }
@@ -4682,6 +4685,7 @@ abstract class MTDatabase {
         $limit = $post_select_limit ? $post_select_limit : 0;
         $id_list = array();
         $_total_count = 0;
+        $_seen = array();
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
@@ -4693,11 +4697,17 @@ abstract class MTDatabase {
             if (empty($cd)) break;
             if (count($filters)) {
                 foreach ($filters as $f) {
-                    if (!$f($cd, $filter_ctx)) {
+                    $func = $f[0];
+                    $filter_ctx = $f[1];
+                    if (!$func($cd, $filter_ctx)) {
                         continue 2;
                     }
                 }
             }
+
+            if (array_key_exists($cd->id, $_seen)) continue;
+            $_seen[$cd->id] = 1;
+
             $_total_count++;
             if ( !is_null($total_count) ) {
                 if ( ($orig_limit > 0)

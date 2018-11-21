@@ -403,7 +403,9 @@ sub _hdlr_contents {
             if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
 
         if (%fields) {
+            my $field_ct = 0;
             foreach my $key ( keys %fields ) {
+                $field_ct++;
                 my $value = $fields{$key};
                 my $cf    = MT->model('cf')->load(
                     {   name            => $key,
@@ -503,7 +505,7 @@ sub _hdlr_contents {
                                     {   content_field_id => $cf->id,
                                         value_integer    => \@cat_ids
                                     },
-                                    { alias => 'cat_cf_idx' }
+                                    { alias => "cat_cf_idx_$field_ct" }
                                 );
                                 push @{ $args{joins} }, $join;
                             }
@@ -664,11 +666,13 @@ sub _hdlr_contents {
             my $j   = 0;
             my $off = $args->{offset} || 0;
             my $n   = $args->{limit};
+            my %seen;
         CONTENT_DATA: while ( my $c = $iter->() ) {
                 for (@filters) {
                     next CONTENT_DATA unless $_->($c);
                 }
                 next if $off && $j++ < $off;
+                next if $seen{ $c->id }++;
                 push @contents, $c;
                 $i++;
                 $iter->end, last if $n && $i >= $n;
