@@ -12,12 +12,24 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         $at = $args['type'];
         $at or $at = $args['archive_type'];
         $at = preg_quote($at);
+        if (preg_match('/ContentType/i', $at) && (!isset($args['content_type']) || $args['content_type'] == '')) {
+            $repeat = false;
+            return $ctx->error(
+              $ctx->mt->translate(
+                "You used an [_1] tag without a valid [_2] attribute.",
+                array("<MTIfArchiveType>", "content_type")
+              )
+            );
+        }
         $blog_at = ',' . $blog->blog_archive_type . ',';
         $enabled = 0;
         $at_exists = preg_match("/,$at,/", $blog_at);
         if ($at_exists) {
-            $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog->blog_id, 'content_type' => $args['content_type']));
+            $params = array('type' => $at, 'blog_id' => $blog->blog_id);
+            if ( preg_match('/ContentType/i', $at) ){
+                $params['content_type'] = $args['content_type'];
+            }
+            $maps = $ctx->mt->db()->fetch_templatemap($params);
             if (!empty($maps)) {
                 foreach ($maps as $map) {
                     if ($map->templatemap_build_type != 0 )

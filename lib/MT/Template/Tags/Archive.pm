@@ -757,6 +757,13 @@ sub _hdlr_archive_type_enabled {
     my $blog         = $ctx->stash('blog');
     my $at           = ( $args->{type} || $args->{archive_type} );
     my $content_type = $at =~ /ContentType/ ? ( $args->{content_type} ) : '';
+    return $ctx->error(
+        MT->translate(
+            "You used an [_1] tag without a valid [_2] attribute.",
+            "<MTIfArchiveType>",
+            "content_type"
+        )
+    ) if ( $at =~ /ContentType/ && !$content_type);
     return $blog->has_archive_type( $at, $content_type );
 }
 
