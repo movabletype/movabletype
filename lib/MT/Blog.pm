@@ -1043,62 +1043,46 @@ sub has_archive_type {
     return 0 unless exists $at{ lc $type };
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
+    $content_type = '' unless defined $content_type;
 
-    my $r     = MT->request;
-    my $cache = $r->cache($cache_key);
-    if (!$cache
-        || ($cache
-            && (!$cache->{$type}
-                || (   defined $content_type
-                    && $content_type ne ''
-                    && !$cache->{$type}->{$content_type} )
-            )
-        )
-        )
-    {
-        require MT::PublishOption;
-        require MT::TemplateMap;
-        my $count = MT::TemplateMap->count(
-            {   blog_id      => $blog->id,
-                archive_type => $type,
-                build_type   => { not => MT::PublishOption::DISABLED() },
-            }
-        );
-        if ( defined $content_type && $content_type ne '' && $count ) {
-            my $content_type_obj
-                = MT::ContentType->load($content_type)
-                || MT::ContentType->load( { unique_id => $content_type } )
-                || MT::ContentType->load(
-                { name => $content_type, blog_id => $blog->id } );
-            if ($content_type_obj) {
-                $count = MT::TemplateMap->count(
-                    {   blog_id      => $blog->id,
-                        archive_type => $type,
-                        build_type =>
-                            { not => MT::PublishOption::DISABLED() },
+    my $r = MT->request;
+    my $cache = $r->cache($cache_key) || {};
+    $cache->{$type} ||= {};
+
+    return $cache->{$type}{$content_type}
+        if $cache->{$type}{$content_type};
+
+    my $join_args;
+    if ( $content_type ne '' ) {
+        my $ct_obj
+            = MT::ContentType->load($content_type)
+            || MT::ContentType->load( { unique_id => $content_type } )
+            || MT::ContentType->load(
+            { name => $content_type, blog_id => $blog->id } );
+        if ($ct_obj) {
+            $join_args = {
+                join => MT->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $ct_obj->id,
                     },
-                    {   join => MT->model('template')->join_on(
-                            undef,
-                            {   id => \'= templatemap_template_id',
-                                content_type_id => $content_type_obj->id,
-                            },
-                        )
-                    }
-                );
-                $cache->{$type}->{$content_type} = $count;
-            }
+                )
+            };
         }
-        else {
-            $cache->{$type} = $count;
-        }
-        $r->cache( $cache_key, $cache );
     }
-    if ( defined $content_type && $content_type ne '' ) {
-        return $cache->{$type}->{$content_type};
-    }
-    else {
-        return $cache->{$type};
-    }
+    require MT::PublishOption;
+    require MT::TemplateMap;
+    my $count = MT::TemplateMap->count(
+        {   blog_id      => $blog->id,
+            archive_type => $type,
+            build_type   => { not => MT::PublishOption::DISABLED() },
+        },
+        $join_args,
+    );
+    $cache->{$type}{$content_type} = $count;
+    $r->cache( $cache_key, $cache );
+
+    return $cache->{$type}{$content_type};
 }
 
 sub accepts_registered_comments {
