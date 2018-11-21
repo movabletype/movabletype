@@ -13,7 +13,7 @@ use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Monthly );
 use MT::Util qw( start_end_month );
 
 sub name {
-    return 'ContentTypeMonthly';
+    return 'ContentType-Monthly';
 }
 
 sub archive_label {

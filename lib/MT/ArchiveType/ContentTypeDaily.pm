@@ -13,7 +13,7 @@ use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Daily );
 use MT::Util qw( start_end_day );
 
 sub name {
-    return 'ContentTypeDaily';
+    return 'ContentType-Daily';
 }
 
 sub archive_label {
