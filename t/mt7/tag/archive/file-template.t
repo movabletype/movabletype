@@ -213,7 +213,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -238,9 +237,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -265,9 +261,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -292,9 +285,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_clip/cat_compass/cat_ruler
 %-c: cat-clip/cat-compass/cat-ruler
@@ -319,9 +309,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -482,7 +469,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -507,9 +493,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -534,9 +517,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -561,9 +541,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -588,9 +565,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2018
 %Y: 18
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 31
 %D: 31
@@ -691,7 +665,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_individual
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_daily
 %d: 03
 %D: 3
@@ -754,7 +727,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_page
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 02
 %D: 2
@@ -964,7 +936,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_pencil
 %-c: cat-pencil
@@ -989,9 +960,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2016
 %Y: 16
---- expected_php_todo_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_pencil
 %-c: cat-pencil
@@ -1016,9 +984,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2016
 %Y: 16
---- expected_php_todo_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_pencil
 %-c: cat-pencil
@@ -1043,9 +1008,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2016
 %Y: 16
---- expected_php_todo_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_pencil
 %-c: cat-pencil
@@ -1070,9 +1032,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2016
 %Y: 16
---- expected_php_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -1233,7 +1192,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1258,9 +1216,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1285,9 +1240,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1312,9 +1264,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_strawberry/cat_orange
 %-c: cat-strawberry/cat-orange
@@ -1339,9 +1288,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2019
 %Y: 19
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 26
 %D: 26
@@ -1461,7 +1407,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_individual
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_monthly
 %d: 01
 %D: 1
@@ -1505,7 +1450,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_page
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 27
 %D: 27
@@ -1715,7 +1659,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_daily
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1740,9 +1683,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2017
 %Y: 17
---- expected_php_todo_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_monthly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1767,9 +1707,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2017
 %Y: 17
---- expected_php_todo_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_weekly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1794,9 +1731,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2017
 %Y: 17
---- expected_php_todo_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_category_yearly
 %c: cat_clip/cat_compass
 %-c: cat-clip/cat-compass
@@ -1821,9 +1755,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2017
 %Y: 17
---- expected_php_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype
 %b: [% cd_same_apple_orange_unique_id %]
 %-b: [% cd_same_apple_orange_unique_id %]
@@ -1984,7 +1915,6 @@ https://movabletype.atlassian.net/browse/MTC-26148
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_daily
 %c: cat_apple
 %-c: cat-apple
@@ -2009,9 +1939,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_monthly
 %c: cat_apple
 %-c: cat-apple
@@ -2036,9 +1963,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_weekly
 %c: cat_apple
 %-c: cat-apple
@@ -2063,9 +1987,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_category_yearly
 %c: cat_apple
 %-c: cat-apple
@@ -2090,9 +2011,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 %x: .html
 %y: 2008
 %Y: 08
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_contenttype_daily
 %d: 01
 %D: 1
@@ -2212,7 +2130,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_individual
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_monthly
 %d: 01
 %D: 1
@@ -2252,7 +2169,6 @@ https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_php_todo_page
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26148
-https://movabletype.atlassian.net/browse/MTC-26149
 --- expected_weekly
 %d: 03
 %D: 3
