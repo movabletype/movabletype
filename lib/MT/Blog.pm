@@ -1043,6 +1043,10 @@ sub has_archive_type {
     return 0 unless exists $at{ lc $type };
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
+
+    if ( $content_type_id && $type !~ /^ContentType/ ) {
+        $content_type_id = 0;
+    }
     $content_type_id ||= 0;
 
     my $r = MT->request;
@@ -2334,7 +2338,8 @@ returns true if this site support a $type archive type, and have
 templates for it.
 
 If $content_type_id is set, check this site has $type related to
-$content_type_id.
+$content_type_id. When $type is not for content type, $content_type_id
+is set to 0.
 
 =head2 $blog->accepts_registered_comments
 

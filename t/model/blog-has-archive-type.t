@@ -46,17 +46,18 @@ MT::Test::Permission->make_templatemap(
 
 my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
-subtest 'some archive type' => sub {
+subtest 'some archive type with content_type_id' => sub {
     $mt->request->reset;
 
     my %blog_archive_type = map { $_ => 1 } split ',', $blog->archive_type;
 
     for my $type (@archive_types) {
         if ( $blog_archive_type{$type} ) {
-            ok( $blog->has_archive_type($type), "$type exists" );
+            ok( $blog->has_archive_type( $type, $ct1->id ), "$type exists" );
         }
         else {
-            ok( !$blog->has_archive_type($type), "$type does not exist" );
+            ok( !$blog->has_archive_type( $type, $ct2->id ),
+                "$type does not exist" );
         }
     }
 
