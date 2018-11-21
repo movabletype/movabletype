@@ -120,9 +120,6 @@ http://narnia.na/2015/
 --- expected_author
 http://narnia.na/author/author1/
 http://narnia.na/author/author2/
---- expected_php_todo_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26105
 --- expected_author_daily
 http://narnia.na/author/author1/2018/12/03/
 http://narnia.na/author/author1/2017/12/03/

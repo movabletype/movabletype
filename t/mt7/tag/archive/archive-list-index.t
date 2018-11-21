@@ -80,9 +80,6 @@ __END__
 --- expected_author
 author1
 author2
---- expected_php_todo_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26105
 --- expected_author_daily
 author1: December  3, 2018
 author1: December  3, 2017
@@ -256,9 +253,6 @@ page_author1_coffee
 --- expected_author
 author1
 author2
---- expected_php_todo_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26105
 --- expected_author_daily
 author1: December  3, 2018
 author1: December  3, 2017
