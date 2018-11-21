@@ -173,7 +173,7 @@ function _get_content_type( $ctx, $args ) {
     $content_types = array();
     $not_found = array();
 
-    $stash_content_type = $ctx->stash('cotnent_type');
+    $stash_content_type = $ctx->stash('content_type');
     if ($stash_content_type) {
         return array($stash_content_type);
     }
