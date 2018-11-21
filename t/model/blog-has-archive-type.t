@@ -60,8 +60,11 @@ subtest 'some archive type' => sub {
         }
     }
 
-    is_deeply( $mt->request->cache($cache_key),
-        +{ map { $_ => { '' => 1 } } keys %blog_archive_type }, 'check cache' );
+    is_deeply(
+        $mt->request->cache($cache_key),
+        +{ map { $_ => { 0 => 1 } } keys %blog_archive_type },
+        'check cache'
+    );
 };
 
 subtest 'no archive type' => sub {
@@ -84,14 +87,8 @@ subtest 'content_type related archive type' => sub {
     for my $type (@archive_types) {
         if ( $type eq 'ContentType' ) {
             ok( $blog->has_archive_type($type), "$type exists" );
-
             ok( $blog->has_archive_type( $type, $ct1->id ),
                 "$type exists (\$ct1->id)" );
-            ok( $blog->has_archive_type( $type, $ct1->unique_id ),
-                "$type exists (\$ct1->unique_id)" );
-            ok( $blog->has_archive_type( $type, $ct1->name ),
-                "$type exists (\$ct1->name)" );
-
             ok( !$blog->has_archive_type( $type, $ct2->id ),
                 "$type does not exist (\$ct2->id)"
             );
@@ -104,11 +101,9 @@ subtest 'content_type related archive type' => sub {
     is_deeply(
         $mt->request->cache($cache_key),
         {   ContentType => {
-                ''              => 1,
-                $ct1->id        => 1,
-                $ct1->unique_id => 1,
-                $ct1->name      => 1,
-                $ct2->id        => 0,
+                0        => 1,
+                $ct1->id => 1,
+                $ct2->id => 0,
             },
         },
         'check cache'
