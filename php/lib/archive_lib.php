@@ -206,7 +206,7 @@ class IndividualArchiver implements ArchiveType {
                 entry_blog_id = $blog_id
                 and entry_status = 2
                 and entry_class = 'entry'
-                order by entry_authored_on $order";
+                order by entry_authored_on $order, entry_id asc";
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
@@ -283,7 +283,7 @@ class PageArchiver extends IndividualArchiver {
                 entry_blog_id = $blog_id
                 and entry_status = 2
                 and entry_class = 'page'
-                order by entry_authored_on $order";
+                order by entry_authored_on $order, entry_id asc";
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
@@ -2385,7 +2385,7 @@ class ContentTypeArchiver implements ArchiveType {
                 cd_blog_id = $blog_id
                 and cd_status = 2
                 $content_type_filter
-                order by cd_authored_on $order";
+                order by cd_authored_on $order, cd_id asc";
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
