@@ -15,9 +15,8 @@ my @archive_types = MT->publisher->archive_types;
 
 plan tests => scalar @archive_types;
 
-for my $archive_type (@archive_types) {
+for my $archive_type ( sort @archive_types ) {
     my $archiver = MT->publisher->archiver($archive_type);
-    is( $archiver->name, $archive_type );
+    is( $archiver->name, $archive_type, $archive_type );
 }
 
-done_testing;
