@@ -13,7 +13,7 @@ use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Weekly );
 use MT::Util qw( start_end_week week2ymd );
 
 sub name {
-    return 'ContentTypeWeekly';
+    return 'ContentType-Weekly';
 }
 
 sub archive_label {

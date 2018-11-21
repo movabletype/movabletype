@@ -14,7 +14,7 @@ use base
 use MT::Util qw( start_end_year );
 
 sub name {
-    return 'ContentType-Catogery-Yearly';
+    return 'ContentType-Category-Yearly';
 }
 
 sub archive_label {
