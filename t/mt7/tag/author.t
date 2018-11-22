@@ -145,6 +145,14 @@ MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
+=== MT:Authors no modifier
+--- template
+<mt:Authors><mt:AuthorDisplayName>
+</mt:Authors>
+--- expected
+Has Entry, No Content
+Has Entry, Has Content
+
 === MT:Authors need_entry="0"
 --- template
 <mt:Authors need_entry="0"><mt:AuthorDisplayName>

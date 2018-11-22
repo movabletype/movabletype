@@ -2069,33 +2069,38 @@ abstract class MTDatabase {
         }
 
         # Adds entry/cd join and filter
-        if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
-            $args['need_entry'] = 0;
-        if (!isset($args['need_entry']))
-            $args['need_entry'] = 1;
-        if (!isset($args['need_content']))
-            $args['need_content'] = 0;
-        if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
-            $extras['join']['mt_entry'] = array(
-                    'condition' => "author_id = entry_author_id"
-                );
-            $extras['distinct'] = 'distinct';
-            $entry_filter = " and entry_status = 2";
-            if ( $blog_ids )
-                $entry_filter .= " and entry_blog_id " . $blog_ids;
+        $content_type = $ctx->stash('content_type');
+        if (isset($content_type)) {
+            if ($args['need_content'] && !(isset($args['id']) || isset($args['username']))) {
+                $extras['join']['mt_cd'] = array(
+                        'condition' => "author_id = cd_author_id"
+                    );
+                $extras['distinct'] = 'distinct';
+                $cd_filter = " and cd_status = 2";
+                if ( $blog_ids )
+                    $cd_filter .= " and cd_blog_id" . $blog_ids;
+                if (isset($content_type))
+                    $cd_filter .= " and cd_content_type_id = " . $content_type->id;
+            }
         }
-        if ($args['need_content'] && !(isset($args['id']) || isset($args['username']))) {
-            $extras['join']['mt_cd'] = array(
-                    'condition' => "author_id = cd_author_id"
-                );
-            $extras['distinct'] = 'distinct';
-            $cd_filter = " and cd_status = 2";
-            if ( $blog_ids )
-                $cd_filter .= " and cd_blog_id" . $blog_ids;
-            if (isset($content_type))
-                $cd_filter .= " and cd_content_type_id = " . $content_type->id;
+        else {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
+                $args['need_entry'] = 0;
+            if (!isset($args['need_entry']))
+                $args['need_entry'] = 1;
+            if (!isset($args['need_content']))
+                $args['need_content'] = 0;
+            if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
+                $extras['join']['mt_entry'] = array(
+                        'condition' => "author_id = entry_author_id"
+                    );
+                $extras['distinct'] = 'distinct';
+                $entry_filter = " and entry_status = 2";
+                if ( $blog_ids )
+                    $entry_filter .= " and entry_blog_id " . $blog_ids;
+            }
         }
-        if (isset($entry_filter) || isset($cd_filter)) {
+        if (!isset($entry_filter) && !isset($cd_filter)) {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
                 $join_sql = "permission_author_id = author_id";
