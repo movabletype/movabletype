@@ -2340,7 +2340,8 @@ templates for it.
 
 If $content_type_id is set, check this site has $type related to
 $content_type_id. When $type is not for content type, $content_type_id
-is set to 0.
+is ignored. When $type is for content type and $content_type_id is not set,
+this method always returns false.
 
 =head2 $blog->accepts_registered_comments
 

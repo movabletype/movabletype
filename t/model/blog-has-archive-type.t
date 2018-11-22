@@ -38,10 +38,19 @@ my $tmpl_ct1 = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     content_type_id => $ct1->id,
 );
+my $tmpl_ct1_listing = MT::Test::Permission->make_template(
+    blog_id         => $blog->id,
+    content_type_id => $ct1->id,
+);
 MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType',
     blog_id      => $blog->id,
     template_id  => $tmpl_ct1->id,
+);
+MT::Test::Permission->make_templatemap(
+    archive_type => 'ContentType-Daily',
+    blog_id      => $blog->id,
+    template_id  => $tmpl_ct1_listing->id,
 );
 
 my $cache_key = 'has_archive_type::blog:' . $blog->id;
@@ -83,10 +92,10 @@ subtest 'no archive type' => sub {
 subtest 'content_type related archive type' => sub {
     $mt->request->reset;
 
-    $blog->archive_type('ContentType');
+    $blog->archive_type('ContentType,ContentType-Daily');
 
     for my $type (@archive_types) {
-        if ( $type eq 'ContentType' ) {
+        if ( $type eq 'ContentType' || $type eq 'ContentType-Daily' ) {
             ok( !$blog->has_archive_type($type),
                 "$type does not exist (no ct_id)"
             );
@@ -104,6 +113,10 @@ subtest 'content_type related archive type' => sub {
     is_deeply(
         $mt->request->cache($cache_key),
         {   ContentType => {
+                $ct1->id => 1,
+                $ct2->id => 0,
+            },
+            'ContentType-Daily' => {
                 $ct1->id => 1,
                 $ct2->id => 0,
             },
