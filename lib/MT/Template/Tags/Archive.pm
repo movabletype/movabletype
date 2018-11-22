@@ -738,6 +738,13 @@ Specifies the name of the archive type you wish to check to see if it is enabled
 A list of possible values values for type can be found on the L<ArchiveType>
 tag.
 
+=item * content_type (optional)
+
+Specifies id, unique_id or name of the content type of the archive type that you
+wish to check to see if it is enabled.
+
+This is ignored when you check archive type not realted to content type. This is required when you check archive type related to content type. This tag returns false when you check archive type related to content type and invalid content_type modifier.
+
 =back
 
 B<Example:>
@@ -772,6 +779,7 @@ sub _hdlr_archive_type_enabled {
             = $ct_class->load($ct_arg)
             || $ct_class->load( { unique_id => $ct_arg } )
             || $ct_class->load( { blog_id => $blog->id, name => $ct_arg } );
+        return unless $ct;
     }
 
     return $blog->has_archive_type( $at, $ct ? $ct->id : 0 );
