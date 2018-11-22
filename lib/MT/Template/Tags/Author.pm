@@ -261,6 +261,7 @@ sub _hdlr_authors {
         $args->{need_entry} = 0
             if ( defined $args->{any_type} && $args->{any_type} == 1 );
     }
+
     if ( ( defined $args->{need_entry} ? $args->{need_entry} : 1 )
         && !( defined $args->{id} || defined $args->{username} ) )
     {
@@ -269,7 +270,17 @@ sub _hdlr_authors {
         push @joins,
             MT::Entry->join_on( 'author_id', \%blog_terms, \%blog_args );
     }
-    else {
+    if ( ( defined $args->{need_content} ? $args->{need_content} : 0 )
+        && !( defined $args->{id} || defined $args->{username} ) )
+    {
+        $blog_args{'unique'}  = 1;
+        $blog_terms{'status'} = MT::ContentStatus::RELEASE();
+        push @joins,
+            MT::ContentData->join_on( 'author_id', \%blog_terms,
+            \%blog_args );
+    }
+
+    unless (@joins) {
         $blog_args{'unique'} = 1;
         if ( !$role_arg ) {
             require MT::Permission;
