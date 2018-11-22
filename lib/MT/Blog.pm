@@ -1041,7 +1041,6 @@ sub has_archive_type {
     my ( $type, $content_type_id ) = @_;
     my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
-    return 0 if !$content_type_id && $type =~ /^ContentType/;
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
@@ -2340,8 +2339,7 @@ templates for it.
 
 If $content_type_id is set, check this site has $type related to
 $content_type_id. When $type is not for content type, $content_type_id
-is ignored. When $type is for content type and $content_type_id is not set,
-this method always returns false.
+is ignored.
 
 =head2 $blog->accepts_registered_comments
 

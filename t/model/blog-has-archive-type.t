@@ -96,9 +96,7 @@ subtest 'content_type related archive type' => sub {
 
     for my $type (@archive_types) {
         if ( $type eq 'ContentType' || $type eq 'ContentType-Daily' ) {
-            ok( !$blog->has_archive_type($type),
-                "$type does not exist (no ct_id)"
-            );
+            ok( $blog->has_archive_type($type), "$type exists (no ct_id)" );
             ok( $blog->has_archive_type( $type, $ct1->id ),
                 "$type exists (\$ct1->id)" );
             ok( !$blog->has_archive_type( $type, $ct2->id ),
@@ -113,10 +111,12 @@ subtest 'content_type related archive type' => sub {
     is_deeply(
         $mt->request->cache($cache_key),
         {   ContentType => {
+                0        => 1,
                 $ct1->id => 1,
                 $ct2->id => 0,
             },
             'ContentType-Daily' => {
+                0        => 1,
                 $ct1->id => 1,
                 $ct2->id => 0,
             },
