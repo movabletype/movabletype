@@ -1041,6 +1041,7 @@ sub has_archive_type {
     my ( $type, $content_type_id ) = @_;
     my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
+    return 0 if !$content_type_id && $type =~ /^ContentType/;
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
