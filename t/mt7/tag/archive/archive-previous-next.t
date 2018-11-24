@@ -37,7 +37,7 @@ for my $cd_label ( keys %{$objs->{content_data}} ){
     MT::Test::ArchiveType->vars->{$key} = $cd->unique_id;
 }
 
-MT::Test::ArchiveType->run_tests();
+MT::Test::ArchiveType->run_tests;
 
 done_testing;
 
@@ -95,7 +95,7 @@ cat_apple: October 29, 2017 - November  4, 2017 | http://narnia.na/cat-apple/201
 https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_yearly
 cat_apple: 2017 | http://narnia.na/cat-apple/2017/
---- expected_aphp_todo_contenttype_category_yearly
+--- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_daily
