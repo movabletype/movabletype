@@ -168,38 +168,23 @@ sub _hdlr_contents {
 
     my $map = $ctx->stash('template_map');
 
-    if ( !$archive_contents ) {
-        if ( $ctx->{inside_mt_categories} ) {
-            if ( my $cat = $ctx->stash('category') ) {
-                if ( $cat->class eq $cat_class_type ) {
-                    if ( $map
-                        && ( my $cat_field_id = $map->cat_field_id ) )
-                    {
-                        push @{ $args{joins} },
-                            MT::ContentFieldIndex->join_on(
-                            'content_data_id',
-                            {   content_field_id => $cat_field_id,
-                                value_integer    => $cat->id
-                            },
-                            { alias => 'cat_cf_idx' }
-                            );
-                    }
-                }
-            }
-        }
-        elsif ( my $cat = $ctx->stash('archive_category') ) {
-            if ( $cat->class eq $cat_class_type ) {
-                if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
-                    push @{ $args{joins} },
-                        MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   content_field_id => $cat_field_id,
-                            value_integer    => $cat->id
-                        },
-                        { alias => 'cat_cf_idx' }
-                        );
-                }
-            }
+    if (  !$archive_contents
+        && $map
+        && ( my $cat_field_id = $map->cat_field_id ) )
+    {
+        my $cat
+            = $ctx->{inside_mt_categories}
+            ? $ctx->stash('category')
+            : $ctx->stash('archive_category');
+        if ( $cat->class eq $cat_class_type ) {
+            push @{ $args{joins} },
+                MT::ContentFieldIndex->join_on(
+                'content_data_id',
+                {   content_field_id => $cat_field_id,
+                    value_integer    => $cat->id
+                },
+                { alias => 'cat_cf_idx' }
+                );
         }
     }
 
