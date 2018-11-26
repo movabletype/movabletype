@@ -388,7 +388,9 @@ sub _hdlr_contents {
             }
         }
         $args{'sort'} = 'authored_on'
-            if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
+            if ( !exists $args{sort}
+            && ( !$map || !$map->dt_field_id )
+            && !$sort_by_cf );
 
         if (%fields) {
             my $field_ct = 0;
