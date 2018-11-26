@@ -22,8 +22,12 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'sort_order' => 'descend',
                               'start_string' => $name,
                               'lastn' => 1,
-                              'blog_id' => $blog_id,
-                              'need_content' => 1);
+                              'blog_id' => $blog_id);
+                $at = $ctx->stash('current_archive_type');
+                if (preg_match('/^ContentType-.*$/i', $at)) {
+                    $args['need_entry'] = 0;
+                    $args['neet_content'] = 1;
+                }
                 list($prev_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($prev_author) {
