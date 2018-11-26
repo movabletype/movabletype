@@ -273,8 +273,8 @@ aaaaa
 === MT:Contents with content_type modifier and wrong blog_id
 --- template
 <mt:Contents content_type="test content type 1" blog_id="2">a</mt:Contents>
---- expected_todo_error
-No Content Type could be found.
+--- expected_error
+Content Type was not found. Blog ID: 2
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26115
 

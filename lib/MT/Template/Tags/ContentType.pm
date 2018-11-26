@@ -2089,17 +2089,7 @@ sub _get_content_type {
         }
         else {
             if ($template_ct) {
-                my %terms = ( name => $template_ct->name );
-                my $ct
-                    = MT->model('content_type')
-                    ->load(
-                    { name => $template_ct->name, blog_id => $blog_id } );
-                if ($ct) {
-                    push @content_types, $ct;
-                }
-                else {
-                    push @not_found, $blog_id;
-                }
+                push @content_types, $template_ct;
             }
             else {
                 my @ct
