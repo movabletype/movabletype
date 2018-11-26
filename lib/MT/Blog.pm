@@ -1038,67 +1038,48 @@ sub flush_has_archive_type_cache {
 
 sub has_archive_type {
     my $blog = shift;
-    my ( $type, $content_type ) = @_;
+    my ( $type, $content_type_id ) = @_;
     my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
 
-    my $r     = MT->request;
-    my $cache = $r->cache($cache_key);
-    if (!$cache
-        || ($cache
-            && (!$cache->{$type}
-                || (   defined $content_type
-                    && $content_type ne ''
-                    && !$cache->{$type}->{$content_type} )
+    if ( $content_type_id && $type !~ /^ContentType/ ) {
+        $content_type_id = 0;
+    }
+    $content_type_id ||= 0;
+
+    my $r = MT->request;
+    my $cache = $r->cache($cache_key) || {};
+    $cache->{$type} ||= {};
+
+    return $cache->{$type}{$content_type_id}
+        if $cache->{$type}{$content_type_id};
+
+    my $join_args;
+    if ($content_type_id) {
+        $join_args = {
+            join => MT->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $content_type_id,
+                },
             )
-        )
-        )
-    {
-        require MT::PublishOption;
-        require MT::TemplateMap;
-        my $count = MT::TemplateMap->count(
-            {   blog_id      => $blog->id,
-                archive_type => $type,
-                build_type   => { not => MT::PublishOption::DISABLED() },
-            }
-        );
-        if ( defined $content_type && $content_type ne '' && $count ) {
-            my $content_type_obj
-                = MT::ContentType->load($content_type)
-                || MT::ContentType->load( { unique_id => $content_type } )
-                || MT::ContentType->load(
-                { name => $content_type, blog_id => $blog->id } );
-            if ($content_type_obj) {
-                $count = MT::TemplateMap->count(
-                    {   blog_id      => $blog->id,
-                        archive_type => $type,
-                        build_type =>
-                            { not => MT::PublishOption::DISABLED() },
-                    },
-                    {   join => MT->model('template')->join_on(
-                            undef,
-                            {   id => \'= templatemap_template_id',
-                                content_type_id => $content_type_obj->id,
-                            },
-                        )
-                    }
-                );
-                $cache->{$type}->{$content_type} = $count;
-            }
-        }
-        else {
-            $cache->{$type} = $count;
-        }
-        $r->cache( $cache_key, $cache );
+        };
     }
-    if ( defined $content_type && $content_type ne '' ) {
-        return $cache->{$type}->{$content_type};
-    }
-    else {
-        return $cache->{$type};
-    }
+    require MT::PublishOption;
+    require MT::TemplateMap;
+    my $count = MT::TemplateMap->count(
+        {   blog_id      => $blog->id,
+            archive_type => $type,
+            build_type   => { not => MT::PublishOption::DISABLED() },
+        },
+        $join_args,
+    );
+    $cache->{$type}{$content_type_id} = $count;
+    $r->cache( $cache_key, $cache );
+
+    return $cache->{$type}{$content_type_id};
 }
 
 sub accepts_registered_comments {
@@ -2351,10 +2332,14 @@ according to the include_system defined
 
 Returns the I<MT::FileMgr> object specific to this particular blog.
 
-=head2 $blog->has_archive_type( $type )
+=head2 $blog->has_archive_type( $type [, $content_type_id ] )
 
-returns true if this blog support a $type archive type, and have
-templates for it
+returns true if this site support a $type archive type, and have
+templates for it.
+
+If $content_type_id is set, check this site has $type related to
+$content_type_id. When $type is not for content type, $content_type_id
+is ignored.
 
 =head2 $blog->accepts_registered_comments
 

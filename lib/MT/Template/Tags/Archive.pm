@@ -738,6 +738,13 @@ Specifies the name of the archive type you wish to check to see if it is enabled
 A list of possible values values for type can be found on the L<ArchiveType>
 tag.
 
+=item * content_type (optional)
+
+Specifies id, unique_id or name of the content type of the archive type that you
+wish to check to see if it is enabled.
+
+This is ignored when you check archive type not realted to content type. This is required when you check archive type related to content type. This tag returns false when you check archive type related to content type and invalid content_type modifier.
+
 =back
 
 B<Example:>
@@ -754,17 +761,28 @@ B<Example:>
 
 sub _hdlr_archive_type_enabled {
     my ( $ctx, $args ) = @_;
-    my $blog         = $ctx->stash('blog');
-    my $at           = ( $args->{type} || $args->{archive_type} );
-    my $content_type = $at =~ /ContentType/ ? ( $args->{content_type} ) : '';
-    return $ctx->error(
-        MT->translate(
-            "You used an [_1] tag without a valid [_2] attribute.",
-            "<MTIfArchiveType>",
-            "content_type"
-        )
-    ) if ( $at =~ /ContentType/ && !$content_type);
-    return $blog->has_archive_type( $at, $content_type );
+    my $blog = $ctx->stash('blog');
+    my $at = ( $args->{type} || $args->{archive_type} );
+
+    my $ct;
+    if ( $at =~ /ContentType/ ) {
+        my $ct_arg
+            = defined $args->{content_type} ? $args->{content_type} : '';
+        return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag without a valid [_2] attribute.",
+                "<MTIfArchiveType>", "content_type"
+            )
+        ) unless $ct_arg;
+        my $ct_class = MT->model('content_type');
+        $ct
+            = $ct_class->load($ct_arg)
+            || $ct_class->load( { unique_id => $ct_arg } )
+            || $ct_class->load( { blog_id => $blog->id, name => $ct_arg } );
+        return unless $ct;
+    }
+
+    return $blog->has_archive_type( $at, $ct ? $ct->id : 0 );
 }
 
 ###########################################################################
