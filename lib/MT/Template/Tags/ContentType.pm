@@ -61,7 +61,6 @@ sub _hdlr_contents {
 
     my ( @filters, %terms, %args, %blog_terms, %blog_args );
     %terms = %blog_terms = ( blog_id => $blog_id );
-    %args = %blog_args;
 
     my $content_type = _get_content_type( $ctx, $args, \%blog_terms )
         or return;
@@ -379,23 +378,12 @@ sub _hdlr_contents {
                 }
             }
             unless ($sort_by_cf) {
-                $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
-                $args->{sort_by} = 'ping_count'
-                    if $args->{sort_by} eq 'trackback_count';
                 if ( $class->is_meta_column( $args->{sort_by} ) ) {
                     $no_resort = 0;
                 }
                 elsif ( $class->has_column( $args->{sort_by} ) ) {
                     $args{sort} = $args->{sort_by};
                     $no_resort = 1;
-                }
-                elsif (
-                    $args->{limit}
-                    && (   'score' eq $args->{sort_by}
-                        || 'rate' eq $args->{sort_by} )
-                    )
-                {
-                    $no_resort = 0;
                 }
             }
         }
@@ -692,9 +680,30 @@ sub _hdlr_contents {
                 || ( $blog ? $blog->sort_order_posts : undef )
                 || '';
             my $col = $args->{sort_by} || 'authored_on';
-            if ( $col ne 'score' ) {
-                if ( my $def = $class->column_def($col) ) {
-                    if ( $def->{type} =~ m/^integer|float|double$/ ) {
+            if ( my $def = $class->column_def($col) ) {
+                if ( $def->{type} =~ m/^integer|float|double$/ ) {
+                    @$archive_contents
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() <=> $b->$col() }
+                        @$archive_contents
+                        : sort { $b->$col() <=> $a->$col() }
+                        @$archive_contents;
+                }
+                else {
+                    @$archive_contents
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() cmp $b->$col() }
+                        @$archive_contents
+                        : sort { $b->$col() cmp $a->$col() }
+                        @$archive_contents;
+                }
+                $no_resort = 1;
+            }
+            else {
+                if ( $class->is_meta_column($col) ) {
+                    my $type = MT::Meta->metadata_by_name( $class, $col );
+                    no warnings;
+                    if ( $type->{type} =~ m/integer|float|double/ ) {
                         @$archive_contents
                             = $so eq 'ascend'
                             ? sort { $a->$col() <=> $b->$col() }
@@ -711,30 +720,6 @@ sub _hdlr_contents {
                             @$archive_contents;
                     }
                     $no_resort = 1;
-                }
-                else {
-                    $col =~ s/(^field):(.*)/$1.$2/ig;
-                    if ( $class->is_meta_column($col) ) {
-                        my $type = MT::Meta->metadata_by_name( $class, $col );
-                        no warnings;
-                        if ( $type->{type} =~ m/integer|float|double/ ) {
-                            @$archive_contents
-                                = $so eq 'ascend'
-                                ? sort { $a->$col() <=> $b->$col() }
-                                @$archive_contents
-                                : sort { $b->$col() <=> $a->$col() }
-                                @$archive_contents;
-                        }
-                        else {
-                            @$archive_contents
-                                = $so eq 'ascend'
-                                ? sort { $a->$col() cmp $b->$col() }
-                                @$archive_contents
-                                : sort { $b->$col() cmp $a->$col() }
-                                @$archive_contents;
-                        }
-                        $no_resort = 1;
-                    }
                 }
             }
         }
