@@ -322,14 +322,11 @@ sub _hdlr_contents {
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
                 my ( $prefix, $value ) = split ':', $sort_by, 2;
-                my $cf = MT->model('cf')->load(
-                    {   name            => $value,
-                        content_type_id => $content_type_id,
+                my $cf = _search_content_field(
+                    {   content_type_id   => $content_type_id,
+                        name_or_unique_id => $value,
                     }
                 );
-                unless ($cf) {
-                    $cf = MT->model('cf')->load( { unique_id => $value } );
-                }
                 if ($cf) {
                     my $data_type = MT->registry('content_field_types')
                         ->{ $cf->type }{data_type};
@@ -380,14 +377,11 @@ sub _hdlr_contents {
             foreach my $key ( keys %fields ) {
                 $field_ct++;
                 my $value = $fields{$key};
-                my $cf    = MT->model('cf')->load(
-                    {   name            => $key,
-                        content_type_id => $content_type_id,
+                my $cf    = _search_content_field(
+                    {   content_type_id   => $content_type_id,
+                        name_or_unique_id => $key,
                     }
                 );
-                unless ($cf) {
-                    $cf = MT->model('cf')->load( { unique_id => $key } );
-                }
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
                     ->{ $cf->type }{data_type};
@@ -749,8 +743,8 @@ sub _hdlr_contents {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $glue    = $args->{glue};
-    my $vars    = $ctx->{__stash}{vars} ||= {};
+    my $glue = $args->{glue};
+    my $vars = $ctx->{__stash}{vars} ||= {};
     local $ctx->{__stash}{contents}
         = ( @contents && defined $contents[0] ) ? \@contents : undef;
     for my $content_data (@contents) {
@@ -1532,15 +1526,13 @@ sub _hdlr_content_calendar {
         }
         else {
             my $date_cf = '';
-            $date_cf = MT->model('cf')->load($arg)
+            $date_cf = MT->model('content_field')->load($arg)
                 if ( $arg =~ /^[0-9]+$/ );
-            $date_cf = MT->model('cf')->load( { unique_id => $arg } )
-                unless ($date_cf);
-            $date_cf = MT->model('cf')->load(
-                {   name            => $arg,
-                    content_type_id => $content_type_id,
+            $date_cf = _search_content_field(
+                {   content_type_id   => $content_type_id,
+                    name_or_unique_id => $arg,
                 }
-            ) unless ($date_cf);
+            );
             if ($date_cf) {
                 $dt_field_id = $date_cf->id;
             }
@@ -2095,6 +2087,22 @@ sub _get_content_type {
     }
 
     return \@content_types;
+}
+
+sub _search_content_field {
+    my ($args) = @_;
+    $args ||= {};
+    my $content_type_id = $args->{content_type_id} or return;
+    my $name_or_unique_id = $args->{name_or_unique_id};
+    return unless defined $name_or_unique_id && $name_or_unique_id ne '';
+    my $cf_class = MT->model('content_field');
+    my $cf       = $cf_class->load(
+        {   content_type_id => $content_type_id,
+            name            => $name_or_unique_id,
+        }
+    );
+    $cf ||= $cf_class->load( { unique_id => $name_or_unique_id } );
+    return $cf;
 }
 
 1;
