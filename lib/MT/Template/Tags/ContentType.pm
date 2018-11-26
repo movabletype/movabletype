@@ -1318,7 +1318,7 @@ sub _hdlr_content_permalink {
                 '<$MTEntryPermalink$>',
                 $at
             )
-        ) unless $blog->has_archive_type($at);
+        ) unless $blog->has_archive_type( $at, $c->content_type_id );
     }
     my $link = $c->permalink( $args ? $at : undef,
         { valid_html => $args->{valid_html} } )
