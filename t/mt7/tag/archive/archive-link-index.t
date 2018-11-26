@@ -242,7 +242,6 @@ http://narnia.na/cat-peach/2004/11/01/
 http://narnia.na/cat-strawberry/2004/11/01/
 --- expected_php_todo_contenttype_category_daily
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
@@ -257,7 +256,6 @@ http://narnia.na/cat-peach/2004/10/31-week/
 http://narnia.na/cat-strawberry/2004/10/31-week/
 --- expected_php_todo_contenttype_category_weekly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
@@ -272,7 +270,6 @@ http://narnia.na/cat-peach/2004/11/
 http://narnia.na/cat-strawberry/2004/11/
 --- expected_php_todo_contenttype_category_monthly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
@@ -287,7 +284,6 @@ http://narnia.na/cat-peach/2004/
 http://narnia.na/cat-strawberry/2004/
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
 https://movabletype.atlassian.net/browse/MTC-26039
 https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118

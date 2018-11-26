@@ -4146,7 +4146,8 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
-            $sort_order = $args['sort_order'] || 'ascend';
+            $sort_order = $args['sort_order'];
+            $sort_order or $sort_order = 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4289,7 +4290,8 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
-            $sort_order = $args['sort_order'] || 'ascend';
+            $sort_order = $args['sort_order'];
+            $sort_order or $sort_order = 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4435,7 +4437,8 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
-            $sort_order = $args['sort_order'] || 'ascend';
+            $sort_order = $args['sort_order'];
+            $sort_order or $sort_order = 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
@@ -4594,7 +4597,8 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $category_set = $ctx->stash('category_set');
                 $cat_set_id = isset($category_set) ? $category_set->category_set_id: '> 0';
             }
-            $sort_order = $args['sort_order'] || 'ascend';
+            $sort_order = $args['sort_order'];
+            $sort_order or $sort_order = 'ascend';
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
                 'show_empty' => 1,
