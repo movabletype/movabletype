@@ -166,11 +166,12 @@ sub _hdlr_contents {
 
     $terms{status} = MT::ContentStatus::RELEASE();
 
+    my $map = $ctx->stash('template_map');
+
     if ( !$archive_contents ) {
         if ( $ctx->{inside_mt_categories} ) {
             if ( my $cat = $ctx->stash('category') ) {
                 if ( $cat->class eq $cat_class_type ) {
-                    my $map = $ctx->stash('template_map');
                     if ( $map
                         && ( my $cat_field_id = $map->cat_field_id ) )
                     {
@@ -188,7 +189,6 @@ sub _hdlr_contents {
         }
         elsif ( my $cat = $ctx->stash('archive_category') ) {
             if ( $cat->class eq $cat_class_type ) {
-                my $map = $ctx->stash('template_map');
                 if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
                     push @{ $args{joins} },
                         MT::ContentFieldIndex->join_on(
@@ -256,7 +256,6 @@ sub _hdlr_contents {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
         if ( $start && $end ) {
-            my $map = $ctx->stash('template_map');
             if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
@@ -304,7 +303,7 @@ sub _hdlr_contents {
             }
 
             unless ( $dt_field && $dt_field_id ) {
-                if ( my $map = $ctx->stash('template_map') ) {
+                if ($map) {
                     $dt_field_id = $map->dt_field_id;
                 }
                 else {
@@ -334,7 +333,6 @@ sub _hdlr_contents {
             }
         }
 
-        my $map        = $ctx->stash('template_map');
         my $sort_by_cf = 0;
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
