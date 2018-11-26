@@ -287,11 +287,11 @@ sub _hdlr_contents {
                 }
             }
 
-            unless ( $dt_field && $dt_field_id ) {
+            unless ( $dt_field || $dt_field_id ) {
                 if ($map) {
                     $dt_field_id = $map->dt_field_id;
                 }
-                else {
+                unless ($dt_field_id) {
                     $dt_field = 'authored_on';
                 }
             }
