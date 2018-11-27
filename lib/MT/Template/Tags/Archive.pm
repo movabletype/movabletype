@@ -468,6 +468,9 @@ sub _hdlr_archive_prev_next {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based
