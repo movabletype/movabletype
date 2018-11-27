@@ -75,15 +75,14 @@ sub archive_group_iter {
 
     my $author = $ctx->stash('author');
 
-    my $map = $ctx->stash('template_map') || MT->model('templatemap')->load(
-        {   blog_id      => $blog->id,
-            archive_type => 'ContentType-Author-Yearly',
-            is_preferred => 1,
-        }
-    );
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
     my $content_type_id
         = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
 
     unless ($content_type_id) {
         my $tmpl = $ctx->stash('template');

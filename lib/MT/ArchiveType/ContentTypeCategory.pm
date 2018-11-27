@@ -143,8 +143,16 @@ sub archive_group_iter {
         { 'sort'  => 'label',  direction       => 'ascend' },
     );
 
-    my $map = $ctx->stash('template_map');
-    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $content_type_id
+        = $ctx->stash('content_type')
+        ? $ctx->stash('content_type')->id
+        : undef;
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+        }
+    );
+    my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
@@ -157,11 +165,9 @@ sub archive_group_iter {
                 {   id      => \'= cf_idx_content_data_id',
                     blog_id => $blog_id,
                     status  => MT::ContentStatus::RELEASE(),
-                    (   $ctx->stash('content_type')
-                        ? ( content_type_id =>
-                                $ctx->stash('content_type')->id )
-                        : ()
-                    ),
+                    $content_type_id
+                    ? ( content_type_id => $content_type_id )
+                    : (),
                 }
             ),
         }
