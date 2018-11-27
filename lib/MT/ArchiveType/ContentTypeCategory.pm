@@ -143,10 +143,7 @@ sub archive_group_iter {
         { 'sort'  => 'label',  direction       => 'ascend' },
     );
 
-    my $content_type_id
-        = $ctx->stash('content_type')
-        ? $ctx->stash('content_type')->id
-        : undef;
+    my $content_type_id = $ctx->stash('content_type')->id;
     my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
         {   blog_id         => $blog_id,
             content_type_id => $content_type_id,

@@ -78,8 +78,7 @@ sub archive_group_iter {
 
     my $author = $ctx->stash('author');
 
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+    my $content_type_id = $ctx->stash('content_type')->id;
     my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
         {   blog_id         => $blog->id,
             content_type_id => $content_type_id,
@@ -87,13 +86,6 @@ sub archive_group_iter {
     );
     my $dt_field_id = $map ? $map->dt_field_id : '';
 
-    unless ($content_type_id) {
-        my $tmpl = $ctx->stash('template');
-        if ( !$tmpl && $map ) {
-            $tmpl = MT->model('template')->load( $map->template_id );
-        }
-        $content_type_id = $tmpl->content_type_id if $tmpl;
-    }
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
