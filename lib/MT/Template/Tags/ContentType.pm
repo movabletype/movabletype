@@ -355,6 +355,7 @@ sub _hdlr_contents {
                         push @{ $args{joins} }, $join;
                     }
                     $sort_by_cf = 1;
+                    $no_resort  = 1;
                 }
             }
             unless ($sort_by_cf) {
