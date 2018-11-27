@@ -217,7 +217,14 @@ sub _hdlr_archives {
             {   blog_id      => $blog->id,
                 archive_type => $at,
                 is_preferred => 1,
-            }
+            },
+            {   join => MT->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $ctx->stash('content_type')->id,
+                    },
+                ),
+            },
             );
         my $cat_field = $map ? $map->cat_field : undef;
         my $category_set

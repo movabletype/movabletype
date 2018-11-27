@@ -360,61 +360,61 @@ __END__
 
 === MT:ArchiveNext with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><<mt:ArchiveTitle>></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchiveNext><<mt:ArchiveTitle>></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 <May  6, 2019><April  7, 2018><May 2019><April 2018><May  5, 2019 - May 11, 2019><April  1, 2018 - April  7, 2018><2019><2018>
 
 === MT:ArchivePrevious with Date Field
 --- template
-<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><<mt:ArchiveTitle>></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="datebased_archive"><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchivePrevious><<mt:ArchiveTitle>></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 <April  7, 2018><March  8, 2017><April 2018><March 2017><April  1, 2018 - April  7, 2018><March  5, 2017 - March 11, 2017><2018><2017>
 
 === MT:ArchiveNext with Author
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with Author
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
 === MT:ArchiveNext with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
 category2category3
 
 === MT:ArchivePrevious with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_unique_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
 category1category2
 
 === MT:ArchiveNext with name
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_name %]"><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with name
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_name %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_name %]"><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
 === MT:ArchiveNext with id
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchiveNext content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_id %]"><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test2
 
 === MT:ArchivePrevious with id
 --- template
-<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList><mt:ArchivePrevious content_type="[% content_type_id %]"><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="author_based_archive"><mt:ArchiveList content_type="[% content_type_id %]"><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:if></mt:Archives>
 --- expected
 test1
 
