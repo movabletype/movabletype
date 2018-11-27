@@ -202,6 +202,9 @@ sub _hdlr_archives {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to

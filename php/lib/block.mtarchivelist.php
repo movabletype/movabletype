@@ -40,6 +40,12 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
                 $ctx->stash('content_type', $content_types[0]);
             }
         }
+        if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type')) {
+            $repeat = false;
+            return $ctx->error(
+                $ctx->mt->translate('No Content Type could be found.')
+            );
+        }
 
         $ctx->stash('current_archive_type', $at);
         ## If we are producing a Category archive list, don't bother to
