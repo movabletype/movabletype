@@ -1331,12 +1331,13 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
-    my $pub = shift;
-    my ($fi) = @_;
+    my $pub          = shift;
+    my ($fi)         = @_;
     my $archive_type = $fi->archive_type;
-    if ($archive_type =~ /^ContentType/) {
+    if ( $archive_type =~ /^ContentType/ ) {
         $pub->rebuild_content_from_fileinfo(@_);
-    } else {
+    }
+    else {
         $pub->rebuild_entry_from_fileinfo(@_);
     }
 }

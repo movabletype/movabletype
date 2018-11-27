@@ -59,7 +59,8 @@ $test_env->prepare_fixture(
             name      => 'test blog 01',
         );
         $blog->archive_type(
-            'ContentType-Category,ContentType-Author,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly');
+            'ContentType-Category,ContentType-Author,ContentType-Daily,ContentType-Weekly,ContentType-Monthly,ContentType-Yearly'
+        );
         $blog->save;
 
         my $perm = MT::Test::Permission->make_permission(
@@ -345,14 +346,15 @@ $vars->{content_type_id}        = $content_type->id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
 
-my ($template) = MT->model('template')->load({ content_type_id => $content_type->id }); 
-my @maps = MT->model('templatemap')->load({ template_id => $template->id });
+my ($template)
+    = MT->model('template')->load( { content_type_id => $content_type->id } );
+my @maps = MT->model('templatemap')->load( { template_id => $template->id } );
 foreach my $map (@maps) {
     $map->build_type(3);
     $map->save;
 }
 
-MT::Test::Tag->run_php_tests($blog->id);
+MT::Test::Tag->run_php_tests( $blog->id );
 
 __END__
 
