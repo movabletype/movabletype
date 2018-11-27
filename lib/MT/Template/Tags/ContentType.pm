@@ -176,7 +176,7 @@ sub _hdlr_contents {
             = $ctx->{inside_mt_categories}
             ? $ctx->stash('category')
             : $ctx->stash('archive_category');
-        if ( $cat->class eq $cat_class_type ) {
+        if ( $cat && $cat->class eq $cat_class_type ) {
             push @{ $args{joins} },
                 MT::ContentFieldIndex->join_on(
                 'content_data_id',
