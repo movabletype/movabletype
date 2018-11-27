@@ -744,6 +744,65 @@ sub _hdlr_contents {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
+
+    if ( !$no_resort && @contents ) {
+        my $col = $args->{sort_by} || 'authored_on';
+        my $so
+            = $args->{sort_order}
+            || ( $blog ? $blog->sort_order_posts : 'descend' )
+            || '';
+        $so = $so eq 'ascend' ? 1 : -1;
+        my $type;
+        if ( my $def = $class->column_def($col) ) {
+            $type = $def->{type};
+        }
+        elsif ( $class->is_meta_column($col) ) {
+            $type = MT::Meta->metadata_by_name( $class, $col );
+        }
+        my $func;
+        no warnings;
+        if ( $col =~ /^field:(.+)$/ ) {
+            my $cf_arg = $1;
+            my $cf     = _search_content_field(
+                {   content_type_id   => $content_type_id,
+                    name_or_unique_id => $cf_arg,
+                }
+            );
+            my $cf_data_type = $cf ? $cf->data_type : '';
+            if ( $cf_data_type =~ /^(integer|float|double)$/ ) {
+                $func = sub {
+                    ( $a->data->{ $cf->id } || 0 )
+                        <=> ( $b->data->{ $cf->id } || 0 );
+                };
+            }
+            elsif ($cf_data_type) {
+                $func = sub {
+                    my $a_field = $a->data->{ $cf->id };
+                    my $b_field = $b->data->{ $cf->id };
+                    $a_field = '' unless defined $a_field;
+                    $b_field = '' unless defined $b_field;
+                    return $so * ( $a_field cmp $b_field );
+                    }
+            }
+        }
+        elsif ( $type and $type =~ m/^(integer|float|double)$/ ) {
+            $func = sub { $so * ( $a->$col() <=> $b->$col() ) };
+        }
+        elsif ( $col eq 'authored_on' ) {
+            $func = sub {
+                $so
+                    * (    ( $a->$col() cmp $b->$col() )
+                        || ( $a->id() cmp $b->id() ) );
+            };
+        }
+        else {
+            $func = sub { $so * ( $a->$col() cmp $b->$col() ) };
+        }
+        if ($func) {
+            @contents = sort $func @contents;
+        }
+    }
+
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
     local $ctx->{__stash}{contents}
