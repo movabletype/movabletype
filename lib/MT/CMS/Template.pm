@@ -1728,7 +1728,7 @@ sub create_preview_content {
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {   limit => $number || 1,
+        {   limit     => $number || 1,
             direction => 'descend',
             'sort'    => 'authored_on',
             %$cat_args,
