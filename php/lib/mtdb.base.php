@@ -4282,9 +4282,10 @@ abstract class MTDatabase {
 
         if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
             $map = $mt->db()->fetch_templatemap(array(
-                'blog_id' => $blog_id,
-                'type' => $ctx->stash('current_archive_type'),
-                'preferred' => 1,
+                'blog_id'         => $blog_id,
+                'content_type_id' => $content_type_id,
+                'preferred'       => 1,
+                'type'            => $ctx->stash('current_archive_type'),
             ));
             if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
                 $start = isset($args['current_timestamp'])
