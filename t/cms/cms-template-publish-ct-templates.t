@@ -84,6 +84,10 @@ my $tmpl_ct1 = MT::Test::Permission->make_template(
     blog_id         => $website->id,
     content_type_id => $ct1->id,
 );
+my $tmpl_ct1_listing = MT::Test::Permission->make_template(
+    blog_id         => $website->id,
+    content_type_id => $ct1->id,
+);
 my $map_ct_ct1 = MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType',
     blog_id      => $website->id,
@@ -92,10 +96,14 @@ my $map_ct_ct1 = MT::Test::Permission->make_templatemap(
 my $map_ct_daily_ct1 = MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType-Daily',
     blog_id      => $website->id,
-    template_id  => $tmpl_ct1->id,
+    template_id  => $tmpl_ct1_listing->id,
 );
 
 my $tmpl_ct2 = MT::Test::Permission->make_template(
+    blog_id         => $website->id,
+    content_type_id => $ct2->id,
+);
+my $tmpl_ct2_listing = MT::Test::Permission->make_template(
     blog_id         => $website->id,
     content_type_id => $ct2->id,
 );
@@ -107,10 +115,14 @@ my $map_ct_ct2 = MT::Test::Permission->make_templatemap(
 my $map_ct_author_monthly_ct2 = MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType-Author-Monthly',
     blog_id      => $website->id,
-    template_id  => $tmpl_ct2->id,
+    template_id  => $tmpl_ct2_listing->id,
 );
 
 my $tmpl_ct3 = MT::Test::Permission->make_template(
+    blog_id         => $website->id,
+    content_type_id => $ct3->id,
+);
+my $tmpl_ct3_listing = MT::Test::Permission->make_template(
     blog_id         => $website->id,
     content_type_id => $ct3->id,
 );
@@ -122,42 +134,33 @@ my $map_ct_ct3 = MT::Test::Permission->make_templatemap(
 my $map_ct_author_ct3 = MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType-Author',
     blog_id      => $website->id,
-    template_id  => $tmpl_ct3->id,
+    template_id  => $tmpl_ct3_listing->id,
 );
 my $map_ct_yearly_ct3 = MT::Test::Permission->make_templatemap(
     archive_type => 'ContentType-Yearly',
     blog_id      => $website->id,
-    template_id  => $tmpl_ct3->id,
+    template_id  => $tmpl_ct3_listing->id,
 );
 
+my $max_run_app_count = 10;
+
 subtest 'ct1' => sub {
-    my $query;
-    subtest 'publish_ct_templates' => sub {
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'publish_ct_templates',
-                type        => 'template',
-                blog_id     => $website->id,
-                id          => $tmpl_ct1->id,
-            },
-        );
-        my $out = delete $app->{__test_output};
-        my ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-        $query = _get_query_hash($next_url);
+    my $params = {
+        __mode  => 'publish_ct_templates',
+        type    => 'template',
+        blog_id => $website->id,
+        id      => [ $tmpl_ct1->id, $tmpl_ct1_listing->id ],
     };
-    my $rebuild_count = 0;
-    while ( $query->{__mode} eq 'rebuild' ) {
-        $rebuild_count++;
-        subtest "rebuild ($rebuild_count)" => sub {
-            $query = _rebuild($query);
+    my $run_app_count = 0;
+    until (    $params->{__mode} eq 'list_template'
+            || $run_app_count >= $max_run_app_count )
+    {
+        subtest '__mode=' . $params->{__mode} => sub {
+            $params = _run_app_and_get_next_params($params);
         };
+        $run_app_count++;
     }
     subtest 'finish' => sub {
-        is( $rebuild_count, 2, 'rebuild 2 times' );
-        ok( $query->{__mode} eq 'list_template', 'finish' );
-
         my $file_count = 0;
         File::Find::find(
             {   no_chdir => 1,
@@ -182,33 +185,22 @@ subtest 'ct1' => sub {
 };
 
 subtest 'ct2' => sub {
-    my $query;
-    subtest 'publish_ct_templates' => sub {
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'publish_ct_templates',
-                type        => 'template',
-                blog_id     => $website->id,
-                id          => $tmpl_ct2->id,
-            },
-        );
-        my $out = delete $app->{__test_output};
-        my ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-        $query = _get_query_hash($next_url);
+    my $params = {
+        __mode  => 'publish_ct_templates',
+        type    => 'template',
+        blog_id => $website->id,
+        id      => [ $tmpl_ct2->id, $tmpl_ct2_listing->id ],
     };
-    my $rebuild_count = 0;
-    while ( $query->{__mode} eq 'rebuild' ) {
-        $rebuild_count++;
-        subtest "rebuild ($rebuild_count)" => sub {
-            $query = _rebuild($query);
+    my $run_app_count = 0;
+    until (    $params->{__mode} eq 'list_template'
+            || $run_app_count >= $max_run_app_count )
+    {
+        subtest '__mode=' . $params->{__mode} => sub {
+            $params = _run_app_and_get_next_params($params);
         };
+        $run_app_count++;
     }
     subtest 'finish' => sub {
-        is( $rebuild_count, 2, 'rebuild 2 times' );
-        ok( $query->{__mode} eq 'list_template', 'finish' );
-
         my $file_count = 0;
         File::Find::find(
             {   no_chdir => 1,
@@ -237,33 +229,22 @@ subtest 'ct2' => sub {
 };
 
 subtest 'ct3' => sub {
-    my $query;
-    subtest 'publish_ct_templates' => sub {
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'publish_ct_templates',
-                type        => 'template',
-                blog_id     => $website->id,
-                id          => $tmpl_ct3->id,
-            },
-        );
-        my $out = delete $app->{__test_output};
-        my ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-        $query = _get_query_hash($next_url);
+    my $params = {
+        __mode  => 'publish_ct_templates',
+        type    => 'template',
+        blog_id => $website->id,
+        id      => [ $tmpl_ct3->id, $tmpl_ct3_listing->id ],
     };
-    my $rebuild_count = 0;
-    while ( $query->{__mode} eq 'rebuild' ) {
-        $rebuild_count++;
-        subtest "rebuild ($rebuild_count)" => sub {
-            $query = _rebuild($query);
+    my $run_app_count = 0;
+    until (    $params->{__mode} eq 'list_template'
+            || $run_app_count >= $max_run_app_count )
+    {
+        subtest '__mode=' . $params->{__mode} => sub {
+            $params = _run_app_and_get_next_params($params);
         };
+        $run_app_count++;
     }
     subtest 'finish' => sub {
-        is( $rebuild_count, 7, 'rebuild 7 times' );
-        ok( $query->{__mode} eq 'list_template', 'finish' );
-
         my $file_count = 0;
         File::Find::find(
             {   no_chdir => 1,
@@ -299,57 +280,25 @@ subtest 'ct3' => sub {
 };
 
 subtest 'ct1 and ct2' => sub {
-    my $query;
-    subtest 'publish_ct_templates' => sub {
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'publish_ct_templates',
-                type        => 'template',
-                blog_id     => $website->id,
-                id          => [ $tmpl_ct1->id, $tmpl_ct2->id ],
-                return_args => '__mode=list_template&blog_id=' . $website->id,
-            },
-        );
-        my $out = delete $app->{__test_output};
-        my ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-        $query = _get_query_hash($next_url);
+    my $params = {
+        __mode  => 'publish_ct_templates',
+        type    => 'template',
+        blog_id => $website->id,
+        id      => [
+            $tmpl_ct1->id, $tmpl_ct1_listing->id,
+            $tmpl_ct2->id, $tmpl_ct2_listing->id
+        ],
     };
-    my $rebuild_count = 0;
-    while ( $query->{__mode} eq 'rebuild' ) {
-        $rebuild_count++;
-        subtest "rebuild ($rebuild_count)" => sub {
-            $query = _rebuild($query);
+    my $run_app_count = 0;
+    until (    $params->{__mode} eq 'list_template'
+            || $run_app_count >= $max_run_app_count )
+    {
+        subtest '__mode=' . $params->{__mode} => sub {
+            $params = _run_app_and_get_next_params($params);
         };
-    }
-    subtest 'publish_archive_templates' => sub {
-        is( $rebuild_count, 2, 'rebuild 2 times' );
-        ok( $query->{__mode} eq 'publish_archive_templates',
-            '__mode=publish_archive_templates' );
-
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                %$query,
-            },
-        );
-        my $out = delete $app->{__test_output};
-        my ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-        $query = _get_query_hash($next_url);
-    };
-    $rebuild_count = 0;
-    while ( $query->{__mode} eq 'rebuild' ) {
-        $rebuild_count++;
-        subtest "rebuild ($rebuild_count)" => sub {
-            $query = _rebuild($query);
-        };
+        $run_app_count++;
     }
     subtest 'finish' => sub {
-        is( $rebuild_count, 2, 'rebuild 2 times' );
-        ok( $query->{__mode} eq 'list_template', 'finish' );
-
         my $file_count = 0;
         File::Find::find(
             {   no_chdir => 1,
@@ -383,7 +332,7 @@ subtest 'ct1 and ct2' => sub {
 
 done_testing;
 
-sub _get_query_hash {
+sub _parse_query_params {
     my ($next_url) = @_;
     my ( $url, $query ) = split '\?', $next_url;
     my %query;
@@ -395,13 +344,13 @@ sub _get_query_hash {
     return \%query;
 }
 
-sub _rebuild {
-    my ($query) = @_;
+sub _run_app_and_get_next_params {
+    my ($params) = @_;
 
     my $app = _run_app(
         'MT::App::CMS',
         {   __test_user => $admin,
-            %$query,
+            %$params,
         },
     );
     my $out = delete $app->{__test_output};
@@ -409,12 +358,12 @@ sub _rebuild {
     if ( $out =~ /Status: 302 Found/ ) {
         ok( 1, 'redirect' );
         ($next_url) = $out =~ /Location: (.+)\r\n?/;
-        ok($next_url);
+        ok( $next_url, 'get next url' );
     }
     else {
         ($next_url) = $out =~ /window\.location='([^']+)'/;
         ok( $out && $next_url, 'get next url' );
     }
 
-    return _get_query_hash($next_url);
+    return _parse_query_params($next_url);
 }
