@@ -213,8 +213,12 @@ sub archive_group_contents {
 
     my $limit = $param->{limit};
     $limit = 0 if defined $limit && $limit eq 'none';
-    my $c = $ctx->stash('archive_category') || $ctx->stash('category');
-    my $map = $ctx->stash('template_map');
+    my $c   = $ctx->stash('archive_category') || $ctx->stash('category');
+    my $map = $ctx->stash('template_map')     || $obj->_search_preferred_map(
+        {   blog_id         => $ctx->stash('blog')->id,
+            content_type_id => $content_type_id,
+        }
+    );
     my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(

@@ -324,15 +324,16 @@ sub _search_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
+    my $archive_type    = $args->{archive_type} || $self->name;
     my $blog_id         = $args->{blog_id};
     my $content_type_id = $args->{content_type_id};
 
     my $map_args
-        = ( $self->name =~ /^ContentType/ && $content_type_id )
+        = ( $archive_type =~ /^ContentType/ && $content_type_id )
         ? +{
         join => MT->model('template')->join_on(
             undef,
-            {  id              => \'= templatemap_template_id',
+            {   id              => \'= templatemap_template_id',
                 content_type_id => $content_type_id,
             },
         ),
@@ -340,7 +341,7 @@ sub _search_preferred_map {
         : undef;
 
     my $map = MT->model('templatemap')->load(
-        {   archive_type => $self->name,
+        {   archive_type => $archive_type,
             blog_id      => $blog_id,
             is_preferred => 1,
         },
