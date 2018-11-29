@@ -1331,12 +1331,13 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
-    my $pub = shift;
-    my ($fi) = @_;
+    my $pub          = shift;
+    my ($fi)         = @_;
     my $archive_type = $fi->archive_type;
-    if ($archive_type =~ /^ContentType/) {
+    if ( $archive_type =~ /^ContentType/ ) {
         $pub->rebuild_content_from_fileinfo(@_);
-    } else {
+    }
+    else {
         $pub->rebuild_entry_from_fileinfo(@_);
     }
 }
@@ -1739,11 +1740,13 @@ sub _rebuild_content_archive_type {
                 : '';
             my $cache_map_key
                 = $blog->id . ':'
-                . ( $content_type_id ? $content_type_id . ':' : '' )
+                . ( ( $at =~ /^ContentType/ && $content_type_id )
+                ? $content_type_id . ':'
+                : '' )
                 . $at;
             unless ( $map = $cache_map->{$cache_map_key} ) {
                 my $args
-                    = $content_type_id
+                    = ( $at =~ /^ContentType/ && $content_type_id )
                     ? {
                     join => MT->model('template')->join_on(
                         undef,

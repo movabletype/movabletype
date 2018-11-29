@@ -202,6 +202,9 @@ sub _hdlr_archives {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
@@ -214,7 +217,14 @@ sub _hdlr_archives {
             {   blog_id      => $blog->id,
                 archive_type => $at,
                 is_preferred => 1,
-            }
+            },
+            {   join => MT->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $ctx->stash('content_type')->id,
+                    },
+                ),
+            },
             );
         my $cat_field = $map ? $map->cat_field : undef;
         my $category_set
