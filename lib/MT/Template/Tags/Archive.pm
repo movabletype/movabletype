@@ -917,16 +917,17 @@ sub _hdlr_archive_link {
         $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     }
 
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+
     return $ctx->error(
         MT->translate(
             "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
             '<$MTArchiveLink$>',
             $at
         )
-    ) unless $blog->has_archive_type($at);
+    ) unless $blog->has_archive_type( $at, $content_type_id || 0 );
 
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
     $arch = $blog->site_url
         if $content && $content->can('class') && $content->class eq 'page';
