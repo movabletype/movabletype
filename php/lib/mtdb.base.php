@@ -1932,7 +1932,9 @@ abstract class MTDatabase {
                 try {
                     if (isset($category_set_id) && $category_set_id) {
                         $category_set = $mt->db()->fetch_category_set($category_set_id);
-                        $custom_order = $category_set->order;
+                        if ($category_set) {
+                            $custom_order = $category_set->order;
+                        }
                     } else {
                         $ctx = $mt->context();
                         $blog = $ctx->stash('blog');
@@ -3990,7 +3992,8 @@ abstract class MTDatabase {
         }
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        $category_set->Load("category_set_id = $category_set_id");
+        $loaded = $category_set->Load("category_set_id = $category_set_id");
+        if (!$loaded) return null;
         $this->_category_set_id_cache[$category_set_id] = $category_set;
         return $category_set;
     }
@@ -4469,7 +4472,7 @@ abstract class MTDatabase {
 
             if(preg_match('/^[0-9]+$/',$id))
                 $category_set = $this->fetch_category_set($id);
-            if(!isset($category_set)){
+            if(!$category_set){
                 $category_sets = $this->fetch_category_sets(array(
                     'blog_id' => $blog_id,
                     'name' => $id,

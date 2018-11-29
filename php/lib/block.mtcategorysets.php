@@ -23,7 +23,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
         if (isset($args['id']) && !empty($args['id'])) {
             $cs = $ctx->mt->db()->fetch_category_set($args['id']);
-            if (is_null($cs->id)) {
+            if (!$cs) {
                 $repeat = false;
                 return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
@@ -55,7 +55,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 foreach($content_fields as $f){
                     if ( $f['type'] == 'categories' ) {
                         $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
-                        $category_sets[] = $cs;
+                        if ($cs) {
+                            $category_sets[] = $cs;
+                        }
                     }
                 }
             }
