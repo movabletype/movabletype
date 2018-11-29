@@ -6273,8 +6273,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'backup data' => 'copia de seguridad', # Translate - New
 	'Invalid backup file name.' => 'El nombre del fichero de la copia de seguridad no es válido.', # Translate - New
 	'Cannot copy backup file to workspace.' => 'No se pudo copiar el fichero de la copia de seguridad al espacio de trabajo.', # Translate - New
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo guardar la configuración del sitio web porque el número de dominios en uso excede el número de dominios que pueden estar disponibles.', # Translate - New
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo crear el sitio web porque el número de dominios que se han creado excede el número de dominios que pueden estar disponibles.', # Translate - New
+	'Could not save the site settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo guardar la configuración del sitio web porque el número de dominios en uso excede el número de dominios que pueden estar disponibles.', # Translate - New
+	'Could not create the site because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo crear el sitio web porque el número de dominios que se han creado excede el número de dominios que pueden estar disponibles.', # Translate - New
 	'Auto Update Settings' => 'Actualización automática de configuración', # Translate - New
 	'Unable to write AUTOUPDATE file: [_1]' => 'No se pudo escribir en el fichero AUTOUPDATE: [_1]', # Translate - New
 	'Auto update settings has successfully been updated.' => 'Se ha actualizado correctamente la configuración de la actualización automática.', # Translate - New
@@ -6300,7 +6300,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unifique la existencia de www. <a href="[_1]">Más información</a>', # Translate - New
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html', # Translate - New
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Se ha modificado el \'Sitio web raíz\' o la \'Raíz de los archivos\'. Debe mover los contenidos existentes.', # Translate - New
+	'\'Site Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Se ha modificado el \'Sitio web raíz\' o la \'Raíz de los archivos\'. Debe mover los contenidos existentes.', # Translate - New
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
 	'Disabling any plugins...' => 'Deshabilitando las extensiones...', # Translate - New

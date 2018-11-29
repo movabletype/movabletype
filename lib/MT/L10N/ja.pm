@@ -6036,8 +6036,8 @@ use vars qw( @ISA %Lexicon );
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
+	'Could not save the site settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、サイトを保存できません。',
+	'Could not create the site because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、サイトを作成できません。',
 	'Auto Update Settings' => '自動アップデートの設定',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'Auto update settings has successfully been updated.' => '自動アップデートの設定が更新されました。',
@@ -6056,7 +6056,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www の有無を統一する。 <a href="[_1]">詳細</a>',
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
+	'\'Site Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'サイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
 	'Disabling any plugins...' => 'プラグインを無効化しています...',

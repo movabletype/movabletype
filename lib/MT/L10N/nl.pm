@@ -6276,8 +6276,8 @@ use vars qw( @ISA %Lexicon );
 	'backup data' => 'backupgegevens', # Translate - New
 	'Invalid backup file name.' => 'Ongeldige bestandsnaam backupbestand.', # Translate - New
 	'Cannot copy backup file to workspace.' => 'Kan backupbestand niet kopiëren naar de werkruimte.', # Translate - New
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website-instellingen niet opslaan omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website niet aanmaken omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
+	'Could not save the site settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website-instellingen niet opslaan omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
+	'Could not create the site because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website niet aanmaken omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
 	'Auto Update Settings' => 'Instellingen voor automatisch bijwerken', # Translate - New
 	'Unable to write AUTOUPDATE file: [_1]' => 'Kon geen AUTOUPDATE bestand schrijven: [_1]', # Translate - New
 	'Auto update settings has successfully been updated.' => 'Instellingen voor automatisch bijwerken werden met succes bijgewerkt.', # Translate - New
@@ -6303,7 +6303,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unificeer het bestaan van www. <a href="[_1]">Detail</a>', # Translate - New
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.com/documentation/cloud/guide/multi-domain.html', # Translate - New
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'Website\' root of \'Archief\' root werd aangepast.  U moet bestaande inhoud verhuizen.', # Translate - New
+	'\'Site Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'Website\' root of \'Archief\' root werd aangepast.  U moet bestaande inhoud verhuizen.', # Translate - New
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
 	'Disabling any plugins...' => 'Bezig plugins uit te schakelen...', # Translate - New

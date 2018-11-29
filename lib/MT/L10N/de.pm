@@ -6260,8 +6260,8 @@ use vars qw( @ISA %Lexicon );
 	'backup data' => 'Sicherungsdaten', # Translate - New # OK
 	'Invalid backup file name.' => 'Der Name der Sicherungsdatei ist ungültig.', # Translate - New # OK
 	'Cannot copy backup file to workspace.' => 'Die Sicherungsdatei konnte nicht in den Arbeitsbereich kopiert werden.', # Translate - New # OK
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website-Einstellungen konnten nicht gespeichert werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website konnte nicht angelegt werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
+	'Could not save the site settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website-Einstellungen konnten nicht gespeichert werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
+	'Could not create the site because the number of domains that have been used exceeds the number of domains which can be available.' => 'Die Website konnte nicht angelegt werden: Die Anzahl der verwendeten Domains übersteigt die Anzahl der verfügbaren Domains.', # Translate - New # OK
 	'Auto Update Settings' => 'Aktualisierungs-Einstellungen', # Translate - New # OK
 	'Unable to write AUTOUPDATE file: [_1]' => 'Die AUTOUPDATE-Datei konnte nicht geschrieben werden: [_1]', # Translate - New # OK
 	'Auto update settings has successfully been updated.' => 'Aktualisierungs-Einstellungen erfolgreich aktualisiert.', # Translate - New # OK
@@ -6287,7 +6287,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'WWW-Subdomain verwenden. <a href="[_1]">Weitere Informationen</a>', # Translate - New # OK
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html', # Translate - New # OK
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Wurzelverezeichnis der Website oder des Archivs geändert. Bitte verschieben Sie die bestehenden Ordner entsprechend.', # Translate - New # OK
+	'\'Site Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Wurzelverezeichnis der Website oder des Archivs geändert. Bitte verschieben Sie die bestehenden Ordner entsprechend.', # Translate - New # OK
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
 	'Disabling any plugins...' => 'Deaktiviere alle Plugins...', # Translate - New # OK

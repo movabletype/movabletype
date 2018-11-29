@@ -6286,8 +6286,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'backup data' => 'données sauvegardées', # Translate - New
 	'Invalid backup file name.' => 'Nom de fichier de sauvegarde invalide.', # Translate - New
 	'Cannot copy backup file to workspace.' => 'Impossible de copier le fichier de sauvegarde dans l\'espace de travail.', # Translate - New
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Impossible de sauvegarder les paramètres du site car le nombre de domaines utilisés excède le nombre de domaines disponibles.', # Translate - New
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Impossible de créer le site car le nombre de domaines utilisés excède le nombre de domaines disponibles.', # Translate - New
+	'Could not save the site settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Impossible de sauvegarder les paramètres du site car le nombre de domaines utilisés excède le nombre de domaines disponibles.', # Translate - New
+	'Could not create the site because the number of domains that have been used exceeds the number of domains which can be available.' => 'Impossible de créer le site car le nombre de domaines utilisés excède le nombre de domaines disponibles.', # Translate - New
 	'Auto Update Settings' => 'Paramètres de mise à jour automatique', # Translate - New
 	'Unable to write AUTOUPDATE file: [_1]' => 'Impossible d\'écrire le fichier AUTOUPDATE : [_1]', # Translate - New
 	'Auto update settings has successfully been updated.' => 'Les paramètres de mise à jour automatique ont été mis à jour.', # Translate - New
@@ -6313,7 +6313,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## addons/Cloud.pack/lib/Cloud/Template.pm
 	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unifier l\'existence de www. <a href="[_1]">Détails</a>', # Translate - New
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => '', # Translate - New
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Le chemin du site ou de ses archives a été modifié. Vous devez déplacer le contenu existant.', # Translate - New
+	'\'Site Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Le chemin du site ou de ses archives a été modifié. Vous devez déplacer le contenu existant.', # Translate - New
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
 	'Disabling any plugins...' => 'Afficher tous les plugins...', # Translate - New
