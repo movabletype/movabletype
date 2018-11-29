@@ -1799,6 +1799,8 @@ sub _rebuild_content_archive_type {
             if $obj && ( ref $obj eq 'MT::Entry' || ref $obj eq 'MT::Page' );
         local $ctx->{__stash}{content} = $obj
             if $obj && ref $obj eq 'MT::ContentData';
+        local $ctx->{__stash}{content_type} = $obj->content_type
+            if $ctx->stash('content');
         local $ctx->{__stash}{author}
             = $author ? $author : $obj ? $obj->author : undef;
         if ( $obj && !$timestamp ) {
