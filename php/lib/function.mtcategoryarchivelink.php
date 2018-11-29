@@ -16,7 +16,8 @@ function smarty_function_mtcategoryarchivelink($args, &$ctx) {
     if (!isset($args['blog_id']))
         $args['blog_id'] = $ctx->stash('blog_id');
     if (!$category) return '';
-    $at = isset($args['category_set_id']) && $args['category_set_id'] ? 'ContentType-Category' : 'Category';
+    $category_set = $ctx->stash('category_set');
+    $at = isset($category_set) && $category_set ? 'ContentType-Category' : 'Category';
     $link = $ctx->mt->db()->category_link($category->category_id, $at);
     if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
