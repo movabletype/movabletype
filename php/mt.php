@@ -685,9 +685,9 @@ class MT {
             }
             if(preg_match('/ContentType-Category/', $at)){
                 if($archive_category){
-                    $category_sets = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
-                    if($category_sets)
-                        $ctx->stash('category_set', $category_sets);
+                    $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
+                    if($category_set)
+                        $ctx->stash('category_set', $category_set);
                 }
             }
         }
