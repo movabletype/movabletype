@@ -210,7 +210,7 @@ sub archive_group_entries {
         = $param{year}
         ? sprintf( "%04d%02d%02d000000",
         $param{year}, $param{month}, $param{day} )
-        : $ctx->stash('current_timestamp');
+        : $ctx->{current_timestamp};
     my $cat = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
     $obj->dated_category_entries( $ctx, 'Category-Daily', $cat, $ts, $limit );
