@@ -94,9 +94,6 @@ http://narnia.na/author/author1/2019/09/
 http://narnia.na/author/author1/2019/
 --- expected_contenttype_category
 http://narnia.na/cat-strawberry/cat-orange/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26155
 --- expected_contenttype_category_daily
 http://narnia.na/cat-strawberry/cat-orange/2019/09/26/
 --- expected_contenttype_category_weekly
