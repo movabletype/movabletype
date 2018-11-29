@@ -31,7 +31,6 @@ function smarty_function_mtarchivelink($args, &$ctx) {
         if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
             return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
         }
-        $args['category_set_id'] = $ctx->stash('category_set')->id;
         return $ctx->tag('CategoryArchiveLink', $args);
     }
     $args['blog_id'] = $blog->blog_id;
