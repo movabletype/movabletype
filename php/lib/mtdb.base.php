@@ -4078,8 +4078,8 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_type.php");
         $content_type= New ContentType;
-        $content_type->Load( $id );
-        if ( !empty( $content_type ) ) {
+        $loaded = $content_type->Load( $id );
+        if ($loaded) {
             $this->_content_type_id_cache[$id] = $content_type;
             return $content_type;
         } else {
