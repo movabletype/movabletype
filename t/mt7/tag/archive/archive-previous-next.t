@@ -449,9 +449,6 @@ author2 | http://narnia.na/author/author2/
 --- expected_contenttype_author_yearly
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26120
 --- expected_contenttype_category_daily
 --- expected_contenttype_category_monthly
 --- expected_contenttype_category_weekly
@@ -514,9 +511,6 @@ author1: 2020 | http://narnia.na/author/author1/2020/
 https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26120
 --- expected_contenttype_category_daily
 cat_apple: September 26, 2020 | http://narnia.na/cat-apple/2020/09/26/
 --- expected_php_todo_contenttype_category_daily
@@ -617,9 +611,6 @@ https://movabletype.atlassian.net/browse/MTC-26117
 https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26120
 --- expected_contenttype_category_daily
 --- expected_contenttype_category_monthly
 --- expected_contenttype_category_weekly
@@ -715,9 +706,6 @@ author2 | http://narnia.na/author/author2/
 --- expected_contenttype_author_yearly
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26120
 --- expected_contenttype_category_daily
 --- expected_contenttype_category_monthly
 --- expected_contenttype_category_weekly

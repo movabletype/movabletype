@@ -380,6 +380,16 @@ require_once('class.mt_content_data.php');
 PHP
             }
 
+            if ( my $category_set = $stash->{category_set} ) {
+                my $category_set_id = $category_set->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_category_set.php');
+\$category_set = new CategorySet;
+\$category_set->Load($category_set_id);
+\$ctx->stash('category_set', \$category_set);
+PHP
+            }
+
             $test_script .= <<'PHP';
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
