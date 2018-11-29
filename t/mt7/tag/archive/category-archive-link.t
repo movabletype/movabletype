@@ -135,3 +135,12 @@ http://narnia.na/cat-strawberry/cat-orange/
 https://movabletype.atlassian.net/browse/MTC-26153
 --- expected_contenttype_yearly
 http://narnia.na/cat-strawberry/cat-orange/
+--- expected_php_todo_error_author
+--- expected_php_todo_error_author_daily
+--- expected_php_todo_error_author_monthly
+--- expected_php_todo_error_author_weekly
+--- expected_php_todo_error_author_yearly
+--- expected_php_todo_error_daily
+--- expected_php_todo_error_monthly
+--- expected_php_todo_error_weekly
+--- expected_php_todo_error_yearly
