@@ -275,8 +275,6 @@ aaaaa
 <mt:Contents content_type="test content type 1" blog_id="2">a</mt:Contents>
 --- expected_error
 Content Type was not found. Blog ID: 2
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26115
 
 === MT:Contents with limit
 --- template
