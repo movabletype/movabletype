@@ -4159,6 +4159,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4167,6 +4168,10 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
@@ -4303,6 +4308,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4311,6 +4317,10 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4450,6 +4460,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4458,6 +4469,10 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4610,6 +4625,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4618,6 +4634,10 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $inside = $ctx->stash('inside_archive_list');
                 if (!isset($inside)) {
