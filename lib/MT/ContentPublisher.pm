@@ -659,7 +659,7 @@ sub rebuild_content_data {
         my %at = map { $_ => 1 } split /,/, $blog->archive_type;
         my @db_at = grep {
             my $archiver = $mt->archiver($_);
-            $archiver && $archiver->date_based
+            $archiver && $archiver->contenttype_date_based
         } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
