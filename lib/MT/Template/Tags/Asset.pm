@@ -1359,6 +1359,50 @@ sub _hdlr_asset_count {
     return $ctx->count_format( $count, $args );
 }
 
+=head2 EntryAssetCount
+
+Returns the number of assets associated with the current entry context.
+
+B<Attributes:>
+
+=over 4
+
+=item type
+
+Allows for filtering by file type. Built-in types supported are "image",
+"audio", "video". These types can be extended by plugins.
+
+=back
+
+B<Example:>
+
+    Images available: <$mt:EntryAssetCount type="image"$>
+
+=for tags assets
+
+=head2 PageAssetCount
+
+Returns the number of assets associated with the current page context.
+
+B<Attributes:>
+
+=over 4
+
+=item type
+
+Allows for filtering by file type. Built-in types supported are "image",
+"audio", "video". These types can be extended by plugins.
+
+=back
+
+B<Example:>
+
+    Images available: <$mt:PageAssetCount type="image"$>
+
+=for tags assets
+
+=cut
+
 sub _hdlr_entry_asset_count {
     my ( $ctx, $args, $cond ) = @_;
 
