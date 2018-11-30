@@ -1380,6 +1380,10 @@ B<Example:>
 
 =for tags assets
 
+=cut
+
+# Page Asset Count is an Alias for EntryAssetCount
+  
 =head2 PageAssetCount
 
 Returns the number of assets associated with the current page context.
