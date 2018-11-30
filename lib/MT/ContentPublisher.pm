@@ -697,8 +697,10 @@ sub rebuild_content_data {
 
                             if (my $prev_arch
                                 = $archiver->previous_archive_content_data(
-                                    {   content_data => $content_data,
-                                        category     => $cat,
+                                    {   category_field_id =>
+                                            $map->cat_field_id,
+                                        category_id  => $cat->id,
+                                        content_data => $content_data,
                                     }
                                 )
                                 )
@@ -716,8 +718,10 @@ sub rebuild_content_data {
                             }
                             if (my $next_arch
                                 = $archiver->next_archive_content_data(
-                                    {   content_data => $content_data,
-                                        category     => $cat,
+                                    {   category_field_id =>
+                                            $map->cat_field_id,
+                                        category_id  => $cat->id,
+                                        content_data => $content_data,
                                     }
                                 )
                                 )
