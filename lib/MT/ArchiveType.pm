@@ -319,4 +319,34 @@ sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
 
+sub _search_preferred_map {
+    my $self = shift;
+    my ($args) = @_;
+    $args ||= {};
+    my $archive_type    = $args->{archive_type} || $self->name;
+    my $blog_id         = $args->{blog_id};
+    my $content_type_id = $args->{content_type_id};
+
+    my $map_args
+        = ( $archive_type =~ /^ContentType/ && $content_type_id )
+        ? +{
+        join => MT->model('template')->join_on(
+            undef,
+            {   id              => \'= templatemap_template_id',
+                content_type_id => $content_type_id,
+            },
+        ),
+        }
+        : undef;
+
+    my $map = MT->model('templatemap')->load(
+        {   archive_type => $archive_type,
+            blog_id      => $blog_id,
+            is_preferred => 1,
+        },
+        $map_args || (),
+    );
+    return $map;
+}
+
 1;

@@ -213,18 +213,11 @@ sub _hdlr_archives {
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
         my $map
-            = $ctx->stash('template_map') || MT->model('templatemap')->load(
-            {   blog_id      => $blog->id,
-                archive_type => $at,
-                is_preferred => 1,
-            },
-            {   join => MT->model('template')->join_on(
-                    undef,
-                    {   id              => \'= templatemap_template_id',
-                        content_type_id => $ctx->stash('content_type')->id,
-                    },
-                ),
-            },
+            = $ctx->stash('template_map')
+            || $archiver->_search_preferred_map(
+            {   blog_id         => $blog->id,
+                content_type_id => $ctx->stash('content_type')->id,
+            }
             );
         my $cat_field = $map ? $map->cat_field : undef;
         my $category_set
@@ -468,6 +461,9 @@ sub _hdlr_archive_prev_next {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based

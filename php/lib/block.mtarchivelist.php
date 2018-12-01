@@ -53,9 +53,10 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         if ($at == 'Category' || $at === 'ContentType-Category') {
             if ($at === 'ContentType-Category') {
                 $maps = $ctx->mt->db()->fetch_templatemap(array(
-                    'type' => $at,
                     'blog_id' => $blog_id,
-                    'preferred' => 1
+                    'content_type_id' => $ctx->stash('content_type')->id,
+                    'preferred' => 1,
+                    'type' => $at,
                 ));
                 if (isset($maps)) {
                     $cat_field = $maps[0]->cat_field();

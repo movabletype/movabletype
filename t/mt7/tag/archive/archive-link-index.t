@@ -220,61 +220,37 @@ http://narnia.na/cat-apple/
 http://narnia.na/cat-strawberry/cat-orange/
 http://narnia.na/cat-peach/
 http://narnia.na/cat-strawberry/
---- expected_todo_contenttype_category_daily
---- FIXME
-http://narnia.na/cat-apple/2008/11/01/
-http://narnia.na/cat-apple/2006/11/01/
-http://narnia.na/cat-apple/2004/11/01/
-http://narnia.na/cat-strawberry/cat-orange/2006/11/01/
-http://narnia.na/cat-strawberry/cat-orange/2004/11/01/
-http://narnia.na/cat-peach/2004/11/01/
-http://narnia.na/cat-strawberry/2004/11/01/
+--- expected_contenttype_category_daily
+http://narnia.na/cat-apple/2018/10/31/
+http://narnia.na/cat-apple/2017/10/31/
+http://narnia.na/cat-strawberry/cat-orange/2017/10/31/
+http://narnia.na/cat-peach/2016/10/31/
 --- expected_php_todo_contenttype_category_daily
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_weekly
---- FIXME
-http://narnia.na/cat-apple/2008/10/26-week/
-http://narnia.na/cat-apple/2006/10/29-week/
-http://narnia.na/cat-apple/2004/10/31-week/
-http://narnia.na/cat-strawberry/cat-orange/2006/10/29-week/
-http://narnia.na/cat-strawberry/cat-orange/2004/10/31-week/
-http://narnia.na/cat-peach/2004/10/31-week/
-http://narnia.na/cat-strawberry/2004/10/31-week/
+http://narnia.na/cat-apple/2018/10/28-week/
+http://narnia.na/cat-apple/2017/10/29-week/
+http://narnia.na/cat-strawberry/cat-orange/2017/10/29-week/
+http://narnia.na/cat-peach/2016/10/30-week/
 --- expected_php_todo_contenttype_category_weekly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_monthly
---- FIXME
-http://narnia.na/cat-apple/2008/11/
-http://narnia.na/cat-apple/2006/11/
-http://narnia.na/cat-apple/2004/11/
-http://narnia.na/cat-strawberry/cat-orange/2006/11/
-http://narnia.na/cat-strawberry/cat-orange/2004/11/
-http://narnia.na/cat-peach/2004/11/
-http://narnia.na/cat-strawberry/2004/11/
+http://narnia.na/cat-apple/2018/10/
+http://narnia.na/cat-apple/2017/10/
+http://narnia.na/cat-strawberry/cat-orange/2017/10/
+http://narnia.na/cat-peach/2016/10/
 --- expected_php_todo_contenttype_category_monthly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_yearly
---- FIXME
-http://narnia.na/cat-apple/2008/
-http://narnia.na/cat-apple/2006/
-http://narnia.na/cat-apple/2004/
-http://narnia.na/cat-strawberry/cat-orange/2006/
-http://narnia.na/cat-strawberry/cat-orange/2004/
-http://narnia.na/cat-peach/2004/
-http://narnia.na/cat-strawberry/2004/
+http://narnia.na/cat-apple/2018/
+http://narnia.na/cat-apple/2017/
+http://narnia.na/cat-strawberry/cat-orange/2017/
+http://narnia.na/cat-peach/2016/
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_daily
 --- FIXME
