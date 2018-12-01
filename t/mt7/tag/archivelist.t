@@ -185,8 +185,8 @@ __END__
 === mt:ArchiveList label="No content_type"
 --- template
 <mt:ArchiveList type="ContentType-Author"><mt:ArchiveCount></mt:ArchiveList>
---- expected
-21
+--- expected_error
+No Content Type could be found.
 
 === mt:ArchiveList unique_id 01
 --- template

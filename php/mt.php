@@ -676,13 +676,19 @@ class MT {
                 $ctx->stash('entry', $entry);
                 $ctx->stash('current_timestamp', $entry->entry_authored_on);
             }
-
             if (isset($cd_id) && ($cd_id) && $at == 'ContentType') {
                 $cd = $mtdb->fetch_content($cd_id);
                 $ct = $mtdb->fetch_content_type($cd->content_type_id);
                 $ctx->stash('content', $cd);
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
+            }
+            if(preg_match('/ContentType-Category/', $at)){
+                if($archive_category){
+                    $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
+                    if($category_set)
+                        $ctx->stash('category_set', $category_set);
+                }
             }
         }
 

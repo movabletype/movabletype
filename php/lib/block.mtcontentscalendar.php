@@ -91,7 +91,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
 
             if(preg_match('/^[0-9]+$/',$id))
                 $category_set = $ctx->mt->db()->fetch_category_set($id);
-            if(!isset($category_set)){
+            if(!$category_set){
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
                     'name' => $id,

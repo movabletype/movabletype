@@ -118,7 +118,7 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/content_field_type_lib.php
 	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
-	'No category_set setting in content field type.' => 'コンテンっつフィールドにカテゴリセットが設定されていません。',
+	'No category_set setting in content field type.' => 'コンテンツフィールドにカテゴリセットが設定されていません。',
 
 ## php/lib/function.mtassettype.php
 	'image' => '画像',

@@ -380,6 +380,16 @@ require_once('class.mt_content_data.php');
 PHP
             }
 
+            if ( my $category_set = $stash->{category_set} ) {
+                my $category_set_id = $category_set->id;
+                $test_script .= <<"PHP";
+require_once('class.mt_category_set.php');
+\$category_set = new CategorySet;
+\$category_set->Load($category_set_id);
+\$ctx->stash('category_set', \$category_set);
+PHP
+            }
+
             $test_script .= <<'PHP';
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
@@ -399,14 +409,20 @@ PHP
                 { binmode_stdin => 1 }
                 or die $?;
 
+            # those with $method_name have higher precedence
+            # and todo does, too
             my @extra_methods = (
                 "expected_php_todo_error_$method_name",
-                "expected_php_error_$method_name",
-                "expected_php_error",
                 "expected_php_todo_$method_name",
                 "expected_todo_$method_name",
+                "expected_php_error_$method_name",
+                "expected_error_$method_name",
                 "expected_$method_name",
+                "expected_php_todo",
+                "expected_todo_error",
                 "expected_todo",
+                "expected_php_error",
+                "expected_error",
             );
             my $expected_method = "expected";
             for my $method (@extra_methods) {

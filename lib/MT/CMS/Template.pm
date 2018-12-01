@@ -1728,7 +1728,7 @@ sub create_preview_content {
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {   limit => $number || 1,
+        {   limit     => $number || 1,
             direction => 'descend',
             'sort'    => 'authored_on',
             %$cat_args,
@@ -3232,8 +3232,14 @@ sub publish_archive_templates {
     $app->return_args($return_args);
     return $app->call_return unless %ats;
 
-    $app->param( 'template_id',     $tmpl_id );
-    $app->param( 'single_template', 1 );          # forces fullscreen mode
+    $app->param( 'template_id', $tmpl_id );
+    if ($tmpl_id) {
+        my $tmpl = $app->model('template')->load($tmpl_id);
+        if ( $tmpl && $tmpl->content_type_id ) {
+            $app->param( 'content_type_id', $tmpl->content_type_id );
+        }
+    }
+    $app->param( 'single_template', 1 );    # forces fullscreen mode
     $app->param( 'type', join( ",", keys %ats ) );
     return MT::CMS::Blog::start_rebuild_pages($app);
 }
