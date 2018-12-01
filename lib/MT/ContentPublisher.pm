@@ -1740,10 +1740,11 @@ sub _rebuild_content_archive_type {
                 : '';
             my $cache_map_key
                 = $blog->id . ':'
-                . ( ( $at =~ /^ContentType/ && $content_type_id )
+                . (
+                ( $at =~ /^ContentType/ && $content_type_id )
                 ? $content_type_id . ':'
-                : '' )
-                . $at;
+                : ''
+                ) . $at;
             unless ( $map = $cache_map->{$cache_map_key} ) {
                 my $args
                     = ( $at =~ /^ContentType/ && $content_type_id )
