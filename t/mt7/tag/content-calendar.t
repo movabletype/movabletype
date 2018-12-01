@@ -47,7 +47,13 @@ $test_env->prepare_fixture('db');
 
 my @ts = MT::Util::offset_time_list( time, $blog_id );
 my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
-my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+my $next_month;
+if ( $ts[4] + 2 > 12 ) {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900 + 1, 1;
+}
+else {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+}
 
 my $ct = MT::Test::Permission->make_content_type(
     name    => 'test content data',
