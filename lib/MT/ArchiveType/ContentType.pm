@@ -73,10 +73,9 @@ sub archive_group_iter {
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $blog_id = $ctx->stash('blog')->id;
 
-    my $map = $ctx->stash('template_map') || MT->model('templatemap')->load(
-        {   blog_id      => $blog_id,
-            archive_type => 'ContentType',
-            is_preferred => 1,
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $ctx->stash('content_type')->id,
         }
     );
     my $dt_field = $map ? $map->dt_field : undef;
