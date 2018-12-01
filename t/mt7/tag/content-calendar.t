@@ -122,13 +122,13 @@ my $cd4 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
     authored_on     => '20170615000000',
-    data => { $cf_category->id => [ $category1->id ], },
+    data            => { $cf_category->id => [ $category1->id ], },
 );
 
-$vars->{ct_uid}    = $ct->unique_id;
-$vars->{ct_name}   = $ct->name;
-$vars->{ct_id}     = $ct->id;
-$vars->{cat_label} = $category2->label;
+$vars->{ct_uid}          = $ct->unique_id;
+$vars->{ct_name}         = $ct->name;
+$vars->{ct_id}           = $ct->id;
+$vars->{cat_label}       = $category2->label;
 $vars->{category_set_id} = $category_set->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
