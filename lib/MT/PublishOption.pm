@@ -51,7 +51,7 @@ sub archive_build_is_enable {
 # https://movabletype.atlassian.net/browse/MTC-26180
 sub archive_build_type {
     my ( $blog_id, $at ) = @_;
-    warn 'MT::PublishOption::archive_build_type has been depreated.';
+    warn 'MT::PublishOption::archive_build_type has been deprecated.';
     require MT::TemplateMap;
     my $map = MT::TemplateMap->load(
         { blog_id => $blog_id, archive_type => $at } );
