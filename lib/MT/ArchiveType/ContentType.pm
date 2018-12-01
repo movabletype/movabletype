@@ -71,11 +71,12 @@ sub archive_group_iter {
 
     my $order
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
-    my $blog_id = $ctx->stash('blog')->id;
+    my $blog_id         = $ctx->stash('blog')->id;
+    my $content_type_id = $ctx->stash('content_type')->id;
 
     my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
         {   blog_id         => $blog_id,
-            content_type_id => $ctx->stash('content_type')->id,
+            content_type_id => $content_type_id,
         }
     );
     my $dt_field = $map ? $map->dt_field : undef;
@@ -99,12 +100,9 @@ sub archive_group_iter {
 
     require MT::ContentData;
     my $iter = MT::ContentData->load_iter(
-        {   blog_id => $blog_id,
-            status  => MT::ContentStatus::RELEASE(),
-            (   $ctx->stash('content_type')
-                ? ( content_type_id => $ctx->stash('content_type')->id )
-                : ()
-            ),
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            status          => MT::ContentStatus::RELEASE(),
         },
         $iter_args,
     );
