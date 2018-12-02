@@ -106,7 +106,8 @@ sub delete {
 sub _is_archive_template {
     my ( $app, $tmpl ) = @_;
 
-    if (!(  grep { $tmpl->type eq $_ } qw/ individual page category archive /
+    if (!(  grep { $tmpl->type eq $_ }
+            qw/ individual page category archive ct ct_archive /
         )
         )
     {

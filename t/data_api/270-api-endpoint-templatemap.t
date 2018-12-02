@@ -3,21 +3,24 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
@@ -31,6 +34,9 @@ my $mock_author = Test::MockModule->new('MT::Author');
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+
+my $ct1 = MT::Test::Permission->make_content_type( blog_id => 1 );
+my $ct2 = MT::Test::Permission->make_content_type( blog_id => 1 );
 
 my $template_class = $app->model('template');
 
@@ -61,6 +67,63 @@ my $blog_other_tmplmap_id = $blog_other_tmplmap->id;
 my $blog_other_site_tmplmap = $tmplmap_class->load( { blog_id => 2 } )
     or die $tmplmap_class->errstr;
 my $blog_other_site_tmplmap_id = $blog_other_site_tmplmap->id;
+
+my $blog_ct1_tmpl = MT::Test::Permission->make_template(
+    blog_id         => 1,
+    content_type_id => $ct1->id,
+    type            => 'ct',
+);
+my $blog_ct1_archive_tmpl = MT::Test::Permission->make_template(
+    blog_id         => 1,
+    content_type_id => $ct1->id,
+    type            => 'ct_archive',
+);
+my $blog_ct1_tmpl_id         = $blog_ct1_tmpl->id;
+my $blog_ct1_archive_tmpl_id = $blog_ct1_archive_tmpl->id;
+
+my $blog_ct1_tmplmap = MT::Test::Permission->make_templatemap(
+    archive_type => 'ContentType',
+    blog_id => 1,
+    is_preferred => 1,
+    template_id => $blog_ct1_tmpl_id,
+);
+my $blog_ct1_archive_tmplmap = MT::Test::Permission->make_templatemap(
+    archive_type => 'ContentType-Daily',
+    blog_id => 1,
+    is_preferred => 1,
+    template_id => $blog_ct1_archive_tmpl_id,
+);
+my $blog_ct1_tmplmap_id = $blog_ct1_tmplmap->id,;
+my $blog_ct1_archive_tmplmap_id = $blog_ct1_archive_tmpl->id;
+
+my $blog_ct2_tmpl = MT::Test::Permission->make_template(
+    blog_id         => 1,
+    content_type_id => $ct2->id,
+    type            => 'ct',
+);
+my $blog_ct2_archive_tmpl = MT::Test::Permission->make_template(
+    blog_id         => 1,
+    content_type_id => $ct2->id,
+    type            => 'ct_archive',
+);
+my $blog_ct2_tmpl_id         = $blog_ct2_tmpl->id;
+my $blog_ct2_archive_tmpl_id = $blog_ct2_archive_tmpl->id;
+
+my $blog_ct2_tmplmap = MT::Test::Permission->make_templatemap(
+    archive_type => 'ContentType',
+    blog_id => 1,
+    is_preferred => 1,
+    template_id => $blog_ct2_tmpl_id,
+);
+my $blog_ct2_archive_tmplmap = MT::Test::Permission->make_templatemap(
+    archive_type => 'ContentType-Author-Monthly',
+    blog_id => 1,
+    is_preferred => 1,
+    template_id => $blog_ct2_archive_tmpl_id,
+);
+my $blog_ct2_tmplmap_id = $blog_ct2_tmplmap->id;
+my $blog_ct2_archive_tmplmap_id = $blog_ct2_archive_tmplmap->id;
+
 
 # test.
 my $suite = suite();
@@ -212,6 +275,113 @@ sub suite {
                         is_preferred => { not => 1 },
                     }
                 );
+            },
+        },
+        {
+            note => 'create content type archive for $ct1',
+            path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            result => sub {
+                $app->model('templatemap')->load(
+                    {   blog_id      => 1,
+                        template_id  => $blog_ct1_tmpl_id,
+                        is_preferred => { not => 1 },
+                    }
+                );
+            },
+            complete => sub {
+                my @maps = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct1_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps ), 1 );
+            },
+        },
+        {   note => 'create content type archive for ct2',
+            path   => "/v2/sites/1/templates/$blog_ct2_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            result => sub {
+                $app->model('templatemap')->load(
+                    {   blog_id      => 1,
+                        template_id  => $blog_ct2_tmpl_id,
+                        is_preferred => { not => 1 },
+                    }
+                );
+            },
+            complete => sub {
+                my @maps_for_ct1 = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct1_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps_for_ct1 ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps_for_ct1 ), 1 );
+
+                my @maps_for_ct2 = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct2_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps_for_ct2 ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps_for_ct2 ), 1 );
+            },
+        },
+        {   note => 'create content type archive listing for $ct2',
+            path =>
+                "/v2/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Author-Daily',
+                    buildType   => 'Static',
+                },
+            },
+            result => sub {
+                $app->model('templatemap')->load(
+                    {   blog_id      => 1,
+                        template_id  => $blog_ct2_archive_tmpl_id,
+                        is_preferred => { not => 1 },
+                    }
+                );
+            },
+            complete => sub {
+                my @maps_for_ct1 = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct1_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps_for_ct1 ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps_for_ct1 ), 1 );
+
+                my @maps_for_ct2 = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct2_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps_for_ct2 ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps_for_ct2 ), 1 );
+
+                my @maps_for_ct2_archive = $app->model('templatemap')->load(
+                    {   blog_id     => 1,
+                        template_id => $blog_ct2_archive_tmpl_id,
+                    }
+                );
+                is( scalar( grep { $_->is_preferred } @maps_for_ct2_archive ),  1 );
+                is( scalar( grep { !$_->is_preferred } @maps_for_ct2_archive ), 1 );
             },
         },
 
@@ -370,6 +540,31 @@ sub suite {
                 };
             },
         },
+        {    # ct1 content type archive
+            path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'GET',
+            result => sub {
+                my @tm = $app->model('templatemap')
+                    ->load( { template_id => $blog_ct1_tmpl_id, } );
+                return +{
+                    totalResults => scalar(@tm),
+                    items => MT::DataAPI::Resource->from_object( \@tm ),
+                };
+            },
+        },
+        {    # ct2 content type archive listing
+            path =>
+                "/v2/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            method => 'GET',
+            result => sub {
+                my @tm = $app->model('templatemap')
+                    ->load( { template_id => $blog_ct2_archive_tmpl_id, } );
+                return +{
+                    totalResults => scalar(@tm),
+                    items => MT::DataAPI::Resource->from_object( \@tm ),
+                };
+            },
+        },
 
         # get_templatemap - irregular tests
         {    # Non-existent templatemap.
@@ -440,6 +635,11 @@ sub suite {
             result => sub {
                 $blog_tmplmap;
             },
+        },
+        {
+            path => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'GET',
+            result => sub { $blog_ct1_tmplmap },
         },
 
         # update_templatemap - irregular test.

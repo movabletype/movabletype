@@ -95,16 +95,27 @@ sub _retrieve_archive_types {
 sub pre_save {
     my ( $cb, $app, $obj ) = @_;
 
-    if (!$obj->is_preferred
-        && !$app->model('templatemap')->exist(
-            {   blog_id      => $obj->blog_id,
-                archive_type => $obj->archive_type,
-                is_preferred => 1,
-            }
-        )
-        )
-    {
-        $obj->is_preferred(1);
+    if ( !$obj->is_preferred ) {
+        my $terms = {
+            blog_id      => $obj->blog_id,
+            archive_type => $obj->archive_type,
+            is_preferred => 1,
+        };
+        my $tmpl = $obj->template;
+        my $args = {
+            $tmpl->content_type_id
+            ? ( join => $app->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $tmpl->content_type_id,
+                    },
+                ),
+                )
+            : (),
+        };
+        if ( !$app->model('templatemap')->exist( $terms, $args ) ) {
+            $obj->is_preferred(1);
+        }
     }
 
     return 1;
@@ -115,13 +126,26 @@ sub post_save {
     my ( $app, $obj, $original ) = @_;
 
     if ( $obj->is_preferred ) {
-        my @maps = $app->model('templatemap')->load(
-            {   id           => { not => $obj->id },
-                blog_id      => $obj->blog_id,
-                archive_type => $obj->archive_type,
-                is_preferred => 1,
-            }
-        );
+        my $terms = {
+            id           => { not => $obj->id },
+            blog_id      => $obj->blog_id,
+            archive_type => $obj->archive_type,
+            is_preferred => 1,
+        };
+        my $tmpl = $obj->template;
+        my $args = {
+            $tmpl->content_type_id
+            ? ( join => $app->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $tmpl->content_type_id,
+                    },
+                ),
+                )
+            : (),
+        };
+
+        my @maps = $app->model('templatemap')->load( $terms, $args );
 
         for my $m (@maps) {
             $m->is_preferred(0);
@@ -186,18 +210,33 @@ sub post_delete {
     my $eh = shift;
     my ( $app, $obj ) = @_;
 
+    my $tmpl = $obj->template;
+    my $args = {
+        $tmpl->content_type_id
+        ? ( join => $app->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $tmpl->content_type_id,
+                },
+            ),
+            )
+        : (),
+    };
+
     if (!$app->model('templatemap')->exist(
             {   blog_id      => $obj->blog_id,
                 archive_type => $obj->archive_type,
                 is_preferred => 1,
-            }
+            },
+            $args,
         )
         )
     {
         my $m = $app->model('templatemap')->load(
             {   blog_id      => $obj->blog,
                 archive_type => $obj->archive_type,
-            }
+            },
+            $args,
         );
         $m->is_preferred(1);
         $m->save or return;

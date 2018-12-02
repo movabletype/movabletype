@@ -329,6 +329,16 @@ sub cat_field {
     );
 }
 
+sub template {
+    my $self = shift;
+    $self->cache_property(
+        'template',
+        sub {
+            MT->model('template')->load( $self->template_id || 0 );
+        },
+    );
+}
+
 sub _is_for_content_type {
     my $self = shift;
     $self->archive_type =~ /^ContentType/;
