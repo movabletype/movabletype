@@ -901,7 +901,9 @@ sub rebuild_file {
             = MT::ContentType->load( $content_data->content_type_id );
         $ctx->var( 'content_archive', 1 );
         $ctx->{__stash}{content_type} = $content_type;
-        $ctx->{__stash}{content}      = $content_data;
+        if ( $archiver->contenttype_based ) {
+            $ctx->{__stash}{content} = $content_data;
+        }
         $ctx->{__stash}{template_map} = $map;
     }
     local $ctx->{current_timestamp}     = $start if $start;
@@ -1740,10 +1742,11 @@ sub _rebuild_content_archive_type {
                 : '';
             my $cache_map_key
                 = $blog->id . ':'
-                . ( ( $at =~ /^ContentType/ && $content_type_id )
+                . (
+                ( $at =~ /^ContentType/ && $content_type_id )
                 ? $content_type_id . ':'
-                : '' )
-                . $at;
+                : ''
+                ) . $at;
             unless ( $map = $cache_map->{$cache_map_key} ) {
                 my $args
                     = ( $at =~ /^ContentType/ && $content_type_id )
