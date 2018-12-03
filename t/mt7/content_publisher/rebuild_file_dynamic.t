@@ -47,12 +47,8 @@ for my $map ( sort { $a->archive_type cmp $b->archive_type } @ct_maps ) {
     ) or die;
 
     my $fileinfo
-        = $app->model('fileinfo')->load( { templatemap_id => $map->id } );
-    if ( !$fileinfo ) {
-        # FIXME: https://movabletype.atlassian.net/browse/MTC-26200
-        warn 'skip: ' . $map->archive_type;
-        next;
-    }
+        = $app->model('fileinfo')->load( { templatemap_id => $map->id } )
+        or next;
     my $request_uri = $fileinfo->url;
 
     my $tmpl = $app->model('template')->load( $map->template_id ) or die;
