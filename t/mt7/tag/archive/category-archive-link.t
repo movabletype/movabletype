@@ -60,9 +60,6 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
---- expected_php_todo_contenttype
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26152
 --- expected_contenttype
 http://narnia.na/cat-strawberry/cat-orange/
 --- expected_php_todo_contenttype_author
