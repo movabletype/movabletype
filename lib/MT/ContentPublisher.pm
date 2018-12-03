@@ -484,17 +484,18 @@ sub rebuild_content_data {
     my %param = @_;
 
     my $content_data = $param{ContentData}
-        or
-        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+        or return $mt->trans_error( "Parameter '[_1]' is required",
+        'ContentData' );
     unless ( ref $content_data ) {
         $content_data = MT::ContentData->load($content_data);
     }
     unless ($content_data) {
-        return $mt->errtrans( "Parameter '[_1]' is invalid", 'ContentData' );
+        return $mt->trans_error( "Parameter '[_1]' is invalid",
+            'ContentData' );
     }
 
     my $blog = $param{Blog} || $content_data->blog
-        or return $mt->errtrans( "Load of blog '[_1]' failed",
+        or return $mt->trans_error( "Load of blog '[_1]' failed",
         $content_data->blog_id );
     return 1 if $blog->is_dynamic;
 
@@ -1995,8 +1996,8 @@ sub rebuild_deleted_content_data {
     my %param        = @_;
     my $app          = MT->instance;
     my $content_data = $param{ContentData}
-        or
-        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+        or return $mt->trans_error( "Parameter '[_1]' is required",
+        'ContentData' );
     $content_data = MT::ContentData->load($content_data)
         unless ref $content_data;
     return unless $content_data;
@@ -2008,7 +2009,7 @@ sub rebuild_deleted_content_data {
     my $blog = $param{Blog};
     unless ($blog) {
         $blog = $content_data->blog
-            or return $mt->errtrans(
+            or return $mt->trans_error(
             "Load of blog '[_1]' failed",
             $content_data->blog_id || '(none)'
             );
