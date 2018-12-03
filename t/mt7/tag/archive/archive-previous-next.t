@@ -442,7 +442,7 @@ cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].h
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
-author2 | http://narnia.na/author/author2/
+author2 | http://narnia.na/ct_author/author2/
 --- expected_contenttype_author_daily
 --- expected_contenttype_author_monthly
 --- expected_contenttype_author_weekly
@@ -488,7 +488,7 @@ cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].h
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
-author2 | http://narnia.na/author/author2/
+author2 | http://narnia.na/ct_author/author2/
 --- expected_contenttype_author_daily
 author1: September 26, 2020 | http://narnia.na/author/author1/2020/09/26/
 --- expected_php_todo_contenttype_author_daily
@@ -592,7 +592,7 @@ cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].h
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
-author2 | http://narnia.na/author/author2/
+author2 | http://narnia.na/ct_author/author2/
 --- expected_contenttype_author_daily
 --- expected_php_todo_contenttype_author_daily
 --- FIXME
@@ -699,7 +699,7 @@ cd_same_same_date | http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].h
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
-author2 | http://narnia.na/author/author2/
+author2 | http://narnia.na/ct_author/author2/
 --- expected_contenttype_author_daily
 --- expected_contenttype_author_monthly
 --- expected_contenttype_author_weekly

@@ -83,7 +83,7 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- expected_contenttype
 http://narnia.na/2019/09/[% cd_same_apple_orange_unique_id %].html
 --- expected_contenttype_author
-http://narnia.na/author/author1/
+http://narnia.na/ct_author/author1/
 --- expected_contenttype_author_daily
 http://narnia.na/author/author1/2019/09/26/
 --- expected_contenttype_author_weekly

@@ -191,8 +191,8 @@ http://narnia.na/2016/10/[% cd_same_peach_unique_id %].html
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26128
 --- expected_contenttype_author
-http://narnia.na/author/author1/
-http://narnia.na/author/author2/
+http://narnia.na/ct_author/author1/
+http://narnia.na/ct_author/author2/
 --- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26126
