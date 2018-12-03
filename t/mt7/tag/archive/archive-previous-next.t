@@ -147,21 +147,9 @@ https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 --- expected_contenttype_daily
---- expected_php_todo_contenttype_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_monthly
---- expected_php_todo_contenttype_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_weekly
---- expected_php_todo_contenttype_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_yearly
---- expected_php_todo_contenttype_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_daily
 December  3, 2015 | http://narnia.na/2015/12/03/
 --- expected_individual
@@ -449,24 +437,12 @@ cat_apple: September 20, 2020 - September 26, 2020 | http://narnia.na/cat-apple/
 cat_apple: 2020 | http://narnia.na/cat-apple/2020/
 --- expected_contenttype_daily
 September 26, 2020 | http://narnia.na/2020/09/26/
---- expected_php_todo_contenttype_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_monthly
 September 2020 | http://narnia.na/2020/09/
---- expected_php_todo_contenttype_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_weekly
 September 20, 2020 - September 26, 2020 | http://narnia.na/2020/09/20-week/
---- expected_php_todo_contenttype_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_yearly
 2020 | http://narnia.na/2020/
---- expected_php_todo_contenttype_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_daily
 December  3, 2017 | http://narnia.na/2017/12/03/
 --- expected_individual
@@ -520,21 +496,9 @@ cat_peach | http://narnia.na/cat-peach/
 --- expected_contenttype_category_weekly
 --- expected_contenttype_category_yearly
 --- expected_contenttype_daily
---- expected_php_todo_contenttype_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_monthly
---- expected_php_todo_contenttype_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_weekly
---- expected_php_todo_contenttype_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_contenttype_yearly
---- expected_php_todo_contenttype_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26121
 --- expected_daily
 December  3, 2018 | http://narnia.na/2018/12/03/
 --- expected_individual
