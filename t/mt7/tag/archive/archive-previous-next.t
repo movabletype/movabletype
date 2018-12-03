@@ -37,8 +37,6 @@ for my $cd_label ( keys %{$objs->{content_data}} ){
     MT::Test::ArchiveType->vars->{$key} = $cd->unique_id;
 }
 
-# my @maps = MT::Test::ArchiveType->template_maps('ContentType-Category-Daily');
-# MT::Test::ArchiveType->run_tests(@maps);
 MT::Test::ArchiveType->run_tests;
 
 done_testing;
@@ -362,7 +360,6 @@ https://movabletype.atlassian.net/browse/MTC-26123
 2017 | http://narnia.na/2017/
 
 === mt:ArchiveNext (authored_on, cat_apple)
---- ONLY
 --- stash
 { entry => 'entry_author1_ruler_eraser', entry_category => 'cat_ruler', page => 'page_author1_coffee', cd => 'cd_same_apple_orange_peach', cat_field => 'cf_same_catset_fruit', category => 'cat_apple' }
 --- template
