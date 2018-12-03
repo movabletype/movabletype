@@ -663,7 +663,7 @@ sub rebuild_content_data {
         } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
-                my $archiver = $mt->archiver($at);
+                my $archiver = $mt->archiver($at) or next;
                 if ( $archiver->category_based ) {
                     my @maps;
                     if ( $cache_maps{$at} ) {
