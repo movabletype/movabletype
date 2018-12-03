@@ -22,8 +22,12 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
 }
 
 function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
-    $maps = $ctx->mt->db()->fetch_templatemap(
-        array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
+    $maps = $ctx->mt->db()->fetch_templatemap(array(
+        'blog_id' => $blog_id,
+        'content_type_id' => $ctx->stash('content_type')->id,
+        'preferred' => 1,
+        'type' => $at
+    ));
     if (isset($maps)) {
         $map = $maps[0];
         $dt_field_id = $map->templatemap_dt_field_id;
@@ -36,6 +40,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
         $join_on .= "join mt_cf_idx dt_cf_idx";
         $join_on .= " on cd_id = dt_cf_idx.cf_idx_content_data_id";
         $join_on .= " and dt_cf_idx.cf_idx_content_field_id = $dt_field_id\n";
+
         $dt_target_col = 'dt_cf_idx.cf_idx_value_datetime';
     }
     if ($cat) {
@@ -2472,12 +2477,15 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
             }
             $order = $is_prev ? 'previous' : 'next';
             $helper = $this->get_helper();
-            if ($cd = $this->get_content($ts, $ctx->stash('blog_id'), $at, $order, $content_type_id)) {
+            $blog_id = $ctx->stash('blog_id');
+            $content_type_id = $ctx->stash('content_type')->id;
+            if ($cd = $this->get_content($ts, $blog_id, $at, $order, $content_type_id)) {
                 $ctx->stash('contents', array($cd));
                 $maps = $ctx->mt->db()->fetch_templatemap(array(
-                    'type'         => $at,
-                    'preferred'    => 1,
-                    'content_type' => $content_type_id
+                    'blog_id'         => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'preferred'       => 1,
+                    'type'            => $at
                 ));
                 if (isset($maps)) {
                     $map = $maps[0];
@@ -3248,8 +3256,12 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             }
             $order = $is_prev ? 'previous' : 'next';
             $blog_id = $ctx->stash('blog_id');
-            $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
+            $maps = $ctx->mt->db()->fetch_templatemap(array(
+                'blog_id'         => $blog_id,
+                'content_type_id' => $ctx->stash('content_type')->id,
+                'preferred'       => 1,
+                'type'            => $at
+            ));
             if (isset($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
@@ -3977,8 +3989,12 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $is_prev = $tag == 'archiveprevious';
             $blog_id = $ctx->stash('blog_id');
             $ts = $ctx->stash('current_timestamp');
-            $maps = $ctx->mt->db()->fetch_templatemap(
-                array('type' => $at, 'blog_id' => $blog_id, 'preferred' => 1));
+            $maps = $ctx->mt->db()->fetch_templatemap(array(
+                'blog_id'         => $blog_id,
+                'content_type_id' => $ctx->stash('content_type')->id,
+                'preferred'       => 1,
+                'type'            => $at
+            ));
             if (isset($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
@@ -4159,6 +4175,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4167,6 +4184,10 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
@@ -4303,6 +4324,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4311,6 +4333,10 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4450,6 +4476,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4458,6 +4485,10 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4610,6 +4641,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         }
 
         $categories = array();
+        $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
@@ -4618,6 +4650,10 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+
+                # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
+                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                $seen_join_on[$join_on] = 1;
 
                 $inside = $ctx->stash('inside_archive_list');
                 if (!isset($inside)) {

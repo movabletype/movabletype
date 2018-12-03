@@ -202,6 +202,9 @@ sub _hdlr_archives {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
@@ -210,10 +213,10 @@ sub _hdlr_archives {
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
         my $map
-            = $ctx->stash('template_map') || MT->model('templatemap')->load(
-            {   blog_id      => $blog->id,
-                archive_type => $at,
-                is_preferred => 1,
+            = $ctx->stash('template_map')
+            || $archiver->_search_preferred_map(
+            {   blog_id         => $blog->id,
+                content_type_id => $ctx->stash('content_type')->id,
             }
             );
         my $cat_field = $map ? $map->cat_field : undef;
@@ -458,6 +461,9 @@ sub _hdlr_archive_prev_next {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based
@@ -917,16 +923,17 @@ sub _hdlr_archive_link {
         $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     }
 
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+
     return $ctx->error(
         MT->translate(
             "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
             '<$MTArchiveLink$>',
             $at
         )
-    ) unless $blog->has_archive_type($at);
+    ) unless $blog->has_archive_type( $at, $content_type_id || 0 );
 
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
     $arch = $blog->site_url
         if $content && $content->can('class') && $content->class eq 'page';

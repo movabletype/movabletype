@@ -111,5 +111,6 @@ on 'test' => sub {
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
     requires 'Text::Diff';
+    requires 'URI::Escape';
     requires 'Wight';
 };

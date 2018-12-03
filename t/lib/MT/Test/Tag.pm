@@ -160,16 +160,22 @@ SKIP: {
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
+                # those with $method_name have higher precedence
+                # and todo does, too
                 my @extra_methods = (
-                    "expected_php_error_$method_name",
+                    "expected_php_todo_error_$method_name",
                     "expected_php_todo_$method_name",
-                    "expected_php_todo",
-                    "expected_todo_error",
-                    "expected_php_error",
-                    "expected_error",
+                    "expected_todo_$method_name",
+                    "expected_php_error_$method_name",
+                    "expected_error_$method_name",
+                    "expected_php_todo_$method_name",
                     "expected_todo_$method_name",
                     "expected_$method_name",
+                    "expected_php_todo",
+                    "expected_todo_error",
                     "expected_todo",
+                    "expected_php_error",
+                    "expected_error",
                 );
                 my $expected_method = "expected";
                 for my $method (@extra_methods) {
