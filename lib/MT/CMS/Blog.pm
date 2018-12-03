@@ -2419,6 +2419,9 @@ sub update_publishing_profile {
     require MT::TemplateMap;
 
     if ( ( $dcty eq 'none' ) || ( $dcty =~ m/^async/ ) ) {
+
+        # none, async_all or async_partial
+
         my @templates = MT::Template->load(
             {   blog_id => $blog->id,
 
@@ -2438,6 +2441,8 @@ sub update_publishing_profile {
             next if $bt == MT::PublishOption::MANUALLY();
             next if $bt == MT::PublishOption::SCHEDULED();
 
+            # ONDEMAND, DYNAMIC and ASYNC remains
+
             if ( $dcty eq 'async_partial' ) {
 
                 # these should be build synchronously
@@ -2447,14 +2452,15 @@ sub update_publishing_profile {
                     $tmpl->build_type( MT::PublishOption::ONDEMAND() );
                 }
                 else {
-                    if (   ( $tmpl->type eq 'individual' )
-                        || ( $tmpl->type eq 'page' ) )
+                    if (   $tmpl->type eq 'individual'
+                        || $tmpl->type eq 'page'
+                        || $tmpl->type eq 'ct' )
                     {
                         my @tmpl_maps = MT::TemplateMap->load(
                             { template_id => $tmpl->id } );
                         foreach my $tmpl_map (@tmpl_maps) {
                             if ((   $tmpl_map->archive_type
-                                    =~ m/^(Individual|Page)$/
+                                    =~ m/^(Individual|Page|ContentType)$/
                                 )
                                 && ( $tmpl_map->is_preferred )
                                 )
@@ -2489,7 +2495,7 @@ sub update_publishing_profile {
             $tmpl->save();
         }
         if ( $dcty eq 'none' ) {
-            if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+            if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
                 && MT->config->EnableAutoRewriteOnIIS )
             {
 
@@ -2602,6 +2608,8 @@ sub update_publishing_profile {
             next if $bt == MT::PublishOption::MANUALLY();
             next if $bt == MT::PublishOption::SCHEDULED();
 
+            # ONDEMAND, DYNAMIC and ASYNC remains
+
             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
             $tmpl->save();
         }
@@ -2610,6 +2618,7 @@ sub update_publishing_profile {
 }
 
 sub update_dynamicity {
+
     my $app = shift;
     my ($blog) = @_;
 
