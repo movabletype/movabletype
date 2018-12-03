@@ -28,6 +28,9 @@ $test_env->prepare_fixture('archive_type');
 my $objs = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id} or die;
 
+MT::Request->instance->reset;
+MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
 my %built_ct_archive_types = map { $_ => undef }
     grep {/^ContentType/} $app->publisher->archive_types;
 
@@ -59,8 +62,6 @@ $app->rebuild( BlogID => $blog_id ) or die;
 my @not_tested_archive_types
     = grep { !$built_ct_archive_types{$_} } keys %built_ct_archive_types;
 
-# FIXME: https://movabletype.atlassian.net/browse/MTC-26200
-$TODO = 'may fail';
 is( @not_tested_archive_types, 0,
     'test all archive types related to content type' );
 
