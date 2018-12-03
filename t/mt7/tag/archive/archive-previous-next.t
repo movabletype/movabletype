@@ -80,24 +80,12 @@ author1: 2017 | http://narnia.na/author/author1/2017/
 --- expected_contenttype_category
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017 | http://narnia.na/cat-apple/2017/10/31/
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_monthly
 cat_apple: October 2017 | http://narnia.na/cat-apple/2017/10/
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_weekly
 cat_apple: October 29, 2017 - November  4, 2017 | http://narnia.na/cat-apple/2017/10/29-week/
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_yearly
 cat_apple: 2017 | http://narnia.na/cat-apple/2017/
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_daily
 October 31, 2017 | http://narnia.na/2017/10/31/
 --- expected_contenttype_monthly
@@ -150,21 +138,9 @@ cd_same_apple_orange_peach | http://narnia.na/2017/10/[% cd_same_apple_orange_pe
 https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
 --- expected_contenttype_author_daily
---- expected_php_todo_contenttype_author_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_monthly
---- expected_php_todo_contenttype_author_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_weekly
---- expected_php_todo_contenttype_author_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_yearly
---- expected_php_todo_contenttype_author_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 --- expected_contenttype_category_daily
 --- expected_contenttype_category_monthly
@@ -224,45 +200,21 @@ https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
 --- expected_contenttype_author_daily
 author1: November  1, 2006 | http://narnia.na/author/author1/2006/11/01/
---- expected_php_todo_contenttype_author_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_monthly
 author1: November 2006 | http://narnia.na/author/author1/2006/11/
---- expected_php_todo_contenttype_author_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_weekly
 author1: October 29, 2006 - November  4, 2006 | http://narnia.na/author/author1/2006/10/29-week/
---- expected_php_todo_contenttype_author_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_yearly
 author1: 2006 | http://narnia.na/author/author1/2006/
---- expected_php_todo_contenttype_author_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 --- expected_contenttype_category_daily
 cat_apple: November  1, 2006 | http://narnia.na/cat-apple/2006/11/01/
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_monthly
 cat_apple: November 2006 | http://narnia.na/cat-apple/2006/11/
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_weekly
 cat_apple: October 29, 2006 - November  4, 2006 | http://narnia.na/cat-apple/2006/10/29-week/
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_yearly
 cat_apple: 2006 | http://narnia.na/cat-apple/2006/
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_daily
 November  1, 2006 | http://narnia.na/2006/11/01/
 --- expected_contenttype_monthly
@@ -359,24 +311,12 @@ author1: 2017 | http://narnia.na/author/author1/2017/
 --- expected_contenttype_category
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017 | http://narnia.na/cat-apple/2017/10/31/
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_monthly
 cat_apple: October 2017 | http://narnia.na/cat-apple/2017/10/
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_weekly
 cat_apple: October 29, 2017 - November  4, 2017 | http://narnia.na/cat-apple/2017/10/29-week/
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_yearly
 cat_apple: 2017 | http://narnia.na/cat-apple/2017/
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_daily
 October 31, 2017 | http://narnia.na/2017/10/31/
 --- expected_contenttype_monthly
@@ -491,46 +431,22 @@ https://movabletype.atlassian.net/browse/MTC-26058
 author2 | http://narnia.na/author/author2/
 --- expected_contenttype_author_daily
 author1: September 26, 2020 | http://narnia.na/author/author1/2020/09/26/
---- expected_php_todo_contenttype_author_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_monthly
 author1: September 2020 | http://narnia.na/author/author1/2020/09/
---- expected_php_todo_contenttype_author_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_weekly
 author1: September 20, 2020 - September 26, 2020 | http://narnia.na/author/author1/2020/09/20-week/
---- expected_php_todo_contenttype_author_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_yearly
 author1: 2020 | http://narnia.na/author/author1/2020/
---- expected_php_todo_contenttype_author_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
 --- expected_contenttype_category_daily
 cat_apple: September 26, 2020 | http://narnia.na/cat-apple/2020/09/26/
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_monthly
 cat_apple: September 2020 | http://narnia.na/cat-apple/2020/09/
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_weekly
 cat_apple: September 20, 2020 - September 26, 2020 | http://narnia.na/cat-apple/2020/09/20-week/
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category_yearly
 cat_apple: 2020 | http://narnia.na/cat-apple/2020/
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_daily
 September 26, 2020 | http://narnia.na/2020/09/26/
 --- expected_php_todo_contenttype_daily
@@ -594,21 +510,9 @@ https://movabletype.atlassian.net/browse/MTC-26058
 --- expected_contenttype_author
 author2 | http://narnia.na/author/author2/
 --- expected_contenttype_author_daily
---- expected_php_todo_contenttype_author_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_monthly
---- expected_php_todo_contenttype_author_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_weekly
---- expected_php_todo_contenttype_author_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_author_yearly
---- expected_php_todo_contenttype_author_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26117
 --- expected_contenttype_category
 cat_peach | http://narnia.na/cat-peach/
 --- expected_contenttype_category_daily
