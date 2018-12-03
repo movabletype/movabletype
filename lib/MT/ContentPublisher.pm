@@ -567,9 +567,10 @@ sub rebuild_content_data {
                     my $cat;
                     if ( $map->cat_field_id ) {
                         my $obj_category = MT->model('objectcategory')->load(
-                            {   object_ds  => 'content_data',
+                            {   cf_id      => $map->cat_field_id,
+                                is_primary => 1,
+                                object_ds  => 'content_data',
                                 object_id  => $content_data->id,
-                                is_primary => 1
                             }
                         );
                         $cat
