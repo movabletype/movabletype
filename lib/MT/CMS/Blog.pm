@@ -2489,7 +2489,7 @@ sub update_publishing_profile {
             $tmpl->save();
         }
         if ( $dcty eq 'none' ) {
-            if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+            if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
                 && MT->config->EnableAutoRewriteOnIIS )
             {
 
