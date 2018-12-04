@@ -193,9 +193,6 @@ https://movabletype.atlassian.net/browse/MTC-26128
 --- expected_contenttype_author
 http://narnia.na/ct/author/author1/
 http://narnia.na/ct/author/author2/
---- expected_php_todo_contenttype_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26126
 --- expected_contenttype_author_daily
 http://narnia.na/ct/author/author1/2018/10/31/
 http://narnia.na/ct/author/author1/2017/10/31/
