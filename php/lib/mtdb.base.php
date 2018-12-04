@@ -4491,8 +4491,9 @@ abstract class MTDatabase {
                 $category_set_id = $category_set->id;
                 
                 $cat_fields = $this->fetch_content_fields(array(
-                  'blog_id' => $blog_id,
-                  'related_cat_set_id' => $category_set_id,
+                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'related_cat_set_id' => $category_set_id,
                 ));
                 if($cat_fields){
                     $cf = $cat_fields[0];
