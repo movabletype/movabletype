@@ -503,7 +503,12 @@ abstract class MTDatabase {
                     'condition' => "template_id = templatemap_template_id"
                     )
                 );
-            $content_type_filter = 'and template_content_type_id = ' . intval($args['content_type_id']);
+            if (is_array($args['content_type_id'])) {
+                $content_type_id = $args['content_type_id'][0];
+            } else {
+                $content_type_id = $args['content_type_id'];
+            }
+            $content_type_filter = 'and template_content_type_id = ' . intval($content_type_id);
         }
 
         $where = "1 = 1
