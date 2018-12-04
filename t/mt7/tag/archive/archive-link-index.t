@@ -219,33 +219,21 @@ http://narnia.na/ct/cat-apple/2018/10/31/
 http://narnia.na/ct/cat-apple/2017/10/31/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/31/
 http://narnia.na/ct/cat-peach/2016/10/31/
---- expected_php_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_weekly
 http://narnia.na/ct/cat-apple/2018/10/28-week/
 http://narnia.na/ct/cat-apple/2017/10/29-week/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/29-week/
 http://narnia.na/ct/cat-peach/2016/10/30-week/
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_monthly
 http://narnia.na/ct/cat-apple/2018/10/
 http://narnia.na/ct/cat-apple/2017/10/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/
 http://narnia.na/ct/cat-peach/2016/10/
---- expected_php_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_yearly
 http://narnia.na/ct/cat-apple/2018/
 http://narnia.na/ct/cat-apple/2017/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/
 http://narnia.na/ct/cat-peach/2016/
---- expected_php_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_daily
 http://narnia.na/ct/2018/10/31/
 http://narnia.na/ct/2017/10/31/
