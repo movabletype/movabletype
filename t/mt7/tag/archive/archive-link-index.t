@@ -187,9 +187,6 @@ http://narnia.na/ct/2018/10/[% cd_same_apple_orange_unique_id %].html
 http://narnia.na/ct/2018/10/[% cd_same_same_date_unique_id %].html
 http://narnia.na/ct/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 http://narnia.na/ct/2016/10/[% cd_same_peach_unique_id %].html
---- expected_php_todo_contenttype
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26128
 --- expected_contenttype_author
 http://narnia.na/ct/author/author1/
 http://narnia.na/ct/author/author2/
