@@ -71,21 +71,40 @@ sub archive_group_iter {
 
     my $order
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $blog_id         = $ctx->stash('blog')->id;
+    my $content_type_id = $ctx->stash('content_type')->id;
 
-    my $blog_id = $ctx->stash('blog')->id;
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+        }
+    );
+    my $dt_field = $map ? $map->dt_field : undef;
+
+    my $iter_args = { $args->{lastn} ? ( limit => $args->{lastn} ) : () };
+    if ($dt_field) {
+        $iter_args->{join} = MT->model('content_field_index')->join_on(
+            undef,
+            {   content_field_id => $dt_field->id,
+                content_data_id  => \'= cd_id',
+            },
+            {   direction => $order,
+                sort      => 'value_datetime',
+            },
+        );
+    }
+    else {
+        $iter_args->{direction} = $order;
+        $iter_args->{sort}      = 'authored_on';
+    }
+
     require MT::ContentData;
     my $iter = MT::ContentData->load_iter(
-        {   blog_id => $blog_id,
-            status  => MT::ContentStatus::RELEASE(),
-            (   $ctx->stash('content_type')
-                ? ( content_type_id => $ctx->stash('content_type')->id )
-                : ()
-            ),
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            status          => MT::ContentStatus::RELEASE(),
         },
-        {   'sort'    => 'authored_on',
-            direction => $order,
-            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
-        }
+        $iter_args,
     );
     return sub {
         while ( my $content = $iter->() ) {

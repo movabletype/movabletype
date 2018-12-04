@@ -61,7 +61,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
     if (!isset($dt_target_col))
         $dt_target_col = 'cd_authored_on';
 
-    return array ($dt_target_col, $cat_target_col, $join_on); 
+    return array ($dt_target_col, $cat_target_col, $join_on, $dt_field_id);
 }
 
 function _get_content_type_filter($args) {
@@ -2382,18 +2382,33 @@ class ContentTypeArchiver implements ArchiveType {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
+        $at = $args['archive_type'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
         $content_type_filter = _get_content_type_filter($args);
+
+        list($dt_target_col, $cat_target_col, $join_on, $dt_field_id) = _get_join_on($ctx, $at, $blog_id);
+        $content_field_filder = '';
+        if (isset($dt_field_id) && $dt_field_id) {
+            $content_field_filter = "and dt_cf_idx.cf_idx_content_field_id = $dt_field_id";
+        }
 
         $sql = "
                 cd_blog_id = $blog_id
                 and cd_status = 2
                 $content_type_filter
-                order by cd_authored_on $order, cd_id asc";
+                $content_field_filter
+                order by $dt_target_col $order, cd_id asc";
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
+        if (isset($dt_field_id) && $dt_field_id) {
+            $extras['join'] = array(
+                'mt_cf_idx dt_cf_idx' => array(
+                    'condition' => 'cd_id = dt_cf_idx.cf_idx_content_data_id'
+                )
+            );
+        }
 
         require_once('class.mt_content_data.php');
         $content = new ContentData();
