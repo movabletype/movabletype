@@ -252,35 +252,22 @@ http://narnia.na/ct/cat-peach/2016/
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_daily
---- FIXME
-http://narnia.na/ct/2008/11/01/
-http://narnia.na/ct/2006/11/01/
-http://narnia.na/ct/2004/11/01/
---- expected_php_todo_contenttype_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26130
---- expected_todo_contenttype_weekly
---- FIXME
-http://narnia.na/ct/2008/10/26-week/
-http://narnia.na/ct/2006/10/29-week/
-http://narnia.na/ct/2004/10/31-week/
---- expected_php_todo_contenttype_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26130
---- expected_todo_contenttype_monthly
---- FIXME
-http://narnia.na/ct/2008/11/
-http://narnia.na/ct/2006/11/
-http://narnia.na/ct/2004/11/
---- expected_php_todo_contenttype_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26130
---- expected_todo_contenttype_yearly
---- FIXME
-http://narnia.na/ct/2008/
-http://narnia.na/ct/2006/
-http://narnia.na/ct/2004/
+--- expected_contenttype_daily
+http://narnia.na/ct/2018/10/31/
+http://narnia.na/ct/2017/10/31/
+http://narnia.na/ct/2016/10/31/
+--- expected_contenttype_weekly
+http://narnia.na/ct/2018/10/28-week/
+http://narnia.na/ct/2017/10/29-week/
+http://narnia.na/ct/2016/10/30-week/
+--- expected_contenttype_monthly
+http://narnia.na/ct/2018/10/
+http://narnia.na/ct/2017/10/
+http://narnia.na/ct/2016/10/
+--- expected_contenttype_yearly
+http://narnia.na/ct/2018/
+http://narnia.na/ct/2017/
+http://narnia.na/ct/2016/
 
 === Some ArchiveTypes without content_type
 --- template
