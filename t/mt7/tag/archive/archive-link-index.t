@@ -212,9 +212,6 @@ http://narnia.na/ct/author/author2/2016/10/
 http://narnia.na/ct/author/author1/2018/
 http://narnia.na/ct/author/author1/2017/
 http://narnia.na/ct/author/author2/2016/
---- expected_php_todo_contenttype_author_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_category
 http://narnia.na/ct/cat-apple/
 http://narnia.na/ct/cat-strawberry/cat-orange/
