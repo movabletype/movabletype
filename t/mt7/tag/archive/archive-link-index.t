@@ -183,104 +183,104 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_contenttype
-http://narnia.na/2018/10/[% cd_same_apple_orange_unique_id %].html
-http://narnia.na/2018/10/[% cd_same_same_date_unique_id %].html
-http://narnia.na/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
-http://narnia.na/2016/10/[% cd_same_peach_unique_id %].html
+http://narnia.na/ct/2018/10/[% cd_same_apple_orange_unique_id %].html
+http://narnia.na/ct/2018/10/[% cd_same_same_date_unique_id %].html
+http://narnia.na/ct/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
+http://narnia.na/ct/2016/10/[% cd_same_peach_unique_id %].html
 --- expected_php_todo_contenttype
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26128
 --- expected_contenttype_author
-http://narnia.na/ct_author/author1/
-http://narnia.na/ct_author/author2/
+http://narnia.na/ct/author/author1/
+http://narnia.na/ct/author/author2/
 --- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26126
 --- expected_contenttype_author_daily
-http://narnia.na/author/author1/2018/10/31/
-http://narnia.na/author/author1/2017/10/31/
-http://narnia.na/author/author2/2016/10/31/
+http://narnia.na/ct/author/author1/2018/10/31/
+http://narnia.na/ct/author/author1/2017/10/31/
+http://narnia.na/ct/author/author2/2016/10/31/
 --- expected_contenttype_author_weekly
-http://narnia.na/author/author1/2018/10/28-week/
-http://narnia.na/author/author1/2017/10/29-week/
-http://narnia.na/author/author2/2016/10/30-week/
+http://narnia.na/ct/author/author1/2018/10/28-week/
+http://narnia.na/ct/author/author1/2017/10/29-week/
+http://narnia.na/ct/author/author2/2016/10/30-week/
 --- expected_contenttype_author_monthly
-http://narnia.na/author/author1/2018/10/
-http://narnia.na/author/author1/2017/10/
-http://narnia.na/author/author2/2016/10/
+http://narnia.na/ct/author/author1/2018/10/
+http://narnia.na/ct/author/author1/2017/10/
+http://narnia.na/ct/author/author2/2016/10/
 --- expected_contenttype_author_yearly
-http://narnia.na/author/author1/2018/
-http://narnia.na/author/author1/2017/
-http://narnia.na/author/author2/2016/
+http://narnia.na/ct/author/author1/2018/
+http://narnia.na/ct/author/author1/2017/
+http://narnia.na/ct/author/author2/2016/
 --- expected_php_todo_contenttype_author_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26127
 --- expected_contenttype_category
-http://narnia.na/cat-apple/
-http://narnia.na/cat-strawberry/cat-orange/
-http://narnia.na/cat-peach/
-http://narnia.na/cat-strawberry/
+http://narnia.na/ct/cat-apple/
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+http://narnia.na/ct/cat-strawberry/
 --- expected_contenttype_category_daily
-http://narnia.na/cat-apple/2018/10/31/
-http://narnia.na/cat-apple/2017/10/31/
-http://narnia.na/cat-strawberry/cat-orange/2017/10/31/
-http://narnia.na/cat-peach/2016/10/31/
+http://narnia.na/ct/cat-apple/2018/10/31/
+http://narnia.na/ct/cat-apple/2017/10/31/
+http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/31/
+http://narnia.na/ct/cat-peach/2016/10/31/
 --- expected_php_todo_contenttype_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_weekly
-http://narnia.na/cat-apple/2018/10/28-week/
-http://narnia.na/cat-apple/2017/10/29-week/
-http://narnia.na/cat-strawberry/cat-orange/2017/10/29-week/
-http://narnia.na/cat-peach/2016/10/30-week/
+http://narnia.na/ct/cat-apple/2018/10/28-week/
+http://narnia.na/ct/cat-apple/2017/10/29-week/
+http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/29-week/
+http://narnia.na/ct/cat-peach/2016/10/30-week/
 --- expected_php_todo_contenttype_category_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_monthly
-http://narnia.na/cat-apple/2018/10/
-http://narnia.na/cat-apple/2017/10/
-http://narnia.na/cat-strawberry/cat-orange/2017/10/
-http://narnia.na/cat-peach/2016/10/
+http://narnia.na/ct/cat-apple/2018/10/
+http://narnia.na/ct/cat-apple/2017/10/
+http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/
+http://narnia.na/ct/cat-peach/2016/10/
 --- expected_php_todo_contenttype_category_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_category_yearly
-http://narnia.na/cat-apple/2018/
-http://narnia.na/cat-apple/2017/
-http://narnia.na/cat-strawberry/cat-orange/2017/
-http://narnia.na/cat-peach/2016/
+http://narnia.na/ct/cat-apple/2018/
+http://narnia.na/ct/cat-apple/2017/
+http://narnia.na/ct/cat-strawberry/cat-orange/2017/
+http://narnia.na/ct/cat-peach/2016/
 --- expected_php_todo_contenttype_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_todo_contenttype_daily
 --- FIXME
-http://narnia.na/2008/11/01/
-http://narnia.na/2006/11/01/
-http://narnia.na/2004/11/01/
+http://narnia.na/ct/2008/11/01/
+http://narnia.na/ct/2006/11/01/
+http://narnia.na/ct/2004/11/01/
 --- expected_php_todo_contenttype_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_todo_contenttype_weekly
 --- FIXME
-http://narnia.na/2008/10/26-week/
-http://narnia.na/2006/10/29-week/
-http://narnia.na/2004/10/31-week/
+http://narnia.na/ct/2008/10/26-week/
+http://narnia.na/ct/2006/10/29-week/
+http://narnia.na/ct/2004/10/31-week/
 --- expected_php_todo_contenttype_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_todo_contenttype_monthly
 --- FIXME
-http://narnia.na/2008/11/
-http://narnia.na/2006/11/
-http://narnia.na/2004/11/
+http://narnia.na/ct/2008/11/
+http://narnia.na/ct/2006/11/
+http://narnia.na/ct/2004/11/
 --- expected_php_todo_contenttype_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26130
 --- expected_todo_contenttype_yearly
 --- FIXME
-http://narnia.na/2008/
-http://narnia.na/2006/
-http://narnia.na/2004/
+http://narnia.na/ct/2008/
+http://narnia.na/ct/2006/
+http://narnia.na/ct/2004/
 
 === Some ArchiveTypes without content_type
 --- template

@@ -352,12 +352,10 @@ sub _template_type {
 
 sub _file_template {
     my $archiver = shift;
-    if ( $archiver->name eq 'ContentType-Author' ) {
-        return 'ct_author/%-a/%f';
-    }
+    my $prefix = $archiver->name =~ /^ContentType/ ? "ct/" : "";
     for my $archive_template ( @{ $archiver->default_archive_templates } ) {
         next unless $archive_template->{default};
-        return $archive_template->{template};
+        return $prefix . $archive_template->{template};
     }
 }
 
