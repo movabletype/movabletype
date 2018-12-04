@@ -57,9 +57,6 @@ September 22, 2019 12:00 AM
 --- expected_contenttype_category_weekly
 September 20, 2020 12:00 AM
 September 22, 2019 12:00 AM
---- expected_php_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26118
 --- expected_contenttype_weekly
 September 26, 2021 12:00 AM
 September 20, 2020 12:00 AM
