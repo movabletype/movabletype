@@ -97,7 +97,9 @@ sub _hdlr_contents {
             'content_type',          'days',
             'include_subcategories', 'include_blogs',
             'exclude_blogs',         'blog_ids',
-            'include_sites',         'exclude_sites',
+            'include_websites',      'exclude_websites',
+            'site_ids',              'include_sites',
+            'exclude_sites',
             )
         {
             if ( exists( $args->{$args_key} ) ) {
