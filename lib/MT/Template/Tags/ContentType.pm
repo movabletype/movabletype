@@ -61,7 +61,6 @@ sub _hdlr_contents {
 
     my ( @filters, %terms, %args, %blog_terms, %blog_args );
     %terms = %blog_terms = ( blog_id => $blog_id );
-    %args = %blog_args;
 
     my $content_type = _get_content_type( $ctx, $args, \%blog_terms )
         or return;
@@ -167,40 +166,25 @@ sub _hdlr_contents {
 
     $terms{status} = MT::ContentStatus::RELEASE();
 
-    if ( !$archive_contents ) {
-        if ( $ctx->{inside_mt_categories} ) {
-            if ( my $cat = $ctx->stash('category') ) {
-                if ( $cat->class eq $cat_class_type ) {
-                    my $map = $ctx->stash('template_map');
-                    if ( $map
-                        && ( my $cat_field_id = $map->cat_field_id ) )
-                    {
-                        push @{ $args{joins} },
-                            MT::ContentFieldIndex->join_on(
-                            'content_data_id',
-                            {   content_field_id => $cat_field_id,
-                                value_integer    => $cat->id
-                            },
-                            { alias => 'cat_cf_idx' }
-                            );
-                    }
-                }
-            }
-        }
-        elsif ( my $cat = $ctx->stash('archive_category') ) {
-            if ( $cat->class eq $cat_class_type ) {
-                my $map = $ctx->stash('template_map');
-                if ( $map && ( my $cat_field_id = $map->cat_field_id ) ) {
-                    push @{ $args{joins} },
-                        MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   content_field_id => $cat_field_id,
-                            value_integer    => $cat->id
-                        },
-                        { alias => 'cat_cf_idx' }
-                        );
-                }
-            }
+    my $map = $ctx->stash('template_map');
+
+    if (  !$archive_contents
+        && $map
+        && ( my $cat_field_id = $map->cat_field_id ) )
+    {
+        my $cat
+            = $ctx->{inside_mt_categories}
+            ? $ctx->stash('category')
+            : $ctx->stash('archive_category');
+        if ( $cat && $cat->class eq $cat_class_type ) {
+            push @{ $args{joins} },
+                MT::ContentFieldIndex->join_on(
+                'content_data_id',
+                {   content_field_id => $cat_field_id,
+                    value_integer    => $cat->id
+                },
+                { alias => 'cat_cf_idx' }
+                );
         }
     }
 
@@ -257,7 +241,6 @@ sub _hdlr_contents {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
         if ( $start && $end ) {
-            my $map = $ctx->stash('template_map');
             if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
@@ -304,11 +287,11 @@ sub _hdlr_contents {
                 }
             }
 
-            unless ( $dt_field && $dt_field_id ) {
-                if ( my $map = $ctx->stash('template_map') ) {
+            unless ( $dt_field || $dt_field_id ) {
+                if ($map) {
                     $dt_field_id = $map->dt_field_id;
                 }
-                else {
+                unless ($dt_field_id) {
                     $dt_field = 'authored_on';
                 }
             }
@@ -335,19 +318,15 @@ sub _hdlr_contents {
             }
         }
 
-        my $map        = $ctx->stash('template_map');
         my $sort_by_cf = 0;
         if ( my $sort_by = $args->{sort_by} ) {
             if ( $sort_by =~ m/^field:.*$/ ) {
                 my ( $prefix, $value ) = split ':', $sort_by, 2;
-                my $cf = MT->model('cf')->load(
-                    {   name            => $value,
-                        content_type_id => $content_type_id,
+                my $cf = _search_content_field(
+                    {   content_type_id   => $content_type_id,
+                        name_or_unique_id => $value,
                     }
                 );
-                unless ($cf) {
-                    $cf = MT->model('cf')->load( { unique_id => $value } );
-                }
                 if ($cf) {
                     my $data_type = MT->registry('content_field_types')
                         ->{ $cf->type }{data_type};
@@ -376,12 +355,10 @@ sub _hdlr_contents {
                         push @{ $args{joins} }, $join;
                     }
                     $sort_by_cf = 1;
+                    $no_resort  = 1;
                 }
             }
             unless ($sort_by_cf) {
-                $args->{sort_by} =~ s/:/./;    # for meta:name => meta.name
-                $args->{sort_by} = 'ping_count'
-                    if $args->{sort_by} eq 'trackback_count';
                 if ( $class->is_meta_column( $args->{sort_by} ) ) {
                     $no_resort = 0;
                 }
@@ -389,32 +366,23 @@ sub _hdlr_contents {
                     $args{sort} = $args->{sort_by};
                     $no_resort = 1;
                 }
-                elsif (
-                    $args->{limit}
-                    && (   'score' eq $args->{sort_by}
-                        || 'rate' eq $args->{sort_by} )
-                    )
-                {
-                    $no_resort = 0;
-                }
             }
         }
         $args{'sort'} = 'authored_on'
-            if ( ( !$map || !$map->dt_field_id ) && !$sort_by_cf );
+            if ( !exists $args{sort}
+            && ( !$map || !$map->dt_field_id )
+            && !$sort_by_cf );
 
         if (%fields) {
             my $field_ct = 0;
             foreach my $key ( keys %fields ) {
                 $field_ct++;
                 my $value = $fields{$key};
-                my $cf    = MT->model('cf')->load(
-                    {   name            => $key,
-                        content_type_id => $content_type_id,
+                my $cf    = _search_content_field(
+                    {   content_type_id   => $content_type_id,
+                        name_or_unique_id => $key,
                     }
                 );
-                unless ($cf) {
-                    $cf = MT->model('cf')->load( { unique_id => $key } );
-                }
                 my $type      = $cf->type;
                 my $data_type = MT->registry('content_field_types')
                     ->{ $cf->type }{data_type};
@@ -692,9 +660,30 @@ sub _hdlr_contents {
                 || ( $blog ? $blog->sort_order_posts : undef )
                 || '';
             my $col = $args->{sort_by} || 'authored_on';
-            if ( $col ne 'score' ) {
-                if ( my $def = $class->column_def($col) ) {
-                    if ( $def->{type} =~ m/^integer|float|double$/ ) {
+            if ( my $def = $class->column_def($col) ) {
+                if ( $def->{type} =~ m/^integer|float|double$/ ) {
+                    @$archive_contents
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() <=> $b->$col() }
+                        @$archive_contents
+                        : sort { $b->$col() <=> $a->$col() }
+                        @$archive_contents;
+                }
+                else {
+                    @$archive_contents
+                        = $so eq 'ascend'
+                        ? sort { $a->$col() cmp $b->$col() }
+                        @$archive_contents
+                        : sort { $b->$col() cmp $a->$col() }
+                        @$archive_contents;
+                }
+                $no_resort = 1;
+            }
+            else {
+                if ( $class->is_meta_column($col) ) {
+                    my $type = MT::Meta->metadata_by_name( $class, $col );
+                    no warnings;
+                    if ( $type->{type} =~ m/integer|float|double/ ) {
                         @$archive_contents
                             = $so eq 'ascend'
                             ? sort { $a->$col() <=> $b->$col() }
@@ -711,30 +700,6 @@ sub _hdlr_contents {
                             @$archive_contents;
                     }
                     $no_resort = 1;
-                }
-                else {
-                    $col =~ s/(^field):(.*)/$1.$2/ig;
-                    if ( $class->is_meta_column($col) ) {
-                        my $type = MT::Meta->metadata_by_name( $class, $col );
-                        no warnings;
-                        if ( $type->{type} =~ m/integer|float|double/ ) {
-                            @$archive_contents
-                                = $so eq 'ascend'
-                                ? sort { $a->$col() <=> $b->$col() }
-                                @$archive_contents
-                                : sort { $b->$col() <=> $a->$col() }
-                                @$archive_contents;
-                        }
-                        else {
-                            @$archive_contents
-                                = $so eq 'ascend'
-                                ? sort { $a->$col() cmp $b->$col() }
-                                @$archive_contents
-                                : sort { $b->$col() cmp $a->$col() }
-                                @$archive_contents;
-                        }
-                        $no_resort = 1;
-                    }
                 }
             }
         }
@@ -779,8 +744,67 @@ sub _hdlr_contents {
     my $res     = '';
     my $tok     = $ctx->stash('tokens');
     my $builder = $ctx->stash('builder');
-    my $glue    = $args->{glue};
-    my $vars    = $ctx->{__stash}{vars} ||= {};
+
+    if ( !$no_resort && @contents ) {
+        my $col = $args->{sort_by} || 'authored_on';
+        my $so
+            = $args->{sort_order}
+            || ( $blog ? $blog->sort_order_posts : 'descend' )
+            || '';
+        $so = $so eq 'ascend' ? 1 : -1;
+        my $type;
+        if ( my $def = $class->column_def($col) ) {
+            $type = $def->{type};
+        }
+        elsif ( $class->is_meta_column($col) ) {
+            $type = MT::Meta->metadata_by_name( $class, $col );
+        }
+        my $func;
+        no warnings;
+        if ( $col =~ /^field:(.+)$/ ) {
+            my $cf_arg = $1;
+            my $cf     = _search_content_field(
+                {   content_type_id   => $content_type_id,
+                    name_or_unique_id => $cf_arg,
+                }
+            );
+            my $cf_data_type = $cf ? $cf->data_type : '';
+            if ( $cf_data_type =~ /^(integer|float|double)$/ ) {
+                $func = sub {
+                    ( $a->data->{ $cf->id } || 0 )
+                        <=> ( $b->data->{ $cf->id } || 0 );
+                };
+            }
+            elsif ($cf_data_type) {
+                $func = sub {
+                    my $a_field = $a->data->{ $cf->id };
+                    my $b_field = $b->data->{ $cf->id };
+                    $a_field = '' unless defined $a_field;
+                    $b_field = '' unless defined $b_field;
+                    return $so * ( $a_field cmp $b_field );
+                    }
+            }
+        }
+        elsif ( $type and $type =~ m/^(integer|float|double)$/ ) {
+            $func = sub { $so * ( $a->$col() <=> $b->$col() ) };
+        }
+        elsif ( $col eq 'authored_on' ) {
+            $func = sub {
+                $so
+                    * (    ( $a->$col() cmp $b->$col() )
+                        || ( $a->id() cmp $b->id() ) );
+            };
+        }
+        else {
+            $func = sub { $so * ( $a->$col() cmp $b->$col() ) };
+        }
+        if ($func) {
+            @contents = sort $func @contents;
+        }
+    }
+
+    my $glue = $args->{glue};
+    my $vars = $ctx->{__stash}{vars} ||= {};
     local $ctx->{__stash}{contents}
         = ( @contents && defined $contents[0] ) ? \@contents : undef;
     for my $content_data (@contents) {
@@ -1562,15 +1586,13 @@ sub _hdlr_content_calendar {
         }
         else {
             my $date_cf = '';
-            $date_cf = MT->model('cf')->load($arg)
+            $date_cf = MT->model('content_field')->load($arg)
                 if ( $arg =~ /^[0-9]+$/ );
-            $date_cf = MT->model('cf')->load( { unique_id => $arg } )
-                unless ($date_cf);
-            $date_cf = MT->model('cf')->load(
-                {   name            => $arg,
-                    content_type_id => $content_type_id,
+            $date_cf = _search_content_field(
+                {   content_type_id   => $content_type_id,
+                    name_or_unique_id => $arg,
                 }
-            ) unless ($date_cf);
+            );
             if ($date_cf) {
                 $dt_field_id = $date_cf->id;
             }
@@ -2115,6 +2137,22 @@ sub _get_content_type {
     }
 
     return \@content_types;
+}
+
+sub _search_content_field {
+    my ($args) = @_;
+    $args ||= {};
+    my $content_type_id = $args->{content_type_id} or return;
+    my $name_or_unique_id = $args->{name_or_unique_id};
+    return unless defined $name_or_unique_id && $name_or_unique_id ne '';
+    my $cf_class = MT->model('content_field');
+    my $cf       = $cf_class->load(
+        {   content_type_id => $content_type_id,
+            name            => $name_or_unique_id,
+        }
+    );
+    $cf ||= $cf_class->load( { unique_id => $name_or_unique_id } );
+    return $cf;
 }
 
 1;
