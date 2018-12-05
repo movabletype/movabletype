@@ -86,26 +86,19 @@ sub _hdlr_contents {
     # For the stock Contents tags, clear any prepopulated
     # contents list (placed by archive publishing) if we're invoked
     # with any of the following attributes. A plugin tag may
-    # prepopulate the entries stash and then invoke this handler
+    # prepopulate the contents stash and then invoke this handler
     # to permit further filtering of the contents.
     my $tag = lc $ctx->stash('tag');
-    if ( $tag eq 'contents' ) {
-        foreach
-            my $args_key ( 'category', 'categories', 'tag', 'tags', 'author' )
-        {
-            if ( exists( $args->{$args_key} ) ) {
-                $use_stash = 0;
-                last;
-            }
-        }
+    if ( $tag eq 'contents' && exists( $args->{'author'} ) ) {
+        $use_stash = 0;
     }
     if ($use_stash) {
         foreach my $args_key (
             'id',                    'unique_id',
             'content_type',          'days',
-            'recently_commented_on', 'include_subcategories',
-            'include_blogs',         'exclude_blogs',
-            'blog_ids'
+            'include_subcategories', 'include_blogs',
+            'exclude_blogs',         'blog_ids',
+            'include_sites',         'exclude_sites',
             )
         {
             if ( exists( $args->{$args_key} ) ) {
