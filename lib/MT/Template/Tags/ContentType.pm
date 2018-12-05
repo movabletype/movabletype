@@ -170,20 +170,19 @@ sub _hdlr_contents {
 
     if (  !$archive_contents
         && $map
-        && ( my $cat_field_id = $map->cat_field_id ) )
+        && ( my $cat_field = $map->cat_field ) )
     {
         my $cat
             = $ctx->{inside_mt_categories}
             ? $ctx->stash('category')
             : $ctx->stash('archive_category');
         if ( $cat && $cat->class eq $cat_class_type ) {
-            my $cat_field      = MT::ContentField->load($cat_field_id);
             my $has_same_field = exists $fields{ $cat_field->name }
                 || exists $fields{ $cat_field->unique_id };
             push @{ $args{joins} },
                 MT::ContentFieldIndex->join_on(
                 'content_data_id',
-                {   content_field_id => $cat_field_id,
+                {   content_field_id => $cat_field->id,
                     value_integer    => $cat->id
                 },
                 { alias => 'cat_cf_idx' }
