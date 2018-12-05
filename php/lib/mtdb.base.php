@@ -4211,7 +4211,7 @@ abstract class MTDatabase {
             }
         }
 
-        // determine any custom fields that we should filter on
+        // determine any content fields that we should filter on
         $fields = array();
         foreach ($args as $name => $v)
             if (preg_match('/^field___(\w+)$/', $name, $m))
