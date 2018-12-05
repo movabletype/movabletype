@@ -4498,7 +4498,7 @@ abstract class MTDatabase {
                 if($cat_fields){
                     $cf = $cat_fields[0];
                     if (isset($args['category'])){
-                        if (!array_key_exists($cf->cf_name, $fields)) {
+                        if (!array_key_exists($cf->cf_name, $fields) && !array_key_exists($cf->cf_unique_id, $fields)) {
                             $fields[$cf->cf_name] = $args['category'];
                         }
                     } else {
