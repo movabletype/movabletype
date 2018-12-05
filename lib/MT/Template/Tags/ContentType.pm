@@ -82,16 +82,36 @@ sub _hdlr_contents {
     }
 
     my $use_stash = 1;
-    foreach my $args_key (
-        'id',                    'unique_id',
-        'content_type',          'days',
-        'include_subcategories', 'include_blogs',
-        'exclude_blogs',         'blog_ids'
-        )
-    {
-        if ( exists( $args->{$args_key} ) ) {
-            $use_stash = 0;
-            last;
+
+    # For the stock Contents tags, clear any prepopulated
+    # contents list (placed by archive publishing) if we're invoked
+    # with any of the following attributes. A plugin tag may
+    # prepopulate the entries stash and then invoke this handler
+    # to permit further filtering of the contents.
+    my $tag = lc $ctx->stash('tag');
+    if ( $tag eq 'contents' ) {
+        foreach
+            my $args_key ( 'category', 'categories', 'tag', 'tags', 'author' )
+        {
+            if ( exists( $args->{$args_key} ) ) {
+                $use_stash = 0;
+                last;
+            }
+        }
+    }
+    if ($use_stash) {
+        foreach my $args_key (
+            'id',                    'unique_id',
+            'content_type',          'days',
+            'recently_commented_on', 'include_subcategories',
+            'include_blogs',         'exclude_blogs',
+            'blog_ids'
+            )
+        {
+            if ( exists( $args->{$args_key} ) ) {
+                $use_stash = 0;
+                last;
+            }
         }
     }
     if ( $use_stash && %fields ) {
@@ -117,12 +137,8 @@ sub _hdlr_contents {
             # class types do not match; we can't use stashed entries
             undef $archive_contents;
         }
-        elsif (
-            (   defined $ctx->stash('tag')
-                && lc( $ctx->stash('tag') ) eq 'contents'
-            )
-            && $blog_id != $content->blog_id
-            )
+        elsif ( ( $tag eq 'contents' )
+            && $blog_id != $content->blog_id )
         {
 
             # Blog ID do not match; we can't use stashed entries
