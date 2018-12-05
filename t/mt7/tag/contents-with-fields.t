@@ -138,8 +138,8 @@ for my $id ( 1 .. 3 ) {
         blog_id         => $blog_id,
         category_set_id => $catset->id,
         label           => "Category $id-1",
-        ),
-        push @cats,
+        );
+    push @cats,
         MT::Test::Permission->make_category(
         blog_id         => $blog_id,
         category_set_id => $catset->id,
@@ -485,8 +485,8 @@ Content Data9
 <mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" sort_by="field:single"><mt:ContentLabel>
 </mt:Contents>
 --- expected
-Content Data8
 Content Data7
+Content Data6
 
 === mt:Contents with another category field (MTC-26080/26092)
 --- blog_id
@@ -495,8 +495,8 @@ Content Data7
 <mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_2="Category 2-1" sort_by="field:single"><mt:ContentLabel>
 </mt:Contents>
 --- expected
-Content Data8
 Content Data7
+Content Data6
 
 === mt:Contents with two category fields (MTC-26080/26092)
 --- blog_id
@@ -505,8 +505,8 @@ Content Data7
 <mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" field:cf_category_2="Category 2-1" sort_by="field:single"><mt:ContentLabel>
 </mt:Contents>
 --- expected
-Content Data8
 Content Data7
+Content Data6
 
 === mt:Contents with two different category fields (MTC-26080/26092)
 --- blog_id
@@ -525,7 +525,7 @@ Content Data7
 </mt:Contents>
 --- expected
 Content Data7
-Content Data8
+Content Data6
 
 === mt:Contents with two different category fields, sort by category (MTC-26080/26092)
 --- blog_id
