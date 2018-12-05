@@ -81,32 +81,32 @@ http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
 --- expected_contenttype
-http://narnia.na/2019/09/[% cd_same_apple_orange_unique_id %].html
+http://narnia.na/ct/2019/09/[% cd_same_apple_orange_unique_id %].html
 --- expected_contenttype_author
-http://narnia.na/author/author1/
+http://narnia.na/ct/author/author1/
 --- expected_contenttype_author_daily
-http://narnia.na/author/author1/2019/09/26/
+http://narnia.na/ct/author/author1/2019/09/26/
 --- expected_contenttype_author_weekly
-http://narnia.na/author/author1/2019/09/22-week/
+http://narnia.na/ct/author/author1/2019/09/22-week/
 --- expected_contenttype_author_monthly
-http://narnia.na/author/author1/2019/09/
+http://narnia.na/ct/author/author1/2019/09/
 --- expected_contenttype_author_yearly
-http://narnia.na/author/author1/2019/
+http://narnia.na/ct/author/author1/2019/
 --- expected_contenttype_category
-http://narnia.na/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-strawberry/cat-orange/
 --- expected_contenttype_category_daily
-http://narnia.na/cat-strawberry/cat-orange/2019/09/26/
+http://narnia.na/ct/cat-strawberry/cat-orange/2019/09/26/
 --- expected_contenttype_category_weekly
-http://narnia.na/cat-strawberry/cat-orange/2019/09/22-week/
+http://narnia.na/ct/cat-strawberry/cat-orange/2019/09/22-week/
 --- expected_contenttype_category_monthly
-http://narnia.na/cat-strawberry/cat-orange/2019/09/
+http://narnia.na/ct/cat-strawberry/cat-orange/2019/09/
 --- expected_contenttype_category_yearly
-http://narnia.na/cat-strawberry/cat-orange/2019/
+http://narnia.na/ct/cat-strawberry/cat-orange/2019/
 --- expected_contenttype_daily
-http://narnia.na/2019/09/26/
+http://narnia.na/ct/2019/09/26/
 --- expected_contenttype_weekly
-http://narnia.na/2019/09/22-week/
+http://narnia.na/ct/2019/09/22-week/
 --- expected_contenttype_monthly
-http://narnia.na/2019/09/
+http://narnia.na/ct/2019/09/
 --- expected_contenttype_yearly
-http://narnia.na/2019/
+http://narnia.na/ct/2019/

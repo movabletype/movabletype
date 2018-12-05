@@ -47,7 +47,13 @@ $test_env->prepare_fixture('db');
 
 my @ts = MT::Util::offset_time_list( time, $blog_id );
 my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
-my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+my $next_month;
+if ( $ts[4] + 2 > 12 ) {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900 + 1, 1;
+}
+else {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+}
 
 my $ct = MT::Test::Permission->make_content_type(
     name    => 'test content data',
@@ -122,13 +128,13 @@ my $cd4 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
     authored_on     => '20170615000000',
-    data => { $cf_category->id => [ $category1->id ], },
+    data            => { $cf_category->id => [ $category1->id ], },
 );
 
-$vars->{ct_uid}    = $ct->unique_id;
-$vars->{ct_name}   = $ct->name;
-$vars->{ct_id}     = $ct->id;
-$vars->{cat_label} = $category2->label;
+$vars->{ct_uid}          = $ct->unique_id;
+$vars->{ct_name}         = $ct->name;
+$vars->{ct_id}           = $ct->id;
+$vars->{cat_label}       = $category2->label;
 $vars->{category_set_id} = $category_set->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);

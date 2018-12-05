@@ -10,6 +10,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
     $localvars = array(array('current_archive_type', 'current_timestamp', 'current_timestamp_end', 'entries', 'contents', 'archive_count', '_archive_list_num', '_archive_list_results','entry','ArchiveListHeader', 'ArchiveListFooter', 'inside_archive_list', 'category', 'author', 'content_type', 'category_set'), common_loop_vars());
     if (!isset($res)) {
         $blog = $ctx->stash('blog');
+        $blog_id = $blog->blog_id;
         $at = $args['type'];
         $at or $at = $args['archive_type'];
         $at or $at = $ctx->stash('current_archive_type');
@@ -48,41 +49,40 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         }
 
         $ctx->stash('current_archive_type', $at);
+       if ( preg_match('/^ContentType-Category/', $at) ) {
+            $maps = $ctx->mt->db()->fetch_templatemap(array(
+                'blog_id' => $blog_id,
+                'content_type_id' => $ctx->stash('content_type')->id,
+                'preferred' => 1,
+                'type' => $at,
+            ));
+            if (isset($maps)) {
+                $cat_field = $maps[0]->cat_field();
+            }
+            if (isset($cat_field)) {
+                require_once('class.mt_category_set.php');
+                $cs = new CategorySet();
+                $cs->Load('category_set_id = ' . $cat_field->cf_related_cat_set_id);
+            }
+            if (!isset($cs) || !$cs->category_set_id) {
+                $cs = $ctx->stash('category_set');
+            } else {
+                $ctx->stash('category_set', $cs);
+            }
+            if (!isset($cs)) {
+               return $ctx->error("No Category Set could be found.");
+            }
+        }
         ## If we are producing a Category archive list, don't bother to
         ## handle it here--instead hand it over to <MTCategories>.
         if ($at == 'Category' || $at === 'ContentType-Category') {
-            if ($at === 'ContentType-Category') {
-                $maps = $ctx->mt->db()->fetch_templatemap(array(
-                    'type' => $at,
-                    'blog_id' => $blog_id,
-                    'preferred' => 1
-                ));
-                if (isset($maps)) {
-                    $cat_field = $maps[0]->cat_field();
-                }
-                if (isset($cat_field)) {
-                    require_once('class.mt_category_set.php');
-                    $cs = new CategorySet();
-                    $cs->Load('category_set_id = ' . $cat_field->cf_related_cat_set_id);
-                }
-                if (!isset($cs) || !$cs->category_set_id) {
-                    $cs = $ctx->stash('category_set');
-                } else {
-                    $ctx->stash('category_set', $cs);
-                }
-                if (!isset($cs)) {
-                   return $ctx->error("No Category Set could be found.");
-                }
-            }
             require_once("block.mtcategories.php");
             return smarty_block_mtcategories($args, $content, $ctx, $repeat);
         }
-        $blog_id = $blog->blog_id;
         $args['sort'] = 'created_on';
         $args['direction'] = 'descend';
         $args['archive_type'] = $at;
         $args['blog_id'] = $blog_id;
-
         $archive_list_results = $ar->get_archive_list($args);
         $ctx->stash('_archive_list_results', $archive_list_results);
         # allow <MTEntries> to load them

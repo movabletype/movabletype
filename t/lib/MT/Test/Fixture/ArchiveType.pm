@@ -154,7 +154,7 @@ our %FixtureSpec = (
             status       => 'publish',
             authored_on  => '20181031000000',
             data         => {
-                cf_same_date               => '20190926',
+                cf_same_date               => '20190926000000',
                 cf_same_datetime           => '20081101121212',
                 cf_same_catset_fruit       => [qw/cat_apple/],
                 cf_same_catset_other_fruit => [qw/cat_orange/],
@@ -166,7 +166,7 @@ our %FixtureSpec = (
             authored_on  => '20171031000000',
             status       => 'publish',
             data         => {
-                cf_same_date               => '20200926',
+                cf_same_date               => '20200926000000',
                 cf_same_datetime           => '20061101121212',
                 cf_same_catset_fruit       => [qw/cat_apple cat_orange/],
                 cf_same_catset_other_fruit => [qw/cat_peach/],
@@ -178,7 +178,7 @@ our %FixtureSpec = (
             status       => 'publish',
             authored_on  => '20161031000000',
             data         => {
-                cf_same_date               => '20210926',
+                cf_same_date               => '20210926000000',
                 cf_same_datetime           => '20041101121212',
                 cf_same_catset_fruit       => [qw/cat_peach/],
                 cf_same_catset_other_fruit => [qw//],
@@ -190,7 +190,7 @@ our %FixtureSpec = (
             status       => 'publish',
             authored_on  => '20181031000000',
             data         => {
-                cf_same_date               => '20200926',
+                cf_same_date               => '20200926000000',
                 cf_same_datetime           => '20041101121212',
                 cf_same_catset_fruit       => [qw//],
                 cf_same_catset_other_fruit => [qw/cat_peach/],
@@ -202,7 +202,7 @@ our %FixtureSpec = (
             status       => 'draft',
             authored_on  => '20181031000000',
             data         => {
-                cf_same_date               => '20200926',
+                cf_same_date               => '20200926000000',
                 cf_same_datetime           => '20041101121212',
                 cf_same_catset_fruit       => [qw//],
                 cf_same_catset_other_fruit => [qw/cat_peach/],
@@ -214,7 +214,7 @@ our %FixtureSpec = (
             authored_on  => '20081101121212',
             status       => 'publish',
             data         => {
-                cf_other_date          => '19990831',
+                cf_other_date          => '19990831000000',
                 cf_other_datetime      => '20181031000000',
                 cf_other_catset_fruit  => [qw/cat_apple/],
                 cf_other_catset_animal => [qw//],
@@ -226,7 +226,7 @@ our %FixtureSpec = (
             authored_on  => '20061101121212',
             status       => 'publish',
             data         => {
-                cf_other_date          => '19980831',
+                cf_other_date          => '19980831000000',
                 cf_other_datetime      => '20161031000000',
                 cf_other_catset_fruit  => [qw/cat_apple cat_orange/],
                 cf_other_catset_animal => [qw/cat_dog cat_cat/],
@@ -238,7 +238,7 @@ our %FixtureSpec = (
             authored_on  => '20041101121212',
             status       => 'publish',
             data         => {
-                cf_other_date         => '19970831',
+                cf_other_date         => '19970831000000',
                 cf_other_datetime     => '20181031000000',
                 cf_other_catset_fruit => [
                     qw/
@@ -257,7 +257,7 @@ our %FixtureSpec = (
             authored_on  => '20041101121212',
             status       => 'publish',
             data         => {
-                cf_other_date          => '19980831',
+                cf_other_date          => '19980831000000',
                 cf_other_datetime      => '20181031000000',
                 cf_other_catset_fruit  => [qw//],
                 cf_other_catset_animal => [qw/cat_dog cat_rabbit/],
@@ -269,7 +269,7 @@ our %FixtureSpec = (
             authored_on  => '20041101121212',
             status       => 'draft',
             data         => {
-                cf_other_date          => '19980831',
+                cf_other_date          => '19980831000000',
                 cf_other_datetime      => '20181031000000',
                 cf_other_catset_fruit  => [qw//],
                 cf_other_catset_animal => [qw/cat_dog cat_rabbit/],
@@ -352,9 +352,10 @@ sub _template_type {
 
 sub _file_template {
     my $archiver = shift;
+    my $prefix = $archiver->name =~ /^ContentType/ ? "ct/" : "";
     for my $archive_template ( @{ $archiver->default_archive_templates } ) {
         next unless $archive_template->{default};
-        return $archive_template->{template};
+        return $prefix . $archive_template->{template};
     }
 }
 

@@ -66,22 +66,14 @@ sub archive_group_iter {
     my $ts    = $ctx->{current_timestamp};
     my $tsend = $ctx->{current_timestamp_end};
 
-    my $map = $ctx->stash('template_map');
-    unless ($map) {
-        ($map) = MT->model('templatemap')->load(
-            {   blog_id      => $blog->id,
-                archive_type => 'ContentType-Weekly',
-                is_preferred => 1,
-            }
-        );
-    }
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
-    if ( !$content_type_id && $map ) {
-        my $template = MT->model('template')->load( $map->template_id );
-        $content_type_id = $template->content_type_id;
-    }
+    my $content_type_id = $ctx->stash('content_type')->id;
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
+
     require MT::ContentData;
     require MT::ContentFieldIndex;
 

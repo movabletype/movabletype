@@ -6,15 +6,8 @@
 # $Id$
 
 function smarty_function_mtcategoryarchivelink($args, &$ctx) {
-    $category = $ctx->stash('category') or $ctx->stash('archive_category');
-    if (!$category) {
-        $entry = $ctx->stash('entry');
-        if (!empty($entry) && ($categoty = $entry->category())) {
-            $category = $entry->category();
-        }
-    }
-    if (!isset($args['blog_id']))
-        $args['blog_id'] = $ctx->stash('blog_id');
+    require_once('MTUtil.php');
+    $category = get_category_context($ctx);
     if (!$category) return '';
     $category_set = $ctx->stash('category_set');
     $at = isset($category_set) && $category_set ? 'ContentType-Category' : 'Category';

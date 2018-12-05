@@ -503,7 +503,12 @@ abstract class MTDatabase {
                     'condition' => "template_id = templatemap_template_id"
                     )
                 );
-            $content_type_filter = 'and template_content_type_id = ' . intval($args['content_type_id']);
+            if (is_array($args['content_type_id'])) {
+                $content_type_id = $args['content_type_id'][0];
+            } else {
+                $content_type_id = $args['content_type_id'];
+            }
+            $content_type_filter = 'and template_content_type_id = ' . intval($content_type_id);
         }
 
         $where = "1 = 1
@@ -4078,8 +4083,8 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_type.php");
         $content_type= New ContentType;
-        $content_type->Load( $id );
-        if ( !empty( $content_type ) ) {
+        $loaded = $content_type->Load( $id );
+        if ($loaded) {
             $this->_content_type_id_cache[$id] = $content_type;
             return $content_type;
         } else {
@@ -4285,9 +4290,10 @@ abstract class MTDatabase {
 
         if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
             $map = $mt->db()->fetch_templatemap(array(
-                'blog_id' => $blog_id,
-                'type' => $ctx->stash('current_archive_type'),
-                'preferred' => 1,
+                'blog_id'         => $blog_id,
+                'content_type_id' => $content_type_id,
+                'preferred'       => 1,
+                'type'            => $ctx->stash('current_archive_type'),
             ));
             if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
                 $start = isset($args['current_timestamp'])
@@ -4485,8 +4491,9 @@ abstract class MTDatabase {
                 $category_set_id = $category_set->id;
                 
                 $cat_fields = $this->fetch_content_fields(array(
-                  'blog_id' => $blog_id,
-                  'related_cat_set_id' => $category_set_id,
+                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'related_cat_set_id' => $category_set_id,
                 ));
                 if($cat_fields){
                     $cf = $cat_fields[0];
