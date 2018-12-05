@@ -4498,7 +4498,9 @@ abstract class MTDatabase {
                 if($cat_fields){
                     $cf = $cat_fields[0];
                     if (isset($args['category'])){
-                        $fields[$cf->cf_name] = $args['category'];
+                        if (!array_key_exists($cf->cf_name, $fields)) {
+                            $fields[$cf->cf_name] = $args['category'];
+                        }
                     } else {
                         $alias = 'cf_idx_' . $cf->id;
                         require_once "content_field_type_lib.php";

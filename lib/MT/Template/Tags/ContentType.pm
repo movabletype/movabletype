@@ -177,6 +177,8 @@ sub _hdlr_contents {
             ? $ctx->stash('category')
             : $ctx->stash('archive_category');
         if ( $cat && $cat->class eq $cat_class_type ) {
+            my $cat_field = MT::ContentField->load($cat_field_id);
+            my $has_same_field = exists $fields{ $cat_field->name };
             push @{ $args{joins} },
                 MT::ContentFieldIndex->join_on(
                 'content_data_id',
@@ -184,7 +186,7 @@ sub _hdlr_contents {
                     value_integer    => $cat->id
                 },
                 { alias => 'cat_cf_idx' }
-                );
+                ) unless $has_same_field;
         }
     }
 
