@@ -26,7 +26,7 @@ filters {
     MT::Test::ArchiveType->filter_spec
 };
 
-my @maps = grep {$_->archive_type =~ /^ContentType-Category$/} MT::Test::ArchiveType->template_maps;
+my @maps = grep {$_->archive_type =~ /^ContentType-Category/} MT::Test::ArchiveType->template_maps;
 
 my $objs = MT::Test::Fixture::ArchiveType->load_objs;
 MT::Test::ArchiveType->vars->{blog_id} = $objs->{blog_id};
@@ -50,6 +50,8 @@ __END__
 --- expected_contenttype_category
 cd_same_apple_orange
 cd_same_apple_orange_peach
+--- expected
+cd_same_apple_orange_peach
 
 === mt:Contents with the same field modifier as the one set in the template map (MTC-26097/26104)
 --- stash
@@ -63,6 +65,8 @@ cd_same_apple_orange_peach
 </mt:Contents>
 --- expected_contenttype_category
 cd_same_apple_orange
+cd_same_apple_orange_peach
+--- expected
 cd_same_apple_orange_peach
 
 === mt:Contents with a different modifier from the one set in the template map (MTC-26097/26104)
@@ -88,8 +92,9 @@ cd_same_apple_orange_peach
 --- template
 <mt:Contents content_type="ct_with_same_catset" blog_id="[% blog_id %]" field:cf_same_catset_fruit="cat_peach"><mt:ContentLabel>
 </mt:Contents>
---- expected
+--- expected_contenttype_category
 cd_same_peach
+--- expected
 
 === mt:Contents with two consistent modifiers (same as the related content data) (MTC-26097/26104)
 --- stash
@@ -114,6 +119,6 @@ cd_same_apple_orange_peach
 --- template
 <mt:Contents content_type="ct_with_same_catset" blog_id="[% blog_id %]" field:cf_same_catset_fruit="cat_apple" field:cf_same_catset_other_fruit="cat_orange"><mt:ContentLabel>
 </mt:Contents>
---- expected
+--- expected_contenttype_category
 cd_same_apple_orange
-
+--- expected
