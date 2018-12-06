@@ -355,7 +355,8 @@ sub _hdlr_entries {
             'recently_commented_on', 'include_subcategories',
             'include_blogs',         'exclude_blogs',
             'blog_ids',              'include_websites',
-            'exclude_websites',      'site_ids'
+            'exclude_websites',      'site_ids',
+            'include_sites',         'exclude_sites'
             )
         {
             if ( exists( $args->{$args_key} ) ) {
