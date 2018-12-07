@@ -847,38 +847,26 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_todo_contenttype_category_daily
+--- expected_contenttype_category_daily
 cat_apple: October 31, 2017
 cat_apple: October 31, 2018
+cat_orange: October 31, 2017
 cat_peach: October 31, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 cat_apple: October 2017
 cat_apple: October 2018
+cat_orange: October 2017
 cat_peach: October 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_weekly
+--- expected_contenttype_category_weekly
 cat_apple: October 29, 2017 - November  4, 2017
 cat_apple: October 28, 2018 - November  3, 2018
+cat_orange: October 29, 2017 - November  4, 2017
 cat_peach: October 30, 2016 - November  5, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_yearly
+--- expected_contenttype_category_yearly
 cat_apple: 2017
 cat_apple: 2018
+cat_orange: 2017
 cat_peach: 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
 --- expected_contenttype_daily
 October 31, 2016
 October 31, 2017
@@ -1001,11 +989,10 @@ author2: September 26, 2021
 author1: September 2020
 author1: September 2019
 author2: September 2021
---- expected_todo_contenttype_author_weekly
-author1: December 25, -001 - December 31, -001
-author2: December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_author_weekly
+author1: September 20, 2020 - September 26, 2020
+author1: September 22, 2019 - September 28, 2019
+author2: September 26, 2021 - October  2, 2021
 --- expected_contenttype_author_yearly
 author1: 2020
 author1: 2019
@@ -1015,43 +1002,26 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_todo_contenttype_category_daily
-cat_apple: October 31, 2018
-cat_apple: October 31, 2017
-cat_orange: October 31, 2017
-cat_peach: October 31, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_monthly
-cat_apple: October 2018
-cat_apple: October 2017
-cat_orange: October 2017
-cat_peach: October 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_weekly
-cat_apple: October 28, 2018 - November  3, 2018
-cat_apple: October 29, 2017 - November  4, 2017
-cat_orange: October 29, 2017 - November  4, 2017
-cat_peach: October 30, 2016 - November  5, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
---- expected_todo_contenttype_category_yearly
-cat_apple: 2018
-cat_apple: 2017
-cat_orange: 2017
-cat_peach: 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_apple: September 26, 2020
+cat_apple: September 26, 2019
+cat_orange: September 26, 2020
+cat_peach: September 26, 2021
+--- expected_contenttype_category_monthly
+cat_apple: September 2020
+cat_apple: September 2019
+cat_orange: September 2020
+cat_peach: September 2021
+--- expected_contenttype_category_weekly
+cat_apple: September 20, 2020 - September 26, 2020
+cat_apple: September 22, 2019 - September 28, 2019
+cat_orange: September 20, 2020 - September 26, 2020
+cat_peach: September 26, 2021 - October  2, 2021
+--- expected_contenttype_category_yearly
+cat_apple: 2020
+cat_apple: 2019
+cat_orange: 2020
+cat_peach: 2021
 --- expected_contenttype_daily
 September 26, 2021
 September 26, 2020
@@ -1060,10 +1030,10 @@ September 26, 2019
 September 2021
 September 2020
 September 2019
---- expected_todo_contenttype_weekly
-December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_weekly
+September 26, 2021 - October  2, 2021
+September 20, 2020 - September 26, 2020
+September 22, 2019 - September 28, 2019
 --- expected_contenttype_yearly
 2021
 2020
@@ -1174,11 +1144,10 @@ author2: September 26, 2021
 author1: September 2019
 author1: September 2020
 author2: September 2021
---- expected_todo_contenttype_author_weekly
-author1: December 25, -001 - December 31, -001
-author2: December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_author_weekly
+author1: September 22, 2019 - September 28, 2019
+author1: September 20, 2020 - September 26, 2020
+author2: September 26, 2021 - October  2, 2021
 --- expected_contenttype_author_yearly
 author1: 2019
 author1: 2020
@@ -1188,42 +1157,26 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_todo_contenttype_category_daily
-cat_apple: October 31, 2017
-cat_apple: October 31, 2018
-cat_peach: October 31, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
-cat_apple: October 2017
-cat_apple: October 2018
-cat_peach: October 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
-cat_apple: October 29, 2017 - November  4, 2017
-cat_apple: October 28, 2018 - November  3, 2018
-cat_peach: October 30, 2016 - November  5, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
-cat_apple: 2017
-cat_apple: 2018
-cat_peach: 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_apple: September 26, 2019
+cat_apple: September 26, 2020
+cat_orange: September 26, 2020
+cat_peach: September 26, 2021
+--- expected_contenttype_category_monthly
+cat_apple: September 2019
+cat_apple: September 2020
+cat_orange: September 2020
+cat_peach: September 2021
+--- expected_contenttype_category_weekly
+cat_apple: September 22, 2019 - September 28, 2019
+cat_apple: September 20, 2020 - September 26, 2020
+cat_orange: September 20, 2020 - September 26, 2020
+cat_peach: September 26, 2021 - October  2, 2021
+--- expected_contenttype_category_yearly
+cat_apple: 2019
+cat_apple: 2020
+cat_orange: 2020
+cat_peach: 2021
 --- expected_contenttype_daily
 September 26, 2019
 September 26, 2020
@@ -1232,10 +1185,10 @@ September 26, 2021
 September 2019
 September 2020
 September 2021
---- expected_todo_contenttype_weekly
-December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_weekly
+September 22, 2019 - September 28, 2019
+September 20, 2020 - September 26, 2020
+September 26, 2021 - October  2, 2021
 --- expected_contenttype_yearly
 2019
 2020
@@ -1346,11 +1299,10 @@ author1: September 26, 2019
 author2: September 2021
 author1: September 2020
 author1: September 2019
---- expected_todo_contenttype_author_weekly
-author2: December 25, -001 - December 31, -001
-author1: December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_author_weekly
+author2: September 26, 2021 - October  2, 2021
+author1: September 20, 2020 - September 26, 2020
+author1: September 22, 2019 - September 28, 2019
 --- expected_contenttype_author_yearly
 author2: 2021
 author1: 2020
@@ -1360,30 +1312,26 @@ cat_strawberry
 cat_peach
 cat_orange
 cat_apple
---- expected_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_peach: September 26, 2021
+cat_orange: September 26, 2020
+cat_apple: September 26, 2020
+cat_apple: September 26, 2019
+--- expected_contenttype_category_monthly
+cat_peach: September 2021
+cat_orange: September 2020
+cat_apple: September 2020
+cat_apple: September 2019
+--- expected_contenttype_category_weekly
+cat_peach: September 26, 2021 - October  2, 2021
+cat_orange: September 20, 2020 - September 26, 2020
+cat_apple: September 20, 2020 - September 26, 2020
+cat_apple: September 22, 2019 - September 28, 2019
+--- expected_contenttype_category_yearly
+cat_peach: 2021
+cat_orange: 2020
+cat_apple: 2020
+cat_apple: 2019
 --- expected_contenttype_daily
 September 26, 2021
 September 26, 2020
@@ -1392,10 +1340,10 @@ September 26, 2019
 September 2021
 September 2020
 September 2019
---- expected_todo_contenttype_weekly
-December 25, -001 - December 31, -001
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26091
+--- expected_contenttype_weekly
+September 26, 2021 - October  2, 2021
+September 20, 2020 - September 26, 2020
+September 22, 2019 - September 28, 2019
 --- expected_contenttype_yearly
 2021
 2020
@@ -1523,46 +1471,26 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_todo_contenttype_category_daily
-cat_apple: October 31, 2018
-cat_apple: October 31, 2017
-cat_orange: October 31, 2017
-cat_peach: October 31, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
-cat_apple: October 2018
-cat_apple: October 2017
-cat_orange: October 2017
-cat_peach: October 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
-cat_apple: October 28, 2018 - November  3, 2018
-cat_apple: October 29, 2017 - November  4, 2017
-cat_orange: October 29, 2017 - November  4, 2017
-cat_peach: October 30, 2016 - November  5, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
-cat_apple: 2018
-cat_apple: 2017
-cat_orange: 2017
-cat_peach: 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_apple: November  1, 2008
+cat_apple: November  1, 2006
+cat_orange: November  1, 2006
+cat_peach: November  1, 2004
+--- expected_contenttype_category_monthly
+cat_apple: November 2008
+cat_apple: November 2006
+cat_orange: November 2006
+cat_peach: November 2004
+--- expected_contenttype_category_weekly
+cat_apple: October 26, 2008 - November  1, 2008
+cat_apple: October 29, 2006 - November  4, 2006
+cat_orange: October 29, 2006 - November  4, 2006
+cat_peach: October 31, 2004 - November  6, 2004
+--- expected_contenttype_category_yearly
+cat_apple: 2008
+cat_apple: 2006
+cat_orange: 2006
+cat_peach: 2004
 --- expected_contenttype_daily
 November  1, 2008
 November  1, 2006
@@ -1702,42 +1630,26 @@ cat_apple
 cat_orange
 cat_peach
 cat_strawberry
---- expected_todo_contenttype_category_daily
-cat_apple: October 31, 2017
-cat_apple: October 31, 2018
-cat_peach: October 31, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
-cat_apple: October 2017
-cat_apple: October 2018
-cat_peach: October 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
-cat_apple: October 29, 2017 - November  4, 2017
-cat_apple: October 28, 2018 - November  3, 2018
-cat_peach: October 30, 2016 - November  5, 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
-cat_apple: 2017
-cat_apple: 2018
-cat_peach: 2016
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_apple: November  1, 2006
+cat_apple: November  1, 2008
+cat_orange: November  1, 2006
+cat_peach: November  1, 2004
+--- expected_contenttype_category_monthly
+cat_apple: November 2006
+cat_apple: November 2008
+cat_orange: November 2006
+cat_peach: November 2004
+--- expected_contenttype_category_weekly
+cat_apple: October 29, 2006 - November  4, 2006
+cat_apple: October 26, 2008 - November  1, 2008
+cat_orange: October 29, 2006 - November  4, 2006
+cat_peach: October 31, 2004 - November  6, 2004
+--- expected_contenttype_category_yearly
+cat_apple: 2006
+cat_apple: 2008
+cat_orange: 2006
+cat_peach: 2004
 --- expected_contenttype_daily
 November  1, 2004
 November  1, 2006
@@ -1877,30 +1789,26 @@ cat_strawberry
 cat_peach
 cat_orange
 cat_apple
---- expected_todo_contenttype_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
---- expected_todo_contenttype_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26038
-https://movabletype.atlassian.net/browse/MTC-26039
-https://movabletype.atlassian.net/browse/MTC-26107
-https://movabletype.atlassian.net/browse/MTC-26118
+--- expected_contenttype_category_daily
+cat_peach: November  1, 2004
+cat_orange: November  1, 2006
+cat_apple: November  1, 2008
+cat_apple: November  1, 2006
+--- expected_contenttype_category_monthly
+cat_peach: November 2004
+cat_orange: November 2006
+cat_apple: November 2008
+cat_apple: November 2006
+--- expected_contenttype_category_weekly
+cat_peach: October 31, 2004 - November  6, 2004
+cat_orange: October 29, 2006 - November  4, 2006
+cat_apple: October 26, 2008 - November  1, 2008
+cat_apple: October 29, 2006 - November  4, 2006
+--- expected_contenttype_category_yearly
+cat_peach: 2004
+cat_orange: 2006
+cat_apple: 2008
+cat_apple: 2006
 --- expected_contenttype_daily
 November  1, 2008
 November  1, 2006
