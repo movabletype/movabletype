@@ -88,7 +88,6 @@ __END__
 
 === mt:ArchiveTypeLabel de
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26093
 --- skip_php
 1
@@ -164,7 +163,6 @@ Jahresarchiv
 
 === mt:ArchiveTypeLabel en_us
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26093
 --- skip_php
 1
@@ -240,7 +238,6 @@ Yearly
 
 === mt:ArchiveTypeLabel es
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26093
 --- language 
 es
@@ -316,7 +313,6 @@ anuales
 
 === mt:ArchiveTypeLabel fr
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26093
 --- language 
 fr
@@ -392,7 +388,6 @@ annuelles
 
 === mt:ArchiveTypeLabel nl
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 https://movabletype.atlassian.net/browse/MTC-26093
 --- language 
 nl
@@ -467,8 +462,6 @@ per jaar
 
 
 === mt:ArchiveTypeLabel ja
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26050
 --- language 
 ja
 --- stash
