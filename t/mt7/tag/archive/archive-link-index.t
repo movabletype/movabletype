@@ -152,36 +152,24 @@ http://narnia.na/cat-eraser/2018/12/03/
 http://narnia.na/cat-eraser/2016/12/03/
 http://narnia.na/cat-pencil/2016/12/03/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/03/
---- expected_php_todo_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_weekly
 http://narnia.na/cat-clip/cat-compass/2017/12/03-week/
 http://narnia.na/cat-eraser/2018/12/02-week/
 http://narnia.na/cat-eraser/2016/11/27-week/
 http://narnia.na/cat-pencil/2016/11/27-week/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/02-week/
---- expected_php_todo_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_monthly
 http://narnia.na/cat-clip/cat-compass/2017/12/
 http://narnia.na/cat-eraser/2018/12/
 http://narnia.na/cat-eraser/2016/12/
 http://narnia.na/cat-pencil/2016/12/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
---- expected_php_todo_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/2017/
 http://narnia.na/cat-eraser/2018/
 http://narnia.na/cat-eraser/2016/
 http://narnia.na/cat-pencil/2016/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
---- expected_php_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_contenttype
 http://narnia.na/ct/2018/10/[% cd_same_apple_orange_unique_id %].html
 http://narnia.na/ct/2018/10/[% cd_same_same_date_unique_id %].html
@@ -216,17 +204,17 @@ http://narnia.na/ct/cat-apple/2018/10/31/
 http://narnia.na/ct/cat-apple/2017/10/31/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/31/
 http://narnia.na/ct/cat-peach/2016/10/31/
---- expected_todo_contenttype_category_weekly
+--- expected_contenttype_category_weekly
 http://narnia.na/ct/cat-apple/2018/10/28-week/
 http://narnia.na/ct/cat-apple/2017/10/29-week/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/29-week/
 http://narnia.na/ct/cat-peach/2016/10/30-week/
---- expected_todo_contenttype_category_monthly
+--- expected_contenttype_category_monthly
 http://narnia.na/ct/cat-apple/2018/10/
 http://narnia.na/ct/cat-apple/2017/10/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/10/
 http://narnia.na/ct/cat-peach/2016/10/
---- expected_todo_contenttype_category_yearly
+--- expected_contenttype_category_yearly
 http://narnia.na/ct/cat-apple/2018/
 http://narnia.na/ct/cat-apple/2017/
 http://narnia.na/ct/cat-strawberry/cat-orange/2017/
@@ -317,36 +305,24 @@ http://narnia.na/cat-eraser/2018/12/03/
 http://narnia.na/cat-eraser/2016/12/03/
 http://narnia.na/cat-pencil/2016/12/03/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/03/
---- expected_php_todo_category_daily
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_weekly
 http://narnia.na/cat-clip/cat-compass/2017/12/03-week/
 http://narnia.na/cat-eraser/2018/12/02-week/
 http://narnia.na/cat-eraser/2016/11/27-week/
 http://narnia.na/cat-pencil/2016/11/27-week/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/02-week/
---- expected_php_todo_category_weekly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_monthly
 http://narnia.na/cat-clip/cat-compass/2017/12/
 http://narnia.na/cat-eraser/2018/12/
 http://narnia.na/cat-eraser/2016/12/
 http://narnia.na/cat-pencil/2016/12/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/12/
---- expected_php_todo_category_monthly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_category_yearly
 http://narnia.na/cat-clip/cat-compass/2017/
 http://narnia.na/cat-eraser/2018/
 http://narnia.na/cat-eraser/2016/
 http://narnia.na/cat-pencil/2016/
 http://narnia.na/cat-clip/cat-compass/cat-ruler/2018/
---- expected_php_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26129
 --- expected_error_contenttype
 No Content Type could be found.
 --- expected_error_contenttype_author
