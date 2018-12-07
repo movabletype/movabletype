@@ -264,24 +264,23 @@ https://movabletype.atlassian.net/browse/MTC-26123
 --- expected_todo_error_category_daily
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
---- expected_todo_category_daily
-https://movabletype.atlassian.net/browse/MTC-26071
+--- expected_category_daily
+cat_eraser: December  3, 2016 | http://narnia.na/cat-eraser/2016/12/03/
 --- expected_todo_error_category_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
---- expected_todo_category_monthly
-https://movabletype.atlassian.net/browse/MTC-26071
+--- expected_category_monthly
+cat_eraser: December 2016 | http://narnia.na/cat-eraser/2016/12/
 --- expected_todo_error_category_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
---- expected_todo_category_weekly
-https://movabletype.atlassian.net/browse/MTC-26071
+--- expected_category_weekly
+cat_eraser: November 27, 2016 - December  3, 2016 | http://narnia.na/cat-eraser/2016/11/27-week/
 --- expected_todo_error_category_yearly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
---- expected_todo_category_yearly
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26071
+--- expected_category_yearly
+cat_eraser: 2016 | http://narnia.na/cat-eraser/2016/
 --- expected_contenttype
 cd_same_apple_orange_peach | http://narnia.na/ct/2017/10/[% cd_same_apple_orange_peach_unique_id %].html
 --- expected_php_todo_contenttype
