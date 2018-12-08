@@ -66,6 +66,7 @@ sub run_tests {
 
     my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
     my $blog_id = $objs->{blog_id};
+    $vars->{blog_id} = $blog_id;
 
     for my $map ( sort { $a->archive_type cmp $b->archive_type } @maps ) {
     SKIP: {
