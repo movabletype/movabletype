@@ -93,7 +93,8 @@ sub _hdlr_contents {
     }
     if ($use_stash) {
         foreach my $args_key (
-            'id',                    'unique_id',
+            'id',                    'blog_id',
+            'site_id',               'unique_id',
             'content_type',          'days',
             'include_subcategories', 'include_blogs',
             'exclude_blogs',         'blog_ids',
