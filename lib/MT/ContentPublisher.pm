@@ -341,29 +341,36 @@ sub rebuild {
                 }
                 else {
                     my @cats;
-                    my @cat_cf_ids = map { $_->id } MT::ContentField->load(
-                        {   type            => 'categories',
-                            content_type_id => $content_data->content_type_id,
-                        },
-                        { fetchonly => { id => 1 } },
-                    );
-                    if (@cat_cf_ids) {
-                        @cats = MT::Category->load(
-                            { category_set_id => { op => '>', value => 0 } },
-                            {   join => MT::ObjectCategory->join_on(
-                                    undef,
-                                    {   category_id => \'= category_id',
-                                        object_ds   => 'content_data',
-                                        object_id   => $content_data->id,
-                                        cf_id       => \@cat_cf_ids,
-                                    },
-                                ),
-                                unique => 1,
+                    if ( $archiver->contenttype_category_based ) {
+                        my @cat_cf_ids
+                            = map { $_->id } MT::ContentField->load(
+                            {   type => 'categories',
+                                content_type_id =>
+                                    $content_data->content_type_id,
                             },
-                        );
+                            { fetchonly => { id => 1 } },
+                            );
+                        if (@cat_cf_ids) {
+                            @cats = MT::Category->load(
+                                {   category_set_id =>
+                                        { op => '>', value => 0 }
+                                },
+                                {   join => MT::ObjectCategory->join_on(
+                                        undef,
+                                        {   category_id => \'= category_id',
+                                            object_ds   => 'content_data',
+                                            object_id   => $content_data->id,
+                                            cf_id       => \@cat_cf_ids,
+                                        },
+                                    ),
+                                    unique => 1,
+                                },
+                            );
+                        }
                     }
-                    @cats = (undef)
-                        if !@cats && !$archiver->contenttype_category_based;
+                    else {
+                        @cats = (undef);
+                    }
                     for my $cat (@cats) {
                         $mt->_rebuild_content_archive_type(
                             ContentData => $content_data,
@@ -1839,6 +1846,8 @@ sub _rebuild_content_archive_type {
             if $ctx->stash('content');
         local $ctx->{__stash}{author}
             = $author ? $author : $obj ? $obj->author : undef;
+        local $ctx->{__stash}{template_map} = $map if $map;
+
         if ( $obj && !$timestamp ) {
             $timestamp
                 = $at eq 'ContentType' && $map && $map->dt_field_id

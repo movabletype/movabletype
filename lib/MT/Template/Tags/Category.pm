@@ -63,8 +63,9 @@ sub _get_category_context {
             my $map = $ctx->stash('template_map');
             unless ($map) {
                 my $content_type_id = $content_data->content_type_id;
+                my $at = $ctx->{archive_type} || 'ContentType';
                 ($map) = MT->model('templatemap')->load(
-                    { archive_type => 'ContentType', is_preferred => 1 },
+                    { archive_type => $at, is_preferred => 1 },
                     {   join => MT->model('template')->join_on(
                             undef,
                             {   id => \'= templatemap_template_id',

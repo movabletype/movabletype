@@ -18,6 +18,7 @@ BEGIN {
 }
 
 use File::Find;
+use File::Path;
 
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
@@ -166,27 +167,73 @@ my $map_ct_archive_content_type_author_monthly
     template_id => $tmpl_ct_archive->id,
     );
 
-$app->rebuild_content_data( ContentData => $cd ) or die;
+subtest 'save content_data' => sub {
+    $app->rebuild_content_data( ContentData => $cd ) or die;
 
-my %expected = map { $website->archive_path . $_ => 0 }
-    ( '/baz/2018/12/03/index.html', '/orange/2025/12/index.html', );
+    my %expected = _get_expected_hash();
 
-File::Find::find(
-    {   wanted => sub {
-            if ( -f $File::Find::name ) {
-                note $File::Find::name;
-                if ( exists $expected{$File::Find::name} ) {
-                    $expected{$File::Find::name} = 1;
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                    if ( exists $expected{$File::Find::name} ) {
+                        $expected{$File::Find::name} = 1;
+                    }
                 }
-            }
+            },
+            no_chdir => 1,
         },
-        no_chdir => 1,
-    },
-    $website->archive_path,
-);
+        $website->archive_path,
+    );
 
-my $no_tested_count = grep { !$expected{$_} } keys %expected;
-is( $no_tested_count, 0, 'all files have been built' );
+    my $no_tested_count = grep { !$expected{$_} } keys %expected;
+    is( $no_tested_count, 0, 'all files have been built' );
+};
+
+File::Path::rmtree( $website->archive_path ) or die;
+MT->request->reset;
+
+subtest 'save & publish template' => sub {
+
+    $app->rebuild(
+        BlogID      => $blog_id,
+        ArchiveType => 'ContentType-Daily',
+        NoIndexes   => 1,
+        Limit       => $app->config->EntriesPerRebuild,
+        TemplateID  => $tmpl_ct_archive->id,
+    ) or die;
+    $app->rebuild(
+        BlogID      => $blog_id,
+        ArchiveType => 'ContentType-Author-Monthly',
+        NoIndexes   => 1,
+        Limit       => $app->config->EntriesPerRebuild,
+        TemplateID  => $tmpl_ct_archive->id,
+    ) or die;
+
+    my %expected = _get_expected_hash();
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                    if ( exists $expected{$File::Find::name} ) {
+                        $expected{$File::Find::name} = 1;
+                    }
+                }
+            },
+            no_chdir => 1,
+        },
+        $website->archive_path,
+    );
+    my $no_tested_count = grep { !$expected{$_} } keys %expected;
+    is( $no_tested_count, 0, 'all files have been built' );
+};
+
+sub _get_expected_hash {
+    return
+        map { $website->archive_path . $_ => 0 }
+        ( '/baz/2018/12/03/index.html', '/orange/2025/12/index.html', );
+}
 
 done_testing;
 
