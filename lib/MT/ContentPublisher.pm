@@ -570,23 +570,11 @@ sub rebuild_content_data {
             }
             else {
                 for my $map (@maps) {
-
-                    # If necessary, category is loaded.
-                    my $cat;
-                    if ( $map->cat_field_id ) {
-                        my $obj_category = MT->model('objectcategory')->load(
-                            {   cf_id      => $map->cat_field_id,
-                                is_primary => 1,
-                                object_ds  => 'content_data',
-                                object_id  => $content_data->id,
-                            }
-                        );
-                        $cat
-                            = $obj_category
-                            ? MT->model('category')
-                            ->load( $obj_category->category_id )
-                            : '';
-                    }
+                    my $cat = _get_primary_category_of_content_data(
+                        {   cat_field_id    => $map->cat_field_id,
+                            content_data_id => $content_data->id,
+                        }
+                    );
                     $mt->_rebuild_content_archive_type(
                         ContentData => $content_data,
                         Blog        => $blog,
@@ -595,7 +583,7 @@ sub rebuild_content_data {
                         NoStatic    => $param{NoStatic},
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Author      => $content_data->author,
-                        ( $cat ? ( Category => $cat ) : () ),
+                        Category    => $cat,
                     ) or return;
                 }
             }
@@ -756,25 +744,6 @@ sub rebuild_content_data {
                 }
                 else {
                     for my $map (@maps) {
-
-                        # If necessary, category is loaded.
-                        my $cat;
-                        if ( $map->cat_field_id ) {
-                            my $obj_category
-                                = MT->model('objectcategory')->load(
-                                {   cf_id      => $map->cat_field_id,
-                                    is_primary => 1,
-                                    object_ds  => 'content_data',
-                                    object_id  => $content_data->id,
-                                }
-                                );
-                            $cat
-                                = $obj_category
-                                ? MT->model('category')
-                                ->load( $obj_category->category_id )
-                                : '';
-                        }
-
                         if (my $prev_arch
                             = $archiver->previous_archive_content_data(
                                 {   content_data => $content_data,
@@ -785,6 +754,11 @@ sub rebuild_content_data {
                             )
                             )
                         {
+                            my $cat = _get_primary_category_of_content_data(
+                                {   cat_field_id    => $map->cat_field_id,
+                                    content_data_id => $prev_arch->id,
+                                }
+                            );
                             $mt->_rebuild_content_archive_type(
                                 NoStatic => $param{NoStatic},
 
@@ -793,10 +767,10 @@ sub rebuild_content_data {
                                 Blog        => $blog,
                                 ArchiveType => $at,
                                 TemplateMap => $map,
+                                Category    => $cat,
                                 $archiver->author_based
                                 ? ( Author => $content_data->author )
                                 : (),
-                                $cat ? ( Category => $cat ) : (),
                             ) or return;
                         }
                         if (my $next_arch
@@ -809,6 +783,11 @@ sub rebuild_content_data {
                             )
                             )
                         {
+                            my $cat = _get_primary_category_of_content_data(
+                                {   cat_field_id    => $map->cat_field_id,
+                                    content_data_id => $next_arch->id,
+                                }
+                            );
                             $mt->_rebuild_content_archive_type(
                                 NoStatic => $param{NoStatic},
 
@@ -817,10 +796,10 @@ sub rebuild_content_data {
                                 Blog        => $blog,
                                 ArchiveType => $at,
                                 TemplateMap => $map,
+                                Category    => $cat,
                                 $archiver->author_based
                                 ? ( Author => $content_data->author )
                                 : (),
-                                $cat ? ( Category => $cat ) : (),
                             ) or return;
                         }
                     }
@@ -832,6 +811,24 @@ sub rebuild_content_data {
     MT::Util::Log->info('--- End   rebuild_content_data.');
 
     1;
+}
+
+# move to MT::ContentData?
+sub _get_primary_category_of_content_data {
+    my ($args) = @_;
+    $args ||= {};
+    my $cat_field_id = $args->{cat_field_id} or return;
+    my $cd_id = $args->{content_data_id};
+
+    my $obj_category = MT->model('objectcategory')->load(
+        {   cf_id      => $cat_field_id,
+            is_primary => 1,
+            object_ds  => 'content_data',
+            object_id  => $cd_id,
+        }
+    ) or return;
+    my $cat = MT->model('category')->load( $obj_category->category_id );
+    return $cat;
 }
 
 sub rebuild_file {
