@@ -182,50 +182,7 @@ subtest 'save content_data' => sub {
         BuildDependencies => 1,
     ) or die $app->errstr;
 
-    my %expected = _get_expected_hash();
-
-    File::Find::find(
-        {   wanted => sub {
-                if ( -f $File::Find::name ) {
-                    note $File::Find::name;
-                    if ( exists $expected{$File::Find::name} ) {
-                        $expected{$File::Find::name} = 1;
-                    }
-                }
-            },
-            no_chdir => 1,
-        },
-        $website->archive_path,
-    );
-
-    my $no_tested_count = grep { !$expected{$_} } keys %expected;
-    is( $no_tested_count, 0, 'all files have been built' );
-
-    subtest 'check fileinfo' => sub {
-        my @fileinfo = $app->model('fileinfo')->load(
-            {   blog_id      => $blog_id,
-                archive_type => { like => 'ContentType%' },
-            }
-        );
-
-        is( @fileinfo, 2, 'there are 2 fileinfoes' );
-
-        my ($fileinfo_ct_daily)
-            = grep { $_->archive_type eq 'ContentType-Daily' } @fileinfo;
-        ok( $fileinfo_ct_daily
-                && $fileinfo_ct_daily->url eq '/baz/2018/12/03/index.html',
-            'fileinfo: /baz/2018/12/03/index.html'
-        );
-
-        my ($fileinfo_ct_author_monthly)
-            = grep { $_->archive_type eq 'ContentType-Author-Monthly' }
-            @fileinfo;
-        ok( $fileinfo_ct_author_monthly
-                && $fileinfo_ct_author_monthly->url eq
-                '/orange/2025/12/index.html',
-            'fileinfo: /orange/2025/12/index.html'
-        );
-    };
+    _test_with_1_data();
 };
 
 File::Path::rmtree( $website->archive_path ) or die;
@@ -249,6 +206,70 @@ subtest 'save & publish template' => sub {
         TemplateID  => $tmpl_ct_archive->id,
     ) or die;
 
+    _test_with_1_data();
+};
+
+File::Path::rmtree( $website->archive_path ) or die;
+MT->request->reset;
+MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+my $cd_a = MT::Test::Permission->make_content_data(
+    authored_on     => '20181209000000',
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    label           => 'a',
+);
+$cd_a->data(
+    {   $cf_cat1->id => [ $cs1_foo->id ],
+        $cf_cat2->id => [ $cs2_apple->id ],
+        $cf_date->id => '2018122200000',
+    }
+);
+$cd_a->save or die;
+
+MT->request->reset;
+MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+subtest 'save content_data when there are 2 data' => sub {
+    my $prev_old = $cd_a->previous(1);
+    my $next_old = $cd_a->next(1);
+    ok( $prev_old && $prev_old->id == $cd->id, '$cd_a->previous(1) exists' );
+    ok( !$next_old, 'no $cd_a->next(1) exists' );
+
+    # in MT::CMS::ContentData::save()
+    $app->rebuild_content_data(
+        ContentData       => $cd_a,
+        BuildDependencies => 1,
+        OldPrevious       => $prev_old->id,
+    ) or die;
+
+    _test_with_2_data();
+};
+
+File::Path::rmtree( $website->archive_path ) or die;
+MT->request->reset;
+MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+subtest 'save & publish template when there are 2 data' => sub {
+    $app->rebuild(
+        BlogID      => $blog_id,
+        ArchiveType => 'ContentType-Daily',
+        NoIndexes   => 1,
+        Limit       => $app->config->EntriesPerRebuild,
+        TemplateID  => $tmpl_ct_archive->id,
+    ) or die;
+    $app->rebuild(
+        BlogID      => $blog_id,
+        ArchiveType => 'ContentType-Author-Monthly',
+        NoIndexes   => 1,
+        Limit       => $app->config->EntriesPerRebuild,
+        TemplateID  => $tmpl_ct_archive->id,
+    ) or die;
+
+    _test_with_2_data();
+};
+
+sub _test_with_1_data {
     my %expected = _get_expected_hash();
 
     File::Find::find(
@@ -292,42 +313,9 @@ subtest 'save & publish template' => sub {
             'fileinfo: /orange/2025/12/index.html'
         );
     };
-};
+}
 
-File::Path::rmtree( $website->archive_path ) or die;
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
-
-my $cd_a = MT::Test::Permission->make_content_data(
-    authored_on     => '20181209000000',
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    label           => 'a',
-);
-$cd_a->data(
-    {   $cf_cat1->id => [ $cs1_foo->id ],
-        $cf_cat2->id => [ $cs2_apple->id ],
-        $cf_date->id => '2018122200000',
-    }
-);
-$cd_a->save or die;
-
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
-
-subtest 'save content_data when there is 2 data' => sub {
-    my $prev_old = $cd_a->previous(1);
-    my $next_old = $cd_a->next(1);
-    ok( $prev_old && $prev_old->id == $cd->id, '$cd_a->previous(1) exists' );
-    ok( !$next_old, 'no $cd_a->next(1) exists' );
-
-    # in MT::CMS::ContentData::save()
-    $app->rebuild_content_data(
-        ContentData       => $cd_a,
-        BuildDependencies => 1,
-        OldPrevious       => $prev_old->id,
-    ) or die;
-
+sub _test_with_2_data {
     my %expected = map { $website->archive_path . $_ => 0 } (
 
         # cd
@@ -388,7 +376,7 @@ subtest 'save content_data when there is 2 data' => sub {
             'fileinfo: /foo/2018/12/09/index.html'
         );
     };
-};
+}
 
 sub _get_expected_hash {
     return
