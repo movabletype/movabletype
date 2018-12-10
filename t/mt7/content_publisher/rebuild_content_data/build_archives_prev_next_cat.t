@@ -18,6 +18,7 @@ BEGIN {
 }
 
 use File::Find;
+use File::Path;
 
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
@@ -30,6 +31,7 @@ $test_env->prepare_fixture('db');
 
 my $blog_id = 1;
 my $website = $app->model('website')->load($blog_id) or die;
+$website->site_path( $test_env->root . '/site' );
 $website->archive_path( $test_env->root . '/site/archive' );
 $website->save or die;
 
@@ -204,53 +206,145 @@ my $map_ct_archive_author_yearly = MT::Test::Permission->make_templatemap(
     template_id => $tmpl_ct_archive->id,
 );
 
-$app->rebuild_content_data(
-    BuildArchives => 1,
-    ContentData   => $cd1,
-);
+subtest 'save content_data' => sub {
 
-my %expected = map { $website->archive_path . $_ => 0 } (
+    $app->rebuild_content_data(
+        BuildDependencies => 1,
+        ContentData       => $cd1,
+    ) or die $app->errstr;
 
-    # ContentType-Category-Daily
-    '/foo/2008/12/03/index.html',
-    '/foo/2038/12/03/index.html',
-    '/foo/2018/12/03/index.html',
+    my @urls = (
 
-    # ContentType-Category-Monthly
-    '/bar/2008/09/index.html',
-    '/bar/2038/09/index.html',
-    '/bar/2018/09/index.html',
+        # ContentType-Category-Daily
+        '/foo/2008/12/03/index.html',
+        '/foo/2038/12/03/index.html',
+        '/foo/2018/12/03/index.html',
 
-    # ContentType-Weekly
-    '/foo/2008/11/30-week/index.html',
-    '/foo/2028/12/03-week/index.html',
-    '/foo/2018/12/02-week/index.html',
+        # ContentType-Category-Monthly
+        '/bar/2008/09/index.html',
+        '/bar/2038/09/index.html',
+        '/bar/2018/09/index.html',
 
-    # ContentType-Author-Yearly
-    '/bar/2008/index.html',
-    '/bar/2028/index.html',
-    '/bar/2018/index.html',
-);
+        # ContentType-Weekly
+        '/foo/2008/11/30-week/index.html',
+        '/bar/2028/12/03-week/index.html',
+        '/foo/2018/12/02-week/index.html',
 
-File::Find::find(
-    {   wanted => sub {
-            if ( -f $File::Find::name ) {
-                note $File::Find::name;
-                if ( exists $expected{$File::Find::name} ) {
-                    $expected{$File::Find::name} = 1;
+        # ContentType-Author-Yearly
+        '/bar/2008/index.html',
+        '/baz/2028/index.html',
+        '/bar/2018/index.html',
+    );
+    my %expected = map { $website->archive_path . $_ => 0 } @urls;
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                    if ( exists $expected{$File::Find::name} ) {
+                        $expected{$File::Find::name} = 1;
+                    }
+                    else {
+                        $expected{$File::Find::name} = -1;
+                    }
                 }
-                else {
-                    $expected{$File::Find::name} = -1;
-                }
-            }
+            },
+            no_chdir => 1,
         },
-        no_chdir => 1,
-    },
-    $website->archive_path
-);
+        $website->archive_path
+    );
 
-my $no_tested_count = grep { $expected{$_} != 1 } keys %expected;
-is( $no_tested_count, 0, 'all files have been built' );
+    my $no_tested_count = grep { $expected{$_} != 1 } keys %expected;
+    is( $no_tested_count, 0, 'all files have been built' );
+
+    my @fileinfo = $app->model('fileinfo')->load( { blog_id => $blog_id } );
+    is( @fileinfo, 12, 'there are 12 fileinfoes' );
+
+    for my $url (@urls) {
+        is( scalar( grep { $_->url eq $url } @fileinfo ),
+            1, "fileinfo: $url" );
+    }
+};
+
+File::Path::rmtree( $website->archive_path ) or die;
+MT->request->reset;
+MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+subtest 'save & publish template' => sub {
+    my @archive_types = qw(
+        ContentType-Category-Daily
+        ContentType-Category-Monthly
+        ContentType-Weekly
+        ContentType-Author-Yearly
+    );
+    for my $at (@archive_types) {
+        $app->rebuild(
+            BlogID      => $blog_id,
+            ArchiveType => $at,
+            NoIndexes   => 1,
+            Limit       => $app->config->EntriesPerRebuild,
+            TemplateID  => $tmpl_ct_archive->id,
+        ) or die $app->errstr;
+    }
+
+    my @urls = (
+
+        # ContentType-Category-Daily
+        "/foo/2018/12/03/index.html",
+        "/foo/2008/12/03/index.html",
+        "/foo/2038/12/03/index.html",
+        "/bar/2028/12/03/index.html",
+        "/foo/1998/12/03/index.html",
+
+        # ContentType-Category-Monthly
+        "/bar/2018/09/index.html",
+        "/bar/2008/09/index.html",
+        "/bar/2038/09/index.html",
+        "/baz/2028/09/index.html",
+        "/bar/1998/09/index.html",
+
+        # ContentType-Weekly
+        "/foo/2018/12/02-week/index.html",
+        "/foo/2008/11/30-week/index.html",
+        "/bar/2028/12/03-week/index.html",
+        "/foo/2038/11/28-week/index.html",
+        "/foo/1998/11/29-week/index.html",
+
+        # ContentType-Author-Yearly
+        "/bar/2018/index.html",
+        "/bar/2008/index.html",
+        "/baz/2028/index.html",
+        "/bar/2038/index.html",
+        "/bar/1998/index.html",
+
+    );
+    my %expected = map { $website->archive_path . $_ => 0 } @urls;
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                    if ( exists $expected{$File::Find::name} ) {
+                        $expected{$File::Find::name} = 1;
+                    }
+                    else {
+                        $expected{$File::Find::name} = -1;
+                    }
+                }
+            },
+            no_chdir => 1,
+        },
+        $website->archive_path
+    );
+
+    my @fileinfo = $app->model('fileinfo')->load( { blog_id => $blog_id } );
+    is( @fileinfo, 20, 'there are 20 fileinfoes' );
+
+    for my $url (@urls) {
+        is( scalar( grep { $_->url eq $url } @fileinfo ),
+            1, "fileinfo: $url" );
+    }
+};
 
 done_testing;
 
