@@ -223,12 +223,12 @@ my %expected = map { $website->archive_path . $_ => 0 } (
 
     # ContentType-Weekly
     '/foo/2008/11/30-week/index.html',
-    '/foo/2028/12/03-week/index.html',
+    '/bar/2028/12/03-week/index.html',
     '/foo/2018/12/02-week/index.html',
 
     # ContentType-Author-Yearly
     '/bar/2008/index.html',
-    '/bar/2028/index.html',
+    '/baz/2028/index.html',
     '/bar/2018/index.html',
 );
 
