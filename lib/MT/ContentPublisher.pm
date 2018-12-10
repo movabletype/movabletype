@@ -746,10 +746,11 @@ sub rebuild_content_data {
                     for my $map (@maps) {
                         if (my $prev_arch
                             = $archiver->previous_archive_content_data(
-                                {   content_data => $content_data,
-                                    $archiver->author_based
+                                {   $archiver->author_based
                                     ? ( author => $content_data->author )
                                     : (),
+                                    content_data      => $content_data,
+                                    datetime_field_id => $map->dt_field_id,
                                 }
                             )
                             )
@@ -775,10 +776,11 @@ sub rebuild_content_data {
                         }
                         if (my $next_arch
                             = $archiver->next_archive_content_data(
-                                {   content_data => $content_data,
-                                    $archiver->author_based
+                                {   $archiver->author_based
                                     ? ( author => $content_data->author )
                                     : (),
+                                    content_data      => $content_data,
+                                    datetime_field_id => $map->dt_field_id,
                                 }
                             )
                             )

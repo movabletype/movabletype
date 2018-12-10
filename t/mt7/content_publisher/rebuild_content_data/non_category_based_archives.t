@@ -328,8 +328,14 @@ subtest 'save content_data when there is 2 data' => sub {
         OldPrevious       => $prev_old->id,
     ) or die;
 
-    my %expected = map { $website->archive_path . $_ => 0 }
-        ( '/apple/2018/12/index.html', '/foo/2018/12/09/index.html', );
+    my %expected = map { $website->archive_path . $_ => 0 } (
+
+        # cd
+        '/baz/2018/12/03/index.html', '/orange/2025/12/index.html',
+
+        # cd_a
+        '/apple/2018/12/index.html', '/foo/2018/12/09/index.html',
+    );
 
     File::Find::find(
         {   wanted => sub {
