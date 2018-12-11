@@ -103,7 +103,7 @@ sub archive_group_contents {
         ? sprintf( "%04d%02d%02d000000", $param->{year}, 1, 1 )
         : undef;
     my $limit = $param->{limit};
-    $obj->dated_group_contents( $ctx, 'Yearly', $ts, $limit,
+    $obj->dated_group_contents( $ctx, $obj->name, $ts, $limit,
         $content_type_id );
 }
 
