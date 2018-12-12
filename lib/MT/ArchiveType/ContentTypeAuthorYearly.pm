@@ -175,7 +175,7 @@ sub archive_group_contents {
         : $ctx->{current_timestamp};
     my $author = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    $obj->dated_author_contents( $ctx, 'ContentType-Author-Yearly', $author,
+    $obj->dated_author_contents( $ctx, $obj->name, $author,
         $ts, $limit, $content_type_id );
 }
 

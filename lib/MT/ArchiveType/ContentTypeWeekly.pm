@@ -114,7 +114,7 @@ sub archive_group_contents {
         week2ymd( $param->{year}, $param->{week} ) )
         : undef;
     my $limit = $param->{limit};
-    $obj->dated_group_contents( $ctx, 'Weekly', $ts, $limit,
+    $obj->dated_group_contents( $ctx, $obj->name, $ts, $limit,
         $content_type_id );
 }
 

@@ -212,7 +212,7 @@ sub archive_group_contents {
         : $ctx->{current_timestamp};
     my $cat = $param->{category} || $ctx->stash('archive_category');
     my $limit = $param->{limit};
-    $obj->dated_category_contents( $ctx, 'Category-Yearly', $cat, $ts,
+    $obj->dated_category_contents( $ctx, $obj->name, $cat, $ts,
         $limit, $content_type_id );
 }
 
