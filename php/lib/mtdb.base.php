@@ -551,10 +551,15 @@ abstract class MTDatabase {
         return $config;
     }
 
-    public function category_link($cid, $at = 'Category') {
-        if (isset($this->_cat_link_cache[$cid])) {
-            $url = $this->_cat_link_cache[$cid];
+    public function category_link($cid, $at = 'Category', $content_type_id = 0) {
+        $cache_key = implode(':', array($cid, $at, $content_type_id));
+        if (isset($this->_cat_link_cache[$cache_key])) {
+            $url = $this->_cat_link_cache[$cache_key];
         } else {
+            if ($at == 'ContentType-Category' && !$content_type_id) {
+                return null;
+            }
+
             $where = "fileinfo_category_id = $cid and
                       fileinfo_archive_type = '$at'";
             require_once('class.mt_fileinfo.php');
@@ -566,11 +571,18 @@ abstract class MTDatabase {
             $found = false;
             foreach($finfos as $fi) {
                 $tmap = $fi->TemplateMap();
-                if ($tmap->is_preferred == 1) {
-                    $found = true;
-                    $finfo = $fi;
-                    break;
+                if ($tmap->is_preferred != 1) {
+                    continue;
                 }
+                if ($at == 'ContentType-Category') {
+                    $tmpl = $tmap->template();
+                    if ($tmpl->content_type_id != $content_type_id) {
+                        continue;
+                    }
+                }
+                $found = true;
+                $finfo = $fi;
+                break;
             }
             if (!$found)
                 return null;
@@ -583,7 +595,7 @@ abstract class MTDatabase {
             $url = $blog_url . $finfo->url;
             require_once('MTUtil.php');
             $url = _strip_index($url, $blog);
-            $this->_cat_link_cache[$cid] = $url;
+            $this->_cat_link_cache[$cache_key] = $url;
         }
         return $url;
     }
