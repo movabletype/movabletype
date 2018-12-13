@@ -113,9 +113,9 @@ __END__
 --- template
 <mt:IfArchiveTypeEnabled archive_type="ContentType">true<mt:Else>false</mt:IfArchiveTypeEnabled>
 --- expected_error
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 
 === mt:IfArchiveTypeEnabled without content_type (contenttype_* is error)
 --- stash
@@ -132,65 +132,65 @@ You used an <MTIfArchiveType> tag without a valid content_type attribute.
 --- expected
 [% expected %]
 --- expected_error_contenttype
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_author
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_author
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_author_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_author_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_author_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_author_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_author_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_author_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_author_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_author_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_category
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_category
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_category_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_category_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_category_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_category_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_category_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_category_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_category_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_category_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_daily
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_monthly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_weekly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_error_contenttype_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 --- expected_php_error_contenttype_yearly
-You used an <MTIfArchiveType> tag without a valid content_type attribute.
+You used an <MTIfArchiveTypeEnabled> tag without a valid content_type attribute.
 
 === mt:IfArchiveTypeEnabled with an inconsistent content type
 --- stash

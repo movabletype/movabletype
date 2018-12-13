@@ -776,7 +776,8 @@ sub _hdlr_archive_type_enabled {
         return $ctx->error(
             MT->translate(
                 "You used an [_1] tag without a valid [_2] attribute.",
-                "<MTIfArchiveType>", "content_type"
+                "<MTIfArchiveTypeEnabled>",
+                "content_type"
             )
         ) unless $ct_arg;
         my $ct_class = MT->model('content_type');
