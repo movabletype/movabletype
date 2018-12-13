@@ -604,3 +604,145 @@ Content Data9
 </mt:Contents>
 --- expected
 Content Data10
+
+=== all tests in 1 template (MTC-26242)
+--- template
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id2 %]" field:single="single" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single" field:multiline="multiline" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single" sort_by="field:multiline"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:date_only="2018-12-25"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single" field:date_only="2018-12-25"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single2" field:date_only="2018-12-25" field:date_and_time="2018-12-25 12:34:56"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_2="Category 2-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" field:cf_category_2="Category 2-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" field:cf_category_2="Category 2-2" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" field:cf_category_2="Category 2-1" sort_by="field:cf_category_3"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Categories" blog_id="[% blog_id %]" field:cf_category_1="Category 1-1" field:cf_category_2="Category 2-2" sort_by="field:cf_category_3"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_1="Tag 1-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_2="Tag 2-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_1="Tag 1-1" field:cf_tag_2="Tag 2-1" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_1="Tag 1-1" field:cf_tag_2="Tag 2-2" sort_by="field:single"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_1="Tag 1-1" field:cf_tag_2="Tag 2-1" sort_by="field:cf_tag_3"><mt:ContentLabel>
+</mt:Contents>
+-
+<mt:Contents content_type="Content Type with Tags" blog_id="[% blog_id %]" field:cf_tag_1="Tag 1-1" field:cf_tag_2="Tag 2-2" sort_by="field:cf_tag_3"><mt:ContentLabel>
+</mt:Contents>
+--- expected
+Content Data2
+Content Data4
+
+-
+Content Data3
+
+-
+Content Data4
+
+-
+Content Data4
+Content Data2
+
+-
+Content Data5
+Content Data4
+
+-
+Content Data4
+
+-
+Content Data5
+
+-
+Content Data11
+Content Data10
+Content Data9
+
+-
+Content Data7
+Content Data6
+
+-
+Content Data7
+Content Data6
+
+-
+Content Data7
+Content Data6
+
+-
+Content Data7
+
+-
+Content Data7
+Content Data6
+
+-
+Content Data7
+
+-
+Content Data11
+Content Data10
+Content Data9
+
+-
+Content Data10
+Content Data9
+
+-
+Content Data10
+Content Data9
+
+-
+Content Data10
+Content Data9
+
+-
+Content Data10
+
+-
+Content Data10
+Content Data9
+
+-
+Content Data10
