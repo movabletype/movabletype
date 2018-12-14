@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
-    $localvars = array(array('content', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_limit', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
+    $localvars = array(array('content', 'content_type', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_limit', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
 
     $blog_id = $args['site_id'];
     $blog_id or $blog_id = $args['blog_id'];
