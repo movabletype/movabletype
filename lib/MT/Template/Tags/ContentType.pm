@@ -34,7 +34,7 @@ widgets to select content in many different ways.
 The contents of this container tag will be displayed when the first
 content listed by a L<Contents> tag is reached.
 
-=for tags entries
+=for tags contents
 
 =cut
 
@@ -134,14 +134,14 @@ sub _hdlr_contents {
         my $content = @$archive_contents[0];
         if ( !$content->isa($class) ) {
 
-            # class types do not match; we can't use stashed entries
+            # class types do not match; we can't use stashed contents
             undef $archive_contents;
         }
         elsif ( ( $tag eq 'contents' )
             && $blog_id != $content->blog_id )
         {
 
-            # Blog ID do not match; we can't use stashed entries
+            # Blog ID do not match; we can't use stashed contents
             undef $archive_contents;
         }
     }
@@ -1244,7 +1244,7 @@ Returns the count of a list of contents that are currently in context
 (ie: used in an archive template, or inside an L<Contents> tag). If no
 content list context exists, it will fallback to the list that would be
 selected for a generic L<Contents> tag (respecting number of days or
-entries configured to publish on the blog's main index template).
+contents configured to publish on the blog's main index template).
 
 =for tags count
 
