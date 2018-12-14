@@ -17,7 +17,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
             return $ctx->error(
               $ctx->mt->translate(
                 "You used an [_1] tag without a valid [_2] attribute.",
-                array("<MTIfArchiveType>", "content_type")
+                array("<MTIfArchiveTypeEnabled>", "content_type")
               )
             );
         }

@@ -212,8 +212,7 @@ sub _hdlr_archives {
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
-        my $map
-            = $ctx->stash('template_map')
+        my $map = $ctx->stash('template_map')
             || $archiver->_search_preferred_map(
             {   blog_id         => $blog->id,
                 content_type_id => $ctx->stash('content_type')->id,
@@ -777,7 +776,8 @@ sub _hdlr_archive_type_enabled {
         return $ctx->error(
             MT->translate(
                 "You used an [_1] tag without a valid [_2] attribute.",
-                "<MTIfArchiveType>", "content_type"
+                "<MTIfArchiveTypeEnabled>",
+                "content_type"
             )
         ) unless $ct_arg;
         my $ct_class = MT->model('content_type');
