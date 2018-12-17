@@ -204,6 +204,16 @@ sub _hdlr_contents {
             $terms{author_id} = $author->id;
         }
     }
+    elsif ( $at =~ /^ContentType-Author/ ) {
+        if ( my $author = $ctx->stash('author') ) {
+            if ($archive_contents) {
+                push @filters, sub { $_[0]->author_id == $author->id };
+            }
+            else {
+                $terms{author_id} = $author->id;
+            }
+        }
+    }
 
     # Adds an ID filter to the filter list.
     foreach my $id (qw/ id unique_id /) {

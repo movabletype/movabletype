@@ -631,6 +631,18 @@ sub _hdlr_entries {
         }
     }
 
+    # For compatibility. MTC-26227
+    #elsif ( $at =~ /^Author/ ) {
+    #    if ( my $author = $ctx->stash('author') ) {
+    #        if ($archive_contents) {
+    #            push @filters, sub { $_[0]->author_id == $author->id };
+    #        }
+    #        else {
+    #            $terms{author_id} = $author->id;
+    #        }
+    #    }
+    #}
+
     if ( my $f = MT::Component->registry( "tags", "filters", "Entries" ) ) {
         foreach my $set (@$f) {
             foreach my $fkey ( keys %$set ) {
