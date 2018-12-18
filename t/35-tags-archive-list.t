@@ -39,13 +39,33 @@ my $role_author = MT->model('role')->load( { name => 'Author' } ) or die;
 MT->model('association')->link( $blog, $role_author, $author1 );
 MT->model('association')->link( $blog, $role_author, $author2 );
 
-MT::Test::Permission->make_entry(
+my $entry1 = MT::Test::Permission->make_entry(
     author_id => $author1->id,
     blog_id   => $blog_id,
 );
-MT::Test::Permission->make_entry(
+my $entry2 = MT::Test::Permission->make_entry(
     author_id => $author2->id,
     blog_id   => $blog_id,
+);
+
+my $cat1 = MT::Test::Permission->make_category(
+    blog_id => $blog_id,
+    label   => 'cat1',
+);
+my $cat2 = MT::Test::Permission->make_category(
+    blog_id => $blog_id,
+    label   => 'cat2',
+);
+
+MT::Test::Permission->make_placement(
+    blog_id     => $blog_id,
+    entry_id    => $entry1->id,
+    category_id => $cat1->id,
+);
+MT::Test::Permission->make_placement(
+    blog_id     => $blog_id,
+    entry_id    => $entry2->id,
+    category_id => $cat2->id,
 );
 
 run {
@@ -168,3 +188,26 @@ test2
 test2
 test1
 
+=== MTArchiveList type="Category"
+--- template
+<MTArchiveList type="Category"><MTArchiveTitle>
+</MTArchiveList>
+--- expected
+cat1
+cat2
+
+=== MTArchiveList type="Category" sort_order="ascend"
+--- template
+<MTArchiveList type="Category" sort_order="ascend"><MTArchiveTitle>
+</MTArchiveList>
+--- expected
+cat1
+cat2
+
+=== MTArchiveList type="Category" sort_order="descend"
+--- template
+<MTArchiveList type="Category" sort_order="descend"><MTArchiveTitle>
+</MTArchiveList>
+--- expected
+cat2
+cat1
