@@ -47,3 +47,5 @@ t/update/
 
 *.swp
 .DS_Store
+
+.perl-version
