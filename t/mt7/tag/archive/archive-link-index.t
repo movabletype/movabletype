@@ -194,11 +194,9 @@ http://narnia.na/ct/author/author2/2016/10/
 http://narnia.na/ct/author/author1/2018/
 http://narnia.na/ct/author/author1/2017/
 http://narnia.na/ct/author/author2/2016/
---- expected_contenttype_category
-http://narnia.na/ct/cat-apple/
-http://narnia.na/ct/cat-strawberry/cat-orange/
-http://narnia.na/ct/cat-peach/
-http://narnia.na/ct/cat-strawberry/
+--- expected_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26248
 --- expected_contenttype_category_daily
 http://narnia.na/ct/cat-apple/2018/10/31/
 http://narnia.na/ct/cat-apple/2017/10/31/

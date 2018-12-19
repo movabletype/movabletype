@@ -231,7 +231,7 @@ November 27, 2016 - December  3, 2016 | http://narnia.na/2016/11/27-week/
 --- stash
 { entry => 'entry_author1_ruler_eraser_1', entry_category => 'cat_eraser', page => 'page_author2_no_folder', cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple'}
 --- template
-<mt:ArchivePrevious content_type="[% cd_same_apple_orange_unique_id %]"><mt:ArchiveTitle> | <mt:ArchiveLink>
+<mt:ArchivePrevious content_type="ct_with_same_catset"><mt:ArchiveTitle> | <mt:ArchiveLink>
 </mt:ArchivePrevious>
 --- expected_todo_error_author
 --- FIXME
@@ -516,7 +516,7 @@ December  2, 2018 - December  8, 2018 | http://narnia.na/2018/12/02-week/
 --- stash
 { entry => 'entry_author1_ruler_eraser_1', entry_category => 'cat_eraser', page => 'page_author2_no_folder', cd => 'cd_same_apple_orange', cat_field => 'cf_same_catset_fruit', category => 'cat_apple'}
 --- template
-<mt:ArchiveNext content_type="[% cd_same_apple_orange_unique_id %]"><mt:ArchiveTitle> | <mt:ArchiveLink>
+<mt:ArchiveNext content_type="ct_with_same_catset"><mt:ArchiveTitle> | <mt:ArchiveLink>
 </mt:ArchiveNext>
 --- expected_todo_error_author
 --- FIXME
@@ -585,20 +585,15 @@ cat_peach | http://narnia.na/ct/cat-peach/
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
 --- expected_daily
---- expected_todo_error_individual
+--- expected_todo_individual
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26122
+--- expected_monthly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
---- expected_individual
-entry_author1_ruler_eraser | http://narnia.na/2018/12/entry-author1-ruler-eraser.html
---- expected_todo_error_monthly
+--- expected_todo_page
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26123
---- expected_manthly
---- expected_todo_error_page
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26123
---- expected_page
-page_author1_coffee | http://narnia.na/folder-green-tea/folder-cola/folder-coffee/page-author1-coffee.html
+https://movabletype.atlassian.net/browse/MTC-26122
 --- expected_todo_error_weekly
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26123
