@@ -225,6 +225,7 @@ riot.tag2('content-fields', '<form name="content-type-form" action="{CMSScriptUR
         return
       }
 
+      self.rebuildLabelFields()
       setDirty(false)
       fieldOptions = [];
       if (self.fields) {

@@ -319,6 +319,7 @@
         return
       }
 
+      self.rebuildLabelFields()
       setDirty(false)
       fieldOptions = [];
       if (self.fields) {
