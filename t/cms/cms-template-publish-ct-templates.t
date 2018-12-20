@@ -7,7 +7,6 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use File::Find;
 use File::Path;
-use URI::Escape;
 use MT::Test::Env;
 our $test_env;
 
@@ -35,6 +34,7 @@ $admin->save or die;
 my $website = MT->model('website')->load(1) or die;
 my $website_archive_path = join '/', $test_env->root, 'site', 'archive';
 $website->archive_path($website_archive_path);
+$website->theme_id('classic_website');
 $website->save or die;
 
 my $ct1 = MT::Test::Permission->make_content_type( blog_id => $website->id );
@@ -142,228 +142,170 @@ my $map_ct_yearly_ct3 = MT::Test::Permission->make_templatemap(
     template_id  => $tmpl_ct3_listing->id,
 );
 
-my $max_run_app_count = 10;
-
 subtest 'ct1' => sub {
-    my $params = {
-        __mode  => 'publish_ct_templates',
-        type    => 'template',
-        blog_id => $website->id,
-        id      => [ $tmpl_ct1->id, $tmpl_ct1_listing->id ],
-    };
-    my $run_app_count = 0;
-    until (    $params->{__mode} eq 'list_template'
-            || $run_app_count >= $max_run_app_count )
-    {
-        subtest '__mode=' . $params->{__mode} => sub {
-            $params = _run_app_and_get_next_params($params);
-        };
-        $run_app_count++;
-    }
-    subtest 'finish' => sub {
-        my $file_count = 0;
-        File::Find::find(
-            {   no_chdir => 1,
-                wanted   => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $admin,
+            __test_follow_redirects => 1,
+            __mode                  => 'publish_ct_templates',
+            type                    => 'template',
+            blog_id                 => $website->id,
+            id => [ $tmpl_ct1->id, $tmpl_ct1_listing->id ],
+        }
+    );
+    delete $app->{__test_output};
+    my $file_count = 0;
+    File::Find::find(
+        {   no_chdir => 1,
+            wanted   => sub {
+                if ( -f $File::Find::name ) {
                     note $File::Find::name ;
-                    if ( -f $File::Find::name ) {
-                        $file_count++;
-                    }
-                },
+                    $file_count++;
+                }
             },
-            $website_archive_path,
-        );
-        ok( -f "$website_archive_path/2018/11/cd1-ct1.html",
-            'cd1-ct1.html exists' );
-        ok( -f "$website_archive_path/2018/11/28/index.html",
-            'ContentType-Daily archive exists' );
-        is( $file_count, 2, 'Build files only for ct1' );
+        },
+        $website_archive_path,
+    );
+    ok( -f "$website_archive_path/2018/11/cd1-ct1.html",
+        'cd1-ct1.html exists' );
+    ok( -f "$website_archive_path/2018/11/28/index.html",
+        'ContentType-Daily archive exists' );
+    is( $file_count, 2, 'Build files only for ct1' );
 
-        is( File::Path::rmtree($website_archive_path),
-            6, 'Remove files and directories' );
-    };
+    is( File::Path::rmtree($website_archive_path),
+        6, 'Remove files and directories' );
 };
 
 subtest 'ct2' => sub {
-    my $params = {
-        __mode  => 'publish_ct_templates',
-        type    => 'template',
-        blog_id => $website->id,
-        id      => [ $tmpl_ct2->id, $tmpl_ct2_listing->id ],
-    };
-    my $run_app_count = 0;
-    until (    $params->{__mode} eq 'list_template'
-            || $run_app_count >= $max_run_app_count )
-    {
-        subtest '__mode=' . $params->{__mode} => sub {
-            $params = _run_app_and_get_next_params($params);
-        };
-        $run_app_count++;
-    }
-    subtest 'finish' => sub {
-        my $file_count = 0;
-        File::Find::find(
-            {   no_chdir => 1,
-                wanted   => sub {
-                    note $File::Find::name ;
-                    if ( -f $File::Find::name ) {
-                        $file_count++;
-                    }
-                },
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $admin,
+            __test_follow_redirects => 1,
+            type                    => 'template',
+            blog_id                 => $website->id,
+            id      => [ $tmpl_ct1->id, $tmpl_ct1_listing->id ],
+            __mode  => 'publish_ct_templates',
+            type    => 'template',
+            blog_id => $website->id,
+            id      => [ $tmpl_ct2->id, $tmpl_ct2_listing->id ],
+        },
+    );
+    delete $app->{__test_output};
+    my $file_count = 0;
+    File::Find::find(
+        {   no_chdir => 1,
+            wanted   => sub {
+                note $File::Find::name ;
+                if ( -f $File::Find::name ) {
+                    $file_count++;
+                }
             },
-            $website_archive_path,
-        );
-        ok( -f "$website_archive_path/2020/11/cd1-ct2.html",
-            'cd1-ct2.html exists' );
-        ok( -f "$website_archive_path/2022/11/cd2-ct2.html",
-            'cd2-ct2.html exists' );
-        ok( -f "$website_archive_path/author/admin/2020/11/index.html",
-            'ContentType-Author-Monthly archive exists' );
-        ok( -f "$website_archive_path/author/admin/2022/11/index.html",
-            'ContentType-Author-Monthly archive exists' );
-        is( $file_count, 4, 'Build files only for ct2' );
+        },
+        $website_archive_path,
+    );
+    ok( -f "$website_archive_path/2020/11/cd1-ct2.html",
+        'cd1-ct2.html exists' );
+    ok( -f "$website_archive_path/2022/11/cd2-ct2.html",
+        'cd2-ct2.html exists' );
+    ok( -f "$website_archive_path/author/admin/2020/11/index.html",
+        'ContentType-Author-Monthly archive exists' );
+    ok( -f "$website_archive_path/author/admin/2022/11/index.html",
+        'ContentType-Author-Monthly archive exists' );
+    is( $file_count, 4, 'Build files only for ct2' );
 
-        is( File::Path::rmtree($website_archive_path),
-            15, 'Remove files and directories' );
-    };
+    is( File::Path::rmtree($website_archive_path),
+        15, 'Remove files and directories' );
 };
 
 subtest 'ct3' => sub {
-    my $params = {
-        __mode  => 'publish_ct_templates',
-        type    => 'template',
-        blog_id => $website->id,
-        id      => [ $tmpl_ct3->id, $tmpl_ct3_listing->id ],
-    };
-    my $run_app_count = 0;
-    until (    $params->{__mode} eq 'list_template'
-            || $run_app_count >= $max_run_app_count )
-    {
-        subtest '__mode=' . $params->{__mode} => sub {
-            $params = _run_app_and_get_next_params($params);
-        };
-        $run_app_count++;
-    }
-    subtest 'finish' => sub {
-        my $file_count = 0;
-        File::Find::find(
-            {   no_chdir => 1,
-                wanted   => sub {
-                    note $File::Find::name ;
-                    if ( -f $File::Find::name ) {
-                        $file_count++;
-                    }
-                },
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $admin,
+            __test_follow_redirects => 1,
+            __mode                  => 'publish_ct_templates',
+            type                    => 'template',
+            blog_id                 => $website->id,
+            id => [ $tmpl_ct3->id, $tmpl_ct3_listing->id ],
+        },
+    );
+    delete $app->{__test_output};
+    my $file_count = 0;
+    File::Find::find(
+        {   no_chdir => 1,
+            wanted   => sub {
+                note $File::Find::name ;
+                if ( -f $File::Find::name ) {
+                    $file_count++;
+                }
             },
-            $website_archive_path,
+        },
+        $website_archive_path,
+    );
+
+    my $year  = 2024;
+    my $count = 1;
+    for my $cd (@cd_ct3) {
+        ok( -f "$website_archive_path/$year/11/cd$count-ct3.html",
+            "cd$count-ct3.html exists" );
+        ok( -f "$website_archive_path/$year/index.html",
+            "ContentType-Yearly archive exists"
         );
+        $year += 2;
+        $count++;
+    }
+    ok( -f "$website_archive_path/author/admin/index.html",
+        "ContentType-Author archive exists" );
+    is( $file_count, scalar(@cd_ct3) * 2 + 1, 'Build files only for ct3' );
 
-        my $year  = 2024;
-        my $count = 1;
-        for my $cd (@cd_ct3) {
-            ok( -f "$website_archive_path/$year/11/cd$count-ct3.html",
-                "cd$count-ct3.html exists" );
-            ok( -f "$website_archive_path/$year/index.html",
-                "ContentType-Yearly archive exists"
-            );
-            $year += 2;
-            $count++;
-        }
-        ok( -f "$website_archive_path/author/admin/index.html",
-            "ContentType-Author archive exists" );
-        is( $file_count, scalar(@cd_ct3) * 2 + 1,
-            'Build files only for ct3' );
-
-        is( File::Path::rmtree($website_archive_path),
-            48, 'Remove files and directories' );
-    };
+    is( File::Path::rmtree($website_archive_path),
+        48, 'Remove files and directories' );
 };
 
 subtest 'ct1 and ct2' => sub {
-    my $params = {
-        __mode  => 'publish_ct_templates',
-        type    => 'template',
-        blog_id => $website->id,
-        id      => [
-            $tmpl_ct1->id, $tmpl_ct1_listing->id,
-            $tmpl_ct2->id, $tmpl_ct2_listing->id
-        ],
-    };
-    my $run_app_count = 0;
-    until (    $params->{__mode} eq 'list_template'
-            || $run_app_count >= $max_run_app_count )
-    {
-        subtest '__mode=' . $params->{__mode} => sub {
-            $params = _run_app_and_get_next_params($params);
-        };
-        $run_app_count++;
-    }
-    subtest 'finish' => sub {
-        my $file_count = 0;
-        File::Find::find(
-            {   no_chdir => 1,
-                wanted   => sub {
-                    note $File::Find::name ;
-                    if ( -f $File::Find::name ) {
-                        $file_count++;
-                    }
-                },
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $admin,
+            __test_follow_redirects => 1,
+            __mode                  => 'publish_ct_templates',
+            __mode                  => 'publish_ct_templates',
+            type                    => 'template',
+            blog_id                 => $website->id,
+            id                      => [
+                $tmpl_ct1->id, $tmpl_ct1_listing->id,
+                $tmpl_ct2->id, $tmpl_ct2_listing->id
+            ],
+        },
+    );
+    delete $app->{__test_output};
+    my $file_count = 0;
+    File::Find::find(
+        {   no_chdir => 1,
+            wanted   => sub {
+                note $File::Find::name ;
+                if ( -f $File::Find::name ) {
+                    $file_count++;
+                }
             },
-            $website_archive_path,
-        );
-        ok( -f "$website_archive_path/2018/11/cd1-ct1.html",
-            'cd1-ct1.html exists' );
-        ok( -f "$website_archive_path/2018/11/28/index.html",
-            'ContentType-Daily archive exists' );
-        ok( -f "$website_archive_path/2020/11/cd1-ct2.html",
-            'cd1-ct2.html exists' );
-        ok( -f "$website_archive_path/2022/11/cd2-ct2.html",
-            'cd2-ct2.html exists' );
-        ok( -f "$website_archive_path/author/admin/2020/11/index.html",
-            'ContentType-Author-Monthly archive exists' );
-        ok( -f "$website_archive_path/author/admin/2022/11/index.html",
-            'ContentType-Author-Monthly archive exists' );
-        is( $file_count, 6, 'Build file only for ct1 and ct2' );
+        },
+        $website_archive_path,
+    );
+    ok( -f "$website_archive_path/2018/11/cd1-ct1.html",
+        'cd1-ct1.html exists' );
+    ok( -f "$website_archive_path/2018/11/28/index.html",
+        'ContentType-Daily archive exists' );
+    ok( -f "$website_archive_path/2020/11/cd1-ct2.html",
+        'cd1-ct2.html exists' );
+    ok( -f "$website_archive_path/2022/11/cd2-ct2.html",
+        'cd2-ct2.html exists' );
+    ok( -f "$website_archive_path/author/admin/2020/11/index.html",
+        'ContentType-Author-Monthly archive exists' );
+    ok( -f "$website_archive_path/author/admin/2022/11/index.html",
+        'ContentType-Author-Monthly archive exists' );
+    is( $file_count, 6, 'Build file only for ct1 and ct2' );
 
-        is( File::Path::rmtree($website_archive_path),
-            20, 'Remove files and directories' );
-    };
+    is( File::Path::rmtree($website_archive_path),
+        20, 'Remove files and directories' );
 };
 
 done_testing;
 
-sub _parse_query_params {
-    my ($next_url) = @_;
-    my ( $url, $query ) = split '\?', $next_url;
-    my %query;
-    my @key_value = split '&', $query;
-    for my $kv (@key_value) {
-        my ( $key, $value ) = split '=', $kv, 2;
-        $query{$key} = uri_unescape($value);
-    }
-    return \%query;
-}
-
-sub _run_app_and_get_next_params {
-    my ($params) = @_;
-
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            %$params,
-        },
-    );
-    my $out = delete $app->{__test_output};
-    my $next_url;
-    if ( $out =~ /Status: 302 Found/ ) {
-        ok( 1, 'redirect' );
-        ($next_url) = $out =~ /Location: (.+)\r\n?/;
-        ok( $next_url, 'get next url' );
-    }
-    else {
-        ($next_url) = $out =~ /window\.location='([^']+)'/;
-        ok( $out && $next_url, 'get next url' );
-    }
-
-    return _parse_query_params($next_url);
-}
