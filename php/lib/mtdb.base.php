@@ -1882,6 +1882,20 @@ abstract class MTDatabase {
                 } else {
                     $entry_filter = ' and objectcategory_object_id = cd_id and cd_status = 2';
                 }
+                if (isset($args['content_type'])) {
+                  $mt = MT::get_instance();
+                  $ctx = $mt->context();
+                  if ($ctx->stash('content_type')){
+                    $content_type = $ctx->stash('content_type');
+                  } else {
+                    $content_types = $ctx->mt->db()->fetch_content_types($args);
+                    if ($content_types){
+                      $content_type = $content_types[0];
+                    }
+                  }
+                  if (isset($content_type))
+                    $content_type_filter = ' and cd_content_type_id ='.intval($content_type->id);
+                }
                 $count_column = 'objectcategory_id';
             }
         }
@@ -1919,6 +1933,7 @@ abstract class MTDatabase {
                    $parent_filter
                    $class_filter
                    $category_set_filter
+                   $content_type_filter
              group by category_id
         ";
 
