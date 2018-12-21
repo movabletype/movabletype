@@ -2094,9 +2094,10 @@ sub convert_breaks {
         $self->blob_convert_breaks(@_);
     }
     else {
-        defined $self->blob_convert_breaks
-            ? $self->blob_convert_breaks
-            : $self->meta('convert_breaks');
+        unless ( defined $self->blob_convert_breaks ) {
+            $self->blob_convert_breaks( $self->meta('convert_breaks') );
+        }
+        $self->blob_convert_breaks;
     }
 }
 
