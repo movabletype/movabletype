@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT::BackupRestore::ContentTypePermission;
+use MT::Serialize;
 use MT::Util qw( encode_url );
 use Symbol;
 use base qw( MT::ErrorHandler );
@@ -1020,11 +1021,35 @@ sub cb_restore_objects {
                 }
             }
         }
+        $content_data->data( \%new_data );
+
+        if ( my $raw_convert_breaks = $content_data->convert_breaks ) {
+            if ( my $convert_breaks
+                = MT::Serialize->unserialize($raw_convert_breaks) )
+            {
+                if (   $convert_breaks
+                    && $$convert_breaks
+                    && ref $$convert_breaks eq 'HASH' )
+                {
+                    my %new_convert_breaks;
+                    for my $old_field_id ( keys %{$$convert_breaks} ) {
+                        my $new_field
+                            = $all_objects->{"MT::ContentField#$old_field_id"}
+                            or next;
+                        $new_convert_breaks{ $new_field->id }
+                            = $$convert_breaks->{$old_field_id};
+                    }
+                    my $new_raw_conver_breaks
+                        = MT::Serialize->serialize( \{%new_convert_breaks} );
+                    $content_data->convert_breaks($new_raw_conver_breaks);
+                }
+            }
+        }
+
         $callback->(
             MT->translate( "Importing content data ... ( [_1] )", $i++ ),
             'cb-restore-content-data-data'
         );
-        $content_data->data( \%new_data );
         $content_data->save or die $content_data->errstr;
     }
     $callback->( MT->translate("Done.") . "\n" );
