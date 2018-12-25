@@ -538,13 +538,8 @@ sub save {
 
     my $archive_type = '';
 
-    my $orig      = $content_data->clone;
-    my $orig_file = '';
-    if ( $content_data->id ) {
-        $archive_type = 'ContentType';
-        $orig_file
-            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
-    }
+    my $orig       = $content_data->clone;
+    my $orig_file  = '';
     my $status_old = $content_data_id ? $content_data->status : 0;
 
     if ( $content_data->id ) {
