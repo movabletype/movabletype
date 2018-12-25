@@ -35,8 +35,7 @@ $test_env->prepare_fixture('archive_type');
 my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id};
 
-my @archive_types
-    = sort MT->publisher->archive_types;
+my @archive_types = sort MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
 my $ct = MT->model('content_type')->load(
