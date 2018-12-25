@@ -1860,7 +1860,6 @@ November 29, 2015 - December  5, 2015
 2015
 
 === ArchiveList + Contents (MTC-26234)
---- ONLY
 --- template
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 <mt:Contents sort_order="ascend"><mt:ContentLabel>
