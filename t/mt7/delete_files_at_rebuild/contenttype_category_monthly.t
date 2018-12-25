@@ -255,19 +255,13 @@ subtest 'update content_data (change categories field)' => sub {
 
     ok !-e File::Spec->catfile( $blog->archive_path,
         "category1/2018/08/index.html" );
-SKIP: {
-        local $TODO = 'should be removed';
-        ok !-e File::Spec->catfile( $blog->archive_path,
-            "category1/2018/10/index.html" );
-    }
+    ok !-e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/10/index.html" );
     ok -e File::Spec->catfile( $blog->archive_path,
         "category2/2018/10/index.html" );
 
     my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
-SKIP: {
-        local $TODO = 'old fileinfo should be removed';
-        is @finfos => 2, "2 FileInfo";
-    }
+    is @finfos => 2, "2 FileInfo";
 
     File::Find::find(
         {   wanted => sub {
@@ -307,21 +301,15 @@ subtest 'create other content_data' => sub {
 
     ok !-e File::Spec->catfile( $blog->archive_path,
         "category1/2018/08/index.html" );
-SKIP: {
-        local $TODO = 'should be removed';
-        ok !-e File::Spec->catfile( $blog->archive_path,
-            "category1/2018/10/index.html" );
-    }
+    ok !-e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/10/index.html" );
     ok -e File::Spec->catfile( $blog->archive_path,
         "category2/2018/10/index.html" );
     ok -e File::Spec->catfile( $blog->archive_path,
         "category2/2018/12/index.html" );
 
     my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
-SKIP: {
-        local $TODO = 'old fileinfo should be removed';
-        is @finfos => 4, "4 FileInfo";
-    }
+    is @finfos => 4, "4 FileInfo";
 
     File::Find::find(
         {   wanted => sub {

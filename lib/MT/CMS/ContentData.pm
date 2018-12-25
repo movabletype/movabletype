@@ -566,6 +566,18 @@ sub save {
         $content_data->status($status);
     }
 
+    my %categories_old;
+    if ( $orig->id ) {
+        for my $field_id ( keys %{ $orig->data } ) {
+            my $field_hash = $content_type->get_field($field_id);
+            next
+                unless $field_hash
+                && %$field_hash
+                && ( $field_hash->{type} || '' ) eq 'categories';
+            $categories_old{$field_id} = $orig->data->{$field_id} || [];
+        }
+    }
+
     my $filter_result
         = $app->run_callbacks( 'cms_save_filter.content_data', $app );
 
@@ -781,6 +793,10 @@ sub save {
             return unless $res;
         }
         else {
+            my $old_categories
+                = %categories_old
+                ? MT::Util::to_json( \%categories_old )
+                : undef;
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
@@ -791,6 +807,7 @@ sub save {
                         content_data_id => $content_data->id,
                         is_new          => $is_new,
                         old_status      => $status_old,
+                        old_categories  => $old_categories,
                         $previous_old
                         ? ( old_previous => $previous_old->id )
                         : (),
