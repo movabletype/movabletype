@@ -4536,10 +4536,8 @@ abstract class MTDatabase {
 
                         $join_table = "mt_cf_idx $alias";
                         $join_condition = "$alias.cf_idx_content_field_id = " . $cf->id .
-                                          " and $alias.cf_idx_content_data_id = cd_id";
+                                          " and $alias.cf_idx_content_data_id = cd_id\n";
                         $extras['join'][$join_table] = array('condition' => $join_condition);
-
-                        $field_filter .= " and $alias.cf_idx_value_$data_type = " . $category_set_id . "\n";
                     }
                 }
             }
