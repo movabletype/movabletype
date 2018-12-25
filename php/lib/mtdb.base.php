@@ -4524,9 +4524,9 @@ abstract class MTDatabase {
                 ));
                 if($cat_fields){
                     $cf = $cat_fields[0];
-                    if (isset($args['category'])){
+                    if (isset($args['category']) or $ctx->stash('category')){
                         if (!array_key_exists($cf->cf_name, $fields) && !array_key_exists($cf->cf_unique_id, $fields)) {
-                            $fields[$cf->cf_name] = $args['category'];
+                            $fields[$cf->cf_name] = isset($args['category']) ? $args['category'] : $ctx->stash('category')->label;
                         }
                     } else {
                         $alias = 'cf_idx_' . $cf->id;
