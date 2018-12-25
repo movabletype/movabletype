@@ -11,24 +11,31 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_APP}    = 'MT::App::CMS';
 }
+
+use File::Find ();
 
 use MT;
 use MT::Test;
 use MT::Test::Permission;
-my $app = MT->instance;
+
+MT::Test->init_app;
 
 my $blog_id = 1;
 
 $test_env->prepare_fixture('db');
 
+my $author = MT->model('author')->load(1) or die;
+
 my $ct = MT::Test::Permission->make_content_type(
     name    => 'test content type',
     blog_id => $blog_id,
 );
+my $ct_id = $ct->id;
 
 my $cf_category = MT::Test::Permission->make_content_field(
     blog_id         => $blog_id,
@@ -60,17 +67,23 @@ my $category2 = MT::Test::Permission->make_category(
 );
 
 $ct->fields(
-    [   {   id        => $cf_category->id,
-            label     => 1,
-            name      => $cf_category->name,
+    [   {   id      => $cf_category->id,
+            name    => $cf_category->name,
+            options => {
+                category_set => $category_set->id,
+                label        => $cf_category->name,
+            },
             order     => 1,
             type      => $cf_category->type,
             unique_id => $cf_category->unique_id,
         },
-        {   id        => $cf_datetime->id,
-            label     => 1,
-            name      => $cf_datetime->name,
-            order     => 1,
+        {   id      => $cf_datetime->id,
+            name    => $cf_datetime->name,
+            options => {
+                label    => $cf_datetime->name,
+                required => 1,
+            },
+            order     => 2,
             type      => $cf_datetime->type,
             unique_id => $cf_datetime->unique_id,
         },
@@ -78,26 +91,16 @@ $ct->fields(
 );
 $ct->save or die $ct->error;
 
-my $cd = MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    data            => {
-        $cf_category->id => [ $category1->id ],
-        $cf_datetime->id => '20180831000000',
-    },
-);
-my $unique_id = $cd->unique_id;
-
 # Mapping
-my $template = MT::Test::Permission->make_template(
+my $tmpl_ct = MT::Test::Permission->make_template(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
     name            => 'ContentType Test',
     type            => 'ct',
     text            => 'test',
 );
-my $template_map = MT::Test::Permission->make_templatemap(
-    template_id   => $template->id,
+my $map_ct = MT::Test::Permission->make_templatemap(
+    template_id   => $tmpl_ct->id,
     blog_id       => $blog_id,
     archive_type  => 'ContentType',
     file_template => '%c/%y/%m/%f',
@@ -107,98 +110,162 @@ my $template_map = MT::Test::Permission->make_templatemap(
 );
 
 my $blog = MT::Blog->load($blog_id);
+$blog->site_path( $test_env->root . '/site' );
 $blog->archive_path( join "/", $test_env->root, "site/archive" );
 $blog->save;
 
-require MT::ContentPublisher;
-my $publisher = MT::ContentPublisher->new;
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'ContentType',
-    TemplateMap => $template_map,
-);
-
-my $archive = File::Spec->catfile( $test_env->root,
-    "site/archive/category1/2018/08/$unique_id.html" );
-ok -e $archive;
-
-my @finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @finfos => 1, "only one FileInfo";
-
-require File::Find;
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+subtest 'create content_data' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save',
+            _type                   => 'content_data',
+            return_args =>
+                "__mode=view&blog_id=$blog_id&type=content_data_$ct_id&_type=content_data&content_type_id=$ct_id",
+            blog_id                             => $blog_id,
+            content_type_id                     => $ct_id,
+            save_revision                       => 1,
+            data_label                          => 'cd1',
+            'content-field-' . $cf_category->id => $category1->id,
+            'category-' . $cf_category->id      => $category1->id,
+            'date-' . $cf_datetime->id          => '2018-08-31',
+            'time-' . $cf_datetime->id          => '00:00:00',
+            authored_on_date                    => '2017-05-30',
+            authored_on_time                    => '16:36:00',
+            status                              => 2,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+    );
+    delete $app->{__test_output};
 
-$cd->data(
-    {   $cf_category->id => [ $category1->id ],
-        $cf_datetime->id => '20181031000000',
-    },
-);
-$cd->save or die $cd->error;
+    my $cd1 = MT->model('content_data')->load or die;
+    my $cd1_unique_id = $cd1->unique_id;
 
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'ContentType',
-    TemplateMap => $template_map,
-);
+    ok -e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/08/$cd1_unique_id.html" );
 
-ok !-e $archive;
+    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @finfos => 1, "1 FileInfo";
 
-my $updated_archive = File::Spec->catfile( $test_env->root,
-    "site/archive/category1/2018/10/$unique_id.html" );
-ok -e $updated_archive;
-
-my @updated_finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @updated_finfos => 1, "only one FileInfo";
-
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+        $blog->archive_path
+    );
+};
 
-my $cd2 = MT::Test::Permission->make_content_data(
-    blog_id         => $blog_id,
-    content_type_id => $ct->id,
-    data            => {
-        $cf_category->id => [ $category1->id ],
-        $cf_datetime->id => '20181231000000',
-    },
-);
-my $unique_id2 = $cd2->unique_id;
+subtest 'update content_date (change date_and_time field)' => sub {
+    my $cd1           = MT->model('content_data')->load or die;
+    my $cd1_id        = $cd1->id;
+    my $cd1_unique_id = $cd1->unique_id;
 
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'ContentType',
-    TemplateMap => $template_map,
-);
-
-ok !-e $archive;
-ok -e $updated_archive;
-
-my $new_archive = File::Spec->catfile( $test_env->root,
-    "site/archive/category1/2018/12/$unique_id2.html" );
-ok -e $new_archive;
-
-my @new_finfos = MT::FileInfo->load({ blog_id => $blog_id });
-is @new_finfos => 2, "two FileInfo";
-
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save',
+            _type                   => 'content_data',
+            return_args =>
+                "__mode=view&blog_id=$blog_id&type=content_data_$ct_id&_type=content_data&content_type_id=$ct_id&id="
+                . $cd1->id,
+            id                                  => $cd1->id,
+            identifier                          => $cd1->identifier,
+            blog_id                             => $blog_id,
+            content_type_id                     => $ct_id,
+            save_revision                       => 1,
+            data_label                          => 'cd1',
+            'content-field-' . $cf_category->id => $category1->id,
+            'category-' . $cf_category->id      => $category1->id,
+            'date-' . $cf_datetime->id          => '2018-10-31',
+            'time-' . $cf_datetime->id          => '00:00:00',
+            authored_on_date                    => '2017-05-30',
+            authored_on_time                    => '16:36:00',
+            status                              => 2,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+    );
+    delete $app->{__test_output};
+
+    ok !-e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/08/$cd1_unique_id.html" );
+    ok -e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/10/$cd1_unique_id.html" );
+
+    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @finfos => 1, "1 FileInfo";
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
+        },
+        $blog->archive_path
+    );
+};
+
+subtest 'create other content_data' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save',
+            _type                   => 'content_data',
+            return_args =>
+                "__mode=view&blog_id=$blog_id&type=content_data_$ct_id&_type=content_data&content_type_id=$ct_id",
+            blog_id                             => $blog_id,
+            content_type_id                     => $ct_id,
+            save_revision                       => 1,
+            data_label                          => 'cd2',
+            'content-field-' . $cf_category->id => $category1->id,
+            'category-' . $cf_category->id      => $category1->id,
+            'date-' . $cf_datetime->id          => '2018-12-31',
+            'time-' . $cf_datetime->id          => '00:00:00',
+            authored_on_date                    => '2017-05-30',
+            authored_on_time                    => '16:36:00',
+            status                              => 2,
+        },
+    );
+    delete $app->{__test_output};
+
+    my $cd1
+        = MT->model('content_data')
+        ->load( { blog_id => $blog_id, label => 'cd1' } )
+        or die;
+    my $cd1_unique_id = $cd1->unique_id;
+
+    my $cd2
+        = MT->model('content_data')
+        ->load( { blog_id => $blog_id, label => 'cd2' } )
+        or die;
+    my $cd2_unique_id = $cd2->unique_id;
+
+    ok !-e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/08/$cd1_unique_id.html" );
+    ok -e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/10/$cd1_unique_id.html" );
+    ok -e File::Spec->catfile( $blog->archive_path,
+        "category1/2018/12/$cd2_unique_id.html" );
+
+    my @new_finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @new_finfos => 2, "two FileInfo";
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
+        },
+        $blog->archive_path
+    );
+};
 
 done_testing;
