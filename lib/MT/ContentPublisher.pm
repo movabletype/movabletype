@@ -513,8 +513,6 @@ sub rebuild_content_data {
 
     my $content_type = $content_data->content_type;
 
-    my %categories_for_rebuild;
-
     my ( $old_categories, @field_ids );
     if ( my $old_categories_json = $param{OldCategories} ) {
         $old_categories
@@ -523,15 +521,10 @@ sub rebuild_content_data {
     }
     else {
         $old_categories = {};
-        for my $field_id ( keys %{ $content_data->data } ) {
-            my $field_hash = $content_type->get_field($field_id);
-            next
-                unless $field_hash
-                && %$field_hash
-                && ( $field_hash->{type} || '' ) eq 'categories';
-            push @field_ids, $field_id;
-        }
+        @field_ids = map { $_->{id} } @{ $content_type->categories_fields };
     }
+
+    my %categories_for_rebuild;
     for my $field_id (@field_ids) {
         my $field_hash = $content_type->get_field($field_id);
         my %rebuild_ids;

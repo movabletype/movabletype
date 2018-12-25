@@ -568,14 +568,10 @@ sub save {
 
     my %categories_old;
     if ( $orig->id ) {
-        for my $field_id ( keys %{ $orig->data } ) {
-            my $field_hash = $content_type->get_field($field_id);
-            next
-                unless $field_hash
-                && %$field_hash
-                && ( $field_hash->{type} || '' ) eq 'categories';
-            $categories_old{$field_id} = $orig->data->{$field_id} || [];
-        }
+        my $orig_data = $orig->data;
+        my @cat_field_ids
+            = map { $_->{id} } @{ $content_type->categories_fields };
+        %categories_old = map { $_ => $orig_data->{$_} || [] } @cat_field_ids;
     }
 
     my $filter_result

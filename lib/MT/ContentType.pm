@@ -865,4 +865,17 @@ sub _get_tag_field_ids {
     );
 }
 
+sub categories_fields {
+    my $self = shift;
+    my @fields;
+    for my $field_hash ( @{ $self->fields } ) {
+        next
+            unless $field_hash
+            && %$field_hash
+            && ( $field_hash->{type} || '' ) eq 'categories';
+        push @fields, $field_hash;
+    }
+    return \@fields;
+}
+
 1;
