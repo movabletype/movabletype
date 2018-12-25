@@ -45,6 +45,16 @@ my $ct = MT->model('content_type')->load(
     }
 ) or die;
 
+my $tmpl = MT::Test::Permission->make_template(
+    blog_id => $blog_id,
+    type    => 'index',
+    outfile => 'index.html',
+);
+
+MT->publisher->rebuild( BlogID => $blog_id );
+my $fileinfo = MT::FileInfo->load( { template_id => $tmpl->id } );
+my $finfo_id = $fileinfo->id;
+
 foreach my $archive_type (@archive_types) {
     MT::Test::Tag->run_perl_tests(
         $blog_id,
@@ -75,6 +85,10 @@ foreach my $archive_type (@archive_types) {
                 : $archive_types;
             return <<"PHP";
 \$blog->archive_type = "$blog_archive_type";
+require_once('class.mt_fileinfo.php');
+\$fileinfo = new FileInfo;
+\$fileinfo->Load($finfo_id);
+\$ctx->stash('_fileinfo', \$fileinfo);
 PHP
         },
         $archive_type
