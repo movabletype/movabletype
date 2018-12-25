@@ -56,6 +56,11 @@ my $content_type_02 = MT::Test::Permission->make_content_type(
     name    => 'test content type 02',
 );
 
+my $content_type_03 = MT::Test::Permission->make_content_type(
+    blog_id => $blog->id,
+    name    => 'test content type 03',
+);
+
 my $author_01 = MT::Test::Permission->make_author(
     name     => 'yishikawa',
     nickname => 'Yuki Ishikawa',
@@ -103,6 +108,30 @@ my $fields = [
 ];
 $content_type_01->fields($fields);
 $content_type_01->save or die $content_type_01->errstr;
+
+
+my $cf_category_03 = MT::Test::Permission->make_content_field(
+    blog_id            => $content_type_03->blog_id,
+    content_type_id    => $content_type_03->id,
+    name               => 'categories',
+    type               => 'categories',
+    related_cat_set_id => $category_set->id,
+);
+my $fields_03 = [
+    {   id      => $cf_category_03->id,
+        order   => 15,
+        type    => $cf_category_03->type,
+        options => {
+            label        => $cf_category_03->name,
+            category_set => $category_set->id,
+            multiple     => 1,
+            max          => 5,
+            min          => 1,
+        },
+    },
+];
+$content_type_03->fields($fields_03);
+$content_type_03->save or die $content_type_03->errstr;
 
 my $content_data_01 = MT::Test::Permission->make_content_data(
     blog_id         => $blog->id,
@@ -169,8 +198,26 @@ my $map_03 = MT::Test::Permission->make_templatemap(
     build_type    => 3,
 );
 
+my $template_03 = MT::Test::Permission->make_template(
+    blog_id         => $blog->id,
+    content_type_id => $content_type_03->id,
+    name            => 'ContentType Test 03',
+    type            => 'ct_archive',
+    text            => 'test 03',
+);
+
+my $map_04 = MT::Test::Permission->make_templatemap(
+    template_id   => $template_03->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category',
+    file_template => '%-c/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category_03->id,
+    build_type    => 3,
+);
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
 $vars->{content_type_02_unique_id} = $content_type_02->unique_id;
+$vars->{content_type_03_unique_id} = $content_type_03->unique_id;
 $vars->{content_type_01_name}      = $content_type_01->unique_id;
 $vars->{content_type_02_name}      = $content_type_02->unique_id;
 $vars->{content_type_01_id}        = $content_type_01->id;
@@ -247,3 +294,9 @@ No Content Type could be found.
 <mt:CategorySets><mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveCount></mt:ArchiveList></mt:CategorySets>
 --- expected
 1
+
+=== mt:ArchiveList type="ContentType-Category"
+--- template
+<mt:ArchiveList type="ContentType-Category" content_type="[% content_type_03_unique_id %]"><mt:CategoryLabel></mt:ArchiveList>
+--- expected
+

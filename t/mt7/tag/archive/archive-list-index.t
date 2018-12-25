@@ -203,7 +203,6 @@ author2: 2016
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -356,7 +355,6 @@ author2: 2016
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2018
 cat_apple: October 31, 2017
@@ -540,7 +538,6 @@ author2: 2016
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017
 cat_apple: October 31, 2018
@@ -690,7 +687,6 @@ author2: 2016
 author1: 2018
 author1: 2017
 --- expected_contenttype_category
-cat_strawberry
 cat_peach
 cat_orange
 cat_apple
@@ -846,7 +842,6 @@ author2: 2016
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: October 31, 2017
 cat_apple: October 31, 2018
@@ -1001,7 +996,6 @@ author2: 2021
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: September 26, 2020
 cat_apple: September 26, 2019
@@ -1156,7 +1150,6 @@ author2: 2021
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: September 26, 2019
 cat_apple: September 26, 2020
@@ -1308,7 +1301,6 @@ author2: 2021
 author1: 2020
 author1: 2019
 --- expected_contenttype_category
-cat_strawberry
 cat_peach
 cat_orange
 cat_apple
@@ -1470,7 +1462,6 @@ author2: 2004
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: November  1, 2008
 cat_apple: November  1, 2006
@@ -1629,7 +1620,6 @@ author2: 2004
 cat_apple
 cat_orange
 cat_peach
-cat_strawberry
 --- expected_contenttype_category_daily
 cat_apple: November  1, 2006
 cat_apple: November  1, 2008
@@ -1785,7 +1775,6 @@ author1: 2008
 author1: 2006
 author1: 2004
 --- expected_contenttype_category
-cat_strawberry
 cat_peach
 cat_orange
 cat_apple

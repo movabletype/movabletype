@@ -264,7 +264,11 @@ sub _hdlr_categories {
     if ( !$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i ) {
         $count_all = 1;
     }
-
+    my $content_type_id;
+    if ( $args->{content_type} ) {
+        my $content_type = $ctx->get_content_type_context( $args, $cond );
+        $content_type_id = $content_type->id if $content_type;
+    }
     ## Supplies a routine that will yield the number of entries associated
     ## with the category in context in the most efficient manner.
     ## If we can determine counts will be gathered for all categories,
@@ -311,7 +315,11 @@ sub _hdlr_categories {
             unless $count_all;
         return $cat->content_data_count(
             {   count =>
-                    ( defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 )
+                    ( defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 ),
+                $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : (),
+
             }
         ) if $counts_fetched;
         return $cat->cache_property(
@@ -324,7 +332,11 @@ sub _hdlr_categories {
                 my @content_field_ids = map { $_->id } @category_fields;
 
                 my $cnt_iter = MT::ContentFieldIndex->count_group_by(
-                    { content_field_id => [@content_field_ids] },
+                    {   content_field_id => [@content_field_ids],
+                        $content_type_id
+                        ? ( content_type_id => $content_type_id )
+                        : (),
+                    },
                     {   group => ['value_integer'],
                         join  => MT->model('content_data')->join_on(
                             undef,
