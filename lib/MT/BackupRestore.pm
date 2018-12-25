@@ -1046,6 +1046,12 @@ sub cb_restore_objects {
             }
         }
 
+        if ( MT->component('BlockEditor') ) {
+            require BlockEditor::BackupRestore;
+            BlockEditor::BackupRestore->update_cd_block_editor_data(
+                $content_data, $all_objects );
+        }
+
         $callback->(
             MT->translate( "Importing content data ... ( [_1] )", $i++ ),
             'cb-restore-content-data-data'

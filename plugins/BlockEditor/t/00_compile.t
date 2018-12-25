@@ -23,6 +23,7 @@ use MT;
 
 use_ok('BlockEditor');
 use_ok('BlockEditor::App');
+use_ok('BlockEditor::BackupRestore');
 use_ok('BlockEditor::BlockEditorFieldType::Image');
 
 # L10N modules
