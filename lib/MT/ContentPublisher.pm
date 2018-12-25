@@ -477,6 +477,51 @@ sub rebuild_archives {
     $mt->SUPER::rebuild_archives(@_);
 }
 
+# return hashref
+#  key: content_field_id
+#  value: categories to be rebuilt
+sub _get_categories_for_rebuild {
+    my $mt    = shift;
+    my %param = @_;
+
+    my $cd            = $param{content_data};
+    my $old_cats_json = $param{old_categories};
+    my $ct            = $cd->content_type;
+
+    my ( $old_categories, @field_ids );
+    if ($old_cats_json) {
+        $old_categories
+            = eval { MT::Util::from_json($old_cats_json) } || {};
+        @field_ids = keys %$old_categories;
+    }
+    else {
+        $old_categories = {};
+        @field_ids = map { $_->{id} } @{ $ct->categories_fields };
+    }
+
+    my %categories_for_rebuild;
+    for my $field_id (@field_ids) {
+        my $field_hash = $ct->get_field($field_id);
+        my %rebuild_ids;
+        $rebuild_ids{$_} = 1 for @{ $cd->data->{$field_id}       || [] };
+        $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id} || [] };
+        if (%rebuild_ids) {
+            $categories_for_rebuild{$field_id} = [
+                MT->model('category')->load(
+                    {   id              => [ keys %rebuild_ids ],
+                        category_set_id => \'> 0',
+                    }
+                )
+            ];
+        }
+        else {
+            $categories_for_rebuild{$field_id} = [];
+        }
+    }
+
+    return \%categories_for_rebuild;
+}
+
 #   rebuild_content_data
 #
 # $mt->rebuild_content_data(ContentData => $content_data_id,
@@ -511,38 +556,10 @@ sub rebuild_content_data {
 
     MT::Util::Log->info('--- Start rebuild_content_data.');
 
-    my $content_type = $content_data->content_type;
-
-    my ( $old_categories, @field_ids );
-    if ( my $old_categories_json = $param{OldCategories} ) {
-        $old_categories
-            = eval { MT::Util::from_json($old_categories_json) } || {};
-        @field_ids = keys %$old_categories;
-    }
-    else {
-        $old_categories = {};
-        @field_ids = map { $_->{id} } @{ $content_type->categories_fields };
-    }
-
-    my %categories_for_rebuild;
-    for my $field_id (@field_ids) {
-        my $field_hash = $content_type->get_field($field_id);
-        my %rebuild_ids;
-        $rebuild_ids{$_} = 1 for @{ $content_data->data->{$field_id} || [] };
-        $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id}     || [] };
-        if (%rebuild_ids) {
-            $categories_for_rebuild{$field_id} = [
-                MT->model('category')->load(
-                    {   id              => [ keys %rebuild_ids ],
-                        category_set_id => \'> 0',
-                    }
-                )
-            ];
-        }
-        else {
-            $categories_for_rebuild{$field_id} = [];
-        }
-    }
+    my $categories_for_rebuild = $mt->_get_categories_for_rebuild(
+        content_data   => $content_data,
+        old_categories => $param{OldCategories},
+    );
 
     my %cache_maps;
 
@@ -582,7 +599,7 @@ sub rebuild_content_data {
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
                     my @cats
-                        = @{ $categories_for_rebuild{ $map->cat_field_id }
+                        = @{ $categories_for_rebuild->{ $map->cat_field_id }
                             || [] };
                     for my $cat (@cats) {
                         $mt->_rebuild_content_archive_type(
@@ -717,8 +734,8 @@ sub rebuild_content_data {
 
                     for my $map (@maps) {
                         my @cats
-                            = @{ $categories_for_rebuild{ $map->cat_field_id }
-                                || [] };
+                            = @{ $categories_for_rebuild
+                                ->{ $map->cat_field_id } || [] };
                         for my $cat (@cats) {
                             if (my $prev_arch
                                 = $archiver->previous_archive_content_data(
