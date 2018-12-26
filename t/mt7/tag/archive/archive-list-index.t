@@ -1981,7 +1981,7 @@ cd_same_apple_orange_peach
 
 cd_same_peach
 cd_same_peach
---- expected_todo_contenttype_author
+--- expected_contenttype_author
 author1
 cd_same_apple_orange_peach
 cd_same_apple_orange
@@ -1989,8 +1989,6 @@ cd_same_same_date
 
 author2
 cd_same_peach
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26279
 --- expected_contenttype_author_daily
 author1: October 31, 2018
 cd_same_apple_orange
@@ -2328,7 +2326,7 @@ cd_same_peach
 
 cd_same_same_date
 cd_same_same_date
---- expected_todo_contenttype_author
+--- expected_contenttype_author
 author1
 cd_same_apple_orange_peach
 cd_same_apple_orange
@@ -2336,8 +2334,6 @@ cd_same_same_date
 
 author2
 cd_same_peach
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26279
 --- expected_contenttype_author_daily
 author1: November  1, 2008
 cd_same_apple_orange
