@@ -65,6 +65,10 @@ my $cf_datetime = MT::Test::Permission->make_content_field(
     name            => 'date and time',
     type            => 'date_and_time',
 );
+my $category_set0 = MT::Test::Permission->make_category_set(
+    blog_id => $ct->blog_id,
+    name    => 'test category set0',
+);
 my $category_set = MT::Test::Permission->make_category_set(
     blog_id => $ct->blog_id,
     name    => 'test category set',

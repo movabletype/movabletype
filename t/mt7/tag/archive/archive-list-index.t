@@ -35,8 +35,7 @@ $test_env->prepare_fixture('archive_type');
 my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id};
 
-my @archive_types
-    = sort MT->publisher->archive_types;
+my @archive_types = sort MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
 my $ct = MT->model('content_type')->load(
@@ -44,6 +43,16 @@ my $ct = MT->model('content_type')->load(
         name    => 'ct_with_same_catset',
     }
 ) or die;
+
+my $tmpl = MT::Test::Permission->make_template(
+    blog_id => $blog_id,
+    type    => 'index',
+    outfile => 'index.html',
+);
+
+MT->publisher->rebuild( BlogID => $blog_id );
+my $fileinfo = MT::FileInfo->load( { template_id => $tmpl->id } );
+my $finfo_id = $fileinfo->id;
 
 foreach my $archive_type (@archive_types) {
     MT::Test::Tag->run_perl_tests(
@@ -75,6 +84,10 @@ foreach my $archive_type (@archive_types) {
                 : $archive_types;
             return <<"PHP";
 \$blog->archive_type = "$blog_archive_type";
+require_once('class.mt_fileinfo.php');
+\$fileinfo = new FileInfo;
+\$fileinfo->Load($finfo_id);
+\$ctx->stash('_fileinfo', \$fileinfo);
 PHP
         },
         $archive_type
@@ -1846,3 +1859,688 @@ November 29, 2015 - December  5, 2015
 2016
 2015
 
+=== ArchiveList + Contents (MTC-26234)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26276
+--- template
+<mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
+<mt:Contents sort_order="ascend"><mt:ContentLabel>
+</mt:Contents>
+</mt:ArchiveList>
+--- expected_todo_author
+author1
+
+author2
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26277
+--- expected_author_daily
+author1: December  3, 2018
+
+author1: December  3, 2017
+
+author2: December  3, 2016
+
+author2: December  3, 2015
+--- expected_author_monthly
+author1: December 2018
+
+author1: December 2017
+
+author2: December 2016
+
+author2: December 2015
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018
+
+author1: December  3, 2017 - December  9, 2017
+
+author2: November 27, 2016 - December  3, 2016
+
+author2: November 29, 2015 - December  5, 2015
+--- expected_todo_author_yearly
+author1: 2018
+
+author1: 2017
+
+author2: 2016
+
+author2: 2015
+--- expected_category
+cat_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+cat_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+cat_pencil
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+cat_ruler
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_category_daily
+cat_compass: December  3, 2017
+
+cat_eraser: December  3, 2018
+
+cat_eraser: December  3, 2016
+
+cat_pencil: December  3, 2016
+
+cat_ruler: December  3, 2018
+--- expected_category_monthly
+cat_compass: December 2017
+
+cat_eraser: December 2018
+
+cat_eraser: December 2016
+
+cat_pencil: December 2016
+
+cat_ruler: December 2018
+--- expected_category_weekly
+cat_compass: December  3, 2017 - December  9, 2017
+
+cat_eraser: December  2, 2018 - December  8, 2018
+
+cat_eraser: November 27, 2016 - December  3, 2016
+
+cat_pencil: November 27, 2016 - December  3, 2016
+
+cat_ruler: December  2, 2018 - December  8, 2018
+--- expected_todo_category_yearly
+cat_compass: 2017
+
+cat_eraser: 2018
+
+cat_eraser: 2016
+
+cat_pencil: 2016
+
+cat_ruler: 2018
+--- expected_contenttype
+cd_same_apple_orange
+cd_same_apple_orange
+
+cd_same_same_date
+cd_same_same_date
+
+cd_same_apple_orange_peach
+cd_same_apple_orange_peach
+
+cd_same_peach
+cd_same_peach
+--- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26278
+--- expected_todo_contenttype_author
+author1
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+author2
+cd_same_peach
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26279
+--- expected_contenttype_author_daily
+author1: October 31, 2018
+cd_same_apple_orange
+cd_same_same_date
+
+author1: October 31, 2017
+cd_same_apple_orange_peach
+
+author2: October 31, 2016
+cd_same_peach
+--- expected_contenttype_author_monthly
+author1: October 2018
+cd_same_apple_orange
+cd_same_same_date
+
+author1: October 2017
+cd_same_apple_orange_peach
+
+author2: October 2016
+cd_same_peach
+--- expected_contenttype_author_weekly
+author1: October 28, 2018 - November  3, 2018
+cd_same_apple_orange
+cd_same_same_date
+
+author1: October 29, 2017 - November  4, 2017
+cd_same_apple_orange_peach
+
+author2: October 30, 2016 - November  5, 2016
+cd_same_peach
+--- expected_contenttype_author_yearly
+author1: 2018
+cd_same_apple_orange
+cd_same_same_date
+
+author1: 2017
+cd_same_apple_orange_peach
+
+author2: 2016
+cd_same_peach
+--- expected_contenttype_category
+cat_apple
+cd_same_apple_orange_peach
+cd_same_apple_orange
+
+cat_orange
+cd_same_apple_orange_peach
+
+cat_peach
+cd_same_peach
+--- expected_contenttype_category_daily
+cat_apple: October 31, 2018
+cd_same_apple_orange
+
+cat_apple: October 31, 2017
+cd_same_apple_orange_peach
+
+cat_orange: October 31, 2017
+cd_same_apple_orange_peach
+
+cat_peach: October 31, 2016
+cd_same_peach
+--- expected_contenttype_category_monthly
+cat_apple: October 2018
+cd_same_apple_orange
+
+cat_apple: October 2017
+cd_same_apple_orange_peach
+
+cat_orange: October 2017
+cd_same_apple_orange_peach
+
+cat_peach: October 2016
+cd_same_peach
+--- expected_contenttype_category_weekly
+cat_apple: October 28, 2018 - November  3, 2018
+cd_same_apple_orange
+
+cat_apple: October 29, 2017 - November  4, 2017
+cd_same_apple_orange_peach
+
+cat_orange: October 29, 2017 - November  4, 2017
+cd_same_apple_orange_peach
+
+cat_peach: October 30, 2016 - November  5, 2016
+cd_same_peach
+--- expected_contenttype_category_yearly
+cat_apple: 2018
+cd_same_apple_orange
+
+cat_apple: 2017
+cd_same_apple_orange_peach
+
+cat_orange: 2017
+cd_same_apple_orange_peach
+
+cat_peach: 2016
+cd_same_peach
+--- expected_contenttype_daily
+October 31, 2018
+cd_same_apple_orange
+cd_same_same_date
+
+October 31, 2017
+cd_same_apple_orange_peach
+
+October 31, 2016
+cd_same_peach
+--- expected_contenttype_monthly
+October 2018
+cd_same_apple_orange
+cd_same_same_date
+
+October 2017
+cd_same_apple_orange_peach
+
+October 2016
+cd_same_peach
+--- expected_contenttype_weekly
+October 28, 2018 - November  3, 2018
+cd_same_apple_orange
+cd_same_same_date
+
+October 29, 2017 - November  4, 2017
+cd_same_apple_orange_peach
+
+October 30, 2016 - November  5, 2016
+cd_same_peach
+--- expected_contenttype_yearly
+2018
+cd_same_apple_orange
+cd_same_same_date
+
+2017
+cd_same_apple_orange_peach
+
+2016
+cd_same_peach
+--- expected_daily
+December  3, 2018
+
+December  3, 2017
+
+December  3, 2016
+
+December  3, 2015
+--- expected_todo_individual
+entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+entry_author1_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+entry_author2_pencil_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+entry_author2_no_category
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
+--- expected_monthly
+December 2018
+
+December 2017
+
+December 2016
+
+December 2015
+--- expected_todo_page
+page_author2_no_folder
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+page_author2_water
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+page_author1_coffee
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+page_author1_coffee
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+
+December  3, 2017 - December  9, 2017
+
+November 27, 2016 - December  3, 2016
+
+November 29, 2015 - December  5, 2015
+--- expected_todo_yearly
+2018
+
+2017
+
+2016
+
+2015
+
+=== ArchiveList + Contents + datetime (MTC-26234)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26276
+--- dt_field
+cf_same_datetime
+--- template
+<mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
+<mt:Contents sort_order="ascend"><mt:ContentLabel>
+</mt:Contents>
+</mt:ArchiveList>
+--- expected_todo_author
+author1
+
+author2
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26277
+--- expected_author_daily
+author1: December  3, 2018
+
+author1: December  3, 2017
+
+author2: December  3, 2016
+
+author2: December  3, 2015
+--- expected_author_monthly
+author1: December 2018
+
+author1: December 2017
+
+author2: December 2016
+
+author2: December 2015
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018
+
+author1: December  3, 2017 - December  9, 2017
+
+author2: November 27, 2016 - December  3, 2016
+
+author2: November 29, 2015 - December  5, 2015
+--- expected_todo_author_yearly
+author1: 2018
+
+author1: 2017
+
+author2: 2016
+
+author2: 2015
+--- expected_todo_category
+cat_compass
+
+cat_eraser
+
+cat_pencil
+
+cat_ruler
+--- expected_category_daily
+cat_compass: December  3, 2017
+
+cat_eraser: December  3, 2018
+
+cat_eraser: December  3, 2016
+
+cat_pencil: December  3, 2016
+
+cat_ruler: December  3, 2018
+--- expected_category_monthly
+cat_compass: December 2017
+
+cat_eraser: December 2018
+
+cat_eraser: December 2016
+
+cat_pencil: December 2016
+
+cat_ruler: December 2018
+--- expected_category_weekly
+cat_compass: December  3, 2017 - December  9, 2017
+
+cat_eraser: December  2, 2018 - December  8, 2018
+
+cat_eraser: November 27, 2016 - December  3, 2016
+
+cat_pencil: November 27, 2016 - December  3, 2016
+
+cat_ruler: December  2, 2018 - December  8, 2018
+--- expected_todo_category_yearly
+cat_compass: 2017
+
+cat_eraser: 2018
+
+cat_eraser: 2016
+
+cat_pencil: 2016
+
+cat_ruler: 2018
+--- expected_contenttype
+cd_same_apple_orange
+cd_same_apple_orange
+
+cd_same_apple_orange_peach
+cd_same_apple_orange_peach
+
+cd_same_peach
+cd_same_peach
+
+cd_same_same_date
+cd_same_same_date
+--- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26278
+--- expected_todo_contenttype_author
+author1
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+
+author2
+cd_same_peach
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26279
+--- expected_contenttype_author_daily
+author1: November  1, 2008
+cd_same_apple_orange
+
+author1: November  1, 2006
+cd_same_apple_orange_peach
+
+author1: November  1, 2004
+cd_same_same_date
+
+author2: November  1, 2004
+cd_same_peach
+--- expected_contenttype_author_monthly
+author1: November 2008
+cd_same_apple_orange
+
+author1: November 2006
+cd_same_apple_orange_peach
+
+author1: November 2004
+cd_same_same_date
+
+author2: November 2004
+cd_same_peach
+--- expected_contenttype_author_weekly
+author1: October 26, 2008 - November  1, 2008
+cd_same_apple_orange
+
+author1: October 29, 2006 - November  4, 2006
+cd_same_apple_orange_peach
+
+author1: October 31, 2004 - November  6, 2004
+cd_same_same_date
+
+author2: October 31, 2004 - November  6, 2004
+cd_same_peach
+--- expected_contenttype_author_yearly
+author1: 2008
+cd_same_apple_orange
+
+author1: 2006
+cd_same_apple_orange_peach
+
+author1: 2004
+cd_same_same_date
+
+author2: 2004
+cd_same_peach
+--- expected_contenttype_category
+cat_apple
+cd_same_apple_orange_peach
+cd_same_apple_orange
+
+cat_orange
+cd_same_apple_orange_peach
+
+cat_peach
+cd_same_peach
+--- expected_contenttype_category_daily
+cat_apple: November  1, 2008
+cd_same_apple_orange
+
+cat_apple: November  1, 2006
+cd_same_apple_orange_peach
+
+cat_orange: November  1, 2006
+cd_same_apple_orange_peach
+
+cat_peach: November  1, 2004
+cd_same_peach
+--- expected_contenttype_category_monthly
+cat_apple: November 2008
+cd_same_apple_orange
+
+cat_apple: November 2006
+cd_same_apple_orange_peach
+
+cat_orange: November 2006
+cd_same_apple_orange_peach
+
+cat_peach: November 2004
+cd_same_peach
+--- expected_contenttype_category_weekly
+cat_apple: October 26, 2008 - November  1, 2008
+cd_same_apple_orange
+
+cat_apple: October 29, 2006 - November  4, 2006
+cd_same_apple_orange_peach
+
+cat_orange: October 29, 2006 - November  4, 2006
+cd_same_apple_orange_peach
+
+cat_peach: October 31, 2004 - November  6, 2004
+cd_same_peach
+--- expected_contenttype_category_yearly
+cat_apple: 2008
+cd_same_apple_orange
+
+cat_apple: 2006
+cd_same_apple_orange_peach
+
+cat_orange: 2006
+cd_same_apple_orange_peach
+
+cat_peach: 2004
+cd_same_peach
+--- expected_contenttype_daily
+November  1, 2008
+cd_same_apple_orange
+
+November  1, 2006
+cd_same_apple_orange_peach
+
+November  1, 2004
+cd_same_peach
+cd_same_same_date
+--- expected_contenttype_monthly
+November 2008
+cd_same_apple_orange
+
+November 2006
+cd_same_apple_orange_peach
+
+November 2004
+cd_same_peach
+cd_same_same_date
+--- expected_contenttype_weekly
+October 26, 2008 - November  1, 2008
+cd_same_apple_orange
+
+October 29, 2006 - November  4, 2006
+cd_same_apple_orange_peach
+
+October 31, 2004 - November  6, 2004
+cd_same_peach
+cd_same_same_date
+--- expected_contenttype_yearly
+2008
+cd_same_apple_orange
+
+2006
+cd_same_apple_orange_peach
+
+2004
+cd_same_peach
+cd_same_same_date
+--- expected_daily
+December  3, 2018
+
+December  3, 2017
+
+December  3, 2016
+
+December  3, 2015
+--- expected_todo_individual
+entry_author1_ruler_eraser
+
+entry_author1_ruler_eraser
+
+entry_author1_compass
+
+entry_author2_pencil_eraser
+
+entry_author2_no_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
+--- expected_monthly
+December 2018
+
+December 2017
+
+December 2016
+
+December 2015
+--- expected_todo_page
+page_author2_no_folder
+
+page_author2_water
+
+page_author1_coffee
+
+page_author1_coffee
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
+--- expected_weekly
+December  2, 2018 - December  8, 2018
+
+December  3, 2017 - December  9, 2017
+
+November 27, 2016 - December  3, 2016
+
+November 29, 2015 - December  5, 2015
+--- expected_todo_yearly
+2018
+
+2017
+
+2016
+
+2015
