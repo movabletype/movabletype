@@ -128,9 +128,9 @@ sub archive_group_contents {
     my ( $ctx, $param, $content_type_id ) = @_;
 
     $content_type_id ||=
-          $ctx->stash('template')
-        ? $ctx->stash('template')->content_type_id
-        : undef;
+          $ctx->stash('content_type') ? $ctx->stash('content_type')->id
+        : $ctx->stash('template') ? $ctx->stash('template')->content_type_id
+        :                           undef;
 
     my $blog  = $ctx->stash('blog');
     my $a     = $param->{author} || $ctx->stash('author');
