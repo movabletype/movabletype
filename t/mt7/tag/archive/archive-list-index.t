@@ -2538,3 +2538,278 @@ November 29, 2015 - December  5, 2015
 2016
 
 2015
+
+=== ArchiveList + Entries (MTC-26278)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26276
+--- template
+<MTArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><MTArchiveTitle>:
+<MTEntries sort_order="ascend"> <MTEntryID>:<MTEntryTitle>
+</MTEntries>
+</MTArchiveList>
+--- expected_author
+author1:
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+--- expected_author_daily
+author1: December  3, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: December  3, 2017:
+ 3:entry_author1_compass
+
+author2: December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+author2: December  3, 2015:
+ 5:entry_author2_no_category
+--- expected_author_monthly
+author1: December 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: December 2017:
+ 3:entry_author1_compass
+
+author2: December 2016:
+ 4:entry_author2_pencil_eraser
+
+author2: December 2015:
+ 5:entry_author2_no_category
+--- expected_author_weekly
+author1: December  2, 2018 - December  8, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: December  3, 2017 - December  9, 2017:
+ 3:entry_author1_compass
+
+author2: November 27, 2016 - December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+author2: November 29, 2015 - December  5, 2015:
+ 5:entry_author2_no_category
+--- expected_author_yearly
+author1: 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: 2017:
+ 3:entry_author1_compass
+
+author2: 2016:
+ 4:entry_author2_pencil_eraser
+
+author2: 2015:
+ 5:entry_author2_no_category
+--- expected_category
+cat_compass:
+ 3:entry_author1_compass
+
+cat_eraser:
+ 4:entry_author2_pencil_eraser
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_pencil:
+ 4:entry_author2_pencil_eraser
+
+cat_ruler:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_category_daily
+cat_compass: December  3, 2017:
+ 3:entry_author1_compass
+
+cat_eraser: December  3, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_eraser: December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_pencil: December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_ruler: December  3, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_category_monthly
+cat_compass: December 2017:
+ 3:entry_author1_compass
+
+cat_eraser: December 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_eraser: December 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_pencil: December 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_ruler: December 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_category_weekly
+cat_compass: December  3, 2017 - December  9, 2017:
+ 3:entry_author1_compass
+
+cat_eraser: December  2, 2018 - December  8, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_eraser: November 27, 2016 - December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_pencil: November 27, 2016 - December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_ruler: December  2, 2018 - December  8, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_category_yearly
+cat_compass: 2017:
+ 3:entry_author1_compass
+
+cat_eraser: 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_eraser: 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_pencil: 2016:
+ 4:entry_author2_pencil_eraser
+
+cat_ruler: 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype
+cd_same_apple_orange:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cd_same_same_date:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cd_same_apple_orange_peach:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cd_same_peach:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_php_todo_contenttype
+--- expected_todo_contenttype_author
+--- expected_todo_contenttype_author_daily
+--- expected_todo_contenttype_author_monthly
+--- expected_todo_contenttype_author_weekly
+--- expected_todo_contenttype_author_yearly
+--- expected_todo_contenttype_category
+--- expected_todo_contenttype_category_daily
+--- expected_todo_contenttype_category_monthly
+--- expected_todo_contenttype_category_weekly
+--- expected_todo_contenttype_category_yearly
+--- expected_todo_contenttype_daily
+--- expected_todo_contenttype_monthly
+--- expected_todo_contenttype_weekly
+--- expected_todo_contenttype_yearly
+--- expected_daily
+December  3, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+December  3, 2017:
+ 3:entry_author1_compass
+
+December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+December  3, 2015:
+ 5:entry_author2_no_category
+--- expected_individual
+entry_author1_ruler_eraser:
+ 1:entry_author1_ruler_eraser
+
+entry_author1_ruler_eraser:
+ 2:entry_author1_ruler_eraser
+
+entry_author1_compass:
+ 3:entry_author1_compass
+
+entry_author2_pencil_eraser:
+ 4:entry_author2_pencil_eraser
+
+entry_author2_no_category:
+ 5:entry_author2_no_category
+--- expected_monthly
+December 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+December 2017:
+ 3:entry_author1_compass
+
+December 2016:
+ 4:entry_author2_pencil_eraser
+
+December 2015:
+ 5:entry_author2_no_category
+--- expected_page
+page_author2_no_folder:
+ 10:page_author2_no_folder
+
+page_author2_water:
+ 9:page_author2_water
+
+page_author1_coffee:
+ 7:page_author1_coffee
+
+page_author1_coffee:
+ 8:page_author1_coffee
+--- expected_weekly
+December  2, 2018 - December  8, 2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+December  3, 2017 - December  9, 2017:
+ 3:entry_author1_compass
+
+November 27, 2016 - December  3, 2016:
+ 4:entry_author2_pencil_eraser
+
+November 29, 2015 - December  5, 2015:
+ 5:entry_author2_no_category
+--- expected_yearly
+2018:
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+2017:
+ 3:entry_author1_compass
+
+2016:
+ 4:entry_author2_pencil_eraser
+
+2015:
+ 5:entry_author2_no_category
