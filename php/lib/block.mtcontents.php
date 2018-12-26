@@ -123,8 +123,6 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         return $ret;
     }
 
-    $args['class'] = 'content_data';
-
     if ($counter < $limit) {
         $blog_id = $ctx->stash('blog_id');
         $content = $contents[$counter];
