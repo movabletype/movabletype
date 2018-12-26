@@ -28,7 +28,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         if ($ctx->stash('category_set')) {
             $category_set_id = $ctx->stash('category_set')->id;
         } else {
-            $category_set_id = $args['category_set_id'] || 0;
+            $category_set_id = $args['category_set_id'] ? $args['category_set_id'] : 0;
         }
 
         # Store the tokens for recursion
