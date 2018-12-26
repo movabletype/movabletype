@@ -12,6 +12,7 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::Permission;
 
 use MT::ContentType;
 
@@ -48,6 +49,55 @@ subtest 'forbid creating content_type with not unique unique_id' => sub {
     $ct2->unique_id( $ct1->unique_id );
     $ct2->save;
     ok( $ct2->errstr, 'unique_id column must be unique' );
+};
+
+subtest 'categories_fields' => sub {
+    my $ct = MT::Test::Permission->make_content_type( blog_id => 1 );
+    is_deeply( $ct->categories_fields, [], 'no field' );
+
+    my $cf_single = MT::Test::Permission->make_content_field(
+        blog_id         => 1,
+        content_type_id => $ct->id,
+        name            => 'single',
+        type            => 'single_line_text',
+    );
+    $ct->fields(
+        [   {   id        => $cf_single->id,
+                name      => $cf_single->name,
+                options   => { label => $cf_single->name, },
+                order     => 1,
+                type      => $cf_single->type,
+                unique_id => $cf_single->unique_id,
+            },
+        ]
+    );
+    $ct->save or die;
+    $ct->refresh;
+    is_deeply( $ct->categories_fields, [], '1 non categories field' );
+
+    my $catset = MT::Test::Permission->make_category_set( blog_id => 1 );
+    my $cf_cat = MT::Test::Permission->make_content_field(
+        blog_id         => 1,
+        content_type_id => $ct->id,
+        name            => 'cat',
+        type            => 'categories',
+    );
+    my $cat_field_hash = {
+        id      => $cf_cat->id,
+        name    => $cf_cat->name,
+        options => {
+            category_set => $catset->id,
+            label        => $cf_cat->name,
+        },
+        order     => 2,
+        type      => $cf_cat->type,
+        unique_id => $cf_cat->unique_id,
+    };
+    $ct->fields( [ @{ $ct->fields }, $cat_field_hash, ], );
+    $ct->save or die;
+    $ct->refresh;
+    is_deeply( $ct->categories_fields, [$cat_field_hash],
+        '1 categories field' );
 };
 
 done_testing;

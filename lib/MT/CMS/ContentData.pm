@@ -538,13 +538,8 @@ sub save {
 
     my $archive_type = '';
 
-    my $orig      = $content_data->clone;
-    my $orig_file = '';
-    if ( $content_data->id ) {
-        $archive_type = 'ContentType';
-        $orig_file
-            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
-    }
+    my $orig       = $content_data->clone;
+    my $orig_file  = '';
     my $status_old = $content_data_id ? $content_data->status : 0;
 
     if ( $content_data->id ) {
@@ -569,6 +564,14 @@ sub save {
     else {
         my $status = $app->param('status');
         $content_data->status($status);
+    }
+
+    my %categories_old;
+    if ( $orig->id ) {
+        my $orig_data = $orig->data;
+        my @cat_field_ids
+            = map { $_->{id} } @{ $content_type->categories_fields };
+        %categories_old = map { $_ => $orig_data->{$_} || [] } @cat_field_ids;
     }
 
     my $filter_result
@@ -786,6 +789,10 @@ sub save {
             return unless $res;
         }
         else {
+            my $old_categories
+                = %categories_old
+                ? MT::Util::to_json( \%categories_old )
+                : undef;
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
@@ -796,6 +803,7 @@ sub save {
                         content_data_id => $content_data->id,
                         is_new          => $is_new,
                         old_status      => $status_old,
+                        old_categories  => $old_categories,
                         $previous_old
                         ? ( old_previous => $previous_old->id )
                         : (),
