@@ -101,13 +101,6 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                 $ctx->stash('__pager_total_count', $total_count);
             $ctx->stash('contents', $contents);
 
-            $ctx->stash('conditional', empty($contents) ? 0 : 1);
-            if (empty($contents)) {
-                $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
-                if (!$repeat)
-                      $ctx->restore($localvars);
-                return $ret;
-            }
         }
 
         $ctx->stash('_contents_glue', $args['glue']);
@@ -120,6 +113,14 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $limit = $ctx->stash('_contents_limit');
         $counter = $ctx->stash('_contents_counter');
         $out = $ctx->stash('__out');
+    }
+
+    $ctx->stash('conditional', empty($contents) ? 0 : 1);
+    if (empty($contents)) {
+        $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
+        if (!$repeat)
+              $ctx->restore($localvars);
+        return $ret;
     }
 
     $args['class'] = 'content_data';

@@ -1981,9 +1981,6 @@ cd_same_apple_orange_peach
 
 cd_same_peach
 cd_same_peach
---- expected_php_todo_contenttype
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26278
 --- expected_todo_contenttype_author
 author1
 cd_same_apple_orange_peach
@@ -2331,9 +2328,6 @@ cd_same_peach
 
 cd_same_same_date
 cd_same_same_date
---- expected_php_todo_contenttype
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26278
 --- expected_todo_contenttype_author
 author1
 cd_same_apple_orange_peach

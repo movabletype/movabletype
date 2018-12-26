@@ -2433,7 +2433,7 @@ class ContentTypeArchiver implements ArchiveType {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $ctx->stash('content', $row);
-        $ctx->stash('contents', array());
+        $ctx->stash('contents', array($row));
     }
 
     public function get_template_params() {
