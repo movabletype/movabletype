@@ -1860,6 +1860,8 @@ November 29, 2015 - December  5, 2015
 2015
 
 === ArchiveList + Contents (MTC-26234)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26276
 --- template
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 <mt:Contents sort_order="ascend"><mt:ContentLabel>
@@ -1869,6 +1871,8 @@ November 29, 2015 - December  5, 2015
 author1
 
 author2
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26277
 --- expected_author_daily
 author1: December  3, 2018
 
@@ -1901,14 +1905,30 @@ author1: 2017
 author2: 2016
 
 author2: 2015
---- expected_todo_category
+--- expected_category
 cat_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_daily
 cat_compass: December  3, 2017
 
@@ -1962,6 +1982,8 @@ cd_same_apple_orange_peach
 cd_same_peach
 cd_same_peach
 --- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26278
 --- expected_todo_contenttype_author
 author1
 cd_same_apple_orange_peach
@@ -1970,6 +1992,8 @@ cd_same_same_date
 
 author2
 cd_same_peach
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26279
 --- expected_contenttype_author_daily
 author1: October 31, 2018
 cd_same_apple_orange
@@ -2118,14 +2142,36 @@ December  3, 2016
 December  3, 2015
 --- expected_todo_individual
 entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author1_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author2_pencil_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author2_no_category
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_monthly
 December 2018
 
@@ -2136,12 +2182,30 @@ December 2016
 December 2015
 --- expected_todo_page
 page_author2_no_folder
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author2_water
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author1_coffee
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author1_coffee
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_weekly
 December  2, 2018 - December  8, 2018
 
@@ -2160,6 +2224,8 @@ November 29, 2015 - December  5, 2015
 2015
 
 === ArchiveList + Contents + datetime (MTC-26234)
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26276
 --- dt_field
 cf_same_datetime
 --- template
@@ -2171,6 +2237,8 @@ cf_same_datetime
 author1
 
 author2
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26277
 --- expected_author_daily
 author1: December  3, 2018
 
@@ -2263,8 +2331,9 @@ cd_same_peach
 
 cd_same_same_date
 cd_same_same_date
---- FIXME
 --- expected_php_todo_contenttype
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26278
 --- expected_todo_contenttype_author
 author1
 cd_same_apple_orange_peach
@@ -2273,6 +2342,8 @@ cd_same_same_date
 
 author2
 cd_same_peach
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26279
 --- expected_contenttype_author_daily
 author1: November  1, 2008
 cd_same_apple_orange
@@ -2437,6 +2508,8 @@ entry_author1_compass
 entry_author2_pencil_eraser
 
 entry_author2_no_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_monthly
 December 2018
 
@@ -2453,6 +2526,8 @@ page_author2_water
 page_author1_coffee
 
 page_author1_coffee
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_weekly
 December  2, 2018 - December  8, 2018
 
