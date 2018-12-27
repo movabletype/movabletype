@@ -79,6 +79,22 @@ $test_env->prepare_fixture(
         if ( $catset2->id != $catset2_id ) {
             die '$catset2->id is ' . ( $catset2->id || 'not set' );
         }
+
+        MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset2->id,
+            label           => '123',
+        );
+        MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset2->id,
+            label           => '456',
+        );
+        MT::Test::Permission->make_category(
+            blog_id         => $blog_id,
+            category_set_id => $catset2->id,
+            label           => '789',
+        );
     }
 );
 
@@ -119,4 +135,6 @@ ghi
 <MTCategorySets id="1"><MTCategories category_set_id="2" show_empty="1"><MTCategoryLabel>
 </MTCategories></MTCategorySets>
 --- expected
-
+123
+456
+789
