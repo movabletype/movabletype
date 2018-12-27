@@ -730,10 +730,10 @@ sub _hdlr_sub_categories {
     $sort_by = 'user_custom'
         if !$sort_by || !$class->has_column($sort_by);
 
-    my $category_set_id
-        = $ctx->stash('category_set')
-        ? $ctx->stash('category_set')->id
-        : $args->{category_set_id} || 0;
+    my $category_set_id = $args->{category_set_id} || 0;
+    if ( !$category_set_id && $ctx->stash('category_set') ) {
+        $category_set_id = $ctx->stash('category_set')->id;
+    }
 
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;
