@@ -324,7 +324,8 @@ sub _hdlr_archives {
             sub {
                 $archiver->archive_group_entries( $ctx, %curr );
             }
-        ) if $archiver->group_based;
+            )
+            if $archiver->group_based && !$archiver->contenttype_group_based;
         local $ctx->{__stash}{contents} = delay(
             sub {
                 $archiver->archive_group_contents( $ctx, \%curr );

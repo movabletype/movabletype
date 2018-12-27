@@ -51,6 +51,7 @@ sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
     my $blog_id
         = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
@@ -119,13 +120,13 @@ sub _hdlr_contents {
     my $archive_contents;
     if ($use_stash) {
         $archive_contents = $ctx->stash('contents');
-        if ( !$archive_contents && $at ) {
-            my $archiver = MT->publisher->archiver($at);
-            if ( $archiver && $archiver->group_based ) {
-                $archive_contents
-                    = $archiver->archive_group_contents( $ctx, $args,
-                    $content_type_id );
-            }
+        if (  !$archive_contents
+            && $archiver
+            && $archiver->contenttype_group_based )
+        {
+            $archive_contents
+                = $archiver->archive_group_contents( $ctx, $args,
+                $content_type_id );
         }
     }
     if ( $archive_contents && scalar @$archive_contents ) {
@@ -241,7 +242,13 @@ sub _hdlr_contents {
     if ( !$archive_contents ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ( $start && $end ) {
+        if ((   !$archiver || ( $archiver->contenttype_based
+                    || $archiver->contenttype_group_based )
+            )
+            && $start
+            && $end
+            )
+        {
             if ( $map && ( my $dt_field_id = $map->dt_field_id ) ) {
                 push @{ $args{joins} },
                     MT::ContentFieldIndex->join_on(
