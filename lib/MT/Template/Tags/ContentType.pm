@@ -2093,20 +2093,20 @@ sub _get_content_type {
         }
     }
     else {
-        my $stash_ct = $ctx->stash('content_type');
-        unless ($stash_ct) {
+        my $ct = $ctx->stash('content_type');
+        unless ($ct) {
             my $tmpl = $ctx->stash('template');
             if ( $tmpl && $tmpl->content_type_id ) {
-                $stash_ct
+                $ct
                     = MT->model('content_type')
                     ->load( $tmpl->content_type_id );
 
                 # invalid template_content_type_id
-                return $ctx->_no_content_type_error unless $stash_ct;
+                return $ctx->_no_content_type_error unless $ct;
             }
         }
-        if ($stash_ct) {
-            @content_types = ($stash_ct);
+        if ($ct) {
+            @content_types = ($ct);
         }
         else {
             for my $blog_id (@blog_ids) {

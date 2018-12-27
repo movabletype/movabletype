@@ -192,17 +192,17 @@ function _get_content_type( $ctx, $args, $blog_terms ) {
                 $not_found_blog_ids[] = $blog_id;
         }
     } else {
-        $stash_ct = $ctx->stash('content_type');
-        if (!$stash_ct) {
+        $ct = $ctx->stash('content_type');
+        if (!$ct) {
             $tmpl = $ctx->stash('template');
             if ($tmpl && $tmpl->template_content_type_id) {
-                $stash_ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
-                if (!$stash_ct)
+                $ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
+                if (!$ct)
                     return $ctx->mt->translate('No Content Type could be found.');
             }
         }
-        if ($stash_ct) {
-            $content_types[] = $stash_ct;
+        if ($ct) {
+            $content_types[] = $ct;
         } else {
             $content_types = $ctx->mt->db()->fetch_content_types($blog_terms);
             if (!isset($content_types))
