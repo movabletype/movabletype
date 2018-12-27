@@ -763,11 +763,12 @@ sub _hdlr_entries {
     if ( !$entries ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if (   $archiver
-            && !$archiver->contenttype_based
-            && !$archiver->contenttype_group_based
+        if ((   !$archiver || ( !$archiver->contenttype_based
+                    && !$archiver->contenttype_group_based )
+            )
             && $start
-            && $end )
+            && $end
+            )
         {
             $terms{authored_on} = [ $start, $end ];
             $args{range_incl}{authored_on} = 1;

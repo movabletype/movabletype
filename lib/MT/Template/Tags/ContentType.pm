@@ -244,9 +244,9 @@ sub _hdlr_contents {
     if ( !$archive_contents ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ($archiver
-            && (   $archiver->contenttype_based
-                || $archiver->contenttype_group_based )
+        if ((   !$archiver || ( $archiver->contenttype_based
+                    || $archiver->contenttype_group_based )
+            )
             && $start
             && $end
             )
