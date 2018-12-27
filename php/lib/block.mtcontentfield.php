@@ -14,7 +14,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
             '_assets',
             'category','entries','contents','category_count','blog_id','blog',
             'parent_content','parent_content_type','content','content_type','contents',
-            'conditonal','else_content',
+            'conditional','else_content',
         ),
         common_loop_vars()
     );
