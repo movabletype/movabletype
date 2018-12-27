@@ -1860,51 +1860,119 @@ November 29, 2015 - December  5, 2015
 2015
 
 === ArchiveList + Contents (MTC-26234)
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26276
 --- template
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 <mt:Contents sort_order="ascend"><mt:ContentLabel>
 </mt:Contents>
 </mt:ArchiveList>
---- expected_todo_author
+--- expected_author
 author1
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26277
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_daily
 author1: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December  3, 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_monthly
 author1: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_weekly
 author1: December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: November 29, 2015 - December  5, 2015
---- expected_todo_author_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_author_yearly
 author1: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category
 cat_compass
 cd_same_peach
@@ -1931,44 +1999,124 @@ cd_same_apple_orange
 cd_same_same_date
 --- expected_category_daily
 cat_compass: December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_monthly
 cat_compass: December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_weekly
 cat_compass: December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December  2, 2018 - December  8, 2018
---- expected_todo_category_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_category_yearly
 cat_compass: 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_contenttype
 cd_same_apple_orange
 cd_same_apple_orange
@@ -2129,13 +2277,29 @@ cd_same_apple_orange_peach
 cd_same_peach
 --- expected_daily
 December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2015
---- expected_todo_individual
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_individual
 entry_author1_ruler_eraser
 cd_same_peach
 cd_same_apple_orange_peach
@@ -2165,17 +2329,31 @@ cd_same_peach
 cd_same_apple_orange_peach
 cd_same_apple_orange
 cd_same_same_date
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_monthly
 December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2015
---- expected_todo_page
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_page
 page_author2_no_folder
 cd_same_peach
 cd_same_apple_orange_peach
@@ -2199,28 +2377,56 @@ cd_same_peach
 cd_same_apple_orange_peach
 cd_same_apple_orange
 cd_same_same_date
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26280
 --- expected_weekly
 December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 November 29, 2015 - December  5, 2015
---- expected_todo_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_yearly
 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 === ArchiveList + Contents + datetime (MTC-26234)
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26276
 --- dt_field
 cf_same_datetime
 --- template
@@ -2228,92 +2434,258 @@ cf_same_datetime
 <mt:Contents sort_order="ascend"><mt:ContentLabel>
 </mt:Contents>
 </mt:ArchiveList>
---- expected_todo_author
+--- expected_author
 author1
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26277
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_daily
 author1: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December  3, 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_monthly
 author1: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: December 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_author_weekly
 author1: December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: November 29, 2015 - December  5, 2015
---- expected_todo_author_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_author_yearly
 author1: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author1: 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 author2: 2015
---- expected_todo_category
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_category
 cat_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_daily
 cat_compass: December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_monthly
 cat_compass: December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_category_weekly
 cat_compass: December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: December  2, 2018 - December  8, 2018
---- expected_todo_category_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_category_yearly
 cat_compass: 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_eraser: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_pencil: 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 cat_ruler: 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_contenttype
 cd_same_apple_orange
 cd_same_apple_orange
@@ -2482,58 +2854,154 @@ cd_same_peach
 cd_same_same_date
 --- expected_daily
 December  3, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2015
---- expected_todo_individual
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_individual
 entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author1_ruler_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author1_compass
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author2_pencil_eraser
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 entry_author2_no_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26280
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_monthly
 December 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December 2015
---- expected_todo_page
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_page
 page_author2_no_folder
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author2_water
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author1_coffee
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 page_author1_coffee
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26280
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 --- expected_weekly
 December  2, 2018 - December  8, 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 December  3, 2017 - December  9, 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 November 27, 2016 - December  3, 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 November 29, 2015 - December  5, 2015
---- expected_todo_yearly
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
+--- expected_yearly
 2018
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2017
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2016
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 2015
+cd_same_peach
+cd_same_apple_orange_peach
+cd_same_apple_orange
+cd_same_same_date
 
 === ArchiveList + Entries (MTC-26278)
 --- FIXME

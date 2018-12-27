@@ -69,17 +69,19 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             if (isset($args['id'])) {
                 $args['content_id'] = $args['id'];
             }
-            $ts = $ctx->stash('current_timestamp');
-            $tse = $ctx->stash('current_timestamp_end');
-            if ($ts && $tse) {
-                # assign date range if we have both
-                # start and end date
-                $args['current_timestamp'] = $ts;
-                $args['current_timestamp_end'] = $tse;
-            }
-            if (isset($archiver)) {
-                $args['limit'] or $args['limit'] = -1;
-                $archiver->setup_args($args);
+            if (preg_match('/^ContentType/', $at)) {
+                $ts = $ctx->stash('current_timestamp');
+                $tse = $ctx->stash('current_timestamp_end');
+                if ($ts && $tse) {
+                    # assign date range if we have both
+                    # start and end date
+                    $args['current_timestamp'] = $ts;
+                    $args['current_timestamp_end'] = $tse;
+                }
+                if (isset($archiver)) {
+                    $args['limit'] or $args['limit'] = -1;
+                    $archiver->setup_args($args);
+                }
             }
 
             $cat = $ctx->stash('category');
