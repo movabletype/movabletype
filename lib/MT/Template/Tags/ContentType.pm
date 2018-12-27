@@ -50,9 +50,7 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $id        = $args->{id};
-    my $unique_id = $args->{unique_id};
-    my $at        = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $blog_id
         = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
