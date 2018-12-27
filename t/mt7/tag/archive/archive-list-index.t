@@ -3004,8 +3004,6 @@ cd_same_apple_orange
 cd_same_same_date
 
 === ArchiveList + Entries (MTC-26278)
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26276
 --- template
 <MTArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><MTArchiveTitle>:
 <MTEntries sort_order="ascend"> <MTEntryID>:<MTEntryTitle>
@@ -3183,21 +3181,321 @@ cd_same_peach:
  3:entry_author1_compass
  1:entry_author1_ruler_eraser
  2:entry_author1_ruler_eraser
---- expected_php_todo_contenttype
---- expected_todo_contenttype_author
---- expected_todo_contenttype_author_daily
---- expected_todo_contenttype_author_monthly
---- expected_todo_contenttype_author_weekly
---- expected_todo_contenttype_author_yearly
---- expected_todo_contenttype_category
---- expected_todo_contenttype_category_daily
---- expected_todo_contenttype_category_monthly
---- expected_todo_contenttype_category_weekly
---- expected_todo_contenttype_category_yearly
---- expected_todo_contenttype_daily
---- expected_todo_contenttype_monthly
---- expected_todo_contenttype_weekly
---- expected_todo_contenttype_yearly
+--- expected_contenttype_author
+author1:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_author_daily
+author1: October 31, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: October 31, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2: October 31, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_author_monthly
+author1: October 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: October 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2: October 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_author_weekly
+author1: October 28, 2018 - November  3, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: October 29, 2017 - November  4, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2: October 30, 2016 - November  5, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_author_yearly
+author1: 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author1: 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+author2: 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_category
+cat_apple:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_orange:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_peach:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_category_daily
+cat_apple: October 31, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_apple: October 31, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_orange: October 31, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_peach: October 31, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_category_monthly
+cat_apple: October 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_apple: October 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_orange: October 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_peach: October 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_category_weekly
+cat_apple: October 28, 2018 - November  3, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_apple: October 29, 2017 - November  4, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_orange: October 29, 2017 - November  4, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_peach: October 30, 2016 - November  5, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_category_yearly
+cat_apple: 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_apple: 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_orange: 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+cat_peach: 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_daily
+October 31, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 31, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 31, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_monthly
+October 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_weekly
+October 28, 2018 - November  3, 2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 29, 2017 - November  4, 2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+October 30, 2016 - November  5, 2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+--- expected_contenttype_yearly
+2018:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+2017:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
+
+2016:
+ 5:entry_author2_no_category
+ 4:entry_author2_pencil_eraser
+ 3:entry_author1_compass
+ 1:entry_author1_ruler_eraser
+ 2:entry_author1_ruler_eraser
 --- expected_daily
 December  3, 2018:
  1:entry_author1_ruler_eraser

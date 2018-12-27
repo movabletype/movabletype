@@ -95,20 +95,22 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
         }
-        $ts = $ctx->stash('current_timestamp');
-        $tse = $ctx->stash('current_timestamp_end');
-        if ($ts && $tse) {
-            # assign date range if we have both
-            # start and end date
-            $args['current_timestamp'] = $ts;
-            $args['current_timestamp_end'] = $tse;
-        }
-        if (isset($archiver)) {
-            ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
-            $archiver->setup_args($args);
+        if (!preg_match('/^ContentType/', $at)) {
+            $ts = $ctx->stash('current_timestamp');
+            $tse = $ctx->stash('current_timestamp_end');
+            if ($ts && $tse) {
+                # assign date range if we have both
+                # start and end date
+                $args['current_timestamp'] = $ts;
+                $args['current_timestamp_end'] = $tse;
+            }
+            if (isset($archiver)) {
+                ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
+                $archiver->setup_args($args);
+            }
         }
         $cat = $ctx->stash('category');
-        if (isset($cat) && (($args['class'] == 'entry' && $cat->category_class == 'category') || ($args['class'] == 'page' && $cat->category_class == 'folder'))) {
+        if (isset($cat) && !$cat->category_category_set_id && (($args['class'] == 'entry' && $cat->category_class == 'category') || ($args['class'] == 'page' && $cat->category_class == 'folder'))) {
             $args['category'] or $args['categories'] or $args['category_id'] = $cat->category_id;
             if ($ctx->stash('inside_mt_categories')) {
                 $args['category_id'] = $cat->category_id;

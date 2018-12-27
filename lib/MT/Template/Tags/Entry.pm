@@ -298,10 +298,11 @@ sub _hdlr_entries {
         && ( 'score' eq $args->{sort_by} )
         && ( !exists $args->{namespace} ) );
 
-    my $cfg     = $ctx->{config};
-    my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id = $ctx->stash('blog_id');
-    my $blog    = $ctx->stash('blog');
+    my $cfg      = $ctx->{config};
+    my $at       = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $blog_id  = $ctx->stash('blog_id');
+    my $blog     = $ctx->stash('blog');
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
 
     # for the case that we want to use mt:Entries with mt-search
@@ -372,11 +373,12 @@ sub _hdlr_entries {
     my $entries;
     if ($use_stash) {
         $entries = $ctx->stash('entries');
-        if ( !$entries && $at ) {
-            my $archiver = MT->publisher->archiver($at);
-            if ( $archiver && $archiver->group_based ) {
-                $entries = $archiver->archive_group_entries( $ctx, %$args );
-            }
+        if (  !$entries
+            && $archiver
+            && $archiver->group_based
+            && !$archiver->contenttype_group_based )
+        {
+            $entries = $archiver->archive_group_entries( $ctx, %$args );
         }
     }
     if ( $entries && scalar @$entries ) {
@@ -437,15 +439,15 @@ sub _hdlr_entries {
     $terms{status} = MT::Entry::RELEASE();
 
     if ( !$entries ) {
-        if ( $ctx->{inside_mt_categories} ) {
-            if ( my $cat = $ctx->stash('category') ) {
-                $args->{category} ||= [ 'OR', [$cat] ]
-                    if $cat->class eq $cat_class_type;
-            }
-        }
-        elsif ( my $cat = $ctx->stash('archive_category') ) {
-            $args->{category} ||= [ 'OR', [$cat] ]
-                if $cat->class eq $cat_class_type;
+        my $cat
+            = $ctx->{inside_mt_categories}
+            ? $ctx->stash('category')
+            : $ctx->stash('archive_category');
+        if (   $cat
+            && $cat->class eq $cat_class_type
+            && !$cat->category_set_id )
+        {
+            $args->{category} ||= [ 'OR', [$cat] ];
         }
     }
 
@@ -761,7 +763,12 @@ sub _hdlr_entries {
     if ( !$entries ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ( $start && $end ) {
+        if (   $archiver
+            && !$archiver->contenttype_based
+            && !$archiver->contenttype_group_based
+            && $start
+            && $end )
+        {
             $terms{authored_on} = [ $start, $end ];
             $args{range_incl}{authored_on} = 1;
         }
