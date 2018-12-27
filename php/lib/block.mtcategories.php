@@ -16,10 +16,12 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
-        if ($ctx->stash('category_set')) {
-            $args['category_set_id'] = $ctx->stash('category_set')->id;
-        } elseif (!isset($args['category_set_id'])) {
-            $args['category_set_id'] = 0;
+        if (!(isset($args['category_set_id']) && $args['category_set_id'])) {
+            if ($ctx->stash('category_set')) {
+                $args['category_set_id'] = $ctx->stash('category_set')->id;
+            } else {
+                $args['category_set_id'] = 0;
+            }
         }
         $args['sort_by'] = 'label';
         $args['sort_order'] or $args['sort_order'] = 'ascend';
