@@ -29,7 +29,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         if ($ctx->stash('contents') && isset($args['author']) )
             $ctx->__stash['contents'] = null;
         if ($ctx->__stash['contents']) {
-            if (isset($args['id']) || isset($args['days']) ) {
+            if (isset($args['id']) || isset($args['days']) || isset($args['content_type'])) {
                 $ctx->__stash['contents'] = null;
             }
             else if (isset($args['sort_by'])) {
@@ -180,50 +180,49 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 function _get_content_type( $ctx, $args, $blog_terms ) {
 
     $content_types = array();
-    $not_found = array();
-
-    $stash_content_type = $ctx->stash('content_type');
-    if ($stash_content_type) {
-        return array($stash_content_type);
-    }
-
-    $tmpl = $ctx->stash('template');
-    if ( $tmpl && $tmpl->template_content_type_id ) {
-        $template_ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
-        if (!$template_ct)
-            return $ctx->mt->translate('No Content Type could be found.');
-    } else if ((!isset($args['id']) || $args['id'] === '')
-        && (!isset($args['unique_id']) || $args['unique_id'] === '')
-        && (!isset($args['content_type']) || $args['content_type'] === '') ) {
-        return $ctx->mt->translate('No Content Type could be found.');
-    }
-
+    $not_found_blog_ids = array();
     $blog_ids = $blog_terms['blog_id'];
     if (!is_array($blog_ids)) {
         $blog_ids = array($blog_ids);
     }
 
-    foreach ($blog_ids as $blog_id) {
-        $args['blog_id'] = $blog_id;
-        if ( isset($args['content_type']) && $args['content_type'] !== '' ) {
+    if (isset($args['content_type']) && $args['content_type'] !== '') {
+        foreach ($blog_ids as $blog_id) {
+            $args['blog_id'] = $blog_id;
             $content_types = $ctx->mt->db()->fetch_content_types(array_merge($args, $blog_terms));
             if (!isset($content_types))
-                $not_found[] = $blog_id;
+                $not_found_blog_ids[] = $blog_id;
         }
-        else {
-            if (isset($template_ct)) {
-                $content_types[] = $ct;
+    } else {
+        $ct = $ctx->stash('content_type');
+        if (!$ct) {
+            $tmpl = $ctx->stash('template');
+            if ($tmpl && $tmpl->template_content_type_id) {
+                $ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
+                if (!$ct)
+                    return $ctx->mt->translate('No Content Type could be found.');
             }
-            else {
-                $content_types = $ctx->mt->db()->fetch_content_types($blog_terms);
-                if (!isset($content_types))
-                    $not_found[] = $blog_id;
-            }
+        }
+        if ($ct) {
+            $content_types[] = $ct;
+        } else {
+            $content_types = $ctx->mt->db()->fetch_content_types($blog_terms);
+            if (!isset($content_types))
+                $not_found_blog_ids[] = $blog_id;
         }
     }
 
-    return $not_found
-        ? $ctx->mt->translate( "Content Type was not found. Blog ID: [_1]", join(',', $not_found) )
-        : $content_types;
+    if ($not_found_blog_ids) {
+        return $ctx->mt->translate(
+            "Content Type was not found. Blog ID: [_1]",
+            join(',', $not_found_blog_ids)
+        );
+    }
+
+    if (!$content_types) {
+        return $ctx->mt->translate('No Content Type could be found.');
+    }
+
+    return $content_types;
 }
 ?>

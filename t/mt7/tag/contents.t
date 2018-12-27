@@ -214,7 +214,7 @@ MT::Test::Permission->make_content_data(
     content_type_id => $ct2->id,
     status          => MT::ContentStatus::RELEASE(),
     author_id       => 2,
-    data => { $cf_single_line_text2->id => 'test single line text ', },
+    data => { $cf_single_line_text2->id => 'test single line text', },
 );
 
 # Empty Content Type
@@ -470,3 +470,10 @@ Content is not found.
 --- expected
 543
 21
+
+=== nested MTContents with content_type (MTC-26284)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents content_type="test content type 2"><MTContentField content_field="single line text 2"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text

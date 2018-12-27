@@ -50,10 +50,8 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $id        = $args->{id};
-    my $unique_id = $args->{unique_id};
-    my $at        = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $archiver  = MT->publisher->archiver($at);
+    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
     my $blog_id
         = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
@@ -2083,32 +2081,13 @@ sub _check_and_invoke {
 sub _get_content_type {
     my ( $ctx, $args, $blog_terms ) = @_;
 
-    my @content_types = ();
-    my $template_ct;
-    my @not_found = ();
-    my $blog_ids  = $blog_terms->{blog_id};
+    my @content_types      = ();
+    my @not_found_blog_ids = ();
+    my $blog_ids           = $blog_terms->{blog_id};
+    my @blog_ids           = ref $blog_ids ? @$blog_ids : ($blog_ids);
 
-    if ( my $stash_content_type = $ctx->stash('content_type') ) {
-        return [$stash_content_type];
-    }
-
-    my $tmpl = $ctx->stash('template');
-    if ( $tmpl && $tmpl->content_type_id ) {
-        $template_ct
-            = MT->model('content_type')->load( $tmpl->content_type_id )
-            or return $ctx->_no_conent_type_error;
-    }
-    elsif (( !defined $args->{id} || $args->{id} eq '' )
-        && ( !defined $args->{unique_id} || $args->{unique_id} eq '' )
-        && ( !defined $args->{content_type} || $args->{content_type} eq '' ) )
-    {
-        return $ctx->_no_content_type_error;
-    }
-
-    my @blog_ids = ref $blog_ids ? @$blog_ids : ($blog_ids);
-
-    foreach my $blog_id (@blog_ids) {
-        if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+    if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
+        for my $blog_id (@blog_ids) {
             my ($ct)
                 = MT::Util::ContentType::get_content_types(
                 $args->{content_type}, { blog_id => $blog_id } );
@@ -2116,14 +2095,28 @@ sub _get_content_type {
                 push @content_types, $ct;
             }
             else {
-                push @not_found, $blog_id;
+                push @not_found_blog_ids, $blog_id;
             }
         }
-        else {
-            if ($template_ct) {
-                push @content_types, $template_ct;
+    }
+    else {
+        my $ct = $ctx->stash('content_type');
+        unless ($ct) {
+            my $tmpl = $ctx->stash('template');
+            if ( $tmpl && $tmpl->content_type_id ) {
+                $ct
+                    = MT->model('content_type')
+                    ->load( $tmpl->content_type_id );
+
+                # invalid template_content_type_id
+                return $ctx->_no_content_type_error unless $ct;
             }
-            else {
+        }
+        if ($ct) {
+            @content_types = ($ct);
+        }
+        else {
+            for my $blog_id (@blog_ids) {
                 my @ct
                     = MT->model('content_type')
                     ->load( { blog_id => $blog_id } );
@@ -2131,20 +2124,22 @@ sub _get_content_type {
                     push @content_types, @ct;
                 }
                 else {
-                    push @not_found, $blog_id;
+                    push @not_found_blog_ids, $blog_id;
                 }
             }
         }
     }
 
-    if (@not_found) {
+    if (@not_found_blog_ids) {
         return $ctx->error(
             MT->translate(
                 'Content Type was not found. Blog ID: [_1]',
-                join( ',', @not_found ),
+                join( ',', @not_found_blog_ids ),
             )
         );
     }
+
+    return $ctx->_no_content_type_error unless @content_types;
 
     return \@content_types;
 }
