@@ -440,7 +440,6 @@ https://movabletype.atlassian.net/browse/MTC-26225
 --- expected_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26225
-https://movabletype.atlassian.net/browse/MTC-26227
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -499,7 +498,6 @@ https://movabletype.atlassian.net/browse/MTC-26228
 --- expected_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26225
-https://movabletype.atlassian.net/browse/MTC-26227
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -558,7 +556,6 @@ https://movabletype.atlassian.net/browse/MTC-26228
 --- expected_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26225
-https://movabletype.atlassian.net/browse/MTC-26227
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -617,7 +614,6 @@ https://movabletype.atlassian.net/browse/MTC-26228
 --- expected_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26225
-https://movabletype.atlassian.net/browse/MTC-26227
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
