@@ -137,19 +137,39 @@ sub archive_group_contents {
     my $limit = $param->{limit};
     $limit = 0 if defined $limit && $limit eq 'none';
     return [] unless $a;
+
+    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+        {   archive_type    => $obj->name,
+            blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+        }
+    );
+    my $dt_field_id = $map && $map->dt_field_id ? $map->dt_field_id : '';
+
     require MT::ContentData;
     my @contents = MT::ContentData->load(
         {   blog_id => $blog->id,
-            (   $content_type_id
-                ? ( content_type_id => $content_type_id )
+            (   $content_type_id ? ( content_type_id => $content_type_id )
                 : ()
             ),
             author_id => $a->id,
             status    => MT::ContentStatus::RELEASE()
         },
-        {   'sort'      => 'authored_on',
+        {   ( !$dt_field_id ? ( 'sort' => 'authored_on' ) : () ),
             'direction' => 'descend',
             ( $limit ? ( 'limit' => $limit ) : () ),
+            (   $dt_field_id
+                ? ( 'join' => [
+                        'MT::ContentFieldIndex',
+                        'content_data_id',
+                        { content_field_id => $dt_field_id },
+                        {   sort       => 'value_datetime',
+                            range_incl => { value_datetime => 1 }
+                        }
+                    ]
+                    )
+                : ()
+            ),
         }
     );
     \@contents;

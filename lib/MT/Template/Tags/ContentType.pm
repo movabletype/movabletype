@@ -333,46 +333,51 @@ sub _hdlr_contents {
         }
 
         my $sort_by_cf = 0;
-        if ( my $sort_by = $args->{sort_by} ) {
-            if ( $sort_by =~ m/^field:.*$/ ) {
+        if ( $args->{sort_by} || ( $map && $map->dt_field_id ) ) {
+            my $sort_by = $args->{sort_by};
+            my $cf      = '';
+            if ( $sort_by && $sort_by =~ m/^field:.*$/ ) {
                 my ( $prefix, $value ) = split ':', $sort_by, 2;
-                my $cf = _search_content_field(
+                $cf = _search_content_field(
                     {   content_type_id   => $content_type_id,
                         name_or_unique_id => $value,
                     }
                 );
-                if ($cf) {
-                    my $data_type = MT->registry('content_field_types')
-                        ->{ $cf->type }{data_type};
-                    my $join = MT->model('cf_idx')->join_on(
-                        'content_data_id',
-                        undef,
-                        {   sort      => 'value_' . $data_type,
-                            direction => $args->{sort_order} || 'descend',
-                            alias     => 'cf_idx_' . $cf->id,
-                            type      => 'left',
-                            condition => {
-                                content_data_id  => \'= cd_id',
-                                content_field_id => $cf->id,
-                            },
-                        }
-                    );
-                    if ( $args{join} ) {
-                        push @{ $args{joins} }, $args{join};
-                        push @{ $args{joins} }, $join;
-                        delete $args{join};
-                    }
-                    elsif ( $args{joins} ) {
-                        push @{ $args{joins} }, $join;
-                    }
-                    else {
-                        push @{ $args{joins} }, $join;
-                    }
-                    $sort_by_cf = 1;
-                    $no_resort  = 1;
-                }
             }
-            unless ($sort_by_cf) {
+            else {
+                $cf = MT::ContentField->load( $map->dt_field_id );
+            }
+            if ($cf) {
+                my $data_type = MT->registry('content_field_types')
+                    ->{ $cf->type }{data_type};
+                my $join = MT->model('cf_idx')->join_on(
+                    'content_data_id',
+                    undef,
+                    {   sort      => 'value_' . $data_type,
+                        direction => $args->{sort_order} || 'descend',
+                        alias     => 'cf_idx_' . $cf->id,
+                        type      => 'left',
+                        condition => {
+                            content_data_id  => \'= cd_id',
+                            content_field_id => $cf->id,
+                        },
+                    }
+                );
+                if ( $args{join} ) {
+                    push @{ $args{joins} }, $args{join};
+                    push @{ $args{joins} }, $join;
+                    delete $args{join};
+                }
+                elsif ( $args{joins} ) {
+                    push @{ $args{joins} }, $join;
+                }
+                else {
+                    push @{ $args{joins} }, $join;
+                }
+                $sort_by_cf = 1;
+                $no_resort  = 1;
+            }
+            if ( !$sort_by_cf && $args->{sort_by} ) {
                 if ( $class->is_meta_column( $args->{sort_by} ) ) {
                     $no_resort = 0;
                 }
