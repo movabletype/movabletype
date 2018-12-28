@@ -191,11 +191,17 @@ sub _hdlr_contents {
     }
 
     # Adds an author filter to the filters list.
+    my $author;
     if ( my $author_name = $args->{author} ) {
         require MT::Author;
-        my $author = MT::Author->load( { name => $author_name } )
+        $author = MT::Author->load( { name => $author_name } )
             or return $ctx->error(
             MT->translate( "No such user '[_1]'", $author_name ) );
+    }
+    elsif ( $archiver && $archiver->contenttype_author_based ) {
+        $author = $ctx->stash('author');
+    }
+    if ($author) {
         if ($archive_contents) {
             push @filters, sub { $_[0]->author_id == $author->id };
         }
