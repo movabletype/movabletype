@@ -88,6 +88,12 @@ my $category2 = MT::Test::Permission->make_category(
     category_set_id => $category_set->id,
     label           => 'category2',
 );
+my $category3 = MT::Test::Permission->make_category(
+    blog_id         => $blog_id,
+    category_set_id => $category_set->id,
+    label           => 'category3',
+    parent          => $category1->id,
+);
 my $cf_tag = MT::Test::Permission->make_content_field(
     blog_id         => $ct->blog_id,
     content_type_id => $ct->id,
@@ -153,9 +159,7 @@ $ct->fields($fields);
 $ct->save or die $ct->errstr;
 
 # Content Data
-my $count = 0;
-for ( 1 .. 5 ) {
-    $count++;
+for my $count ( 1 .. 5 ) {
     my $count_up   = time - ( $count < 5 ? 3600 * 24 * ( 5 - $count ) : 0 );
     my $count_down = time - ( $count > 1 ? 3600 * 24 * ( $count - 1 ) : 0 );
     my @auth_day = MT::Util::offset_time_list( $count_up, $blog_id );
@@ -173,12 +177,15 @@ for ( 1 .. 5 ) {
         content_type_id => $ct->id,
         status          => MT::ContentStatus::RELEASE(),
         data            => {
-            $cf_single_line_text->id => 'test single line text ' . $_,
-            (   $_ == 2
+            $cf_single_line_text->id => 'test single line text ' . $count,
+            (   $count == 2
                 ? ( $cf_category->id => [ $category2->id, $category1->id ] )
                 : ()
             ),
-            (   $_ == 4 ? ( $cf_tag->id => [ $tag2->id, $tag1->id ] )
+            (   $count == 4
+                ? ( $cf_category->id => [ $category3->id ],
+                    $cf_tag->id      => [ $tag2->id, $tag1->id ],
+                    )
                 : ()
             ),
             $cf_datetime->id => $datetime_day,
@@ -236,6 +243,7 @@ $vars->{cf1_uid}     = $cf1->unique_id;
 $vars->{cf2_uid}     = $cf2->unique_id;
 $vars->{cf3_uid}     = $cf3->unique_id;
 $vars->{date_cf_uid} = $date_cf->unique_id;
+$vars->{cd4_id}      = $cd4->id;
 $vars->{cd4_uid}     = $cd4->unique_id;
 $vars->{ct3_name}    = $ct3->name;
 $vars->{cd4_author}  = $cd4->author->name;
@@ -477,3 +485,64 @@ Content is not found.
 </MTContentField></MTContents></MTContents>
 --- expected
 test single line text
+
+=== nested MTContents with id (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents id="[% cd4_id %]"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 4
+
+=== nested MTContents with blog_id (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents blog_id="1"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+
+=== nested MTContents with site_id (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents site_id="1"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+test single line text 2
+test single line text 1
+
+=== nested MTContents with unique_id (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents unique_id="[% cd4_uid %]"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 4
+
+=== nested MTContents with days (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents days="3"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 5
+test single line text 4
+test single line text 3
+
+=== nested MTContents with field:??? (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents field:[% cf1_uid %]="test single line text 2"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 2
+
+=== nested MTContents with include_subcategories (MTC-26096)
+--- template
+<MTContents content_type="test content type 1" limit="1"><MTContents field:[% cf2_uid %]="category1" include_subcategories="1"><MTContentField content_field="single line text"><MTContentFieldValue>
+</MTContentField></MTContents></MTContents>
+--- expected
+test single line text 4
+test single line text 2
+
