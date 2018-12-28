@@ -26,13 +26,31 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             $content_type_id[] = $c->content_type_id;
         }
 
-        if ($ctx->stash('contents') && isset($args['author']) )
+        $tag = $ctx->this_tag();
+        if ($tag == 'mtcontents' && isset($args['author']) )
             $ctx->__stash['contents'] = null;
         if ($ctx->__stash['contents']) {
-            if (isset($args['id']) || isset($args['days']) || isset($args['content_type'])) {
+            if (isset($args['id']) ||
+                isset($args['blog_id']) ||
+                isset($args['site_id']) ||
+                isset($args['unique_id']) ||
+                isset($args['content_type']) ||
+                isset($args['days']) ||
+                isset($args['include_subcategories'])
+            ) {
                 $ctx->__stash['contents'] = null;
             }
-            else if (isset($args['sort_by'])) {
+        }
+        if ($ctx->__stash['contents']) {
+            foreach ($args as $k => $v) {
+                if (!substr_compare($k, 'field___', 0, 8)) {
+                    $ctx->__stash['contents'] = null;
+                    break;
+                }
+            }
+        }
+        if ($ctx->__stash['contents']) {
+            if (isset($args['sort_by'])) {
                 $ids = array();
                 foreach ($ctx->__stash['contents'] as $c) {
                     $ids[] = $c->cd_id;
