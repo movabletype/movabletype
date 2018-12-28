@@ -212,12 +212,12 @@ sub _hdlr_archives {
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
-        my $map = $ctx->stash('template_map')
-            || $archiver->_search_preferred_map(
+        my $map = $archiver->_get_preferred_map(
             {   blog_id         => $blog->id,
                 content_type_id => $ctx->stash('content_type')->id,
+                map             => $ctx->stash('template_map'),
             }
-            );
+        );
         my $cat_field = $map ? $map->cat_field : undef;
         my $category_set
             = $cat_field

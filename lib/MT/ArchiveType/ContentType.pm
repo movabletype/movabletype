@@ -74,9 +74,10 @@ sub archive_group_iter {
     my $blog_id         = $ctx->stash('blog')->id;
     my $content_type_id = $ctx->stash('content_type')->id;
 
-    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+    my $map = $obj->_get_preferred_map(
         {   blog_id         => $blog_id,
             content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
         }
     );
     my $dt_field = $map ? $map->dt_field : undef;

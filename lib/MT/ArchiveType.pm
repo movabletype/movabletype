@@ -319,6 +319,41 @@ sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
 
+sub _get_preferred_map {
+    my $self = shift;
+    my ($args) = @_;
+    $args ||= {};
+    my $map = $args->{map};
+
+    return $map if $self->_is_valid_map($args);
+
+    return $self->_search_preferred_map($args);
+}
+
+sub _is_valid_map {
+    my $self = shift;
+    my ($args) = @_;
+    $args ||= {};
+    my $content_type_id = $args->{content_type_id};
+    my $map             = $args->{map};
+
+    return unless $map;
+
+    return 1 unless $self->_is_contenttype_archiver;
+
+    my $tmpl = $map->template;
+    return unless $tmpl;
+
+    if (   $tmpl->content_type
+        && $content_type_id
+        && $tmpl->content_type_id eq $content_type_id )
+    {
+        return 1;
+    }
+
+    return;
+}
+
 sub _search_preferred_map {
     my $self = shift;
     my ($args) = @_;
@@ -326,9 +361,10 @@ sub _search_preferred_map {
     my $archive_type    = $args->{archive_type} || $self->name;
     my $blog_id         = $args->{blog_id};
     my $content_type_id = $args->{content_type_id};
+    my $map             = $args->{map};
 
     my $map_args
-        = ( $archive_type =~ /^ContentType/ && $content_type_id )
+        = ( $self->_is_contenttype_archiver && $content_type_id )
         ? +{
         join => MT->model('template')->join_on(
             undef,
@@ -339,7 +375,7 @@ sub _search_preferred_map {
         }
         : undef;
 
-    my $map = MT->model('templatemap')->load(
+    $map = MT->model('templatemap')->load(
         {   archive_type => $archive_type,
             blog_id      => $blog_id,
             is_preferred => 1,
@@ -347,6 +383,11 @@ sub _search_preferred_map {
         $map_args || (),
     );
     return $map;
+}
+
+sub _is_contenttype_archiver {
+    my $self = shift;
+    return $self->contenttype_based || $self->contenttype_group_based;
 }
 
 1;

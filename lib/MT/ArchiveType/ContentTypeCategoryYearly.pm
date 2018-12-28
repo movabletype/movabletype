@@ -110,9 +110,10 @@ sub archive_group_iter {
     my $count = 0;
 
     my $content_type_id = $ctx->stash('content_type')->id;
-    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+    my $map             = $obj->_get_preferred_map(
         {   blog_id         => $blog->id,
             content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
         }
     );
     my $cat_field_id = $map ? $map->cat_field_id : '';
