@@ -455,6 +455,28 @@ Content is not found.
 2
 1
 
+=== MT:Contents with sort_order="ascend" and no sort_by modifier (MTC-26225)
+--- template
+<MTContents blog_id="1" content_type="test content type 1" sort_order="ascend"><MTContentID>
+</MTContents>
+--- expected
+1
+2
+3
+4
+5
+
+=== MT:Contents with sort_order="descend" and no sort_by modifier (MTC-26225)
+--- template
+<MTContents blog_id="1" content_type="test content type 1" sort_order="descend"><MTContentID>
+</MTContents>
+--- expected
+5
+4
+3
+2
+1
+
 === MT:Contents with category
 --- template
 <mt:Contents blog_id="1" content_type="[% ct_uid %]" field:[% cf2_uid %]="category1">
