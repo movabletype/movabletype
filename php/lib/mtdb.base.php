@@ -4315,13 +4315,14 @@ abstract class MTDatabase {
 
         $join_clause = '';
 
+        $map = $mt->db()->fetch_templatemap(array(
+            'blog_id'         => $blog_id,
+            'content_type_id' => $content_type_id,
+            'preferred'       => 1,
+            'type'            => $ctx->stash('current_archive_type'),
+        ));
+
         if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
-            $map = $mt->db()->fetch_templatemap(array(
-                'blog_id'         => $blog_id,
-                'content_type_id' => $content_type_id,
-                'preferred'       => 1,
-                'type'            => $ctx->stash('current_archive_type'),
-            ));
             if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
                 $start = isset($args['current_timestamp'])
                     ? $args['current_timestamp'] : null;
@@ -4433,8 +4434,10 @@ abstract class MTDatabase {
             $offset = $args['offset'];
 
         if (!isset($sort_field)) {
-            if (isset($args['sort_by'])) {
-                if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+            if (isset($args['sort_by']) || $map && $map[0]->dt_field_id) {
+                if (!isset($args['sort_by'])) {
+                    $cf = $map[0]->dt_field();
+                } else if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
                     $key= $m[1];
                     $cfs = $this->fetch_content_fields(array(
                         'content_type_id' => $content_type_id,
@@ -4446,23 +4449,25 @@ abstract class MTDatabase {
                         ));
                     if (isset($cfs)) {
                         $cf = $cfs[0];
-                        $type = $cf->cf_type;
-                        require_once "content_field_type_lib.php";
-                        $cf_type = ContentFieldTypeFactory::get_type($type);
-
-                        $alias = 'sb_cf_idx_' . $cf->id;
-
-                        $data_type = $cf_type->get_data_type();
-                        $join_table = "mt_cf_idx $alias";
-                        $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
-                                          " and $alias.cf_idx_content_data_id = cd_id";
-                        $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
-
-                        $sort_field = "$alias.cf_idx_value_$data_type";
                     }
-                    if ($sort_field) $no_resort = 1;
                 }
-                else {
+                if (isset($cf)) {
+                    $type = $cf->cf_type;
+                    require_once "content_field_type_lib.php";
+                    $cf_type = ContentFieldTypeFactory::get_type($type);
+
+                    $alias = 'sb_cf_idx_' . $cf->id;
+
+                    $data_type = $cf_type->get_data_type();
+                    $join_table = "mt_cf_idx $alias";
+                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                      " and $alias.cf_idx_content_data_id = cd_id";
+                    $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
+
+                    $sort_field = "$alias.cf_idx_value_$data_type";
+                    $no_resort = 1;
+                }
+                if (!isset($sort_field) && isset($args['sort_by'])) {
                     if ($args['sort_by'] == 'authored_on') {
                         $sort_field = 'cd_authored_on';
                     } elseif ($args['sort_by'] == 'modified_on') {

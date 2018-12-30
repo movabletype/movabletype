@@ -2706,6 +2706,9 @@ cd_same_same_date
 
 author2
 cd_same_peach
+--- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26228
 --- expected_contenttype_author_daily
 author1: November  1, 2008
 cd_same_apple_orange
