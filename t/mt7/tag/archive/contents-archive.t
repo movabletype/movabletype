@@ -456,8 +456,8 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 --- expected_contenttype_category
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
-7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228
@@ -514,8 +514,8 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- expected_contenttype_category
-11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- expected_php_todo_contenttype_category
 --- FIXME
@@ -574,8 +574,8 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 --- expected_contenttype_category
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
-7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 --- expected_php_todo_contenttype_category
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228
@@ -632,8 +632,8 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- expected_contenttype_category
-11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- expected_php_todo_contenttype_category
 --- FIXME
